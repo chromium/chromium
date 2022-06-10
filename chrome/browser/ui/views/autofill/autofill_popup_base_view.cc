@@ -129,8 +129,8 @@ SkColor AutofillPopupBaseView::GetFooterBackgroundColor() const {
   return GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground);
 }
 
-SkColor AutofillPopupBaseView::GetSeparatorColor() const {
-  return GetColorProvider()->GetColor(ui::kColorMenuSeparator);
+ui::ColorId AutofillPopupBaseView::GetSeparatorColorId() const {
+  return ui::kColorMenuSeparator;
 }
 
 SkColor AutofillPopupBaseView::GetWarningColor() const {
@@ -474,7 +474,7 @@ ADD_READONLY_PROPERTY_METADATA(SkColor, ForegroundColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, SelectedBackgroundColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, SelectedForegroundColor)
 ADD_READONLY_PROPERTY_METADATA(SkColor, FooterBackgroundColor)
-ADD_READONLY_PROPERTY_METADATA(SkColor, SeparatorColor)
+ADD_READONLY_PROPERTY_METADATA(ui::ColorId, SeparatorColorId)
 ADD_READONLY_PROPERTY_METADATA(SkColor, WarningColor)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ContentAreaBounds)
 END_METADATA

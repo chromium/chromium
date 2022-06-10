@@ -220,12 +220,11 @@ SkColor AppListColorProviderImpl::GetGridBackgroundCardInactiveColor() const {
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
-SkColor AppListColorProviderImpl::GetSeparatorColor() const {
+ui::ColorId AppListColorProviderImpl::GetSeparatorColorId() const {
   if (ShouldUseDarkLightColors()) {
-    return ash_color_provider_->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor);
+    return ui::kColorAshAppListSeparatorLight;
   }
-  return SkColorSetA(gfx::kGoogleGrey900, 0x24);  // default_color
+  return ui::kColorAshAppListSeparator;  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetFocusRingColor() const {

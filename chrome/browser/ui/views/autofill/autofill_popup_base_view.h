@@ -63,7 +63,7 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   SkColor GetSelectedBackgroundColor() const;
   SkColor GetSelectedForegroundColor() const;
   SkColor GetFooterBackgroundColor() const;
-  SkColor GetSeparatorColor() const;
+  ui::ColorId GetSeparatorColorId() const;
   SkColor GetWarningColor() const;
 
   base::TimeDelta time_delta_since_popup_shown() const {

@@ -184,6 +184,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
+  E_CPONLY(kColorAshAppListSeparator) \
+  E_CPONLY(kColorAshAppListSeparatorLight) \
+  E_CPONLY(kColorAshArcInputMenuSeparator) \
+  E_CPONLY(kColorAshIconInOobe) \
+  \
   E_CPONLY(kColorAshSystemUIBorderColor1) \
   E_CPONLY(kColorAshSystemUIBorderColor2) \
   E_CPONLY(kColorAshSystemUIHighlightColor1) \
@@ -199,6 +204,7 @@
   E_CPONLY(kColorAshSystemUIMenuIcon) \
   E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \
   E_CPONLY(kColorAshSystemUIMenuSeparator) \
+  \
   E_CPONLY(kColorNativeColor1) \
   E_CPONLY(kColorNativeColor1Shade1) \
   E_CPONLY(kColorNativeColor1Shade2) \

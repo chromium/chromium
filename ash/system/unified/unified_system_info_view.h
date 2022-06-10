@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/gtest_prod_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -21,6 +22,7 @@ namespace ash {
 // is enterprise managed or not.
 class ASH_EXPORT UnifiedSystemInfoView : public views::View {
  public:
+  METADATA_HEADER(UnifiedSystemInfoView);
   explicit UnifiedSystemInfoView(UnifiedSystemTrayController* controller);
 
   UnifiedSystemInfoView(const UnifiedSystemInfoView&) = delete;
@@ -31,8 +33,6 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);

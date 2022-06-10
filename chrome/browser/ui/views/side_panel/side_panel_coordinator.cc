@@ -72,20 +72,6 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
   return button;
 }
 
-class SidePanelSeparator : public views::Separator {
- public:
-  METADATA_HEADER(SidePanelSeparator);
-
-  void OnThemeChanged() override {
-    views::Separator::OnThemeChanged();
-    SetColor(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR));
-  }
-};
-
-BEGIN_METADATA(SidePanelSeparator, views::Separator)
-END_METADATA
-
 using PopulateSidePanelCallback = base::OnceCallback<void(
     SidePanelEntry* entry,
     absl::optional<std::unique_ptr<views::View>> content_view)>;
@@ -302,7 +288,8 @@ void SidePanelCoordinator::InitializeSidePanel() {
   container->SetID(kSidePanelContentViewId);
 
   container->AddChildView(CreateHeader());
-  container->AddChildView(std::make_unique<SidePanelSeparator>());
+  container->AddChildView(std::make_unique<views::Separator>())
+      ->SetColorId(kColorSidePanelContentAreaSeparator);
 
   auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>(
       no_delays_for_testing_);

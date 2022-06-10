@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_SEPARATOR_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -30,8 +31,8 @@ class VIEWS_EXPORT Separator : public View {
 
   ~Separator() override;
 
-  SkColor GetColor() const;
-  void SetColor(SkColor color);
+  ui::ColorId GetColorId() const;
+  void SetColorId(ui::ColorId color_id);
 
   // Vertical or horizontal extension depending on the orientation. Set to
   // `kThickness` by default.
@@ -47,12 +48,12 @@ class VIEWS_EXPORT Separator : public View {
 
  private:
   int preferred_length_ = kThickness;
-  absl::optional<SkColor> overridden_color_;
+  ui::ColorId color_id_ = ui::kColorSeparator;
   Orientation orientation_ = Orientation::kVertical;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)
-VIEW_BUILDER_PROPERTY(SkColor, Color)
+VIEW_BUILDER_PROPERTY(ui::ColorId, ColorId)
 VIEW_BUILDER_PROPERTY(int, PreferredLength)
 VIEW_BUILDER_PROPERTY(Separator::Orientation, Orientation)
 END_VIEW_BUILDER

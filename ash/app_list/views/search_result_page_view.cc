@@ -37,6 +37,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -152,7 +154,9 @@ class SearchResultPageBackground : public views::Background {
     // Draw a separator between SearchBoxView and SearchResultPageView.
     bounds.set_y(kActiveSearchBoxHeight + kSearchBoxBottomSpacing);
     bounds.set_height(kSeparatorThickness);
-    canvas->FillRect(bounds, AppListColorProvider::Get()->GetSeparatorColor());
+    canvas->FillRect(bounds,
+                     view->GetColorProvider()->GetColor(
+                         AppListColorProvider::Get()->GetSeparatorColorId()));
   }
 };
 
@@ -180,7 +184,9 @@ class SearchResultPageView::HorizontalSeparator : public views::View {
 
   void OnPaint(gfx::Canvas* canvas) override {
     gfx::Rect rect = GetContentsBounds();
-    canvas->FillRect(rect, AppListColorProvider::Get()->GetSeparatorColor());
+    canvas->FillRect(rect,
+                     GetColorProvider()->GetColor(
+                         AppListColorProvider::Get()->GetSeparatorColorId()));
     View::OnPaint(canvas);
   }
 

@@ -616,6 +616,7 @@ test("wayland_client_tests") {
     "//components/exo",
     "//components/exo/wayland",
     "//ui/base",
+    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 
@@ -662,6 +663,7 @@ test("wayland_client_perftests") {
     "//testing/perf",
     "//ui/aura:test_support",
     "//ui/base",
+    "//ui/color:color",
     "//ui/compositor:test_support",
     "//ui/gl:test_support",
   ]
@@ -707,6 +709,7 @@ test("wayland_client_compatibility_tests") {
     "//components/exo/wayland/compatibility_test:generated_client_helper_headers",
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
+    "//ui/color:color",
     "//ui/gl:test_support",
   ]
 

@@ -26,6 +26,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -105,11 +106,9 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
   settings_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS));
 
-  const SkColor separator_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
-  separator_1_->SetColor(separator_color);
+  separator_1_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_1_->SetPreferredLength(kSeparatorHeight);
-  separator_2_->SetColor(separator_color);
+  separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_2_->SetPreferredLength(kSeparatorHeight);
 
   close_button_->SetTooltipText(

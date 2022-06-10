@@ -45,6 +45,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -299,8 +300,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   if (features::IsProductivityLauncherEnabled()) {
     separator_ = scrollable_container_->AddChildView(
         std::make_unique<views::Separator>());
-    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor));
+    separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     separator_->SetPreferredSize(
         gfx::Size(kSeparatorWidth, views::Separator::kThickness));
     // Initially set the vertical inset to kRegularSeparatorVerticalInset. The
@@ -1147,14 +1147,6 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   // Finish initialization of views that require app list config.
   if (creating_initial_config)
     UpdateForActiveAppListModel();
-}
-
-void AppsContainerView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (separator_) {
-    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor));
-  }
 }
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {

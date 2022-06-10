@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -321,7 +322,7 @@ void InputMenuView::Init() {
 
 std::unique_ptr<views::View> InputMenuView::BuildSeparator() {
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(SK_ColorGRAY);
+  separator->SetColorId(ui::kColorAshArcInputMenuSeparator);
 
   return std::move(separator);
 }
