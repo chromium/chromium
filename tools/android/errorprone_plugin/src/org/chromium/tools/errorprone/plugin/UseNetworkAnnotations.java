@@ -19,6 +19,7 @@ import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.List;
         link = "https://bugs.chromium.org/p/chromium/issues/detail?id=1231780")
 public class UseNetworkAnnotations
         extends BugChecker implements BugChecker.MethodInvocationTreeMatcher {
+    private static final String ERRORPRONE_PLUGIN_PATH = "tools/android/errorprone_plugin";
     private static final String URL_CLASS_NAME = "java.net.URL";
     private static final String OPEN_CONNECTION_METHOD_NAME = "openConnection";
     private static final String OPEN_STREAM_METHOD_NAME = "openStream";
@@ -74,23 +76,22 @@ public class UseNetworkAnnotations
             return Description.NO_MATCH;
         }
 
-        // Find the src/ dir. This assumes the build path is inside the src/ directory, and that
-        // the root is actually called "src".
-        Path buildPath = Paths.get("").toAbsolutePath();
-        Path srcDir = buildPath;
-        while (srcDir != null && !srcDir.endsWith("src")) {
+        Path javaFile = Paths.get(ASTHelpers.getFileName(state.getPath().getCompilationUnit()));
+
+        // Find the top-level src/ dir. If the ERRORPRONE_PLUGIN_PATH directory exists while walking
+        // up the tree, it is assumed to be the top-level src/.
+        Path srcDir = javaFile;
+        while (srcDir != null && !Files.isDirectory(srcDir.resolve(ERRORPRONE_PLUGIN_PATH))) {
             srcDir = srcDir.getParent();
         }
         if (srcDir == null) {
             return buildDescription(tree)
-                    .setMessage(
-                            "Could not find the src/ directory for the UseNetworkAnnotations check."
-                            + " Make sure your build path is inside src/.")
+                    .setMessage("Could not find the top-level src/ directory for the "
+                            + "UseNetworkAnnotations check.")
                     .build();
         }
 
         // Check whether the file is allowlisted.
-        Path javaFile = Paths.get(ASTHelpers.getFileName(state.getPath().getCompilationUnit()));
         for (String allowed : ALLOWLISTED_FILES) {
             if (javaFile.startsWith(srcDir.resolve(allowed))) {
                 return Description.NO_MATCH;
