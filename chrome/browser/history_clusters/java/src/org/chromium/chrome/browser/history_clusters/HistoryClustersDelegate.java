@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.url.GURL;
 
 /**
@@ -33,9 +34,15 @@ public interface HistoryClustersDelegate {
 
     /** Returns an intent that opens the given url in the correct main browsing activity. */
     @Nullable
-    Intent getOpenUrlIntent(GURL gurl);
+    Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab);
 
     /** Returns a toggle view that swaps between the Journeys UI and the "normal" History UI. */
     @Nullable
     ViewGroup getToggleView(ViewGroup parent);
+
+    /** Returns an object that can create new tabs. */
+    @Nullable
+    default TabCreator getTabCreator(boolean isIncognito) {
+        return null;
+    }
 }

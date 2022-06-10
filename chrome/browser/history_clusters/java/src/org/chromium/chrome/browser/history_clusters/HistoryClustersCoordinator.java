@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,11 +28,30 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.List;
+
 /**
  * Root component for the HistoryClusters UI component, which displays lists of related history
  * visits grouped into clusters.
  */
 public class HistoryClustersCoordinator implements OnMenuItemClickListener {
+    private static class DisabledSelectionDelegate extends SelectionDelegate {
+        @Override
+        public boolean toggleSelectionForItem(Object o) {
+            return false;
+        }
+
+        @Override
+        public boolean isItemSelected(Object o) {
+            return false;
+        }
+
+        @Override
+        public boolean isSelectionEnabled() {
+            return false;
+        }
+    }
+
     private final HistoryClustersMediator mMediator;
     private final ModelList mModelList;
     private final HistoryClustersDelegate mDelegate;
@@ -41,8 +61,9 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private final PropertyModel mToolbarModel;
     private ViewGroup mActivityContentView;
     private HistoryClustersToolbar mToolbar;
-    private SelectionDelegate mSelectionDelegate;
+    private SelectionDelegate<ClusterVisit> mSelectionDelegate;
     private SelectableListLayout mSelectableListLayout;
+    private SelectionDelegate mDisabledSelectionDelegate = new DisabledSelectionDelegate();
 
     /**
      * Construct a new HistoryClustersCoordinator.
@@ -61,9 +82,12 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                                 .with(HistoryClustersToolbarProperties.QUERY_STATE,
                                         QueryState.forQueryless())
                                 .build();
+
+        mSelectionDelegate = new SelectionDelegate<>();
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), mActivity, mActivity.getResources(), mModelList,
-                mToolbarModel, mDelegate, System::currentTimeMillis, templateUrlService);
+                mToolbarModel, mDelegate, System::currentTimeMillis, templateUrlService,
+                mSelectionDelegate);
     }
 
     public void destroy() {
@@ -119,7 +143,6 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         recyclerView.setItemAnimator(null);
         recyclerView.addOnScrollListener(mMediator);
 
-        mSelectionDelegate = new SelectionDelegate<>();
         mToolbar = (HistoryClustersToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.history_clusters_toolbar, mSelectionDelegate,
                 R.string.history_clusters_journeys_tab_label, R.id.normal_menu_group,
@@ -144,6 +167,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         SelectableItemView<HistoryCluster> clusterView =
                 (SelectableItemView<HistoryCluster>) LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.history_cluster, parent, false);
+        clusterView.setSelectionDelegate(mDisabledSelectionDelegate);
         return clusterView;
     }
 
@@ -151,6 +175,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         SelectableItemView<ClusterVisit> itemView =
                 (SelectableItemView<ClusterVisit>) LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.history_cluster_visit, parent, false);
+        itemView.setSelectionDelegate(mSelectionDelegate);
         return itemView;
     }
 
@@ -159,16 +184,35 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 .inflate(R.layout.history_clusters_related_searches_view, parent, false);
     }
 
+    // OnMenuItemClickListener implementation.
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.search_menu_id) {
             mMediator.setQueryState(QueryState.forQuery(""));
             return true;
-        }
-        if (menuItem.getItemId() == R.id.close_menu_id && mDelegate.isSeparateActivity()) {
+        } else if (menuItem.getItemId() == R.id.close_menu_id && mDelegate.isSeparateActivity()) {
             mActivity.finish();
+            return true;
+        } else if (menuItem.getItemId() == R.id.selection_mode_open_in_incognito) {
+            openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), true);
+            mSelectionDelegate.clearSelection();
+            return true;
+        } else if (menuItem.getItemId() == R.id.selection_mode_open_in_new_tab) {
+            openVisitsInNewTabs(mSelectionDelegate.getSelectedItemsAsList(), false);
+            mSelectionDelegate.clearSelection();
             return true;
         }
         return false;
+    }
+
+    private void openVisitsInNewTabs(List<ClusterVisit> visits, boolean isIncognito) {
+        for (ClusterVisit visit : visits) {
+            mMediator.navigateToUrl(visit.getGURL(), isIncognito, true);
+        }
+    }
+
+    @VisibleForTesting
+    SelectionDelegate<ClusterVisit> getSelectionDelegateForTesting() {
+        return mSelectionDelegate;
     }
 }

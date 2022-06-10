@@ -19,6 +19,8 @@ class HistoryClustersViewBinder {
         if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
             OnClickListener clickListener = model.get(HistoryClustersItemProperties.CLICK_HANDLER);
             itemView.setOnClickListener(clickListener);
+        } else if (key == HistoryClustersItemProperties.CLUSTER_VISIT) {
+            itemView.setItem(model.get(HistoryClustersItemProperties.CLUSTER_VISIT));
         } else if (key == HistoryClustersItemProperties.ICON_DRAWABLE) {
             itemView.setIconDrawable(model.get(HistoryClustersItemProperties.ICON_DRAWABLE));
         } else if (key == HistoryClustersItemProperties.TITLE) {

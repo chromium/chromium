@@ -42,6 +42,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -92,6 +95,8 @@ public class HistoryClustersMediatorTest {
     private RecyclerView mRecyclerView;
     @Mock
     private LinearLayoutManager mLayoutManager;
+    @Mock
+    private TabCreator mTabCreator;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
@@ -109,6 +114,7 @@ public class HistoryClustersMediatorTest {
     private HistoryClustersMediator mMediator;
     private boolean mIsSeparateActivity;
     private HistoryClustersDelegate mHistoryClustersDelegate;
+    private SelectionDelegate mSelectionDelegate = new SelectionDelegate();
 
     @Before
     public void setUp() {
@@ -136,7 +142,7 @@ public class HistoryClustersMediatorTest {
             }
 
             @Override
-            public Intent getOpenUrlIntent(GURL gurl) {
+            public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean createNewTab) {
                 return mIntent;
             }
 
@@ -144,10 +150,16 @@ public class HistoryClustersMediatorTest {
             public ViewGroup getToggleView(ViewGroup parent) {
                 return null;
             }
+
+            @Override
+            public TabCreator getTabCreator(boolean isIncognito) {
+                return mTabCreator;
+            }
         };
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
-                mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService);
+                mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
+                mSelectionDelegate);
         mVisit1 = new ClusterVisit(
                 1.0F, mGurl1, "Title 1", "url1.com/", new ArrayList<>(), new ArrayList<>());
         mVisit2 = new ClusterVisit(
@@ -277,15 +289,24 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testNavigate() {
-        mMediator.navigateToItemUrl(mMockGurl);
+        mMediator.navigateToUrl(mMockGurl, false, false);
 
         verify(mTab).loadUrl(argThat(hasSameUrl(ITEM_URL_SPEC)));
     }
 
     @Test
+    public void testNavigateToNewTab() {
+        mMediator.navigateToUrl(mMockGurl, false, true);
+
+        verify(mTabCreator)
+                .createNewTab(argThat(hasSameUrl(ITEM_URL_SPEC)), eq(TabLaunchType.FROM_CHROME_UI),
+                        eq(mTab));
+    }
+
+    @Test
     public void testNavigateSeparateActivity() {
         mIsSeparateActivity = true;
-        mMediator.navigateToItemUrl(mMockGurl);
+        mMediator.navigateToUrl(mMockGurl, false, false);
         verify(mContext).startActivity(mIntent);
     }
 
@@ -392,7 +413,7 @@ public class HistoryClustersMediatorTest {
         ShadowLooper.idleMainLooper();
     }
 
-    private ArgumentMatcher<LoadUrlParams> hasSameUrl(String url) {
+    static ArgumentMatcher<LoadUrlParams> hasSameUrl(String url) {
         return argument -> argument.getUrl().equals(url);
     }
 }

@@ -27,9 +27,13 @@ import org.chromium.base.Promise;
 import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -65,9 +69,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final int mFaviconSize;
     private Promise<HistoryClustersResult> mPromise;
     private final HistoryClustersDelegate mDelegate;
-    private CallbackController mCallbackController = new CallbackController();
+    private final CallbackController mCallbackController = new CallbackController();
     private final Clock mClock;
     private final TemplateUrlService mTemplateUrlService;
+    private final SelectionDelegate mSelectionDelegate;
 
     /**
      * Create a new HistoryClustersMediator.
@@ -82,12 +87,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      *         externally, e.g. populating intents targeting activities we can't reference directly.
      * @param clock Provider of the current time in ms relative to the unix epoch.
      * @param templateUrlService Service that allows us to generate a URL for a given search query.
+     * @param selectionDelegate Delegate that gives us information about the currently selected
+     *         items in the list we're displaying.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             HistoryClustersDelegate historyClustersDelegate, Clock clock,
-            TemplateUrlService templateUrlService) {
+            TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -99,6 +106,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
         mClock = clock;
         mTemplateUrlService = templateUrlService;
+        mSelectionDelegate = selectionDelegate;
     }
 
     // SearchDelegate implementation.
@@ -182,7 +190,29 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             return;
         }
 
-        navigateToItemUrl(new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)));
+        navigateToUrl(
+                new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)), false, false);
+    }
+
+    void navigateToUrl(GURL gurl, boolean inIncognito, boolean createNewTab) {
+        Context appContext = ContextUtils.getApplicationContext();
+        if (mDelegate.isSeparateActivity()) {
+            appContext.startActivity(mDelegate.getOpenUrlIntent(gurl, inIncognito, createNewTab));
+            return;
+        }
+
+        Tab currentTab = mDelegate.getTab();
+        if (currentTab == null) return;
+
+        if (createNewTab) {
+            TabCreator tabCreator = mDelegate.getTabCreator(currentTab.isIncognito());
+            assert tabCreator != null;
+            tabCreator.createNewTab(
+                    new LoadUrlParams(gurl), TabLaunchType.FROM_CHROME_UI, currentTab);
+        } else {
+            LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
+            currentTab.loadUrl(loadUrlParams);
+        }
     }
 
     private void queryComplete(HistoryClustersResult result) {
@@ -221,7 +251,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 visitModel.set(HistoryClustersItemProperties.URL,
                         applyBolding(visit.getUrlForDisplay(), visit.getUrlMatchPositions()));
                 visitModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                        (v) -> navigateToItemUrl(visit.getGURL()));
+                        (v) -> onClusterVisitClicked((SelectableItemView) v, visit));
+                visitModel.set(HistoryClustersItemProperties.CLUSTER_VISIT, visit);
                 visitModel.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
                 if (mLargeIconBridge != null) {
                     mLargeIconBridge.getLargeIconForUrl(visit.getGURL(), mFaviconSize,
@@ -263,6 +294,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
     }
 
+    private void onClusterVisitClicked(SelectableItemView view, ClusterVisit clusterVisit) {
+        if (mSelectionDelegate.isSelectionEnabled()) {
+            view.onLongClick(view);
+        } else {
+            navigateToUrl(clusterVisit.getGURL(), false, false);
+        }
+    }
+
     private boolean hasToggleItem() {
         return mModelList.size() > 0 && mModelList.get(0).type == ItemType.TOGGLE;
     }
@@ -277,6 +316,13 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
 
         mModelList.removeRange(indexOfFirstVisit, itemsToHide.size());
+        for (ListItem listItem : itemsToHide) {
+            ClusterVisit clusterVisit =
+                    listItem.model.get(HistoryClustersItemProperties.CLUSTER_VISIT);
+            if (mSelectionDelegate.isItemSelected(clusterVisit)) {
+                mSelectionDelegate.toggleSelectionForItem(clusterVisit);
+            }
+        }
     }
 
     @VisibleForTesting
@@ -287,21 +333,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
         mModelList.addAll(itemsToShow, insertionIndex);
-    }
-
-    @VisibleForTesting
-    void navigateToItemUrl(GURL gurl) {
-        Context appContext = ContextUtils.getApplicationContext();
-        if (mDelegate.isSeparateActivity()) {
-            appContext.startActivity(mDelegate.getOpenUrlIntent(gurl));
-            return;
-        }
-
-        Tab currentTab = mDelegate.getTab();
-        if (currentTab == null) return;
-
-        LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
-        currentTab.loadUrl(loadUrlParams);
     }
 
     @VisibleForTesting

@@ -822,7 +822,7 @@ public class RootUiCoordinator
                 }
 
                 @Override
-                public Intent getOpenUrlIntent(GURL gurl) {
+                public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean inNewTab) {
                     return new Intent();
                 }
 

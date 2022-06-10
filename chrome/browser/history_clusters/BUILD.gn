@@ -16,7 +16,10 @@ android_resources("java_resources") {
     "java/res/layout/history_clusters_toolbar.xml",
     "java/res/menu/history_clusters_menu.xml",
   ]
-  deps = [ "//components/browser_ui/widget/android:java_resources" ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
 }
 
 android_library("java") {
@@ -47,6 +50,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java",

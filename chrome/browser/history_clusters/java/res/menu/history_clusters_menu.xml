@@ -23,5 +23,17 @@
   <group
       android:id="@+id/selection_mode_menu_group"
       android:visible="false" >
+    <item
+        android:id="@+id/selection_mode_open_in_new_tab"
+        android:title="@string/contextmenu_open_in_new_tab"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/selection_mode_open_in_incognito"
+        android:title="@string/contextmenu_open_in_incognito_tab"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/selection_mode_copy_link"
+        android:title="@string/copy_link"
+        app:showAsAction="never" />
   </group>
 </menu>

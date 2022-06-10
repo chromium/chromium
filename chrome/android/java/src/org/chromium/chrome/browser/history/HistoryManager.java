@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -144,13 +146,18 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 }
 
                 @Override
-                public Intent getOpenUrlIntent(GURL gurl) {
-                    return HistoryContentManager.createOpenUrlIntent(gurl, mActivity);
+                public Intent getOpenUrlIntent(GURL gurl, boolean inIncognito, boolean inNewTab) {
+                    return mContentManager.getOpenUrlIntent(gurl, inIncognito, inNewTab);
                 }
 
                 @Override
                 public ViewGroup getToggleView(ViewGroup parent) {
                     return buildToggleView(parent, JOURNEYS_TAB_INDEX);
+                }
+
+                @Override
+                public TabCreator getTabCreator(boolean isIncognito) {
+                    return new TabDelegate(isIncognito);
                 }
             };
 

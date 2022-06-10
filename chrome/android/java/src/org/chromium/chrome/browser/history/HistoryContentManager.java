@@ -367,7 +367,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
     }
 
-    @VisibleForTesting
     Intent getOpenUrlIntent(GURL url, Boolean isIncognito, boolean createNewTab) {
         // Construct basic intent.
         Intent viewIntent = createOpenUrlIntent(url, mActivity);
