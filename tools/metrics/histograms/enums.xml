@@ -40317,6 +40317,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4268" label="SharedStorageAPI_Clear_Method"/>
   <int value="4269" label="SharedStorageAPI_SelectURL_Method"/>
   <int value="4270" label="SharedStorageAPI_Run_Method"/>
+  <int value="4271" label="ViewTimelineConstructor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

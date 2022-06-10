@@ -52,6 +52,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsDocumentTimeline() const { return false; }
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsCSSScrollTimeline() const { return false; }
+  virtual bool IsViewTimeline() const { return false; }
+
   virtual bool IsActive() const = 0;
   virtual AnimationTimeDelta ZeroTime() = 0;
   // https://w3.org/TR/web-animations-1/#monotonically-increasing-timeline
@@ -71,7 +73,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
       const Timing&) {
     return AnimationTimeDelta();
   }
-  Document* GetDocument() { return document_; }
+  Document* GetDocument() const { return document_; }
   virtual void AnimationAttached(Animation*);
   virtual void AnimationDetached(Animation*);
 

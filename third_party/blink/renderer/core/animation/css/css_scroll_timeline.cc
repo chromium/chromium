@@ -209,11 +209,14 @@ CSSScrollTimeline::Options::Options(Document& document,
       offsets_(ComputeScrollOffsets(document, rule.GetStart(), rule.GetEnd())),
       rule_(&rule) {}
 
+// TODO(crbug.com/1329159): Support nearest scroll ancestor.
 CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
-    : ScrollTimeline(document,
-                     options.source_,
-                     options.direction_,
-                     std::move(options.offsets_)),
+    : ScrollTimeline(
+          document,
+          ReferenceType::kSource,
+          options.source_.value_or(document->ScrollingElementNoLayout()),
+          options.direction_,
+          std::move(options.offsets_)),
       rule_(options.rule_) {
   DCHECK(rule_);
 }
@@ -223,7 +226,8 @@ const AtomicString& CSSScrollTimeline::Name() const {
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
-  return (source() == options.source_) &&
+  // TODO(crbug.com/1060384): Support ReferenceType::kNearestAncestor.
+  return HasExplicitSource() && (SourceInternal() == options.source_) &&
          (GetOrientation() == options.direction_) &&
          (ScrollOffsetsEqual(options.offsets_)) && (rule_ == options.rule_);
 }

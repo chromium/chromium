@@ -42,14 +42,26 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
     kVertical,
   };
 
+  // Indicates the relation between the reference element and source of the
+  // scroll timeline.
+  enum class ReferenceType {
+    kSource,          // The reference element matches the source.
+    kNearestAncestor  // The source is the nearest scrollable ancestor to the
+                      // reference element.
+  };
+
   static ScrollTimeline* Create(Document&,
                                 ScrollTimelineOptions*,
                                 ExceptionState&);
 
   ScrollTimeline(Document*,
-                 absl::optional<Element*> source,
+                 ReferenceType reference_type,
+                 Element* reference,
                  ScrollDirection,
                  HeapVector<Member<ScrollTimelineOffset>>);
+
+  static bool StringToScrollDirection(String scroll_direction,
+                                      ScrollTimeline::ScrollDirection& result);
 
   bool IsScrollTimeline() const override { return true; }
   // ScrollTimeline is not active if source is null, does not currently
@@ -74,7 +86,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   V8CSSNumberish* ConvertTimeToProgress(AnimationTimeDelta time) const;
 
   // Returns the Node that should actually have the ScrollableArea (if one
-  // exists). This can differ from |source| when |source_| is the
+  // exists). This can differ from |source| when defaulting to the
   // Document's scrollingElement, and it may be null if the document was
   // removed before the ScrollTimeline was created.
   Node* ResolvedSource() const { return resolved_source_; }
@@ -138,6 +150,20 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   bool ScrollOffsetsEqual(
       const HeapVector<Member<ScrollTimelineOffset>>& other) const;
 
+  virtual Element* ReferenceElement() const { return reference_element_.Get(); }
+
+  // Determines the source for the scroll timeline. It may be the reference
+  // element or its nearest scrollable ancestor, depending on |souce_type|.
+  // This version does not force a style update and is therefore safe to call
+  // during lifecycle update.
+  Element* SourceInternal() const;
+
+  bool HasExplicitSource() const {
+    return reference_type_ == ReferenceType::kSource;
+  }
+
+  void UpdateResolvedSource();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
@@ -168,7 +194,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
     }
   };
 
-  TimelineState ComputeTimelineState() const;
+  TimelineState ComputeTimelineState();
   ScrollTimelineOffset* StartScrollOffset() const;
   ScrollTimelineOffset* EndScrollOffset() const;
 
@@ -176,9 +202,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // false - regardless of time change.
   void ScheduleNextServiceInternal(bool time_check);
 
-  // Use |source_| only to implement the web-exposed API but use
-  // resolved_source_ to actually access the scroll related properties.
-  Member<Element> source_;
+  ReferenceType reference_type_;
+  Member<Element> reference_element_;
   Member<Node> resolved_source_;
   ScrollDirection orientation_;
   HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;

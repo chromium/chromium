@@ -106,6 +106,7 @@ class TestScrollTimeline : public ScrollTimeline {
                      HeapVector<Member<ScrollTimelineOffset>> scroll_offsets =
                          CreateScrollOffsets())
       : ScrollTimeline(document,
+                       ScrollTimeline::ReferenceType::kSource,
                        source,
                        ScrollTimeline::kVertical,
                        std::move(scroll_offsets)),
@@ -359,9 +360,9 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullSource) {
   // documentElement from the document.
   Element* scroll_source = nullptr;
   Persistent<ScrollTimeline> scroll_timeline =
-      MakeGarbageCollected<ScrollTimeline>(&GetDocument(), scroll_source,
-                                           ScrollTimeline::kBlock,
-                                           CreateScrollOffsets());
+      MakeGarbageCollected<ScrollTimeline>(
+          &GetDocument(), ScrollTimeline::ReferenceType::kSource, scroll_source,
+          ScrollTimeline::kBlock, CreateScrollOffsets());
 
   // Sanity checks.
   ASSERT_EQ(scroll_timeline->source(), nullptr);

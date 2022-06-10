@@ -277,6 +277,8 @@ blink_core_sources("animation") {
     "underlying_value.h",
     "underlying_value_owner.cc",
     "underlying_value_owner.h",
+    "view_timeline.cc",
+    "view_timeline.h",
     "worklet_animation_base.h",
     "worklet_animation_controller.cc",
     "worklet_animation_controller.h",

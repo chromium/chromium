@@ -1445,6 +1445,7 @@ class ScrollTimelineForTest : public ScrollTimeline {
                         HeapVector<Member<ScrollTimelineOffset>>
                             scroll_offsets = CreateScrollOffsets())
       : ScrollTimeline(document,
+                       ScrollTimeline::ReferenceType::kSource,
                        scroll_source,
                        ScrollTimeline::kVertical,
                        std::move(scroll_offsets)),

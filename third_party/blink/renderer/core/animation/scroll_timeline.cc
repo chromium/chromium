@@ -41,27 +41,6 @@ ScrollTimelineSet& GetScrollTimelineSet() {
   return *set;
 }
 
-bool StringToScrollDirection(String scroll_direction,
-                             ScrollTimeline::ScrollDirection& result) {
-  if (scroll_direction == "block") {
-    result = ScrollTimeline::kBlock;
-    return true;
-  }
-  if (scroll_direction == "inline") {
-    result = ScrollTimeline::kInline;
-    return true;
-  }
-  if (scroll_direction == "horizontal") {
-    result = ScrollTimeline::kHorizontal;
-    return true;
-  }
-  if (scroll_direction == "vertical") {
-    result = ScrollTimeline::kVertical;
-    return true;
-  }
-  return false;
-}
-
 ScrollOrientation ToPhysicalScrollOrientation(
     ScrollTimeline::ScrollDirection direction,
     const LayoutBox& source_box) {
@@ -94,6 +73,7 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
                                         ? absl::make_optional(options->source())
                                         : absl::nullopt;
 
+  // TODO(crbug.com/1060384): Update to axis in alignment with the spec rewrite.
   ScrollDirection orientation;
   if (!StringToScrollDirection(options->orientation(), orientation)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -102,6 +82,8 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   }
 
   HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
+  // TODO(crbug.com/1329159): Replace scrollOffsets once ratified in the spec
+  // rewrite.
   // https://drafts.csswg.org/scroll-animations-1/#set-the-offset-value
   for (auto& offset : options->scrollOffsets()) {
     ScrollTimelineOffset* scroll_offset = ScrollTimelineOffset::Create(offset);
@@ -128,30 +110,46 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   if (document.InQuirksMode())
     document.UpdateStyleAndLayoutTree();
 
-  return MakeGarbageCollected<ScrollTimeline>(&document, source, orientation,
-                                              scroll_offsets);
+  return MakeGarbageCollected<ScrollTimeline>(
+      &document, ReferenceType::kSource,
+      source.value_or(document.ScrollingElementNoLayout()), orientation,
+      scroll_offsets);
+}
+
+bool ScrollTimeline::StringToScrollDirection(
+    String scroll_direction,
+    ScrollTimeline::ScrollDirection& result) {
+  if (scroll_direction == "block") {
+    result = ScrollTimeline::kBlock;
+    return true;
+  }
+  if (scroll_direction == "inline") {
+    result = ScrollTimeline::kInline;
+    return true;
+  }
+  if (scroll_direction == "horizontal") {
+    result = ScrollTimeline::kHorizontal;
+    return true;
+  }
+  if (scroll_direction == "vertical") {
+    result = ScrollTimeline::kVertical;
+    return true;
+  }
+  return false;
 }
 
 ScrollTimeline::ScrollTimeline(
     Document* document,
-    absl::optional<Element*> source,
+    ReferenceType reference_type,
+    Element* reference,
     ScrollDirection orientation,
     HeapVector<Member<ScrollTimelineOffset>> scroll_offsets)
     : AnimationTimeline(document),
-      source_(source.value_or(document->ScrollingElementNoLayout())),
-      resolved_source_(ResolveSource(source_)),
+      reference_type_(reference_type),
+      reference_element_(reference),
       orientation_(orientation),
       scroll_offsets_(std::move(scroll_offsets)) {
-  if (resolved_source_) {
-    ScrollTimelineSet& set = GetScrollTimelineSet();
-    if (!set.Contains(resolved_source_)) {
-      set.insert(
-          resolved_source_,
-          MakeGarbageCollected<HeapHashSet<WeakMember<ScrollTimeline>>>());
-    }
-    auto it = set.find(resolved_source_);
-    it->value->insert(this);
-  }
+  UpdateResolvedSource();
   SnapshotState();
 }
 
@@ -301,7 +299,9 @@ V8CSSNumberish* ScrollTimeline::duration() {
 }
 
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
-ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
+ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
+  UpdateResolvedSource();
+
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
@@ -325,6 +325,9 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
             resolved_offsets};
   }
+
+  // TODO(crbug.com/1060384): Support determination of offsets for a
+  // ViewTimeline.
 
   double start_offset = resolved_offsets[0];
   double end_offset = resolved_offsets[resolved_offsets.size() - 1];
@@ -396,6 +399,7 @@ void ScrollTimeline::ServiceAnimations(TimingUpdateReason reason) {
   // Snapshot timeline state once at top of animation frame.
   if (reason == kTimingUpdateForAnimationFrame)
     SnapshotState();
+
   // When scroll timeline goes from inactive to active the animations may need
   // to be started and possibly composited.
   bool was_active =
@@ -429,7 +433,38 @@ void ScrollTimeline::SnapshotState() {
 }
 
 Element* ScrollTimeline::source() const {
-  return source_.Get();
+  if (reference_type_ == ReferenceType::kNearestAncestor)
+    GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+
+  return SourceInternal();
+}
+
+Element* ScrollTimeline::SourceInternal() const {
+  if (reference_type_ == ReferenceType::kSource)
+    return reference_element_.Get();
+
+  // ReferenceType::kNearestAncestor
+  if (!reference_element_)
+    return nullptr;
+
+  LayoutBox* layout_box = reference_element_->GetLayoutBox();
+  if (!layout_box)
+    return nullptr;
+
+  // TODO(crbug.com/1329159): Consider Using cached AncestorScrollContainerLayer
+  // for efficiency.
+  const LayoutBox* scrollport_layout_box = layout_box->EnclosingScrollportBox();
+  if (!scrollport_layout_box)
+    return layout_box->GetDocument().ScrollingElementNoLayout();
+
+  Node* node = scrollport_layout_box->GetNode();
+  if (node->IsElementNode())
+    return DynamicTo<Element>(node);
+  if (node->IsDocumentNode())
+    return DynamicTo<Document>(node)->ScrollingElementNoLayout();
+
+  NOTREACHED();
+  return nullptr;
 }
 
 String ScrollTimeline::orientation() {
@@ -519,8 +554,39 @@ void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
   attached_worklet_animations_.insert(worklet);
 }
 
+void ScrollTimeline::UpdateResolvedSource() {
+  if (reference_type_ == ReferenceType::kSource && resolved_source_)
+    return;
+
+  Node* old_resolved_source = resolved_source_.Get();
+  resolved_source_ = ResolveSource(SourceInternal());
+  if (old_resolved_source == resolved_source_.Get())
+    return;
+
+  ScrollTimelineSet& set = GetScrollTimelineSet();
+
+  if (old_resolved_source) {
+    if (HasAnimations())
+      old_resolved_source->UnregisterScrollTimeline(this);
+
+    auto it = set.find(old_resolved_source);
+    DCHECK(it != set.end());
+    it->value->erase(this);
+  }
+
+  if (resolved_source_) {
+    if (HasAnimations())
+      resolved_source_->RegisterScrollTimeline(this);
+
+    auto add_result = set.insert(
+        resolved_source_,
+        MakeGarbageCollected<HeapHashSet<WeakMember<ScrollTimeline>>>());
+    add_result.stored_value->value->insert(this);
+  }
+}
+
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(source_);
+  visitor->Trace(reference_element_);
   visitor->Trace(resolved_source_);
   visitor->Trace(scroll_offsets_);
   visitor->Trace(attached_worklet_animations_);

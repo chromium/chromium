@@ -99,7 +99,8 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   ScrollTimelineOffset* end_scroll_offset =
       MakeGarbageCollected<ScrollTimelineOffset>();
   ScrollTimeline* timeline = MakeGarbageCollected<ScrollTimeline>(
-      &GetDocument(), source, ScrollTimeline::kBlock,
+      &GetDocument(), ScrollTimeline::ReferenceType::kSource, source,
+      ScrollTimeline::kBlock,
       CreateScrollOffsets(start_scroll_offset, end_scroll_offset));
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
