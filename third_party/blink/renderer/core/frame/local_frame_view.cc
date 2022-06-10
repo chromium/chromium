@@ -2391,6 +2391,10 @@ bool LocalFrameView::UpdateLifecyclePhases(
 
 void LocalFrameView::UpdateLifecyclePhasesInternal(
     DocumentLifecycle::LifecycleState target_state) {
+  // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
+  // failures are fixed.
+  BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
+
   // RunScrollTimelineSteps must not run more than once.
   bool should_run_scroll_timeline_steps = true;
 
@@ -2493,7 +2497,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // observations led to content-visibility intersection changing visibility
     // state synchronously (which happens on the first intersection
     // observeration of a context).
-    needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
+    {
+      ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
+    }
     // Only run the rest of the steps here if resize observer is done.
     if (needs_to_repeat_lifecycle)
       continue;
@@ -2505,7 +2512,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     if (needs_to_repeat_lifecycle)
       continue;
 
-    needs_to_repeat_lifecycle = RunPostLayoutIntersectionObserverSteps();
+    {
+      ScriptForbiddenScope::AllowUserAgentScript allow_script;
+      needs_to_repeat_lifecycle = RunPostLayoutIntersectionObserverSteps();
+    }
     if (!needs_to_repeat_lifecycle)
       break;
   }
@@ -2750,6 +2760,7 @@ bool LocalFrameView::AnyFrameIsPrintingOrPaintingPreview() {
 }
 
 void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
+  DCHECK(ScriptForbiddenScope::WillBeScriptForbidden());
   DCHECK(LocalFrameTreeAllowsThrottling());
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPaintLifecyclePhase");
   // While printing or capturing a paint preview of a document, the paint walk
@@ -4404,6 +4415,9 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // so painting the tree should just clear the previous painted output.
     DCHECK(!IsUpdatingLifecycle());
     ForceThrottlingScope force_throttling(*this);
+    // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
+    // failures are fixed.
+    BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
     RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   }
 
@@ -4894,6 +4908,9 @@ void LocalFrameView::RunPaintBenchmark(int repeat_count,
       // quantization when the time is very small.
       base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
       do {
+        // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
+        // failures are fixed.
+        BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
         RunPaintLifecyclePhase(mode);
         timer.NextLap();
       } while (!timer.HasTimeLimitExpired());

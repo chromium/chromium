@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_FORBIDDEN_SCOPE_H_
 
 #include "base/auto_reset.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -13,6 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+class BlinkLifecycleScopeWillBeScriptForbidden;
 
 // Scoped disabling of script execution.
 class PLATFORM_EXPORT ScriptForbiddenScope final {
@@ -28,19 +31,31 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
     STACK_ALLOCATED();
 
    public:
-    AllowUserAgentScript() : saved_counter_(&GetMutableCounter(), 0) {}
+    AllowUserAgentScript() : saved_counter_(&GetMutableCounter(), 0) {
+      if (LIKELY(IsMainThread())) {
+        saved_blink_counter_.emplace(&g_blink_lifecycle_counter_, 0);
+      }
+    }
     AllowUserAgentScript(const AllowUserAgentScript&) = delete;
     AllowUserAgentScript& operator=(const AllowUserAgentScript&) = delete;
     ~AllowUserAgentScript() { DCHECK(!IsScriptForbidden()); }
 
    private:
     base::AutoReset<unsigned> saved_counter_;
+    absl::optional<base::AutoReset<unsigned>> saved_blink_counter_;
   };
 
   static bool IsScriptForbidden() {
     if (LIKELY(!WTF::MayNotBeMainThread()))
       return g_main_thread_counter_ > 0;
     return GetMutableCounter() > 0;
+  }
+
+  static bool WillBeScriptForbidden() {
+    if (LIKELY(IsMainThread()))
+      return g_blink_lifecycle_counter_ > 0;
+    // Blink lifecycle scope is never entered on other threads.
+    return false;
   }
 
   static void ThrowScriptForbiddenException(v8::Isolate* isolate) {
@@ -64,11 +79,47 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
     }
   }
 
+  static void EnterBlinkLifecycle() {
+    DCHECK(IsMainThread());
+    ++g_blink_lifecycle_counter_;
+  }
+  static void ExitBlinkLifecycle() {
+    DCHECK(IsMainThread());
+    --g_blink_lifecycle_counter_;
+  }
+
   static unsigned& GetMutableCounter();
+
   static unsigned g_main_thread_counter_;
+
+  // TODO(https://crbug.com/1196853): Remove once
+  // BlinkLifecycleScopeWillBeScriptForbidden can be removed.
+  static unsigned g_blink_lifecycle_counter_;
 
   // V8GCController is exceptionally allowed to call Enter/Exit.
   friend class V8GCController;
+  friend class BlinkLifecycleScopeWillBeScriptForbidden;
+};
+
+// Temporarily separate class for identifying cases in which adding a script
+// forbidden scope to the blink lifecycle update is causing operations to
+// be skipped leading to crashes, see https://crbug.com/1196853.
+// TODO(https://crbug.com/1196853): Remove this class and use
+// ScriptForbiddenScope once failures are fixed.
+class PLATFORM_EXPORT BlinkLifecycleScopeWillBeScriptForbidden final {
+  STACK_ALLOCATED();
+
+ public:
+  BlinkLifecycleScopeWillBeScriptForbidden() {
+    ScriptForbiddenScope::EnterBlinkLifecycle();
+  }
+  BlinkLifecycleScopeWillBeScriptForbidden(
+      const BlinkLifecycleScopeWillBeScriptForbidden&) = delete;
+  BlinkLifecycleScopeWillBeScriptForbidden& operator=(
+      const BlinkLifecycleScopeWillBeScriptForbidden&) = delete;
+  ~BlinkLifecycleScopeWillBeScriptForbidden() {
+    ScriptForbiddenScope::ExitBlinkLifecycle();
+  }
 };
 
 }  // namespace blink
