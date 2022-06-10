@@ -1164,8 +1164,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // be the first thing shown after startup.
             setTrackColdStartupMetrics(false);
             showOverview(StartSurfaceState.SHOWING_START);
-            mAppLaunchDrawBlocker.onOverviewPageAvailable(
-                    mOverviewShownOnStart && !isInstantStartEnabled());
             return;
         }
 
@@ -1675,7 +1673,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabReparentingControllerSupplier(),
                 // TODO(sinansahin): This currently only checks for incognito extras in the intent.
                 // We should make it more robust by using more signals.
-                IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()), mBackPressManager);
+                IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()), mBackPressManager,
+                mCallbackController.makeCancelable(
+                        ()
+                                -> mAppLaunchDrawBlocker.onOverviewPageAvailable(
+                                        mOverviewShownOnStart && !isInstantStartEnabled())));
     }
 
     @Override

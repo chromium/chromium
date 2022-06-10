@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
+import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -250,6 +251,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabReparentingControllerSupplier Supplier for the {@link TabReparentingController}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
+     * @param unblockDrawForOverviewPageRunnable The runnable for unblocking the {@link
+     *                                           AppLaunchDrawBlocker} which is specifically for
+     *                                           blocking draw on launch when overview page
+     *                                           is showing during startup.
      */
     public TabbedRootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -289,7 +294,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
-            boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager) {
+            boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager,
+            @NonNull Runnable unblockDrawForOverviewPageRunnable) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, tabBookmarkerSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
@@ -302,7 +308,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 snackbarManagerSupplier, activityType, isInOverviewModeSupplier,
                 isWarmOnResumeSupplier, appMenuDelegate, statusBarColorProvider,
                 intentRequestTracker, tabReparentingControllerSupplier,
-                ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager);
+                ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager,
+                unblockDrawForOverviewPageRunnable);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;

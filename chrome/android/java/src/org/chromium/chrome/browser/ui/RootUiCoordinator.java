@@ -299,6 +299,8 @@ public class RootUiCoordinator
     @Nullable
     private final BackPressManager mBackPressManager;
     @Nullable
+    private final Runnable mUnblockDrawForOverviewPageRunnable;
+    @Nullable
     private PageZoomCoordinator mPageZoomCoordinator;
 
     /**
@@ -343,6 +345,10 @@ public class RootUiCoordinator
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
+     * @param unblockDrawForOverviewPageRunnable The runnable for unblocking the {@link
+     *                                           AppLaunchDrawBlocker} which is specifically for
+     *                                           blocking draw on launch when overview page
+     *                                           is showing during startup.
      */
     public RootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -379,7 +385,8 @@ public class RootUiCoordinator
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager) {
+            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager,
+            @Nullable Runnable unblockDrawForOverviewPageRunnable) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -407,6 +414,7 @@ public class RootUiCoordinator
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mInitializeUiWithIncognitoColors = initializeUiWithIncognitoColors;
         mBackPressManager = backPressManager;
+        mUnblockDrawForOverviewPageRunnable = unblockDrawForOverviewPageRunnable;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
@@ -1128,7 +1136,8 @@ public class RootUiCoordinator
                     mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
                     mOmniboxPedalDelegate, mEphemeralTabCoordinatorSupplier,
-                    mInitializeUiWithIncognitoColors, mBackPressManager);
+                    mInitializeUiWithIncognitoColors, mBackPressManager,
+                    mUnblockDrawForOverviewPageRunnable);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
