@@ -366,7 +366,7 @@ void SettingsController::UpdateDarkModeEnabledV2(
   assistant_client_->SendDisplayRequest(request);
 }
 
-void SettingsController::OnAssistantClientStarted(
+void SettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_client_ = assistant_client;
 
