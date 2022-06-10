@@ -8828,6 +8828,21 @@
             ]
         }
     ],
+    "VaapiVp8TemporalLayerEncoding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VaapiVp8TemporalLayerEncoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "VaapiVp9kSVCEncoding": [
         {
             "platforms": [
