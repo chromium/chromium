@@ -6972,6 +6972,25 @@
             ]
         }
     ],
+    "QuickIntensiveWakeUpThrottlingAfterLoading": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickIntensiveWakeUpThrottlingAfterLoading"
+                    ]
+                }
+            ]
+        }
+    ],
     "RawDrawAndDrDc": [
         {
             "platforms": [
