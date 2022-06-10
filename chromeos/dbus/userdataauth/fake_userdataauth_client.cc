@@ -695,10 +695,10 @@ base::FilePath FakeUserDataAuthClient::GetUserProfileDir(
 
 bool FakeUserDataAuthClient::UserExists(
     const cryptohome::AccountIdentifier& account_id) const {
-  if (existing_users_.find(account_id) != std::end(existing_users_)) {
-    LOG(INFO) << "User exists : specified by mixin";
+  if (key_data_map_.find(account_id) != std::end(key_data_map_)) {
     return true;
   }
+
   base::ScopedAllowBlockingForTesting allow_io;
   bool result = base::PathExists(GetUserProfileDir(account_id));
   LOG(INFO) << "User " << (result ? "exists" : "does not exist")
@@ -731,7 +731,9 @@ FakeUserDataAuthClient::GetAuthenticatedAuthSession(
 
 void FakeUserDataAuthClient::AddExistingUser(
     const cryptohome::AccountIdentifier& account_id) {
-  existing_users_.insert(account_id);
+  // Insert user without any associated keys.
+  const auto [_, was_inserted] = key_data_map_.insert({account_id, {}});
+  DCHECK(was_inserted) << "User already exists: " << account_id.account_id();
 }
 
 }  // namespace chromeos

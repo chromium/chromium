@@ -391,10 +391,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // Other stuff/miscellaneous:
 
-  // The users that have already logged in at least once
-  std::set<cryptohome::AccountIdentifier> existing_users_;
-
-  //
+  // Base directory of user directories.
   base::FilePath user_data_dir_;
 
   // List of observers.
