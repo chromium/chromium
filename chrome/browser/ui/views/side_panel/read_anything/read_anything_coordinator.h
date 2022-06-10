@@ -7,11 +7,12 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 
 class Browser;
 class ReadAnythingController;
@@ -32,8 +33,8 @@ class View;
 //  feature. Classes outside this feature should make calls to the coordinator.
 //  This class has the same lifetime as the browser.
 //
-class ReadAnythingCoordinator
-    : public BrowserUserData<ReadAnythingCoordinator> {
+class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
+                                public SidePanelEntryObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -56,12 +57,20 @@ class ReadAnythingCoordinator
   friend class BrowserUserData<ReadAnythingCoordinator>;
   friend class ReadAnythingCoordinatorTest;
 
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryHidden(SidePanelEntry* entry) override;
+
   // Callback passed to SidePanelCoordinator. This function creates the
   // container view and all its child views and returns it.
   std::unique_ptr<views::View> CreateContainerView();
 
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
+
+  // Observes the side panel entry corresponding this feature.
+  base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
+      side_panel_entry_observation_{this};
 
   base::ObserverList<Observer> observers_;
   BROWSER_USER_DATA_KEY_DECL();

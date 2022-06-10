@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
@@ -49,7 +52,6 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
         side_panel_coordinator_->GetGlobalSidePanelRegistry();
     read_anything_coordinator_ =
         ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
-    read_anything_coordinator_->CreateAndRegisterEntry(side_panel_registry_);
   }
 
   // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
@@ -70,11 +72,12 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   std::unique_ptr<views::View> CreateContainerView() {
     return read_anything_coordinator_->CreateContainerView();
   }
+  bool IsControllerActive() { return GetController()->IsActiveForTesting(); }
 
  protected:
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_;
-  raw_ptr<SidePanelRegistry> side_panel_registry_;
-  raw_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
+  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
+  raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
+  raw_ptr<ReadAnythingCoordinator> read_anything_coordinator_ = nullptr;
 
   MockReadAnythingCoordinatorObserver coordinator_observer_;
   MockReadAnythingModelObserver model_observer_;
@@ -117,4 +120,18 @@ TEST_F(ReadAnythingCoordinatorTest, ModelObserversReceiveNotifications) {
   GetModel()->SetContent(std::vector<ContentNodePtr>());
 
   GetModel()->RemoveObserver(&model_observer_);
+}
+
+TEST_F(ReadAnythingCoordinatorTest, ActivatesAndDeactivatesController) {
+  side_panel_coordinator_->Show(SidePanelEntry::Id::kReadAnything);
+  EXPECT_TRUE(IsControllerActive());
+  side_panel_coordinator_->Close();
+  EXPECT_FALSE(IsControllerActive());
+
+  SidePanelEntry* entry =
+      side_panel_registry_->GetEntryForId(SidePanelEntry::Id::kReadAnything);
+  entry->OnEntryShown();
+  EXPECT_TRUE(IsControllerActive());
+  entry->OnEntryHidden();
+  EXPECT_FALSE(IsControllerActive());
 }
