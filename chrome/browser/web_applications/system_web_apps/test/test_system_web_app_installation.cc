@@ -297,19 +297,29 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
                           // startup. TestSystemWebAppInstallation is intended
                           // to have the same lifecycle as the test, it won't be
                           // destroyed before the test finishes.
-                          base::Unretained(this), delegate_ptr));
+                          base::Unretained(this)));
+
+  test_system_web_app_manager_creator_ =
+      std::make_unique<TestSystemWebAppManagerCreator>(base::BindRepeating(
+          &TestSystemWebAppInstallation::CreateSystemWebAppManager,
+          base::Unretained(this), delegate_ptr));
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
-  fake_web_app_provider_creator_ = std::make_unique<
-      FakeWebAppProviderCreator>(base::BindRepeating(
-      &TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps,
-      // base::Unretained is safe here. This callback is called
-      // at TestingProfile::Init, which is at test startup.
-      // TestSystemWebAppInstallation is intended to have the
-      // same lifecycle as the test, it won't be destroyed before
-      // the test finishes.
-      base::Unretained(this)));
+  fake_web_app_provider_creator_ = std::make_unique<FakeWebAppProviderCreator>(
+      base::BindRepeating(&TestSystemWebAppInstallation::CreateWebAppProvider,
+                          // base::Unretained is safe here. This callback is
+                          // called at TestingProfile::Init, which is at test
+                          // startup. TestSystemWebAppInstallation is intended
+                          // to have the same lifecycle as the test, it won't be
+                          // destroyed before the test finishes.
+                          base::Unretained(this)));
+
+  test_system_web_app_manager_creator_ =
+      std::make_unique<TestSystemWebAppManagerCreator>(
+          base::BindRepeating(&TestSystemWebAppInstallation::
+                                  CreateSystemWebAppManagerWithNoSystemWebApps,
+                              base::Unretained(this)));
 }
 
 TestSystemWebAppInstallation::~TestSystemWebAppInstallation() = default;
@@ -769,17 +779,31 @@ TestSystemWebAppInstallation::SetUpAppWithColors(
 }
 
 std::unique_ptr<KeyedService>
-TestSystemWebAppInstallation::CreateWebAppProvider(
+TestSystemWebAppInstallation::CreateWebAppProvider(Profile* profile) {
+  profile_ = profile;
+
+  auto provider = std::make_unique<FakeWebAppProvider>(profile);
+  provider->Start();
+
+  return provider;
+}
+
+std::unique_ptr<KeyedService>
+TestSystemWebAppInstallation::CreateSystemWebAppManager(
     UnittestingSystemAppDelegate* delegate,
     Profile* profile) {
-  profile_ = profile;
+  // `CreateWebAppProvider` gets called first and assigns `profile_`.
+  DCHECK_EQ(profile_, profile);
+
   if (GetWebUIType(delegate->GetInstallUrl()) == WebUIType::kChromeUntrusted) {
     AddTestURLDataSource(GetChromeUntrustedDataSourceNameFromInstallUrl(
                              delegate->GetInstallUrl()),
                          profile);
   }
 
-  auto provider = std::make_unique<FakeWebAppProvider>(profile);
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  DCHECK(provider);
+
   auto system_web_app_manager =
       std::make_unique<ash::SystemWebAppManager>(profile);
 
@@ -787,38 +811,36 @@ TestSystemWebAppInstallation::CreateWebAppProvider(
       std::move(system_app_delegates_));
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
 
-  provider->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&ash::SystemWebAppManager::Start,
-                                system_web_app_manager->GetWeakPtr()));
-
-  provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-  provider->Start();
+  system_web_app_manager->ConnectSubsystems(provider);
+  system_web_app_manager->ScheduleStart();
 
   const url::Origin app_origin = url::Origin::Create(delegate->GetInstallUrl());
   auto* allowlist = WebUIAllowlist::GetOrCreate(profile);
   for (const auto& permission : auto_granted_permissions_)
     allowlist->RegisterAutoGrantedPermission(app_origin, permission);
 
-  return provider;
+  return system_web_app_manager;
 }
 
 std::unique_ptr<KeyedService>
-TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
+TestSystemWebAppInstallation::CreateSystemWebAppManagerWithNoSystemWebApps(
     Profile* profile) {
-  profile_ = profile;
-  auto provider = std::make_unique<FakeWebAppProvider>(profile);
+  // `CreateWebAppProvider` gets called first and assigns `profile_`.
+  DCHECK_EQ(profile_, profile);
+
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  DCHECK(provider);
+
   auto system_web_app_manager =
       std::make_unique<ash::SystemWebAppManager>(profile);
+
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
 
-  provider->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&ash::SystemWebAppManager::Start,
-                                system_web_app_manager->GetWeakPtr()));
+  system_web_app_manager->ConnectSubsystems(provider);
+  system_web_app_manager->ScheduleStart();
 
-  provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-  provider->Start();
-  return provider;
+  return system_web_app_manager;
 }
 
 void TestSystemWebAppInstallation::WaitForAppInstall() {

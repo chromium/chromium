@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
@@ -58,8 +59,10 @@ namespace ash {
 
 // Installs, uninstalls, and updates System Web Apps.
 // System Web Apps are built-in, highly-privileged Web Apps for Chrome OS. They
-// have access to more APIs and are part of the Chrome OS image.
-class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
+// have access to more APIs and are part of the Chrome OS image. All clients
+// should await `on_apps_synchronized()` event to start working with SWAs.
+class SystemWebAppManager : public KeyedService,
+                            public web_app::WebAppUiManagerObserver {
  public:
   // Policy for when the SystemWebAppManager will update apps/install new apps.
   enum class UpdatePolicy {
@@ -109,9 +112,14 @@ class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
       web_app::WebAppSyncBridge* sync_bridge,
       web_app::WebAppUiManager* ui_manager,
       web_app::WebAppPolicyManager* web_app_policy_manager);
+  void ConnectSubsystems(web_app::WebAppProvider* provider);
+  void ScheduleStart();
 
   // Gets called when `WebAppProvider` is ready.
   void Start();
+
+  // KeyedService:
+  void Shutdown() override;
 
   // The SystemWebAppManager is disabled in browser tests by default because it
   // pollutes the startup state (several tests expect the Extensions state to be
@@ -176,8 +184,6 @@ class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
 
   void ResetOnAppsSynchronizedForTesting();
 
-  void Shutdown();
-
   // Get the timers. Only use this for testing.
   const std::vector<std::unique_ptr<SystemWebAppBackgroundTask>>&
   GetBackgroundTasksForTesting();
@@ -225,7 +231,14 @@ class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
       content::NavigationHandle* navigation_handle) override;
   void OnWebAppUiManagerDestroyed() override;
 
+  void CheckIsConnected() const;
+  void ConnectProviderToSystemWebAppDelegateMap(
+      const SystemWebAppDelegateMap* system_web_apps_delegate_map) const;
+
   raw_ptr<Profile> profile_;
+  // SystemWebAppManager KeyedService depends on WebAppProvider KeyedService,
+  // therefore this pointer is always valid once connected.
+  raw_ptr<web_app::WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<base::OneShotEvent> on_apps_synchronized_;
   std::unique_ptr<base::OneShotEvent> on_tasks_started_;

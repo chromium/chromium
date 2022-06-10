@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
@@ -219,12 +218,9 @@ class AppInfoGeneratorTest : public ::testing::Test {
               std::make_unique<web_app::FakeWebAppProvider>(profile);
           auto app_registrar =
               std::make_unique<web_app::WebAppRegistrarMutable>(profile);
-          auto system_web_app_manager =
-              std::make_unique<web_app::TestSystemWebAppManager>(profile);
 
           app_registrar_ = app_registrar.get();
           provider->SetRegistrar(std::move(app_registrar));
-          provider->SetSystemWebAppManager(std::move(system_web_app_manager));
           provider->Start();
           return provider;
         }));

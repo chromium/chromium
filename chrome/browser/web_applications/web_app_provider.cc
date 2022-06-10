@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
@@ -216,7 +215,6 @@ void WebAppProvider::Shutdown() {
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();
   manifest_update_manager_->Shutdown();
-  system_web_app_manager_->Shutdown();
   install_manager_->Shutdown();
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
@@ -237,7 +235,6 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
       std::make_unique<ExternallyManagedAppManagerImpl>(profile);
   preinstalled_web_app_manager_ =
       std::make_unique<PreinstalledWebAppManager>(profile);
-  system_web_app_manager_ = std::make_unique<ash::SystemWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
@@ -313,9 +310,6 @@ void WebAppProvider::ConnectSubsystems() {
   preinstalled_web_app_manager_->SetSubsystems(
       registrar_.get(), ui_manager_.get(),
       externally_managed_app_manager_.get());
-  system_web_app_manager_->SetSubsystems(
-      externally_managed_app_manager_.get(), registrar_.get(),
-      sync_bridge_.get(), ui_manager_.get(), web_app_policy_manager_.get());
   web_app_policy_manager_->SetSubsystems(externally_managed_app_manager_.get(),
                                          registrar_.get(), sync_bridge_.get(),
                                          os_integration_manager_.get());
@@ -328,13 +322,6 @@ void WebAppProvider::ConnectSubsystems() {
 
   command_manager_->SetSubsystems(install_manager_.get());
   connected_ = true;
-
-  // TODO(crbug.com/1321984): Extract this code to SystemWebAppManager
-  // KeyedService.
-  manifest_update_manager_->SetSystemWebAppDelegateMap(
-      &system_web_app_manager_->system_app_delegates());
-  web_app_policy_manager_->SetSystemWebAppDelegateMap(
-      &system_web_app_manager_->system_app_delegates());
 }
 
 void WebAppProvider::StartSyncBridge() {
@@ -376,7 +363,6 @@ void WebAppProvider::RegisterProfilePrefs(
   ExternallyInstalledWebAppPrefs::RegisterProfilePrefs(registry);
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
-  ash::SystemWebAppManager::RegisterProfilePrefs(registry);
   WebAppPrefsUtilsRegisterProfilePrefs(registry);
   IsolationPrefsUtilsRegisterProfilePrefs(registry);
   RegisterInstallBounceMetricProfilePrefs(registry);

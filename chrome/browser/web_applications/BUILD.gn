@@ -12,6 +12,8 @@ source_set("web_applications") {
     "../ash/system_web_apps/system_web_app_background_task.h",
     "../ash/system_web_apps/system_web_app_manager.cc",
     "../ash/system_web_apps/system_web_app_manager.h",
+    "../ash/system_web_apps/system_web_app_manager_factory.cc",
+    "../ash/system_web_apps/system_web_app_manager_factory.h",
     "app_registrar_observer.h",
     "commands/callback_command.cc",
     "commands/callback_command.h",
