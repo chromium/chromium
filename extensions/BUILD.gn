@@ -271,7 +271,7 @@ test("extensions_unittests") {
     "//extensions/common:unit_tests",
     "//extensions/renderer:unit_tests",
     "//extensions/shell:unit_tests",
-    "//services/data_decoder:lib",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/service_manager/public/cpp/test:test_support",
     "//ui/gl:test_support",
   ]
