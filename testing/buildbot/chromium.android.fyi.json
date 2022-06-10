@@ -8329,12 +8329,12 @@
           "--test-runner-outdir",
           ".",
           "--client-outdir",
-          "../../weblayer_instrumentation_test_M103/out/Release",
+          "../../weblayer_instrumentation_test_M104/out/Release",
           "--implementation-outdir",
           ".",
           "--test-expectations",
           "../../weblayer/browser/android/javatests/skew/expectations.txt",
-          "--client-version=103",
+          "--client-version=104",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
@@ -8344,11 +8344,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests with_client_from_103"
+            "weblayer_skew_tests with_client_from_104"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests with_client_from_103",
+        "name": "weblayer_skew_tests with_client_from_104",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8358,8 +8358,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/weblayer-x86",
-              "location": "weblayer_instrumentation_test_M103",
-              "revision": "version:103.0.5060.46"
+              "location": "weblayer_instrumentation_test_M104",
+              "revision": "version:104.0.5112.3"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -8405,7 +8405,7 @@
         },
         "test": "weblayer_skew_tests",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
-        "variant_id": "with_client_from_103"
+        "variant_id": "with_client_from_104"
       },
       {
         "args": [
@@ -8841,10 +8841,10 @@
           "--client-outdir",
           ".",
           "--implementation-outdir",
-          "../../weblayer_instrumentation_test_M103/out/Release",
+          "../../weblayer_instrumentation_test_M104/out/Release",
           "--test-expectations",
           "../../weblayer/browser/android/javatests/skew/expectations.txt",
-          "--impl-version=103",
+          "--impl-version=104",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
@@ -8854,11 +8854,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_skew_tests with_impl_from_103"
+            "weblayer_skew_tests with_impl_from_104"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_skew_tests with_impl_from_103",
+        "name": "weblayer_skew_tests with_impl_from_104",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -8868,8 +8868,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/weblayer-x86",
-              "location": "weblayer_instrumentation_test_M103",
-              "revision": "version:103.0.5060.46"
+              "location": "weblayer_instrumentation_test_M104",
+              "revision": "version:104.0.5112.3"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -8915,7 +8915,7 @@
         },
         "test": "weblayer_skew_tests",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_skew_tests/",
-        "variant_id": "with_impl_from_103"
+        "variant_id": "with_impl_from_104"
       },
       {
         "args": [
