@@ -1324,7 +1324,8 @@
     {
       // crbug.com/989916
       name: "LayoutNGForeignObject",
-      status: "test",
+      depends_on: ["LayoutNG"],
+      status: "stable",
     },
     {
       // Block fragmentation support in the grid layout algorithm.
