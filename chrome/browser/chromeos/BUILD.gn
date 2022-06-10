@@ -2478,6 +2478,8 @@ source_set("chromeos") {
     "../ash/system/timezone_util.h",
     "../ash/system/user_removal_manager.cc",
     "../ash/system/user_removal_manager.h",
+    "../ash/system_logs/bluetooth_log_source.cc",
+    "../ash/system_logs/bluetooth_log_source.h",
     "../ash/system_logs/command_line_log_source.cc",
     "../ash/system_logs/command_line_log_source.h",
     "../ash/system_logs/connected_input_devices_log_source.cc",
