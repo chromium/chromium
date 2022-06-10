@@ -5685,6 +5685,27 @@
             ]
         }
     ],
+    "OffsetParentNewSpecBehaviorKillswitch": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "OffsetParentNewSpecBehavior"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [
