@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි.</translation>
 <translation id="1175951029573070619">සාමාන්‍යයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
+<translation id="1190378975642195988">පාදම් ත්වරණමානය</translation>
 <translation id="1195447618553298278">නොදන්නා දෝෂය.</translation>
 <translation id="1196959502276349371">අනුවාදය <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">වාදනය කරන්න/විරාම කරන්න</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">නිත්‍ය මෘදුකාංග යාවත්කාලීන වන අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙම යාවත්කාලීන කිරීමට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
 <translation id="3488065109653206955">අර්ධව සක්‍රිය කළ</translation>
+<translation id="3492982278147736083">තිර විභ්‍රමණේක්ෂය</translation>
 <translation id="3517001332549868749">ChromeOS යාවත්කාලීනය</translation>
 <translation id="3527036260304016759">අසාර්ථක විය - නොදන්නා දෝෂයකි</translation>
 <translation id="3532980081107202182">මිනිත්තු <ph name="MIN_REMAINING" />ක් පමණ ඉතිරිය</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">වලංගු නොවන PIN.</translation>
 <translation id="3838338534323494292">නව මුරපදය</translation>
 <translation id="385051799172605136">ආපසු</translation>
+<translation id="3856304145690230735">පාදම් විභ්‍රමණේක්ෂය</translation>
 <translation id="385832974417157471">වැසීමට පෙර, ඔබගේ උපාංගය පවර්වොෂ් කරන්න. ඔබ‍ගේ උපාංගයට පියනක් තිබේ නම්, පියන වැසීමට පෙර පවර්වොෂ් සම්පූර්ණ වන තෙක් රැඳී සිටින්න. පවර්වොෂ් සම්පූර්ණ කිරීමට මිනිත්තුවක් දක්වා ගත විය හැකිය.</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3865414814144988605">විභේදනය</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4479639480957787382">ඊදර්නෙට්</translation>
 <translation id="4483049906298469269">පෙරනිමි නොවන ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
+<translation id="4500213108254186382">තිර ත්වරණමානය</translation>
 <translation id="4503223151711056411">වම් ඊතලය</translation>
 <translation id="4511264077854731334">ද්වාරය</translation>
 <translation id="4521826082652183069">මාතෘකා විකල්ප නම ගැළපීම</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM අගුලු හරින ලදී</translation>
 <translation id="4562494484721939086">සේවාව නැත</translation>
 <translation id="4568938274596692027">ස්ථාපනය කිරීම සම්පූර්ණයි. යළි ආරම්භ කිරීමට සූදානම් වෙමින්...</translation>
+<translation id="4576943788798178439">පන්හිඳ සහාය</translation>
 <translation id="458794348635939462">සියලු සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="4593212453765072419">ප්‍රොක්සි සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="4609350030397390689">යතුරු පුවරු දීප්තිය පහළට</translation>
@@ -537,6 +542,7 @@
 <translation id="5866840822086176774">ඉතා ශක්තිමත්</translation>
 <translation id="588258955323874662">සම්පුර්ණ තිරය</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
+<translation id="5898758006340607522">බල බොත්තම</translation>
 <translation id="5901630391730855834">කහ</translation>
 <translation id="5903200662178656908">උපාංගය යතුරු පුවරු සහ මූසික සංයෝජනයකි.</translation>
 <translation id="5916084858004523819">තහනම්</translation>
@@ -859,6 +865,7 @@
 <translation id="8919792139048574232">විසඳා ඇති දේ බලන්න</translation>
 <translation id="8919837981463578619">අසාර්ථක විය - තැටිය මගහැරී ඇත</translation>
 <translation id="8923267550422472772">යළි සැකසීම සඳහා මාසයේ දිනය</translation>
+<translation id="8925613211674558308">Vpd හැඹිලිගත කළ</translation>
 <translation id="8928727111548978589">අසාර්ථක විය - කඩදාසි නැත</translation>
 <translation id="8930521118335213258">සාමානයා</translation>
 <translation id="8930622219860340959">නොරැහැන්</translation>

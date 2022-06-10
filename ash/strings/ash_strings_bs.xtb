@@ -504,6 +504,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3901991538546252627">Povezivanje na mrežu <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od 1 minute}one{Vratite uređaj na prethodnu verziju u roku od # minute}few{Vratite uređaj na prethodnu verziju u roku od # minute}other{Vratite uređaj na prethodnu verziju u roku od # minuta}}</translation>
 <translation id="3923494859158167397">Nije postavljena nijedna mobilna mreža</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, učitavanje događaja.</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
 <translation id="3934456833412894880">Prilagodljivo punjenje je uključeno. Vaša baterija će ostati na 80% radi produžavanja vijeka trajanja baterije, a potpuno će se napuniti kada vam to bude potrebno.</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
@@ -1055,6 +1056,10 @@ Nova instalacija</translation>
 <translation id="7258828758145722155">Uređeno jučer</translation>
 <translation id="726276584504105859">Povucite ovdje za korištenje podijeljenog ekrana</translation>
 <translation id="7262906531272962081">Napravite podsjetnik</translation>
+<translation id="7297440678881127227">Od <ph name="START_TIME" /> do
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Odaberite za više detalja u Google Kalendaru.</translation>
 <translation id="7302889331339392448">Automatski titlovi su isključeni.</translation>
 <translation id="7303365578352795231">Odgovaranje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>

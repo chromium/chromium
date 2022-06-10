@@ -202,6 +202,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1188807932851744811">Le journal n'a pas été téléversé.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Accéder à un fichier stocké sur votre ordinateur}one{Accéder à # fichier stocké sur votre ordinateur}other{Accéder à # fichiers stockés sur votre ordinateur}}</translation>
 <translation id="119092896208640858">Pour effacer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous<ph name="END_LINK" />.</translation>
+<translation id="1191353342579061195">Choisissez le thème qui correspond à vos besoins. Pour changer votre thème, votre fond d'écran, votre écran de veille et plus, il suffit de faire un clic droit sur le bureau.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Vous serez automatiquement déconnecté dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}one{Vous serez automatiquement déconnecté dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Vous serez automatiquement déconnecté dans # secondes.
@@ -1296,6 +1297,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2220409419896228519">Ajoutez des favoris à vos applications Google préférées</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
+<translation id="222115440608612541">Changez de thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Source multimédia anonyme</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
@@ -1522,6 +1524,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="241082044617551207">Plugiciel inconnu</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Touches de fonction du clavier</translation>
+<translation id="2418307627282545839">Optez pour un style lumineux et aéré</translation>
 <translation id="2419131370336513030">Afficher les applications installées</translation>
 <translation id="2419706071571366386">Pour des raisons de sécurité, déconnectez-vous lorsque votre ordinateur n'est pas en cours d'utilisation.</translation>
 <translation id="2422125132043002186">Restauration Linux annulée</translation>
@@ -6032,6 +6035,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6895032998810961280">Signaler à Google les détails relatifs aux logiciels nuisibles, aux paramètres système et aux processus qui ont été trouvés sur votre ordinateur lors de ce nettoyage</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6897363604023044284">Choisir les sites à effacer</translation>
+<translation id="6897688156970667447">Utile pour les conditions de faible éclairage et prolonge l'autonomie de la pile</translation>
 <translation id="6898440773573063262">Il est maintenant possible de configurer les applications Kiosque pour qu'elles se lancent automatiquement sur cet appareil.</translation>
 <translation id="6900284862687837908">Application en arrière-plan : <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
@@ -7519,6 +7523,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8358685469073206162">Restaurer les pages qui étaient ouvertes?</translation>
 <translation id="8358912028636606457">La diffusion de l'audio de l'onglet n'est pas prise en charge sur cet appareil.</translation>
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
+<translation id="8360140320636871023">Personnaliser votre thème d'affichage</translation>
 <translation id="8363095875018065315">stable</translation>
 <translation id="8363142353806532503">Le microphone est bloqué</translation>
 <translation id="8366396658833131068">Votre connexion réseau est rétablie. Veuillez sélectionner un autre réseau ou appuyer sur « Continuer » ci-dessous pour lancer votre application de kiosque.</translation>

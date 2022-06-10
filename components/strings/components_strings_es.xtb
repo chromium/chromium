@@ -27,6 +27,7 @@
 <translation id="1043382569739532657">Subvenciones, becas y ayudas económicas</translation>
 <translation id="1048785276086539861">Cuando edites las anotaciones, este documento volverá a la vista de una única página</translation>
 <translation id="1050038467049342496">Cierra otras aplicaciones</translation>
+<translation id="1053959602163383901">Has elegido realizar la verificación con un dispositivo de autenticación en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Este proveedor puede haber almacenado información sobre tu método de pago, que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Deshacer acción de añadir</translation>
 <translation id="1056663316309890343">Software para fotos</translation>
 <translation id="1056898198331236512">Advertencia</translation>
@@ -426,6 +427,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2053111141626950936">No se traducirán las páginas en <ph name="LANGUAGE" />.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza todos los días.}=1{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza todos los días.}other{Cuando el control está habilitado y en estado activo, Chrome determina qué grupo de personas o "cohorte" encaja mejor con tu actividad de navegación reciente. Los anunciantes pueden seleccionar anuncios para el grupo, y tu actividad de navegación se conservará en tu dispositivo y será privada. Tu grupo se actualiza cada {NUM_DAYS} días.}}</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Una sugerencia}other{# sugerencias}}</translation>
+<translation id="2066915425250589881">solicitar que se elimine</translation>
 <translation id="2068528718802935086">Bebés y niños pequeños</translation>
 <translation id="2071156619270205202">Esta tarjeta no reúne los requisitos necesarios para un número de tarjeta virtual.</translation>
 <translation id="2071692954027939183">Se han bloqueado automáticamente las notificaciones porque no las sueles permitir.</translation>
@@ -582,6 +584,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2512101340618156538">No permitido (predeterminado)</translation>
 <translation id="2512413427717747692">Botón para establecer Chrome como navegador predeterminado, pulsa Intro para establecer Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
 <translation id="2515629240566999685">Comprobar la señal en tu zona</translation>
+<translation id="2515761554693942801">Has elegido realizar la verificación con Touch ID en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Este proveedor puede haber almacenado información sobre tu método de pago, que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Grapado en la parte inferior derecha</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
@@ -1499,6 +1502,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5051305769747448211">Comedia en directo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo usando Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}other{Para enviar estos archivos usando Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}}</translation>
 <translation id="5056549851600133418">Artículos recomendados para ti</translation>
+<translation id="5060483733937416656">Has elegido realizar la verificación con Windows Hello en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Este proveedor puede haber almacenado información sobre tu método de pago, que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">¿Querías decir <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historial de impresión</translation>
 <translation id="5068234115460527047">Fondos de cobertura</translation>

@@ -202,6 +202,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1188807932851744811">Rexistro non cargado.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Accede a un ficheiro almacenado no teu ordenador}other{Accede a # ficheiros almacenados no teu ordenador}}</translation>
 <translation id="119092896208640858">Para borrar os datos só deste dispositivo, pero mantelos na túa Conta de Google, tes que <ph name="BEGIN_LINK" />pechar sesión<ph name="END_LINK" />.</translation>
+<translation id="1191353342579061195">Escolle o tema axeitado para as túas necesidades. Para cambiar de tema, fondo de pantalla e protector de pantalla, entre outras cousas, só tes que facer clic co botón dereito no escritorio.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Pecharase a túa sesión automaticamente en # segundo.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}other{Pecharase a túa sesión automaticamente en # segundos.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}}</translation>
@@ -1294,6 +1295,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2220409419896228519">Engade marcadores ás túas aplicacións de Google favoritas</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
+<translation id="222115440608612541">Cambia de tema ao amencer e ao solpor</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Fonte de información sen nome</translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
@@ -1520,6 +1522,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="241082044617551207">Plugin descoñecido</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Teclas de función do teclado</translation>
+<translation id="2418307627282545839">Goza de imaxes brillantes e claras</translation>
 <translation id="2419131370336513030">Ver aplicacións instaladas</translation>
 <translation id="2419706071571366386">Por cuestións de seguranza, pecha sesión cando non esteas utilizando o ordenador.</translation>
 <translation id="2422125132043002186">Cancelouse a restauración de Linux</translation>
@@ -6023,6 +6026,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6895032998810961280">Informar a Google do software, a configuración do sistema e os procesos daniños atopados no ordenador durante esta limpeza</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897363604023044284">Escoller sitios dos que borrar datos</translation>
+<translation id="6897688156970667447">Resulta útil cando hai pouca luz e aforra batería</translation>
 <translation id="6898440773573063262">Xa se poden configurar as aplicacións de quiosco para que se inicien automaticamente neste dispositivo.</translation>
 <translation id="6900284862687837908">Aplicación en segundo plano: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Protección mellorada</translation>
@@ -7509,6 +7513,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8358685469073206162">Queres restaurar as páxinas?</translation>
 <translation id="8358912028636606457">A emisión do audio da pestana non é compatible con este dispositivo.</translation>
 <translation id="835951711479681002">Gardar na túa Conta de Google</translation>
+<translation id="8360140320636871023">Personalizar o tema da pantalla</translation>
 <translation id="8363095875018065315">estable</translation>
 <translation id="8363142353806532503">Bloqueouse o micrófono</translation>
 <translation id="8366396658833131068">Restableceuse a túa conectividade de rede. Selecciona unha rede diferente ou preme o botón "Continuar" a continuación para iniciar a túa aplicación de quiosco.</translation>

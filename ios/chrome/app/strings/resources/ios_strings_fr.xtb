@@ -163,6 +163,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="236977714248711277">Les sites ne peuvent pas utiliser de cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 
 Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
+<translation id="2375243552872247702">Voir des contenus sur mesure</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2386793615875593361">1 photo sélectionnée</translation>
 <translation id="2421004566762153674">Blocage des cookies tiers</translation>
@@ -602,6 +603,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6136914049981179737">À l'instant.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode navigation privée</translation>
 <translation id="6149061208933997199">Utiliser mot de passe</translation>
+<translation id="6152406514676263192">Activez la synchronisation pour bénéficier des contenus les plus pertinents en fonction de vos centres d'intérêt.</translation>
 <translation id="6159839020698489198">facultatif</translation>
 <translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
@@ -750,6 +752,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7189598951263744875">Partager…</translation>
 <translation id="7192050974311852563">Démarrer la journalisation</translation>
 <translation id="7203585745079012652">Énoncer les réponses</translation>
+<translation id="7207023858769244910">Activez la synchronisation pour bénéficier de contenus correspondant à vos centres d'intérêt.</translation>
 <translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme appli de navigation par défaut. <ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo incorrect associé à la carte</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée 

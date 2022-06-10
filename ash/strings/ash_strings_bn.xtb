@@ -504,6 +504,7 @@
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
 <translation id="3922427723338465344">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# মিনিটের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# মিনিটের মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
 <translation id="3923494859158167397">কোনও মোবাইল নেটওয়ার্ক সেট-আপ করা নেই</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, ইভেন্ট লোড করা হচ্ছে।</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="3934456833412894880">'অ্যাডাপ্টিভ চার্জিং' ফিচারটি চালু আছে। ব্যাটারির আয়ু বাড়ানোর জন্য আপনার ব্যাটারি ৮০% এ থাকবে এবং যখন আপনার প্রয়োজন হবে তখন সম্পূর্ণ চার্জ হবে।</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
@@ -1055,6 +1056,10 @@
 <translation id="7258828758145722155">গতকাল এডিট করা হয়েছে</translation>
 <translation id="726276584504105859">বিভক্ত স্ক্রিন ব্যবহার করতে এখানে টেনে আনুন</translation>
 <translation id="7262906531272962081">রিমাইন্ডার তৈরি করুন</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> থেকে
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />। Google Calendar-এ আরও বিবরণ দেখতে বেছে নিন।</translation>
 <translation id="7302889331339392448">লাইভ ক্যাপশন বন্ধ আছে।</translation>
 <translation id="7303365578352795231">অন্য ডিভাইসে উত্তর দেওয়া হচ্ছে।</translation>
 <translation id="7305884605064981971">EDGE</translation>

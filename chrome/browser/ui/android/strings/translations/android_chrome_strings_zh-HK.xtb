@@ -348,6 +348,7 @@
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
+<translation id="2861923151411510142">部分 Chrome 功能將無法再使用</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871733351037274014">預先載入網頁</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
@@ -891,6 +892,7 @@
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5869789175361934029">透過其他裝置繼續瀏覽</translation>
 <translation id="587735546353481577">如要追蹤網站，只要前往該網站並開啟 Chrome 選單，然後輕按 [追蹤] 即可。</translation>
+<translation id="5879072387416556377">取得更切題的建議</translation>
 <translation id="5880748256563468367">前往動態消息</translation>
 <translation id="5884076754568147479">為協助您完成工作，系統會將您使用「Google 助理」的網站網址和內容，以及您透過「Google 助理」提交的資料傳送給 Google</translation>
 <translation id="5906513782029855931">如果「Google 助理」知道網站的網址，便能夠助您完成工作。您可在 Chrome 設定中關閉「Google 助理」。</translation>
@@ -1233,6 +1235,7 @@
 <translation id="770741401784017797">建立緊 GIF</translation>
 <translation id="7707922173985738739">使用流動數據</translation>
 <translation id="7709094866268987903">系統會在此處顯示您已移除的興趣</translation>
+<translation id="7709918231054955894">取得您所有的分頁</translation>
 <translation id="7725024127233776428">加入書籤的網頁會在這裡顯示</translation>
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7761849928583394409">選擇日期和時間</translation>
@@ -1428,6 +1431,7 @@
 <translation id="8656747343598256512">使用您的 Google 帳戶登入此網站和 Chrome。您可稍後再開啟同步功能。</translation>
 <translation id="8659579665266920523">如何使用 Chrome 搜尋</translation>
 <translation id="8662811608048051533">您會從大部分網站登出。</translation>
+<translation id="8664215986015753476">自行決定 Chrome 的使用方式</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
 <translation id="8666759526542103597">關於基於瀏覽器的廣告個人化</translation>
 <translation id="8667760277771450375">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>

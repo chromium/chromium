@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Середній сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Видалити</translation>
+<translation id="1190378975642195988">Акселерометр корпусу</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
 <translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Відтворити/призупинити</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Поки мікропрограма оновлюється, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Оновлення може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="3486220673238053218">визначення</translation>
 <translation id="3488065109653206955">Частково активовано</translation>
+<translation id="3492982278147736083">Гіроскоп кришки</translation>
 <translation id="3517001332549868749">Оновлення ОС Chrome</translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3856304145690230735">Гіроскоп корпусу</translation>
 <translation id="385832974417157471">Перш ніж завершити роботу, скиньте його налаштування за допомогою функції Powerwash. Якщо пристрій має кришку, не закривайте її, доки триває скидання налаштувань. Це може зайняти до однієї хвилини.</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
+<translation id="4500213108254186382">Акселерометр кришки</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Збіг з альтернативною назвою суб’єкта</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM-карту розблоковано</translation>
 <translation id="4562494484721939086">Не працює</translation>
 <translation id="4568938274596692027">Встановлення завершено. Підготовка до перезапуску…</translation>
+<translation id="4576943788798178439">Підтримка стилуса</translation>
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
@@ -537,6 +542,7 @@
 <translation id="5866840822086176774">Дуже потужний</translation>
 <translation id="588258955323874662">Повноекранний режим</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
+<translation id="5898758006340607522">Кнопка живлення</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5903200662178656908">Пристрій – це набір із клавіатури й миші.</translation>
 <translation id="5916084858004523819">Заборонено</translation>
@@ -859,6 +865,7 @@
 <translation id="8919792139048574232">Дізнайтесь, які проблеми було усунено</translation>
 <translation id="8919837981463578619">Не надруковано – немає лотка</translation>
 <translation id="8923267550422472772">День місяця для скидання</translation>
+<translation id="8925613211674558308">Кешовані дані VPD</translation>
 <translation id="8928727111548978589">Не надруковано – закінчився папір</translation>
 <translation id="8930521118335213258">Аналог</translation>
 <translation id="8930622219860340959">Бездротове</translation>

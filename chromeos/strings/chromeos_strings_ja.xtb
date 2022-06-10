@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="1175951029573070619">普通（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="1181037720776840403">削除</translation>
+<translation id="1190378975642195988">本体加速度計</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1196959502276349371">バージョン <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">再生と一時停止</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>
+<translation id="3492982278147736083">カバー部ジャイロスコープ</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
@@ -286,6 +288,7 @@
 <translation id="3621202678540785336">入力</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3643810137582748570">キャリブレーションをスキップ</translation>
+<translation id="3651050199673793219">温度の単位を選択してください</translation>
 <translation id="3678765385266369662">書き込み保護を無効にする方法を選択してください</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
@@ -300,8 +303,10 @@
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="385051799172605136">戻る</translation>
+<translation id="3856304145690230735">本体ジャイロスコープ</translation>
 <translation id="385832974417157471">シャットダウンする前に、デバイスで Powerwash を実行してください。折りたたみ式のデバイスの場合は、Powerwash が完了するまで待ってからカバーを閉じてください。Powerwash が完了するまでに 1 分ほどかかることがあります。</translation>
 <translation id="3858860766373142691">名前</translation>
+<translation id="3862598938296403232">説明は必須です</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="3866249974567520381">説明</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
@@ -371,6 +376,7 @@
 <translation id="4472575034687746823">始める</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
+<translation id="4500213108254186382">カバー部加速度計</translation>
 <translation id="4503223151711056411">左矢印</translation>
 <translation id="4511264077854731334">ポータル</translation>
 <translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
@@ -382,6 +388,7 @@
 <translation id="4561801978359312462">SIM のロックは解除されています</translation>
 <translation id="4562494484721939086">サービスなし</translation>
 <translation id="4568938274596692027">インストールが完了しました。再起動の準備をしています...</translation>
+<translation id="4576943788798178439">タッチペンのサポート</translation>
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
 <translation id="4609350030397390689">キーボードの明るさを下げる</translation>
@@ -537,6 +544,7 @@
 <translation id="5866840822086176774">非常に強い</translation>
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5895138241574237353">再起動</translation>
+<translation id="5898758006340607522">電源ボタン</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903200662178656908">デバイスはキーボードとマウスの一体型です。</translation>
 <translation id="5916084858004523819">禁止</translation>
@@ -672,6 +680,7 @@
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="714876143603641390">LAN 接続</translation>
+<translation id="7154020516215182599">フィードバックまたは問題の内容を記入します。可能な場合は、問題の再現手順もお知らせください。</translation>
 <translation id="7155171745945906037">カメラやファイルに保存されている写真</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7170236477717446850">プロフィール写真</translation>
@@ -859,6 +868,7 @@
 <translation id="8919792139048574232">修復内容を確認できます</translation>
 <translation id="8919837981463578619">失敗 - トレイがありません</translation>
 <translation id="8923267550422472772">リセット日</translation>
+<translation id="8925613211674558308">VPD キャッシュ</translation>
 <translation id="8928727111548978589">失敗 - 用紙がありません</translation>
 <translation id="8930521118335213258">ピア</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>

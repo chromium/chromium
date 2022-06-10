@@ -348,6 +348,7 @@
 <translation id="2842985007712546952">অভিভাবক ফোল্ডার</translation>
 <translation id="2856503607207334158">সাইন-ইন করা যায়নি</translation>
 <translation id="2860954141821109167">এই ডিভাইসে ফোন অ্যাপ চালু করা আছে কিনা দেখে নিন</translation>
+<translation id="2861923151411510142">কিছু Chrome-এর ফিচার আর ব্যবহার করা যাবে না</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা প্রিলোড করা</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
@@ -893,6 +894,7 @@
 <translation id="5869522115854928033">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="5869789175361934029">অন্য ডিভাইস থেকে চালিয়ে যান</translation>
 <translation id="587735546353481577">কোনও সাইট ফলো করতে, সাইটে যান, 'Chrome' মেনু খুলুন এবং 'ফলো করুন' বিকল্পে ট্যাপ করুন।</translation>
+<translation id="5879072387416556377">আরও ভাল সাজেশন পান</translation>
 <translation id="5880748256563468367">ফিডে যান</translation>
 <translation id="5884076754568147479">আপনাকে টাস্কগুলি সম্পূর্ণ করতে সাহায্য করার জন্য, যে যে সাইটে Assistant ব্যবহার করেন সেগুলির কন্টেন্ট ও ইউআরএল, তার সাথে Assistant-এর মাধ্যমে আপনার জমা দেওয়া যেকোনও তথ্য Google-কে পাঠানো হবে</translation>
 <translation id="5906513782029855931">সাইটের URL জেনে, Google Assistant আপনাকে কাজটি সম্পূর্ণ করতে সাহায্য করে। আপনি Chrome সেটিংস থেকে Assistant বন্ধ করে দিতে পারেন।</translation>
@@ -1235,6 +1237,7 @@
 <translation id="770741401784017797">GIF তৈরি করা হচ্ছে</translation>
 <translation id="7707922173985738739">মোবাইল ডেটা ব্যবহার করুন</translation>
 <translation id="7709094866268987903">আপনার সরিয়ে দেওয়া আগ্রহের বিষয় এখানে দেখা যাবে</translation>
+<translation id="7709918231054955894">আপনার সব ট্যাব পান</translation>
 <translation id="7725024127233776428">আপনার বুকমার্ক করা পৃষ্ঠা এখানে দেখানো হয়</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7761849928583394409">তারিখ ও সময় বেছে নিন</translation>
@@ -1430,6 +1433,7 @@
 <translation id="8656747343598256512">আপনার Google অ্যাকাউন্ট দিয়ে এই সাইট ও Chrome-এ সাইন-ইন করুন। আপনি পরে সিঙ্ক করার সুবিধা চালু করতে পারবেন।</translation>
 <translation id="8659579665266920523">Chrome-এর সাহায্যে কীভাবে সার্চ করবেন</translation>
 <translation id="8662811608048051533">বেশিরভাগ সাইট থেকে আপনাকে সাইন-আউট করিয়ে দেয়।</translation>
+<translation id="8664215986015753476">আপনি যেমনভাবে চান ঠিক তেমনভাবেই Chrome ব্যবহার করুন</translation>
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8666759526542103597">ব্রাউজার ভিত্তিক পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া সম্পর্কে</translation>
 <translation id="8667760277771450375">বিজ্ঞাপন স্প্যাম এবং জালিয়াতি বন্ধ করতে সাইটগুলিকে চালু করার সময় আমরা ক্রস-সাইট ট্র্যাকিং সীমাবদ্ধ করার উপায়গুলি খুঁজছি।</translation>

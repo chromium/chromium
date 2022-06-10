@@ -163,6 +163,7 @@
 <translation id="236977714248711277">网站无法使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
 网站也无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
+<translation id="2375243552872247702">查看为您推荐的内容</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
 <translation id="2421004566762153674">阻止第三方 Cookie</translation>
@@ -602,6 +603,7 @@
 <translation id="6136914049981179737">几秒前</translation>
 <translation id="6144589619057374135">在无痕模式下打开 ${url}</translation>
 <translation id="6149061208933997199">使用密码</translation>
+<translation id="6152406514676263192">开启同步功能后，您便会看到系统根据您的兴趣推荐的最相关的内容。</translation>
 <translation id="6159839020698489198">可选</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6184086493125982861">显示标签页</translation>
@@ -750,6 +752,7 @@
 <translation id="7189598951263744875">分享...</translation>
 <translation id="7192050974311852563">开始生成日志</translation>
 <translation id="7203585745079012652">说出答案</translation>
+<translation id="7207023858769244910">同步即可获取系统根据您的兴趣推荐的内容。</translation>
 <translation id="7207383424303353046">新功能：将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开网站。<ph name="BEGIN_LINK" />打开“设置”<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡的昵称无效</translation>
 <translation id="722454870747268814">打开新的无痕模式标签页</translation>

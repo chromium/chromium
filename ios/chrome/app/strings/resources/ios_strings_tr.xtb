@@ -163,6 +163,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="236977714248711277">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanamaz.
 
 Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerez kullanamaz.</translation>
+<translation id="2375243552872247702">Size özel içerikleri görün</translation>
 <translation id="2381405137052800939">Temel ayarlar</translation>
 <translation id="2386793615875593361">1 fotoğraf seçildi</translation>
 <translation id="2421004566762153674">Üçüncü taraf çerezler engelleniyor</translation>
@@ -602,6 +603,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6136914049981179737">Sn. önce</translation>
 <translation id="6144589619057374135">Şunu Gizli modda aç: ${url}</translation>
 <translation id="6149061208933997199">Şifre Kullan</translation>
+<translation id="6152406514676263192">Senkronize ederek ilgi alanlarınıza dayalı en alakalı içerikleri görün.</translation>
 <translation id="6159839020698489198">isteğe bağlı</translation>
 <translation id="6177442314419606057">Chrome'da ara</translation>
 <translation id="6184086493125982861">Sekmeleri Göster</translation>
@@ -750,6 +752,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7189598951263744875">Paylaş...</translation>
 <translation id="7192050974311852563">Günlüğe Kaydetmeyi Başlat</translation>
 <translation id="7203585745079012652">Yanıtı Sesli Söyle</translation>
+<translation id="7207023858769244910">Senkronize ederek ilgi alanlarınıza dayalı içerikler görün.</translation>
 <translation id="7207383424303353046">Yeni: Varsayılan Tarayıcı Uygulamanız yaparak siteleri Chrome'da otomatik bir şekilde açın. <ph name="BEGIN_LINK" />Ayarları Aç<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kart İçin Geçersiz Takma Ad</translation>
 <translation id="722454870747268814">Yeni Gizli Sekme</translation>

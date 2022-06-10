@@ -163,6 +163,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="236977714248711277">I siti non possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
 I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci.</translation>
+<translation id="2375243552872247702">Vedi i contenuti per te</translation>
 <translation id="2381405137052800939">Opzioni di base</translation>
 <translation id="2386793615875593361">Una selezionata</translation>
 <translation id="2421004566762153674">Blocco dei cookie di terze parti</translation>
@@ -405,6 +406,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4502566650163919158">Controlla ora</translation>
 <translation id="4505980578794259603">Ultima verifica: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
+<translation id="4511669830082467224">Cerca immagine con Google</translation>
 <translation id="4526249700380860531">Controlla e gestisci le password salvate all'indirizzo <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4536418791685807335">Prova ad accedere nuovamente.</translation>
@@ -602,6 +604,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6136914049981179737">Secondi fa</translation>
 <translation id="6144589619057374135">Apri ${url} in incognito</translation>
 <translation id="6149061208933997199">Utilizza password</translation>
+<translation id="6152406514676263192">Sincronizza i contenuti più pertinenti in base ai tuoi interessi.</translation>
 <translation id="6159839020698489198">facoltativo</translation>
 <translation id="6177442314419606057">Cerca in Chrome</translation>
 <translation id="6184086493125982861">Mostra schede</translation>
@@ -750,6 +753,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7189598951263744875">Condividi...</translation>
 <translation id="7192050974311852563">Avvia logging</translation>
 <translation id="7203585745079012652">Pronuncia le risposte</translation>
+<translation id="7207023858769244910">Sincronizza per ricevere contenuti in base ai tuoi interessi.</translation>
 <translation id="7207383424303353046">Novità: apri automaticamente siti in Chrome impostandolo come App browser predefinita. <ph name="BEGIN_LINK" />Apri le Impostazioni<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="722454870747268814">Nuova scheda in incognito</translation>

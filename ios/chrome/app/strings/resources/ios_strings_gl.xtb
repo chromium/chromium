@@ -163,6 +163,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="236977714248711277">Os sitios non poden utilizar cookies para mellorar a túa experiencia de navegación a través de funcións como manter a sesión iniciada ou lembrar artigos da túa cesta da compra.
 
 Tampouco poden utilizalas para ver a túa actividade de navegación en distintos sitios (por exemplo, co fin de personalizar anuncios).</translation>
+<translation id="2375243552872247702">Goza de contido para ti</translation>
 <translation id="2381405137052800939">Opcións básicas</translation>
 <translation id="2386793615875593361">Seleccionouse un</translation>
 <translation id="2421004566762153674">Bloqueando cookies de terceiros</translation>
@@ -602,6 +603,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6136914049981179737">Seg. antes</translation>
 <translation id="6144589619057374135">Abre ${url} no modo de incógnito</translation>
 <translation id="6149061208933997199">Usar contrasinal</translation>
+<translation id="6152406514676263192">Activa a sincronización para gozar do contido máis relevante baseado nos teus intereses.</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Busca en Chrome</translation>
 <translation id="6184086493125982861">Amosar pestanas</translation>
@@ -750,6 +752,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7189598951263744875">Compartir...</translation>
 <translation id="7192050974311852563">Iniciar rexistro</translation>
 <translation id="7203585745079012652">Dicir as respostas</translation>
+<translation id="7207023858769244910">Activa a sincronización para obter contido baseado nos teus intereses.</translation>
 <translation id="7207383424303353046">Novidade: Abre sitios en Chrome automaticamente configurándoo como o teu navegador predeterminado. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">O alcume da tarxeta non é válido</translation>
 <translation id="722454870747268814">Nova pestana do modo de incógnito</translation>
