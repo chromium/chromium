@@ -7780,6 +7780,7 @@ grit("dev_ui_browser_resources") {
   deps = [
     "//chrome/browser/media:mojo_bindings_js",
     "//chrome/browser/resources/accessibility:build_ts",
+    "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/engagement:build_ts",
     "//chrome/browser/resources/memory_internals:build_ts",
     "//chrome/browser/resources/predictors:build_ts",
