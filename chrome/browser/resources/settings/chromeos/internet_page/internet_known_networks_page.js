@@ -329,8 +329,9 @@ class SettingsInternetKnownNetworksPageElement extends
   onForgetTap_() {
     this.networkConfig_.forgetNetwork(this.selectedGuid_).then(response => {
       if (!response.success) {
-        console.warn('Froget network failed for: ' + this.selectedGuid_);
+        console.warn('Forget network failed for: ' + this.selectedGuid_);
       }
+      this.refreshNetworks_();
     });
 
     if (this.networkType === chromeos.networkConfig.mojom.NetworkType.kWiFi) {
