@@ -391,7 +391,10 @@ Response PageHandler::Disable() {
     video_consumer_->StopCapture();
 
   if (!pending_dialog_.is_null()) {
-    WebContentsImpl* web_contents = GetWebContents();
+    // Only a top level frame can have a dialog.
+    DCHECK(!AssureTopLevelActiveFrame(host_).IsError());
+
+    WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
     // Leave dialog hanging if there is a manager that can take care of it,
     // cancel and send ack otherwise.
     bool has_dialog_manager =
