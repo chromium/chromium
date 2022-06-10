@@ -199,9 +199,12 @@ void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
   if (delay < TimeDelta())
     delay = TimeDelta();
 
+  if (!timer_callback_) {
+    timer_callback_ = BindRepeating(&DelayTimerBase::OnScheduledTaskInvoked,
+                                    Unretained(this));
+  }
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTask(
-      base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&DelayTimerBase::OnScheduledTaskInvoked, Unretained(this)),
+      base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
       delay);
   scheduled_run_time_ = desired_run_time_ = Now() + delay;
 }
@@ -369,7 +372,6 @@ void DeadlineTimer::Start(const Location& posted_from,
   subtle::DelayPolicy delay_policy =
       exact ? subtle::DelayPolicy::kPrecise
             : subtle::DelayPolicy::kFlexiblePreferEarly;
-
   ScheduleNewTask(deadline, delay_policy);
 }
 
@@ -384,9 +386,12 @@ void DeadlineTimer::ScheduleNewTask(TimeTicks deadline,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_running_ = true;
 
+  if (!timer_callback_) {
+    timer_callback_ =
+        BindRepeating(&DeadlineTimer::OnScheduledTaskInvoked, Unretained(this));
+  }
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&DeadlineTimer::OnScheduledTaskInvoked, Unretained(this)),
+      base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
       deadline, delay_policy);
 }
 
@@ -451,9 +456,12 @@ void MetronomeTimer::ScheduleNewTask() {
   TimeTicks deadline =
       (TimeTicks::Now() + interval_ / 2).SnappedToNextTick(phase_, interval_);
 
+  if (!timer_callback_) {
+    timer_callback_ = BindRepeating(&MetronomeTimer::OnScheduledTaskInvoked,
+                                    Unretained(this));
+  }
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&MetronomeTimer::OnScheduledTaskInvoked, Unretained(this)),
+      base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
       deadline, subtle::DelayPolicy::kPrecise);
 }
 

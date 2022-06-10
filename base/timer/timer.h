@@ -149,6 +149,11 @@ class BASE_EXPORT TimerBase {
 
   // The handle to the posted delayed task.
   DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Callback invoked when the timer is ready. This is saved as a member to
+  // avoid rebinding every time the Timer fires. Lazy initialized the first time
+  // the Timer is started.
+  RepeatingClosure timer_callback_;
 };
 
 //-----------------------------------------------------------------------------
