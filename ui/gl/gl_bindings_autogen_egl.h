@@ -314,7 +314,7 @@ typedef EGLint(GL_BINDING_CALL* eglWaitSyncKHRProc)(EGLDisplay dpy,
                                                     EGLSyncKHR sync,
                                                     EGLint flags);
 
-struct GL_EXPORT ExtensionsEGL {
+struct GL_EXPORT ClientExtensionsEGL {
   bool b_EGL_ANGLE_display_power_preference;
   bool b_EGL_ANGLE_feature_control;
   bool b_EGL_ANGLE_platform_angle;
@@ -332,6 +332,14 @@ struct GL_EXPORT ExtensionsEGL {
   bool b_EGL_EXT_platform_device;
   bool b_EGL_KHR_debug;
   bool b_EGL_MESA_platform_surfaceless;
+
+  void InitializeClientExtensionSettings();
+
+ private:
+  static std::string GetClientExtensions();
+};
+
+struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANDROID_blob_cache;
   bool b_EGL_ANDROID_create_native_client_buffer;
   bool b_EGL_ANDROID_front_buffer_auto_refresh;
@@ -345,6 +353,7 @@ struct GL_EXPORT ExtensionsEGL {
   bool b_EGL_ANGLE_display_semaphore_share_group;
   bool b_EGL_ANGLE_display_texture_share_group;
   bool b_EGL_ANGLE_external_context_and_surface;
+  bool b_EGL_ANGLE_keyed_mutex;
   bool b_EGL_ANGLE_power_preference;
   bool b_EGL_ANGLE_query_surface_pointer;
   bool b_EGL_ANGLE_stream_producer_d3d_texture;
@@ -380,14 +389,10 @@ struct GL_EXPORT ExtensionsEGL {
   bool b_GL_CHROMIUM_egl_android_native_fence_sync_hack;
   bool b_GL_CHROMIUM_egl_khr_fence_sync_hack;
 
-  void InitializeClientExtensionSettings();
   void InitializeExtensionSettings(GLDisplayEGL* display);
   void UpdateConditionalExtensionSettings(GLDisplayEGL* display);
 
   static std::string GetPlatformExtensions(GLDisplayEGL* display);
-
- private:
-  static std::string GetClientExtensions();
 };
 
 struct ProcsEGL {

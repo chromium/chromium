@@ -544,7 +544,7 @@ struct GL_EXPORT DriverEGL {
   void ClearBindings();
 
   ProcsEGL fn;
-  ExtensionsEGL ext;
+  ClientExtensionsEGL client_ext;
 };
 #endif
 

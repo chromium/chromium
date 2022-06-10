@@ -69,6 +69,7 @@
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -792,8 +793,9 @@ bool DXVAVideoDecodeAccelerator::Initialize(const Config& config,
   RETURN_ON_FAILURE(make_context_current_cb_.Run(),
                     "Failed to make context current", false);
 
+  gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
   RETURN_ON_FAILURE(
-      gl::g_driver_egl.ext.b_EGL_ANGLE_surface_d3d_texture_2d_share_handle,
+      display && display->ext->b_EGL_ANGLE_surface_d3d_texture_2d_share_handle,
       "EGL_ANGLE_surface_d3d_texture_2d_share_handle unavailable", false);
 
   RETURN_ON_FAILURE(gl::GLFence::IsSupported(), "GL fences are unsupported",
@@ -1661,15 +1663,16 @@ bool DXVAVideoDecodeAccelerator::CheckDecoderDxvaSupport() {
     use_dx11_ = !!dx11_aware;
   }
 
-  use_keyed_mutex_ =
-      use_dx11_ && gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-                       "EGL_ANGLE_keyed_mutex");
+  gl::GLDisplayEGL* display = gl_context->GetGLDisplayEGL();
 
-  if (!use_dx11_ ||
-      !gl::g_driver_egl.ext.b_EGL_ANGLE_stream_producer_d3d_texture ||
-      !gl::g_driver_egl.ext.b_EGL_KHR_stream ||
-      !gl::g_driver_egl.ext.b_EGL_KHR_stream_consumer_gltexture ||
-      !gl::g_driver_egl.ext.b_EGL_NV_stream_consumer_gltexture_yuv) {
+  use_keyed_mutex_ =
+      use_dx11_ && display && display->ext->b_EGL_ANGLE_keyed_mutex;
+
+  if (!use_dx11_ || !display ||
+      !display->ext->b_EGL_ANGLE_stream_producer_d3d_texture ||
+      !display->ext->b_EGL_KHR_stream ||
+      !display->ext->b_EGL_KHR_stream_consumer_gltexture ||
+      !display->ext->b_EGL_NV_stream_consumer_gltexture_yuv) {
     DisableSharedTextureSupport();
     support_copy_nv12_textures_ = false;
   }

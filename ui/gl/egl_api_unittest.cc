@@ -52,10 +52,12 @@ class EGLApiTest : public testing::Test {
     if (disabled_extensions) {
       SetDisabledExtensionsEGL(disabled_extensions);
     }
-    g_driver_egl.ext.InitializeClientExtensionSettings();
+    if (display_) {
+      // Clear the display so InitializeDisplay() will re-initialize it.
+      display_->SetDisplay(EGL_NO_DISPLAY);
+    }
     display_ = GLSurfaceEGL::InitializeDisplay(
         EGLDisplayPlatform(EGL_DEFAULT_DISPLAY), /*system_device_id=*/0);
-    g_driver_egl.ext.InitializeExtensionSettings(display_);
   }
 
   void SetFakeExtensionString(const char* fake_string,
@@ -126,11 +128,11 @@ TEST_F(EGLApiTest, DisabledExtensionBitTest) {
   SetFakeExtensionString(kFakeExtensions, kFakeClientExtensions);
   InitializeAPI(nullptr);
 
-  EXPECT_TRUE(g_driver_egl.ext.b_EGL_KHR_fence_sync);
+  EXPECT_TRUE(this->display_->ext->b_EGL_KHR_fence_sync);
 
   InitializeAPI(kFakeDisabledExtensions);
 
-  EXPECT_FALSE(g_driver_egl.ext.b_EGL_KHR_fence_sync);
+  EXPECT_FALSE(this->display_->ext->b_EGL_KHR_fence_sync);
 }
 
 TEST_F(EGLApiTest, DisabledExtensionStringTest) {

@@ -37,6 +37,7 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
   YUVToRGBConverter* GetYUVToRGBConverter(
       const gfx::ColorSpace& color_space) override;
   void SetVisibility(bool visibility) override;
+  GLDisplayEGL* GetGLDisplayEGL() override;
 
  protected:
   ~GLContextEGL() override;

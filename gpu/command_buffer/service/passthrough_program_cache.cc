@@ -13,6 +13,7 @@
 #include "ui/gl/gl_bindings.h"
 
 #if defined(USE_EGL)
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif  // defined(USE_EGL)
 
@@ -21,14 +22,12 @@ namespace gles2 {
 
 namespace {
 
-bool BlobCacheExtensionAvailable() {
 #if defined(USE_EGL)
+bool BlobCacheExtensionAvailable(gl::GLDisplayEGL* gl_display) {
   // The display should be initialized if the extension is available.
-  return gl::g_driver_egl.ext.b_EGL_ANDROID_blob_cache;
-#else
-  return false;
-#endif  // defined(USE_EGL)
+  return gl_display->ext->b_EGL_ANDROID_blob_cache;
 }
+#endif  // defined(USE_EGL)
 
 // EGL_ANDROID_blob_cache doesn't give user pointer to the callbacks so we are
 // forced to have this be global.
@@ -44,16 +43,17 @@ PassthroughProgramCache::PassthroughProgramCache(
       curr_size_bytes_(0),
       store_(ProgramLRUCache::NO_AUTO_EVICT) {
 #if defined(USE_EGL)
-  EGLDisplay display =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  EGLDisplay egl_display = gl_display->GetHardwareDisplay();
 
   DCHECK(!g_program_cache);
   g_program_cache = this;
 
   // display is EGL_NO_DISPLAY during unittests.
-  if (display != EGL_NO_DISPLAY && BlobCacheExtensionAvailable()) {
+  if (egl_display != EGL_NO_DISPLAY &&
+      BlobCacheExtensionAvailable(gl_display)) {
     // Register the blob cache callbacks.
-    eglSetBlobCacheFuncsANDROID(display, BlobCacheSet, BlobCacheGet);
+    eglSetBlobCacheFuncsANDROID(egl_display, BlobCacheSet, BlobCacheGet);
   }
 #endif  // defined(USE_EGL)
 }

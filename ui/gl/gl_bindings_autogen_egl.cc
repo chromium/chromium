@@ -227,7 +227,7 @@ void DriverEGL::InitializeStaticBindings() {
       reinterpret_cast<eglWaitSyncKHRProc>(GetGLProcAddress("eglWaitSyncKHR"));
 }
 
-void ExtensionsEGL::InitializeClientExtensionSettings() {
+void ClientExtensionsEGL::InitializeClientExtensionSettings() {
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -266,7 +266,7 @@ void ExtensionsEGL::InitializeClientExtensionSettings() {
       gfx::HasExtension(extensions, "EGL_MESA_platform_surfaceless");
 }
 
-void ExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
+void DisplayExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
@@ -297,6 +297,8 @@ void ExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
       gfx::HasExtension(extensions, "EGL_ANGLE_display_texture_share_group");
   b_EGL_ANGLE_external_context_and_surface =
       gfx::HasExtension(extensions, "EGL_ANGLE_external_context_and_surface");
+  b_EGL_ANGLE_keyed_mutex =
+      gfx::HasExtension(extensions, "EGL_ANGLE_keyed_mutex");
   b_EGL_ANGLE_power_preference =
       gfx::HasExtension(extensions, "EGL_ANGLE_power_preference");
   b_EGL_ANGLE_query_surface_pointer =

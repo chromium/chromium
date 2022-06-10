@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_surface_egl.h"
 
 namespace gl {
 
@@ -79,7 +80,8 @@ EGLint GLFenceEGL::ClientWaitWithTimeoutNanos(EGLTimeKHR timeout) {
 }
 
 void GLFenceEGL::ServerWait() {
-  if (!g_driver_egl.ext.b_EGL_KHR_wait_sync) {
+  GLDisplayEGL* display = GLSurfaceEGL::GetGLDisplayEGL();
+  if (!display->ext->b_EGL_KHR_wait_sync) {
     ClientWait();
     return;
   }

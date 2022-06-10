@@ -406,6 +406,10 @@ void GLContextEGL::SetVisibility(bool visibility) {
   }
 }
 
+GLDisplayEGL* GLContextEGL::GetGLDisplayEGL() {
+  return gl_display_;
+}
+
 void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
 #if BUILDFLAG(IS_APPLE)
   bool has_backpressure_fences = HasBackpressureFences();

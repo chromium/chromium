@@ -1010,16 +1010,9 @@ GLDisplayEGL* GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
   GLDisplayEGL* display =
       GLDisplayManagerEGL::GetInstance()->GetDisplay(system_device_id);
   if (display->GetDisplay() == EGL_NO_DISPLAY) {
-    // Must be called before InitializeDisplay().
-    g_driver_egl.ext.InitializeClientExtensionSettings();
-
     display = InitializeDisplay(native_display, system_device_id);
     if (display->GetDisplay() == EGL_NO_DISPLAY)
       return nullptr;
-
-    // Must be called after InitializeDisplay().
-    g_driver_egl.ext.InitializeExtensionSettings(display);
-
     InitializeOneOffCommon(display);
   }
   return display;
@@ -1027,11 +1020,10 @@ GLDisplayEGL* GLSurfaceEGL::InitializeOneOff(EGLDisplayPlatform native_display,
 
 // static
 GLDisplayEGL* GLSurfaceEGL::InitializeOneOffForTesting() {
-  g_driver_egl.ext.InitializeClientExtensionSettings();
   GLDisplayEGL* display =
       GLDisplayManagerEGL::GetInstance()->GetDisplay(GpuPreference::kDefault);
   display->SetDisplay(eglGetCurrentDisplay());
-  g_driver_egl.ext.InitializeExtensionSettings(display);
+  display->ext->InitializeExtensionSettings(display);
   InitializeOneOffCommon(display);
   return display;
 }
@@ -1183,7 +1175,7 @@ bool GLSurfaceEGL::InitializeExtensionSettingsOneOff(GLDisplayEGL* display) {
   DCHECK(display);
   if (display->GetDisplay() == EGL_NO_DISPLAY)
     return false;
-  g_driver_egl.ext.UpdateConditionalExtensionSettings(display);
+  display->ext->UpdateConditionalExtensionSettings(display);
   display->egl_client_extensions =
       eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
   display->egl_extensions =
@@ -1372,6 +1364,7 @@ GLDisplayEGL* GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display,
                               DISPLAY_TYPE_MAX);
     gl_display->SetDisplay(egl_display);
     gl_display->display_type = display_type;
+    gl_display->ext->InitializeExtensionSettings(gl_display);
     break;
   }
 
@@ -1424,7 +1417,7 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
     egl_window_attributes.push_back(size_.height());
   }
 
-  if (g_driver_egl.ext.b_EGL_NV_post_sub_buffer) {
+  if (display_->ext->b_EGL_NV_post_sub_buffer) {
     egl_window_attributes.push_back(EGL_POST_SUB_BUFFER_SUPPORTED_NV);
     egl_window_attributes.push_back(EGL_TRUE);
   }
@@ -1494,7 +1487,7 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
     return false;
   }
 
-  if (g_driver_egl.ext.b_EGL_NV_post_sub_buffer) {
+  if (display_->ext->b_EGL_NV_post_sub_buffer) {
     EGLint surfaceVal;
     EGLBoolean retVal =
         eglQuerySurface(display_->GetDisplay(), surface_,
@@ -1503,7 +1496,7 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   }
 
   supports_swap_buffer_with_damage_ =
-      g_driver_egl.ext.b_EGL_KHR_swap_buffers_with_damage;
+      display_->ext->b_EGL_KHR_swap_buffers_with_damage;
 
   if (!vsync_provider_external_ &&
       EGLSyncControlVSyncProvider::IsSupported(display_)) {
@@ -1520,11 +1513,11 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
 }
 
 bool NativeViewGLSurfaceEGL::SupportsSwapTimestamps() const {
-  return g_driver_egl.ext.b_EGL_ANDROID_get_frame_timestamps;
+  return display_->ext->b_EGL_ANDROID_get_frame_timestamps;
 }
 
 void NativeViewGLSurfaceEGL::SetEnableSwapTimestamps() {
-  DCHECK(g_driver_egl.ext.b_EGL_ANDROID_get_frame_timestamps);
+  DCHECK(display_->ext->b_EGL_ANDROID_get_frame_timestamps);
 
   // If frame timestamps are supported, set the proper attribute to enable the
   // feature and then cache the timestamps supported by the underlying
@@ -2186,10 +2179,10 @@ void* PbufferGLSurfaceEGL::GetShareHandle() {
   NOTREACHED();
   return nullptr;
 #else
-  if (!g_driver_egl.ext.b_EGL_ANGLE_query_surface_pointer)
+  if (!display_->ext->b_EGL_ANGLE_query_surface_pointer)
     return nullptr;
 
-  if (!g_driver_egl.ext.b_EGL_ANGLE_surface_d3d_texture_2d_share_handle)
+  if (!display_->ext->b_EGL_ANGLE_surface_d3d_texture_2d_share_handle)
     return nullptr;
 
   void* handle;

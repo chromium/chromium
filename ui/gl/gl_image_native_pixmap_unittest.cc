@@ -44,12 +44,10 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
   }
 
   bool SkipTest(GLDisplay* display) const override {
-    const std::string dmabuf_import_ext = "EGL_MESA_image_dma_buf_export";
-    std::string platform_extensions(ExtensionsEGL::GetPlatformExtensions(
-        static_cast<GLDisplayEGL*>(display)));
-    gfx::ExtensionSet extensions(gfx::MakeExtensionSet(platform_extensions));
-    if (!gfx::HasExtension(extensions, dmabuf_import_ext)) {
-      LOG(WARNING) << "Skip test, missing extension " << dmabuf_import_ext;
+    GLDisplayEGL* display_egl = static_cast<GLDisplayEGL*>(display);
+    if (!display_egl->ext->b_EGL_MESA_image_dma_buf_export) {
+      LOG(WARNING) << "Skip test, missing extension "
+                   << "EGL_MESA_image_dma_buf_export";
       return true;
     }
 

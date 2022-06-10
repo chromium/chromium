@@ -141,15 +141,14 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
     // Default to null platform
     native_display_ = gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
 
-    gl::g_driver_egl.ext.InitializeClientExtensionSettings();
-    if (gl::g_driver_egl.ext.b_EGL_MESA_platform_surfaceless) {
+    if (gl::g_driver_egl.client_ext.b_EGL_MESA_platform_surfaceless) {
       native_display_ = gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY,
                                                EGL_PLATFORM_SURFACELESS_MESA);
     }
 
-    if (!(gl::g_driver_egl.ext.b_EGL_EXT_device_query &&
-          gl::g_driver_egl.ext.b_EGL_EXT_platform_device &&
-          gl::g_driver_egl.ext.b_EGL_EXT_device_enumeration)) {
+    if (!(gl::g_driver_egl.client_ext.b_EGL_EXT_device_query &&
+          gl::g_driver_egl.client_ext.b_EGL_EXT_platform_device &&
+          gl::g_driver_egl.client_ext.b_EGL_EXT_device_enumeration)) {
       LOG(WARNING) << "Platform device extensions not found.";
       return native_display_;
     }

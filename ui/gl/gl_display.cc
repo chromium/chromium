@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/gl/gl_display.h"
+
 #include "base/notreached.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 
 #if defined(USE_GLX)
@@ -20,6 +23,7 @@ GLDisplay::~GLDisplay() = default;
 #if defined(USE_EGL)
 GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id)
     : GLDisplay(system_device_id) {
+  ext = std::make_unique<DisplayExtensionsEGL>();
   display_ = EGL_NO_DISPLAY;
 }
 
@@ -43,6 +47,12 @@ EGLNativeDisplayType GLDisplayEGL::GetNativeDisplay() {
 
 DisplayType GLDisplayEGL::GetDisplayType() {
   return display_type;
+}
+
+// static
+GLDisplayEGL* GLDisplayEGL::GetDisplayForCurrentContext() {
+  GLContext* context = GLContext::GetCurrent();
+  return context ? context->GetGLDisplayEGL() : nullptr;
 }
 
 bool GLDisplayEGL::HasEGLClientExtension(const char* name) {

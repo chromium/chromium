@@ -2817,6 +2817,7 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_create_context_client_arrays',
   'EGL_ANGLE_create_context_webgl_compatibility',
   'EGL_ANGLE_external_context_and_surface',
+  'EGL_ANGLE_keyed_mutex',
   'EGL_ANGLE_surface_orientation',
   'EGL_ANGLE_window_fixed_size',
   'EGL_CHROMIUM_create_context_bind_generates_resource',
@@ -3130,25 +3131,34 @@ class GLContext;
   # Write declarations for booleans indicating which extensions are available.
   file.write('\n')
   if set_name == 'egl':
-    file.write('struct GL_EXPORT ExtensionsEGL {\n')
+    file.write('struct GL_EXPORT ClientExtensionsEGL {\n')
+    for extension in sorted(used_client_extensions):
+      file.write('  bool b_%s;\n' % extension)
+    file.write(
+"""
+
+  void InitializeClientExtensionSettings();
+
+ private:
+  static std::string GetClientExtensions();
+};
+
+struct GL_EXPORT DisplayExtensionsEGL {
+""")
   else:
+    assert len(used_client_extensions) == 0
     file.write("struct Extensions%s {\n" % set_name.upper())
-  for extension in sorted(used_client_extensions):
-    file.write('  bool b_%s;\n' % extension)
+
   for extension in sorted(used_extensions):
     file.write('  bool b_%s;\n' % extension)
   if set_name == 'egl':
     file.write(
 """
 
-  void InitializeClientExtensionSettings();
   void InitializeExtensionSettings(GLDisplayEGL* display);
   void UpdateConditionalExtensionSettings(GLDisplayEGL* display);
 
   static std::string GetPlatformExtensions(GLDisplayEGL* display);
-
- private:
-  static std::string GetClientExtensions();
 """)
   file.write('};\n')
   file.write('\n')
@@ -3440,7 +3450,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 """)
   elif set_name == 'egl':
     file.write("""\
-void ExtensionsEGL::InitializeClientExtensionSettings() {
+void ClientExtensionsEGL::InitializeClientExtensionSettings() {
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -3480,7 +3490,7 @@ void Driver%s::InitializeExtensionBindings() {
     file.write("""\
 }
 
-void ExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
+void DisplayExtensionsEGL::InitializeExtensionSettings(GLDisplayEGL* display) {
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));

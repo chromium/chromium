@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "ui/gl/gl_export.h"
 
 #if defined(USE_EGL)
@@ -14,7 +16,7 @@
 #endif  // defined(USE_EGL)
 
 namespace gl {
-
+struct DisplayExtensionsEGL;
 template <typename GLDisplayPlatform>
 class GLDisplayManager;
 
@@ -87,6 +89,8 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   ~GLDisplayEGL() override;
 
+  static GLDisplayEGL* GetDisplayForCurrentContext();
+
   EGLDisplay GetDisplay() override;
   void SetDisplay(EGLDisplay display);
 
@@ -153,6 +157,8 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool egl_ext_query_device_supported = false;
   bool egl_angle_context_virtualization_supported = false;
   bool egl_angle_vulkan_image_supported = false;
+
+  std::unique_ptr<DisplayExtensionsEGL> ext;
 
  private:
   friend class GLDisplayManager<GLDisplayEGL>;

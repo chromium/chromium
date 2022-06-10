@@ -24,6 +24,7 @@ void InitializeStaticGLBindingsEGL() {
   }
 
   g_current_egl_context = g_egl_wrapper->api();
+  g_driver_egl.client_ext.InitializeClientExtensionSettings();
 }
 
 void ClearBindingsEGL() {
