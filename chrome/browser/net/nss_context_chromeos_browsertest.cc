@@ -9,6 +9,7 @@
 #include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -275,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest,
-                       TwoAffiliatedUsersHaveSystemSlots) {
+                       DISABLED_TwoAffiliatedUsersHaveSystemSlots) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
   // Log in first user and get their DB.
