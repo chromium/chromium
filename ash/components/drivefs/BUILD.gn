@@ -37,6 +37,7 @@ component("drivefs") {
     "//base",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus",
+    "//chromeos/dbus/cros_disks",
     "//components/account_id",
     "//components/drive",
     "//components/signin/public/identity_manager",
@@ -47,9 +48,6 @@ component("drivefs") {
     "//net",
     "//services/network/public/cpp:cpp",
   ]
-  if (!use_real_dbus_clients) {
-    deps += [ "//chromeos/dbus/cros_disks" ]
-  }
   defines = [ "IS_DRIVEFS_IMPL" ]
 }
 

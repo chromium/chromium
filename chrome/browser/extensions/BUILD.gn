@@ -1140,6 +1140,7 @@ static_library("extensions") {
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/remote_apps/mojom",
       "//chromeos/dbus",
+      "//chromeos/dbus/cros_disks",
       "//chromeos/dbus/cryptohome",
       "//chromeos/dbus/image_burner",
       "//chromeos/dbus/power",
