@@ -5,7 +5,6 @@
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../common/common_style.css.js';
 import '../cros_button_style.css.js';
 
@@ -261,19 +260,19 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   private getWallpaperColorContainerClass_(selectedColor: BacklightColor):
       string {
     return this.getColorContainerClass_(
-        this.getWallpaperColorAriaSelected_(selectedColor));
+        this.getWallpaperColorAriaChecked_(selectedColor));
   }
 
   private getPresetColorContainerClass_(
       colorId: string, colors: Record<string, ColorInfo>,
       selectedColor: BacklightColor) {
     return this.getColorContainerClass_(
-        this.getPresetColorAriaSelected_(colorId, colors, selectedColor));
+        this.getPresetColorAriaChecked_(colorId, colors, selectedColor));
   }
 
   private getRainbowColorContainerClass_(selectedColor: BacklightColor) {
     return this.getColorContainerClass_(
-        this.getRainbowColorAriaSelected_(selectedColor));
+        this.getRainbowColorAriaChecked_(selectedColor));
   }
 
   private getColorContainerClass_(isSelected: string) {
@@ -282,11 +281,11 @@ export class KeyboardBacklight extends WithPersonalizationStore {
                                    defaultClassName;
   }
 
-  private getWallpaperColorAriaSelected_(selectedColor: BacklightColor) {
+  private getWallpaperColorAriaChecked_(selectedColor: BacklightColor) {
     return (selectedColor === BacklightColor.kWallpaper).toString();
   }
 
-  private getPresetColorAriaSelected_(
+  private getPresetColorAriaChecked_(
       colorId: string, colors: Record<string, ColorInfo>,
       selectedColor: BacklightColor) {
     if (!colorId || !colors[colorId]) {
@@ -295,8 +294,12 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     return (colors[colorId].enumVal === selectedColor).toString();
   }
 
-  private getRainbowColorAriaSelected_(selectedColor: BacklightColor) {
+  private getRainbowColorAriaChecked_(selectedColor: BacklightColor) {
     return (selectedColor === BacklightColor.kRainbow).toString();
+  }
+
+  private getWallpaperColorTitle_() {
+    return this.i18n('wallpaperColorTooltipText');
   }
 }
 
