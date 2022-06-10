@@ -160,6 +160,12 @@ DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
 DEFINE_IS_OS_FUNCS(12, IGNORE_DEPLOYMENT_TARGET)
 #endif
 
+#ifdef MAC_OS_VERSION_13_0
+DEFINE_IS_OS_FUNCS(13, TEST_DEPLOYMENT_TARGET)
+#else
+DEFINE_IS_OS_FUNCS(13, IGNORE_DEPLOYMENT_TARGET)
+#endif
+
 #undef DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED
 #undef DEFINE_OLD_IS_OS_FUNCS
 #undef DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED
@@ -171,8 +177,8 @@ DEFINE_IS_OS_FUNCS(12, IGNORE_DEPLOYMENT_TARGET)
 // This should be infrequently used. It only makes sense to use this to avoid
 // codepaths that are very likely to break on future (unreleased, untested,
 // unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan12_DontCallThis() {
-  return !IsAtMostOS12();
+inline bool IsOSLaterThan13_DontCallThis() {
+  return !IsAtMostOS13();
 }
 
 enum class CPUType {
