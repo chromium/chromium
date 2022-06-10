@@ -24,6 +24,10 @@ GuestOsMountProviderRegistry* GuestOsService::MountProviderRegistry() {
   return &mount_provider_registry_;
 }
 
+GuestOsTerminalProviderRegistry* GuestOsService::TerminalProviderRegistry() {
+  return &terminal_provider_registry_;
+}
+
 GuestOsWaylandServer* GuestOsService::WaylandServer() {
   return wayland_server_.get();
 }

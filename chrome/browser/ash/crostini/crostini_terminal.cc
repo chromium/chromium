@@ -27,6 +27,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -260,7 +262,7 @@ void LaunchTerminalWithIntent(Profile* profile,
     return std::move(callback).Run(false, "Crostini not installed");
   }
 
-  // Look for vm_name, container_name, and settings_profile in intent->extras.
+  // Look for vm_name and container_name in intent->extras.
   ContainerId container_id = ContainerId::GetDefault();
   std::string settings_profile;
   if (intent && intent->extras.has_value()) {
@@ -565,23 +567,18 @@ void AddTerminalMenuShortcuts(
   gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
   std::vector<std::pair<std::string, std::string>> connections =
       GetSSHConnections(profile);
-  std::vector<ContainerId> containers;
-  if (CrostiniFeatures::Get()->IsEnabled(profile)) {
-    containers = GetContainers(profile);
-  }
-  if (connections.size() > 0 || containers.size() > 0) {
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile)
+                       ->TerminalProviderRegistry();
+  if (connections.size() > 0 || registry->List().size() > 0) {
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
   }
 
-  for (const auto& container : containers) {
-    // Use <container_name> for termina, else <vm_name>:<container_name>.
-    std::string label = container.container_name;
-    if (container.vm_name != kCrostiniDefaultVmName) {
-      label = base::StrCat({container.vm_name, ":", container.container_name});
-    }
-    apps::AddShortcutCommandItem(next_command_id++,
-                                 ShortcutIdFromContainerId(profile, container),
-                                 label, crostini_mascot_icon, &menu_items);
+  for (auto id : registry->List()) {
+    auto* provider = registry->Get(id);
+    apps::AddShortcutCommandItem(
+        next_command_id++,
+        ShortcutIdFromContainerId(profile, *provider->CrostiniContainerId()),
+        provider->Label(), crostini_mascot_icon, &menu_items);
   }
 
   for (const auto& connection : connections) {

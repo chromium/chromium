@@ -38,9 +38,11 @@
 #include "chrome/browser/ash/crostini/crostini_remover.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
 #include "chrome/browser/ash/crostini/crostini_sshfs.h"
+#include "chrome/browser/ash/crostini/crostini_terminal_provider.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_upgrade_available_notification.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -1247,6 +1249,18 @@ CrostiniManager::CrostiniManager(Profile* profile)
           kCrostiniStabilityHistogram);
   low_disk_notifier_ = std::make_unique<CrostiniLowDiskNotification>();
   crostini_sshfs_ = std::make_unique<CrostiniSshfs>(profile_);
+
+  // It's possible for us to have containers in prefs while Crostini isn't
+  // enabled, for example, maybe policy changed and now Crostini isn't allowed
+  // any more. Only register containers to show up if this profile is allowed to
+  // use Crostini. Note: This means changes only take effect after a restart,
+  // which is fine, since e.g. force-quitting a running VM because policy
+  // changed isn't something we're going to do.
+  if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
+    for (const auto& container : GetContainers(profile_)) {
+      RegisterContainer(container);
+    }
+  }
 }
 
 CrostiniManager::~CrostiniManager() {
@@ -1686,6 +1700,7 @@ void CrostiniManager::OnDeleteLxdContainer(
   } else if (response->status() ==
              vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST) {
     RemoveLxdContainerFromPrefs(profile_, container_id);
+    UnregisterContainer(container_id);
     std::move(callback).Run(/*success=*/true);
 
   } else {
@@ -3026,6 +3041,7 @@ void CrostiniManager::OnCreateLxdContainer(
       // Containers are registered in OnContainerCreated() when created via the
       // UI. But for any created manually also register now (crbug.com/1330168).
       AddNewLxdContainerToPrefs(profile_, container_id);
+      RegisterContainer(container_id);
       std::move(callback).Run(CrostiniResult::SUCCESS);
       break;
     default:
@@ -3194,6 +3210,7 @@ void CrostiniManager::OnLxdContainerCreated(
     case vm_tools::cicerone::LxdContainerCreatedSignal::CREATED:
       result = CrostiniResult::SUCCESS;
       AddNewLxdContainerToPrefs(profile_, container_id);
+      RegisterContainer(container_id);
       break;
     case vm_tools::cicerone::LxdContainerCreatedSignal::DOWNLOAD_TIMED_OUT:
       result = CrostiniResult::CONTAINER_DOWNLOAD_TIMED_OUT;
@@ -3228,6 +3245,7 @@ void CrostiniManager::OnLxdContainerDeleted(
       signal.status() == vm_tools::cicerone::LxdContainerDeletedSignal::DELETED;
   if (success) {
     RemoveLxdContainerFromPrefs(profile_, container_id);
+    UnregisterContainer(container_id);
   } else {
     LOG(ERROR) << "Failed to delete container " << container_id << " : "
                << signal.failure_reason();
@@ -3519,6 +3537,7 @@ void CrostiniManager::OnRemoveCrostini(CrostiniResult result) {
   for (auto& callback : remove_crostini_callbacks_) {
     std::move(callback).Run(result);
   }
+  UnregisterAllContainers();
   remove_crostini_callbacks_.clear();
 }
 
@@ -4022,6 +4041,39 @@ void CrostiniManager::RemoveStoppedContainer(const ContainerId& container_id) {
     if (engagement_metrics_service) {
       engagement_metrics_service->SetBackgroundActive(false);
     }
+  }
+}
+
+void CrostiniManager::RegisterContainer(const ContainerId& container_id) {
+  if (terminal_provider_ids_.find(container_id) !=
+      terminal_provider_ids_.end()) {
+    // Already registered, do nothing.
+    return;
+  }
+  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
+                                ->TerminalProviderRegistry();
+  terminal_provider_ids_[container_id] = terminal_registry->Register(
+      std::make_unique<CrostiniTerminalProvider>(container_id));
+}
+
+void CrostiniManager::UnregisterContainer(const ContainerId& container_id) {
+  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
+                                ->TerminalProviderRegistry();
+  auto it = terminal_provider_ids_.find(container_id);
+  if (it == terminal_provider_ids_.end()) {
+    // Not registered, nothing to do.
+    return;
+  }
+  terminal_registry->Unregister(it->second);
+  terminal_provider_ids_.erase(it);
+}
+
+void CrostiniManager::UnregisterAllContainers() {
+  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
+                                ->TerminalProviderRegistry();
+  for (const auto& pair : terminal_provider_ids_) {
+    terminal_registry->Unregister(pair.second);
+    terminal_provider_ids_.erase(pair.first);
   }
 }
 

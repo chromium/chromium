@@ -90,6 +90,11 @@ void ExpectCrostiniResult(base::OnceClosure closure,
   std::move(closure).Run();
 }
 
+void ExpectBool(base::OnceClosure closure, bool expected_result, bool result) {
+  EXPECT_EQ(expected_result, result);
+  std::move(closure).Run();
+}
+
 void ExpectCrostiniExportResult(base::OnceClosure closure,
                                 CrostiniResult expected_result,
                                 uint64_t expected_container_size,
@@ -1938,6 +1943,60 @@ TEST_F(CrostiniManagerRestartTest, StopAfterLxdAvailableThenFullRestart) {
                 crostini::mojom::InstallerState::kStartContainer,
             }),
             observer2.stages);
+}
+
+TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile_.get())
+                       ->TerminalProviderRegistry();
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindLambdaForTesting([this, registry](CrostiniResult result) {
+        ASSERT_GT(registry->List().size(), 0);
+        crostini_manager()->RemoveCrostini(
+            kVmName,
+            base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
+                           base::Unretained(this), run_loop()->QuitClosure()));
+      }));
+  run_loop()->Run();
+  ASSERT_EQ(registry->List().size(), 0);
+}
+
+TEST_F(CrostiniManagerRestartTest,
+       DeleteUnregistersContainersWhenDoesNotExist) {
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile_.get())
+                       ->TerminalProviderRegistry();
+  vm_tools::cicerone::DeleteLxdContainerResponse response;
+  response.set_status(
+      vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST);
+  fake_cicerone_client_->set_delete_lxd_container_response_(response);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindLambdaForTesting([this, registry](CrostiniResult result) {
+        ASSERT_GT(registry->List().size(), 0);
+        crostini_manager()->DeleteLxdContainer(
+            container_id(),
+            base::BindOnce(&ExpectBool, run_loop()->QuitClosure(), true));
+      }));
+  run_loop()->Run();
+  ASSERT_EQ(registry->List().size(), 0);
+}
+
+TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile_.get())
+                       ->TerminalProviderRegistry();
+  vm_tools::cicerone::LxdContainerDeletedSignal signal;
+  signal.set_vm_name(container_id().vm_name);
+  signal.set_container_name(container_id().container_name);
+  signal.set_owner_id(CryptohomeIdForProfile(profile()));
+  signal.set_status(vm_tools::cicerone::LxdContainerDeletedSignal::DELETED);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()));
+  run_loop()->Run();
+  ASSERT_GT(registry->List().size(), 0);
+  crostini_manager()->OnLxdContainerDeleted(signal);
+  ASSERT_EQ(registry->List().size(), 0);
 }
 
 class CrostiniManagerEnterpriseReportingTest

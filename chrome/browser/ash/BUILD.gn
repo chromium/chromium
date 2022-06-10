@@ -811,6 +811,8 @@ source_set("ash") {
     "crostini/crostini_sshfs.h",
     "crostini/crostini_terminal.cc",
     "crostini/crostini_terminal.h",
+    "crostini/crostini_terminal_provider.cc",
+    "crostini/crostini_terminal_provider.h",
     "crostini/crostini_unsupported_action_notifier.cc",
     "crostini/crostini_unsupported_action_notifier.h",
     "crostini/crostini_upgrade_available_notification.cc",
