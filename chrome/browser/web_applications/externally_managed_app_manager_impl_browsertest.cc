@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 
 // crbug.com/1334849: All/ExternallyManagedBrowserTestWithPrefMigrationRead.
 // ReinstallPolicyAppWithLocallyInstalledApp/1 is failing on Mac builders.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_ReinstallPolicyAppWithLocallyInstalledApp \
   DISABLED_ReinstallPolicyAppWithLocallyInstalledApp
 #else
