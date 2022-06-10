@@ -19,8 +19,7 @@ AutoSignInBubbleController::AutoSignInBubbleController(
 }
 
 AutoSignInBubbleController::~AutoSignInBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void AutoSignInBubbleController::OnAutoSignInToastTimeout() {

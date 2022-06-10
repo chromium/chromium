@@ -32,8 +32,7 @@ MoveToAccountStoreBubbleController::MoveToAccountStoreBubbleController(
 MoveToAccountStoreBubbleController::~MoveToAccountStoreBubbleController() {
   // Make sure the interactions are reported even if Views didn't notify the
   // controller about the bubble being closed.
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void MoveToAccountStoreBubbleController::RequestFavicon(

@@ -153,8 +153,7 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
 }
 
 SaveUpdateBubbleController::~SaveUpdateBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void SaveUpdateBubbleController::OnSaveClicked() {
