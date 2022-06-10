@@ -49,14 +49,19 @@ CIPD_DATA['yaml'] = CIPD_DATA['template'] % (
 CONFIG_DATA = {}
 CONFIG_DATA['json'] = """{
   "platform1": {
+    "git": {
+      "tag_prefix": "platform-1.0"
+    },
     "arch": {
       "arch1": {
         "filename": "arch1/platform1/file1.zip",
-        "_origin": "https://a1.p1/f1.zip"
+        "_origin": "https://a1.p1/f1.zip",
+        "unzip_dir": "arch1/path/platform1_r1"
       },
       "arch2": {
         "filename": "arch2/platform1/file3.zip",
-        "_origin": "https://a2.p1/f3.zip"
+        "_origin": "https://a2.p1/f3.zip",
+        "unzip_dir": "arch1/path/platform1_r1"
       }
     },
     "test_runs": [
@@ -66,14 +71,19 @@ CONFIG_DATA['json'] = """{
     ]
   },
   "platform2": {
+    "git": {
+      "tag_prefix": "platform-2.0"
+    },
     "arch": {
       "arch1": {
         "filename": "arch1/platform2/file2.zip",
-        "_origin": "https://a1.p2/f2.zip"
+        "_origin": "https://a1.p2/f2.zip",
+        "unzip_dir": "arch1/path/platform2_r1"
       },
       "arch2": {
         "filename": "arch2/platform2/file4.zip",
-        "_origin": "https://a2.p2/f4.zip"
+        "_origin": "https://a2.p2/f4.zip",
+        "unzip_dir": "arch1/path/platform2_r1"
       }
     },
     "test_runs": [

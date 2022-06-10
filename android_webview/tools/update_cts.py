@@ -9,6 +9,7 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -23,6 +24,17 @@ from devil.utils import cmd_helper
 from devil.utils import logging_common
 
 import cts_utils
+
+
+def _query_git_for_cts_tags():
+  cts_git_url = 'https://android.googlesource.com/platform/cts/'
+
+  tags = cmd_helper.GetCmdOutput(['git', 'ls-remote', '--tags',
+                                  cts_git_url]).splitlines()
+
+  print('[Updating CTS versions] Retrieved the CTS git tags')
+
+  return tags
 
 
 class PathError(IOError):
@@ -119,8 +131,9 @@ class UpdateCTS:
     self._repo_root = os.path.abspath(repo_root)
     helper = cts_utils.ChromiumRepoHelper(self._repo_root)
     self._repo_helper = helper
-    self._CTSConfig = cts_utils.CTSConfig(
-        helper.rebase(cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE))
+    self._cts_config_path = helper.rebase(cts_utils.TOOLS_DIR,
+                                          cts_utils.CONFIG_FILE)
+    self._CTSConfig = cts_utils.CTSConfig(self._cts_config_path)
     self._CIPDYaml = cts_utils.CTSCIPDYaml(
         helper.rebase(cts_utils.TOOLS_DIR, cts_utils.CIPD_FILE))
 
@@ -128,6 +141,55 @@ class UpdateCTS:
   def download_dir(self):
     """Full directory path where full test zips are to be downloaded to."""
     return self._download_dir
+
+  def _check_for_latest_cts_versions(self, cts_tags):
+    """Query for the latest cts versions per platform
+
+    We can retrieve the newest CTS versions by searching through the git tags
+    for each CTS version and looking for the latest
+    """
+
+    prefixes = [(platform, self._CTSConfig.get_git_tag_prefix(platform))
+                for platform in self._CTSConfig.iter_platforms()]
+    release_versions = dict()
+
+    tag_prefix_regexes = {
+        # Do a forward lookup for the tag prefix plus an '_r'
+        # Eg: 'android-cts-7.0_r2'
+        # Then retrieve the digits after this
+        tag_prefix: re.compile('(?<=/%s_r)\\d*' % re.escape(tag_prefix))
+        for _, tag_prefix in prefixes
+    }
+
+    for tag in cts_tags:
+      for platform, prefix in prefixes:
+        matches = tag_prefix_regexes[prefix].search(tag)
+        if matches:
+          version = int(matches.group(0))
+          if release_versions.get(platform, -1) < version:
+            release_versions[platform] = version
+
+    print('[Updating CTS versions] Retrieved the latest CTS versions')
+
+    return release_versions
+
+  def _update_cts_config_file_download_origins(self, release_versions):
+    """ Update the CTS release version for each architecture
+    and then save the config json
+    """
+    for platform, arch in self._CTSConfig.iter_platform_archs():
+      self._CTSConfig.set_release_version(platform, arch,
+                                          release_versions[platform])
+
+    self._CTSConfig.save()
+
+    print('[Updating CTS versions] Updated cts config')
+
+  def update_cts_download_origins_cmd(self):
+    """Performs the cts download origins update command"""
+    tags = _query_git_for_cts_tags()
+    release_versions = self._check_for_latest_cts_versions(tags)
+    self._update_cts_config_file_download_origins(release_versions)
 
   def download_cts_cmd(self, platforms=None):
     """Performs the download sub-command."""
@@ -360,6 +422,7 @@ After performing all steps, perform git add then commit.""".format(
     os.path.join(cts_utils.TOOLS_DIR, cts_utils.CONFIG_FILE))
 
 ALL_CMD = 'all-steps'
+UPDATE_CONFIG = 'update-config'
 DOWNLOAD_CMD = 'download'
 CIPD_UPDATE_CMD = 'create-cipd'
 CHECKOUT_UPDATE_CMD = 'update-checkout'
@@ -408,6 +471,11 @@ def main():
   add_dessert_arg(all_subparser)
   add_workdir_arg(all_subparser, False)
 
+  update_config_subparser = subparsers.add_parser(
+      UPDATE_CONFIG,
+      help='Update the CTS config to the newest release versions.')
+  add_workdir_arg(update_config_subparser, False)
+
   download_subparser = subparsers.add_parser(
       DOWNLOAD_CMD,
       help='Only downloads files to workdir for later use by other'
@@ -445,13 +513,16 @@ def main():
   try:
     cts_updater = UpdateCTS(work_dir=workdir, repo_root=cts_utils.SRC_DIR)
 
-    if args.cmd == DOWNLOAD_CMD:
+    if args.cmd == UPDATE_CONFIG:
+      cts_updater.update_cts_download_origins_cmd()
+    elif args.cmd == DOWNLOAD_CMD:
       cts_updater.download_cts_cmd(platforms=args.dessert)
     elif args.cmd == CIPD_UPDATE_CMD:
       cts_updater.create_cipd_cmd()
     elif args.cmd == CHECKOUT_UPDATE_CMD:
       cts_updater.update_repository_cmd()
     elif args.cmd == ALL_CMD:
+      cts_updater.update_cts_download_origins_cmd()
       cts_updater.download_cts_cmd()
       cts_updater.create_cipd_cmd()
       cts_updater.update_repository_cmd()
