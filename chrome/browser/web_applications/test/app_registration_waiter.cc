@@ -10,8 +10,9 @@
 namespace web_app {
 
 AppRegistrationWaiter::AppRegistrationWaiter(Profile* profile,
-                                             const AppId& app_id)
-    : app_id_(app_id) {
+                                             const AppId& app_id,
+                                             apps::Readiness readiness)
+    : app_id_(app_id), readiness_(readiness) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   Observe(&cache);
@@ -25,7 +26,7 @@ void AppRegistrationWaiter::Await() {
 }
 
 void AppRegistrationWaiter::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == app_id_)
+  if (update.AppId() == app_id_ && update.Readiness() == readiness_)
     run_loop_.Quit();
 }
 void AppRegistrationWaiter::OnAppRegistryCacheWillBeDestroyed(

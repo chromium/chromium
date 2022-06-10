@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
@@ -223,5 +224,36 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
   SelectContextMenuForApp(app_id, kCloseIndex);
   AppInstanceWaiter(AppServiceProxy()->InstanceRegistry(), app_id)
       .AwaitStopped();
+  EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
+  if (!ash_starter().HasLacrosArgument()) {
+    return;
+  }
+
+  const int kPinIndex = 1;
+  const int kUninstallIndex = 3;
+
+  const web_app::AppId app_id =
+      InstallWebApp("https://example.org/", apps::WindowMode::kBrowser);
+  AppServiceProxy()->Launch(app_id, /*event_flags=*/0,
+                            apps::mojom::LaunchSource::kFromAppListGrid);
+  AppInstanceWaiter(AppServiceProxy()->InstanceRegistry(), app_id)
+      .AwaitRunning();
+  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+
+  SelectContextMenuForApp(app_id, kUninstallIndex);
+  AppUninstallDialogView::GetActiveViewForTesting()->CancelDialog();
+  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+
+  SelectContextMenuForApp(app_id, kPinIndex);
+  SelectContextMenuForApp(app_id, kUninstallIndex);
+  AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
+  AppInstanceWaiter(AppServiceProxy()->InstanceRegistry(), app_id)
+      .AwaitStopped();
+  web_app::AppRegistrationWaiter(profile(), app_id,
+                                 apps::Readiness::kUninstalledByUser)
+      .Await();
   EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
 }

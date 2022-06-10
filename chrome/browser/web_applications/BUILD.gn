@@ -472,6 +472,7 @@ source_set("web_applications_test_support") {
     "//chrome/browser/ui",
     "//components/crx_file:crx_file",
     "//components/keyed_service/content",
+    "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
