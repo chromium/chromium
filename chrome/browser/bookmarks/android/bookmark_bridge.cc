@@ -927,7 +927,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
   int type = JavaBookmarkIdGetType(env, j_parent_id_obj);
   const BookmarkNode* parent = GetNodeByID(bookmark_id, type);
 
-  const BookmarkNode* new_node = bookmark_model_->AddURL(
+  const BookmarkNode* new_node = bookmark_model_->AddNewURL(
       parent, static_cast<size_t>(index),
       base::android::ConvertJavaStringToUTF16(env, j_title),
       *url::GURLAndroid::ToNativeGURL(env, j_url));

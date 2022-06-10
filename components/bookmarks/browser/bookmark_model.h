@@ -220,9 +220,21 @@ class BookmarkModel : public BookmarkUndoProvider,
       absl::optional<base::Time> creation_time = absl::nullopt,
       absl::optional<base::GUID> guid = absl::nullopt);
 
+  // Adds a new bookmark for the given `url` at the specified position with the
+  // given `meta_info`. Used for bookmarks being added through some direct user
+  // action (e.g. the bookmark star).
+  const BookmarkNode* AddNewURL(
+      const BookmarkNode* parent,
+      size_t index,
+      const std::u16string& title,
+      const GURL& url,
+      const BookmarkNode::MetaInfoMap* meta_info = nullptr);
+
   // Adds a url at the specified position with the given |creation_time|,
   // |meta_info| and |guid|. If no GUID is provided (i.e. nullopt), then a
   // random one will be generated. If a GUID is provided, it must be valid.
+  // Used for bookmarks not being added from direct user actions (e.g. created
+  // via sync, locally modified bookmark or pre-existing bookmark).
   const BookmarkNode* AddURL(
       const BookmarkNode* parent,
       size_t index,

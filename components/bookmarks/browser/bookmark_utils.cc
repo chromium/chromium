@@ -59,8 +59,10 @@ void CloneBookmarkNodeImpl(BookmarkModel* model,
     Time date_added = reset_node_times ? Time::Now() : element.date_added;
     DCHECK(!date_added.is_null());
 
-    model->AddURL(parent, index_to_add_at, element.title, element.url,
-                  &meta_info_map, date_added);
+    const BookmarkNode* node = model->AddNewURL(
+        parent, index_to_add_at, element.title, element.url, &meta_info_map);
+    model->SetDateAdded(node, date_added);
+
   } else {
     const BookmarkNode* cloned_node = model->AddFolder(
         parent, index_to_add_at, element.title, &meta_info_map);
@@ -499,7 +501,7 @@ void AddIfNotBookmarked(BookmarkModel* model,
     return;  // Nothing to do, a user bookmark with that url already exists.
   model->client()->RecordAction(base::UserMetricsAction("BookmarkAdded"));
   const BookmarkNode* parent = GetParentForNewNodes(model);
-  model->AddURL(parent, parent->children().size(), title, url);
+  model->AddNewURL(parent, parent->children().size(), title, url);
 }
 
 void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {

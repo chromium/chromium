@@ -172,7 +172,7 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
 
   const BookmarkNode* node;
   if (url_string.length()) {
-    node = model->AddURL(parent, index, title, url, meta_info);
+    node = model->AddNewURL(parent, index, title, url, meta_info);
   } else {
     node = model->AddFolder(parent, index, title, meta_info);
     model->SetDateFolderModified(parent, base::Time::Now());
