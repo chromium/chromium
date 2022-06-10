@@ -4,6 +4,7 @@
 
 import {Point} from './constants.js';
 import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
+import {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 import {ViewportInterface, ViewportScroller} from './viewport_scroller.js';
 
 interface InProcessPdfPluginElement extends HTMLEmbedElement {
@@ -77,6 +78,7 @@ channel.port1.onmessage = e => {
       isPresentationMode = e.data.enablePresentationMode;
 
       gestureDetector.setPresentationMode(isPresentationMode);
+      swipeDetector.setPresentationMode(isPresentationMode);
       if (isPresentationMode) {
         document.documentElement.className = 'fullscreen';
       } else {
@@ -160,6 +162,21 @@ const gestureDetector = new GestureDetector(plugin);
 for (const type of ['pinchstart', 'pinchupdate', 'pinchend', 'wheel']) {
   gestureDetector.getEventTarget().addEventListener(type, relayGesture);
 }
+
+/**
+ * Relays swipe events to the parent frame.
+ * @param e The swipe event.
+ */
+function relaySwipe(e: Event): void {
+  const swipeEvent = e as CustomEvent<SwipeDirection>;
+  channel.port1.postMessage({
+    type: 'swipe',
+    direction: swipeEvent.detail,
+  });
+}
+
+const swipeDetector = new SwipeDetector(plugin);
+swipeDetector.getEventTarget().addEventListener('swipe', relaySwipe);
 
 document.addEventListener('keydown', e => {
   // Only forward potential shortcut keys.
