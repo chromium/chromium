@@ -268,10 +268,10 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
   auto* condition = wait_for_dom->mutable_wait_condition();
   condition->mutable_client_id()->set_identifier("e");
   condition->set_require_unique_element(true);
-  auto* semantic_information =
-      condition->mutable_match()->mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
+  auto* semantic_filter =
+      condition->mutable_match()->add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
 
   base::MockCallback<base::OnceCallback<void(ScriptExecutor*)>>
       run_expectations;
@@ -302,9 +302,9 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
 
   // We pretend that the button is the correct element.
   SelectorProto proto;
-  auto* semantic_information = proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
   RunStrictElementCheck(Selector(proto), true);
 
   ASSERT_EQ(log_info_.element_finder_info().size(), 1);
@@ -312,10 +312,8 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
       log_info_.element_finder_info(0).semantic_inference_result();
   ASSERT_EQ(1, result.predicted_elements().size());
   EXPECT_EQ(backend_node_id, result.predicted_elements(0).backend_node_id());
-  EXPECT_THAT(
-      1, result.predicted_elements(0).semantic_information().semantic_role());
-  EXPECT_THAT(2,
-              result.predicted_elements(0).semantic_information().objective());
+  EXPECT_THAT(1, result.predicted_elements(0).semantic_filter().role());
+  EXPECT_THAT(2, result.predicted_elements(0).semantic_filter().objective());
 }
 
 IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
@@ -337,9 +335,9 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
 
   // We pretend that the button is the correct element.
   SelectorProto proto;
-  auto* semantic_information = proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
   RunStrictElementCheck(Selector(proto), true);
 
   ASSERT_EQ(log_info_.element_finder_info().size(), 1);
@@ -347,10 +345,8 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
       log_info_.element_finder_info(0).semantic_inference_result();
   ASSERT_EQ(1, result.predicted_elements().size());
   EXPECT_EQ(backend_node_id, result.predicted_elements(0).backend_node_id());
-  EXPECT_THAT(
-      1, result.predicted_elements(0).semantic_information().semantic_role());
-  EXPECT_THAT(2,
-              result.predicted_elements(0).semantic_information().objective());
+  EXPECT_THAT(1, result.predicted_elements(0).semantic_filter().role());
+  EXPECT_THAT(2, result.predicted_elements(0).semantic_filter().objective());
 }
 
 IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
@@ -362,18 +358,18 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
                                          std::vector<NodeData>{}));
 
   SelectorProto proto;
-  auto* semantic_information = proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
   FindElementExpectEmptyResult(Selector(proto));
 }
 
 IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
                        ElementExistenceCheckWithSemanticMultipleFound) {
   SelectorProto proto;
-  auto* semantic_information = proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
 
   NodeData node_data;
   node_data.backend_node_id = 5;
@@ -408,12 +404,12 @@ IN_PROC_BROWSER_TEST_F(
           mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
 
   SelectorProto proto;
-  auto* semantic_information = proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
   // All we want is this to be propagated to the GetSemanticNodes call as
   // configured in the previous expectation.
-  semantic_information->set_ignore_objective(true);
+  semantic_filter->set_ignore_objective(true);
 
   ClientStatus ignore_status;
   FindElement(Selector(proto), &ignore_status, nullptr);
@@ -425,46 +421,46 @@ IN_PROC_BROWSER_TEST_F(
       log_info_.element_finder_info(0).semantic_inference_result();
   ASSERT_EQ(1, result.predicted_elements().size());
   EXPECT_EQ(5, result.predicted_elements(0).backend_node_id());
-  EXPECT_THAT(
-      1, result.predicted_elements(0).semantic_information().semantic_role());
-  EXPECT_THAT(2,
-              result.predicted_elements(0).semantic_information().objective());
+  EXPECT_THAT(1, result.predicted_elements(0).semantic_filter().role());
+  EXPECT_THAT(2, result.predicted_elements(0).semantic_filter().objective());
 }
 
 IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest,
-                       SemanticAndCssComparison) {
-  ClientStatus status;
-  int backend_node_id = GetBackendNodeId(Selector({"#button"}), &status);
-  EXPECT_TRUE(status.ok());
+                       FindOptionInSemanticSelect) {
+  ClientStatus select_status;
+  int select_backend_node_id =
+      GetBackendNodeId(Selector({"#select"}), &select_status);
+  EXPECT_TRUE(select_status.ok());
 
   NodeData node_data;
-  node_data.backend_node_id = backend_node_id;
+  node_data.backend_node_id = select_backend_node_id;
   EXPECT_CALL(autofill_assistant_agent_,
               GetSemanticNodes(1, 2, false, base::Milliseconds(5000), _))
       .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
                                    std::vector<NodeData>{node_data}))
-      // Capture any other frames.
       .WillRepeatedly(RunOnceCallback<4>(
           mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
 
-  // We pretend that the button is the correct element.
-  SelectorProto proto = ToSelectorProto("#button");
-  auto* semantic_information = proto.mutable_semantic_information();
-  semantic_information->set_semantic_role(1);
-  semantic_information->set_objective(2);
-  semantic_information->set_check_matches_css_element(true);
-  RunStrictElementCheck(Selector(proto), true);
+  SelectorProto proto;
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+  proto.add_filters()->set_css_selector("option:nth-child(2)");
 
-  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
-  const auto& result =
-      log_info_.element_finder_info(0).semantic_inference_result();
-  ASSERT_EQ(1, result.predicted_elements().size());
-  EXPECT_EQ(backend_node_id, result.predicted_elements(0).backend_node_id());
-  EXPECT_THAT(
-      1, result.predicted_elements(0).semantic_information().semantic_role());
-  EXPECT_THAT(2,
-              result.predicted_elements(0).semantic_information().objective());
-  EXPECT_TRUE(result.predicted_elements(0).matches_css_element());
+  ClientStatus option_status;
+  ElementFinderResult option_result;
+  FindElement(Selector(proto), &option_status, &option_result);
+  EXPECT_TRUE(option_status.ok());
+
+  base::RunLoop run_loop;
+  web_controller_->GetFieldValue(
+      option_result, base::BindLambdaForTesting([&](const ClientStatus& status,
+                                                    const std::string& value) {
+        EXPECT_TRUE(status.ok());
+        EXPECT_EQ(value, "two");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace autofill_assistant

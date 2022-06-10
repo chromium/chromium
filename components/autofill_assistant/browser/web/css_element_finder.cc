@@ -134,10 +134,6 @@ ElementFinderInfoProto CssElementFinder::GetLogInfo() const {
   return info;
 }
 
-int CssElementFinder::GetBackendNodeId() const {
-  return backend_node_id_.value_or(0);
-}
-
 void CssElementFinder::GiveUpWithError(const ClientStatus& status) {
   DCHECK(!status.ok());
   if (!callback_) {
@@ -217,6 +213,13 @@ void CssElementFinder::ExecuteNextTask() {
   }
 
   current_filter_index_range_start_ = next_filter_index_;
+  if (filters.Get(next_filter_index_).filter_case() ==
+      SelectorProto::Filter::kSemantic) {
+    // TODO(b/233340267): By convention the semantic filter must be the first.
+    // Skip it.
+    DCHECK_EQ(next_filter_index_, 0);
+    ++next_filter_index_;
+  }
   const auto& filter = filters.Get(next_filter_index_);
   switch (filter.filter_case()) {
     case SelectorProto::Filter::kEnterFrame: {
@@ -283,8 +286,9 @@ void CssElementFinder::ExecuteNextTask() {
       return;
     }
 
+    case SelectorProto::Filter::kSemantic:
     case SelectorProto::Filter::FILTER_NOT_SET:
-      VLOG(1) << __func__ << " Unset or unknown filter in " << filter << " in "
+      VLOG(1) << __func__ << " Unexpected filter in " << filter << " in "
               << selector_;
       GiveUpWithError(ClientStatus(INVALID_SELECTOR));
       return;

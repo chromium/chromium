@@ -50,10 +50,6 @@ class CssElementFinder : public BaseElementFinder {
 
   ElementFinderInfoProto GetLogInfo() const override;
 
-  // Returns the backend node id of the result if the proto contains
-  // |semantic_information|, or 0.
-  int GetBackendNodeId() const override;
-
  private:
   // Returns the given status and no element. This expects an error status.
   void GiveUpWithError(const ClientStatus& status);

@@ -62,12 +62,12 @@ class ElementFinder : public WebControllerWorker {
 
   void UpdateLogInfo(const ClientStatus& status);
 
-  // Adds a runner to the list and starts it from the |start_element|.
-  void AddAndStartRunner(const ElementFinderResult& start_element,
-                         std::unique_ptr<BaseElementFinder> runner);
-  void OnResult(size_t index,
-                const ClientStatus& status,
-                std::unique_ptr<ElementFinderResult> result);
+  // Retains a runner and starts it from the |start_element|.
+  void StartAndRetainRunner(const ElementFinderResult& start_element,
+                            std::unique_ptr<BaseElementFinder> runner,
+                            Callback callback);
+  void OnSemanticRunnerResult(const ClientStatus& status,
+                              std::unique_ptr<ElementFinderResult> result);
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<DevtoolsClient> devtools_client_;
@@ -78,10 +78,8 @@ class ElementFinder : public WebControllerWorker {
   const ElementFinderResultType result_type_;
   Callback callback_;
 
-  std::vector<std::unique_ptr<BaseElementFinder>> runners_;
-  std::vector<std::pair<ClientStatus, std::unique_ptr<ElementFinderResult>>>
-      results_;
-  size_t num_results_ = 0;
+  std::unique_ptr<BaseElementFinder> runner_;
+  std::unique_ptr<ElementFinderResult> current_result_;
 
   base::WeakPtrFactory<ElementFinder> weak_ptr_factory_{this};
 };

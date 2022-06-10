@@ -15,6 +15,15 @@
 #include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
+namespace {
+
+bool HasSemanticRootFilter(const Selector& selector) {
+  return selector.proto.filters_size() > 0 &&
+         selector.proto.filters(0).filter_case() ==
+             SelectorProto::Filter::kSemantic;
+}
+
+}  // namespace
 
 ElementFinder::ElementFinder(
     content::WebContents* web_contents,
@@ -48,7 +57,7 @@ void ElementFinder::Start(const ElementFinderResult& start_element,
   // TODO(b/224747076): Coordinate the dom_model_service experiment in the
   // backend. So that we don't get semantic selectors if the client doesn't
   // support the model.
-  if (selector_.proto.has_semantic_information()) {
+  if (HasSemanticRootFilter(selector_)) {
     if (!annotate_dom_model_service_) {
       SendResult(ClientStatus(PRECONDITION_FAILED),
                  std::make_unique<ElementFinderResult>(
@@ -56,63 +65,43 @@ void ElementFinder::Start(const ElementFinderResult& start_element,
       return;
     }
 
-    if (selector_.proto.semantic_information().check_matches_css_element()) {
-      // This will return the element being used.
-      AddAndStartRunner(start_element,
-                        std::make_unique<CssElementFinder>(
-                            web_contents_, devtools_client_, user_data_,
-                            result_type_, selector_));
-    }
-
-    AddAndStartRunner(start_element,
-                      std::make_unique<SemanticElementFinder>(
-                          web_contents_, devtools_client_,
-                          annotate_dom_model_service_, selector_));
+    StartAndRetainRunner(start_element,
+                         std::make_unique<SemanticElementFinder>(
+                             web_contents_, devtools_client_,
+                             annotate_dom_model_service_, selector_),
+                         base::BindOnce(&ElementFinder::OnSemanticRunnerResult,
+                                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
-  AddAndStartRunner(start_element, std::make_unique<CssElementFinder>(
-                                       web_contents_, devtools_client_,
-                                       user_data_, result_type_, selector_));
+  StartAndRetainRunner(
+      start_element,
+      std::make_unique<CssElementFinder>(web_contents_, devtools_client_,
+                                         user_data_, result_type_, selector_),
+      base::BindOnce(&ElementFinder::SendResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ElementFinder::AddAndStartRunner(
+void ElementFinder::StartAndRetainRunner(
     const ElementFinderResult& start_element,
-    std::unique_ptr<BaseElementFinder> runner) {
-  auto* runner_ptr = runner.get();
-  runners_.emplace_back(std::move(runner));
-  results_.resize(runners_.size());
-  runner_ptr->Start(
-      start_element,
-      base::BindOnce(&ElementFinder::OnResult, weak_ptr_factory_.GetWeakPtr(),
-                     /* index= */ runners_.size() - 1));
+    std::unique_ptr<BaseElementFinder> runner,
+    Callback callback) {
+  runner_ = std::move(runner);
+  runner_->Start(start_element, std::move(callback));
 }
 
 void ElementFinder::UpdateLogInfo(const ClientStatus& status) {
-  if (log_info_ == nullptr) {
+  if (!log_info_) {
     return;
   }
 
   auto* info = log_info_->add_element_finder_info();
-  for (const auto& runner : runners_) {
-    info->MergeFrom(runner->GetLogInfo());
+  if (runner_) {
+    info->MergeFrom(runner_->GetLogInfo());
   }
-
   info->set_status(status.proto_status());
   if (selector_.proto.has_tracking_id()) {
     info->set_tracking_id(selector_.proto.tracking_id());
-  }
-
-  if (runners_.size() > 1u) {
-    // By convention the 0th result is used as the result being returned for
-    // usage. If there's more than one runner, use it to compare it to the
-    // semantic results.
-    int css_backend_node_id = runners_[0]->GetBackendNodeId();
-    for (auto& predicted_element : *info->mutable_semantic_inference_result()
-                                        ->mutable_predicted_elements()) {
-      predicted_element.set_matches_css_element(
-          predicted_element.backend_node_id() == css_backend_node_id);
-    }
   }
 }
 
@@ -124,19 +113,30 @@ void ElementFinder::SendResult(const ClientStatus& status,
       ClientStatus(status.proto_status(), status.details()), std::move(result));
 }
 
-void ElementFinder::OnResult(size_t index,
-                             const ClientStatus& status,
-                             std::unique_ptr<ElementFinderResult> result) {
-  results_[index] = std::make_pair(status, std::move(result));
-  ++num_results_;
-
-  if (num_results_ < results_.size()) {
+void ElementFinder::OnSemanticRunnerResult(
+    const ClientStatus& status,
+    std::unique_ptr<ElementFinderResult> result) {
+  if (!status.ok()) {
+    SendResult(status, std::move(result));
     return;
   }
 
-  DCHECK(!results_.empty());
-  DCHECK(!runners_.empty());
-  SendResult(results_[0].first, std::move(results_[0].second));
+  if (selector_.proto.filters_size() > 1) {
+    // The semantic filter was only the root, there are more filters to run.
+    // Log and retain teh current result and start a CSS lookup from here.
+    UpdateLogInfo(status);
+    current_result_ = std::move(result);
+
+    StartAndRetainRunner(
+        *current_result_,
+        std::make_unique<CssElementFinder>(web_contents_, devtools_client_,
+                                           user_data_, result_type_, selector_),
+        base::BindOnce(&ElementFinder::SendResult,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  SendResult(status, std::move(result));
 }
 
 }  // namespace autofill_assistant

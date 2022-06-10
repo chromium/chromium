@@ -31,9 +31,6 @@ class BaseElementFinder {
   // Get the log information for the last run. Should only be run after the
   // run has completed (i.e. |callback_| has been called).
   virtual ElementFinderInfoProto GetLogInfo() const = 0;
-
-  // Returns the backend node id that was previously collected.
-  virtual int GetBackendNodeId() const = 0;
 };
 
 }  // namespace autofill_assistant

@@ -38,31 +38,30 @@ TEST(SelectorTest, FromProto) {
   EXPECT_EQ(Selector({"#test"}), Selector(proto));
 }
 
-TEST(SelectorTest, EmptyCheckCssSelector) {
+TEST(SelectorTest, ValidateCssSelector) {
   EXPECT_TRUE(Selector().empty());
   EXPECT_FALSE(Selector({"#test"}).empty());
 }
 
-TEST(SelectorTest, EmptyCheckSelectorWithSemanticInformation) {
+TEST(SelectorTest, ValidateSemanticSelector) {
   SelectorProto semantic_only_proto;
-  semantic_only_proto.mutable_semantic_information();
+  semantic_only_proto.add_filters()->mutable_semantic();
   EXPECT_FALSE(Selector(semantic_only_proto).empty());
 
-  Selector semantic_and_css({"#test"});
-  semantic_and_css.proto.mutable_semantic_information();
-  EXPECT_FALSE(semantic_and_css.empty());
-}
+  SelectorProto semantic_and_css_proto;
+  semantic_and_css_proto.add_filters()->mutable_semantic();
+  semantic_and_css_proto.add_filters()->set_css_selector("#id");
+  EXPECT_FALSE(Selector(semantic_and_css_proto).empty());
 
-TEST(SelectorTest, EmptyCheckCssAndSemanticComparison) {
-  SelectorProto semantic_only_proto;
-  semantic_only_proto.mutable_semantic_information()
-      ->set_check_matches_css_element(true);
-  EXPECT_TRUE(Selector(semantic_only_proto).empty());
+  SelectorProto css_and_semantic_proto;
+  css_and_semantic_proto.add_filters()->set_css_selector("#id");
+  css_and_semantic_proto.add_filters()->mutable_semantic();
+  EXPECT_TRUE(Selector(css_and_semantic_proto).empty());
 
-  Selector semantic_and_css({"#test"});
-  semantic_and_css.proto.mutable_semantic_information()
-      ->set_check_matches_css_element(true);
-  EXPECT_FALSE(semantic_and_css.empty());
+  SelectorProto semantic_and_semantic_proto;
+  semantic_and_semantic_proto.add_filters()->mutable_semantic();
+  semantic_and_semantic_proto.add_filters()->mutable_semantic();
+  EXPECT_TRUE(Selector(semantic_and_semantic_proto).empty());
 }
 
 TEST(SelectorTest, Comparison) {
@@ -284,6 +283,26 @@ TEST(SelectorTest, ComparisonPropertyFilterAutofillValueRegexp) {
       ->mutable_chunk(0)
       ->set_text("text");
   EXPECT_FALSE(autofill_filter == autofill_filter_chunk);
+}
+
+TEST(SelectorTest, ComparisonSemanticFilters) {
+  Selector semantic_selector;
+  auto* filter = semantic_selector.proto.add_filters();
+  filter->mutable_semantic()->set_objective(1);
+  filter->mutable_semantic()->set_role(2);
+
+  Selector semantic_selector_copy(semantic_selector.proto);
+  EXPECT_TRUE(semantic_selector == semantic_selector_copy);
+
+  Selector ignored_objective_selector;
+  filter = ignored_objective_selector.proto.add_filters();
+  filter->mutable_semantic()->set_ignore_objective(true);
+  filter->mutable_semantic()->set_role(2);
+
+  Selector ignored_objective_selector_copy(ignored_objective_selector.proto);
+  EXPECT_TRUE(ignored_objective_selector == ignored_objective_selector_copy);
+
+  EXPECT_FALSE(semantic_selector == ignored_objective_selector);
 }
 
 }  // namespace

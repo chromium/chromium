@@ -48,6 +48,8 @@ struct Selector {
   Selector& MustBeVisible();
 
   // Checks whether this selector is empty or invalid.
+  // TODO(b/235308082): Rename this to be more appropriate to what the method
+  // actually does.
   bool empty() const;
 
   // Convenience function to set inner_text_pattern in a fluent style.

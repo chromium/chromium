@@ -6,33 +6,12 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 
 namespace autofill_assistant {
-namespace {
-
-bool IsValidCssSelectorProto(const SelectorProto& proto) {
-  for (const SelectorProto::Filter& filter : proto.filters()) {
-    switch (filter.filter_case()) {
-      case SelectorProto::Filter::FILTER_NOT_SET:
-        // There must not be any unknown or invalid filters.
-        return false;
-
-      case SelectorProto::Filter::kCssSelector:
-        // There must be at least one CSS selector, since it's the only
-        // way we have of expanding the set of matches.
-        return true;
-
-      default:
-        break;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 // Comparison operations are in the autofill_assistant scope, even though
 // they're not shared outside of this module, for them to be visible to
@@ -76,6 +55,12 @@ bool operator<(const SelectorProto::PropertyFilter& a,
     case SelectorProto::PropertyFilter::VALUE_NOT_SET:
       return false;
   }
+}
+
+bool operator<(const SelectorProto::SemanticFilter& a,
+               const SelectorProto::SemanticFilter& b) {
+  return std::make_tuple(a.objective(), a.role(), a.ignore_objective()) <
+         std::make_tuple(b.objective(), b.role(), b.ignore_objective());
 }
 
 // Used by operator<(RepeatedPtrField<Filter>, RepeatedPtrField<Filter>)
@@ -144,6 +129,9 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kProperty:
       return a.property() < b.property();
+
+    case SelectorProto::Filter::kSemantic:
+      return a.semantic() < b.semantic();
 
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
@@ -239,12 +227,27 @@ Selector& Selector::MustBeVisible() {
 }
 
 bool Selector::empty() const {
-  bool is_valid_css = IsValidCssSelectorProto(proto);
-  if (proto.has_semantic_information()) {
-    return proto.semantic_information().check_matches_css_element() &&
-           !is_valid_css;
+  if (base::ranges::any_of(proto.filters(),
+                           [](const SelectorProto::Filter& filter) {
+                             return filter.filter_case() ==
+                                    SelectorProto::Filter::FILTER_NOT_SET;
+                           })) {
+    return true;
   }
-  return !is_valid_css;
+
+  int semantic_selector_count = base::ranges::count_if(
+      proto.filters(), [](const SelectorProto::Filter& filter) {
+        return filter.filter_case() == SelectorProto::Filter::kSemantic;
+      });
+  if (semantic_selector_count > 0) {
+    return semantic_selector_count > 1 ||
+           proto.filters(0).filter_case() != SelectorProto::Filter::kSemantic;
+  }
+
+  return !base::ranges::any_of(
+      proto.filters(), [](const SelectorProto::Filter& filter) {
+        return filter.filter_case() == SelectorProto::Filter::kCssSelector;
+      });
 }
 
 std::ostream& operator<<(std::ostream& out, const Selector& selector) {
@@ -292,6 +295,18 @@ std::ostream& operator<<(std::ostream& out,
       out << "/<unknown>/";
       break;
   }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SelectorProto::SemanticFilter& c) {
+  out << "Semantic { role: " << c.role() << ", objective: ";
+  if (c.ignore_objective()) {
+    out << "ignored";
+  } else {
+    out << c.objective();
+  }
+  out << " }";
   return out;
 }
 
@@ -394,6 +409,10 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kParent:
       out << "parent";
+      return out;
+
+    case SelectorProto::Filter::kSemantic:
+      out << f.semantic();
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

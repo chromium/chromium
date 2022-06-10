@@ -47,9 +47,6 @@ class SemanticElementFinder : public BaseElementFinder {
 
   ElementFinderInfoProto GetLogInfo() const override;
 
-  // Returns the backend node id of the first result (if any), or 0.
-  int GetBackendNodeId() const override;
-
  private:
   // Returns the given status and no element. This expects an error status.
   void GiveUpWithError(const ClientStatus& status);
@@ -90,6 +87,7 @@ class SemanticElementFinder : public BaseElementFinder {
   const raw_ptr<DevtoolsClient> devtools_client_;
   const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   const Selector selector_;
+  SelectorProto::SemanticFilter filter_;
   BaseElementFinder::Callback callback_;
 
   // Elements gathered through all frames. Unused if the |selector_| does not

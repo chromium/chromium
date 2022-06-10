@@ -60,6 +60,11 @@ SemanticElementFinder::SemanticElementFinder(
       annotate_dom_model_service_(annotate_dom_model_service),
       selector_(selector) {
   DCHECK(annotate_dom_model_service_);
+
+  DCHECK_GT(selector_.proto.filters_size(), 0);
+  DCHECK(selector_.proto.filters(0).filter_case() ==
+         SelectorProto::Filter::kSemantic);
+  filter_ = selector_.proto.filters(0).semantic();
 }
 
 SemanticElementFinder::~SemanticElementFinder() = default;
@@ -111,7 +116,6 @@ ElementFinderInfoProto SemanticElementFinder::GetLogInfo() const {
   DCHECK(!callback_);  // Run after finish.
 
   ElementFinderInfoProto info;
-  DCHECK(selector_.proto.has_semantic_information());
   for (auto node_data_status : node_data_frame_status_) {
     info.mutable_semantic_inference_result()->add_status_per_frame(
         NodeDataStatusToSemanticInferenceStatus(node_data_status));
@@ -121,21 +125,13 @@ ElementFinderInfoProto SemanticElementFinder::GetLogInfo() const {
         info.mutable_semantic_inference_result()->add_predicted_elements();
     predicted_element->set_backend_node_id(
         semantic_node_result.backend_node_id());
-    *predicted_element->mutable_semantic_information() =
-        selector_.proto.semantic_information();
+    *predicted_element->mutable_semantic_filter() = filter_;
     // TODO(b/217160707): For the ignore_objective case this is not correct
     // and the inferred objective should be returned from the Agent and used
     // here.
   }
 
   return info;
-}
-
-int SemanticElementFinder::GetBackendNodeId() const {
-  if (semantic_node_results_.empty()) {
-    return 0;
-  }
-  return semantic_node_results_[0].backend_node_id();
 }
 
 void SemanticElementFinder::RunAnnotateDomModel(
@@ -172,11 +168,8 @@ void SemanticElementFinder::RunAnnotateDomModelOnFrame(
   }
 
   driver->GetAutofillAssistantAgent()->GetSemanticNodes(
-      selector_.proto.semantic_information().semantic_role(),
-      selector_.proto.semantic_information().objective(),
-      selector_.proto.semantic_information().ignore_objective(),
-      base::Milliseconds(
-          selector_.proto.semantic_information().model_timeout_ms()),
+      filter_.role(), filter_.objective(), filter_.ignore_objective(),
+      base::Milliseconds(filter_.model_timeout_ms()),
       base::BindOnce(&SemanticElementFinder::OnRunAnnotateDomModelOnFrame,
                      weak_ptr_factory_.GetWeakPtr(), host_id,
                      std::move(callback)));
