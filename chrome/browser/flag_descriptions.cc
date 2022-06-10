@@ -539,6 +539,10 @@ const char kTouchToFillPasswordSubmissionDescription[] =
     "Enables automatic form submission after filling credentials with "
     "Touch-To-Fill";
 
+const char kFastCheckoutName[] = "Fast Checkout";
+const char kFastCheckoutDescription[] =
+    "Enables Fast Checkout experiences in Chrome.";
+
 const char kBorealisBigGlName[] = "Borealis Big GL";
 const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 

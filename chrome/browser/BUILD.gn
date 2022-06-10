@@ -508,6 +508,8 @@ static_library("browser") {
     "external_protocol/external_protocol_handler.h",
     "external_protocol/external_protocol_observer.cc",
     "external_protocol/external_protocol_observer.h",
+    "fast_checkout/fast_checkout_features.cc",
+    "fast_checkout/fast_checkout_features.h",
     "favicon/chrome_favicon_client.cc",
     "favicon/chrome_favicon_client.h",
     "favicon/favicon_service_factory.cc",

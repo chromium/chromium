@@ -3179,6 +3179,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "fast-checkout",
+    "owners": [ "vizcay", "bwolfgang", "jkeitel" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "fast-pair",
     "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
     "expiry_milestone": 105

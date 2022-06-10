@@ -295,6 +295,9 @@ extern const char kBiometricReauthForPasswordFillingDescription[];
 extern const char kTouchToFillPasswordSubmissionName[];
 extern const char kTouchToFillPasswordSubmissionDescription[];
 
+extern const char kFastCheckoutName[];
+extern const char kFastCheckoutDescription[];
+
 extern const char kBorealisBigGlName[];
 extern const char kBorealisBigGlDescription[];
 

@@ -58749,6 +58749,7 @@ from previous Chrome versions.
   <int value="504717928" label="PasswordsWeaknessCheck:disabled"/>
   <int value="504946061" label="WebAppEnableUrlHandlers:disabled"/>
   <int value="504994663" label="GenericSensor:disabled"/>
+  <int value="505381354" label="FastCheckout:enabled"/>
   <int value="505561325" label="OpenXR:disabled"/>
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506680761" label="WebNFC:disabled"/>
@@ -59123,6 +59124,7 @@ from previous Chrome versions.
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
   <int value="745541471" label="PaintHolding:disabled"/>
   <int value="745783589" label="translate-force-trigger-on-english"/>
+  <int value="745850072" label="FastCheckout:disabled"/>
   <int value="745868416" label="disable-system-timezone-automatic-detection"/>
   <int value="746294842" label="NotificationsViaHelperApp:disabled"/>
   <int value="746765012" label="AutofillEnableToolbarStatusChip:disabled"/>
