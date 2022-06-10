@@ -111,7 +111,7 @@ public class PriceDropNotificationManagerTest {
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
-        mPriceDropNotificationManager = new PriceDropNotificationManager();
+        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
         when(mMockBookmarkBridge.isBookmarkModelLoaded()).thenReturn(true);
         PriceDropNotificationManager.setBookmarkBridgeForTesting(mMockBookmarkBridge);
     }

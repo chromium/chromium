@@ -119,7 +119,7 @@ public class PriceDropNotificationManager {
             // Handles "turn off alert" action button click.
             ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(() -> {
                 PriceDropNotificationManager priceDropNotificationManager =
-                        new PriceDropNotificationManager();
+                        PriceDropNotificationManagerFactory.create();
                 assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
                     : "Currently only turn off alert action uses this activity.";
                 priceDropNotificationManager.onNotificationActionClicked(
@@ -147,11 +147,18 @@ public class PriceDropNotificationManager {
     private final NotificationManagerProxy mNotificationManager;
     private final SharedPreferencesManager mPreferencesManager;
 
+    // TODO(shaktisahu): Remove this after landing downstream changes.
     public PriceDropNotificationManager() {
         this(ContextUtils.getApplicationContext(),
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
     }
 
+    /**
+     * Constructor.
+     * @param context The application context.
+     * @param notificationManagerProxy The {@link NotificationManagerProxy} for sending
+     *         notifications.
+     */
     public PriceDropNotificationManager(
             Context context, NotificationManagerProxy notificationManagerProxy) {
         mContext = context;

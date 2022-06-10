@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -444,7 +445,8 @@ public class TabSwitcherCoordinator
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {
         if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
-            PriceDropNotificationManager notificationManager = new PriceDropNotificationManager();
+            PriceDropNotificationManager notificationManager =
+                    PriceDropNotificationManagerFactory.create();
             mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(context,
                     modalDialogManager, this, mTabModelSelector, notificationManager, mMode);
             if (mMode == TabListCoordinator.TabListMode.GRID) {

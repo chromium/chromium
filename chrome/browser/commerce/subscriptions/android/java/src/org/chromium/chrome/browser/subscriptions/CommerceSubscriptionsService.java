@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -50,7 +51,7 @@ public class CommerceSubscriptionsService {
         };
         mIdentityManager.addObserver(mIdentityManagerObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
-        mPriceDropNotificationManager = new PriceDropNotificationManager();
+        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
         mMetrics = new CommerceSubscriptionsMetrics();
     }
 

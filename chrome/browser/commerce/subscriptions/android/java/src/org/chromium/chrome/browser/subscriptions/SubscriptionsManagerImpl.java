@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -148,7 +148,7 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
                 && CommerceSubscription.SubscriptionManagementType.USER_MANAGED.equals(
                         subscriptions.get(0).getManagementType())
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            (new PriceDropNotificationManager()).createNotificationChannel();
+            (PriceDropNotificationManagerFactory.create()).createNotificationChannel();
         }
 
         if (!mCanHandleRequests) {
