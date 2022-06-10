@@ -49,23 +49,23 @@ namespace {
 // can surprisingly go through multiple cycles of
 // kCFRunLoopAfterWaiting=>kCFRunLoopBeforeWaiting before invoking Chrome's
 // RunWork() for the first time, triggering multiple  ScopedDoWorkItem 's for
-// potential native work before the first
+// potential native work before the first DoWork().
 constexpr bool ChromeControlsNativeEventProcessing(MessagePumpType pump_type) {
 #if BUILDFLAG(IS_MAC)
-  return pump_type == MessagePumpType::UI;
+  return pump_type != MessagePumpType::UI;
 #elif BUILDFLAG(IS_IOS)
-  return true;
-#else
   return false;
+#else
+  return true;
 #endif
 }
 
 class MockMessagePumpDelegate : public MessagePump::Delegate {
  public:
   explicit MockMessagePumpDelegate(MessagePumpType pump_type)
-      : check_work_items_(!ChromeControlsNativeEventProcessing(pump_type)),
+      : check_work_items_(ChromeControlsNativeEventProcessing(pump_type)),
         native_work_item_accounting_is_on_(
-            ChromeControlsNativeEventProcessing(pump_type)) {}
+            !ChromeControlsNativeEventProcessing(pump_type)) {}
 
   ~MockMessagePumpDelegate() override { ValidateNoOpenWorkItems(); }
 
