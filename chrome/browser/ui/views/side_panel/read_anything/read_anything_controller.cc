@@ -93,7 +93,7 @@ void ReadAnythingController::OnTabStripModelChanged(
   DistillAXTree();
 }
 
-void ReadAnythingController::PrimaryPageChanged(content::Page& page) {
+void ReadAnythingController::DidStopLoading() {
   DistillAXTree();
 }
 

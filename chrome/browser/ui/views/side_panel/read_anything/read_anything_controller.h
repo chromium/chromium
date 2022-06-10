@@ -17,10 +17,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 
-namespace content {
-class Page;
-}
-
 namespace ui {
 struct AXTreeUpdate;
 }
@@ -62,7 +58,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
       const TabStripSelectionChange& selection) override;
 
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
+  void DidStopLoading() override;
 
   // Requests a distilled AXTree for the main frame of the currently active
   // web contents.
