@@ -54,7 +54,10 @@ enum DCLayerResult {
   DC_LAYER_FAILED_NO_HW_OVERLAY_SUPPORT [[deprecated]] = 9,
   DC_LAYER_FAILED_ROUNDED_CORNERS [[deprecated]] = 10,
   DC_LAYER_FAILED_BACKDROP_FILTERS = 11,
-  kMaxValue = DC_LAYER_FAILED_BACKDROP_FILTERS,
+  DC_LAYER_FAILED_COPY_REQUESTS = 12,
+  DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED = 13,
+  DC_LAYER_FAILED_OUTPUT_HDR = 14,
+  kMaxValue = DC_LAYER_FAILED_OUTPUT_HDR,
 };
 
 enum : size_t {
@@ -416,6 +419,32 @@ void RecordOverlayHistograms(DCLayerOverlayList* dc_layer_overlays,
   OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
       is_overlay, has_occluding_surface_damage, damage_rect->IsEmpty());
 }
+
+QuadList::Iterator FindAnOverlayCandidate(QuadList& quad_list) {
+  for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
+    if (it->material == DrawQuad::Material::kYuvVideoContent ||
+        it->material == DrawQuad::Material::kStreamVideoContent ||
+        it->material == DrawQuad::Material::kTextureContent)
+      return it;
+  }
+  return quad_list.end();
+}
+
+QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
+    QuadList& quad_list) {
+  QuadList::Iterator it = quad_list.end();
+  for (auto quad_it = quad_list.begin(); quad_it != quad_list.end();
+       ++quad_it) {
+    if (quad_it->material == DrawQuad::Material::kStreamVideoContent)
+      return quad_list.end();
+    if (it == quad_list.end() &&
+        (quad_it->material == DrawQuad::Material::kYuvVideoContent ||
+         quad_it->material == DrawQuad::Material::kTextureContent))
+      it = quad_it;
+  }
+  return it;
+}
+
 }  // namespace
 
 DCLayerOverlay::DCLayerOverlay() = default;
@@ -633,10 +662,11 @@ void DCLayerOverlayProcessor::Process(
     const gfx::RectF& display_rect,
     const FilterOperationsMap& render_pass_filters,
     const FilterOperationsMap& render_pass_backdrop_filters,
-    AggregatedRenderPassList* render_pass_list,
+    AggregatedRenderPass* render_pass,
     gfx::Rect* damage_rect,
     SurfaceDamageRectList surface_damage_rect_list,
-    DCLayerOverlayList* dc_layer_overlays) {
+    DCLayerOverlayList* dc_layer_overlays,
+    bool is_video_capture_enabled) {
   bool this_frame_has_occluding_damage_rect = false;
   processed_yuv_overlay_count_ = 0;
   surface_damage_rect_list_ = std::move(surface_damage_rect_list);
@@ -646,19 +676,23 @@ void DCLayerOverlayProcessor::Process(
   // by backdrop filters.
   std::vector<gfx::Rect> backdrop_filter_rects;
 
-  auto* root_render_pass = render_pass_list->back().get();
-  if (render_pass_list->back()->is_color_conversion_pass) {
-    DCHECK_GT(render_pass_list->size(), 1u);
-    root_render_pass = (*render_pass_list)[render_pass_list->size() - 2].get();
+  // Skip overlay for copy request, video capture or HDR P010 format.
+  if (ShouldSkipOverlay(render_pass, is_video_capture_enabled)) {
+    // Update damage rect before calling ClearOverlayState, otherwise
+    // previous_frame_overlay_rect_union will be empty.
+    damage_rect->Union(PreviousFrameOverlayDamageContribution());
+    ClearOverlayState();
+
+    return;
   }
 
   // Used for generating the candidate index list.
-  QuadList* quad_list = &root_render_pass->quad_list;
   std::vector<size_t> candidate_index_list;
   size_t candidate = 0;
 
   // Used for looping through candidate_index_list to UpdateDCLayerOverlays()
   size_t prev_index = 0;
+  QuadList* quad_list = &render_pass->quad_list;
   auto prev_it = quad_list->begin();
 
   // Used for whether overlay should be skipped
@@ -817,7 +851,7 @@ void DCLayerOverlayProcessor::Process(
         this_frame_has_occluding_damage_rect = true;
     }
 
-    UpdateDCLayerOverlays(display_rect, root_render_pass, it,
+    UpdateDCLayerOverlays(display_rect, render_pass, it,
                           quad_rectangle_in_target_space, occluding_damage_rect,
                           is_overlay, &prev_it, &prev_index, damage_rect,
                           dc_layer_overlays);
@@ -846,9 +880,50 @@ void DCLayerOverlayProcessor::Process(
   }
 
   if (debug_settings_->show_dc_layer_debug_borders) {
-    InsertDebugBorderDrawQuad(dc_layer_overlays, root_render_pass, display_rect,
+    InsertDebugBorderDrawQuad(dc_layer_overlays, render_pass, display_rect,
                               damage_rect);
   }
+}
+
+bool DCLayerOverlayProcessor::ShouldSkipOverlay(
+    AggregatedRenderPass* render_pass,
+    bool is_video_capture_enabled) {
+  QuadList* quad_list = &render_pass->quad_list;
+
+  // Skip overlay processing if we have copy request or video capture is
+  // enabled. When video capture is enabled, some frames might not have copy
+  // request.
+  if (!render_pass->copy_requests.empty() || is_video_capture_enabled) {
+    // Find a valid overlay candidate from quad_list.
+    QuadList::Iterator it = FindAnOverlayCandidate(*quad_list);
+    if (it != quad_list->end()) {
+      is_video_capture_enabled
+          ? RecordDCLayerResult(DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED, it)
+          : RecordDCLayerResult(DC_LAYER_FAILED_COPY_REQUESTS, it);
+    }
+    return true;
+  }
+
+  // Skip overlay processing if output colorspace is HDR.
+  // Since most of overlay only supports NV12 and YUY2 now, HDR content (usually
+  // P010 format) cannot output through overlay without format degrading. In
+  // some Intel's platforms (Icelake or above), Overlay can play HDR content by
+  // supporting RGB10 format. Let overlay deal with HDR content in this
+  // situation.
+  bool supports_rgb10a2_overlay =
+      gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
+  if (render_pass->content_color_usage == gfx::ContentColorUsage::kHDR &&
+      !supports_rgb10a2_overlay) {
+    // Media Foundation always uses overlays to render video, so do not skip.
+    QuadList::Iterator it =
+        FindAnOverlayCandidateExcludingMediaFoundationVideoContent(*quad_list);
+    if (it != quad_list->end()) {
+      RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, it);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void DCLayerOverlayProcessor::UpdateDCLayerOverlays(

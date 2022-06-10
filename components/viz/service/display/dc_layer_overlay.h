@@ -96,10 +96,11 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                        const gfx::RectF& display_rect,
                        const FilterOperationsMap& render_pass_filters,
                        const FilterOperationsMap& render_pass_backdrop_filters,
-                       AggregatedRenderPassList* render_passes,
+                       AggregatedRenderPass* render_pass,
                        gfx::Rect* damage_rect,
                        SurfaceDamageRectList surface_damage_rect_list,
-                       DCLayerOverlayList* dc_layer_overlays);
+                       DCLayerOverlayList* dc_layer_overlays,
+                       bool is_video_capture_enabled);
   void ClearOverlayState();
   // This is the damage contribution due to previous frame's overlays which can
   // be empty.
@@ -111,6 +112,10 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   void UpdateHasHwOverlaySupport();
 
  private:
+  // Detects overlay processing skip inside |render_pass|.
+  bool ShouldSkipOverlay(AggregatedRenderPass* render_pass,
+                         bool is_video_capture_enabled);
+
   // UpdateDCLayerOverlays() adds the quad at |it| to the overlay list
   // |dc_layer_overlays|.
   void UpdateDCLayerOverlays(const gfx::RectF& display_rect,
