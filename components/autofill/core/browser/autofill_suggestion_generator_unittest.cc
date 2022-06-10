@@ -377,13 +377,6 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
   EXPECT_TRUE(suggestion_generator()->ShouldShowVirtualCardOption(
       &local_card, form_structure));
 
-  // Reset form to reset field storage types to mock as an incomplete form.
-  TestFormStructure incomplete_form_structure(credit_card_form);
-
-  // If it is an incomplete form, it should return false;
-  EXPECT_FALSE(suggestion_generator()->ShouldShowVirtualCardOption(
-      &server_card, incomplete_form_structure));
-
   // Reset server card virtual card enrollment state.
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
