@@ -182,41 +182,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs the given number of promo taps remaining.  Should be called only for users that
-     * are still undecided.
-     * @param promoTapsRemaining The number of taps remaining (should not be negative).
-     */
-    public static void logPromoTapsRemaining(int promoTapsRemaining) {
-        if (promoTapsRemaining >= 0) {
-            RecordHistogram.recordCount1MHistogram(
-                    "Search.ContextualSearchPromoTapsRemaining", promoTapsRemaining);
-        }
-    }
-
-    /**
-     * Logs the historic number of times that a Tap gesture triggered the peeking promo
-     * for users that have never opened the panel.  This should be called periodically for
-     * undecided users only.
-     * @param promoTaps The historic number of taps that have caused the peeking bar for the promo,
-     *        for users that have never opened the panel.
-     */
-    public static void logPromoTapsForNeverOpened(int promoTaps) {
-        RecordHistogram.recordCount1MHistogram(
-                "Search.ContextualSearchPromoTapsForNeverOpened", promoTaps);
-    }
-
-    /**
-     * Logs the historic number of times that a Tap gesture triggered the peeking promo before
-     * the user ever opened the panel.  This should be called periodically for all users.
-     * @param promoTaps The historic number of taps that have caused the peeking bar for the promo
-     *        before the first open of the panel, for all users that have ever opened the panel.
-     */
-    public static void logPromoTapsBeforeFirstOpen(int promoTaps) {
-        RecordHistogram.recordCount1MHistogram(
-                "Search.ContextualSearchPromoTapsBeforeFirstOpen", promoTaps);
-    }
-
-    /**
      * Records the total count of times the revised promo card has *ever* been opened. This should
      * only be called when the user is still undecided.
      * @param count The total historic count of times the revised promo card ever been shown.

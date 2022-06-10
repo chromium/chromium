@@ -254,22 +254,6 @@ class ContextualSearchPolicy {
         ContextualSearchUma.logPreferenceState();
         RelatedSearchesUma.logRelatedSearchesPermissionsForAllUsers(
                 hasSendUrlPermissions(), canSendSurroundings());
-
-        // Log the number of promo taps remaining.
-        int promoTapsRemaining = getPromoTapsRemaining();
-        if (promoTapsRemaining >= 0) ContextualSearchUma.logPromoTapsRemaining(promoTapsRemaining);
-
-        // Also log the total number of taps before opening the promo, even for those
-        // that are no longer tap limited. That way we'll know the distribution of the
-        // number of taps needed before opening the promo.
-        DisableablePromoTapCounter promoTapCounter = getPromoTapCounter();
-        boolean wasOpened = !promoTapCounter.isEnabled();
-        int count = promoTapCounter.getCount();
-        if (wasOpened) {
-            ContextualSearchUma.logPromoTapsBeforeFirstOpen(count);
-        } else {
-            ContextualSearchUma.logPromoTapsForNeverOpened(count);
-        }
     }
 
     /**

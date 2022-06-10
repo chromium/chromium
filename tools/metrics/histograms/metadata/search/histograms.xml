@@ -769,7 +769,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoTapsBeforeFirstOpen" units="taps"
-    expires_after="M81">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -779,7 +782,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoTapsForNeverOpened" units="taps"
-    expires_after="M77">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -790,7 +796,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoTapsRemaining" units="taps"
-    expires_after="M77">
+    expires_after="M105">
+  <obsolete>
+    Removed as of 06/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
