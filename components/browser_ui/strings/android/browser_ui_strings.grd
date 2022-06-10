@@ -596,8 +596,14 @@
       <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TITLE" desc="The title of the 'Ad personalization' section in Page Info.">
         Ad personalization
       </message>
-      <message name="IDS_PAGE_AD_PERSONALIZATION_DESCRIPTION" desc="Description of a section in PageInfo that shows information on how the current site is using ad personalization APIs from the Privacy Sandbox.">
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has accessed the Topics API and joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site defines interests other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION"  desc="The description label that explains to the user that the current site has accessed the Topics API. The label is located in 'Ad personalization' subpage in page info bubble.">
         This site gets your interests from Chrome to show you more relevant ads
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site defines interests other sites can use to show you ads
       </message>
       <message name="IDS_PAGE_INFO_AD_MANAGE_INTERESTS" desc="The button label of the 'Manage interests' button in Page Info. The button opens a settings page to manage interests for the site.">
         Manage interests

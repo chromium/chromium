@@ -19,11 +19,13 @@ import java.util.List;
  */
 public class PageInfoAdPersonalizationPreference
         extends SiteSettingsPreferenceFragment implements Preference.OnPreferenceClickListener {
+    private static final String PERSONALIZATION_SUMMARY = "personalization_summary";
     private static final String MANAGE_INTEREST_PREFERENCE = "manage_interest_button";
     private static final String TOPIC_INFO_PREFERENCE = "topic_info";
 
     /**  Parameters to configure the cookie controls view. */
     public static class Params {
+        public boolean hasJoinedUserToInterestGroup;
         public List<String> topicInfo;
         public Runnable onManageInterestsButtonClicked;
     }
@@ -37,7 +39,20 @@ public class PageInfoAdPersonalizationPreference
 
     private void updateTopics() {
         if (getPreferenceManager() == null || mParams == null) return;
-        findPreference(TOPIC_INFO_PREFERENCE).setTitle(TextUtils.join("\n\n", mParams.topicInfo));
+
+        int summaryId;
+        if (mParams.hasJoinedUserToInterestGroup && !mParams.topicInfo.isEmpty()) {
+            summaryId = R.string.page_info_ad_personalization_topics_and_interest_group_description;
+        } else if (mParams.hasJoinedUserToInterestGroup) {
+            summaryId = R.string.page_info_ad_personalization_interest_group_description;
+        } else {
+            summaryId = R.string.page_info_ad_personalization_topics_description;
+        }
+        findPreference(PERSONALIZATION_SUMMARY).setSummary(summaryId);
+
+        Preference topicList = findPreference(TOPIC_INFO_PREFERENCE);
+        topicList.setVisible(!mParams.topicInfo.isEmpty());
+        topicList.setTitle(TextUtils.join("\n\n", mParams.topicInfo));
     }
 
     @Override
@@ -49,6 +64,7 @@ public class PageInfoAdPersonalizationPreference
         }
         SettingsUtils.addPreferencesFromResource(
                 this, R.xml.page_info_ad_personalization_preference);
+
         findPreference(MANAGE_INTEREST_PREFERENCE).setOnPreferenceClickListener(this);
         updateTopics();
     }

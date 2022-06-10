@@ -389,7 +389,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      * Updates the Topic view if present.
      */
     @CalledByNative
-    private void updateTopicsDisplay(String[] topics) {
+    private void setAdPersonalizationInfo(boolean hasJoinedUserToInterestGroup, String[] topics) {
         // This logic is a little weird. On Android we already have separate controllers for most
         // PageInfo components and they usually update themselves. On Desktop we still have one big
         // controller. Here we are reusing Desktop controller to update the Android component.
@@ -398,7 +398,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         for (PageInfoSubpageController controller : mSubpageControllers) {
             if (controller instanceof PageInfoAdPersonalizationController) {
                 ((PageInfoAdPersonalizationController) controller)
-                        .setTopicsDisplay(Arrays.asList(topics));
+                        .setAdPersonalizationInfo(
+                                hasJoinedUserToInterestGroup, Arrays.asList(topics));
             }
         }
     }
