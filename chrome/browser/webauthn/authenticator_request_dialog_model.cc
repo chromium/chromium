@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -152,8 +153,8 @@ void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
 }
 
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
-    const std::string& relying_party_id)
-    : relying_party_id_(relying_party_id) {}
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {}
 
 AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
   for (auto& observer : observers_)
@@ -448,9 +449,6 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator while displaying the location bar bubble UI.
     // Instead, retry silently.
-    // TODO(nsatragno): we should retry for cross platform authenticators as
-    // well. However, hiding the dialog after it's been shown locks the page
-    // (see crbug.com/1247338).
     StartOver();
     return;
   }
@@ -781,6 +779,16 @@ void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
   }
 
   current_step_ = step;
+  if (should_dialog_be_closed()) {
+    // The dialog will close itself.
+    showing_dialog_ = false;
+  } else {
+    if (!showing_dialog_ && web_contents_) {
+      ShowAuthenticatorRequestDialog(web_contents_, this);
+      showing_dialog_ = true;
+    }
+  }
+
   for (auto& observer : observers_)
     observer.OnStepTransition();
 }

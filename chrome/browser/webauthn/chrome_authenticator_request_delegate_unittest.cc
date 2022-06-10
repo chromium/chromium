@@ -54,6 +54,11 @@ class TestAuthenticatorModelObserver final
       : model_(model) {
     last_step_ = model_->current_step();
   }
+  ~TestAuthenticatorModelObserver() override {
+    if (model_) {
+      model_->RemoveObserver(this);
+    }
+  }
 
   AuthenticatorRequestDialogModel::Step last_step() { return last_step_; }
 

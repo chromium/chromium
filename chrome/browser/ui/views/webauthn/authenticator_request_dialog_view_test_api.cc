@@ -14,9 +14,8 @@ namespace test {
 AuthenticatorRequestDialogView*
 AuthenticatorRequestDialogViewTestApi::CreateDialogView(
     content::WebContents* web_contents,
-    std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model) {
-  return new AuthenticatorRequestDialogView(web_contents,
-                                            std::move(dialog_model));
+    AuthenticatorRequestDialogModel* dialog_model) {
+  return new AuthenticatorRequestDialogView(web_contents, dialog_model);
 }
 
 // static

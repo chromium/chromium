@@ -32,8 +32,11 @@ class AuthenticatorRequestSheetView;
 // then guides them through the flow of setting up their security key using the
 // selecting transport protocol, and finally shows success/failure indications.
 //
+// The dialog view may be destroyed and recreated multiple times during the
+// lifetime of a single WebAuthn request.
+//
 // Note that as a DialogDelegateView, AuthenticatorRequestDialogView is
-// deleted when DeleteDelegate() is called.
+// eventually deleted when DeleteDelegate() is called.
 class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer,
@@ -86,12 +89,11 @@ class AuthenticatorRequestDialogView
   friend class test::AuthenticatorRequestDialogViewTestApi;
   friend void ShowAuthenticatorRequestDialog(
       content::WebContents* web_contents,
-      std::unique_ptr<AuthenticatorRequestDialogModel> model);
+      AuthenticatorRequestDialogModel* model);
 
   // Show by calling ShowAuthenticatorRequestDialog().
-  AuthenticatorRequestDialogView(
-      content::WebContents* web_contents,
-      std::unique_ptr<AuthenticatorRequestDialogModel> model);
+  AuthenticatorRequestDialogView(content::WebContents* web_contents,
+                                 AuthenticatorRequestDialogModel* model);
 
   // Shows the dialog after creation or after being hidden.
   void Show();
@@ -101,7 +103,7 @@ class AuthenticatorRequestDialogView
 
   void OnDialogClosing();
 
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
 
   raw_ptr<AuthenticatorRequestSheetView> sheet_ = nullptr;
   raw_ptr<views::View> other_mechanisms_button_ = nullptr;

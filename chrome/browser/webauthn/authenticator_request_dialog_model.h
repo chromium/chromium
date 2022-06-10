@@ -240,7 +240,7 @@ class AuthenticatorRequestDialogModel {
     UNLOCK_YOUR_PHONE = 12,
   };
 
-  explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
+  explicit AuthenticatorRequestDialogModel(content::WebContents* web_contents);
 
   AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
       delete;
@@ -265,14 +265,14 @@ class AuthenticatorRequestDialogModel {
            current_step() == Step::kClosed;
   }
 
+  // Returns whether the visible dialog should be closed. This usually means
+  // that the request has finished, or that we are in a step that does not
+  // involve showing UI.
   bool should_dialog_be_closed() const {
-    return current_step() == Step::kClosed;
-  }
-  bool should_dialog_be_hidden() const {
-    return current_step() == Step::kNotStarted ||
+    return current_step() == Step::kClosed ||
+           current_step() == Step::kNotStarted ||
            current_step() == Step::kLocationBarBubble;
   }
-
   const TransportAvailabilityInfo* transport_availability() const {
     return &transport_availability_;
   }
@@ -575,6 +575,9 @@ class AuthenticatorRequestDialogModel {
   // phones.
   std::vector<std::string> paired_phone_names() const;
 
+  void set_relying_party_id(std::string relying_party_id) {
+    relying_party_id_ = relying_party_id;
+  }
   const std::string& relying_party_id() const { return relying_party_id_; }
 
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
@@ -657,10 +660,14 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at all steps.
   void HideDialogAndDispatchToPlatformAuthenticator();
 
+  // Web contents where the dialog is shown. May be null on unit tests where
+  // there's no actual UI being shown.
+  raw_ptr<content::WebContents> web_contents_;
+
   EphemeralState ephemeral_state_;
 
   // relying_party_id is the RP ID from Webauthn, essentially a domain name.
-  const std::string relying_party_id_;
+  std::string relying_party_id_;
 
   // The current step of the request UX flow that is currently shown.
   Step current_step_ = Step::kNotStarted;
@@ -706,6 +713,9 @@ class AuthenticatorRequestDialogModel {
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
+
+  // True if the modal dialog is being shown right now.
+  bool showing_dialog_ = false;
 
   // True if this request should use the non-modal location bar bubble UI
   // instead of the page-modal, regular UI.
