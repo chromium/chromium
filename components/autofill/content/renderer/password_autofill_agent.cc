@@ -460,7 +460,7 @@ mojom::SubmissionReadinessState CalculateSubmissionReadiness(
   }
 
   auto ShouldIgnoreField = [](const FormFieldData& field) {
-    if (!field.IsVisible())
+    if (!field.IsFocusable())
       return true;
     // Don't treat a checkbox (e.g. "remember me") as an input field that may
     // block a form submission. Note: Don't use |check_status !=
