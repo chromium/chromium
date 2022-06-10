@@ -16,6 +16,7 @@ namespace cc {
 namespace {
 
 constexpr char kTracingCategory[] = "cc,benchmark,input";
+constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
 
 // Returns the name of the event dispatch breakdown of EventLatency trace events
 // between `start_stage` and `end_stage`.
@@ -191,6 +192,9 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
             context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* event_latency = event->set_event_latency();
         event_latency->set_event_type(ToProtoEnum(event_metrics->type()));
+        bool has_high_latency =
+            (termination_time - generated_timestamp) > high_latency_threshold;
+        event_latency->set_has_high_latency(has_high_latency);
       });
 
   // Event dispatch stages.
