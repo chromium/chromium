@@ -14,7 +14,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -984,12 +983,10 @@ void RunTestServiceCommand(const std::string& sub_command) {
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
-void InvokeTestServiceFunction(
-    const std::string& function_name,
-    const base::flat_map<std::string, base::Value>& arguments) {
+void InvokeTestServiceFunction(const std::string& function_name,
+                               const base::Value::Dict& arguments) {
   std::string arguments_json_string;
-  EXPECT_TRUE(
-      base::JSONWriter::Write(base::Value(arguments), &arguments_json_string));
+  EXPECT_TRUE(base::JSONWriter::Write(arguments, &arguments_json_string));
 
   base::FilePath path(base::CommandLine::ForCurrentProcess()->GetProgram());
   path = path.DirName();

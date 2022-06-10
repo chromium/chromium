@@ -175,9 +175,8 @@ void RunTestServiceCommand(const std::string& sub_command);
 // Calls a function defined in test/service/win/rpc_client.py.
 // Entries of the `arguments` dictionary should be the function's parameter
 // name/value pairs.
-void InvokeTestServiceFunction(
-    const std::string& function_name,
-    const base::flat_map<std::string, base::Value>& arguments);
+void InvokeTestServiceFunction(const std::string& function_name,
+                               const base::Value::Dict& arguments);
 
 void RunUninstallCmdLine(UpdaterScope scope);
 #endif  // BUILDFLAG(IS_WIN)
