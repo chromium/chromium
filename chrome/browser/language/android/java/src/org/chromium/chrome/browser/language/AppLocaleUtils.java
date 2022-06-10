@@ -188,11 +188,13 @@ public class AppLocaleUtils {
      */
     @RequiresApi(Build.VERSION_CODES.S)
     public static void maybeMigrateOverrideLanguage() {
-        String unset_token = "__UNSET__";
+        // Don't migrate if there is no SharedPreference for the override language.
+        // Since null is saved in the SharedPreference if following the system language, a custom
+        // token is used for when the preference is not present.
+        String unsetToken = "__UNSET__";
         String sharedPrefAppLanguage = SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, unset_token);
-        // Don't migrate if there is no preference set for the override language.
-        if (TextUtils.equals(sharedPrefAppLanguage, unset_token)) return;
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, unsetToken);
+        if (TextUtils.equals(sharedPrefAppLanguage, unsetToken)) return;
 
         // Removed the old shared preference so a migration will not occur again.
         removeSharedPrefAppLanguage();
