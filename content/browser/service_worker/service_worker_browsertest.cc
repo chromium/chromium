@@ -3332,8 +3332,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
             process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Flaky on Android, http://crbug.com/1335344.
+#define MAYBE_PostInstallRun DISABLED_PostInstallRun
+#else
+#define MAYBE_PostInstallRun PostInstallRun
+#endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
-                       PostInstallRun) {
+                       MAYBE_PostInstallRun) {
   StartServerAndNavigateToSetup();
 
   std::string page_path =
@@ -3425,7 +3431,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, FreshInstall) {
   EXPECT_TRUE(is_in_process);
 }
 
-IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, PostInstallRun) {
+// Sometimes disabled via the macros above
+// ServiceWorkerCrossOriginIsolatedBrowserTest.PostInstallRun, as the tests
+// flake for the same root cause.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, MAYBE_PostInstallRun) {
   StartServerAndNavigateToSetup();
 
   std::string page_path =
