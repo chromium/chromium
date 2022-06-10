@@ -29,32 +29,20 @@
   }
   @scroll-timeline timeline_source_none {
     source: none;
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline_source_auto {
     source: auto;
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline_source_selector {
     source: selector(#scroller);
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline_source_unspecified {
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline_source_nonexistent_id {
     source: selector(#doesnotexist);
-    start: 0px;
-    end: 100px;
   }
   @scroll-timeline timeline_source_no_layout_box {
     source: selector(#boxless);
-    start: 0px;
-    end: 100px;
   }
   #container > div {
     width: 0px;
@@ -94,6 +82,16 @@
     // Set progress of animations linked to document.scrollingElement to 25%.
     document.scrollingElement.scrollTop = 25;
 
+    function expectedWidth(scrollingElement) {
+      const maxScroll =
+          scrollingElement.scrollHeight - scrollingElement.clientHeight;
+      return 100 * (1 + scrollingElement.scrollTop / maxScroll);
+    }
+
+    function assert_near(actual, expected, tolerance) {
+      assert_approx_equals(parseFloat(actual), expected, 1);
+    }
+
     promise_test(async (t) => {
       await waitForNextFrame();
       assert_equals(getComputedStyle(element_source_none).width, '0px');
@@ -101,17 +99,20 @@
 
     promise_test(async (t) => {
       await waitForNextFrame();
-      assert_equals(getComputedStyle(element_source_auto).width, '125px');
+      assert_near(getComputedStyle(element_source_auto).width,
+                  expectedWidth(document.scrollingElement));
     }, 'Source auto selects scrollingElement of the document');
 
     promise_test(async (t) => {
       await waitForNextFrame();
-      assert_equals(getComputedStyle(element_source_unspecified).width, '125px');
+      assert_near(getComputedStyle(element_source_unspecified).width,
+                  expectedWidth(document.scrollingElement));
     }, 'Unspecified source behaves like auto');
 
     promise_test(async (t) => {
       await waitForNextFrame();
-      assert_equals(getComputedStyle(element_source_selector).width, '175px');
+      assert_near(getComputedStyle(element_source_selector).width,
+                  expectedWidth(scroller));
     }, 'Source selector(<id-selector>) selects an element');
 
     promise_test(async (t) => {
