@@ -2287,6 +2287,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated"
+    enum="Boolean" expires_after="M108">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Recorded on Android when the password store backend is created. This happens
+    on startup and once per profile. It logs whether the user is enrolled in
+    UPM. In this context, all profiles are enrolled unless they have encountered
+    an unrecoverable error upon querying GMS Core. Once that happens, a profile
+    pref is flipped and the client is considered unenrolled from that point on.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordStoreAndroidBackend.APIError.{SyncErrorStatus}"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
@@ -3050,6 +3065,34 @@ chromium-metrics-reviews@google.com.
   <summary>
     Why was the password manager's UI (bubble or infobar) closed? Save and
     update UI are tracked separately.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UnenrolledFromUPMDueToErrors" enum="Boolean"
+    expires_after="M108">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records true when a client's profile is being unenrolled from UPM. This
+    happens when a password store request to GMS Core fails with an error that
+    is deemed unrecoverable.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus"
+    enum="UnifiedPasswordManagerActiveStatus" expires_after="M108">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Recorded on startup after the sync service is initialized and once per
+    profile. It is recorded for clients that have UPM enabled and logs whether
+    UPM is actually active for them. Reasons why UPM might be inactive are:
+    passwords sync off or client unenrolled due to unresolvable errors. Note a
+    client can have both sync off and be unenrolled, in which case it will still
+    only appear in the sync off bucket, since this is considered the main reason
+    why the client is inactive for UPM.
   </summary>
 </histogram>
 

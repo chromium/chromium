@@ -12,15 +12,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
+#include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -46,6 +49,10 @@ const std::u16string kTestUsername(u"Todd Tester");
 const std::u16string kTestPassword(u"S3cr3t");
 constexpr char kTestUrl[] = "https://example.com";
 const base::Time kTestDateCreated = base::Time::FromTimeT(1500);
+constexpr char kUnenrollmentHistogram[] =
+    "PasswordManager.UnenrolledFromUPMDueToErrors";
+constexpr char kUPMActiveHistogram[] =
+    "PasswordManager.UnifiedPasswordManager.ActiveStatus";
 
 MATCHER_P(ExpectError, expectation, "") {
   return absl::holds_alternative<PasswordStoreBackendError>(arg) &&
@@ -208,10 +215,10 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
 
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
   CreatePasswordSyncControllerDelegate() {
-    auto unique_delegate =
-        std::make_unique<PasswordSyncControllerDelegateAndroid>(
-            std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
-            sync_delegate_);
+    auto unique_delegate = std::make_unique<
+        PasswordSyncControllerDelegateAndroid>(
+        std::make_unique<NiceMock<MockPasswordSyncControllerDelegateBridge>>(),
+        sync_delegate_);
     sync_controller_delegate_ = unique_delegate.get();
     return unique_delegate;
   }
@@ -222,6 +229,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
   raw_ptr<MockSyncDelegate> sync_delegate_;
   TestingPrefServiceSimple prefs_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kUnifiedPasswordManagerAndroid};
 };
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsCompletionCallbackAfterInit) {
@@ -598,6 +607,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, kInternalErrorCode, 1);
+  histogram_tester.ExpectBucketCount(kUnenrollmentHistogram, true, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
@@ -677,6 +687,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kAPIErrorMetric,
                                      kPassphraseRequiredErrorCode, 1);
+  histogram_tester.ExpectTotalCount(kUnenrollmentHistogram, 0);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
@@ -1013,6 +1024,40 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordClearedZombieTaskWithoutLatency) {
               ElementsAre(base::Bucket(false, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
               ElementsAre(base::Bucket(8, 1)));  // Record only once.
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       RecordActiveStatusOnSyncServiceInitialized) {
+  base::HistogramTester histogram_tester;
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+  backend().OnSyncServiceInitialized(&sync_service);
+  histogram_tester.ExpectUniqueSample(
+      kUPMActiveHistogram, UnifiedPasswordManagerActiveStatus::kActive, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusSyncOff) {
+  base::HistogramTester histogram_tester;
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(false, {});
+  backend().OnSyncServiceInitialized(&sync_service);
+  histogram_tester.ExpectUniqueSample(
+      kUPMActiveHistogram, UnifiedPasswordManagerActiveStatus::kInactiveSyncOff,
+      1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusUnenrolled) {
+  base::HistogramTester histogram_tester;
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      false, {syncer::UserSelectableType::kPasswords});
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  backend().OnSyncServiceInitialized(&sync_service);
+  histogram_tester.ExpectUniqueSample(
+      kUPMActiveHistogram,
+      UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors, 1);
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

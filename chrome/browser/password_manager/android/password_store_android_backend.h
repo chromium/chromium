@@ -27,6 +27,21 @@
 
 namespace password_manager {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Update enums.xml whenever updating
+// this enum.
+enum class UnifiedPasswordManagerActiveStatus {
+  // UPM is active.
+  kActive = 0,
+  // UPM is inactive because passwords sync is off.
+  kInactiveSyncOff = 1,
+  // UPM is inactive because the client has been unenrolled due to unresolvable
+  // errors
+  kInactiveUnenrolledDueToErrors = 2,
+
+  kMaxValue = kInactiveUnenrolledDueToErrors
+};
+
 // Android-specific password store backend that delegates every request to
 // Google Mobile Service.
 // It uses a `PasswordStoreAndroidBackendBridge` to send API requests for each

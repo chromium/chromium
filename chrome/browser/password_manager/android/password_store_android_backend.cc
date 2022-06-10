@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -48,6 +49,8 @@ namespace {
 // Tasks that are older than this timeout are cleaned up whenever Chrome starts
 // a new foreground session since it's likely that Chrome missed the response.
 constexpr base::TimeDelta kAsyncTaskTimeout = base::Seconds(30);
+constexpr char kUPMActiveHistogram[] =
+    "PasswordManager.UnifiedPasswordManager.ActiveStatus";
 
 using autofill::MatchesPattern;
 using base::UTF8ToUTF16;
@@ -198,6 +201,30 @@ void RecordApiErrorInCombinationWithSyncStatus(
       error_code);
 }
 
+void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
+  // This is called from `PasswordStoreAndroidBackend` which is only
+  // created when feature is enabled.
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerAndroid));
+  if (!sync_util::IsPasswordSyncEnabled(sync_service)) {
+    base::UmaHistogramEnumeration(
+        kUPMActiveHistogram,
+        UnifiedPasswordManagerActiveStatus::kInactiveSyncOff);
+    return;
+  }
+
+  if (prefs->GetBoolean(
+          prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
+    base::UmaHistogramEnumeration(
+        kUPMActiveHistogram,
+        UnifiedPasswordManagerActiveStatus::kInactiveUnenrolledDueToErrors);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kUPMActiveHistogram,
+                                UnifiedPasswordManagerActiveStatus::kActive);
+}
+
 }  // namespace
 
 class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
@@ -277,6 +304,8 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
       bridge_(PasswordStoreAndroidBackendBridge::Create()),
       sync_delegate_(std::move(sync_delegate)) {
+  DCHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerAndroid));
   DCHECK(bridge_);
   prefs_ = prefs;
   DCHECK(prefs_);
@@ -566,6 +595,13 @@ void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
 
 void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
+  // TODO(crbug.com/1335387) Check if this might be called multiple times
+  // without a need for it. If it is don't repeatedly initialize the sync
+  // service to make it clear that it's not needed to do so for future readers
+  // of the code.
+  if (!sync_service_) {
+    LogUPMActiveStatus(sync_service, prefs_);
+  }
   sync_service_ = sync_service;
   sync_service->AddObserver(sync_controller_delegate_.get());
 }
@@ -621,11 +657,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
             static_cast<int>(AndroidBackendAPIErrorCode::kDeveloperError) &&
         api_error !=
             static_cast<int>(AndroidBackendAPIErrorCode::kPassphraseRequired)) {
-      // TODO(crbug.com/1334565): Record a metric on user unenrollment (to see
-      // how many clients are lost each day) & an additional metric on startup
-      // (to see which share of clients is unenrolled).
-      prefs_->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-                         true);
+      if (!prefs_->GetBoolean(
+              prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
+        base::UmaHistogramBoolean(
+            "PasswordManager.UnenrolledFromUPMDueToErrors", true);
+        prefs_->SetBoolean(
+            prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, true);
+      }
       // Reset migration prefs so when the user can join the experiment again,
       // non-syncable data and settings can be migrated to GMS Core.
       prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
