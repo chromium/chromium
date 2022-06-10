@@ -74,6 +74,10 @@ namespace media {
 const base::Feature kInCapturerScaling{"InCapturerScaling",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Uses the most recent advice from Apple for configuring and starting.
+const base::Feature kConfigureCaptureBeforeStart{
+    "ConfigureCaptureBeforeStart", base::FEATURE_ENABLED_BY_DEFAULT};
+
 AVCaptureDeviceFormat* FindBestCaptureFormat(
     NSArray<AVCaptureDeviceFormat*>* formats,
     int width,
@@ -415,12 +419,21 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
          selector:@selector(onVideoError:)
              name:AVCaptureSessionRuntimeErrorNotification
            object:_captureSession];
-  [_captureSession startRunning];
 
-  // Update the active capture format once the capture session is running.
-  // Setting it before the capture session is running has no effect.
-  if (_bestCaptureFormat) {
-    if ([_captureDevice lockForConfiguration:nil]) {
+  if (base::FeatureList::IsEnabled(media::kConfigureCaptureBeforeStart)) {
+    if (_bestCaptureFormat) {
+      [_captureSession beginConfiguration];
+      if ([_captureDevice lockForConfiguration:nil]) {
+        [_captureDevice setActiveFormat:_bestCaptureFormat];
+        [_captureDevice unlockForConfiguration];
+      }
+      [_captureSession commitConfiguration];
+    }
+
+    [_captureSession startRunning];
+  } else {
+    [_captureSession startRunning];
+    if (_bestCaptureFormat && [_captureDevice lockForConfiguration:nil]) {
       [_captureDevice setActiveFormat:_bestCaptureFormat];
       [_captureDevice unlockForConfiguration];
     }
