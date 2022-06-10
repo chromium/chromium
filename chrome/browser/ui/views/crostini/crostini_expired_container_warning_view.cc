@@ -34,6 +34,8 @@ void CrostiniExpiredContainerWarningView::Show(Profile* profile,
 
   // Always call Show to bring the dialog to the front of the screen.
   g_crostini_expired_container_warning_view->GetWidget()->Show();
+
+  VLOG(1) << "Showed CrostiniExpiredContainerWarningView";
 }
 
 CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
