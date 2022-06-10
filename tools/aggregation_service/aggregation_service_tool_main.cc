@@ -272,9 +272,9 @@ int main(int argc, char* argv[]) {
   bool is_debug_mode_enabled = command_line.HasSwitch(kSwitchEnableDebugMode);
 
   base::Value::Dict additional_shared_info_fields;
-  if (command_line.HasSwitch(kSwitchAdditionalFields)) {
+  if (command_line.HasSwitch(kSwitchAdditionalSharedInfoFields)) {
     std::string additional_shared_info_fields_str =
-        command_line.GetSwitchValueASCII(kSwitchAdditionalFields);
+        command_line.GetSwitchValueASCII(kSwitchAdditionalSharedInfoFields);
     // `additional_shared_info_fields_str` is formatted like
     // "key1=value1,key2=value2".
     base::StringPairs kv_pairs;
