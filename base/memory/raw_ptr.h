@@ -1065,6 +1065,11 @@ using base::raw_ptr;
 // never be dereferenced after becoming dangling.
 using DisableDanglingPtrDetection = base::RawPtrMayDangle;
 
+// See https://cbug.com/1291138.
+// Annotates known dangling raw_ptr. Those haven't been triaged yet. All the
+// occurrences are meant to be removed.
+using DanglingUntriaged = DisableDanglingPtrDetection;
+
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
