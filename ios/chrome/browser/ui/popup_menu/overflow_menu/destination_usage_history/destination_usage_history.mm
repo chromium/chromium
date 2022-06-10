@@ -249,7 +249,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   // ahead of time so overflow menu presentation needn't run ranking algorithm
   // each time it presents.
   const base::Value::List* currentRanking = [self fetchCurrentRanking];
-  base::Value::List newRanking =
+  const base::Value::List newRanking =
       [self calculateNewRanking:currentRanking
           numAboveFoldDestinations:numAboveFoldDestinations];
   update->SetKey(kRankingKey, base::Value(newRanking.Clone()));
@@ -306,9 +306,15 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 // Runs the ranking algorithm given a |previousRanking|. If |previousRanking| is
 // invalid or doesn't exist, use the default ranking, based on statistical usage
 // of the old overflow menu.
-- (base::Value::List)calculateNewRanking:
-                         (const base::Value::List*)previousRanking
-                numAboveFoldDestinations:(int)numAboveFoldDestinations {
+- (const base::Value::List)calculateNewRanking:
+                               (const base::Value::List*)previousRanking
+                      numAboveFoldDestinations:(int)numAboveFoldDestinations {
+  if (!previousRanking)
+    return List(kDefaultRanking);
+
+  if (numAboveFoldDestinations >= static_cast<int>(previousRanking->size()))
+    return previousRanking->Clone();
+
   std::vector<overflow_menu::Destination> prevRanking =
       previousRanking ? Vector(previousRanking) : kDefaultRanking;
   std::vector<overflow_menu::Destination> newRanking =
