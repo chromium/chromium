@@ -52,16 +52,27 @@ static constexpr char logo_url[] =
 constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
     net::DefineNetworkTrafficAnnotation("borealis_splash_logo_loader", R"(
       semantics {
-        sender: "Steam Splash Screen"
+        sender: "Steam App for ChromeOS"
         description:
-          "Fetches image for Steam splash screen."
-          " Data source is from a third party."
+          "Fetches image for Steam splash screen. "
+          "Data source is from the Steam public assets server."
         trigger:
           "When Steam is launched."
         data: "URL of the image to be fetched."
         destination: OTHER
         destination_other: "Steam public assets server"
-      })");
+      }
+      policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via the chrome flag "
+            "#borealis-enabled."
+          chrome_policy {
+            UserBorealisAllowed {
+                UserBorealisAllowed: false
+            }
+          }
+        })");
 
 }  // namespace
 
