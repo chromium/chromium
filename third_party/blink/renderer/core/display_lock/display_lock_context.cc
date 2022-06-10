@@ -482,9 +482,15 @@ bool DisplayLockContext::ShouldCommitForActivation(
   return IsActivatable(reason) && IsLocked();
 }
 
-void DisplayLockContext::NotifyForcedUpdateScopeStarted(ForcedPhase phase,
-                                                        bool emit_warnings) {
-  forced_info_.start(phase);
+void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
+                                            ForcedPhase new_phase,
+                                            bool emit_warnings) {
+  // Since we're upgrading, it means we have a bigger phase.
+  DCHECK_LT(static_cast<int>(old_phase), static_cast<int>(new_phase));
+
+  auto old_forced_info = forced_info_;
+  forced_info_.end(old_phase);
+  forced_info_.start(new_phase);
   if (IsLocked()) {
     // Now that the update is forced, we should ensure that style layout, and
     // prepaint code can reach it via dirty bits. Note that paint isn't a part
@@ -494,13 +500,18 @@ void DisplayLockContext::NotifyForcedUpdateScopeStarted(ForcedPhase phase,
     // from within style recalc. We rely on `TakeBlockedStyleRecalcChange`
     // to be called from self style recalc.
     if (CanDirtyStyle() &&
+        !old_forced_info.is_forced(ForcedPhase::kStyleAndLayoutTree) &&
         forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree)) {
       MarkForStyleRecalcIfNeeded();
     }
-    if (forced_info_.is_forced(ForcedPhase::kLayout))
+    if (!old_forced_info.is_forced(ForcedPhase::kLayout) &&
+        forced_info_.is_forced(ForcedPhase::kLayout)) {
       MarkForLayoutIfNeeded();
-    if (forced_info_.is_forced(ForcedPhase::kPrePaint))
+    }
+    if (!old_forced_info.is_forced(ForcedPhase::kPrePaint) &&
+        forced_info_.is_forced(ForcedPhase::kPrePaint)) {
       MarkAncestorsForPrePaintIfNeeded();
+    }
 
     if (emit_warnings && v8::Isolate::GetCurrent()->InContext() &&
         !IsActivatable(DisplayLockActivationReason::kAny) && document_ &&

@@ -71,7 +71,7 @@ class CORE_EXPORT DisplayLockContext final
  public:
   // Note the order of the phases matters. Each phase implies all previous ones
   // as well.
-  enum class ForcedPhase { kStyleAndLayoutTree, kLayout, kPrePaint };
+  enum class ForcedPhase { kNone, kStyleAndLayoutTree, kLayout, kPrePaint };
 
   explicit DisplayLockContext(Element*);
   ~DisplayLockContext() = default;
@@ -238,8 +238,13 @@ class CORE_EXPORT DisplayLockContext final
   void RequestUnlock();
 
   // Called in |DisplayLockUtilities| to notify the state of scope.
-  void NotifyForcedUpdateScopeStarted(ForcedPhase phase, bool emit_warnings);
+  void NotifyForcedUpdateScopeStarted(ForcedPhase phase, bool emit_warnings) {
+    UpgradeForcedScope(ForcedPhase::kNone, phase, emit_warnings);
+  }
   void NotifyForcedUpdateScopeEnded(ForcedPhase phase);
+  void UpgradeForcedScope(ForcedPhase old_phase,
+                          ForcedPhase new_phase,
+                          bool emit_warnings);
 
   // Records the locked context counts on the document as well as context that
   // block all activation.
@@ -351,6 +356,9 @@ class CORE_EXPORT DisplayLockContext final
   struct UpdateForcedInfo {
     bool is_forced(ForcedPhase phase) const {
       switch (phase) {
+        case ForcedPhase::kNone:
+          NOTREACHED();
+          return false;
         case ForcedPhase::kStyleAndLayoutTree:
           return style_update_forced_ || layout_update_forced_ ||
                  prepaint_update_forced_;
@@ -363,6 +371,8 @@ class CORE_EXPORT DisplayLockContext final
 
     void start(ForcedPhase phase) {
       switch (phase) {
+        case ForcedPhase::kNone:
+          break;
         case ForcedPhase::kStyleAndLayoutTree:
           ++style_update_forced_;
           break;
@@ -376,6 +386,8 @@ class CORE_EXPORT DisplayLockContext final
 
     void end(ForcedPhase phase) {
       switch (phase) {
+        case ForcedPhase::kNone:
+          break;
         case ForcedPhase::kStyleAndLayoutTree:
           DCHECK(style_update_forced_);
           --style_update_forced_;

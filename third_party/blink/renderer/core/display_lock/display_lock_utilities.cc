@@ -363,10 +363,8 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::EnsureMinimumForcedPhase(
   // Our `phase_` is already at least as permissive as `phase`.
   if (static_cast<int>(phase_) >= static_cast<int>(phase))
     return;
-  for (auto context : forced_context_set_) {
-    context->NotifyForcedUpdateScopeEnded(phase_);
-    context->NotifyForcedUpdateScopeStarted(phase, emit_warnings_);
-  }
+  for (auto context : forced_context_set_)
+    context->UpgradeForcedScope(phase_, phase, emit_warnings_);
   phase_ = phase;
 }
 
