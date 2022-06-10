@@ -94,14 +94,16 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   void UploadTextForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
-  void UploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
-      const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override;
   void UploadPageForDeepScanning(
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
       override;
+
+  // Fake upload callback for deep scanning. Virtual to be overridden by other
+  // fakes.
+  virtual void FakeUploadFileForDeepScanning(
+      safe_browsing::BinaryUploadService::Result result,
+      const base::FilePath& path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
   static safe_browsing::BinaryUploadService::Result result_;
   base::RepeatingClosure delete_closure_;

@@ -51,7 +51,7 @@ class UnresponsiveContentAnalysisDelegate
     // Do nothing.
   }
 
-  void UploadFileForDeepScanning(
+  void FakeUploadFileForDeepScanning(
       BinaryUploadService::Result result,
       const base::FilePath& path,
       std::unique_ptr<BinaryUploadService::Request> request) override {

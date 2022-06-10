@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -36,7 +37,11 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
                               safe_browsing::DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
-      dm_token_(std::move(dm_token)) {}
+      dm_token_(std::move(dm_token)) {
+  FilesRequestHandler::SetFakeUploadCallback(base::BindRepeating(
+      &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
+      weakptr_factory_.GetWeakPtr()));
+}
 
 FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
   if (!delete_closure_.is_null())
@@ -164,7 +169,9 @@ void FakeContentAnalysisDelegate::Response(
       break;
     case AnalysisConnector::FILE_ATTACHED:
     case AnalysisConnector::FILE_DOWNLOADED:
-      FileRequestCallback(path, result_, response);
+      DCHECK(GetFilesRequestHandlerForTesting());
+      GetFilesRequestHandlerForTesting()->FileRequestCallbackForTesting(
+          path, result_, response);
       break;
     case AnalysisConnector::PRINT:
       PageRequestCallback(result_, response);
@@ -187,7 +194,7 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
       response_delay);
 }
 
-void FakeContentAnalysisDelegate::UploadFileForDeepScanning(
+void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
