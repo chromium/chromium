@@ -152,11 +152,8 @@ class PerfBenchmark(benchmark.Benchmark):
     if not self.IsAndroid(possible_browser):
       return '--enable-field-trial-config'
 
-    chrome_root = finder_options.chrome_root
-    if chrome_root is None:
-      chrome_root = path_module.GetChromiumSrcDir()
-
-    variations_dir = os.path.join(chrome_root, 'testing', 'variations')
+    variations_dir = os.path.join(path_module.GetChromiumSrcDir(), 'testing',
+                                  'variations')
 
     return fieldtrial_util.GenerateArgs(
         os.path.join(variations_dir, 'fieldtrial_testing_config.json'),

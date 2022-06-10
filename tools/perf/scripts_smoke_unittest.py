@@ -47,7 +47,11 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   @decorators.Disabled('chromeos')  # crbug.com/754913
   def testRunBenchmarkListBenchmarks(self):
-    cmdline = ['run_benchmark', 'list', '--browser', self.options.browser_type]
+    cmdline = [
+        'run_benchmark', 'list', '--browser', self.options.browser_type,
+        '--chrome-root',
+        os.path.abspath(self.options.chrome_root)
+    ]
     if self.options.browser_type == 'exact':
       # If we're running with an exact browser and it was not specified with
       # an absolute path, then there's no guarantee that we can actually find it
@@ -94,9 +98,11 @@ class ScriptsSmokeTest(unittest.TestCase):
                '../../tools/perf/run_benchmark '
                '--benchmarks=%s '
                '--browser=%s '
+               '--chrome-root=%s '
                '--isolated-script-test-also-run-disabled-tests '
                '--isolated-script-test-output=%s' %
                (','.join(benchmarks), self.options.browser_type,
+                os.path.abspath(self.options.chrome_root),
                 os.path.join(tempdir, 'output.json')))
     if self.options.browser_type == 'exact':
       # If the path to the browser executable is not absolute, there is no
