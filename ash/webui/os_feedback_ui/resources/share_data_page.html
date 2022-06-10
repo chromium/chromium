@@ -95,7 +95,7 @@
     <!-- User e-mail -->
     <div id="userEmail" class="text-field-container"
         hidden$="[[!hasEmail_(feedbackContext)]]">
-      <label id="userEmailLabel">Email</label>
+      <label id="userEmailLabel">[[i18n('userEmailLabel')]]</label>
       <select id="userEmailDropDown" aria-labelledby="userEmailLabel">
         <option value$="[[feedbackContext.email]]">[[feedbackContext.email]]</option>
         <option value="">Don't include email address</option>

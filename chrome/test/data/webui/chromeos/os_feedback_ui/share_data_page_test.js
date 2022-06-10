@@ -96,6 +96,9 @@ export function shareDataPageTestSuite() {
     // Verify the attach files label is in the page.
     assertEquals('Attach files', getElementContent('#attachFilesLabel'));
 
+    // Verify the user email label is in the page.
+    assertEquals('Email', getElementContent('#userEmailLabel'));
+
     // Screenshot elements.
     assertTrue(!!getElement('#screenshotCheckbox'));
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));

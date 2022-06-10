@@ -53,6 +53,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"noMatchedResults", IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS},
       {"attachFilesLabel", IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL},
       {"replaceFileLabel", IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL},
+      {"userEmailLabel", IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
