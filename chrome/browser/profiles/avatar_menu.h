@@ -14,8 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -23,7 +23,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #endif
 
-class AvatarMenuActions;
 class AvatarMenuObserver;
 class Browser;
 class ProfileAttributesStorage;
@@ -115,7 +114,7 @@ class AvatarMenu :
   void SwitchToProfile(size_t index, bool always_create);
 
   // Creates a new profile.
-  void AddNewProfile(ProfileMetrics::ProfileAdd type);
+  void AddNewProfile();
 
   // Opens the profile settings in response to clicking the edit button next to
   // an item.
@@ -133,10 +132,11 @@ class AvatarMenu :
   const Item& GetItemAt(size_t index) const;
 
   // Gets the index in this menu for which profile_path is equal to |path|.
-  size_t GetIndexOfItemWithProfilePath(const base::FilePath& path);
+  size_t GetIndexOfItemWithProfilePath(const base::FilePath& path) const;
 
-  // Returns the index of the active profile.
-  size_t GetActiveProfileIndex();
+  // Returns the index of the active profile or `absl::nullopt` if there is no
+  // active profile.
+  absl::optional<size_t> GetActiveProfileIndex() const;
 
   // Returns information about a supervised user which will be displayed in the
   // avatar menu. If the profile does not belong to a supervised user, an empty
@@ -148,10 +148,10 @@ class AvatarMenu :
   // browser.
   void ActiveBrowserChanged(Browser* browser);
 
-  // Returns true if the add profile link should be shown.
+  // Returns true if the add profile link should be shown/enabled.
   bool ShouldShowAddNewProfileLink() const;
 
-  // Returns true if the edit profile link should be shown.
+  // Returns true if the edit profile link should be shown/enabled.
   bool ShouldShowEditProfileLink() const;
 
  private:
@@ -179,9 +179,6 @@ class AvatarMenu :
 
   // The model that provides the list of menu items.
   std::unique_ptr<ProfileList> profile_list_;
-
-  // The controller for avatar menu actions.
-  std::unique_ptr<AvatarMenuActions> menu_actions_;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Observes changes to a supervised user's custodian info.

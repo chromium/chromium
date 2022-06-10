@@ -563,7 +563,6 @@ const char kSignOutSubPage[] = "signOut";
 const char kSyncSetupSubPage[] = "syncSetup";
 const char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";
-const char kCreateProfileSubPage[] = "createProfile";
 const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
 const char kPrivacySandboxAdPersonalizationSubPage[] =

@@ -95,8 +95,8 @@ const char* const kChromeSettingsSubPages[] = {
     chrome::kPaymentsSubPage,         chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,    chrome::kSyncSetupSubPage,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    chrome::kCreateProfileSubPage,    chrome::kImportDataSubPage,
-    chrome::kManageProfileSubPage,    chrome::kPeopleSubPage,
+    chrome::kImportDataSubPage,       chrome::kManageProfileSubPage,
+    chrome::kPeopleSubPage,
 #endif
 };
 #endif  // BUILDFLAG(IS_ANDROID)
