@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history/core/browser/sync/typed_url_model_type_controller.h"
+#include "components/history/core/browser/sync/history_model_type_controller.h"
 
 #include <memory>
 
@@ -30,7 +30,7 @@ GetDelegateFromHistoryService(syncer::ModelType model_type,
 
 }  // namespace
 
-TypedURLModelTypeController::TypedURLModelTypeController(
+HistoryModelTypeController::HistoryModelTypeController(
     syncer::ModelType model_type,
     syncer::SyncService* sync_service,
     HistoryService* history_service,
@@ -44,10 +44,10 @@ TypedURLModelTypeController::TypedURLModelTypeController(
          base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
 }
 
-TypedURLModelTypeController::~TypedURLModelTypeController() = default;
+HistoryModelTypeController::~HistoryModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-TypedURLModelTypeController::GetPreconditionState() const {
+HistoryModelTypeController::GetPreconditionState() const {
   if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
     // If the feature flag is enabled, syncer::HISTORY replaces
     // syncer::TYPED_URLS.
