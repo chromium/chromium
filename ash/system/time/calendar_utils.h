@@ -44,7 +44,7 @@ constexpr auto kDateCellInsets =
 
 // Duration of opacity animation for visibility changes.
 constexpr base::TimeDelta kAnimationDurationForVisibility =
-    base::Milliseconds(100);
+    base::Milliseconds(200);
 
 // Fade-out and fade-in duration for resetting to today animation.
 constexpr base::TimeDelta kResetToTodayFadeAnimationDuration =
@@ -52,6 +52,10 @@ constexpr base::TimeDelta kResetToTodayFadeAnimationDuration =
 
 // Duration of moving animation.
 constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
+
+// Duration of month moving animation.
+constexpr base::TimeDelta kAnimationDurationForMonthMoving =
+    base::Milliseconds(600);
 
 // This duration is added to a midnight `base::Time` to adjust the DST when
 // adding days by `base::Day`.

@@ -18,6 +18,11 @@ namespace calendar_test_utils {
 // tests.
 constexpr base::TimeDelta kAnimationSettleDownDuration = base::Seconds(3);
 
+// A duration which is smaller than any of the animation duration. So if there's
+// an animation, the view should be in the middle of the animation.
+constexpr base::TimeDelta kAnimationStartBufferDuration =
+    base::Milliseconds(90);
+
 // Creates a `google_apis::calendar::CalendarEvent` for testing, that converts
 // start/end time strings to `google_apis::calendar::DateTime`.
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
