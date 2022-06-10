@@ -30848,6 +30848,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
           'caption': ''''Default behavior for setTimeout() function clamp.''',
         },
       ],
+      'deprecated': True,
       'default': None,
       'example_value': True,
       'id': 967,
