@@ -194,7 +194,7 @@ class TabSharingUIViewsBrowserTest
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
+    // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
     has_border = false;
 #endif
     views::Widget* contents_border = GetContentsBorder(browser);
@@ -453,6 +453,30 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, CloseTab) {
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
 }
 
+// TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
+                       BorderWidgetShouldCloseWhenBrowserCloses) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  AddTabs(new_browser, 2);
+  ASSERT_EQ(new_browser->tab_strip_model()->count(), 3);
+  CreateUniqueFaviconFor(new_browser->tab_strip_model()->GetWebContentsAt(0));
+  CreateUiAndStartSharing(new_browser, /*capturing_tab=*/0, /*captured_tab=*/1);
+
+  // Share a different tab.
+  // When switching tabs, a new UI is created, and the old one destroyed.
+  ActivateTab(new_browser, 2);
+  CreateUiAndStartSharing(new_browser, /*capturing_tab=*/0, /*captured_tab=*/2);
+
+  // Test that the UI has been updated.
+  VerifyUi(new_browser, /*capturing_tab=*/0, /*captured_tab=*/2);
+
+  auto contents_border_weakptr = GetContentsBorder(new_browser)->GetWeakPtr();
+  CloseBrowserSynchronously(new_browser);
+  EXPECT_FALSE(contents_border_weakptr);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        CloseTabInIncognitoBrowser) {
   AddTabs(browser(), 2);
@@ -670,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
 
   views::Widget* contents_border = GetContentsBorder(browser());
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
+  // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
   EXPECT_EQ(nullptr, contents_border);
 #else
   // The capturing tab, which is not itself being captured, does not have
