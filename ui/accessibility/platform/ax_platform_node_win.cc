@@ -4561,9 +4561,11 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
     return E_INVALIDARG;
 
   AXPosition start_position =
-      start_node->HypertextOffsetToEndpoint(selections->startOffset);
+      start_node->HypertextOffsetToEndpoint(selections->startOffset)
+          ->AsDomSelectionPosition();
   AXPosition end_position =
-      end_node->HypertextOffsetToEndpoint(selections->endOffset);
+      end_node->HypertextOffsetToEndpoint(selections->endOffset)
+          ->AsDomSelectionPosition();
   if (!start_position->IsNullPosition() || end_position->IsNullPosition())
     return E_INVALIDARG;
 

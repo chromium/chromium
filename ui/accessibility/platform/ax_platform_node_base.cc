@@ -13,6 +13,7 @@
 #include <unordered_map>
 
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1895,14 +1896,15 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
   DCHECK_GE(hypertext_offset, 0);
   DCHECK_LT(hypertext_offset, static_cast<int>(GetHypertext().size()));
 
-  int32_t current_hypertext_offset = hypertext_offset;
+  int current_hypertext_offset = hypertext_offset;
   for (auto child_iter = AXPlatformNodeChildrenBegin();
        child_iter != AXPlatformNodeChildrenEnd() &&
        current_hypertext_offset >= 0;
        ++child_iter) {
     int child_text_len = 1;
     if (child_iter->IsText())
-      child_text_len = child_iter->GetHypertext().size();
+      child_text_len =
+          base::checked_cast<int>(child_iter->GetHypertext().size());
 
     if (current_hypertext_offset < child_text_len) {
       int endpoint_offset = child_text_len - current_hypertext_offset;
