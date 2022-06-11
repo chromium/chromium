@@ -702,6 +702,7 @@ crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/
 crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
+crbug.com/angleproject/7421 [ android android-pixel-2 ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
