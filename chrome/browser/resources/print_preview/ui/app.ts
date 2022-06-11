@@ -24,7 +24,6 @@ import {DuplexMode, PrintPreviewModelElement, whenReady} from '../data/model.js'
 import {PrintableArea} from '../data/printable_area.js';
 import {Size} from '../data/size.js';
 import {Error, PrintPreviewStateElement, State} from '../data/state.js';
-import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
 
 import {getTemplate} from './app.html.js';
@@ -168,8 +167,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     this.whenReady_ = whenReady();
     this.nativeLayer_.getInitialSettings().then(
         this.onInitialSettingsSet_.bind(this));
-    MetricsContext.getInitialSettings().record(
-        PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
   override disconnectedCallback() {
@@ -277,8 +274,6 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 
   private onInitialSettingsSet_(settings: NativeInitialSettings) {
-    MetricsContext.getInitialSettings().record(
-        PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     if (!this.whenReady_) {
       // This element and its corresponding model were detached while waiting
       // for the callback. This can happen in tests; return early.

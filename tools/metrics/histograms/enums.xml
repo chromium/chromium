@@ -77960,12 +77960,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="PREVIEW_EVENT_INITIATED"/>
 </enum>
 
-<enum name="PrintPreviewInitializationEvents">
-  <int value="0" label="FUNCTION_INITIATED"/>
-  <int value="1" label="FUNCTION_SUCCESFUL"/>
-  <int value="2" label="FUNCTION_FAILED"/>
-</enum>
-
 <enum name="PrintPreviewPdfActionBuckets">
   <obsolete>
     Deprecated 07/2019.
