@@ -3591,6 +3591,16 @@ enum WebFeature {
   kSharedStorageAPI_Run_Method = 4270,
   kViewTimelineConstructor = 4271,
   kH1UserAgentFontSizeInSectionApplied = 4272,
+  kV8PendingBeacon_Constructor = 4273,
+  kV8PendingBeacon_Url_AttributeGetter = 4274,
+  kV8PendingBeacon_Url_AttributeSetter = 4275,
+  kV8PendingBeacon_Method_AttributeGetter = 4276,
+  kV8PendingBeacon_Method_AttributeSetter = 4277,
+  kV8PendingBeacon_PageHideTimeout_AttributeGetter = 4278,
+  kV8PendingBeacon_PageHideTimeout_AttributeSetter = 4279,
+  kV8PendingBeacon_State_AttributeGetter = 4280,
+  kV8PendingBeacon_Deactivate_Method = 4281,
+  kV8PendingBeacon_SetData_Method = 4282,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
