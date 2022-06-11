@@ -52,10 +52,8 @@ void JavaScriptDialogHelper::RunJavaScriptDialog(
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   base::DictionaryValue request_info;
-  request_info.SetStringKey(webview::kDefaultPromptText,
-                            base::UTF16ToUTF8(default_prompt_text));
-  request_info.SetStringKey(webview::kMessageText,
-                            base::UTF16ToUTF8(message_text));
+  request_info.SetStringKey(webview::kDefaultPromptText, default_prompt_text);
+  request_info.SetStringKey(webview::kMessageText, message_text);
   request_info.SetStringKey(webview::kMessageType,
                             JavaScriptDialogTypeToString(dialog_type));
   request_info.SetStringKey(guest_view::kUrl,

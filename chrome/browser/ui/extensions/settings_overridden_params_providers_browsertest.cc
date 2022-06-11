@@ -114,14 +114,13 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_TRUE(params);
   EXPECT_EQ(search_extension->id(), params->controlling_extension_id);
 
-  EXPECT_EQ("Change back to Google Search?",
-            base::UTF16ToUTF8(params->dialog_title));
+  EXPECT_EQ(u"Change back to Google Search?", params->dialog_title);
 
   // Validate the body message, since it has a bit of formatting applied.
   EXPECT_EQ(
-      "The \"Search Override Extension\" extension changed search to use "
+      u"The \"Search Override Extension\" extension changed search to use "
       "example.com",
-      base::UTF16ToUTF8(params->dialog_message));
+      params->dialog_message);
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
@@ -176,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(
   absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   ASSERT_TRUE(params);
-  EXPECT_EQ("Did you mean to change your search provider?",
-            base::UTF16ToUTF8(params->dialog_title));
+  EXPECT_EQ(u"Did you mean to change your search provider?",
+            params->dialog_title);
 }
 
 // Tests that null params are returned (indicating no dialog should be shown)
@@ -302,6 +301,5 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
       settings_overridden_params::GetNtpOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(extension->id(), params->controlling_extension_id);
-  EXPECT_EQ("Did you mean to change this page?",
-            base::UTF16ToUTF8(params->dialog_title));
+  EXPECT_EQ(u"Did you mean to change this page?", params->dialog_title);
 }

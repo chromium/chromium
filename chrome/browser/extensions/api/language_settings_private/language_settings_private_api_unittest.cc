@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -565,9 +564,8 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
         input_method.FindListKey("languageCodes");
     ASSERT_NE(nullptr, ime_language_codes_ptr);
     for (auto& language_code : ime_language_codes_ptr->GetListDeprecated()) {
-      std::string language_display_name =
-          base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
-              language_code.GetString(), "en", true));
+      std::u16string language_display_name = l10n_util::GetDisplayNameForLocale(
+          language_code.GetString(), "en", true);
       if (!language_display_name.empty())
         EXPECT_TRUE(base::Contains(ime_tags_ptr->GetListDeprecated(),
                                    base::Value(language_display_name)));

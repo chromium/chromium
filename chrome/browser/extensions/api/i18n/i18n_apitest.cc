@@ -5,7 +5,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
@@ -69,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
 
   std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
-  EXPECT_EQ(std::string("FIRSTMESSAGE"), base::UTF16ToUTF8(title));
+  EXPECT_EQ(u"FIRSTMESSAGE", title);
 
   // Change messages.json file and reload extension.
   base::CopyFile(
@@ -83,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
   EXPECT_TRUE(catcher.GetNextResult());
 
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
-  EXPECT_EQ(std::string("SECONDMESSAGE"), base::UTF16ToUTF8(title));
+  EXPECT_EQ(u"SECONDMESSAGE", title);
 }
 
 // detectLanguage has some custom hooks that handle the asynchronous response

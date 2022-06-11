@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -565,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
   std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
-  EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Unpin");
+  EXPECT_EQ(visibility_label, u"Unpin");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
@@ -597,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
   std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
-  EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Pin");
+  EXPECT_EQ(visibility_label, u"Pin");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
