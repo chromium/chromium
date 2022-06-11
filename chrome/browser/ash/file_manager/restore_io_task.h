@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -45,7 +46,6 @@ class RestoreIOTask : public IOTask {
 
   // Ensure the metadata file conforms to the following:
   //   - Has a .trashinfo suffix
-  // TODO(b/231830250): Implement the remaining validations:
   //   - Resides in an enabled trash directory
   //   - The file resides in the info directory
   //   - Has an identical item in the files directory with no .trashinfo suffix
@@ -64,6 +64,9 @@ class RestoreIOTask : public IOTask {
   // work around the fact `FileSystemOperationRunner` requires relative paths
   // only in testing.
   base::FilePath base_path_;
+
+  // A map containing paths which are enabled for trashing.
+  TrashPathsMap enabled_trash_locations_;
 
   // Stores the id of the restore operation if one is in progress. Used so the
   // restore can be cancelled.

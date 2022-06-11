@@ -15,6 +15,7 @@ namespace io_task {
 constexpr char kTrashFolderName[] = ".Trash";
 constexpr char kInfoFolderName[] = "info";
 constexpr char kFilesFolderName[] = "files";
+constexpr char kTrashInfoExtension[] = ".trashinfo";
 
 TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
                              const base::FilePath parent_path,
@@ -38,7 +39,7 @@ const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
   base::FilePath path = trash_path.Append(subdir).Append(file_name);
   // The metadata file in .Trash/info always has the .trashinfo extension.
   if (subdir == kInfoFolderName) {
-    path = path.AddExtension(".trashinfo");
+    path = path.AddExtension(kTrashInfoExtension);
   }
   return path;
 }

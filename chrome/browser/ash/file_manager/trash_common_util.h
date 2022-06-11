@@ -24,6 +24,9 @@ extern const char kInfoFolderName[];
 // Constant representing the "files" folder name inside .Trash.
 extern const char kFilesFolderName[];
 
+// Constant representing the ".trashinfo" extension for metadata files.
+extern const char kTrashInfoExtension[];
+
 struct TrashLocation {
   TrashLocation(const base::FilePath supplied_relative_folder_path,
                 const base::FilePath parent_path,

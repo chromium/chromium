@@ -49,6 +49,8 @@ void RestoreIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
+  enabled_trash_locations_ =
+      GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
   progress_.state = State::kInProgress;
 
   ValidateTrashInfo(0);
@@ -64,17 +66,43 @@ void RestoreIOTask::Complete(State state) {
 }
 
 void RestoreIOTask::ValidateTrashInfo(size_t idx) {
-  const base::FilePath& file_path = progress_.sources[idx].url.path();
-  if (file_path.FinalExtension() != ".trashinfo") {
+  const base::FilePath& trash_info =
+      (base_path_.empty())
+          ? progress_.sources[idx].url.path()
+          : base_path_.Append(progress_.sources[idx].url.path());
+  if (trash_info.FinalExtension() != kTrashInfoExtension) {
     progress_.sources[idx].error = base::File::FILE_ERROR_INVALID_URL;
     Complete(State::kError);
     return;
   }
 
-  // TODO(b/231830250): Add in logic to ensure the trash location is parented at
-  // an enabled trash location.
+  // Ensures the trash location is parented at an enabled trash location.
+  base::FilePath trash_location;
+  for (const auto& [parent_path, info] : enabled_trash_locations_) {
+    if (parent_path.Append(info.relative_folder_path).IsParent(trash_info)) {
+      trash_location = parent_path.Append(info.relative_folder_path);
+      break;
+    }
+  }
 
-  ParseTrashInfoFile(idx, file_path);
+  if (trash_location.empty()) {
+    progress_.sources[idx].error = base::File::FILE_ERROR_INVALID_OPERATION;
+    Complete(State::kError);
+    return;
+  }
+
+  // Ensure the corresponding file that this metadata file refers to actually
+  // exists.
+  base::FilePath actual_file_name =
+      trash_info.BaseName().RemoveFinalExtension();
+  if (!base::PathExists(
+          trash_location.Append(kFilesFolderName).Append(actual_file_name))) {
+    progress_.sources[idx].error = base::File::FILE_ERROR_NOT_FOUND;
+    Complete(State::kError);
+    return;
+  }
+
+  ParseTrashInfoFile(idx, trash_info);
 }
 
 void RestoreIOTask::ParseTrashInfoFile(

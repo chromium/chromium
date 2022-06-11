@@ -55,8 +55,70 @@ TEST_F(RestoreIOTaskTest, URLsWithInvalidSuffixShouldError) {
   // .trashinfo.
   EXPECT_CALL(progress_callback, Run(_)).Times(0);
 
-  // We should get one complete callback when the verifiation of the suffix
+  // We should get one complete callback when the verification of the suffix
   // fails.
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kError)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(RestoreIOTaskTest, FilesNotInProperLocationShouldError) {
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  const base::FilePath file_path =
+      temp_dir_.GetPath().Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // Progress callback should not be called as the supplied file is not within
+  // the .Trash/info directory.
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+
+  // We should get one complete callback when the location is invalid.
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kError)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(RestoreIOTaskTest, MetadataWithNoCorrespondingFileShouldError) {
+  EnsureTrashDirectorySetup(downloads_dir_);
+
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  const base::FilePath file_path = downloads_dir_.Append(kTrashFolderName)
+                                       .Append(kInfoFolderName)
+                                       .Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // Progress callback should not be called as the corresponding file in the
+  // .Trash/files location does not exist.
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+
+  // We should get one complete callback when the .Trash/files path doesn't
+  // exist.
   EXPECT_CALL(complete_callback,
               Run(Field(&ProgressStatus::state, State::kError)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
