@@ -504,18 +504,18 @@
       '--client-outdir',
       '.',
       '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M102/out/Release',
+      '../../weblayer_instrumentation_test_M103/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=102',
+      '--impl-version=103',
     ],
-    'identifier': 'with_impl_from_102',
+    'identifier': 'with_impl_from_103',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
-          'location': 'weblayer_instrumentation_test_M102',
-          'revision': 'version:102.0.5005.125',
+          'location': 'weblayer_instrumentation_test_M103',
+          'revision': 'version:103.0.5060.47',
         }
       ],
     },
@@ -648,18 +648,18 @@
       '--client-outdir',
       '.',
       '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M102/out/Release',
+      '../../weblayer_instrumentation_test_M103/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=102',
+      '--impl-version=103',
     ],
-    'identifier': 'with_impl_from_102',
+    'identifier': 'with_impl_from_103',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
-          'location': 'weblayer_instrumentation_test_M102',
-          'revision': 'version:102.0.5005.125',
+          'location': 'weblayer_instrumentation_test_M103',
+          'revision': 'version:103.0.5060.47',
         }
       ],
     },
@@ -790,20 +790,20 @@
       '--test-runner-outdir',
       '.',
       '--client-outdir',
-      '../../weblayer_instrumentation_test_M102/out/Release',
+      '../../weblayer_instrumentation_test_M103/out/Release',
       '--implementation-outdir',
       '.',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--client-version=102',
+      '--client-version=103',
     ],
-    'identifier': 'with_client_from_102',
+    'identifier': 'with_client_from_103',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
-          'location': 'weblayer_instrumentation_test_M102',
-          'revision': 'version:102.0.5005.125',
+          'location': 'weblayer_instrumentation_test_M103',
+          'revision': 'version:103.0.5060.47',
         }
       ],
     },
