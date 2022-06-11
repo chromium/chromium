@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/flags_ui/flags_ui_switches.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/histogram_encoder.h"
@@ -278,9 +279,19 @@ void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
     system_profile->set_brand_code(brand_code);
 
   // Records 32-bit hashes of the command line keys.
-  const auto command_line_switches =
-      base::CommandLine::ForCurrentProcess()->GetSwitches();
-  for (const auto& command_line_switch : command_line_switches) {
+  base::CommandLine command_line_copy(*base::CommandLine::ForCurrentProcess());
+
+  // Exclude these switches which are very frequently on the command line but
+  // serve no meaningful purpose.
+  static const char* const kSwitchesToFilter[] = {
+      switches::kFlagSwitchesBegin,
+      switches::kFlagSwitchesEnd,
+  };
+
+  for (const char* filter_switch : kSwitchesToFilter)
+    command_line_copy.RemoveSwitch(filter_switch);
+
+  for (const auto& command_line_switch : command_line_copy.GetSwitches()) {
     system_profile->add_command_line_key_hash(
         variations::HashName(command_line_switch.first));
   }

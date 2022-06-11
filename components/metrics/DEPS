@@ -4,6 +4,7 @@ include_rules = [
   "-components",
   "+components/browser_watcher",
   "+components/component_updater",
+  "+components/flags_ui",
   "+components/metrics",
   "+components/network_time",
   "+components/prefs",
