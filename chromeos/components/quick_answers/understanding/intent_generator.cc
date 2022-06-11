@@ -234,11 +234,7 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
     TextAnnotationRequestPtr text_annotation_request =
         TextAnnotationRequest::New();
 
-    // TODO(b/159664194): There is a issue with text classifier that some
-    // capitalized words are not annotated properly. Convert the text to lower
-    // case for now. Clean up after the issue is fixed.
-    text_annotation_request->text = base::UTF16ToUTF8(
-        base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
+    text_annotation_request->text = request.selected_text;
     text_annotation_request->default_locales =
         QuickAnswersState::Get()->application_locale();
 
