@@ -16646,6 +16646,177 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Preloading.Attempt">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This event is logged for each preloading attempt i.e., for preloading
+    features like Preresolve, Preconnect, Prerender, Prefetch, and others when
+    the user navigates or when the WebContents is being destroyed.
+
+    Associated with the Source ID of the page user navigates to. Contains
+    information about the type of attempt, its eligibility, triggering outcome,
+    failure reason and whether the attempt was triggered accurately or not.
+  </summary>
+  <metric name="AccurateTriggering" enum="Boolean">
+    <summary>
+      Whether the preloading operation was triggered accurately for the
+      predicted URL (regardless of the eligibility, failures, etc.). Set to true
+      if the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Eligibility">
+    <summary>
+      Eligibility status of preloading operation for the prediction. Values are
+      from the Chrome enum content::PreloadingEligibility.
+    </summary>
+  </metric>
+  <metric name="FailureReason">
+    <summary>
+      Reason why the preloading operation failed. Values are from the enum
+      specific to the preloading type.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of preloading predictor which made the prediction. Values are
+      from the Chrome enum content::PreloadingPredictor or
+      ChromePreloadingPredictor.
+    </summary>
+  </metric>
+  <metric name="PreloadingType">
+    <summary>
+      The type of preloading operation used for the preloading attempt. Values
+      are from the Chrome enum content::PreloadingType.
+    </summary>
+  </metric>
+  <metric name="TriggeringOutcome">
+    <summary>
+      Specifies whether the preloading attempt triggered and was used for the
+      next navigation. Values are from the Chrome enum
+      content::PreloadingTriggeringOutcome.
+    </summary>
+  </metric>
+</event>
+
+<event name="Preloading.Attempt.PreviousPrimaryPage">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This is same as Preloading.Attempt but UKM is associated with the primary
+    triggering page (if exists) and logged when the user navigates away or when
+    the WebContents is being destroyed.
+
+    Associated with the Source ID of the WebContents primary page where the
+    preloading attempt is triggered (user navigates from). All the metrics data
+    are similar to Preloading.Attempt and please see the comments for more
+    details.
+  </summary>
+  <metric name="AccurateTriggering" enum="Boolean">
+    <summary>
+      Whether the preloading operation was triggered accurately (regardless of
+      the eligibility, holdback, failures, etc.).
+
+      Set to true if the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Eligibility">
+    <summary>
+      Eligibility status of preloading operation for the prediction.
+    </summary>
+  </metric>
+  <metric name="FailureReason">
+    <summary>
+      Reason why the preloading operation failed.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of predictor that made the prediction. Values are from either
+      content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+  <metric name="PreloadingType">
+    <summary>
+      The type of preloading operation used for the preloading attempt.
+    </summary>
+  </metric>
+  <metric name="TriggeringOutcome">
+    <summary>
+      Specifies whether the preloading triggered and was used for the next
+      navigation.
+    </summary>
+  </metric>
+</event>
+
+<event name="Preloading.Prediction">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This event is logged for each preloading prediction and metrics related to
+    the preloading predictors like OmniboxDirectURLInput, Speculation Rules and
+    others when the navigation is finished or when the WebContents is being
+    destroyed.
+
+    Associated with the Source ID of the page user navigates to. Contains
+    information about the type of the predictor, its confidence value and
+    whether the prediction ended up being correct.
+  </summary>
+  <metric name="AccuratePrediction" enum="Boolean">
+    <summary>
+      Whether the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Confidence">
+    <summary>
+      The confidence percentage of predictor's correct prediction for
+      preloading.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of preloading predictor that made the prediction. Values are from
+      content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+</event>
+
+<event name="Preloading.Prediction.PreviousPrimaryPage">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    This is the same as Preloading.Prediction but UKM is associated with the
+    WebContents primary triggering page (if exists) and logged when the user
+    navigates away or when the WebContents is being destroyed.
+
+    Associated with the Source ID of the primary page where the preloading
+    prediction is triggered (user navigates from). All the metrics data are
+    similar to Preloading.Prediction and please see the comments for more
+    details.
+  </summary>
+  <metric name="AccuratePrediction" enum="Boolean">
+    <summary>
+      Whether the user navigated to the predicted URL.
+    </summary>
+  </metric>
+  <metric name="Confidence">
+    <summary>
+      The confidence percentage of predictor's correct prediction for
+      preloading.
+    </summary>
+  </metric>
+  <metric name="PreloadingPredictor">
+    <summary>
+      The type of preloading predictor which made the preloading prediction.
+      Values are from content::PreloadingPredictor or ChromePreloadingPredictor.
+    </summary>
+  </metric>
+</event>
+
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
