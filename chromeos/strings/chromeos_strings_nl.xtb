@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
+<translation id="1190378975642195988">Basisversnellingsmeter</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1196959502276349371">Versie <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Afspelen/Onderbreken</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Koppel dit externe apparaat niet los en zet je computer niet uit terwijl de firmware wordt geüpdatet. Je kunt dit venster minimaliseren. Deze update kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens het updaten.</translation>
 <translation id="3486220673238053218">definitie</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
+<translation id="3492982278147736083">Gyroscoop in de klep</translation>
 <translation id="3517001332549868749">Chrome OS-update</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
@@ -301,6 +303,7 @@
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="385051799172605136">Terug</translation>
+<translation id="3856304145690230735">Basisgyroscoop</translation>
 <translation id="385832974417157471">Voordat je het apparaat uitzet, voer je een Powerwash uit. Als je apparaat een klep heeft, wacht je totdat de Powerwash klaar is voordat je de klep sluit. Het kan een minuut duren voordat de Powerwash klaar is.</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3862598938296403232">Beschrijving is vereist</translation>
@@ -373,6 +376,7 @@
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kan de niet-standaard netwerkgateway niet pingen</translation>
+<translation id="4500213108254186382">Versnellingsmeter in de klep</translation>
 <translation id="4503223151711056411">Pijl-links</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Overeenkomst voor alternatieve naam van onderwerp</translation>
@@ -384,6 +388,7 @@
 <translation id="4561801978359312462">Simkaart ontgrendeld</translation>
 <translation id="4562494484721939086">Geen service</translation>
 <translation id="4568938274596692027">Installatie is afgerond. Opnieuw opstarten voorbereiden...</translation>
+<translation id="4576943788798178439">Stylus-support</translation>
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
@@ -539,6 +544,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5866840822086176774">Zeer sterk</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
+<translation id="5898758006340607522">Aan/uit-knop</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Apparaat is een combinatie van toetsenbord en muis.</translation>
 <translation id="5916084858004523819">Verboden</translation>
@@ -862,6 +868,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8919792139048574232">Bekijken wat er is verholpen</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8923267550422472772">Dag van de maand voor resetten</translation>
+<translation id="8925613211674558308">VPD in cache</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Draadloos</translation>

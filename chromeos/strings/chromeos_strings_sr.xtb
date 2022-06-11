@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Улаз</translation>
 <translation id="3632579075709132555">Укључите/искључите екран за приватност</translation>
 <translation id="3643810137582748570">Прескочи калибрацију</translation>
+<translation id="3651050199673793219">Изаберите јединицу температуре</translation>
 <translation id="3678765385266369662">Изаберите како желите да искључите заштиту од уписивања</translation>
 <translation id="3689839747745352263">Тест <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Учитава се...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Жироскоп за основу</translation>
 <translation id="385832974417157471">Пре искључивања обавите Powerwash на уређају. Ако уређај има поклопац, сачекајте да се Powerwash заврши пре него што затворите поклопац. Powerwash може да траје и до минут.</translation>
 <translation id="3858860766373142691">Назив</translation>
+<translation id="3862598938296403232">Опис је обавезан</translation>
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
@@ -678,6 +680,7 @@
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="714876143603641390">Повезивање LAN-а</translation>
+<translation id="7154020516215182599">Делите повратне информације или опишите проблем. Ако је то могуће, уврстите кораке за изазивање истог проблема.</translation>
 <translation id="7155171745945906037">Постојећа фотографија из камере или датотеке</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7170236477717446850">Слика профила</translation>

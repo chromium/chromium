@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Cymedrol <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1181037720776840403">Dileu</translation>
+<translation id="1190378975642195988">Mesurydd Cyflymu Gwaelod</translation>
 <translation id="1195447618553298278">Gwall anhysbys.</translation>
 <translation id="1196959502276349371">Fersiwn <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Chwarae/Seibio</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Tra bod y gadarnwedd yn diweddaru, peidiwch â dadblygio'r ddyfais allanol hon na diffodd eich cyfrifiadur. Gallwch leihau'r ffenestr hon. Gall y diweddariad hwn gymryd ychydig funudau ac mae'n bosib na fydd eich dyfais allanol yn gweithio yn ystod y cyfnod hwn.</translation>
 <translation id="3486220673238053218">diffiniad</translation>
 <translation id="3488065109653206955">Wedi'i weithredu'n rhannol</translation>
+<translation id="3492982278147736083">Geirosgop Caead</translation>
 <translation id="3517001332549868749">Diweddariad ChromeOS</translation>
 <translation id="3527036260304016759">Wedi methu - Gwall anhysbys</translation>
 <translation id="3532980081107202182">Tua <ph name="MIN_REMAINING" /> o funudau ar ôl</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">PIN annilys.</translation>
 <translation id="3838338534323494292">Cyfrinair newydd</translation>
 <translation id="385051799172605136">Nôl</translation>
+<translation id="3856304145690230735">Geirosgop Gwaelod</translation>
 <translation id="385832974417157471">Cyn diffodd, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3865414814144988605">Cydraniad</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Cychwyn arni</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4483049906298469269">Wedi methu â phingio porth y rhwydwaith nad yw'n ddiofyn</translation>
+<translation id="4500213108254186382">Mesurydd Cyflymu Caead</translation>
 <translation id="4503223151711056411">Saeth chwith</translation>
 <translation id="4511264077854731334">Porth</translation>
 <translation id="4521826082652183069">Cyfateb enw amgen pwnc</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM wedi'i Ddatgloi</translation>
 <translation id="4562494484721939086">Dim gwasanaeth</translation>
 <translation id="4568938274596692027">Wedi cwblhau gosod. Wrthi'n paratoi i ailgychwyn...</translation>
+<translation id="4576943788798178439">Cymorth pwyntil</translation>
 <translation id="458794348635939462">Wedi methu â datrys yr holl westeiwyr</translation>
 <translation id="4593212453765072419">Mae angen dilysu dirprwy weinydd</translation>
 <translation id="4609350030397390689">Disgleirdeb y bysellfwrdd i lawr</translation>
@@ -537,6 +542,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5866840822086176774">Cryf iawn</translation>
 <translation id="588258955323874662">Sgrîn lawn</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
+<translation id="5898758006340607522">Botwm Pŵer</translation>
 <translation id="5901630391730855834">Melyn</translation>
 <translation id="5903200662178656908">Mae'r ddyfais yn gyfuniad bysellfwrdd a llygoden.</translation>
 <translation id="5916084858004523819">Gwaharddedig</translation>
@@ -859,6 +865,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8919792139048574232">Gweld beth sydd wedi'i drwsio</translation>
 <translation id="8919837981463578619">Wedi methu - Mae hambwrdd ar goll</translation>
 <translation id="8923267550422472772">Diwrnod y mis ar gyfer ailosod</translation>
+<translation id="8925613211674558308">Storiwyd Vpd</translation>
 <translation id="8928727111548978589">Wedi methu - Allan o bapur</translation>
 <translation id="8930521118335213258">Cymar</translation>
 <translation id="8930622219860340959">Diwifr</translation>

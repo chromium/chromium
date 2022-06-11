@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Keskmine (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Eemalda</translation>
+<translation id="1190378975642195988">Alusel olev kiirendusmõõtur</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
 <translation id="1196959502276349371">Versioon <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Esita/peata</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
+<translation id="3492982278147736083">Kaanel olev güroskoop</translation>
 <translation id="3517001332549868749">Chrome OS-i värsken.</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="3838338534323494292">Uus parool</translation>
 <translation id="385051799172605136">Tagasi</translation>
+<translation id="3856304145690230735">Alusel olev güroskoop</translation>
 <translation id="385832974417157471">Enne väljalülitamist tehke seadmes Powerwash. Kui teie seadmel on kaas, oodake enne kaane sulgemist, kuni Powerwash on lõpetatud. Powerwashi lõpuleviimine võib võtta kuni minuti.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3865414814144988605">Eraldusvõime</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Mittevaikevõrgulüüsi pingimine ebaõnnestus</translation>
+<translation id="4500213108254186382">Kaanel olev kiirendusmõõtur</translation>
 <translation id="4503223151711056411">Vasaknool</translation>
 <translation id="4511264077854731334">Portaal</translation>
 <translation id="4521826082652183069">Teema alternatiivse nime vaste</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM on avatud</translation>
 <translation id="4562494484721939086">Levi puudub</translation>
 <translation id="4568938274596692027">Installimine on lõpetatud. Taaskäivitamiseks ettevalmistamine …</translation>
+<translation id="4576943788798178439">Elektronpliiatsi tugi</translation>
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
@@ -537,6 +542,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5866840822086176774">Väga tugev</translation>
 <translation id="588258955323874662">Täisekraan</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
+<translation id="5898758006340607522">Toitenupp</translation>
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5903200662178656908">Seade on klaviatuuri ja hiire kombinatsioon.</translation>
 <translation id="5916084858004523819">Keelatud</translation>
@@ -859,6 +865,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8919792139048574232">Vaadake, mis parandati</translation>
 <translation id="8919837981463578619">Ebaõnnestus – salv puudub</translation>
 <translation id="8923267550422472772">Lähtestamise kuupäev</translation>
+<translation id="8925613211674558308">Vahemälus olev VPD</translation>
 <translation id="8928727111548978589">Ebaõnnestus – paber on otsas</translation>
 <translation id="8930521118335213258">Partner</translation>
 <translation id="8930622219860340959">Raadiovõrk</translation>

@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Genomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ta bort</translation>
+<translation id="1190378975642195988">Accelerometer i bas</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Uppspelnings-/paustangenten</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Koppla inte från den externa enheten eller stäng av datorn medan firmware uppdateras. Du kan minimera fönstret. Uppdateringen kan ta en stund och din externa enhet kanske inte fungerar under tiden.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvis aktiverat</translation>
+<translation id="3492982278147736083">Gyroskop i lock</translation>
 <translation id="3517001332549868749">ChromeOS-uppdatering</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="385051799172605136">Föregående</translation>
+<translation id="3856304145690230735">Gyroskop i bas</translation>
 <translation id="385832974417157471">Använd Powerwash på enheten innan du stänger av den. Om enheten har ett lock väntar du tills Powerwash har slutförts innan du stänger locket. Det kan ta upp till en minut för Powerwash att slutföras.</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3865414814144988605">Upplösning</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Det gick inte att pinga gateway för nätverket som inte är standard</translation>
+<translation id="4500213108254186382">Accelerometer i lock</translation>
 <translation id="4503223151711056411">Vänsterpiltangenten</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Matchning av ämnets andra namn</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM-kortet är upplåst</translation>
 <translation id="4562494484721939086">Ingen täckning</translation>
 <translation id="4568938274596692027">Installationen är slutförd. Förbereder omstart …</translation>
+<translation id="4576943788798178439">Stöd för e-penna</translation>
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
@@ -537,6 +542,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5866840822086176774">Mycket stark</translation>
 <translation id="588258955323874662">Helskärm</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="5898758006340607522">Strömbrytare</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Detta är en kombinationsenhet med tangentbord och mus.</translation>
 <translation id="5916084858004523819">Aldrig</translation>
@@ -859,6 +865,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8919792139048574232">Se vad som har åtgärdats</translation>
 <translation id="8919837981463578619">Misslyckades – fack saknas</translation>
 <translation id="8923267550422472772">Dag i månaden för återställning</translation>
+<translation id="8925613211674558308">Vpd Cached</translation>
 <translation id="8928727111548978589">Misslyckades – slut på papper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådlöst</translation>

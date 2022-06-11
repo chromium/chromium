@@ -504,6 +504,7 @@
 <translation id="3901991538546252627">正在連線至 <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{在 1 分鐘內將裝置回復為先前的版本}other{在 # 分鐘內將裝置回復為先前的版本}}</translation>
 <translation id="3923494859158167397">未設定流動網絡</translation>
+<translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
 <translation id="3932043219784172185">未連接任何裝置</translation>
 <translation id="3934456833412894880">自動調節充電速度功能已開啟。裝置電量會維持在 80% 以延長電池壽命，並在您需要時將電池完全充滿。</translation>
 <translation id="3943857333388298514">貼上</translation>
@@ -1053,6 +1054,10 @@
 <translation id="7258828758145722155">昨天編輯過</translation>
 <translation id="726276584504105859">拖曳到此處即可分割畫面</translation>
 <translation id="7262906531272962081">建立提醒</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> 至
+        <ph name="END_TIME" />，
+        <ph name="TIME_ZONE" />，
+        <ph name="EVENT_SUMMARY" />。揀活動就可以喺 Google 日曆度睇詳情。</translation>
 <translation id="7302889331339392448">「即時字幕」功能已關閉。</translation>
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>

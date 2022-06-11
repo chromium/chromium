@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Í meðallagi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
+<translation id="1190378975642195988">Hraðamælir í grunnfleti</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
 <translation id="1196959502276349371">Útgáfa <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Spila / gera hlé</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
+<translation id="3492982278147736083">Snúðvísir í loki</translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Ógilt PIN-númer.</translation>
 <translation id="3838338534323494292">Nýtt aðgangsorð</translation>
 <translation id="385051799172605136">Til baka</translation>
+<translation id="3856304145690230735">Snúðvísir í grunnfleti</translation>
 <translation id="385832974417157471">Djúphreinsaðu tækið áður en þú slekkur á því. Ef lok er á tækinu skaltu bíða þar til djúphreinsun lýkur áður en þú lokar því. Djúphreinsun getur tekið allt að mínútu.</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3865414814144988605">Upplausn</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Hefjast handa</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
+<translation id="4500213108254186382">Hraðamælir í loki</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
 <translation id="4511264077854731334">Gátt</translation>
 <translation id="4521826082652183069">Samsvarandi auknefni viðfangs</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM opið</translation>
 <translation id="4562494484721939086">Ekkert símasamband</translation>
 <translation id="4568938274596692027">Uppsetningu er lokið. Undirbýr endurræsingu...</translation>
+<translation id="4576943788798178439">Pennastuðningur</translation>
 <translation id="458794348635939462">Ekki tókst að leysa úr öllum hýslum</translation>
 <translation id="4593212453765072419">Auðkenningar staðgengilsþjóns krafist</translation>
 <translation id="4609350030397390689">Draga úr birtustigi lyklaborðs</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Þetta mun núllstilla tækið (djúphreinsun).</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
+<translation id="491791267030419270">Ráð um skrif ábendinga</translation>
 <translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="4930320165497208503">Opnaðu <ph name="BEGIN_LINK" />stillingarnar<ph name="END_LINK" /> til að setja upp eða uppfæra tengingu.</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
@@ -536,6 +542,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5866840822086176774">Mjög mikill</translation>
 <translation id="588258955323874662">Allur skjárinn</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
+<translation id="5898758006340607522">Aflrofi</translation>
 <translation id="5901630391730855834">Gulur</translation>
 <translation id="5903200662178656908">Tækið er blanda af mús og lyklaborði.</translation>
 <translation id="5916084858004523819">Bannað</translation>
@@ -858,6 +865,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8919792139048574232">Sjá hvað hefur verið lagfært</translation>
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>
 <translation id="8923267550422472772">Mánaðardagur fyrir endurstillingu</translation>
+<translation id="8925613211674558308">Vpd Cached</translation>
 <translation id="8928727111548978589">Mistókst – pappír vantar</translation>
 <translation id="8930521118335213258">Samanburður</translation>
 <translation id="8930622219860340959">Þráðlaust</translation>

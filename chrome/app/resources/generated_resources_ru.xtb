@@ -188,6 +188,7 @@
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1174073918202301297">Ярлык добавлен</translation>
 <translation id="1174366174291287894">Если подключение небезопасно, браузер Chrome предупредит вас об этом.</translation>
+<translation id="1174391930667737831">Центр конфиденциальности</translation>
 <translation id="117445914942805388">Чтобы удалить данные о работе в браузере со всех синхронизированных устройств и из аккаунта Google, перейдите в <ph name="BEGIN_LINK" />настройки синхронизации<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Печать...</translation>
 <translation id="1176471985365269981">Сайты, которым запрещено изменять файлы и папки на устройстве:</translation>
@@ -202,6 +203,7 @@
 <translation id="1188807932851744811">Журнал не загружен.</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Доступен 1 файл на компьютере}one{Доступен # файл на компьютере}few{Доступно # файла на компьютере}many{Доступно # файлов на компьютере}other{Доступно # файла на компьютере}}</translation>
 <translation id="119092896208640858">Чтобы удалить данные о работе в браузере с этого устройства, но сохранить их в аккаунте Google, <ph name="BEGIN_LINK" />выйдите из системы<ph name="END_LINK" />.</translation>
+<translation id="1191353342579061195">Выберите понравившуюся вам тему. Щелкните правой кнопкой мыши на рабочем столе, чтобы изменить тему, обои, заставку и многое другое.</translation>
 <translation id="1192706927100816598">{0,plural, =1{Вы автоматически выйдете из системы через # секунду.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.}one{Вы автоматически выйдете из системы через # секунду.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.}few{Вы автоматически выйдете из системы через # секунды.
@@ -1297,6 +1299,7 @@
 <translation id="2220409419896228519">Добавьте закладки для любимых приложений Google</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
+<translation id="222115440608612541">Включает автоматическое переключение между светлой и тёмной темами.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> и <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Источник медиа без названия</translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
@@ -1523,6 +1526,7 @@
 <translation id="241082044617551207">Неизвестный плагин</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функциональные клавиши клавиатуры</translation>
+<translation id="2418307627282545839">Делает изображение на экране ярче.</translation>
 <translation id="2419131370336513030">Показать установленные приложения</translation>
 <translation id="2419706071571366386">Если вы закончили работу на компьютере, рекомендуем выйти из аккаунта.</translation>
 <translation id="2422125132043002186">Восстановление контейнера Linux отменено.</translation>
@@ -2070,6 +2074,7 @@
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.</translation>
 <translation id="2923234477033317484">Удалить этот аккаунт</translation>
 <translation id="2923644930701689793">Доступ к фотографиям с камеры телефона</translation>
+<translation id="2925658782192398150">Готово. Проблемы не обнаружены.</translation>
 <translation id="2926085873880284723">Восстановить ярлыки по умолчанию</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> не поддерживается.</translation>
 <translation id="2927017729816812676">CacheStorage</translation>
@@ -5010,6 +5015,7 @@
 <translation id="5891688036610113830">Предпочитаемые сети Wi-Fi</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5895335062901455404">Сохраненные параметры и действия будут доступны на всех устройствах с Chrome OS Flex, где выполнен вход в аккаунт Google. Вы всегда можете выбрать, что синхронизировать, в настройках.</translation>
+<translation id="589541317545606110">Искать по странице, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Запретить</translation>
 <translation id="5900186025777217044">Функция Smart Lock изменена</translation>
 <translation id="5900302528761731119">Фотография профиля Google</translation>
@@ -5061,6 +5067,7 @@
 <translation id="5941153596444580863">Добавить пользователя</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />: необходимо войти.</translation>
 <translation id="5941711191222866238">Свернуть</translation>
+<translation id="594221546068848596">Искать по странице, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Кто видит устройство</translation>
 <translation id="5943127421590245687">Ваш аккаунт подтвержден. Чтобы разблокировать и восстановить данные, введите старый пароль устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в сервис "Google Безопасный просмотр" для проверки?</translation>
@@ -6035,6 +6042,7 @@
 <translation id="6895032998810961280">Сообщать Google о вредоносном ПО, системных настройках и процессах, обнаруженных на компьютере при очистке</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6897363604023044284">Выбрать сайты</translation>
+<translation id="6897688156970667447">Рекомендуется использовать при плохом освещении. Позволяет экономить заряд батареи.</translation>
 <translation id="6898440773573063262">Автозапуск киоск-приложений на этом устройстве разрешен</translation>
 <translation id="6900284862687837908">Фоновое приложение: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>
@@ -6709,6 +6717,7 @@
 <translation id="7582582252461552277">Предпочитать эту сеть</translation>
 <translation id="7582844466922312471">Мобильный модем</translation>
 <translation id="7583948862126372804">Количество</translation>
+<translation id="7585106857920830898">Проверка на соответствие правилам безопасности вашей организации…</translation>
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
 <translation id="758895749110326677">Помогите нам улучшить игры на устройствах Chromebook.</translation>
 <translation id="7589461650300748890">Осторожно!</translation>
@@ -6986,6 +6995,7 @@
 <translation id="7839051173341654115">Просмотреть/сохранить медиафайлы</translation>
 <translation id="7839192898639727867">Идентификатор ключа субъекта сертификата</translation>
 <translation id="7842692330619197998">Чтобы создать аккаунт, перейдите на страницу g.co/ChromeEnterpriseAccount.</translation>
+<translation id="78427265591841839">Искать по области страницы, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Удалить Linux</translation>
 <translation id="7843786652787044762">Войти в сервис "<ph name="WEB_DRIVE" />"</translation>
 <translation id="7844992432319478437">Утилита diff обновляется</translation>
@@ -6993,6 +7003,7 @@
 <translation id="7847212883280406910">Нажмите Ctrl + Alt + S, чтобы перейти к <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Открыть изображение в новой вкладке</translation>
 <translation id="784934925303690534">Временной диапазон</translation>
+<translation id="7850353716413205957">Искать по области страницы, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Если вы разрешите устройствам Chrome OS отправлять автоматические отчеты в Google, это поможет нам определить, что нужно исправить и улучшить в первую очередь. В таких отчетах могут содержаться сведения о том, какими функциями вы пользуетесь и сколько памяти обычно расходуете, а также данные о сбоях в Chrome OS и об использовании и диагностике Android-приложений. Некоторые агрегированные данные позволят улучшить приложения Google и могут пригодиться нашим партнерам, например разработчикам Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Разрешить или запретить отправку отчетов можно в любое время в настройках устройства Chrome OS. Администратор домена может менять этот параметр в консоли администратора.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Если в вашем аккаунте Google включена история приложений и веб-поиска, в нем могут сохраняться данные Android. Чтобы посмотреть или удалить данные, а также изменить настройки аккаунта, перейдите на страницу account.google.com.<ph name="END_PARAGRAPH3" /></translation>
@@ -7522,6 +7533,7 @@
 <translation id="8358685469073206162">Восстановить страницы?</translation>
 <translation id="8358912028636606457">Трансляция аудио из вкладки не поддерживается на этом устройстве</translation>
 <translation id="835951711479681002">Сохранить в аккаунте Google</translation>
+<translation id="8360140320636871023">Персонализация темы</translation>
 <translation id="8363095875018065315">стабильная</translation>
 <translation id="8363142353806532503">Доступ к микрофону запрещен</translation>
 <translation id="8366396658833131068">Подключение к сети восстановлено. Выберите другую сеть или нажмите кнопку "Продолжить", чтобы запустить киоск-приложение.</translation>

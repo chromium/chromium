@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Save to USB</translation>
 <translation id="1468664791493211953">Offers</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
+<translation id="147809995039451286">Couldn't download the update</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Updating firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> manages this user and may remotely manage settings and monitor user activity.</translation>
@@ -178,6 +179,7 @@
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
+<translation id="2447969267935997922">Installation is complete. You can now remove your USB drive or SD card.</translation>
 <translation id="2448312741937722512">Types</translation>
 <translation id="2461822463642141190">Current</translation>
 <translation id="2480034874476596812">Manually turn off</translation>

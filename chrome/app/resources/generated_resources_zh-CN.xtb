@@ -202,6 +202,7 @@
 <translation id="1188807932851744811">未上传日志。</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{可访问您计算机上存储的 1 个文件}other{可访问您计算机上存储的 # 个文件}}</translation>
 <translation id="119092896208640858">要想仅清除此设备中的浏览数据而保留您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />退出<ph name="END_LINK" />。</translation>
+<translation id="1191353342579061195">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等等，只需右键点击桌面即可执行所需操作。</translation>
 <translation id="1192706927100816598">{0,plural, =1{您将在 # 秒后自动退出。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}other{您将在 # 秒后自动退出。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
@@ -1288,6 +1289,7 @@
 <translation id="2220409419896228519">为您最喜爱的 Google 应用添加书签</translation>
 <translation id="2220529011494928058">报告问题</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
+<translation id="222115440608612541">在日出和日落时切换主题</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">未命名的媒体来源</translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
@@ -1514,6 +1516,7 @@
 <translation id="241082044617551207">未知插件</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">键盘功能键</translation>
+<translation id="2418307627282545839">让屏幕保持明快轻盈的色调</translation>
 <translation id="2419131370336513030">查看已安装的应用</translation>
 <translation id="2419706071571366386">为了安全起见，当您未使用计算机时，请退出帐号。</translation>
 <translation id="2422125132043002186">已取消 Linux 恢复</translation>
@@ -2060,6 +2063,7 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。</translation>
 <translation id="2923234477033317484">移除此帐号</translation>
 <translation id="2923644930701689793">访问您手机的相机胶卷</translation>
+<translation id="2925658782192398150">已完成，未发现任何问题</translation>
 <translation id="2926085873880284723">恢复默认快捷方式</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" />不受支持。</translation>
 <translation id="2927017729816812676">缓存空间</translation>
@@ -4995,6 +4999,7 @@
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895335062901455404">无论是在哪部 ChromeOS Flex 设备上，您只需登录自己的 Google 帐号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
+<translation id="589541317545606110">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页</translation>
 <translation id="5896436821193322561">不允许</translation>
 <translation id="5900186025777217044">Smart Lock 的功能有变化</translation>
 <translation id="5900302528761731119">Google 个人资料照片</translation>
@@ -5046,6 +5051,7 @@
 <translation id="5941153596444580863">添加用户…</translation>
 <translation id="5941343993301164315">请登录 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
+<translation id="594221546068848596">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页</translation>
 <translation id="5942779427914696408">设备公开范围</translation>
 <translation id="5943127421590245687">验证成功。若要解锁并恢复您的本地数据，请输入您的旧 <ph name="DEVICE_TYPE" />的密码。</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 安全浏览服务进行扫描？</translation>
@@ -6013,6 +6019,7 @@
 <translation id="6895032998810961280">向 Google 报告在此次清理期间在您计算机中发现的有害软件、系统设置和进程的相关详情</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897363604023044284">选择需要清除数据的网站</translation>
+<translation id="6897688156970667447">适应弱光条件并节省电量</translation>
 <translation id="6898440773573063262">自助服务终端应用现在可配置为在此设备上自动启动。</translation>
 <translation id="6900284862687837908">后台应用：<ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">增强型保护</translation>
@@ -6687,6 +6694,7 @@
 <translation id="7582582252461552277">首选此网络</translation>
 <translation id="7582844466922312471">移动数据</translation>
 <translation id="7583948862126372804">计数</translation>
+<translation id="7585106857920830898">正在检查是否符合贵组织的安全政策…</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
 <translation id="758895749110326677">协助我们改善 Chromebook 上的游戏体验</translation>
 <translation id="7589461650300748890">注意！</translation>
@@ -6964,6 +6972,7 @@
 <translation id="7839051173341654115">查看/备份媒体</translation>
 <translation id="7839192898639727867">证书主题背景密钥 ID</translation>
 <translation id="7842692330619197998">如果您需要创建新帐号，请访问 g.co/ChromeEnterpriseAccount。</translation>
+<translation id="78427265591841839">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的任意部分</translation>
 <translation id="784273751836026224">卸载 Linux</translation>
 <translation id="7843786652787044762">登录“<ph name="WEB_DRIVE" />”</translation>
 <translation id="7844992432319478437">正在更新diff</translation>
@@ -6971,6 +6980,7 @@
 <translation id="7847212883280406910">按 Ctrl + Alt + S 键可切换到 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">在新标签页中打开图片(&amp;I)</translation>
 <translation id="784934925303690534">时间范围</translation>
+<translation id="7850353716413205957">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的任意部分</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：Chrome 操作系统的崩溃时间、使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。<ph name="END_PARAGRAPH3" /></translation>
@@ -7500,6 +7510,7 @@
 <translation id="8358685469073206162">要恢复页面吗？</translation>
 <translation id="8358912028636606457">此设备不支持投射标签页中的音频。</translation>
 <translation id="835951711479681002">保存到您的 Google 帐号中</translation>
+<translation id="8360140320636871023">打造个性化的显示屏主题</translation>
 <translation id="8363095875018065315">稳定</translation>
 <translation id="8363142353806532503">已禁止使用麦克风</translation>
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>

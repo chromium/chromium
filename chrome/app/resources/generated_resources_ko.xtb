@@ -2088,6 +2088,7 @@
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.</translation>
 <translation id="2923234477033317484">계정 삭제</translation>
 <translation id="2923644930701689793">휴대전화 카메라 롤에 액세스합니다.</translation>
+<translation id="2925658782192398150">완료, 문제가 발견되지 않음</translation>
 <translation id="2926085873880284723">기본 바로가기 복원</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> 기기는 지원되지 않습니다.</translation>
 <translation id="2927017729816812676">캐시 저장공간</translation>
@@ -5027,6 +5028,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5891688036610113830">선호하는 Wi-Fi 네트워크</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895335062901455404">Google 계정으로 로그인할 경우 모든 ChromeOS Flex 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요.</translation>
+<translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 검색</translation>
 <translation id="5896436821193322561">허용 안함</translation>
 <translation id="5900186025777217044">Smart Lock 변경됨</translation>
 <translation id="5900302528761731119">Google 프로필 사진</translation>
@@ -5078,6 +5080,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5941153596444580863">사용자 추가...</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />에 로그인하세요.</translation>
 <translation id="5941711191222866238">최소화</translation>
+<translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 검색</translation>
 <translation id="5942779427914696408">내 기기 공개 범위</translation>
 <translation id="5943127421590245687">인증이 완료되었습니다. 로컬 데이터를 잠금 해제하고 복원하려면 이전 <ph name="DEVICE_TYPE" /> 비밀번호를 입력하세요</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 세이프 브라우징으로 전송하시겠습니까?</translation>
@@ -6721,6 +6724,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7582582252461552277">이 네트워크를 기본으로 사용</translation>
 <translation id="7582844466922312471">모바일 데이터</translation>
 <translation id="7583948862126372804">득표 수</translation>
+<translation id="7585106857920830898">조직 보안 정책을 준수하는지 확인 중</translation>
 <translation id="7586498138629385861">Chrome 앱이 열려 있을 때 Chrome이 계속 실행됩니다.</translation>
 <translation id="758895749110326677">Chromebook의 게임 경험을 개선할 수 있도록 도와주세요.</translation>
 <translation id="7589461650300748890">주의하세요.</translation>
@@ -6998,6 +7002,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7839051173341654115">미디어 보기/백업</translation>
 <translation id="7839192898639727867">인증서 대상 키 ID</translation>
 <translation id="7842692330619197998">새 계정을 만들려면 g.co/ChromeEnterpriseAccount를 방문하세요.</translation>
+<translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 일부 임의 검색</translation>
 <translation id="784273751836026224">Linux 제거</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" />에 로그인</translation>
 <translation id="7844992432319478437">diff 업데이트 중</translation>
@@ -7005,6 +7010,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7847212883280406910">Ctrl + Alt + S 키를 눌러 <ph name="IDS_SHORT_PRODUCT_OS_NAME" />(으)로 전환합니다.</translation>
 <translation id="7849264908733290972">새 탭에서 이미지 열기(&amp;I)</translation>
 <translation id="784934925303690534">기간</translation>
+<translation id="7850353716413205957"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 일부 임의 검색</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상 종료되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보와 함께 Android 앱 진단 및 사용 데이터가 포함될 수 있습니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 ChromeOS 기기 설정에서 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Google 계정에 이미 웹 및 앱 활동이 사용 설정되어 있다면 Android 데이터가 Google 계정에 저장될 수 있습니다. account.google.com에서 내 데이터를 보고 삭제하거나 계정 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>

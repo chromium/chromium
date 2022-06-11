@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="1175951029573070619">சுமாராக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">அகற்று</translation>
+<translation id="1190378975642195988">பேஸ் ஆக்சலரோமீட்டர்</translation>
 <translation id="1195447618553298278">தெரியாத பிழை.</translation>
 <translation id="1196959502276349371">பதிப்பு <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">இயக்கும்/இடைநிறுத்தும்</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
+<translation id="3492982278147736083">லிட் திசை காட்டி</translation>
 <translation id="3517001332549868749">ChromeOS அப்டேட்</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">தவறான பின்.</translation>
 <translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
+<translation id="3856304145690230735">பேஸ் திசை காட்டி</translation>
 <translation id="385832974417157471">ஷட் டவுன் செய்வதற்கு முன்பு உங்கள் சாதனத்தைப் பவர்வாஷ் செய்யவும். உங்கள் சாதனத்திற்கு மூடி இருந்தால் பவர்வாஷ் நிறைவடையும் வரை அதை மூடாதீர்கள். பவர்வாஷ் நிறைவடைய ஒரு நிமிடம் வரை ஆகலாம்.</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3865414814144988605">தெளிவு</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">தொடங்குக</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="4500213108254186382">லிட் ஆக்சலரோமீட்டர்</translation>
 <translation id="4503223151711056411">இடது அம்புக்குறி</translation>
 <translation id="4511264077854731334">போர்ட்டல்</translation>
 <translation id="4521826082652183069">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம்</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">சிம் அன்லாக் செய்யப்பட்டுள்ளது</translation>
 <translation id="4562494484721939086">சேவை இல்லை</translation>
 <translation id="4568938274596692027">நிறுவுதல் நிறைவடைந்தது. மீண்டும் தொடங்க தயாராகிறது...</translation>
+<translation id="4576943788798178439">ஸ்டைலஸ் சப்போர்ட்</translation>
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
 <translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4609350030397390689">கீபோர்டு ஒளிர்வைக் குறைக்கும்</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">இது ஆரம்பநிலை அமைப்புகளுக்குச் சாதனத்தை மீட்டமைக்கும் (பவர்வாஷ்).</translation>
 <translation id="4917385247580444890">வலிமையானது</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
+<translation id="491791267030419270">கருத்து வழங்குவது தொடர்பான உதவிக்குறிப்புகள்</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
 <translation id="4930320165497208503">இணைப்பை அமைக்க அல்லது புதுப்பிக்க, <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4932733599132424254">தேதி</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">மிக வலிமையானது</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
+<translation id="5898758006340607522">பவர் பட்டன்</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903200662178656908">கீபோர்டும் மவுஸும் இணைந்ததே சாதனமாகும்.</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">என்ன சரி செய்யப்பட்டது என்பதைப் பாருங்கள்</translation>
 <translation id="8919837981463578619">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8923267550422472772">ரீசெட் செய்ய வேண்டிய நாள்</translation>
+<translation id="8925613211674558308">Vpd தற்காலிக நினைவகத்தில் சேமிக்கப்பட்டது</translation>
 <translation id="8928727111548978589">காகிதம் இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8930521118335213258">பியர்</translation>
 <translation id="8930622219860340959">கம்பியில்லா</translation>

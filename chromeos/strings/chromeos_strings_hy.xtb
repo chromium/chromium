@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1175951029573070619">Միջին (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
+<translation id="1190378975642195988">Արագացման չափիչ (հիմքի)</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
 <translation id="1196959502276349371">Տարբերակ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Նվագարկում/դադար</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Քանի դեռ ներկառուցված ծրագիրը թարմացվում է, մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Այս թարմացումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
 <translation id="3486220673238053218">սահմանում</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
+<translation id="3492982278147736083">Դիրքորոշիչ (կափարիչի)</translation>
 <translation id="3517001332549868749">ChromeOS-ի թարմացում</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="385051799172605136">Հետ</translation>
+<translation id="3856304145690230735">Դիրքորոշիչ (հիմքի)</translation>
 <translation id="385832974417157471">Սարքն անջատելուց առաջ գործարկեք Powerwash գործառույթը։ Եթե ձեր սարքը կափարիչ ունի, մի փակեք այն, մինչև Powerwash-ի աշխատանքն ավարտվի։ Այդ գործընթացը կարող է մեկ րոպե տևել։</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Սկսել</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4500213108254186382">Արագացման չափիչ (կափարիչի)</translation>
 <translation id="4503223151711056411">Ձախ սլաք</translation>
 <translation id="4511264077854731334">Պորտալ</translation>
 <translation id="4521826082652183069">Համընկնում սուբյեկտի այլընտրանքային անվան հետ</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM քարտն ապակողպված է</translation>
 <translation id="4562494484721939086">Ցանցը չի գտնվել</translation>
 <translation id="4568938274596692027">Տեղադրումն ավարտված է։ Սարքը նախապատրաստվում է վերագործարկման…</translation>
+<translation id="4576943788798178439">Ստիլուսի աջակցություն</translation>
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Կվերականգնվեն սարքի գործարանային կարգավորումները (Powerwash)։</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
+<translation id="491791267030419270">Կարծիք գրելու խորհուրդներ</translation>
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="4930320165497208503">Միացում կարգավորելու կամ ստեղծելու համար անցեք <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">Շատ ուժեղ</translation>
 <translation id="588258955323874662">Լիաէկրան</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
+<translation id="5898758006340607522">Սնուցման կոճակ</translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5903200662178656908">Սարքը ստեղնաշարի և մկնիկի համադրություն է։</translation>
 <translation id="5916084858004523819">Արգելված է</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">Թույլ է տալիս տեսնել շտկումները</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
 <translation id="8923267550422472772">Ամսվա օրը, երբ տեղեկությունները պետք է զրոյացվեն</translation>
+<translation id="8925613211674558308">Արտադրանքի մասին քեշավորված տվյալներ (VPD)</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
 <translation id="8930521118335213258">Նմանակ</translation>
 <translation id="8930622219860340959">Անլար</translation>

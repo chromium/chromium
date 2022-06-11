@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Noņemt</translation>
+<translation id="1190378975642195988">Pamatnes akselerometrs</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
 <translation id="1196959502276349371">Versija <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Atskaņot/pārtraukt</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Atjaunināšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="3486220673238053218">definīcija</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
+<translation id="3492982278147736083">Vāka žiroskops</translation>
 <translation id="3517001332549868749">Chrome OS atjauninājums</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="3532980081107202182">Atlikušas aptuveni <ph name="MIN_REMAINING" /> minūtes</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
+<translation id="3856304145690230735">Pamatnes žiroskops</translation>
 <translation id="385832974417157471">Pirms ierīces izslēgšanas izmantojiet tajā funkciju Powerwash. Ja jūsu ierīcei ir vāks, neaizveriet to, līdz funkcija Powerwash ir veikusi vajadzīgās darbības. Funkcijas Powerwash darbību izpilde var ilgt līdz pat vienai minūtei.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4500213108254186382">Vāka akselerometrs</translation>
 <translation id="4503223151711056411">Kreisais bulttaustiņš</translation>
 <translation id="4511264077854731334">Portāls</translation>
 <translation id="4521826082652183069">Subjekta alternatīvā nosaukuma atbilstība</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM karte atbloķēta</translation>
 <translation id="4562494484721939086">Nav pakalpojuma</translation>
 <translation id="4568938274596692027">Instalēšana ir pabeigta. Notiek gatavošanās restartēšanai…</translation>
+<translation id="4576943788798178439">Atbalsts skārienekrāna pildspalvai</translation>
 <translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
@@ -537,6 +542,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5866840822086176774">Ļoti spēcīgs</translation>
 <translation id="588258955323874662">Pilnekrāna</translation>
 <translation id="5895138241574237353">Restartēt</translation>
+<translation id="5898758006340607522">Barošanas poga</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5903200662178656908">Ierīce sastāv no tastatūras un peles.</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
@@ -859,6 +865,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8919792139048574232">Uzziniet, kas ir izlabots</translation>
 <translation id="8919837981463578619">Neizdevās — trūkst paliktņa</translation>
 <translation id="8923267550422472772">Mēneša diena, kad notiek atiestatīšana</translation>
+<translation id="8925613211674558308">Vpd Cached</translation>
 <translation id="8928727111548978589">Neizdevās — beidzies papīrs</translation>
 <translation id="8930521118335213258">Vienādranga ierīce</translation>
 <translation id="8930622219860340959">Bezvadu</translation>

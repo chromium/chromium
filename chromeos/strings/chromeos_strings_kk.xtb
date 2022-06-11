@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1175951029573070619">Орташа (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Өшіру</translation>
+<translation id="1190378975642195988">Негіз акселерометрі</translation>
 <translation id="1195447618553298278">Белгісіз қате.</translation>
 <translation id="1196959502276349371">Нұсқасы: <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Ойнату/кідірту</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Микробағдарлама жаңартылып жатқанда, сыртқы құрылғыны ажыратпаңыз немесе компьютерді өшірмеңіз. Бұл терезені кішірейте аласыз. Бұл жаңарту бірнеше минутқа созылып, ол кезде сыртқы құрылғы жұмыс істемей қалуы мүмкін.</translation>
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
+<translation id="3492982278147736083">Қақпақ гироскопы</translation>
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
 <translation id="3838338534323494292">Жаңа құпия сөз</translation>
 <translation id="385051799172605136">Артқа</translation>
+<translation id="3856304145690230735">Негіз гироскопы</translation>
 <translation id="385832974417157471">Өшіріп қосу алдында құрылғыңызды зауыттық параметрлерге қайтарыңыз. Егер құрылғыңыздың қақпақ болса, зауыттық параметрлерге қайтару аяқталғанша қақпақты жаппаңыз. Зауыттық параметрлерге қайтару бірнеше минут алуы мүмкін.</translation>
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Іске кірісу</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="4500213108254186382">Қақпақ акселерометрі</translation>
 <translation id="4503223151711056411">Сол бағыт пернесі</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Балама атау тақырыбы сәйкестігі</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM құлпы ашық</translation>
 <translation id="4562494484721939086">Қызмет жоқ</translation>
 <translation id="4568938274596692027">Орнатылды. Өшіріп қосуға дайындалуда…</translation>
+<translation id="4576943788798178439">Стилусты қолдау</translation>
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Құрылғы зауыттық параметрлерге қайтарылады (Powerwash).</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
+<translation id="491791267030419270">Пікір жазу туралы кеңестер</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4930320165497208503">Байланысты реттеу немесе жаңарту үшін <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4932733599132424254">Күні</translation>
@@ -535,6 +541,7 @@
 <translation id="5866840822086176774">Аса күшті</translation>
 <translation id="588258955323874662">Толық экран</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
+<translation id="5898758006340607522">Қуат түймесі</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5903200662178656908">Құрылғы пернетақта мен тінтуірден тұрады.</translation>
 <translation id="5916084858004523819">Тыйым салынды</translation>
@@ -857,6 +864,7 @@
 <translation id="8919792139048574232">Түзетулерді көріңіз.</translation>
 <translation id="8919837981463578619">Сәтсіз: науа жоқ</translation>
 <translation id="8923267550422472772">Бастапқы күйге қайтару күні</translation>
+<translation id="8925613211674558308">Кэштелген VPD</translation>
 <translation id="8928727111548978589">Сәтсіз: қағаз бітіп қалды</translation>
 <translation id="8930521118335213258">құрылғы</translation>
 <translation id="8930622219860340959">Сымсыз</translation>

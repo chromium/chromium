@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> این <ph name="DEVICE_TYPE" /> را مدیریت می‌کند.</translation>
 <translation id="1175951029573070619">متوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">حذف</translation>
+<translation id="1190378975642195988">شتاب‌سنج پایه</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
 <translation id="1196959502276349371">نسخه <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">پخش/ مکث</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">وقتی سفت‌افزار درحال به‌روزرسانی است، این دستگاه خارجی را جدا نکنید و رایانه را خاموش نکنید. می‌توانید این پنجره را کمینه کنید. این به‌روزرسانی ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
 <translation id="3486220673238053218">معنی</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
+<translation id="3492982278147736083">ژیروسکوپ درب</translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="385051799172605136">بازگشت</translation>
+<translation id="3856304145690230735">ژیروسکوپ پایه</translation>
 <translation id="385832974417157471">‏قبل‌از خاموش کردن، Powerwash را در دستگاهتان اجرا کنید. اگر دستگاهتان درب دارد، تا زمانی که Powerwash تکمیل نشده است، درب را نبندید. تکمیل Powerwash ممکن است حداکثر یک دقیقه طول بکشد.</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">وضوح</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">شروع به کار</translation>
 <translation id="4479639480957787382">اترنت</translation>
 <translation id="4483049906298469269">پینگ کردن دروازه شبکه غیر پیش‌فرض انجام نشد</translation>
+<translation id="4500213108254186382">شتاب‌سنج درب</translation>
 <translation id="4503223151711056411">جهت‌نمای چپ</translation>
 <translation id="4511264077854731334">پورتال</translation>
 <translation id="4521826082652183069">مطابقت نام جایگزین موضوع</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">قفل سیم‌کارت باز است</translation>
 <translation id="4562494484721939086">بدون سرویس</translation>
 <translation id="4568938274596692027">نصب کامل شد. درحال آماده‌سازی برای بازراه‌اندازی…</translation>
+<translation id="4576943788798178439">پشتیبان قلم</translation>
 <translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4609350030397390689">کاهش روشنایی صفحه‌کلید</translation>
@@ -537,6 +542,7 @@
 <translation id="5866840822086176774">بسیار قوی</translation>
 <translation id="588258955323874662">تمام صفحه</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
+<translation id="5898758006340607522">دکمه روشن/ خاموش</translation>
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5903200662178656908">دستگاه ترکیبی از صفحه‌کلید و موشواره است.</translation>
 <translation id="5916084858004523819">ممنوع</translation>
@@ -859,6 +865,7 @@
 <translation id="8919792139048574232">ببینید چه مشکلاتی رفع شده است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8923267550422472772">روزی از ماه که بازنشانی انجام می‌شود</translation>
+<translation id="8925613211674558308">‏Vpd ذخیره‌شده</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>
 <translation id="8930521118335213258">همتا</translation>
 <translation id="8930622219860340959">بی سیم</translation>

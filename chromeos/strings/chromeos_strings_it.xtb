@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Nella media (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
+<translation id="1190378975642195988">Accelerometro base</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1196959502276349371">Versione <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Riproduci/Pausa</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Durante l'aggiornamento del firmware, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questo aggiornamento potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
 <translation id="3486220673238053218">definizione</translation>
 <translation id="3488065109653206955">Attivato parzialmente</translation>
+<translation id="3492982278147736083">Giroscopio coperchio</translation>
 <translation id="3517001332549868749">Aggiornamento Chrome OS</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3838338534323494292">Nuova password</translation>
 <translation id="385051799172605136">Indietro</translation>
+<translation id="3856304145690230735">Giroscopio base</translation>
 <translation id="385832974417157471">Prima di procedere con l'arresto, esegui il Powerwash del dispositivo. Se il dispositivo ha un coperchio, attendi il completamento del Powerwash prima di chiuderlo. Potrebbe essere necessario fino a un minuto prima che il Powerwash venga completato.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
+<translation id="4500213108254186382">Accelerometro coperchio</translation>
 <translation id="4503223151711056411">Freccia sinistra</translation>
 <translation id="4511264077854731334">Portale</translation>
 <translation id="4521826082652183069">Corrispondenza nome alternativo del soggetto</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM sbloccata</translation>
 <translation id="4562494484721939086">Nessun servizio</translation>
 <translation id="4568938274596692027">Installazione completa. Preparazione al riavvio in corso…</translation>
+<translation id="4576943788798178439">Supporto per stilo</translation>
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Verranno ripristinate le impostazioni di fabbrica del dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Operazione interrotta - Carta esaurita</translation>
+<translation id="491791267030419270">Suggerimenti sulla scrittura di un feedback</translation>
 <translation id="4921665434385737356">Ricarica del <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="4930320165497208503">Per configurare o aggiornare una connessione, vai alle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -536,6 +542,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5866840822086176774">Molto forte</translation>
 <translation id="588258955323874662">Schermo intero</translation>
 <translation id="5895138241574237353">Riavvia</translation>
+<translation id="5898758006340607522">Tasto di accensione</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5903200662178656908">Il dispositivo è una combinazione di tastiera e mouse.</translation>
 <translation id="5916084858004523819">Non consentito</translation>
@@ -858,6 +865,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8919792139048574232">Visualizza i componenti riparati</translation>
 <translation id="8919837981463578619">Operazione non riuscita - Vassoio mancante</translation>
 <translation id="8923267550422472772">Giorno del mese per la reimpostazione</translation>
+<translation id="8925613211674558308">VPN memorizzati nella cache</translation>
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">إشارة متوسطة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">إزالة</translation>
+<translation id="1190378975642195988">مقياس التسارع المُثبَّت في قاعدة الجهاز</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
 <translation id="1196959502276349371">الإصدار <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">التشغيل/الإيقاف المؤقت</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
+<translation id="3492982278147736083">الجيروسكوب المُثبَّت في غطاء الجهاز</translation>
 <translation id="3517001332549868749">‏تحديث نظام التشغيل Chrome</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="385051799172605136">رجوع</translation>
+<translation id="3856304145690230735">الجيروسكوب المُثبَّت في قاعدة الجهاز</translation>
 <translation id="385832974417157471">‏قبل إطفاء الجهاز، عليك تنفيذ الإجراء Powerwash. إذا كان جهازك يحتوي على شاشة قابل للطي، عليك الانتظار إلى أن يكتمل الإجراء Powerwash قبل طي شاشة الجهاز. قد يستغرق اكتمال تنفيذ الإجراء Powerwash مدة تصل إلى دقيقة.</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">الخطوات الأولى</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
+<translation id="4500213108254186382">مقياس التسارع المُثبَّت في غطاء الجهاز</translation>
 <translation id="4503223151711056411">السهم المتّجه لليسار</translation>
 <translation id="4511264077854731334">المدخل</translation>
 <translation id="4521826082652183069">مطابقة الاسم البديل الخاص بالموضوع</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">‏تم فتح قفل شريحة SIM.</translation>
 <translation id="4562494484721939086">لا تتوفر أي خدمة.</translation>
 <translation id="4568938274596692027">اكتملت عملية التثبيت. جارٍ إعادة تشغيل الجهاز...</translation>
+<translation id="4576943788798178439">التوافق مع قلم الشاشة</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">‏يؤدي هذا الخيار إلى إعادة ضبط الجهاز على الإعدادات الأصلية (Powerwash).</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
+<translation id="491791267030419270">نصائح حول كتابة الملاحظات والآراء</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4930320165497208503">لإعداد اتصال أو تعديله، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">قوية جدًا</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
+<translation id="5898758006340607522">زر التشغيل</translation>
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5903200662178656908">يتكوّن الجهاز من لوحة مفاتيح وماوس.</translation>
 <translation id="5916084858004523819">محظورة</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">إليك المشاكل التي تم حلّها.</translation>
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
 <translation id="8923267550422472772">إعادة الضبط في يوم محدَّد من الشهر</translation>
+<translation id="8925613211674558308">بيانات المنتج الحيوية المخزَّنة مؤقتًا</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
 <translation id="8930521118335213258">الند</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>

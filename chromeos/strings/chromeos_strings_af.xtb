@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwyder</translation>
+<translation id="1190378975642195988">Basisversnellingsmeter</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1196959502276349371">Weergawe <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Speel/Laat wag</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl die fermware opdateer nie. Jy kan hierdie venster klein maak. Hierdie opdatering kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="3486220673238053218">definisie</translation>
 <translation id="3488065109653206955">Deels geaktiveer</translation>
+<translation id="3492982278147736083">Dekselgiroskoop</translation>
 <translation id="3517001332549868749">Chrome OS-opdatering</translation>
 <translation id="3527036260304016759">Misluk – Onbekende fout</translation>
 <translation id="3532980081107202182">Ongeveer <ph name="MIN_REMAINING" /> minute oor</translation>
@@ -286,6 +288,7 @@
 <translation id="3621202678540785336">Invoer</translation>
 <translation id="3632579075709132555">Privaatheidskermwisselaar</translation>
 <translation id="3643810137582748570">Slaan kalibrering oor</translation>
+<translation id="3651050199673793219">Kies ’n temperatuureenheid</translation>
 <translation id="3678765385266369662">Kies hoe jy Skryf-beskerming wil afskakel</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />-toets</translation>
 <translation id="370665806235115550">Laai tans …</translation>
@@ -300,8 +303,10 @@
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
 <translation id="3838338534323494292">Nuwe wagwoord</translation>
 <translation id="385051799172605136">Terug</translation>
+<translation id="3856304145690230735">Basisgiroskoop</translation>
 <translation id="385832974417157471">Powerwash jou toestel voordat jy afskakel. As jou toestel ’n deksel het, moet jy wag totdat Powerwash klaar is voordat jy die deksel toemaak. Powerwash kan tot ’n minuut neem om klaar te maak.</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3862598938296403232">Beskrywing word vereis</translation>
 <translation id="3865414814144988605">Resolusie</translation>
 <translation id="3866249974567520381">Beskrywing</translation>
 <translation id="387301095347517405">Die aantal keer wat jou battery deur 'n volledige laaisiklus gegaan het</translation>
@@ -371,6 +376,7 @@
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kon nie die nieversteknetwerkdeurgang pieng nie</translation>
+<translation id="4500213108254186382">Dekselversnellingsmeter</translation>
 <translation id="4503223151711056411">Linkspyl</translation>
 <translation id="4511264077854731334">Portaal</translation>
 <translation id="4521826082652183069">Passing vir onderwerp se alternatiewe naam</translation>
@@ -382,6 +388,7 @@
 <translation id="4561801978359312462">SIM is ontsluit</translation>
 <translation id="4562494484721939086">Geen diens nie</translation>
 <translation id="4568938274596692027">Installasie is afgehandel. Berei tans voor om te herbegin …</translation>
+<translation id="4576943788798178439">Stilusondersteuning</translation>
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4609350030397390689">Verlaag sleutelbordhelderheid</translation>
@@ -537,6 +544,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5866840822086176774">Baie sterk</translation>
 <translation id="588258955323874662">Volskerm</translation>
 <translation id="5895138241574237353">Herbegin</translation>
+<translation id="5898758006340607522">Aan/af-skakelaar</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Toestel is ’n sleutelbord-en-muis-kombinasie.</translation>
 <translation id="5916084858004523819">Verbode</translation>
@@ -672,6 +680,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
+<translation id="7154020516215182599">Deel jou terugvoer of beskryf jou kwessie. Sluit indien moontlik stappe in om jou kwessie te herproduseer.</translation>
 <translation id="7155171745945906037">Bestaande foto in kamera of lêer</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7170236477717446850">Profielprent</translation>
@@ -859,6 +868,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8919792139048574232">Sien wat reggestel is</translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
 <translation id="8923267550422472772">Dag van die maand vir terugstelling</translation>
+<translation id="8925613211674558308">VPD-gekas</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
 <translation id="8930521118335213258">Eweknie</translation>
 <translation id="8930622219860340959">Draadloos</translation>

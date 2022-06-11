@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Povprečna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrani</translation>
+<translation id="1190378975642195988">Osnovni merilnik pospeška</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1196959502276349371">Različica <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Predvajanje/začasna zaustavitev</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Med posodabljanjem vdelane programske opreme ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="3486220673238053218">opredelitev</translation>
 <translation id="3488065109653206955">Delno aktivirano</translation>
+<translation id="3492982278147736083">Žiroskop v pokrovu</translation>
 <translation id="3517001332549868749">Posodobitev sistema Chrome OS</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
 <translation id="3838338534323494292">Novo geslo</translation>
 <translation id="385051799172605136">Nazaj</translation>
+<translation id="3856304145690230735">Osnovni žiroskop</translation>
 <translation id="385832974417157471">Pred zaustavitvijo uporabite funkcijo Powerwash za napravo. Če ima naprava pokrov, počakajte do konca delovanja funkcije Powerwash, preden ga zaprete. Delovanje funkcije Powerwash lahko traja do eno minuto.</translation>
 <translation id="3858860766373142691">Ime</translation>
 <translation id="3865414814144988605">Ločljivost</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
+<translation id="4500213108254186382">Merilnik pospeška v pokrovu</translation>
 <translation id="4503223151711056411">Puščica levo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Ujemanje nadomestnega imena subjekta</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">Kartica SIM je odklenjena</translation>
 <translation id="4562494484721939086">Ni storitve</translation>
 <translation id="4568938274596692027">Namestitev je končana. Pripravljanje na vnovični zagon …</translation>
+<translation id="4576943788798178439">Podpora za pisalo</translation>
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
 <translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
@@ -537,6 +542,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5866840822086176774">Zelo močan</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
+<translation id="5898758006340607522">Gumb za vklop</translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5903200662178656908">Naprava je kombinacija tipkovnice in miške.</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
@@ -859,6 +865,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8919792139048574232">Oglejte si, kaj je bilo popravljeno.</translation>
 <translation id="8919837981463578619">Napaka – ni pladnja</translation>
 <translation id="8923267550422472772">Dan v mesecu za ponastavitev</translation>
+<translation id="8925613211674558308">VPD je predpomnjen</translation>
 <translation id="8928727111548978589">Napaka – zmanjkalo je papirja</translation>
 <translation id="8930521118335213258">Primerljiva aplikacija</translation>
 <translation id="8930622219860340959">Brezžično</translation>

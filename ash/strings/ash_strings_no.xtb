@@ -504,6 +504,7 @@ Koble enheten til strøm.</translation>
 <translation id="3901991538546252627">Kobler til <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen 1 minutt}other{Nedgrader enheten til en tidligere versjon innen # minutter}}</translation>
 <translation id="3923494859158167397">Ingen mobilnettverk er konfigurert</translation>
+<translation id="3925540965556789199"><ph name="DATE" /> – laster inn hendelser.</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
 <translation id="3934456833412894880">Tilpasset lading er på. Batteriet kommer til å holde seg på 80 % for å forlenge batterilevetiden, og det lades helt opp når du trenger det.</translation>
 <translation id="3943857333388298514">Lim inn</translation>
@@ -1055,6 +1056,10 @@ Nylig installert</translation>
 <translation id="7258828758145722155">Redigert i går</translation>
 <translation id="726276584504105859">Dra hit for å bruke delt skjerm</translation>
 <translation id="7262906531272962081">Opprett en påminnelse</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> til
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Velg for å se flere detaljer i Google Kalender.</translation>
 <translation id="7302889331339392448">Direkteteksting er av.</translation>
 <translation id="7303365578352795231">Svarer på en annen enhet</translation>
 <translation id="7305884605064981971">EDGE</translation>

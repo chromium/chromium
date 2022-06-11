@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> اس <ph name="DEVICE_TYPE" /> کا نظم کرتا ہے۔</translation>
 <translation id="1175951029573070619">اوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
+<translation id="1190378975642195988">بیس ایکسلیرومیٹر</translation>
 <translation id="1195447618553298278">نامعلوم خرابی۔</translation>
 <translation id="1196959502276349371">ورژن <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">چلائیں/روکیں</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">فرم ویئر اپ ڈیٹ کرنے کے دوران اس خارجی آلے کو ان پلگ یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
+<translation id="3492982278147736083">لڈ جائرو سکوپ</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="385051799172605136">پیچھے</translation>
+<translation id="3856304145690230735">بیس جائرو سکوپ</translation>
 <translation id="385832974417157471">‏بند کرنے سے پہلے اپنے آلے کو Powerwash کریں۔ اگر آپ کے آلے کا ڈھکن ہے تو ڈھکن بند کرنے سے پہلے Powerwash مکمل ہونے تک انتظار کریں۔ Powerwash کو مکمل ہونے میں ایک منٹ تک کا وقت لگ سکتا ہے۔</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">شروع کریں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4500213108254186382">لِڈ ایکسلیرومیٹر</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>
 <translation id="4511264077854731334">پورٹل</translation>
 <translation id="4521826082652183069">موضوع کا متبادل نام مماثل کریں</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">‏SIM غیر مقفل ہے</translation>
 <translation id="4562494484721939086">کوئی سروس نہیں</translation>
 <translation id="4568938274596692027">انسٹالیشن مکمل ہو گئی۔ ری سٹارٹ ہونے جا رہا ہے...</translation>
+<translation id="4576943788798178439">اسٹائلس سپورٹ</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">کافی مضبوط</translation>
 <translation id="588258955323874662">پوری اسکرین</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
+<translation id="5898758006340607522">پاور بٹن</translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5903200662178656908">آلہ ایک کی بورڈ اور ماؤس کومبو ہے۔</translation>
 <translation id="5916084858004523819">ممنوعہ</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">دیکھیں کیا طے کیا گیا ہے</translation>
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="8923267550422472772">ری سیٹ کرنے کے لیے مہینے کا دن</translation>
+<translation id="8925613211674558308">‏Vpd کیشڈ</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="8930521118335213258">پیئر</translation>
 <translation id="8930622219860340959">وائرلیس</translation>

@@ -190,6 +190,7 @@
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1174073918202301297">Кратенката е додадена</translation>
 <translation id="1174366174291287894">Вашата врска секогаш е безбедна освен ако Chrome не ви каже поинаку</translation>
+<translation id="1174391930667737831">Центар за приватност</translation>
 <translation id="117445914942805388">За да ги избришете податоците од прелистувањето од сите ваши синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />одете на поставките за синхронизација<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Печати...</translation>
 <translation id="1176471985365269981">Не им е дозволено да ги изменуваат датотеките или папките на уредот</translation>
@@ -2088,6 +2089,7 @@
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
 <translation id="2923234477033317484">Отстранете ја сметкава</translation>
 <translation id="2923644930701689793">Пристапете до лентата на камерата на телефонот</translation>
+<translation id="2925658782192398150">Готово, не се најдени проблеми</translation>
 <translation id="2926085873880284723">Врати ги стандардните кратенки</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> не е поддржано.</translation>
 <translation id="2927017729816812676">Склад за кеш</translation>
@@ -5029,6 +5031,7 @@
 <translation id="5891688036610113830">Претпочитани Wi-Fi мрежи</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5895335062901455404">Вашите зачувани поставки и активност ќе бидат спремни на секој уред со ChromeOS Flex кога ќе се најавите со вашата сметка на Google. Може да изберете што да синхронизирате во „Поставки“.</translation>
+<translation id="589541317545606110">Пребарајте ја страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Не дозволувај</translation>
 <translation id="5900186025777217044">Smart Lock е променето.</translation>
 <translation id="5900302528761731119">Фотографија на профилот на Google</translation>
@@ -5080,6 +5083,7 @@
 <translation id="5941153596444580863">Додај лице...</translation>
 <translation id="5941343993301164315">Најавете се на <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Минимизирај</translation>
+<translation id="594221546068848596">Пребарајте ја страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Видливост на уредот</translation>
 <translation id="5943127421590245687">Вашата потврда беше успешна. За да ги отклучите и вратите локалните податоци, внесете ја старата лозинка за <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во „Безбедно прелистување со Google“ за скенирање?</translation>
@@ -6725,6 +6729,7 @@
 <translation id="7582582252461552277">Се претпочита оваа мрежа</translation>
 <translation id="7582844466922312471">Мобилен интернет</translation>
 <translation id="7583948862126372804">Број</translation>
+<translation id="7585106857920830898">Се проверува согласно безбедносните правила на организацијата…</translation>
 <translation id="7586498138629385861">Chrome ќе продолжи да работи додека се отворени Chrome Apps.</translation>
 <translation id="758895749110326677">Помогнете ни да го подобриме играњето на уредите Chromebook</translation>
 <translation id="7589461650300748890">Полека. Внимателно.</translation>
@@ -7002,6 +7007,7 @@
 <translation id="7839051173341654115">Прикажи/Направи резервни копии на медиуми</translation>
 <translation id="7839192898639727867">ИД на клуч за предмет на сертификат</translation>
 <translation id="7842692330619197998">Посетете ја g.co/ChromeEnterpriseAccount ако треба да создадете нова сметка.</translation>
+<translation id="78427265591841839">Пребарајте кој било дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Деинсталирање на Linux</translation>
 <translation id="7843786652787044762">Најавете се на <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Се ажурира разлика</translation>
@@ -7009,6 +7015,7 @@
 <translation id="7847212883280406910">Притиснете Ctrl + Alt + S за да префрлите на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Отвори &amp;слика во нова картичка</translation>
 <translation id="784934925303690534">Временски период</translation>
+<translation id="7850353716413205957">Пребарајте кој било дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите со ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Извештаиве може да содржат податоци за падовите на ChromeOS, кои функции ги користите, колку меморија типично користите и дијагностички податоци и податоци за користењето на апликации на Android. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот со ChromeOS. Ако сте администратор на доменот, поставкава може да ја промените во администрациската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.<ph name="END_PARAGRAPH3" /></translation>

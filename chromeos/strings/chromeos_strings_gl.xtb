@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Eliminar</translation>
+<translation id="1190378975642195988">Acelerómetro da base</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/Pór en pausa</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Mentres se actualiza o firmware, non desenchufes este dispositivo externo nin apagues o ordenador. Podes minimizar esta ventá. Esta actualización pode tardar uns minutos en completarse e é posible que o dispositivo externo non funcione durante o proceso.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
+<translation id="3492982278147736083">Xiroscopio da tapa</translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
 <translation id="3527036260304016759">Produciuse un erro descoñecido</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">O PIN non é válido.</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3856304145690230735">Xiroscopio da base</translation>
 <translation id="385832974417157471">Antes de apagar o dispositivo, utiliza a función Powerwash. Se o dispositivo ten tapa, agarda a que conclúa esta función para pechala. Powerwash pode tardar ata un minuto en rematar.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolución</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
+<translation id="4500213108254186382">Acelerómetro da tapa</translation>
 <translation id="4503223151711056411">Frecha esquerda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia do nome alternativo do asunto</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sen servizo</translation>
 <translation id="4568938274596692027">Completouse a instalación. Preparándose para reiniciar o dispositivo…</translation>
+<translation id="4576943788798178439">Compatibilidade co lapis óptico</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Ao marcar esta opción, restablecerase a configuración de fábrica do dispositivo (Powerwash).</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Detívose (esgotouse o papel)</translation>
+<translation id="491791267030419270">Consellos para escribir comentarios</translation>
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para axustar ou actualizar unha conexión, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -536,6 +542,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5866840822086176774">Moi forte</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5898758006340607522">Botón de acendido</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903200662178656908">O dispositivo é unha combinación de teclado e rato.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
@@ -858,6 +865,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8919792139048574232">Consulta o que se corrixiu</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8923267550422472772">Día do mes no que debe restablecerse o uso de datos</translation>
+<translation id="8925613211674558308">VPD almacenados na memoria caché</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>
 <translation id="8930521118335213258">Semellante</translation>
 <translation id="8930622219860340959">Sen fíos</translation>

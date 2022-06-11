@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3643810137582748570">Hopp over kalibreringen</translation>
+<translation id="3651050199673793219">Velg en temperaturenhet</translation>
 <translation id="3678765385266369662">Velg hvordan du vil slå av skrivebeskyttelsen</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Basegyroskop</translation>
 <translation id="385832974417157471">Utfør en powerwash på enheten før du slår den av. Hvis enheten har lokk, må du vente til powerwashen er fullført før du lukker lokket. Det kan ta opptil et minutt å fullføre powerwashen.</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3862598938296403232">En beskrivelse er nødvendig</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
@@ -678,6 +680,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="714876143603641390">LAN-tilkobling</translation>
+<translation id="7154020516215182599">Del tilbakemeldingen eller beskriv problemet. Ta med en fremgangsmåte for å gjenskape problemet om mulig.</translation>
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbilde</translation>

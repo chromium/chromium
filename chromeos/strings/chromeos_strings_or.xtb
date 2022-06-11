@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1175951029573070619">ସାଧାରଣ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="1190378975642195988">ବେସ ଆକ୍ସିଲେରୋମିଟର</translation>
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
 <translation id="1196959502276349371">ସଂସ୍କରଣ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ଚଲାନ୍ତୁ/ବିରତ କରନ୍ତୁ</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏହି ଅପଡେଟ ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
+<translation id="3492982278147736083">ଲିଡ ଜାଇରୋସ୍କୋପ</translation>
 <translation id="3517001332549868749">ChromeOS ଅପଡେଟ</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
 <translation id="3838338534323494292">ନୂଆ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
+<translation id="3856304145690230735">ବେସ ଜାଇରୋସ୍କୋପ</translation>
 <translation id="385832974417157471">ବନ୍ଦ କରିବା ପୂର୍ବରୁ, ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାରୱାସ କରନ୍ତୁ। ଯଦି ଆପଣଙ୍କ ଡିଭାଇସରେ ଏକ ଲିଡ ଥାଏ, ତେବେ ଲିଡ ବନ୍ଦ କରିବା ପୂର୍ବରୁ ପାୱାରୱାସ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପର୍ଯ୍ୟନ୍ତ ଅପେକ୍ଷା କରନ୍ତୁ। ପାୱାରୱାସ ସମ୍ପୂର୍ଣ୍ଣ ହେବାକୁ ଏକ ମିନିଟ ପର୍ଯ୍ୟନ୍ତ ସମୟ ନେଇପାରେ।</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3865414814144988605">ରିଜୋଲ୍ୟୁଶନ୍</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
+<translation id="4500213108254186382">ଲିଡ ଆକ୍ସିଲେରୋମିଟର</translation>
 <translation id="4503223151711056411">ବାମ ତୀର</translation>
 <translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
 <translation id="4521826082652183069">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="4562494484721939086">କୌଣସି ସେବା ନାହିଁ</translation>
 <translation id="4568938274596692027">ଇନଷ୍ଟଲ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। ରିଷ୍ଟାର୍ଟ ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି...</translation>
+<translation id="4576943788798178439">ଷ୍ଟାଇଲସର ସମର୍ଥନ</translation>
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
@@ -537,6 +542,7 @@
 <translation id="5866840822086176774">ଅତି ଦୃଢ଼</translation>
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
+<translation id="5898758006340607522">ପାୱାର ବଟନ</translation>
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5903200662178656908">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଏବଂ ମାଉସର କମ୍ବୋ ଅଟେ।</translation>
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
@@ -859,6 +865,7 @@
 <translation id="8919792139048574232">କଣ ସମାଧାନ କରାଯାଇଛି ତାହା ଦେଖନ୍ତୁ</translation>
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
 <translation id="8923267550422472772">ରିସେଟ କରିବା ପାଇଁ ମାସର ଦିନ</translation>
+<translation id="8925613211674558308">କ୍ୟାଶ କରାଯାଇଥିବା VPD</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8930521118335213258">ପିଅର୍</translation>
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>

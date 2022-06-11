@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Normal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
+<translation id="1190378975642195988">Acceleròmetre de la base</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
 <translation id="1196959502276349371">Versió <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reprodueix / Posa en pausa</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
+<translation id="3492982278147736083">Giroscopi de la tapa</translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="385051799172605136">Enrere</translation>
+<translation id="3856304145690230735">Giroscopi de la base</translation>
 <translation id="385832974417157471">Abans d'apagar el dispositiu, fes-hi un Powerwash. Si el dispositiu té tapa, espera fins que el Powerwash es completi per tancar-la. Pot tardar fins a un minut a completar-se.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Resolució</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
+<translation id="4500213108254186382">Acceleròmetre de la tapa</translation>
 <translation id="4503223151711056411">Fletxa esquerra</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Nom alternatiu d'assumpte coincident</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM desbloquejada</translation>
 <translation id="4562494484721939086">Sense servei</translation>
 <translation id="4568938274596692027">S'ha completat la instal·lació. S'està preparant el reinici...</translation>
+<translation id="4576943788798178439">Compatibilitat amb el llapis òptic</translation>
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">Es restablirà el dispositiu a la configuració de fàbrica (Powerwash).</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
+<translation id="491791267030419270">Consells per escriure suggeriments</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -536,6 +542,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5866840822086176774">Molt forta</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="5898758006340607522">Botó d'engegada</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5903200662178656908">El dispositiu és un conjunt de teclat i ratolí.</translation>
 <translation id="5916084858004523819">Prohibit</translation>
@@ -858,6 +865,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8919792139048574232">Consulta què s'ha corregit</translation>
 <translation id="8919837981463578619">Error: no es troba la safata</translation>
 <translation id="8923267550422472772">Dia del mes per al restabliment</translation>
+<translation id="8925613211674558308">VPD desades a la memòria cau</translation>
 <translation id="8928727111548978589">Error: no hi ha paper</translation>
 <translation id="8930521118335213258">Aplicació semblant</translation>
 <translation id="8930622219860340959">Sense fil</translation>

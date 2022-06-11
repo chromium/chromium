@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur.</translation>
 <translation id="1175951029573070619">Orta (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Silin</translation>
+<translation id="1190378975642195988">Baza Akselerometri</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
 <translation id="1196959502276349371">Versiya <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Oxudun/Durdurun</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Proqram güncəllənərkən bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu güncəlləmə bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
+<translation id="3492982278147736083">Ekran Giroskopu</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="3856304145690230735">Baza Giroskopu</translation>
 <translation id="385832974417157471">Söndürməzdən əvvəl cihazınızı yenidən formaylayın. Cihazınızın qapağı varsa, qapağı bağlamazdan əvvəl yenidən formatlamanın tamamlanmasını gözləyin. Yenidən formatlamanın tamamlanması bir dəqiqə çəkə bilər.</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
+<translation id="4500213108254186382">Ekran Akselerometr</translation>
 <translation id="4503223151711056411">Sol ox</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subyektin alternativ adının uyğunluğu</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">SIM Kilidi Açılıb</translation>
 <translation id="4562494484721939086">Xidmət yoxdur</translation>
 <translation id="4568938274596692027">Quraşdırma tamamlandı. Yenidən başladılmağa hazırlanır...</translation>
+<translation id="4576943788798178439">Qələm dəstəyi</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4609350030397390689">Klaviatura parlaqlığını azaldın</translation>
@@ -536,6 +541,7 @@
 <translation id="5866840822086176774">Çox güclü</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
+<translation id="5898758006340607522">Qidalanma Düyməsi</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903200662178656908">Cihaz klaviatura və maus kombinidir.</translation>
 <translation id="5916084858004523819">Qadağan olunub</translation>
@@ -858,6 +864,7 @@
 <translation id="8919792139048574232">Düzəlişlərə baxın</translation>
 <translation id="8919837981463578619">Alınmadı - Altlıq yoxdur</translation>
 <translation id="8923267550422472772">Sıfırlamaq üçün ayın günü</translation>
+<translation id="8925613211674558308">Keşlənmiş Vpd</translation>
 <translation id="8928727111548978589">Alınmadı - Kağız yoxdur</translation>
 <translation id="8930521118335213258">Eynisəviyyəli tətbiq</translation>
 <translation id="8930622219860340959">Simsiz</translation>

@@ -18,6 +18,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ממוצע (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">הסרה</translation>
+<translation id="1190378975642195988">מד תאוצה — בסיס</translation>
 <translation id="1195447618553298278">שגיאה לא ידועה.</translation>
 <translation id="1196959502276349371">גרסה <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">הפעלה/השהיה</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
+<translation id="3492982278147736083">ג'ירוסקופ — מסך</translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="385051799172605136">חזרה</translation>
+<translation id="3856304145690230735">ג'ירוסקופ — בסיס</translation>
 <translation id="385832974417157471">‏לפני הכיבוי, צריך לבצע Powerwash במכשיר. אם למכשיר יש מכסה, צריך לחכות לסיום ה-Powerwash לפני שסוגרים את המכסה. פעולת ה-Powerwash עשויה להימשך כדקה.</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
+<translation id="4500213108254186382">מד תאוצה – מסך</translation>
 <translation id="4503223151711056411">חץ שמאלה</translation>
 <translation id="4511264077854731334">פורטל</translation>
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">‏נעילת כרטיס ה-SIM בוטלה</translation>
 <translation id="4562494484721939086">אין שירות</translation>
 <translation id="4568938274596692027">ההתקנה הסתיימה. בהכנה להפעלה מחדש…</translation>
+<translation id="4576943788798178439">תמיכה בסטיילוס</translation>
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
@@ -430,6 +435,7 @@
 <translation id="4915052247106771211">‏המכשיר יאופס להגדרות המקוריות (Powerwash).</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
+<translation id="491791267030419270">טיפים לכתיבת משוב</translation>
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">חזק מאוד</translation>
 <translation id="588258955323874662">מסך מלא</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
+<translation id="5898758006340607522">לחצן הפעלה</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903200662178656908">המכשיר משלב מקלדת ועכבר.</translation>
 <translation id="5916084858004523819">אסור</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">הצגת התיקונים שבוצעו</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8923267550422472772">היום בחודש לאיפוס</translation>
+<translation id="8925613211674558308">‏VPD במטמון</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
 <translation id="8930521118335213258">קצה</translation>
 <translation id="8930622219860340959">אלחוטי</translation>
