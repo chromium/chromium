@@ -185,8 +185,8 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
  protected:
   struct CmdLineArgs {
     CmdLineArgs();
-    CmdLineArgs(const CmdLineArgs&);
-    CmdLineArgs& operator=(const CmdLineArgs&);
+    CmdLineArgs(CmdLineArgs&&);
+    CmdLineArgs& operator=(CmdLineArgs&&);
     ~CmdLineArgs();
 
     // `argc` is modified by toolkits, so store it explicitly.

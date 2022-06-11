@@ -47,10 +47,9 @@ LinuxUI::~LinuxUI() = default;
 
 LinuxUI::CmdLineArgs::CmdLineArgs() = default;
 
-LinuxUI::CmdLineArgs::CmdLineArgs(const CmdLineArgs&) = default;
+LinuxUI::CmdLineArgs::CmdLineArgs(CmdLineArgs&&) = default;
 
-LinuxUI::CmdLineArgs& LinuxUI::CmdLineArgs::operator=(const CmdLineArgs&) =
-    default;
+LinuxUI::CmdLineArgs& LinuxUI::CmdLineArgs::operator=(CmdLineArgs&&) = default;
 
 LinuxUI::CmdLineArgs::~CmdLineArgs() = default;
 
