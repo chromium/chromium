@@ -317,7 +317,9 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
                << phone_status_snapshot.properties().gmscore_version();
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
-  SetStreamableApps(phone_status_snapshot.streamable_apps());
+  if (features::IsEcheSWAEnabled()) {
+    SetStreamableApps(phone_status_snapshot.streamable_apps());
+  }
 }
 
 void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
@@ -343,7 +345,7 @@ void PhoneStatusProcessor::OnHostStatusChanged(
 
 void PhoneStatusProcessor::SetStreamableApps(
     const proto::StreamableApps& streamable_apps) {
-  if (streamable_apps.apps_size() > 0)
+  if (streamable_apps.apps_size() > 0 && recent_apps_interaction_handler_)
     recent_apps_interaction_handler_->SetStreamableApps(streamable_apps);
 }
 
