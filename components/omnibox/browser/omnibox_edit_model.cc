@@ -893,6 +893,10 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     log.tab_id = client_->GetSessionID();
   }
   autocomplete_controller()->AddProviderAndTriggeringLogs(&log);
+
+  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
+                                match.rich_autocompletion_triggered);
+
   client_->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);

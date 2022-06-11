@@ -179,6 +179,19 @@ struct AutocompleteMatch {
     DOCUMENT_TYPE_SIZE
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RichAutocompletionType {
+    kNone = 0,
+    kUrlNonPrefix = 1,
+    kUrlSplit = 2,
+    kTitlePrefix = 3,
+    kTitleNonPrefix = 4,
+    kTitleSplit = 5,
+    kShortcutTextPrefix = 6,
+    kMaxValue = kShortcutTextPrefix,
+  };
+
   static const char* const kDocumentTypeStrings[];
 
   // Return a string version of the core type values.
@@ -593,7 +606,8 @@ struct AutocompleteMatch {
   // can't be used to trigger logging.
   // TODO(manukh): remove `rich_autocompletion_triggered` when counterfactual
   //  experiments end.
-  bool rich_autocompletion_triggered = false;
+  RichAutocompletionType rich_autocompletion_triggered =
+      RichAutocompletionType::kNone;
   // The inline autocompletion to display before the user's input in the
   // omnibox, if this match becomes the default match. Always empty if
   // non-prefix autocompletion is disabled.

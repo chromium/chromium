@@ -915,6 +915,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.RichAutocompletion.Triggered"
+    enum="OmniboxRichAutocompletionType" expires_after="2022-12-08">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the number of sessions for which each type of rich autocompletion
+    triggered; does not measure the number of times each type of rich
+    autocompletion triggered.
+
+    As the user types into the omnibox, the omnibox suggestions are updated.
+    Some of those suggestions may have rich autocompletion. No suggestion may
+    have multiple types of rich autocompletion. A type of rich autocompletion is
+    considered triggered only if the default suggestion has rich autocompletion.
+    If a non-default suggestion has rich autocompletion, does not suffice. If
+    any input during the session triggered a rich autocompletion type, that type
+    is considered triggered for the entire session.
+
+    Recorded multiple times per omnibox session (i.e. per user selecting a
+    suggestion). Recorded once for each type of rich autocompletion that
+    triggered during the session (i.e. while the user was typing their input).
+    If a rich autocompletion type triggered multiple times during the session
+    (very common), it will be logged exactly once. Hence, it's impossible for
+    any single bucket's count to be larger than the count of omnibox sessions or
+    Omnibox.RichAutocompletion.Triggered.Any. If multiple rich autocompletion
+    types triggered during the session (less common), each will be logged.
+    Hence, it's possible for the total count of this histogram to be larger than
+    the count of omnibox sessions.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.RichAutocompletion.Triggered.Any" units="Boolean"
+    expires_after="2022-12-08">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the number of sessions for which any type of rich autocompletion
+    triggered.
+
+    As the user types into the omnibox, the omnibox suggestions are updated.
+    Some of those suggestions may have rich autocompletion. No suggestion may
+    have multiple types of rich autocompletion. A type of rich autocompletion is
+    considered triggered only if the default suggestion has rich autocompletion.
+    If a non-default suggestion has rich autocompletion, does not suffice. If
+    any input during the session triggered a rich autocompletion type, that type
+    is considered triggered for the entire session.
+
+    The related &quot;Omnibox.RichAutocompletion.Triggered&quot; histogram
+    breaks down the trigger count for each rich autocompletion type.
+
+    Recorded exactly once per omnibox session (i.e. per user selecting a
+    suggestion).
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Search.OffTheRecord" enum="BooleanOffTheRecord"
     expires_after="2022-08-02">
   <owner>sideyilmaz@chromium.org</owner>
@@ -1447,6 +1503,28 @@ chromium-metrics-reviews@google.com.
 
     The total count of both buckets is how many times we've offered the chip
     total, and matches the sum of Omnibox.ResumeJourneyShown.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestionUsed.RichAutocompletion"
+    enum="OmniboxRichAutocompletionType" expires_after="2022-12-08">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Measures the number of sessions for which each type of rich autocompletion
+    was used.
+
+    As the user types into the omnibox, the omnibox suggestions are updated.
+    Some of those suggestions may have rich autocompletion. No suggestion may
+    have multiple types of rich autocompletion. A type of rich autocompletion is
+    considered triggered only if the default suggestion has rich autocompletion.
+    If a non-default suggestion has rich autocompletion, does not suffice. If
+    any input during the session triggered a rich autocompletion type, that type
+    is considered triggered for the entire session.
+
+    Recorded exactly once per omnibox session (i.e. per user selecting a
+    suggestion).
   </summary>
 </histogram>
 

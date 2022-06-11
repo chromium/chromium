@@ -504,7 +504,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
                  const std::string primary_text,
                  const std::string secondary_text, bool shortcut_provider,
                  bool expected_return,
-                 bool expected_rich_autocompletion_triggered,
+                 AutocompleteMatch::RichAutocompletionType
+                     expected_rich_autocompletion_triggered,
                  const std::string expected_inline_autocompletion,
                  const std::string expected_prefix_autocompletion,
                  const std::string expected_additional_text,
@@ -554,28 +555,32 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     {
       SCOPED_TRACE("primary prefix");
       test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           false, "_mixd_x_primary", "", "", true);
+           AutocompleteMatch::RichAutocompletionType::kNone, "_mixd_x_primary",
+           "", "", true);
     }
 
     // Otherwise, prefer secondary text prefix.
     {
       SCOPED_TRACE("secondary prefix");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           true, "_mixd_x_secondary", "", "y_mixd_x_primary", true);
+           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
+           "_mixd_x_secondary", "", "y_mixd_x_primary", true);
     }
 
     // Otherwise, prefer primary text non-prefix (wordbreak).
     {
       SCOPED_TRACE("primary non-prefix");
       test("x", false, "y_mixd_x_primary", "y_mixd_x_secondary", false, true,
-           true, "_primary", "y_mixd_", "", true);
+           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "_primary",
+           "y_mixd_", "", true);
     }
 
     // Otherwise, prefer secondary text non-prefix (wordbreak).
     {
       SCOPED_TRACE("secondary non-prefix");
       test("x", false, "y_mid_y_primary", "y_mixd_x_secondary", false, true,
-           true, "_secondary", "y_mixd_", "y_mid_y_primary", true);
+           AutocompleteMatch::RichAutocompletionType::kTitleNonPrefix,
+           "_secondary", "y_mixd_", "y_mid_y_primary", true);
     }
 
     // We don't explicitly test that non-wordbreak matches aren't autocompleted,
@@ -589,14 +594,14 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     {
       SCOPED_TRACE("no autocompletion applicable");
       test("x", false, "y_mid_y_primary", "y_mid_y_secondary", false, false,
-           false, "", "", "", false);
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
 
     // Don't autocomplete if |prevent_inline_autocomplete| is true.
     {
       SCOPED_TRACE("prevent inline autocomplete");
       test("x", true, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           false, "", "", "", false);
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
   }
 
@@ -613,11 +618,12 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionSplitCompletionMinChar", "2"},
         });
 
-    // Do autocomplete title if input is greater than limits.
+    // Do autocomplete URL non-prefix if input is greater than limits.
     {
       SCOPED_TRACE("min char shorter than input");
       test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
-           true, true, "ary", "y_mixd_", "", true);
+           true, AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix,
+           "ary", "y_mixd_", "", true);
     }
 
     // Usually, title autocompletion is preferred to non-prefix. Autocomplete
@@ -626,14 +632,15 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
       SCOPED_TRACE(
           "title min char longer & non-prefix min char shorter than input");
       test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           true, "primary", "y_mixd_", "", true);
+           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "primary",
+           "y_mixd_", "", true);
     }
 
     // Don't autocomplete title and non-prefix if input is less than limits.
     {
       SCOPED_TRACE("min char longer than input");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           false, "", "", "", false);
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
   }
 
@@ -641,7 +648,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
   {
     SCOPED_TRACE("feature disabled");
     test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
-         false, "", "", "", false);
+         AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
   }
 
   // Don't autocomplete if the RichAutocompletionCounterfactual param is
@@ -664,7 +671,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     {
       SCOPED_TRACE("min char shorter than input, counterfactual");
       test("x_prim", false, "y_mixd_x_primary", "x_mixd_x_secondary", false,
-           false, true, "", "", "", false);
+           false, AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "",
+           "", "", false);
     }
 
     {
@@ -672,14 +680,15 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
           "title min char longer & non-prefix min char shorter than input, "
           "counterfactual");
       test("x_", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           true, "", "", "", false);
+           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "", "", "",
+           false);
     }
 
     // Don't trigger if input is less than limits.
     {
       SCOPED_TRACE("min char longer than input, counterfactual");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, false,
-           false, "", "", "", false);
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
   }
 
@@ -698,7 +707,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     {
       SCOPED_TRACE("prefer URLs over prefixes");
       test("x", false, "y_mixd_x_primary", "x_mixd_x_secondary", false, true,
-           true, "_primary", "y_mixd_", "", true);
+           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "_primary",
+           "y_mixd_", "", true);
     }
   }
 
@@ -719,22 +729,23 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     // contains no spaces.
     {
       SCOPED_TRACE("shortcut, input contains no spaces");
-      test("x", false, "primary x x", "x x secondary", true, true, true,
+      test("x", false, "primary x x", "x x secondary", true, true,
+           AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
            " x secondary", "", "primary x x", true);
     }
 
     // Don't trigger if the suggestion is not from the shortcut provider.
     {
       SCOPED_TRACE("not shortcut");
-      test("x", false, "primary x x", "x x secondary", false, false, false, "",
-           "", "", false);
+      test("x", false, "primary x x", "x x secondary", false, false,
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
 
     // Don't trigger if the input contains spaces.
     {
       SCOPED_TRACE("input contains spaces");
-      test("x x", false, "primary x x", "x x secondary", true, false, false, "",
-           "", "", false);
+      test("x x", false, "primary x x", "x x secondary", true, false,
+           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
   }
 
@@ -752,7 +763,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         });
     {
       SCOPED_TRACE("input with spaces");
-      test("x x", false, "primary x x", "secondary x x", true, true, true, "",
+      test("x x", false, "primary x x", "secondary x x", true, true,
+           AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "",
            "primary ", "", true);
     }
   }
@@ -834,6 +846,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   auto test = [](const std::string input_text, const std::string primary_text,
                  const std::string secondary_text,
                  const std::string shortcut_text, bool expected_return,
+                 AutocompleteMatch::RichAutocompletionType
+                     expected_rich_autocompletion_triggered,
                  const std::string expected_inline_autocompletion,
                  const std::string expected_additional_text,
                  bool expected_allowed_to_be_default_match) {
@@ -847,6 +861,9 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
                                     base::UTF8ToUTF16(secondary_text), input,
                                     base::UTF8ToUTF16(shortcut_text)),
         expected_return);
+
+    EXPECT_EQ(match.rich_autocompletion_triggered,
+              expected_rich_autocompletion_triggered);
 
     EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
               expected_inline_autocompletion);
@@ -871,7 +888,9 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   {
     SCOPED_TRACE("URL");
     test("prefix", "prefix-url.com/suffix", "prefix title suffix",
-         "prefix shortcut text suffix", true, "-url.com/suffix", "", true);
+         "prefix shortcut text suffix", true,
+         AutocompleteMatch::RichAutocompletionType::kNone, "-url.com/suffix",
+         "", true);
   }
 
   // Prefer title prefix AC when the input prefix matches the title and shortcut
@@ -879,8 +898,9 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   {
     SCOPED_TRACE("Title");
     test("prefix ", "prefix-url.com/suffix", "prefix title suffix",
-         "prefix shortcut text suffix", true, "title suffix",
-         "prefix-url.com/suffix", true);
+         "prefix shortcut text suffix", true,
+         AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
+         "title suffix", "prefix-url.com/suffix", true);
   }
 
   // Do shortcut text prefix AC when title and URL don't prefix match, even if
@@ -888,6 +908,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   {
     SCOPED_TRACE("Shortcut text");
     test("short", "url.com/shortcut", "title shortcut", "shortcut text", true,
+         AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix,
          "cut text", "url.com/shortcut", true);
   }
 
@@ -896,7 +917,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
   {
     SCOPED_TRACE("None");
     test("suffix", "prefix-url.com/suffix", "prefix title suffix",
-         "prefix shortcut text suffix", false, "", "", false);
+         "prefix shortcut text suffix", false,
+         AutocompleteMatch::RichAutocompletionType::kNone, "", "", false);
   }
 }
 

@@ -70881,6 +70881,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="forced query"/>
 </enum>
 
+<enum name="OmniboxRichAutocompletionType">
+  <int value="0" label="None"/>
+  <int value="1" label="URL non-prefix"/>
+  <int value="2" label="URL split"/>
+  <int value="3" label="Title prefix"/>
+  <int value="4" label="Title non-prefix"/>
+  <int value="5" label="Title split"/>
+  <int value="6" label="Shortcut text prefix"/>
+</enum>
+
 <enum name="OmniboxSearchEngine">
   <int value="0" label="Unknown"/>
   <int value="1" label="Google"/>

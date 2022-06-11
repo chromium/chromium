@@ -1264,12 +1264,11 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     duplicate_match.action = nullptr;
   }
 
-  // Copy |rich_autocompletion_triggered| for counterfactual logging. Only copy
-  // true values since a rich autocompleted would have
-  // |allowed_to_be_default_match| true and would be preferred to a non rich
-  // autocompleted duplicate in non-counterfactual variations.
-  if (duplicate_match.rich_autocompletion_triggered)
-    rich_autocompletion_triggered = true;
+  // Copy `rich_autocompletion_triggered` for counterfactual logging.
+  if (rich_autocompletion_triggered == RichAutocompletionType::kNone) {
+    rich_autocompletion_triggered =
+        duplicate_match.rich_autocompletion_triggered;
+  }
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(
@@ -1298,9 +1297,9 @@ bool AutocompleteMatch::TryRichAutocompletion(
                        base::CompareCase::SENSITIVE)) {
     if (counterfactual)
       return false;
-    // This case intentionally doesn't set |rich_autocompletion_triggered| to
-    // true since presumably non-rich autocompletion should also be able to
-    // handle this case.
+    // This case intentionally doesn't set |rich_autocompletion_triggered| since
+    // presumably non-rich autocompletion should also be able to handle this
+    // case.
     inline_autocompletion = primary_text.substr(input_text_lower.length());
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & prefix");
@@ -1351,7 +1350,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
   // |prefer_primary_non_prefix_over_secondary_prefix|, this may be invoked
   // either before or after trying prefix secondary autocompletion.
   auto NonPrefixPrimaryHelper = [&]() {
-    rich_autocompletion_triggered = true;
+    rich_autocompletion_triggered = RichAutocompletionType::kUrlNonPrefix;
     if (counterfactual)
       return false;
     inline_autocompletion =
@@ -1376,7 +1375,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_titles &&
       base::StartsWith(secondary_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
-    rich_autocompletion_triggered = true;
+    rich_autocompletion_triggered = RichAutocompletionType::kTitlePrefix;
     if (counterfactual)
       return false;
     additional_text = primary_text;
@@ -1400,7 +1399,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_non_prefix && can_autocomplete_titles &&
       (find_index = FindAtWordbreak(secondary_text_lower, input_text_lower)) !=
           std::u16string::npos) {
-    rich_autocompletion_triggered = true;
+    rich_autocompletion_triggered = RichAutocompletionType::kTitleNonPrefix;
     if (counterfactual)
       return false;
     additional_text = primary_text;
@@ -1426,7 +1425,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
       !(input_words = FindWordsSequentiallyAtWordbreak(primary_text_lower,
                                                        input_text_lower))
            .empty()) {
-    rich_autocompletion_triggered = true;
+    rich_autocompletion_triggered = RichAutocompletionType::kUrlSplit;
     if (counterfactual)
       return false;
     split_autocompletion = SplitAutocompletion(
@@ -1450,7 +1449,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
       !(input_words = FindWordsSequentiallyAtWordbreak(secondary_text_lower,
                                                        input_text_lower))
            .empty()) {
-    rich_autocompletion_triggered = true;
+    rich_autocompletion_triggered = RichAutocompletionType::kTitleSplit;
     if (counterfactual)
       return false;
     additional_text = primary_text;
@@ -1466,7 +1465,7 @@ bool AutocompleteMatch::TryRichAutocompletion(
   if (can_autocomplete_shortcut_text &&
       base::StartsWith(shortcut_text_lower, input_text_lower,
                        base::CompareCase::SENSITIVE)) {
-    rich_autocompletion_triggered = true;
+    rich_autocompletion_triggered = RichAutocompletionType::kShortcutTextPrefix;
     if (counterfactual)
       return false;
     additional_text = primary_text;

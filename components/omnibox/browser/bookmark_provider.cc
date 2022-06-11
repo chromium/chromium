@@ -177,7 +177,7 @@ std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
   // It's unnecessary to compare the matches themselves because all
   // |matches_without_paths| should be contained in |matches_with_paths|.
   if (matches_without_paths.size() != matches_with_paths.size()) {
-    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+    client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
         OmniboxTriggeredFeatureService::Feature::kBookmarkPaths);
   }
 
@@ -194,7 +194,7 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
       input.text().length() >=
           OmniboxFieldTrial::
               ShortBookmarkSuggestionsByTotalInputLengthThreshold()) {
-    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+    client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
         OmniboxTriggeredFeatureService::Feature::
             kShortBookmarkSuggestionsByTotalInputLength);
     return OmniboxFieldTrial::
