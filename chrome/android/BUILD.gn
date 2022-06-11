@@ -15,8 +15,6 @@ import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
-import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
-import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import("//chrome/browser/password_manager/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
@@ -310,9 +308,6 @@ android_library("chrome_java") {
     "//chrome/browser/banners/android:java",
     "//chrome/browser/bluetooth/android:java",
     "//chrome/browser/browser_controls/android:java",
-    "//chrome/browser/commerce/android:java",
-    "//chrome/browser/commerce/merchant_viewer/android:java",
-    "//chrome/browser/commerce/price_tracking/proto:proto_java",
     "//chrome/browser/consent_auditor/android:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/dependency_injection:java",
@@ -414,7 +409,6 @@ android_library("chrome_java") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/webshare/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/commerce/core:proto_java",
     "//components/component_updater/android:background_task_update_scheduler_java",
     "//components/content_capture/android:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -626,14 +620,36 @@ android_library("chrome_java") {
   sources += share_java_sources
   deps += share_java_deps
 
-  # TODO(crbug/1186003): Instead of adding source files, add it as a separate
-  # dependency when circular deps is resolved.
-  sources += price_tracking_java_sources
-
-  # TODO(crbug/1210158): Instead of adding source files, add it as a separate
-  # dependency when circular deps is resolved.
-  sources += commerce_subscriptions_java_sources
-  deps += commerce_subscriptions_java_deps
+#  commerce_subscriptions_java_deps = [
+#    "//base:base_java",
+#    "//base:jni_java",
+#    "//build/android:build_java",
+#    "//chrome/android:base_module_java",
+#    "//chrome/browser/android/lifecycle:java",
+#    "//chrome/browser/endpoint_fetcher:java",
+#    "//chrome/browser/flags:java",
+#    "//chrome/browser/preferences:java",
+#    "//chrome/browser/profiles/android:java",
+#    "//chrome/browser/tab:java",
+#    "//chrome/browser/tabmodel:java",
+#    "//third_party/androidx:androidx_annotation_annotation_java",
+#    "//url:gurl_java",
+#  ]
+  deps += [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/android:base_module_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/endpoint_fetcher:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
 
   if (enable_basic_printing) {
     deps += [ "//printing:printing_java" ]
@@ -673,7 +689,6 @@ java_group("chrome_all_java") {
   deps = [
     ":chrome_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
-    "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/content_creation/notes/internal/android:java",
     "//chrome/browser/content_creation/reactions/internal/android:java",
     "//chrome/browser/download/internal/android:java",
@@ -704,9 +719,6 @@ group("jni_headers") {
     "//chrome/android/features/start_surface:jni_headers",
     "//chrome/browser/android/browserservices/metrics:jni_headers",
     "//chrome/browser/android/browserservices/verification:jni_headers",
-    "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
-    "//chrome/browser/commerce/price_tracking/android:jni_headers",
-    "//chrome/browser/commerce/subscriptions/android:jni_headers",
     "//chrome/browser/contextmenu:jni_headers",
     "//chrome/browser/download/android:jni_headers",
     "//chrome/browser/enterprise/util:jni_headers",

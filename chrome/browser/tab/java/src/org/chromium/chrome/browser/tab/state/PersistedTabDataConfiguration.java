@@ -20,7 +20,6 @@ public enum PersistedTabDataConfiguration {
     ENCRYPTED_CRITICAL_PERSISTED_TAB_DATA("ECPTDFB"),
     MOCK_PERSISTED_TAB_DATA("MPTD"),
     ENCRYPTED_MOCK_PERSISTED_TAB_DATA("EMPTD"),
-    SHOPPING_PERSISTED_TAB_DATA("SPTD"),
     STORE_PERSISTED_TAB_DATA("STPTD"),
     EMPTY_BYTE_BUFFER_TEST_CONFIG("EBBTC"),
     // TODO(crbug.com/1113828) investigate separating test from prod test implementations
@@ -77,8 +76,6 @@ public enum PersistedTabDataConfiguration {
         sEncryptedLookup.put(CriticalPersistedTabData.class, ENCRYPTED_CRITICAL_PERSISTED_TAB_DATA);
         sLookup.put(MockPersistedTabData.class, MOCK_PERSISTED_TAB_DATA);
         sEncryptedLookup.put(MockPersistedTabData.class, ENCRYPTED_MOCK_PERSISTED_TAB_DATA);
-        sLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
-        sEncryptedLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
         sLookup.put(StorePersistedTabData.class, STORE_PERSISTED_TAB_DATA);
         sEncryptedLookup.put(StorePersistedTabData.class, STORE_PERSISTED_TAB_DATA);
 
@@ -94,7 +91,6 @@ public enum PersistedTabDataConfiguration {
         ENCRYPTED_MOCK_PERSISTED_TAB_DATA.mStorageFactory = () -> {
             return getEncryptedFilePersistedTabDataStorage();
         };
-        SHOPPING_PERSISTED_TAB_DATA.mStorageFactory = new LevelDBPersistedTabDataStorageFactory();
 
         STORE_PERSISTED_TAB_DATA.mStorageFactory = new LevelDBPersistedTabDataStorageFactory();
 

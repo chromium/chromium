@@ -52,36 +52,4 @@ ProfileProtoDBFactory<coupon_db::CouponContentProto>::GetInstance() {
   return GetCouponProfileProtoDBFactory();
 }
 
-#else
-ProfileProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-GetCommerceSubscriptionProfileProtoDBFactory() {
-  static base::NoDestructor<ProfileProtoDBFactory<
-      commerce_subscription_db::CommerceSubscriptionContentProto>>
-      instance;
-  return instance.get();
-}
-
-template <>
-ProfileProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>*
-ProfileProtoDBFactory<
-    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
-  return GetCommerceSubscriptionProfileProtoDBFactory();
-}
-
-ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
-GetMerchantSignalProfileProtoDBFactory() {
-  static base::NoDestructor<
-      ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>>
-      instance;
-  return instance.get();
-}
-
-template <>
-ProfileProtoDBFactory<merchant_signal_db::MerchantSignalContentProto>*
-ProfileProtoDBFactory<
-    merchant_signal_db::MerchantSignalContentProto>::GetInstance() {
-  return GetMerchantSignalProfileProtoDBFactory();
-}
 #endif

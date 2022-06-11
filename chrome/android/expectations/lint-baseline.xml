@@ -7010,28 +7010,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND, FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE"
-        errorLine1="                foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);"
-        errorLine2="                                                                             ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java"
-            line="671"
-            column="78"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: FoundBuyableProduct.NOT_FOUND, FoundBuyableProduct.FOUND, FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE"
-        errorLine1="                FoundBuyableProduct.NUM_ENTRIES);"
-        errorLine2="                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java"
-            line="713"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Type.ALL_SITES, Type.ADS, Type.AUGMENTED_REALITY, Type.AUTOMATIC_DOWNLOADS, Type.BACKGROUND_SYNC, Type.BLUETOOTH, Type.BLUETOOTH_SCANNING, Type.CAMERA, Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION, Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS, Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY, Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE"
         errorLine1="        for (@SiteSettingsCategory.Type int i = 0; i &lt; SiteSettingsCategory.Type.NUM_ENTRIES; i++) {"
         errorLine2="                                                                                 ~~~~~~~~~~~">

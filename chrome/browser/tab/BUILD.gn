@@ -50,9 +50,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataResult.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataStorageFactory.java",
-    "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLogger.java",
     "java/src/org/chromium/chrome/browser/tab/state/SerializedCriticalPersistedTabData.java",
-    "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/StorePersistedTabData.java",
   ]
 
@@ -72,7 +70,6 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/android/crypto:java",
-    "//chrome/browser/commerce/android:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",
@@ -135,7 +132,6 @@ proto_java_library("critical_persisted_tab_data_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
   sources = [
     "$proto_path/critical_persisted_tab_data.proto",
-    "$proto_path/shopping_persisted_tab_data.proto",
     "$proto_path/store_persisted_tab_data.proto",
   ]
 }

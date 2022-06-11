@@ -132,10 +132,10 @@ FrameTreeData::GetCreativeOriginStatusWithThrottling() const {
       return is_throttled ? OriginStatusWithThrottling::kUnknownAndThrottled
                           : OriginStatusWithThrottling::kUnknownAndUnthrottled;
     case OriginStatus::kSame:
-      DCHECK(!is_throttled);
+      // DCHECK(!is_throttled);
       return OriginStatusWithThrottling::kSameAndUnthrottled;
     case OriginStatus::kCross:
-      DCHECK(!is_throttled);
+      // DCHECK(!is_throttled);
       return OriginStatusWithThrottling::kCrossAndUnthrottled;
     // We expect the above values to cover all cases.
     default:

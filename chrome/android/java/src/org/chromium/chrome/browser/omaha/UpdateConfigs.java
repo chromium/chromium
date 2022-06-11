@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 import java.lang.annotation.Retention;
@@ -89,23 +88,6 @@ public class UpdateConfigs {
         }
 
         return false;
-    }
-
-    /** @return A test {@link UpdateState} to use or {@code null} if no test state was specified. */
-    public static @UpdateState Integer getMockUpdateState() {
-        String forcedUpdateType = getStringParamValue(ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE);
-        if (TextUtils.isEmpty(forcedUpdateType)) return null;
-
-        switch (forcedUpdateType) {
-            case NONE_SWITCH_VALUE:
-                return UpdateState.NONE;
-            case UPDATE_AVAILABLE_SWITCH_VALUE:
-                return UpdateState.UPDATE_AVAILABLE;
-            case UNSUPPORTED_OS_VERSION_SWITCH_VALUE:
-                return UpdateState.UNSUPPORTED_OS_VERSION;
-            default:
-                return null;
-        }
     }
 
     /**

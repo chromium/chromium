@@ -261,29 +261,7 @@ public class UpdateStatusProvider {
         }
 
         private UpdateStatus getTestStatus() {
-            @UpdateState
-            Integer forcedUpdateState = UpdateConfigs.getMockUpdateState();
-            if (forcedUpdateState == null) return null;
-
-            UpdateStatus status = new UpdateStatus();
-
-            status.mIsSimulated = true;
-            status.updateState = forcedUpdateState;
-
-            // Push custom configurations for certain update states.
-            switch (forcedUpdateState) {
-                case UpdateState.UPDATE_AVAILABLE:
-                    String updateUrl = UpdateConfigs.getMockMarketUrl();
-                    if (!TextUtils.isEmpty(updateUrl)) status.updateUrl = updateUrl;
-                    break;
-                case UpdateState.UNSUPPORTED_OS_VERSION:
-                    status.latestUnsupportedVersion =
-                            SharedPreferencesManager.getInstance().readString(
-                                    ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
-                    break;
-            }
-
-            return status;
+            return null;
         }
 
         private UpdateStatus getRealStatus(Context context) {
@@ -294,8 +272,7 @@ public class UpdateStatusProvider {
                 status.latestVersion =
                         VersionNumberGetter.getInstance().getLatestKnownVersion(context);
 
-                boolean allowedToUpdate =
-                        checkForSufficientStorage() && isGooglePlayStoreAvailable(context);
+                boolean allowedToUpdate = false;
                 status.updateState =
                         allowedToUpdate ? UpdateState.UPDATE_AVAILABLE : UpdateState.NONE;
 
@@ -325,16 +302,6 @@ public class UpdateStatusProvider {
             if (minRequiredStorage == -1) return true;
 
             return size >= minRequiredStorage;
-        }
-
-        private boolean isGooglePlayStoreAvailable(Context context) {
-            try {
-                context.getPackageManager().getPackageInfo(
-                        GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
-            }
-            return true;
         }
 
         private long getSize(StatFs statFs) {
