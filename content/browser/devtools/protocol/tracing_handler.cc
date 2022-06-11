@@ -722,7 +722,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
     if (config.isJust()) {
-      base::flat_map<std::string, base::Value> dict;
+      base::Value::Dict dict;
       CHECK(crdtp::ConvertProtocolValue(*config.fromJust(), &dict));
       browser_config =
           GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
