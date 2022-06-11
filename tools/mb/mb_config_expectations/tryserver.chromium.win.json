@@ -167,15 +167,6 @@
       "use_libfuzzer": true
     }
   },
-  "win10-clang-tidy-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
   "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,
