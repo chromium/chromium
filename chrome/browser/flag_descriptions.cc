@@ -5321,7 +5321,7 @@ const char kOobeHidDetectionRevampDescription[] =
 
 const char kPartialSplit[] = "Partial Split";
 const char kPartialSplitDescription[] =
-    "Enables the option to snap windows by thirds for split view.";
+    "Enables the option to snap two windows into 2/3 and 1/3 for split view.";
 
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
