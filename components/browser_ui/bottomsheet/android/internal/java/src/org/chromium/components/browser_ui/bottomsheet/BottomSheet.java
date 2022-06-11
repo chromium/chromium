@@ -583,12 +583,6 @@ class BottomSheet extends FrameLayout
         mIsSheetOpen = false;
 
         for (BottomSheetObserver o : mObservers) o.onSheetClosed(reason);
-        // If the sheet contents are cleared out before #onSheetClosed is called, do not try to
-        // retrieve the accessibility string.
-        if (getCurrentSheetContent() != null) {
-            announceForAccessibility(getResources().getString(
-                    getCurrentSheetContent().getSheetClosedAccessibilityStringId()));
-        }
         clearFocus();
 
         setFocusable(false);
@@ -995,17 +989,12 @@ class BottomSheet extends FrameLayout
         mCurrentState = state;
 
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
-            int resId = mCurrentState == SheetState.FULL
-                    ? getCurrentSheetContent().getSheetFullHeightAccessibilityStringId()
-                    : getCurrentSheetContent().getSheetHalfHeightAccessibilityStringId();
-            announceForAccessibility(getResources().getString(resId));
 
             // TalkBack will announce the content description if it has changed, so wait to set the
             // content description until after announcing full/half height.
             setFocusable(true);
             setFocusableInTouchMode(true);
-            String contentDescription = getResources().getString(
-                    getCurrentSheetContent().getSheetContentDescriptionStringId());
+            String contentDescription = "";
 
             if (getCurrentSheetContent().swipeToDismissEnabled()) {
                 contentDescription += ". "

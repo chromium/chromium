@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
@@ -151,20 +150,6 @@ public class ChromeCachedFlags {
                         add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
                         add(PaintPreviewTabService.ALLOW_SRP);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
-                        add(TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX);
-                        add(TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH);
-                        add(TabUiFeatureUtilities.ENABLE_SEARCH_CHIP);
-                        add(TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION);
-                        add(TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST);
-                        add(TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING);
-                        add(TabUiFeatureUtilities.ZOOMING_MIN_MEMORY);
-                        add(TabUiFeatureUtilities.ZOOMING_MIN_SDK);
-                        add(TabUiFeatureUtilities.SKIP_SLOW_ZOOMING);
-                        add(TabUiFeatureUtilities.TAB_GRID_LAYOUT_ANDROID_NEW_TAB_TILE);
-                        add(TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO);
-                        add(TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH);
-                        add(TabUiFeatureUtilities.TAB_STRIP_TAB_WIDTH);
                         add(ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS);
                     }
                 };

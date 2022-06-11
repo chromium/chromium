@@ -40,8 +40,8 @@ class PermissionDialogModel {
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, delegate.getPrimaryButtonText())
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, delegate.getSecondaryButtonText())
                 .with(ModalDialogProperties.CONTENT_DESCRIPTION, delegate.getMessageText())
-                .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
-                .with(ModalDialogProperties.TOUCH_FILTERED_CALLBACK, touchFilteredCallback)
+                .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, false)
+//                .with(ModalDialogProperties.TOUCH_FILTERED_CALLBACK, touchFilteredCallback)
                 .build();
     }
 

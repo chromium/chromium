@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -399,10 +398,6 @@ public class ProcessInitializationHandler {
             new OptimizationGuideBridgeFactory(registeredTypesAllowList)
                     .create()
                     .onDeferredStartup();
-            if (PriceTrackingUtilities.isPriceTrackingEligible()
-                    && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
-                ShoppingPersistedTabData.onDeferredStartup();
-            }
         });
     }
 

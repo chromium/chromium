@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -32,17 +31,13 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
-     *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
-            StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
-        super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
+        super(host, contentContainer, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier);
     }
 

@@ -56,13 +56,6 @@
         android:layout_gravity="start|top"
         android:focusable="true" />
 
-    <ViewStub
-        android:id="@+id/status_indicator_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inflatedId="@+id/status_indicator"
-        android:layout="@layout/status_indicator_container" />
-
     <FrameLayout
         android:id="@+id/sheet_container"
         android:layout_width="match_parent"

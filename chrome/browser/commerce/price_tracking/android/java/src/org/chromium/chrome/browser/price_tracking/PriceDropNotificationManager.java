@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingId
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManagerImpl;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -161,15 +160,14 @@ public class PriceDropNotificationManager {
      *         which could influence the Chime registration.
      */
     public boolean isEnabled() {
-        return PriceTrackingUtilities.getPriceTrackingNotificationsEnabled();
+        return false;
     }
 
     /**
      * @return Whether price drop notifications can be posted.
      */
     public boolean canPostNotification() {
-        if (!areAppNotificationsEnabled()
-                || !PriceTrackingUtilities.isPriceDropNotificationEligible()) {
+        if (!areAppNotificationsEnabled()) {
             return false;
         }
 
@@ -187,23 +185,7 @@ public class PriceDropNotificationManager {
      * @return Whether price drop notifications can be posted and record user opt-in metrics.
      */
     public boolean canPostNotificationWithMetricsRecorded() {
-        if (!PriceTrackingUtilities.isPriceDropNotificationEligible()) return false;
-        boolean isSystemNotificationEnabled = areAppNotificationsEnabled();
-        RecordHistogram.recordBooleanHistogram(
-                NOTIFICATION_ENABLED_HISTOGRAM, isSystemNotificationEnabled);
-        if (!isSystemNotificationEnabled) return false;
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
-
-        NotificationChannel channel = getNotificationChannel();
-        boolean isChannelCreated = channel != null;
-        RecordHistogram.recordBooleanHistogram(
-                "Commerce.PriceDrop.NotificationChannelCreated", isChannelCreated);
-        if (!isChannelCreated) return false;
-        boolean isChannelBlocked = channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
-        RecordHistogram.recordBooleanHistogram(
-                "Commerce.PriceDrop.NotificationChannelBlocked", isChannelBlocked);
-        return !isChannelBlocked;
+        return false;
     }
 
     /**
@@ -389,14 +371,7 @@ public class PriceDropNotificationManager {
      * Send users to notification settings so they can manage price drop notifications.
      */
     public void launchNotificationSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Make sure the channel is initialized before sending users to the settings.
-            createNotificationChannel();
-        }
-        mContext.startActivity(getNotificationSettingsIntent());
-        // Disable PriceAlertsMessageCard after the first time we send users to notification
-        // settings.
-        PriceTrackingUtilities.disablePriceAlertsMessageCard();
+
     }
 
     /**

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -20,7 +19,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -167,13 +165,7 @@ public class TabUtils {
      * @return Aspect ratio for the grid tab card.
      */
     public static float getTabThumbnailAspectRatio(Context context) {
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)
-                && context.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE) {
-            return (context.getResources().getConfiguration().screenWidthDp * 1.f)
-                    / (context.getResources().getConfiguration().screenHeightDp * 1.f);
-        }
-        float value = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
+        float value = 0.85f;
         return MathUtils.clamp(value, 0.5f, 2.0f);
     }
 }

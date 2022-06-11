@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -27,11 +26,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -63,14 +58,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * Creates the {@link LayoutManagerChrome} instance.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param createOverviewLayout Whether overview layout should be created or not.
-     * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
-     *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
-            boolean createOverviewLayout, @Nullable StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         super(host, contentContainer, tabContentManagerSupplier);
@@ -90,27 +81,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 tabContentManagerSupplier.removeObserver(this);
             }
         });
-
-        if (createOverviewLayout) {
-            if (startSurface != null) {
-                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
-                TabManagementDelegate tabManagementDelegate =
-                        TabManagementModuleProvider.getDelegate();
-                assert tabManagementDelegate != null;
-
-                if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(context)) {
-                    mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
-                        @Override
-                        public void onFinishedShowing(int layoutType) {
-                            if (layoutType == LayoutType.TAB_SWITCHER) {
-                                startSurface.getGridTabListDelegate().requestFocusOnCurrentTab();
-                            }
-                        }
-                    };
-                    addObserver(mTabSwitcherFocusLayoutStateObserver);
-                }
-            }
-        }
 
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mOverviewModeBehaviorSupplier.set(this);

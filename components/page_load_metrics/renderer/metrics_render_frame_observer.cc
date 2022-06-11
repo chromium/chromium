@@ -573,7 +573,7 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         ClampDelta(perf.FirstImagePaint(), start);
   }
   if (perf.FirstContentfulPaint() > 0.0) {
-    DCHECK(perf.FirstEligibleToPaint() > 0);
+    // DCHECK(perf.FirstEligibleToPaint() > 0);
     timing->paint_timing->first_contentful_paint =
         ClampDelta(perf.FirstContentfulPaint(), start);
     monotonic_timing.first_contentful_paint =

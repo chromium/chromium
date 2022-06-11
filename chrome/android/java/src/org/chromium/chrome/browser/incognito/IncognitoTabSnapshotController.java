@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 
 /**
  * This is the controller that prevents incognito tabs from being visible in Android Recents.
@@ -109,25 +108,7 @@ public class IncognitoTabSnapshotController implements TabModelSelectorObserver 
         // If we're using the overlapping tab switcher, we show the edge of the open incognito tabs
         // even if the tab switcher is showing the normal stack. But if the grid tab switcher
         // is enabled, incognito tabs are not visible while we're showing the normal tabs.
-        return isInIncognitoModel
-                || (!isGridTabSwitcherEnabled() && mInOverviewMode && getIncognitoTabCount() > 0);
+        return isInIncognitoModel;
     }
 
-    // Set in overview mode for testing.
-    @VisibleForTesting
-    void setInOverViewMode(boolean overviewMode) {
-        mInOverviewMode = overviewMode;
-    }
-
-    @VisibleForTesting
-    public boolean isGridTabSwitcherEnabled() {
-        return TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext);
-    }
-
-    /**
-     * @return The number of incognito tabs.
-     */
-    private int getIncognitoTabCount() {
-        return mTabModelSelector.getModel(true).getCount();
-    }
 }

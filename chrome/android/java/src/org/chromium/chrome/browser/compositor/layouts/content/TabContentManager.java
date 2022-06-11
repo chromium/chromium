@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.layouts.content;
 
-import static java.lang.Math.min;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,7 +33,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -49,6 +46,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static java.lang.Math.min;
 
 /**
  * The TabContentManager is responsible for serving tab contents to the UI components. Contents
@@ -131,16 +130,8 @@ public class TabContentManager {
     private static int getIntegerResourceWithOverride(Context context, int resourceId,
             String commandLineSwitch) {
         int val = -1;
-        // TODO(crbug/959054): Convert this to Finch config.
-        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)) {
-            // With Grid Tab Switcher, we can greatly reduce the capacity of thumbnail cache.
-            // See crbug.com/959054 for more details.
-            if (resourceId == R.integer.default_thumbnail_cache_size) val = 2;
-            if (resourceId == R.integer.default_approximation_thumbnail_cache_size) val = 8;
-            assert val != -1;
-        } else {
-            val = context.getResources().getInteger(resourceId);
-        }
+        if (resourceId == R.integer.default_thumbnail_cache_size) val = 2;
+        if (resourceId == R.integer.default_approximation_thumbnail_cache_size) val = 8;
         String switchCount = CommandLine.getInstance().getSwitchValue(commandLineSwitch);
         if (switchCount != null) {
             int count = Integer.parseInt(switchCount);
@@ -202,7 +193,7 @@ public class TabContentManager {
 
         boolean useApproximationThumbnails =
                 !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-        boolean saveJpegThumbnails = TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext);
+        boolean saveJpegThumbnails = true;
 
         mNativeTabContentManager =
                 TabContentManagerJni.get().init(TabContentManager.this, mFullResThumbnailsMaxSize,
@@ -550,10 +541,7 @@ public class TabContentManager {
             Matrix matrix = new Matrix();
             matrix.setScale(downsamplingScale, downsamplingScale);
             Bitmap resized = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
-                    TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                            ? Math.min(bitmap.getHeight(),
-                                    (int) (bitmap.getWidth() * 1.0 / getTabCaptureAspectRatio()))
-                            : min(bitmap.getWidth(), bitmap.getHeight()),
+                    min(bitmap.getWidth(), bitmap.getHeight()),
                     matrix, true);
             callback.onResult(resized);
         } else {

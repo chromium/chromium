@@ -7,17 +7,10 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/merchant_viewer/BottomSheetToolbarProperties.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/BottomSheetToolbarView.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/BottomSheetToolbarViewBinder.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustBottomSheetCoordinator.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageScheduler.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageViewModel.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMetrics.java",
-    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCoordinator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsDataProvider.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEvent.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",
@@ -34,8 +27,6 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
-    "//chrome/android/features/tab_ui:java_resources",
-    "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/commerce/merchant_viewer:optimization_guide_protos_java",
     "//chrome/browser/feature_engagement:java",

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.infobar;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -272,6 +273,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
      */
     @CalledByNative
     private void addInfoBar(InfoBar infoBar) {
+        Toast.makeText(mInfoBarContainerView.getContext(), "addInfoBar " + infoBar, Toast.LENGTH_SHORT).show();
         assert !mDestroyed;
         if (infoBar == null) {
             return;
@@ -297,15 +299,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         mInfoBars.add(infoBar);
 
         mInfoBarContainerView.addInfoBar(infoBar);
-    }
-
-    /**
-     * Adds an InfoBar to the view hierarchy.
-     * @param infoBar InfoBar to add to the View hierarchy.
-     */
-    @VisibleForTesting
-    public void addInfoBarForTesting(InfoBar infoBar) {
-        addInfoBar(infoBar);
     }
 
     @Override

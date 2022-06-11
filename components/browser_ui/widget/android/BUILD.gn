@@ -110,11 +110,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/textbubble/ArrowBubbleDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/textbubble/TextBubble.java",
     "java/src/org/chromium/components/browser_ui/widget/textbubble/TextBubbleBackPressHandler.java",
-    "java/src/org/chromium/components/browser_ui/widget/tile/TileView.java",
-    "java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinder.java",
-    "java/src/org/chromium/components/browser_ui/widget/tile/TileViewCoordinator.java",
-    "java/src/org/chromium/components/browser_ui/widget/tile/TileViewMediator.java",
-    "java/src/org/chromium/components/browser_ui/widget/tile/TileViewProperties.java",
   ]
 
   deps = [

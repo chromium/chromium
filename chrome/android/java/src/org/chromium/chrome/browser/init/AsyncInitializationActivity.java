@@ -37,11 +37,13 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -696,7 +698,9 @@ public abstract class AsyncInitializationActivity
      * Returns whether the instant start is enabled.
      */
     protected boolean isInstantStartEnabled() {
-        return TabUiFeatureUtilities.supportInstantStart(isTablet(), this);
+        return !DeviceClassManager.enableAccessibilityLayout(this)
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet()
+                && !SysUtils.isLowEndDevice();
     }
 
     /**

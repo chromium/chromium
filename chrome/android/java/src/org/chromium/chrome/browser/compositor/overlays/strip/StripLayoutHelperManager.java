@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
@@ -207,11 +206,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
 
         private void updateScrimVisibility(boolean visibility) {
-            // Handled by separate scrim over entire browser in the polished version.
-            if (isGridTabSwitcherPolishEnabled()) {
-                mBrowserScrimShowing = visibility;
-                return;
-            }
 
             if (!isGridTabSwitcherNonPolishEnabled()) return;
 
@@ -743,14 +737,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
     }
 
-    private boolean isGridTabSwitcherPolishEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
-                && TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
-    }
-
     private boolean isGridTabSwitcherNonPolishEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
-                && !TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
     }
 
     /**

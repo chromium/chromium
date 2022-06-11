@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -196,7 +195,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         mRightMargin = LocalizationUtils.isLayoutRtl() ? 0 : mNewTabButtonWidth;
         mLeftMargin = LocalizationUtils.isLayoutRtl() ? mNewTabButtonWidth : 0;
-        mMinTabWidth = TabUiFeatureUtilities.getTabMinWidth();
+        mMinTabWidth = 190.f;
 
         mMaxTabWidth = MAX_TAB_WIDTH_DP;
         mReorderMoveStartThreshold = REORDER_MOVE_START_THRESHOLD_DP;
@@ -690,13 +689,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_MEDIUM) {
-                mStripTabs[i].setCanShowCloseButton(!isPartiallyHiddenEdgeTab(tab, i));
-            } else if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_SMALL) {
-                mStripTabs[i].setCanShowCloseButton(tab.getWidth() >= TAB_WIDTH_MEDIUM
-                        || (tab.getId() == selectedTab.getId()
-                                && !isPartiallyHiddenEdgeTab(tab, i)));
-            }
+            mStripTabs[i].setCanShowCloseButton(!isPartiallyHiddenEdgeTab(tab, i));
         }
     }
 

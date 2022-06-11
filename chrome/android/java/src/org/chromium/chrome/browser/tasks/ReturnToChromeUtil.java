@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -391,10 +390,7 @@ public final class ReturnToChromeUtil {
      *         overview list layout is shown instead of start surface.
      */
     public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
-        // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
-        return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                && !(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY.getValue()
-                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context));
+        return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
     /**

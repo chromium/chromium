@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -173,8 +172,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         if (success) {
             if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
-                if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
-                        && mTabModelSelectorSupplier.hasValue()
+                if (mTabModelSelectorSupplier.hasValue()
                         && mTabModelSelectorSupplier.get()
                                         .getTabModelFilterProvider()
                                         .getCurrentTabModelFilter()

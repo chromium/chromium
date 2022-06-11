@@ -6,6 +6,7 @@ package org.chromium.components.permissions;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -69,7 +70,6 @@ public class PermissionDialogController
     private final ObserverList<Observer> mObservers;
 
     private PropertyModel mDialogModel;
-    private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
 
@@ -108,6 +108,7 @@ public class PermissionDialogController
      */
     @CalledByNative
     private static void createDialog(PermissionDialogDelegate delegate) {
+        Toast.makeText(delegate.getWindow().getApplicationContext(), "PermissionDialogController", Toast.LENGTH_SHORT).show();
         PermissionDialogController.getInstance().queueDialog(delegate);
     }
 
@@ -203,46 +204,9 @@ public class PermissionDialogController
 
         mModalDialogManager = mDialogDelegate.getWindow().getModalDialogManager();
 
-        mDialogModel = PermissionDialogModel.getModel(
-                this, mDialogDelegate, () -> showFilteredTouchEventDialog(context));
+        mDialogModel = PermissionDialogModel.getModel(this, mDialogDelegate, null);
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
-    }
-
-    /**
-     * Displays the dialog explaining that Chrome has detected an overlay. Offers the user to close
-     * the overlay window and try again.
-     */
-    private void showFilteredTouchEventDialog(Context context) {
-        // Don't show another dialog if one is already displayed.
-        if (mOverlayDetectedDialogModel != null) return;
-
-        ModalDialogProperties.Controller overlayDetectedDialogController =
-                new SimpleModalDialogController(mModalDialogManager, (Integer dismissalCause) -> {
-                    if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                            && mDialogModel != null) {
-                        mModalDialogManager.dismissDialog(
-                                mDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
-                    }
-                    mOverlayDetectedDialogModel = null;
-                });
-        mOverlayDetectedDialogModel =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, overlayDetectedDialogController)
-                        .with(ModalDialogProperties.TITLE,
-                                context.getString(R.string.overlay_detected_dialog_title,
-                                        BuildInfo.getInstance().hostPackageLabel))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                context.getResources().getString(
-                                        R.string.overlay_detected_dialog_message))
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, context.getResources(),
-                                R.string.cancel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
-                                R.string.try_again)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .build();
-        mModalDialogManager.showDialog(
-                mOverlayDetectedDialogModel, ModalDialogManager.ModalDialogType.APP, true);
     }
 
     public void dismissFromNative(PermissionDialogDelegate delegate) {

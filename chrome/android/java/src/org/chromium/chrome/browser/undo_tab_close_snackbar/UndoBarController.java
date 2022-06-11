@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -81,8 +80,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             private boolean disableUndo(boolean showingUndoBar) {
                 // If the closure happens through conditional tab strip, show the undo snack bar
                 // regardless of whether accessibility mode is enabled.
-                if (TabUiFeatureUtilities.isConditionalTabStripEnabled()
-                        && ConditionalTabStripUtils.getFeatureStatus()
+                if (ConditionalTabStripUtils.getFeatureStatus()
                                 == ConditionalTabStripUtils.FeatureStatus.ACTIVATED
                         && (mLayoutStateProvider != null
                                 && !mLayoutStateProvider.isLayoutVisible(
@@ -96,11 +94,6 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 if (showingUndoBar && dialogVisibilitySupplier != null
                         && dialogVisibilitySupplier.get()) {
                     return true;
-                }
-                // If grid / group M5 is enabled, show the undo snack bar regardless of whether
-                // accessibility mode is enabled.
-                if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context)) {
-                    return false;
                 }
                 return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                         || DeviceClassManager.enableAccessibilityLayout(mContext);

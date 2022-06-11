@@ -113,13 +113,6 @@ public class BrowserControlsManager
         int NONE = 1;
     }
 
-    private final Runnable mUpdateVisibilityRunnable = new Runnable() {
-        @Override
-        public void run() {
-
-        }
-    };
-
     /**
      * Creates an instance of the browser controls manager.
      * @param activity The activity that supports browser controls.
@@ -206,12 +199,11 @@ public class BrowserControlsManager
                 break;
             case ControlsPosition.NONE:
                 // Treat the case of no controls as controls always being totally offscreen.
-                mControlOffsetRatio = 1.0f;
+                mControlOffsetRatio = 0f;
                 break;
         }
 
         mRendererTopContentOffset = mTopControlContainerHeight;
-        updateControlOffset();
         scheduleVisibilityUpdate();
     }
 
@@ -385,18 +377,6 @@ public class BrowserControlsManager
         return mRendererBottomControlsMinHeightOffset;
     }
 
-    private void updateControlOffset() {
-        if (mControlsPosition == ControlsPosition.NONE) return;
-
-        if (getTopControlsHeight() == 0) {
-            // Treat the case of 0 height as controls being totally offscreen.
-            mControlOffsetRatio = 1.0f;
-        } else {
-            mControlOffsetRatio =
-                    Math.abs((float) mRendererTopControlOffset / getTopControlsHeight());
-        }
-    }
-
     @Override
     public float getTopVisibleContentOffset() {
         return getTopControlsHeight() + getTopControlOffset();
@@ -505,7 +485,6 @@ public class BrowserControlsManager
 
         mControlsAtMinHeight.set(getContentOffset() == getTopControlsMinHeight()
                 && getBottomContentOffset() == getBottomControlsMinHeight());
-        updateControlOffset();
         notifyControlOffsetChanged();
     }
 

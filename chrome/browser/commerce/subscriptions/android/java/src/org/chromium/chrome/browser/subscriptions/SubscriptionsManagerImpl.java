@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -240,11 +239,6 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
      */
     void onIdentityChanged() {
         mStorage.deleteAll();
-        // If the feature is still eligible to work, we should re-init and fetch the fresh data.
-        if (PriceTrackingUtilities.isPriceDropNotificationEligible()) {
-            initTypes((status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
-            queryAndUpdateWaaEnabled();
-        }
     }
 
     /**

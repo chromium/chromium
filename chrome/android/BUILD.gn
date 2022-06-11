@@ -12,10 +12,6 @@ import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_java_resources.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-import(
-    "//chrome/android/features/start_surface/public/start_surface_public_java_sources.gni")
-import("//chrome/android/features/tab_ui/buildflags.gni")
-import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
@@ -611,10 +607,6 @@ android_library("chrome_java") {
   # From java_sources.gni.
   sources = chrome_java_sources + [ app_hooks_impl ]
 
-  # Include sources from public_tab_management_java_sources.gni.
-  sources += public_tab_management_java_sources
-  sources += start_surface_public_java_sources
-
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
   jar_excluded_patterns = [ "*/AppHooksImpl.class" ]
@@ -699,13 +691,6 @@ java_group("chrome_all_java") {
 
   if (disable_autofill_assistant_dfm) {
     deps += [ "//components/autofill_assistant/android:java" ]
-  }
-
-  if (disable_tab_ui_dfm) {
-    deps += [
-      "//chrome/android/features/tab_ui:java",
-      "//chrome/android/features/tab_ui:module_desc_java",
-    ]
   }
 }
 

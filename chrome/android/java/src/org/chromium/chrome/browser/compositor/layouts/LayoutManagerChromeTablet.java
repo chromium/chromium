@@ -16,9 +16,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /**
@@ -36,17 +33,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host                     A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host, ViewGroup contentContainer,
-            StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(host, contentContainer,
-                TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
                 tabContentManagerSupplier, overviewModeBehaviorSupplier);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,

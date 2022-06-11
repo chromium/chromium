@@ -11,8 +11,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.chrome.tab_ui.R;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -47,14 +45,6 @@ public class RatingStarSpan extends DynamicDrawableSpan {
 
     @DrawableRes
     private int getResourceId(@RatingStarType int type) {
-        switch (type) {
-            case RatingStarType.OUTLINE:
-                return R.drawable.ic_rating_star_outline;
-            case RatingStarType.HALF:
-                return R.drawable.ic_rating_star_half;
-            case RatingStarType.FULL:
-                return R.drawable.ic_rating_star_full;
-        }
         throw new IllegalArgumentException("RatingStarType value is invalid.");
     }
 }

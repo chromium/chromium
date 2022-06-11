@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -262,7 +261,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 } else {
                     assert histogramName.equals("ContextMenu.SelectedOptionAndroid.Link");
                 }
-                tryToRecordGroupRelatedHistogram(histogramName, action);
             }
 
             if (params.isAnchor()
@@ -272,34 +270,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 RecordHistogram.recordEnumeratedHistogram(
                         histogramName + ".PerformanceClassFast", action, Action.NUM_ENTRIES);
             }
-        }
-
-        private static void tryToRecordGroupRelatedHistogram(
-                String histogramName, @Action int action) {
-            if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()) return;
-
-            boolean openInGroupShownFirst =
-                    TabUiFeatureUtilities.showContextMenuOpenNewTabInGroupItemFirst();
-
-            @SelectedNewTabCreationEnum
-            int selectedNewTabCreationEnum =
-                    SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB;
-
-            if (action == Action.OPEN_IN_NEW_TAB) {
-                if (openInGroupShownFirst) {
-                    selectedNewTabCreationEnum =
-                            SelectedNewTabCreationEnum
-                                    .OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB;
-                }
-            } else if (action == Action.OPEN_IN_NEW_TAB_IN_GROUP) {
-                selectedNewTabCreationEnum = openInGroupShownFirst
-                        ? SelectedNewTabCreationEnum
-                                  .OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP
-                        : SelectedNewTabCreationEnum
-                                  .OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP;
-            }
-            RecordHistogram.recordEnumeratedHistogram(histogramName + ".NewTabOption",
-                    selectedNewTabCreationEnum, SelectedNewTabCreationEnum.NUM_ENTRIES);
         }
 
         /**
@@ -379,17 +349,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (!isEmptyUrl(mParams.getUrl())
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 if (mMode == ContextMenuMode.NORMAL) {
-                    if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()) {
-                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
-                    } else {
-                        if (TabUiFeatureUtilities.showContextMenuOpenNewTabInGroupItemFirst()) {
-                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
-                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
-                        } else {
-                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
-                            linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
-                        }
-                    }
+                    linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }

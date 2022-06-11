@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.price_tracking.proto.Notifications.ChromeNoti
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.ChromeNotification.NotificationDataType;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.ExpandedView;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.PriceDropNotificationPayload;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
@@ -99,16 +98,14 @@ public class PriceTrackingNotificationBridge {
         }
 
         Context context = ContextUtils.getApplicationContext();
-        String title = context.getString(R.string.price_drop_notification_content_title, priceDrop,
-                priceDropPayload.getProductName());
+        String title = priceDropPayload.getProductName();
 
         Uri productUrl = Uri.parse(priceDropPayload.getDestinationUrl());
         if (productUrl.getHost() == null) {
             Log.e(TAG, "Failed to parse destination URL host.");
             return;
         }
-        String text = context.getString(R.string.price_drop_notification_content_text,
-                buildDisplayPrice(priceDropPayload.getCurrentPrice()), productUrl.getHost());
+        String text = productUrl.getHost();
 
         // Use UnsignedLongs to convert OfferId to avoid overflow.
         String offerId = UnsignedLongs.toString(priceDropPayload.getOfferId());
@@ -214,13 +211,6 @@ public class PriceTrackingNotificationBridge {
     }
 
     private static @Nullable String getActionText(String actionId) {
-        if (TextUtils.isEmpty(actionId)) return null;
-        Context context = ContextUtils.getApplicationContext();
-        if (PriceDropNotificationManager.ACTION_ID_VISIT_SITE.equals(actionId)) {
-            return context.getString(R.string.price_drop_notification_action_visit_site);
-        } else if (PriceDropNotificationManager.ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
-            return context.getString(R.string.price_drop_notification_action_turn_off_alert);
-        }
         return null;
     }
 

@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 
 import java.util.concurrent.TimeUnit;
 
@@ -84,8 +83,7 @@ public class CommerceSubscriptionsService {
     }
 
     private void maybeRecordMetricsAndInitializeSubscriptions() {
-        if ((!PriceTrackingUtilities.isPriceDropNotificationEligible())
-                || (System.currentTimeMillis()
+        if ((System.currentTimeMillis()
                                 - mSharedPreferencesManager.readLong(
                                         CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
                         < TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig

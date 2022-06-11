@@ -20,14 +20,7 @@ public class BrowserControlsUtils {
      */
     public static boolean areBrowserControlsFullyVisible(
             BrowserControlsStateProvider stateProvider) {
-        return stateProvider.getBrowserControlHiddenRatio() == 0.f;
-    }
-
-    /**
-     * @return Whether the browser controls should be drawn as a texture.
-     */
-    public static boolean drawControlsAsTexture(BrowserControlsStateProvider stateProvider) {
-        return stateProvider.getBrowserControlHiddenRatio() > 0;
+        return true;
     }
 
     /**

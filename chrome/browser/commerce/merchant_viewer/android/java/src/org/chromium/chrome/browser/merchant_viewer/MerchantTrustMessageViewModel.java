@@ -5,30 +5,21 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.StyleSpan;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
-import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.NumberFormat;
 
 /**
  * This is a util class for creating the property model of the MerchantTrustMessage.
@@ -73,76 +64,13 @@ class MerchantTrustMessageViewModel {
     public static PropertyModel create(Context context, MerchantTrustSignalsV2 trustSignals,
             String messageAssociatedUrl, MessageActionsHandler actionsHandler) {
         return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.MERCHANT_TRUST)
-                .with(MessageBannerProperties.ICON,
-                        ResourcesCompat.getDrawable(
-                                context.getResources(), getIconRes(), context.getTheme()))
-                .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
-                .with(MessageBannerProperties.TITLE,
-                        context.getResources().getString(getTitleStringRes()))
-                .with(MessageBannerProperties.DESCRIPTION,
-                        getMessageDescription(context, trustSignals,
-                                MerchantViewerConfig.getTrustSignalsMessageDescriptionUI()))
-                .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                        context.getResources().getString(R.string.merchant_viewer_message_action))
-                .with(MessageBannerProperties.ON_DISMISSED,
-                        (reason) -> actionsHandler.onMessageDismissed(reason, messageAssociatedUrl))
-                .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                        () -> {
-                            actionsHandler.onMessagePrimaryAction(
-                                    trustSignals, messageAssociatedUrl);
-                            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-                        })
                 .build();
     }
 
     @Nullable
     public static Spannable getMessageDescription(
             Context context, MerchantTrustSignalsV2 trustSignals, int descriptionUI) {
-        if (descriptionUI == MessageDescriptionUI.NONE) return null;
-
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
-        numberFormatter.setMaximumFractionDigits(1);
-        if (descriptionUI == MessageDescriptionUI.REVIEWS_FROM_GOOGLE
-                && trustSignals.getMerchantCountRating() > 0) {
-            builder.append(context.getResources().getQuantityString(
-                    R.plurals.merchant_viewer_message_description_reviews_from_google,
-                    trustSignals.getMerchantCountRating(),
-                    numberFormatter.format(trustSignals.getMerchantCountRating())));
-            return builder;
-        }
-
-        // The zero rating value means we have no rating data for the merchant, under which
-        // condition we shouldn't call this method to generate the description.
-        assert trustSignals.getMerchantStarRating() > 0;
-        // Only keep one decimal to avoid inaccurate double value.
-        double ratingValue = Math.round(trustSignals.getMerchantStarRating() * 10) / 10.0;
-        NumberFormat ratingValueFormatter = NumberFormat.getIntegerInstance();
-        ratingValueFormatter.setMaximumFractionDigits(1);
-        ratingValueFormatter.setMinimumFractionDigits(1);
-        if (MerchantViewerConfig.doesTrustSignalsMessageUseRatingBar()) {
-            builder.append(ratingValueFormatter.format(ratingValue));
-            builder.append(" ");
-            builder.append(getRatingBarSpan(context, ratingValue));
-        } else {
-            builder.append(context.getResources().getString(
-                    R.string.merchant_viewer_message_description_rating,
-                    numberFormatter.format(ratingValue), numberFormatter.format(BASELINE_RATING)));
-            builder.setSpan(new StyleSpan(Typeface.BOLD), 0, builder.length(),
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        }
-        builder.append(" ");
-        if (trustSignals.getMerchantCountRating() > 0) {
-            builder.append(context.getResources().getQuantityString(
-                    R.plurals.merchant_viewer_message_description_reviews,
-                    trustSignals.getMerchantCountRating(),
-                    numberFormatter.format(trustSignals.getMerchantCountRating())));
-        } else {
-            builder.append(context.getResources().getString(
-                    R.string.page_info_store_info_description_with_no_review));
-        }
-        return builder;
+        return null;
     }
 
     private static SpannableStringBuilder getRatingBarSpan(Context context, double ratingValue) {
@@ -168,20 +96,4 @@ class MerchantTrustMessageViewModel {
         return ratingBarSpan;
     }
 
-    @DrawableRes
-    private static int getIconRes() {
-        return MerchantViewerConfig.doesTrustSignalsMessageUseGoogleIcon()
-                ? R.drawable.ic_logo_googleg_24dp
-                : R.drawable.ic_storefront_blue;
-    }
-
-    @StringRes
-    private static int getTitleStringRes() {
-        int titleUI = MerchantViewerConfig.getTrustSignalsMessageTitleUI();
-        if (titleUI == MessageTitleUI.SEE_STORE_REVIEWS) {
-            return R.string.merchant_viewer_message_title_see_reviews;
-        }
-        assert titleUI == MessageTitleUI.VIEW_STORE_INFO : "Invalid title UI";
-        return R.string.merchant_viewer_message_title;
-    }
 }
