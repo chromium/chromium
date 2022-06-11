@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason"
-    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2022-06-23">
+    enum="ApkDownloadTelemetryIncompleteReason" expires_after="2023-06-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1289,16 +1289,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime"
-    units="ms" expires_after="2022-11-20">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Logs the time it takes to append recent navigations. Logged each time the
-    function is called.
-  </summary>
-</histogram>
-
 <histogram
     name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.ClientRedirect"
     units="units" expires_after="2022-11-27">
@@ -1320,28 +1310,6 @@ chromium-metrics-reviews@google.com.
     Logs the number of extra recent navigation (non-user gestured) referrer
     chain entries that were cleared. This is logged when the referrer chain is
     being created for Safe Browsing pings (i.e. Phishguard, CSD).
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.NavigationObserver.IdentifyReferrerChainByEventURLTime"
-    units="ms" expires_after="2022-10-30">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Logs the time it takes to identify referrer chain by event URL. Logged each
-    time the function is called.
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.NavigationObserver.IdentifyReferrerChainByRenderFrameHostTime"
-    units="ms" expires_after="2022-07-03">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Logs the time it takes to identify referrer chain by render frame host.
-    Logged each time the function is called.
   </summary>
 </histogram>
 
@@ -1792,7 +1760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.LocalMatch.Result.{IsMainframe}"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2022-07-16">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-06-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2227,7 +2195,7 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
-    units="verdicts" expires_after="2022-06-05">
+    units="verdicts" expires_after="2023-06-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

@@ -480,8 +480,6 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
     const content::GlobalRenderFrameHostId& outermost_main_frame_id,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain) {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "SafeBrowsing.NavigationObserver.IdentifyReferrerChainByEventURLTime");
   if (!event_url.is_valid())
     return INVALID_URL;
 
@@ -564,9 +562,6 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByRenderFrameHost(
     content::RenderFrameHost* render_frame_host,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain) {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "SafeBrowsing.NavigationObserver."
-      "IdentifyReferrerChainByRenderFrameHostTime");
   if (!render_frame_host)
     return INVALID_URL;
   GURL last_committed_url = render_frame_host->GetLastCommittedURL();
@@ -731,8 +726,6 @@ size_t SafeBrowsingNavigationObserverManager::CountOfRecentNavigationsToAppend(
 void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
     size_t recent_navigation_count,
     ReferrerChain* out_referrer_chain) {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime");
   if (recent_navigation_count <= 0u)
     return;
   size_t allowed_entries = recent_navigation_count;
