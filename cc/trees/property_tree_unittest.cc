@@ -203,13 +203,18 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
   PropertyTrees property_trees(synchronizer);
 
   ClipTree& clip_tree = property_trees.clip_tree_mutable();
+  ClipNode root_clip;
+  root_clip.id = 1;
+  root_clip.parent_id = 0;
+  root_clip.clip = gfx::RectF(0, 0, 500, 500);
+  clip_tree.Insert(root_clip, 0);
+
   const gfx::RectF clip_rect(0, 0, 100, 100);
-  ClipNode clip_node;
-  clip_node.id = 1;
-  clip_node.parent_id = 0;
-  clip_node.clip = clip_rect;
-  clip_tree.Insert(clip_node, 0);
-  clip_tree.set_overscroll_node_id(clip_node.id);
+  ClipNode overscroll_clip;
+  overscroll_clip.id = 2;
+  overscroll_clip.parent_id = 1;
+  overscroll_clip.clip = clip_rect;
+  clip_tree.Insert(overscroll_clip, 1);
 
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
@@ -240,8 +245,7 @@ TEST(PropertyTreeTest, FixedElementInverseTranslation) {
 
   gfx::RectF expected_clip_rect(clip_rect);
   expected_clip_rect.set_height(clip_rect.height() + overscroll_offset.y());
-  EXPECT_EQ(clip_tree.Node(clip_tree.overscroll_node_id())->clip,
-            expected_clip_rect);
+  EXPECT_EQ(clip_tree.Node(overscroll_node.id)->clip, expected_clip_rect);
 }
 
 TEST(PropertyTreeTest, TransformsWithFlattening) {

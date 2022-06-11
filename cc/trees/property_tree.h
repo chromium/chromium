@@ -333,14 +333,6 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
 
   void SetViewportClip(gfx::RectF viewport_rect);
   gfx::RectF ViewportClip() const;
-
-  void set_overscroll_node_id(int id) { overscroll_node_id_ = id; }
-  int overscroll_node_id() const { return overscroll_node_id_; }
-
- private:
-  // Used to track the ClipNode that is corresponding to the overscroll
-  // TransformNode.
-  int overscroll_node_id_;
 };
 
 class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {

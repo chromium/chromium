@@ -475,7 +475,7 @@ void TransformTree::UpdateFixedNodeTransformAndClip(
       gfx::ScaleVector2d(overscroll_offset, 1.f / page_scale_factor());
 
   ClipTree& clip_tree = property_trees()->clip_tree_mutable();
-  ClipNode* clip_node = clip_tree.Node(clip_tree.overscroll_node_id());
+  ClipNode* clip_node = clip_tree.Node(overscroll_node_id_);
 
   if (clip_node) {
     // Inflate the clip rect based on the overscroll direction.
@@ -1265,8 +1265,7 @@ EffectTree::CopyRequestMap EffectTree::TakeCopyRequests() {
 }
 
 ClipTree::ClipTree(PropertyTrees* property_trees)
-    : PropertyTree<ClipNode>(property_trees),
-      overscroll_node_id_(kInvalidPropertyNodeId) {}
+    : PropertyTree<ClipNode>(property_trees) {}
 
 void ClipTree::SetViewportClip(gfx::RectF viewport_rect) {
   if (size() < 2)
@@ -1286,8 +1285,7 @@ gfx::RectF ClipTree::ViewportClip() const {
 
 #if DCHECK_IS_ON()
 bool ClipTree::operator==(const ClipTree& other) const {
-  return PropertyTree::operator==(other) &&
-         overscroll_node_id_ == other.overscroll_node_id();
+  return PropertyTree::operator==(other);
 }
 #endif
 
