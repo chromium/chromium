@@ -390,6 +390,12 @@ const float kModuleVerticalSpacing = 16.0f;
   } else {
     self.mostVisitedViews = [NSMutableArray array];
   }
+
+  if ([configs count] == 0) {
+    // No Most Visited Tiles to show. Remove module.
+    [self.mostVisitedStackView removeFromSuperview];
+    return;
+  }
   NSInteger index = 0;
   for (ContentSuggestionsMostVisitedItem* item in configs) {
     ContentSuggestionsMostVisitedTileView* view =
