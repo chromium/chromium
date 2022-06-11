@@ -184,10 +184,10 @@ void ChromeExtensionsAPIClient::NotifyWebRequestWithheld(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   if (!rfh)
     return;
-  // We don't count subframe blocked actions as yet, since there's no way to
-  // surface this to the user. Ignore these (which is also what we do for
-  // content scripts).
-  if (rfh->GetParent())
+  // We don't count subframes and prerendering blocked actions as yet, since
+  // there's no way to surface this to the user. Ignore these (which is also
+  // what we do for content scripts).
+  if (!rfh->IsInPrimaryMainFrame())
     return;
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
