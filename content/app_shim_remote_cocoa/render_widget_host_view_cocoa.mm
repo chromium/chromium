@@ -1026,6 +1026,19 @@ void ExtractUnderlines(NSAttributedString* string,
   // down event.
   _handlingKeyDown = YES;
 
+  // This is to handle an edge case for the "Live Conversion" feature in default
+  // Japanese IME. When the feature is on, pressing the left key at the
+  // composition boundary will reconvert previously committed text. The text
+  // input system will call setMarkedText multiple times to end the current
+  // composition and start a new one. In this case we'll need to call
+  // ImeSetComposition in setMarkedText instead of here in keyEvent:, otherwise,
+  // only the last setMarkedText will be processed.
+  ui::DomCode domCode = ui::KeycodeConverter::NativeKeycodeToDomCode(keyCode);
+  _isReconversionTriggered =
+      _hasMarkedText && domCode == ui::DomCode::ARROW_LEFT &&
+      _markedTextSelectedRange.location == 0 && _markedRange.location != 0 &&
+      _markedRange.location != NSNotFound;
+
   // These variables might be set when handling the keyboard event.
   // Clear them here so that we can know whether they have changed afterwards.
   _textToBeInserted.clear();
@@ -1108,10 +1121,12 @@ void ExtractUnderlines(NSAttributedString* string,
     // composition node in WebKit.
     // When marked text is available, |markedTextSelectedRange_| will be the
     // range being selected inside the marked text.
-    _host->ImeSetComposition(_markedText, _ime_text_spans,
-                             _setMarkedTextReplacementRange,
-                             _markedTextSelectedRange.location,
-                             NSMaxRange(_markedTextSelectedRange));
+    if (!_isReconversionTriggered) {
+      _host->ImeSetComposition(_markedText, _ime_text_spans,
+                               _setMarkedTextReplacementRange,
+                               _markedTextSelectedRange.location,
+                               NSMaxRange(_markedTextSelectedRange));
+    }
   } else if (oldHasMarkedText && !_hasMarkedText && !textInserted) {
     if (_unmarkTextCalled) {
       _host->ImeFinishComposingText();
@@ -1119,6 +1134,8 @@ void ExtractUnderlines(NSAttributedString* string,
       _host->ImeCancelCompositionFromCocoa();
     }
   }
+
+  _isReconversionTriggered = NO;
 
   // Clear information from |interpretKeyEvents:|
   _setMarkedTextReplacementRange = gfx::Range::InvalidRange();
@@ -1947,14 +1964,33 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   _markedText = base::SysNSStringToUTF16(im_text);
   _hasMarkedText = (length > 0);
 
-  // Update markedRange assuming blink sets composition text as is.
-  // We need this because the IME checks markedRange before IPC to blink.
-  // If markedRange is not updated, IME won't update the popup window position.
+  // Update markedRange/textSelectionRange assuming blink sets composition text
+  // as is. We need this because the IME checks markedRange/textSelectionRange
+  // before IPC to blink. If markedRange/textSelectionRange is not updated, IME
+  // will behave incorrectly, e.g., wrong popup window position or duplicate
+  // characters.
   if (length > 0) {
+    // If the replacement range is valid, the range should be replaced with the
+    // new text.
     if (replacementRange.location != NSNotFound)
-      _markedRange.location = replacementRange.location;
-    _markedRange.length = [string length];
+      _markedRange = NSMakeRange(replacementRange.location, length);
+    // if no replacement range and no marked range, the current selection should
+    // be replaced.
+    else if (_markedRange.location == NSNotFound)
+      _markedRange = NSMakeRange(_textSelectionRange.start(), length);
+    // if no replacement range and the marked range is valid, the current marked
+    // text should be replaced.
+    else
+      _markedRange.length = length;
+
+    _textSelectionRange =
+        gfx::Range(_markedRange.location + newSelRange.location,
+                   _markedRange.location + NSMaxRange(newSelRange));
   } else {
+    // An empty text means the composition is about to be cancelled,
+    // collapse the selection to the begining of the current marked range.
+    _textSelectionRange =
+        gfx::Range(_markedRange.location, _markedRange.location);
     _markedRange = NSMakeRange(NSNotFound, 0);
   }
 
@@ -1969,14 +2005,14 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
         ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT));
   }
 
-  // If we are handling a key down event, then SetComposition() will be
-  // called in keyEvent: method.
+  // If we are handling a key down event and the reconversion is not triggered,
+  // SetComposition() will be called in keyEvent: method.
   // Input methods of Mac use setMarkedText calls with an empty text to cancel
   // an ongoing composition. So, we should check whether or not the given text
   // is empty to update the input method state. (Our input method backend
   // automatically cancels an ongoing composition when we send an empty text.
   // So, it is OK to send an empty text to the renderer.)
-  if (_handlingKeyDown) {
+  if (_handlingKeyDown && !_isReconversionTriggered) {
     _setMarkedTextReplacementRange = gfx::Range(replacementRange);
   } else {
     _host->ImeSetComposition(_markedText, _ime_text_spans,
