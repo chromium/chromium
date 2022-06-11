@@ -1773,22 +1773,6 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R104-14844.0.0",
-        "name": "lacros_all_tast_tests ATLAS_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "ATLAS_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "atlas",
         "cros_img": "atlas-release/R103-14816.17.0",
         "name": "lacros_all_tast_tests ATLAS_RELEASE_DEV",
         "resultdb": {
@@ -1805,7 +1789,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R103-14816.41.0",
+        "cros_img": "atlas-release/R103-14816.49.0",
         "name": "lacros_all_tast_tests ATLAS_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1837,22 +1821,6 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R104-14844.0.0",
-        "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "EVE_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "eve",
         "cros_img": "eve-release/R103-14794.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
         "resultdb": {
@@ -1869,7 +1837,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R103-14816.41.0",
+        "cros_img": "eve-release/R103-14816.49.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1946,22 +1914,6 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R104-14844.0.0",
-        "name": "lacros_all_tast_tests HANA_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "HANA_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "hana",
         "cros_img": "hana-release/R103-14816.17.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_DEV",
         "resultdb": {
@@ -1978,7 +1930,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R103-14816.41.0",
+        "cros_img": "hana-release/R103-14816.49.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2010,22 +1962,6 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R104-14844.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R103-14816.17.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
@@ -2042,7 +1978,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R103-14816.41.0",
+        "cros_img": "jacuzzi-release/R103-14816.49.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2054,19 +1990,6 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
         "variant_id": "JACUZZI_RELEASE_BETA"
-      },
-      {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
-        ],
-        "cros_board": "hana",
-        "cros_img": "hana-release/R104-14844.0.0",
-        "name": "ozone_unittests HANA_RELEASE_LKGM",
-        "swarming": {},
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "HANA_RELEASE_LKGM"
       },
       {
         "args": [
@@ -2086,7 +2009,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R103-14816.41.0",
+        "cros_img": "hana-release/R103-14816.49.0",
         "name": "ozone_unittests HANA_RELEASE_BETA",
         "swarming": {},
         "test": "ozone_unittests",
@@ -2112,19 +2035,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
         ],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R104-14844.0.0",
-        "name": "ozone_unittests JACUZZI_RELEASE_LKGM",
-        "swarming": {},
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
-        ],
-        "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R103-14816.17.0",
         "name": "ozone_unittests JACUZZI_RELEASE_DEV",
         "swarming": {},
@@ -2138,26 +2048,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
         ],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R103-14816.41.0",
+        "cros_img": "jacuzzi-release/R103-14816.49.0",
         "name": "ozone_unittests JACUZZI_RELEASE_BETA",
         "swarming": {},
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
         "timeout_sec": 3600,
         "variant_id": "JACUZZI_RELEASE_BETA"
-      },
-      {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
-        ],
-        "cros_board": "hana",
-        "cros_img": "hana-release/R104-14844.0.0",
-        "name": "viz_unittests HANA_RELEASE_LKGM",
-        "swarming": {},
-        "test": "viz_unittests",
-        "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "HANA_RELEASE_LKGM"
       },
       {
         "args": [
@@ -2177,7 +2074,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R103-14816.41.0",
+        "cros_img": "hana-release/R103-14816.49.0",
         "name": "viz_unittests HANA_RELEASE_BETA",
         "swarming": {},
         "test": "viz_unittests",
@@ -2203,19 +2100,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R104-14844.0.0",
-        "name": "viz_unittests JACUZZI_RELEASE_LKGM",
-        "swarming": {},
-        "test": "viz_unittests",
-        "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "timeout_sec": 3600,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
-        ],
-        "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R103-14816.17.0",
         "name": "viz_unittests JACUZZI_RELEASE_DEV",
         "swarming": {},
@@ -2229,7 +2113,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R103-14816.41.0",
+        "cros_img": "jacuzzi-release/R103-14816.49.0",
         "name": "viz_unittests JACUZZI_RELEASE_BETA",
         "swarming": {},
         "test": "viz_unittests",
