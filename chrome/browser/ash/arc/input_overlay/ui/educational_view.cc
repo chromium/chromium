@@ -103,7 +103,8 @@ void EducationalView::Init(views::View* parent) {
     container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    auto* game_control = ash::login_views_utils::CreateBubbleLabel(
+    // Game control.
+    container_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE_ALPHA),
         /*view_defining_max_width=*/nullptr,
         /*color=*/
@@ -112,17 +113,17 @@ void EducationalView::Init(views::View* parent) {
         /*font_list=*/
         gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                       gfx::Font::FontStyle::NORMAL, kTitleFontSize,
-                      gfx::Font::Weight::MEDIUM));
-    container_view->AddChildView(std::move(game_control));
+                      gfx::Font::Weight::MEDIUM)));
 
-    auto* alpha_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
-        /*view_defining_max_width=*/nullptr, /*color=*/
-        arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection),
-        /*font_list=*/
-        gfx::FontList({ash::login_views_utils::kGoogleSansFont},
-                      gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
-                      gfx::Font::Weight::MEDIUM));
+    auto* alpha_label =
+        container_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
+            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
+            /*view_defining_max_width=*/nullptr, /*color=*/
+            arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection),
+            /*font_list=*/
+            gfx::FontList({ash::login_views_utils::kGoogleSansFont},
+                          gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
+                          gfx::Font::Weight::MEDIUM)));
     alpha_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     alpha_label->SetPreferredSize(gfx::Size(
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
@@ -132,7 +133,6 @@ void EducationalView::Init(views::View* parent) {
         kAlphaCornerRadius));
     alpha_label->SetProperty(views::kMarginsKey,
                              gfx::Insets::TLBR(0, kAlphaLeftMargin, 0, 0));
-    container_view->AddChildView(std::move(alpha_label));
     container_view->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(kBorderRow1, kBorderSides, 0, kBorderSides));
@@ -140,17 +140,18 @@ void EducationalView::Init(views::View* parent) {
   }
   {
     // Feature's description text.
-    auto* description_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(
-            IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA),
-        /*view_defining_max_width=*/this,
-        /*color=*/
-        GetContentLayerColor(
-            ash::AshColorProvider::ContentLayerType::kTextColorSecondary),
-        /*font_list=*/
-        gfx::FontList({ash::login_views_utils::kGoogleSansFont},
-                      gfx::Font::FontStyle::NORMAL, kDescriptionFontSize,
-                      gfx::Font::Weight::MEDIUM));
+    auto* description_label =
+        AddChildView(ash::login_views_utils::CreateBubbleLabel(
+            l10n_util::GetStringUTF16(
+                IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA),
+            /*view_defining_max_width=*/this,
+            /*color=*/
+            GetContentLayerColor(
+                ash::AshColorProvider::ContentLayerType::kTextColorSecondary),
+            /*font_list=*/
+            gfx::FontList({ash::login_views_utils::kGoogleSansFont},
+                          gfx::Font::FontStyle::NORMAL, kDescriptionFontSize,
+                          gfx::Font::Weight::MEDIUM)));
     description_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_CENTER);
     description_label->SetProperty(
@@ -158,7 +159,6 @@ void EducationalView::Init(views::View* parent) {
                                               kBorderRow3, kBorderSides));
     description_label->SetMultiLine(true);
     description_label->SetSize(gfx::Size());
-    AddChildView(std::move(description_label));
   }
   {
     // Edit/add |Got it| button to exit UI.

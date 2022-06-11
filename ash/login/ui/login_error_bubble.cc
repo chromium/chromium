@@ -35,10 +35,10 @@ LoginErrorBubble::LoginErrorBubble(views::View* anchor_view)
 
 LoginErrorBubble::~LoginErrorBubble() = default;
 
-void LoginErrorBubble::SetContent(views::View* content) {
+void LoginErrorBubble::SetContent(std::unique_ptr<views::View> content) {
   if (content_)
-    delete content_;
-  content_ = AddChildView(content);
+    RemoveChildViewT(content_);
+  content_ = AddChildView(std::move(content));
 }
 
 void LoginErrorBubble::SetTextContent(const std::u16string& message) {

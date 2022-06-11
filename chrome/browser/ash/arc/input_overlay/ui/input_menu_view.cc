@@ -179,28 +179,28 @@ void InputMenuView::Init() {
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-    auto* menu_title = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
-        /*view_defining_max_width=*/nullptr, color,
-        /*font_list=*/
-        gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
-                      kTitleFontSize, gfx::Font::Weight::MEDIUM),
-        /*line_height=*/kHeaderMinHeight);
-    header_view->AddChildView(menu_title);
+    auto* menu_title =
+        header_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
+            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
+            /*view_defining_max_width=*/nullptr, color,
+            /*font_list=*/
+            gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
+                          kTitleFontSize, gfx::Font::Weight::MEDIUM),
+            /*line_height=*/kHeaderMinHeight));
 
-    auto* alpha_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
-        /*view_defining_max_width=*/nullptr, kAlphaTextColor,
-        gfx::FontList({ash::login_views_utils::kGoogleSansFont},
-                      gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
-                      gfx::Font::Weight::MEDIUM));
+    auto* alpha_label =
+        header_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
+            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
+            /*view_defining_max_width=*/nullptr, kAlphaTextColor,
+            gfx::FontList({ash::login_views_utils::kGoogleSansFont},
+                          gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
+                          gfx::Font::Weight::MEDIUM)));
     alpha_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     alpha_label->SetPreferredSize(gfx::Size(
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
         kAlphaHeight));
     alpha_label->SetBackground(
         views::CreateRoundedRectBackground(kAlphaBgColor, kAlphaCornerRadius));
-    header_view->AddChildView(std::move(alpha_label));
 
     game_control_toggle_ =
         header_view->AddChildView(std::make_unique<views::ToggleButton>(
@@ -246,14 +246,14 @@ void InputMenuView::Init() {
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-    auto* key_mapping_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_KEY_MAPPING),
-        /*view_defining_max_width=*/nullptr, color,
-        /*font_list=*/
-        gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
-                      kBodyFontSize, gfx::Font::Weight::NORMAL),
-        /*line_height=*/kRowMinHeight);
-    customize_view->AddChildView(key_mapping_label);
+    auto* key_mapping_label =
+        customize_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
+            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_KEY_MAPPING),
+            /*view_defining_max_width=*/nullptr, color,
+            /*font_list=*/
+            gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
+                          kBodyFontSize, gfx::Font::Weight::NORMAL),
+            /*line_height=*/kRowMinHeight));
 
     edit_button_ =
         customize_view->AddChildView(std::make_unique<ash::PillButton>(
@@ -276,14 +276,14 @@ void InputMenuView::Init() {
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-    auto* mapping_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING),
-        /*view_defining_max_width=*/nullptr, color,
-        /*font_list=*/
-        gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
-                      kBodyFontSize, gfx::Font::Weight::NORMAL),
-        /*line_height=*/kRowMinHeight);
-    hint_view->AddChildView(mapping_label);
+    auto* mapping_label =
+        hint_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
+            l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING),
+            /*view_defining_max_width=*/nullptr, color,
+            /*font_list=*/
+            gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
+                          kBodyFontSize, gfx::Font::Weight::NORMAL),
+            /*line_height=*/kRowMinHeight));
     show_mapping_toggle_ = hint_view->AddChildView(
         std::make_unique<views::ToggleButton>(base::BindRepeating(
             &InputMenuView::OnToggleShowHintPressed, base::Unretained(this))));

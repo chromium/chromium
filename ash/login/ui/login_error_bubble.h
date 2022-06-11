@@ -25,7 +25,7 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
 
   // If the content is theme-change sensitive, it should be updated by the
   // class managing this instance via a new call to SetContent.
-  void SetContent(views::View* content);
+  void SetContent(std::unique_ptr<views::View> content);
   // Covers most cases where content is a simple label containing a message.
   // The eventual theme changes will be handled internally.
   void SetTextContent(const std::u16string& message);

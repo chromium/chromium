@@ -2306,7 +2306,7 @@ void LockContentsView::ShowAuthErrorMessage() {
 
   auth_error_bubble_->SetAnchorView(
       big_view->auth_user()->GetActiveInputView());
-  auth_error_bubble_->SetContent(container.release());
+  auth_error_bubble_->SetContent(std::move(container));
   auth_error_bubble_->set_accessible_name(error_text);
   auth_error_bubble_->Show();
 }
