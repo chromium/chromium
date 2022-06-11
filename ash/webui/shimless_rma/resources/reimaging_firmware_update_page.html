@@ -11,14 +11,14 @@
           class="warning-icon small-icon" hidden="[[!shouldShowWarning_]]">
       </iron-icon>
       <span id="firmwareUpdateStatus" class="instructions">
-        [[getStatusString_(status_)]]
+        [[statusString_]]
       </span>
     </div>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper">
-      <img class="illustration" src="[[getImgSrc_(status_)]]"
-          hidden$="[[shouldShowSpinner_]]">
+      <img class="illustration" src="[[imgSrc_]]"
+          hidden$="[[shouldShowSpinner_]]" alt="[[imgAlt_]]">
       <paper-spinner-lite class="large-spinner"
           hidden$="[[!shouldShowSpinner_]]" active>
       </paper-spinner-lite>

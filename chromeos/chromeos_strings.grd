@@ -3192,6 +3192,31 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION" desc="Label for the option to preserve/save the data on the device.">
         Keep user data
       </message>
+      <!-- Illustrations -->
+      <message name="IDS_SHIMLESS_RMA_BASE_ON_FLAT_SURFACE_ALT_TEXT" desc="Alt text for illustration showing how to put the device base flat on a surface.">
+        Put base on flat surface
+      </message>
+      <message name="IDS_SHIMLESS_RMA_DOWNLOADING_ALT_TEXT" desc="Alt text for illustration showing a downloading arrow.">
+        Downloading
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ERROR_ALT_TEXT" desc="Alt text for illustration showing an error screen.">
+        Error
+      </message>
+      <message name="IDS_SHIMLESS_RMA_INSERT_USB_ALT_TEXT" desc="Alt text for illustration showing how to insert a USB.">
+        Insert USB
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LID_ON_FLAT_SURFACE_ALT_TEXT" desc="Alt text for illustration showing how to put the device lid flat on a surface.">
+        Put lid on flat surface
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_START_ALT_TEXT" desc="Alt text for illustration showing a person repairing.">
+        Repair start
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SUCCESS_ALT_TEXT" desc="Alt text for illustration showing a success checkmark.">
+        Success
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_ALT_TEXT" desc="Alt text for illustration showing an hourglass representing updating the OS.">
+        Update OS
+      </message>
       <!-- Peripheral Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
         Firmware updates for external devices

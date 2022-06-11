@@ -32,6 +32,14 @@ const CALIBRATION_IMG_MAP = {
       'lid_on_flat_surface',
 };
 
+/** @type {!Object<!CalibrationSetupInstruction, string>} */
+const CALIBRATION_ALT_MAP = {
+  [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
+      'baseOnFlatSurfaceAltText',
+  [CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface]:
+      'lidOnFlatSurfaceAltText',
+};
+
 /**
  * @fileoverview
  * 'reimaging-calibration-setup-page' is for displaying instructions for the
@@ -62,7 +70,24 @@ export class ReimagingCalibrationSetupPage extends
       /** @protected {?CalibrationSetupInstruction} */
       calibrationSetupInstruction_: {
         type: Object,
-      }
+      },
+
+      /** @protected {string} */
+      imgSrc_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected {string} */
+      imgAlt_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected {string} */
+      calibrationInstructionsText_: {
+        type: String,
+      },
     };
   }
 
@@ -70,6 +95,10 @@ export class ReimagingCalibrationSetupPage extends
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
+  static get observers() {
+    return ['onStatusChanged_(calibrationSetupInstruction_)'];
   }
 
   /** @override */
@@ -88,23 +117,33 @@ export class ReimagingCalibrationSetupPage extends
   }
 
   /**
-   * @return {string}
+   * Groups state changes related to the |calibrationSetupInstruction_|
+   * updating.
    * @protected
    */
-  getCalibrationInstructionsText_() {
+  onStatusChanged_() {
+    this.setCalibrationInstructionsText_();
+    this.setImgSrcAndAlt_();
+  }
+
+  /**
+   * @protected
+   */
+  setCalibrationInstructionsText_() {
     assert(this.calibrationSetupInstruction_);
-    return this.i18n(
+    this.calibrationInstructionsText_ = this.i18n(
         INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction_]);
   }
 
   /**
-   * @return {string}
    * @protected
    */
-  getImgSrc_() {
+  setImgSrcAndAlt_() {
     assert(this.calibrationSetupInstruction_);
-    return `illustrations/${
+    this.imgSrc_ = `illustrations/${
         CALIBRATION_IMG_MAP[this.calibrationSetupInstruction_]}.svg`;
+    this.imgAlt_ =
+        this.i18n(CALIBRATION_ALT_MAP[this.calibrationSetupInstruction_]);
   }
 }
 

@@ -34,6 +34,15 @@ const STATUS_IMG_MAP = {
   [UpdateRoFirmwareStatus.kComplete]: 'downloading',
 };
 
+/** @type {!Object<!UpdateRoFirmwareStatus, string>} */
+const STATUS_ALT_MAP = {
+  [UpdateRoFirmwareStatus.kWaitUsb]: 'insertUsbAltText',
+  [UpdateRoFirmwareStatus.kFileNotFound]: 'errorAltText',
+  [UpdateRoFirmwareStatus.kUpdating]: 'updateOsAltText',
+  [UpdateRoFirmwareStatus.kRebooting]: 'downloadingAltText',
+  [UpdateRoFirmwareStatus.kComplete]: 'downloadingAltText',
+};
+
 /**
  * @fileoverview
  * 'firmware-updating-page' displays status of firmware update.
@@ -85,6 +94,18 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
         value: false,
         reflectToAttribute: true,
       },
+
+      /** @protected {string} */
+      imgSrc_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected {string} */
+      imgAlt_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -102,6 +123,10 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
 
     this.shimlessRmaService_.observeRoFirmwareUpdateProgress(
         this.updateRoFirmwareObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  static get observers() {
+    return ['onStatusChanged_(status_)'];
   }
 
   /**
@@ -133,22 +158,30 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   }
 
   /**
-   * @return {string}
+   * Groups state changes related to the |status_| updating.
    * @protected
    */
-  getStatusString_() {
-    return this.status_ === null ? '' :
-                                   this.i18n(STATUS_TEXT_KEY_MAP[this.status_]);
+  onStatusChanged_() {
+    this.setStatusString_();
+    this.setImgSrcAndAlt_();
   }
 
   /**
-   * @return {string}
    * @protected
    */
-  getImgSrc_() {
-    return `illustrations/${
-        this.status_ === null ? 'downloading' :
-                                STATUS_IMG_MAP[this.status_]}.svg`;
+  setStatusString_() {
+    this.statusString_ =
+        !this.status_ ? '' : this.i18n(STATUS_TEXT_KEY_MAP[this.status_]);
+  }
+
+  /**
+   * @protected
+   */
+  setImgSrcAndAlt_() {
+    this.imgSrc_ = `illustrations/${
+    !this.status_ ? 'downloading' : STATUS_IMG_MAP[this.status_]}.svg`;
+    this.imgAlt_ = this.i18n(
+        !this.status_ ? 'downloadingAltText' : STATUS_ALT_MAP[this.status_]);
   }
 }
 

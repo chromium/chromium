@@ -324,6 +324,17 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION_DESCRIPTION},
       {"wipeDevicePreserveDataLabel",
        IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION},
+      // Illustrations
+      {"baseOnFlatSurfaceAltText",
+       IDS_SHIMLESS_RMA_BASE_ON_FLAT_SURFACE_ALT_TEXT},
+      {"downloadingAltText", IDS_SHIMLESS_RMA_DOWNLOADING_ALT_TEXT},
+      {"errorAltText", IDS_SHIMLESS_RMA_ERROR_ALT_TEXT},
+      {"insertUsbAltText", IDS_SHIMLESS_RMA_INSERT_USB_ALT_TEXT},
+      {"lidOnFlatSurfaceAltText",
+       IDS_SHIMLESS_RMA_LID_ON_FLAT_SURFACE_ALT_TEXT},
+      {"repairStartAltText", IDS_SHIMLESS_RMA_REPAIR_START_ALT_TEXT},
+      {"successAltText", IDS_SHIMLESS_RMA_SUCCESS_ALT_TEXT},
+      {"updateOsAltText", IDS_SHIMLESS_RMA_UPDATE_OS_ALT_TEXT},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
