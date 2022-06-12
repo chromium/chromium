@@ -85,6 +85,7 @@ enum class ThreadPriority : int {
   DISPLAY,
   // Suitable for low-latency, glitch-resistant audio.
   REALTIME_AUDIO,
+  kMaxValue = REALTIME_AUDIO,
 };
 
 // A namespace for low-level thread functions.

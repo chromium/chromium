@@ -5,6 +5,7 @@
 #include "base/threading/scoped_thread_priority.h"
 
 #include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +21,15 @@ namespace {
   if (num_times_run > 1)                                                \
     ADD_FAILURE() << "This test cannot run multiple times in the same " \
                      "process.";
+
+static ThreadPriority kAllThreadTypes[] = {
+    ThreadPriority::REALTIME_AUDIO, ThreadPriority::DISPLAY,
+    ThreadPriority::NORMAL, ThreadPriority::BACKGROUND};
+
+static_assert(static_cast<int>(ThreadPriority::BACKGROUND) == 0,
+              "kBackground isn't lowest");
+static_assert(ThreadPriority::REALTIME_AUDIO == ThreadPriority::kMaxValue,
+              "kRealtimeAudio isn't highest");
 
 class ScopedThreadPriorityTest : public testing::Test {
  protected:
@@ -45,6 +55,41 @@ void FunctionThatBoostsPriorityOnEveryInvoke() {
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
+
+TEST_F(ScopedThreadPriorityTest, BasicTest) {
+  for (auto from : kAllThreadTypes) {
+    if (!PlatformThread::CanChangeThreadPriority(ThreadPriority::NORMAL, from))
+      continue;
+    for (auto to : kAllThreadTypes) {
+      // ThreadType::kRealtimeAudio is not a valid |target_thread_type| for
+      // ScopedBoostPriority.
+      if (to == ThreadPriority::REALTIME_AUDIO)
+        continue;
+      Thread::Options options;
+      options.priority = from;
+      Thread thread("ScopedThreadPriorityTest");
+      thread.StartWithOptions(std::move(options));
+      thread.WaitUntilThreadStarted();
+      thread.task_runner()->PostTask(
+          FROM_HERE,
+          BindOnce(
+              [](ThreadPriority from, ThreadPriority to) {
+                EXPECT_EQ(PlatformThread::GetCurrentThreadPriority(), from);
+                {
+                  ScopedBoostPriority scoped_boost_priority(to);
+                  bool will_boost_priority =
+                      from < to &&
+                      PlatformThread::CanChangeThreadPriority(from, to) &&
+                      PlatformThread::CanChangeThreadPriority(to, from);
+                  EXPECT_EQ(PlatformThread::GetCurrentThreadPriority(),
+                            will_boost_priority ? to : from);
+                }
+                EXPECT_EQ(PlatformThread::GetCurrentThreadPriority(), from);
+              },
+              from, to));
+    }
+  }
+}
 
 TEST_F(ScopedThreadPriorityTest, WithoutPriorityBoost) {
   ASSERT_RUNS_ONCE();

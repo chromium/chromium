@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -300,34 +301,25 @@ void RecordHardFaultHistogram() {
 // base::TimeTicks::Now() at play, but in practice it is pretty much instant
 // compared to multi-seconds startup timings.
 base::TimeTicks StartupTimeToTimeTicks(base::Time time) {
-// First get a base which represents the same point in time in both units.
-// Bump the priority of this thread while doing this as the wall clock time it
-// takes to resolve these two calls affects the precision of this method and
-// bumping the priority reduces the likelihood of a context switch interfering
-// with this computation.
+  // First get a base which represents the same point in time in both units.
+  // Bump the priority of this thread while doing this as the wall clock time it
+  // takes to resolve these two calls affects the precision of this method and
+  // bumping the priority reduces the likelihood of a context switch interfering
+  // with this computation.
+  absl::optional<base::ScopedBoostPriority> scoped_boost_priority;
 
 // Enabling this logic on OS X causes a significant performance regression.
 // https://crbug.com/601270
 #if !BUILDFLAG(IS_APPLE)
   static bool statics_initialized = false;
-
-  base::ThreadPriority previous_priority = base::ThreadPriority::NORMAL;
   if (!statics_initialized) {
-    previous_priority = base::PlatformThread::GetCurrentThreadPriority();
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::DISPLAY);
+    statics_initialized = true;
+    scoped_boost_priority.emplace(base::ThreadPriority::DISPLAY);
   }
-#endif
+#endif  // !BUILDFLAG(IS_APPLE)
 
   static const base::Time time_base = base::Time::Now();
   static const base::TimeTicks trace_ticks_base = base::TimeTicks::Now();
-
-#if !BUILDFLAG(IS_APPLE)
-  if (!statics_initialized) {
-    base::PlatformThread::SetCurrentThreadPriority(previous_priority);
-  }
-  statics_initialized = true;
-#endif
 
   // Then use the TimeDelta common ground between the two units to make the
   // conversion.

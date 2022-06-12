@@ -10,6 +10,27 @@
 #include "build/build_config.h"
 
 namespace base {
+
+ScopedBoostPriority::ScopedBoostPriority(ThreadPriority target_priority) {
+  DCHECK_LT(target_priority, ThreadPriority::REALTIME_AUDIO);
+  const ThreadPriority original_priority =
+      PlatformThread::GetCurrentThreadPriority();
+  const bool should_boost = original_priority < target_priority &&
+                            PlatformThread::CanChangeThreadPriority(
+                                original_priority, target_priority) &&
+                            PlatformThread::CanChangeThreadPriority(
+                                target_priority, original_priority);
+  if (should_boost) {
+    original_priority_.emplace(original_priority);
+    PlatformThread::SetCurrentThreadPriority(target_priority);
+  }
+}
+
+ScopedBoostPriority::~ScopedBoostPriority() {
+  if (original_priority_.has_value())
+    PlatformThread::SetCurrentThreadPriority(original_priority_.value());
+}
+
 namespace internal {
 
 ScopedMayLoadLibraryAtBackgroundPriority::
