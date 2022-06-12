@@ -51,18 +51,32 @@ gfx::Rect GetFullscreenWindowBoundsInParent(aura::Window* window) {
 }
 
 gfx::Rect GetDisplayWorkAreaBoundsInParent(aura::Window* window) {
-  gfx::Rect result =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
-  ::wm::ConvertRectFromScreen(window->parent(), &result);
-  return result;
+  // If it is application window under `non_lock_screen_containers`, use
+  // `in_session_user_work_area_insets`, otherwise, use `user_work_area_insets`.
+  const aura::Window* non_lock_screen_containers = Shell::GetContainer(
+      window->GetRootWindow(), kShellWindowId_NonLockScreenContainersContainer);
+  gfx::Insets insets =
+      non_lock_screen_containers->Contains(window)
+          ? WorkAreaInsets::ForWindow(window)
+                ->in_session_user_work_area_insets()
+          : WorkAreaInsets::ForWindow(window)->user_work_area_insets();
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window).bounds();
+  bounds.Inset(insets);
+  ::wm::ConvertRectFromScreen(window->parent(), &bounds);
+  return bounds;
 }
 
+// TODO(yongshun): Remove or consolidate this function with
+// `GetDisplayWorkAreaBoundsInParent`.
 gfx::Rect GetDisplayWorkAreaBoundsInParentForLockScreen(aura::Window* window) {
   gfx::Rect bounds = WorkAreaInsets::ForWindow(window)->user_work_area_bounds();
   ::wm::ConvertRectFromScreen(window->parent(), &bounds);
   return bounds;
 }
 
+// TODO(yongshun): Remove or consolidate this function with
+// `GetDisplayWorkAreaBoundsInParent`.
 gfx::Rect GetDisplayWorkAreaBoundsInParentForActiveDeskContainer(
     aura::Window* window) {
   aura::Window* root_window = window->GetRootWindow();
@@ -70,6 +84,8 @@ gfx::Rect GetDisplayWorkAreaBoundsInParentForActiveDeskContainer(
       desks_util::GetActiveDeskContainerForRoot(root_window));
 }
 
+// TODO(yongshun): Remove or consolidate this function with
+// `GetDisplayWorkAreaBoundsInParent`.
 gfx::Rect GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
     aura::Window* window) {
   gfx::Rect bounds =

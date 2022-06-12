@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
@@ -103,7 +104,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     aura::Window* root = Shell::GetPrimaryRootWindow();
     gfx::Rect root_bounds(root->bounds());
     EXPECT_EQ(800, root_bounds.width());
-    Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+    WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+        root, gfx::Rect(), gfx::Insets(), gfx::Insets());
     window_ = std::make_unique<aura::Window>(&delegate_);
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
@@ -445,7 +447,8 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_2) {
 TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_3) {
   UpdateDisplay("600x800");
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+  WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets(), gfx::Insets());
 
   window_->SetBounds(gfx::Rect(300, 100, 300, 200));
   window2_->SetBounds(gfx::Rect(300, 300, 200, 150));
@@ -895,8 +898,10 @@ TEST_F(WorkspaceWindowResizerTest, ResizeWindowOutsideRightWorkArea) {
 }
 
 TEST_F(WorkspaceWindowResizerTest, ResizeWindowOutsideBottomWorkArea) {
-  Shell::Get()->SetDisplayWorkAreaInsets(Shell::GetPrimaryRootWindow(),
-                                         gfx::Insets::TLBR(0, 0, 50, 0));
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets::TLBR(0, 0, 50, 0),
+      gfx::Insets::TLBR(0, 0, 50, 0));
   int bottom =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()).bottom();
   int delta_to_bottom = 50;
@@ -1561,7 +1566,8 @@ TEST_F(WorkspaceWindowResizerTest, DontExceedMaxHeight) {
 TEST_F(WorkspaceWindowResizerTest, DontExceedMinHeight) {
   UpdateDisplay("600x500");
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+  WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+      root, gfx::Rect(), gfx::Insets(), gfx::Insets());
 
   // Four 100x100 windows flush against eachother, starting at 100,100.
   window_->SetBounds(gfx::Rect(100, 100, 100, 100));
