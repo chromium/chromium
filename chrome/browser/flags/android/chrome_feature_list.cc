@@ -27,7 +27,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/browser_ui/photo_picker/android/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"

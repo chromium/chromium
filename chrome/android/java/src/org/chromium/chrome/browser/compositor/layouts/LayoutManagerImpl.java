@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -254,7 +253,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         // clang-format off
         // Overlays are ordered back (closest to the web content) to front.
         Class[] overlayOrder = new Class[] {
-                StripLayoutHelperManager.class,
                 ContextualSearchPanel.class};
         // clang-format on
 

@@ -16,7 +16,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -150,11 +149,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
-    protected Layout getLayoutForType(@LayoutType int layoutType) {
-        return super.getLayoutForType(layoutType);
-    }
-
-    @Override
     protected void startShowing(Layout layout, boolean animate) {
         mCreatingNtp = false;
         super.startShowing(layout, animate);
@@ -240,14 +234,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         if (!isOverviewLayout(getActiveLayout())) return;
 
         super.onTabsAllClosing(incognito);
-    }
-
-    /**
-     * @return The {@link StripLayoutHelperManager} managed by this class.
-     */
-    @VisibleForTesting
-    public StripLayoutHelperManager getStripLayoutHelperManager() {
-        return null;
     }
 
     /**

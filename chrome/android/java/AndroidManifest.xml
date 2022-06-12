@@ -675,14 +675,6 @@ by a child template that "extends" this file.
             android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
             android:exported="false" />
 
-        <!-- Service for decoding images in a sandboxed process. -->
-        <service
-            android:description="@string/decoder_description"
-            android:name="org.chromium.chrome.browser.photo_picker.DecoderService"
-            android:exported="false"
-            android:isolatedProcess="true"
-            android:process=":decoder_service" />
-
         <!-- Download foreground service -->
         <service android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
             android:exported="false">

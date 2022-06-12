@@ -7,16 +7,20 @@ package org.chromium.content.browser;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
+import android.widget.Toast;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.content_public.browser.ContactsPicker;
-import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +28,60 @@ import java.util.List;
  * side.
  */
 @JNINamespace("content")
-public class ContactsDialogHost implements ContactsPickerListener {
+public class ContactsDialogHost {
+
+    /**
+     * The action the user took in the picker.
+     */
+    @IntDef({ContactsPickerAction.CANCEL, ContactsPickerAction.CONTACTS_SELECTED,
+            ContactsPickerAction.SELECT_ALL, ContactsPickerAction.UNDO_SELECT_ALL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ContactsPickerAction {
+        int CANCEL = 0;
+        int CONTACTS_SELECTED = 1;
+        int SELECT_ALL = 2;
+        int UNDO_SELECT_ALL = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    public static class Contact {
+        public final List<String> names;
+        public final List<String> emails;
+        public final List<String> tel;
+        public final List<ByteBuffer> serializedAddresses;
+        public final List<ByteBuffer> serializedIcons;
+
+        public Contact(List<String> contactNames, List<String> contactEmails,
+                       List<String> contactTel, List<org.chromium.payments.mojom.PaymentAddress> contactAddresses,
+                       List<org.chromium.blink.mojom.ContactIconBlob> contactIcons) {
+            names = contactNames;
+            emails = contactEmails;
+            tel = contactTel;
+
+            if (contactAddresses != null) {
+                serializedAddresses = new ArrayList<ByteBuffer>();
+                for (org.chromium.payments.mojom.PaymentAddress address : contactAddresses) {
+                    serializedAddresses.add(address.serialize());
+                }
+            } else {
+                serializedAddresses = null;
+            }
+
+            if (contactIcons != null) {
+                serializedIcons = new ArrayList<ByteBuffer>();
+                for (org.chromium.blink.mojom.ContactIconBlob icon : contactIcons) {
+                    serializedIcons.add(icon.serialize());
+                }
+            } else {
+                serializedIcons = null;
+            }
+        }
+    }
+
+
+
+
+
     private long mNativeContactsProviderAndroid;
     private final WebContents mWebContents;
 
@@ -56,7 +113,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
         }
 
         if (windowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)) {
-            if (!ContactsPicker.showContactsPicker(mWebContents, this, multiple, includeNames,
+            if (!showContactsPicker(mWebContents, multiple, includeNames,
                         includeEmails, includeTel, includeAddresses, includeIcons,
                         formattedOrigin)) {
                 ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
@@ -74,7 +131,7 @@ public class ContactsDialogHost implements ContactsPickerListener {
                     if (permissions.length == 1 && grantResults.length == 1
                             && TextUtils.equals(permissions[0], Manifest.permission.READ_CONTACTS)
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (!ContactsPicker.showContactsPicker(mWebContents, this, multiple,
+                        if (!showContactsPicker(mWebContents, multiple,
                                     includeNames, includeEmails, includeTel, includeAddresses,
                                     includeIcons, formattedOrigin)) {
                             ContactsDialogHostJni.get().endWithPermissionDenied(
@@ -87,9 +144,16 @@ public class ContactsDialogHost implements ContactsPickerListener {
                 });
     }
 
-    @Override
+    public boolean showContactsPicker(WebContents webContents, boolean allowMultiple, boolean includeNames,
+                                             boolean includeEmails, boolean includeTel, boolean includeAddresses,
+                                             boolean includeIcons, String formattedOrigin) {
+        Toast.makeText(webContents.getTopLevelNativeWindow().getApplicationContext(),
+                "TODO showContactsPicker", Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
     public void onContactsPickerUserAction(@ContactsPickerAction int action, List<Contact> contacts,
-            int percentageShared, int propertiesRequested) {
+                                           int percentageShared, int propertiesRequested) {
         if (mNativeContactsProviderAndroid == 0) return;
 
         switch (action) {
@@ -112,11 +176,11 @@ public class ContactsDialogHost implements ContactsPickerListener {
                                     : null,
                             contact.serializedAddresses != null
                                     ? contact.serializedAddresses.toArray(
-                                            new ByteBuffer[contact.serializedAddresses.size()])
+                                    new ByteBuffer[contact.serializedAddresses.size()])
                                     : null,
                             contact.serializedIcons != null ? contact.serializedIcons.toArray(
                                     new ByteBuffer[contact.serializedIcons.size()])
-                                                            : null);
+                                    : null);
                 }
                 ContactsDialogHostJni.get().endContactsList(
                         mNativeContactsProviderAndroid, percentageShared, propertiesRequested);

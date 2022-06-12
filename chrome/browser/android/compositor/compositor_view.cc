@@ -24,7 +24,6 @@
 #include "cc/layers/texture_layer.h"
 #include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
-#include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "content/public/browser/android/compositor.h"

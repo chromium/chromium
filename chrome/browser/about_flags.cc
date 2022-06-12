@@ -211,7 +211,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
-#include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
 #include "components/translate/content/android/translate_message.h"
@@ -6671,13 +6670,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRecoverFromNeverSaveAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          password_manager::features::kRecoverFromNeverSaveAndroid)},
-    {"photo-picker-video-support",
-     flag_descriptions::kPhotoPickerVideoSupportName,
-     flag_descriptions::kPhotoPickerVideoSupportDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         photo_picker::features::kPhotoPickerVideoSupport,
-         kPhotoPickerVideoSupportFeatureVariations,
-         "PhotoPickerVideoSupportFeatureVariations")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"full-user-agent", flag_descriptions::kFullUserAgentName,

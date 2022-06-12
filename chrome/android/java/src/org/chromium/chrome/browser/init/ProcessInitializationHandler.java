@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.init;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
@@ -28,7 +27,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
@@ -37,7 +35,6 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
-import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl;
@@ -54,7 +51,6 @@ import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
-import org.chromium.chrome.browser.photo_picker.DecoderService;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -64,10 +60,6 @@ import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShare
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
-import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
-import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
-import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
-import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -83,15 +75,10 @@ import org.chromium.components.viz.common.display.DeJellyUtils;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
-import org.chromium.content_public.browser.ContactsPicker;
-import org.chromium.content_public.browser.ContactsPickerListener;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.base.PhotoPicker;
-import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -223,39 +210,6 @@ public class ProcessInitializationHandler {
         AppBannerManager.setAppDetailsDelegate(AppHooks.get().createAppDetailsDelegate());
         ChromeLifetimeController.initialize();
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
-
-        DecoderServiceHost.setIntentSupplier(() -> {
-            return new Intent(ContextUtils.getApplicationContext(), DecoderService.class);
-        });
-
-        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegateBase() {
-            @Override
-            public PhotoPicker showPhotoPicker(WindowAndroid windowAndroid,
-                    PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
-                PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
-                        windowAndroid.getContext().get().getContentResolver(), listener,
-                        allowMultiple,
-                        mimeTypes);
-                dialog.getWindow().getAttributes().windowAnimations = R.style.PickerDialogAnimation;
-                dialog.show();
-                return dialog;
-            }
-        });
-
-        ContactsPicker.setContactsPickerDelegate(
-                (WindowAndroid windowAndroid, ContactsPickerListener listener,
-                        boolean allowMultiple, boolean includeNames, boolean includeEmails,
-                        boolean includeTel, boolean includeAddresses, boolean includeIcons,
-                        String formattedOrigin) -> {
-                    ContactsPickerDialog dialog = new ContactsPickerDialog(windowAndroid,
-                            new ChromePickerAdapter(windowAndroid.getContext().get()), listener,
-                            allowMultiple, includeNames, includeEmails, includeTel,
-                            includeAddresses, includeIcons, formattedOrigin);
-                    dialog.getWindow().getAttributes().windowAnimations =
-                            R.style.PickerDialogAnimation;
-                    dialog.show();
-                    return dialog;
-                });
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
     }

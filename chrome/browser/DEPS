@@ -72,7 +72,6 @@ include_rules = [
   "+components/browser_ui/bottomsheet",
   "+components/browser_ui/modaldialog",
   "+components/browser_ui/notifications",
-  "+components/browser_ui/photo_picker",
   "+components/browser_ui/settings",
   "+components/browser_ui/util",
   "+components/browser_ui/widget",
