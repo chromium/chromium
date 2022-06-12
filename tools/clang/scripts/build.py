@@ -476,6 +476,26 @@ def CopyLibstdcpp(args, build_dir):
   CopyFile(libstdcpp, os.path.join(build_dir, 'lib'))
 
 
+def compiler_rt_cmake_flags(*, sanitizers, profile):
+  # Don't set -DCOMPILER_RT_BUILD_BUILTINS=ON/OFF as it interferes with the
+  # runtimes logic of building builtins.
+  args = [
+      # Build crtbegin/crtend. It's just two tiny TUs, so just enable this
+      # everywhere, even though we only need it on Linux.
+      'COMPILER_RT_BUILD_CRT=ON',
+      'COMPILER_RT_BUILD_LIBFUZZER=OFF',
+      'COMPILER_RT_BUILD_MEMPROF=OFF',
+      'COMPILER_RT_BUILD_ORC=OFF',
+      'COMPILER_RT_BUILD_PROFILE=' + ('ON' if profile else 'OFF'),
+      'COMPILER_RT_BUILD_SANITIZERS=' + ('ON' if sanitizers else 'OFF'),
+      'COMPILER_RT_BUILD_XRAY=OFF',
+      # We explicitly list all targets we want to build, do not autodetect
+      # targets.
+      'COMPILER_RT_DEFAULT_TARGET_ONLY=ON',
+  ]
+  return args
+
+
 def gn_arg(v):
   if v == 'True':
     return True
@@ -633,18 +653,20 @@ def main():
 
   targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
 
-  projects = 'clang;compiler-rt;lld;clang-tools-extra'
+  projects = 'clang;lld;clang-tools-extra'
+  runtimes = 'compiler-rt'
 
   if sys.platform == 'darwin':
     # clang needs libc++, else -stdlib=libc++ won't find includes
     # (this is needed for bootstrap builds and for building the fuchsia runtime)
-    projects += ';libcxx'
+    runtimes += ';libcxx'
 
   base_cmake_args = [
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
       '-DLLVM_ENABLE_PROJECTS=' + projects,
+      '-DLLVM_ENABLE_RUNTIMES=' + runtimes,
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
       # PIC needed for Rust build (links LLVM into shared object)
       '-DLLVM_ENABLE_PIC=ON',
@@ -778,14 +800,19 @@ def main():
     os.chdir(LLVM_BOOTSTRAP_DIR)
 
     projects = 'clang'
-    if args.pgo:
-      # Need libclang_rt.profile
-      projects += ';compiler-rt'
+    runtimes = ''
+    if args.pgo or sys.platform == 'darwin':
+      # Need libclang_rt.profile for PGO.
+      # On macOS, the bootstrap toolchain needs to have compiler-rt because
+      # dsymutil's link needs libclang_rt.osx.a. Only the x86_64 osx
+      # libraries are needed though, and only libclang_rt (i.e.
+      # COMPILER_RT_BUILD_BUILTINS).
+      runtimes += ';compiler-rt'
     if sys.platform != 'darwin':
       projects += ';lld'
     if sys.platform == 'darwin':
-      # Need libc++ and compiler-rt for the bootstrap compiler on mac.
-      projects += ';libcxx;compiler-rt'
+      # Need libc++ for the bootstrap compiler on mac.
+      runtimes += ';libcxx'
 
     bootstrap_targets = 'X86'
     if sys.platform == 'darwin':
@@ -794,6 +821,7 @@ def main():
     bootstrap_args = base_cmake_args + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
         '-DLLVM_ENABLE_PROJECTS=' + projects,
+        '-DLLVM_ENABLE_RUNTIMES=' + runtimes,
         '-DCMAKE_INSTALL_PREFIX=' + LLVM_BOOTSTRAP_INSTALL_DIR,
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
@@ -803,19 +831,13 @@ def main():
         # Ignore args.disable_asserts for the bootstrap compiler.
         '-DLLVM_ENABLE_ASSERTIONS=ON',
     ]
+    # PGO needs libclang_rt.profile but none of the other compiler-rt stuff.
+    bootstrap_args.extend([
+        '-D' + f
+        for f in compiler_rt_cmake_flags(sanitizers=False, profile=args.pgo)
+    ])
     if sys.platform == 'darwin':
-      # On macOS, the bootstrap toolchain needs to have compiler-rt because
-      # dsymutil's link needs libclang_rt.osx.a. Only the x86_64 osx
-      # libraries are needed though, and only libclang_rt (i.e.
-      # COMPILER_RT_BUILD_BUILTINS).
       bootstrap_args.extend([
-          '-DCOMPILER_RT_BUILD_BUILTINS=ON',
-          '-DCOMPILER_RT_BUILD_CRT=OFF',
-          '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-          '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-          '-DCOMPILER_RT_BUILD_ORC=OFF',
-          '-DCOMPILER_RT_BUILD_SANITIZERS=OFF',
-          '-DCOMPILER_RT_BUILD_XRAY=OFF',
           '-DCOMPILER_RT_ENABLE_IOS=OFF',
           '-DCOMPILER_RT_ENABLE_WATCHOS=OFF',
           '-DCOMPILER_RT_ENABLE_TVOS=OFF',
@@ -824,18 +846,6 @@ def main():
         bootstrap_args.extend(['-DDARWIN_osx_ARCHS=arm64'])
       else:
         bootstrap_args.extend(['-DDARWIN_osx_ARCHS=x86_64'])
-    elif args.pgo:
-      # PGO needs libclang_rt.profile but none of the other compiler-rt stuff.
-      bootstrap_args.extend([
-          '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
-          '-DCOMPILER_RT_BUILD_CRT=OFF',
-          '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-          '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-          '-DCOMPILER_RT_BUILD_ORC=OFF',
-          '-DCOMPILER_RT_BUILD_PROFILE=ON',
-          '-DCOMPILER_RT_BUILD_SANITIZERS=OFF',
-          '-DCOMPILER_RT_BUILD_XRAY=OFF',
-          ])
 
     if cc is not None:  bootstrap_args.append('-DCMAKE_C_COMPILER=' + cc)
     if cxx is not None: bootstrap_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
@@ -870,11 +880,13 @@ def main():
     os.chdir(LLVM_INSTRUMENTED_DIR)
 
     projects = 'clang'
+    runtimes = ''
     if sys.platform == 'darwin':
-      projects += ';libcxx;compiler-rt'
+      runtimes += 'libcxx'
 
     instrument_args = base_cmake_args + [
         '-DLLVM_ENABLE_PROJECTS=' + projects,
+        '-DLLVM_ENABLE_RUNTIMES=' + runtimes,
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
         '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
@@ -932,36 +944,6 @@ def main():
                                        '*.profraw')), msvc_arch='x64')
     print('Profile generated.')
 
-  compiler_rt_args = [
-      # Build crtbegin/crtend. It's just two tiny TUs, so just enable this
-      # everywhere, even though we only need it on Linux.
-      '-DCOMPILER_RT_BUILD_CRT=ON',
-      '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-      '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-      '-DCOMPILER_RT_BUILD_ORC=OFF',
-      '-DCOMPILER_RT_BUILD_PROFILE=ON',
-      '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
-      '-DCOMPILER_RT_BUILD_XRAY=OFF',
-  ]
-  if sys.platform == 'darwin':
-    compiler_rt_args.extend([
-        '-DCOMPILER_RT_ENABLE_IOS=ON',
-        '-DCOMPILER_RT_ENABLE_WATCHOS=OFF',
-        '-DCOMPILER_RT_ENABLE_TVOS=OFF',
-        # armv7 is A5 and earlier, armv7s is A6+ (2012 and later, before 64-bit
-        # iPhones). armv7k is Apple Watch, which we don't need.
-        '-DDARWIN_ios_ARCHS=armv7;armv7s;arm64',
-        '-DDARWIN_iossim_ARCHS=i386;x86_64;arm64',
-        # We don't need 32-bit intel support for macOS, we only ship 64-bit.
-        '-DDARWIN_osx_ARCHS=arm64;x86_64',
-    ])
-
-  if sys.platform == 'win32':
-    # https://crbug.com/1293778
-    compiler_rt_args.append('-DCOMPILER_RT_BUILD_BUILTINS=OFF')
-  else:
-    compiler_rt_args.append('-DCOMPILER_RT_BUILD_BUILTINS=ON')
-
   # LLVM uses C++11 starting in llvm 3.5. On Linux, this means libstdc++4.7+ is
   # needed, on OS X it requires libc++. clang only automatically links to libc++
   # when targeting OS X 10.9+, so add stdlib=libc++ explicitly so clang can run
@@ -1002,7 +984,7 @@ def main():
   if cc is not None:  base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
   if cxx is not None: base_cmake_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
   if lld is not None: base_cmake_args.append('-DCMAKE_LINKER=' + lld)
-  cmake_args = base_cmake_args + compiler_rt_args + [
+  cmake_args = base_cmake_args + [
       '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
       '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
       '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
@@ -1049,12 +1031,145 @@ def main():
   elif sys.platform == 'win32':
     cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-windows-msvc')
 
+  # List of (triple, list of CMake vars without '-D').
+  runtimes_triples_args = []
+
+  if sys.platform.startswith('linux'):
+    runtimes_triples_args.append(
+        ('i386-unknown-linux-gnu',
+         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+             'CMAKE_SYSROOT=%s' % sysroot_i386,
+         ]))
+    runtimes_triples_args.append(
+        ('x86_64-unknown-linux-gnu',
+         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+             'CMAKE_SYSROOT=%s' % sysroot,
+         ]))
+  elif sys.platform == 'win32':
+    runtimes_triples_args.append(
+        ('i386-pc-windows-msvc',
+         compiler_rt_cmake_flags(sanitizers=False, profile=True) + [
+             'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+         ]))
+    runtimes_triples_args.append(
+        ('x86_64-pc-windows-msvc',
+         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+             'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+         ]))
+  elif sys.platform == 'darwin':
+    compiler_rt_args = [
+        'COMPILER_RT_ENABLE_IOS=ON',
+        'COMPILER_RT_ENABLE_WATCHOS=OFF',
+        'COMPILER_RT_ENABLE_TVOS=OFF',
+        # armv7 is A5 and earlier, armv7s is A6+ (2012 and later, before 64-bit
+        # iPhones). armv7k is Apple Watch, which we don't need.
+        'DARWIN_ios_ARCHS=armv7;armv7s;arm64',
+        'DARWIN_iossim_ARCHS=i386;x86_64;arm64',
+        # We don't need 32-bit intel support for macOS, we only ship 64-bit.
+        'DARWIN_osx_ARCHS=arm64;x86_64',
+    ] + compiler_rt_cmake_flags(sanitizers=True, profile=True)
+    # compiler-rt is built for all platforms/arches with a single
+    # configuration, we should only specify one target triple. 'default' is
+    # specially handled.
+    runtimes_triples_args.append(('default', compiler_rt_args))
+
+  if args.with_android:
+    toolchain_dir = ANDROID_NDK_DIR + '/toolchains/llvm/prebuilt/linux-x86_64'
+    for target_arch in ['aarch64', 'arm', 'i686', 'x86_64']:
+      target_triple = target_arch
+      if target_arch == 'arm':
+        target_triple = 'armv7'
+      api_level = '19'
+      if target_arch == 'aarch64' or target_arch == 'x86_64':
+        api_level = '21'
+      target_triple += '-linux-android' + api_level
+      cflags = [
+          '--sysroot=%s/sysroot' % toolchain_dir,
+
+          # We don't have an unwinder ready, and don't need it either.
+          '--unwindlib=none',
+      ]
+
+      if target_arch == 'aarch64':
+        # Use PAC/BTI instructions for AArch64
+        cflags += [ '-mbranch-protection=standard' ]
+
+      android_args = compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+          'LLVM_ENABLE_RUNTIMES=compiler-rt',
+          # On Android, we want DWARF info for the builtins for unwinding. See
+          # crbug.com/1311807.
+          'CMAKE_BUILD_TYPE=RelWithDebInfo',
+          'CMAKE_C_FLAGS=' + ' '.join(cflags),
+          'CMAKE_CXX_FLAGS=' + ' '.join(cflags),
+          'CMAKE_ASM_FLAGS=' + ' '.join(cflags),
+          'COMPILER_RT_USE_BUILTINS_LIBRARY=ON',
+          'SANITIZER_CXX_ABI=libcxxabi',
+          'CMAKE_SHARED_LINKER_FLAGS=-Wl,-u__cxa_demangle',
+          'ANDROID=1',
+          'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+          'LLVM_INCLUDE_TESTS=OFF',
+          # This prevents static_asserts from firing in 32-bit builds.
+          # TODO: remove once we only support API >=24.
+          'ANDROID_NATIVE_API_LEVEL=' + api_level,
+      ]
+
+      runtimes_triples_args.append((target_triple, android_args))
+
+  if args.with_fuchsia:
+    # Fuchsia links against libclang_rt.builtins-<arch>.a instead of libgcc.a.
+    for target_arch in ['aarch64', 'x86_64']:
+      fuchsia_arch_name = {'aarch64': 'arm64', 'x86_64': 'x64'}[target_arch]
+      toolchain_dir = os.path.join(
+          FUCHSIA_SDK_DIR, 'arch', fuchsia_arch_name, 'sysroot')
+      target_triple = target_arch + '-unknown-fuchsia'
+      # Build the Fuchsia profile and asan runtimes.  This is done after the rt
+      # builtins have been created because the CMake build runs link checks that
+      # require that the builtins already exist to succeed.
+      # TODO(thakis): Figure out why this doesn't build with the stage0
+      # compiler in arm cross builds.
+      build_profile = target_arch == 'x86_64' and not args.build_mac_arm
+      # Build the asan runtime only on non-Mac platforms.  Macs are excluded
+      # because the asan install changes library RPATHs which CMake only
+      # supports on ELF platforms and MacOS uses Mach-O instead of ELF.
+      build_sanitizers = build_profile and sys.platform != 'darwin'
+      # TODO(thakis): Might have to pass -B here once sysroot contains
+      # binaries (e.g. gas for arm64?)
+      fuchsia_args = compiler_rt_cmake_flags(
+          sanitizers=build_sanitizers, profile=build_profile
+      ) + [
+          'LLVM_ENABLE_RUNTIMES=compiler-rt',
+          'CMAKE_SYSTEM_NAME=Fuchsia',
+          'COMPILER_RT_DEFAULT_TARGET_ONLY=ON',
+          'CMAKE_SYSROOT=%s' % toolchain_dir,
+          # TODO(thakis|scottmg): Use PER_TARGET_RUNTIME_DIR for all platforms.
+          # https://crbug.com/882485.
+          'LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON',
+      ]
+      if build_sanitizers:
+        fuchsia_args.append('SANITIZER_NO_UNDEFINED_SYMBOLS=OFF')
+
+      runtimes_triples_args.append((target_triple, fuchsia_args))
+
+  # Convert FOO=BAR CMake flags per triple into
+  # -DBUILTINS_$triple_FOO=BAR/-DRUNTIMES_$triple_FOO=BAR and build up
+  # -DLLVM_BUILTIN_TARGETS/-DLLVM_RUNTIME_TARGETS.
+  all_triples = ''
+  for (triple, a) in runtimes_triples_args:
+    all_triples += ';' + triple
+    for arg in a:
+      assert not arg.startswith('-')
+      cmake_args.append('-DBUILTINS_' + triple + '_' + arg)
+      cmake_args.append('-DRUNTIMES_' + triple + '_' + arg)
+  cmake_args.append('-DLLVM_BUILTIN_TARGETS=' + all_triples)
+  cmake_args.append('-DLLVM_RUNTIME_TARGETS=' + all_triples)
+
   if os.path.exists(LLVM_BUILD_DIR):
     RmTree(LLVM_BUILD_DIR)
   EnsureDirExists(LLVM_BUILD_DIR)
   os.chdir(LLVM_BUILD_DIR)
   RunCommand(['cmake'] + cmake_args + [os.path.join(LLVM_DIR, 'llvm')],
-             msvc_arch='x64', env=deployment_env)
+             msvc_arch='x64',
+             env=deployment_env)
   CopyLibstdcpp(args, LLVM_BUILD_DIR)
   RunCommand(['ninja'], msvc_arch='x64')
 
@@ -1065,300 +1180,6 @@ def main():
   if not args.build_mac_arm:
     VerifyVersionOfBuiltClangMatchesVERSION()
     VerifyZlibSupport()
-
-  if sys.platform == 'win32':
-    rt_platform = 'windows'
-  elif sys.platform == 'darwin':
-    rt_platform = 'darwin'
-  else:
-    assert sys.platform.startswith('linux')
-    rt_platform = 'linux'
-  rt_lib_dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang', RELEASE_VERSION,
-                                'lib', rt_platform)
-  # Make sure the directory exists; this will not be implicilty created if
-  # built with per-target runtime directories.
-  if not os.path.exists(rt_lib_dst_dir):
-    os.makedirs(rt_lib_dst_dir)
-
-  # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib and
-  # 32-bit Linux crt/builtins/profile/sanitizer libs.
-  if sys.platform == 'win32' or sys.platform.startswith('linux'):
-    compiler_rt_build_dir = os.path.join(LLVM_BUILD_DIR, 'compiler-rt')
-    if os.path.isdir(compiler_rt_build_dir):
-      RmTree(compiler_rt_build_dir)
-    os.makedirs(compiler_rt_build_dir)
-    os.chdir(compiler_rt_build_dir)
-    cflags_i386 = cflags
-    cxxflags_i386 = cxxflags
-    if 'clang' in cc:
-      # clang-cl produces 64-bit binaries by default.
-      cflags_i386 += ['-m32']
-      cxxflags_i386 += ['-m32']
-
-    on_linux = 'ON' if sys.platform.startswith('linux') else 'OFF'
-    compiler_rt_args = base_cmake_args + [
-        '-DCMAKE_C_FLAGS=' + ' '.join(cflags_i386),
-        '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags_i386),
-        '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-        '-DCOMPILER_RT_BUILD_BUILTINS=' + on_linux,
-        '-DCOMPILER_RT_BUILD_CRT=' + on_linux,
-        '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-        '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-        '-DCOMPILER_RT_BUILD_ORC=OFF',
-        '-DCOMPILER_RT_BUILD_PROFILE=ON',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=' + on_linux,
-        '-DCOMPILER_RT_BUILD_XRAY=OFF',
-
-        # The libxml2 we built above is 64-bit. Since it's only needed by
-        # lld-link and not compiler-rt, just turn it off down here.
-        '-DLLVM_ENABLE_LIBXML2=OFF',
-    ]
-
-    if sys.platform.startswith('linux'):
-      compiler_rt_args.append('-DCMAKE_SYSROOT=' + sysroot_i386)
-      compiler_rt_args.append('-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON')
-    RunCommand(['cmake'] + compiler_rt_args +
-               [os.path.join(LLVM_DIR, 'llvm')],
-               msvc_arch='x86', env=deployment_env)
-    RunCommand(['ninja', 'compiler-rt'], msvc_arch='x86')
-
-    # Copy select output to the main tree.
-    if sys.platform.startswith('linux'):
-      # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON layout.
-      src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
-                             RELEASE_VERSION, 'lib', 'i386-unknown-linux-gnu')
-      # lib/clang/15.0.0/lib/i386-unknown-linux-gnu/libclang_rt.asan.a
-      dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang', RELEASE_VERSION,
-                            'lib', 'i386-unknown-linux-gnu')
-      if not os.path.exists(dst_dir):
-        os.makedirs(dst_dir)
-    else:
-      # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF layout.
-      src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
-                             RELEASE_VERSION, 'lib', rt_platform)
-      dst_dir = rt_lib_dst_dir
-
-    # Static and dynamic libraries:
-    CopyDirectoryContents(src_dir, dst_dir)
-
-  if args.with_android:
-    # TODO(thakis): Now that the NDK uses clang, try to build all archs in
-    # one LLVM build instead of building 3 times.
-    toolchain_dir = ANDROID_NDK_DIR + '/toolchains/llvm/prebuilt/linux-x86_64'
-    for target_arch in ['aarch64', 'arm', 'i686', 'x86_64']:
-      # Build compiler-rt runtimes needed for Android in a separate build tree.
-      build_dir = os.path.join(LLVM_BUILD_DIR, 'android-' + target_arch)
-      if not os.path.exists(build_dir):
-        os.mkdir(os.path.join(build_dir))
-      os.chdir(build_dir)
-      target_triple = target_arch
-      if target_arch == 'arm':
-        target_triple = 'armv7'
-      api_level = '19'
-      if target_arch == 'aarch64' or target_arch == 'x86_64':
-        api_level = '21'
-      target_triple += '-linux-android' + api_level
-      cflags = [
-          '--target=' + target_triple,
-          '--sysroot=%s/sysroot' % toolchain_dir,
-
-          # pylint: disable=line-too-long
-          # android_ndk/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/ld
-          # depends on a newer version of libxml2.so than what's available on
-          # the bots. To make things work, use our just-built lld as linker.
-          # pylint: enable=line-too-long
-          '-fuse-ld=lld',
-
-          # We don't have an unwinder ready, and don't need it either.
-          '--unwindlib=none',
-      ]
-
-      if target_arch == 'aarch64':
-        # Use PAC/BTI instructions for AArch64
-        cflags += [ '-mbranch-protection=standard' ]
-
-      android_args = base_cmake_args + [
-        '-DCMAKE_C_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang'),
-        '-DCMAKE_CXX_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang++'),
-        '-DLLVM_CONFIG_PATH=' + os.path.join(LLVM_BUILD_DIR, 'bin/llvm-config'),
-        '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
-        '-DCMAKE_CXX_FLAGS=' + ' '.join(cflags),
-        '-DCMAKE_ASM_FLAGS=' + ' '.join(cflags),
-        '-DCOMPILER_RT_BUILD_BUILTINS=ON',
-        '-DCOMPILER_RT_BUILD_CRT=OFF',
-        '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-        '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-        '-DCOMPILER_RT_BUILD_ORC=OFF',
-        '-DCOMPILER_RT_BUILD_PROFILE=OFF',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=OFF',
-        '-DCOMPILER_RT_BUILD_XRAY=OFF',
-        '-DSANITIZER_CXX_ABI=libcxxabi',
-        '-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-u__cxa_demangle',
-        '-DANDROID=1'
-
-        # These are necessary because otherwise CMake tries to build an
-        # executable to test to see if the compiler is working, but in doing so,
-        # it links against the builtins.a that we're about to build.
-        '-DCMAKE_CXX_COMPILER_WORKS=ON',
-        '-DCMAKE_C_COMPILER_WORKS=ON',
-        '-DCMAKE_ASM_COMPILER_WORKS=ON',
-      ]
-
-      # First build the builtins and copy to the main build tree.
-      RunCommand(
-          ['cmake'] + android_args +
-          # On Android, we want DWARF info for the builtins for
-          # unwinding. See crbug.com/1311807.
-          ['-DCMAKE_BUILD_TYPE=RelWithDebInfo'] +
-          [os.path.join(COMPILER_RT_DIR, 'lib', 'builtins')])
-      builtins_a = 'lib/linux/libclang_rt.builtins-%s-android.a' % target_arch
-      RunCommand(['ninja', builtins_a])
-      shutil.copy(builtins_a, rt_lib_dst_dir)
-
-      # With the builtins in place, we can build the other runtimes.
-      build_dir_2 = build_dir + '-phase2'
-      if not os.path.exists(build_dir_2):
-        os.mkdir(os.path.join(build_dir_2))
-      os.chdir(build_dir_2)
-
-      android_args.extend([
-        '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
-        '-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON',
-        '-DCOMPILER_RT_BUILD_PROFILE=ON',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
-      ])
-      RunCommand(['cmake'] + android_args + [COMPILER_RT_DIR])
-
-      libs_want = [
-          'lib/linux/libclang_rt.asan-{0}-android.so',
-          'lib/linux/libclang_rt.asan_static-{0}-android.a',
-          'lib/linux/libclang_rt.ubsan_standalone-{0}-android.so',
-          'lib/linux/libclang_rt.profile-{0}-android.a',
-      ]
-      # Only build HWASan for AArch64.
-      if target_arch == 'aarch64':
-        libs_want += ['lib/linux/libclang_rt.hwasan-{0}-android.so']
-      libs_want = [lib.format(target_arch) for lib in libs_want]
-      RunCommand(['ninja'] + libs_want)
-
-      # And copy them into the main build tree.
-      for p in libs_want:
-        shutil.copy(p, rt_lib_dst_dir)
-
-  if args.with_fuchsia:
-    # Fuchsia links against libclang_rt.builtins-<arch>.a instead of libgcc.a.
-    for target_arch in ['aarch64', 'x86_64']:
-      fuchsia_arch_name = {'aarch64': 'arm64', 'x86_64': 'x64'}[target_arch]
-      toolchain_dir = os.path.join(
-          FUCHSIA_SDK_DIR, 'arch', fuchsia_arch_name, 'sysroot')
-      # Build clang_rt runtime for Fuchsia in a separate build tree.
-      build_dir = os.path.join(LLVM_BUILD_DIR, 'fuchsia-' + target_arch)
-      if not os.path.exists(build_dir):
-        os.mkdir(os.path.join(build_dir))
-      os.chdir(build_dir)
-      target_spec = target_arch + '-unknown-fuchsia'
-      if args.build_mac_arm:
-        # Just-built clang can't run (it's an arm binary on an intel host), so
-        # use the bootstrap compiler instead.
-        host_path = LLVM_BOOTSTRAP_INSTALL_DIR
-      else:
-        host_path = LLVM_BUILD_DIR
-      # TODO(thakis): Might have to pass -B here once sysroot contains
-      # binaries (e.g. gas for arm64?)
-      fuchsia_args = base_cmake_args + [
-        '-DCMAKE_C_COMPILER=' + os.path.join(host_path, 'bin/clang'),
-        '-DCMAKE_CXX_COMPILER=' + os.path.join(host_path, 'bin/clang++'),
-        '-DCMAKE_LINKER=' + os.path.join(host_path, 'bin/clang'),
-        '-DCMAKE_AR=' + os.path.join(host_path, 'bin/llvm-ar'),
-        '-DLLVM_CONFIG_PATH=' + os.path.join(host_path, 'bin/llvm-config'),
-        '-DCMAKE_SYSTEM_NAME=Fuchsia',
-        '-DCMAKE_CXX_COMPILER_TARGET=' + target_spec,
-        '-DCMAKE_C_COMPILER_TARGET=' + target_spec,
-        '-DCMAKE_ASM_COMPILER_TARGET=' + target_spec,
-        '-DCOMPILER_RT_BUILD_BUILTINS=ON',
-        '-DCOMPILER_RT_BUILD_CRT=OFF',
-        '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
-        '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
-        '-DCOMPILER_RT_BUILD_ORC=OFF',
-        '-DCOMPILER_RT_BUILD_PROFILE=OFF',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=OFF',
-        '-DCOMPILER_RT_BUILD_XRAY=OFF',
-        '-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON',
-        '-DCMAKE_SYSROOT=%s' % toolchain_dir,
-        # TODO(thakis|scottmg): Use PER_TARGET_RUNTIME_DIR for all platforms.
-        # https://crbug.com/882485.
-        '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON',
-
-        # These are necessary because otherwise CMake tries to build an
-        # executable to test to see if the compiler is working, but in doing so,
-        # it links against the builtins.a that we're about to build.
-        '-DCMAKE_CXX_COMPILER_WORKS=ON',
-        '-DCMAKE_C_COMPILER_WORKS=ON',
-        '-DCMAKE_ASM_COMPILER_WORKS=ON',
-        ]
-      RunCommand(['cmake'] +
-                 fuchsia_args +
-                 [os.path.join(COMPILER_RT_DIR, 'lib', 'builtins')])
-      builtins_a = 'libclang_rt.builtins.a'
-      RunCommand(['ninja', builtins_a])
-
-      # And copy it into the main build tree.
-      fuchsia_lib_dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang',
-                                         RELEASE_VERSION, 'lib', target_spec)
-      if not os.path.exists(fuchsia_lib_dst_dir):
-        os.makedirs(fuchsia_lib_dst_dir)
-      CopyFile(os.path.join(build_dir, 'lib', target_spec, builtins_a),
-               fuchsia_lib_dst_dir)
-
-      # Build the Fuchsia profile and asan runtimes.  This is done after the rt
-      # builtins have been created because the CMake build runs link checks that
-      # require that the builtins already exist to succeed.
-      # TODO(thakis): Figure out why this doesn't build with the stage0
-      # compiler in arm cross builds.
-      if target_arch == 'x86_64' and not args.build_mac_arm:
-        fuchsia_args.extend([
-            '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
-            '-DCOMPILER_RT_BUILD_PROFILE=ON',
-        ])
-        # Build the asan runtime only on non-Mac platforms.  Macs are excluded
-        # because the asan install changes library RPATHs which CMake only
-        # supports on ELF platforms and MacOS uses Mach-O instead of ELF.
-        if sys.platform != 'darwin':
-          fuchsia_args.extend([
-              '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
-              '-DSANITIZER_NO_UNDEFINED_SYMBOLS=OFF',
-          ])
-        build_phase2_dir = os.path.join(LLVM_BUILD_DIR,
-                                         'fuchsia-phase2-' + target_arch)
-        if not os.path.exists(build_phase2_dir):
-          os.mkdir(os.path.join(build_phase2_dir))
-        os.chdir(build_phase2_dir)
-        RunCommand(['cmake'] +
-                   fuchsia_args +
-                   [COMPILER_RT_DIR])
-        profile_a = 'libclang_rt.profile.a'
-        asan_preinit_a = 'libclang_rt.asan-preinit.a'
-        asan_static_a = 'libclang_rt.asan_static.a'
-        asan_so = 'libclang_rt.asan.so'
-        ninja_command = ['ninja', profile_a]
-        if sys.platform != 'darwin':
-          ninja_command.append(asan_so)
-          ninja_command.append(asan_preinit_a)
-          ninja_command.append(asan_static_a)
-        RunCommand(ninja_command)
-        CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, profile_a),
-                              fuchsia_lib_dst_dir)
-        if sys.platform != 'darwin':
-          CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, asan_so),
-                   fuchsia_lib_dst_dir)
-          CopyFile(
-              os.path.join(build_phase2_dir, 'lib', target_spec,
-                           asan_preinit_a), fuchsia_lib_dst_dir)
-          CopyFile(
-              os.path.join(build_phase2_dir, 'lib', target_spec, asan_static_a),
-              fuchsia_lib_dst_dir)
 
   # Run tests.
   if (not args.build_mac_arm and
