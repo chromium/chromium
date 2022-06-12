@@ -527,7 +527,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3845098929839618392">Otvori u anonimnoj kartici</translation>
 <translation id="3856096718352044181">Potvrdite da je ovo važeći pružalac usluga ili pokušajte ponovo kasnije</translation>
 <translation id="3858860766373142691">Naziv</translation>
-<translation id="3859206958100234503">Sinhronizirajte da preuzmete lozinke, oznake i ostali sadržaj na svim svojim uređajima</translation>
 <translation id="3861633093716975811">Popularni videozapisi</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3894427358181296146">Dodaj folder</translation>
@@ -791,6 +790,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5324858694974489420">Postavke nadređenog računa</translation>
 <translation id="5326921373682845375">Pošto se predučitane stranice šifriraju i pošto je web lokacija koja povezuje stranice Googleova web lokacija, Googleovi serveri ne primaju nove informacije kada se ove stranice privatno predučitavaju.</translation>
 <translation id="5329858041417644019">Vašim preglednikom se ne upravlja</translation>
+<translation id="5339031667684712858">Web lokacije koje ste uklonili</translation>
 <translation id="5342314432463739672">Zahtjevi za odobrenje</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
 <translation id="5368227114232678694">Da privatno pregledate na ovom uređaju, isprobajte anonimni način rada</translation>
@@ -1067,6 +1067,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Dodirnite i zadržite da uredite ovu prečicu.</translation>
 <translation id="6756507620369789050">Dijeli povratne informacije</translation>
 <translation id="6767294960381293877">Spisak uređaja s kojim će se dijeliti kartica je otvoren na pola visine.</translation>
+<translation id="6770042910635026163">Web lokacije koje posjećujete, koje definiraju vaša interesovanja</translation>
 <translation id="6770602306803890733">Poboljšava vašu i svačiju sigurnost na webu</translation>
 <translation id="6785476624617658922">Dodatni Uslovi korištenja usluge za Chrome i ChromeOS</translation>
 <translation id="6795633245022906657">Brzo otvorite novu karticu. Da uredite ovu prečicu, idite u Postavke.</translation>

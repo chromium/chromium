@@ -526,7 +526,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3845098929839618392">Gizli sekmede aç</translation>
 <translation id="3856096718352044181">Lütfen bunun geçerli bir sağlayıcı olduğunu doğrulayın veya daha sonra tekrar deneyin</translation>
 <translation id="3858860766373142691">Ad</translation>
-<translation id="3859206958100234503">Şifrelerinize, yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için senkronize edin</translation>
 <translation id="3861633093716975811">Popüler videolar</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="3894427358181296146">Klasör ekleyin</translation>
@@ -790,6 +789,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5324858694974489420">Ebeveyn Ayarları</translation>
 <translation id="5326921373682845375">Önceden yüklenmiş sayfalar şifrelenmiş ve sayfalara bağlantı veren site bir Google sitesi olduğundan Google sunucuları bu sayfaları gizli olarak önceden yüklerken yeni bilgi almaz.</translation>
 <translation id="5329858041417644019">Tarayıcınız yönetilmemektedir</translation>
+<translation id="5339031667684712858">Kaldırdığınız siteler</translation>
 <translation id="5342314432463739672">İzin istekleri</translation>
 <translation id="5355191726083956201">Gelişmiş Koruma açık</translation>
 <translation id="5368227114232678694">Bu cihazda gizli olarak göz atmak için Gizli modu deneyin</translation>
@@ -1065,6 +1065,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="6751521182688001123">Hızlıca yeni bir sekme açın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="6756507620369789050">Geri bildiriminizi paylaşın</translation>
 <translation id="6767294960381293877">Sekme paylaşılacak cihazların listesi yarım yükseklikte açıldı.</translation>
+<translation id="6770042910635026163">Ziyaret ettiğiniz ve ilgi alanlarınızı belirleyen siteler</translation>
 <translation id="6770602306803890733">Hem siz hem de web'deki herkes için güvenliği iyileştirir</translation>
 <translation id="6785476624617658922">Chrome ve ChromeOS Ek Hizmet Şartları</translation>
 <translation id="6795633245022906657">Hızlıca yeni bir sekme açın. Bu kısayolu düzenlemek için Ayarlar'a gidin.</translation>

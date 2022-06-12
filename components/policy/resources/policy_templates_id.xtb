@@ -5624,7 +5624,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
 <translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
-<translation id="7041170641363384736">Memungkinkan penyetelan jadwal kustom untuk memulai ulang perangkat. Kebijakan saat ini hanya berlaku pada perangkat yang mengaktifkan peluncuran otomatis aplikasi dalam sesi Kios. Setelah kebijakan disetel ke Benar (True), perangkat akan dimulai ulang sesuai jadwal. Kebijakan harus dihapus untuk membatalkan semua mulai ulang terjadwal lainnya.</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
 <translation id="7047495632846973438">Menentukan apakah kebijakan izin perekaman layar dicentang atau dilewati.</translation>
 <translation id="7066292150801784098">Cegah interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
@@ -6594,7 +6593,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
           Jika Anda menetapkan kebijakan ini, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="8161536598508377155">Menyetel jadwal kustom untuk memulai ulang perangkat kios</translation>
 <translation id="8164144100557223371">Nonaktifkan entrypoint toolbar fitur eksperimental browser</translation>
 <translation id="8164687848393015214">Jika kebijakan disetel ke Aktif, paket jaringan pemantauan (<ph name="HEARTBEATS_TERM" />) akan dikirim ke server pengelolaan untuk memantau status online, guna memungkinkan server mendeteksi apakah perangkat sedang offline.
 

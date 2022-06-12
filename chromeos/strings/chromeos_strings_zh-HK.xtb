@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">推出咗新功能，請用向上箭咀掣了解詳情。</translation>
 <translation id="1059913517121127803">無法開始掃瞄</translation>
+<translation id="1062407476771304334">取代</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
@@ -437,7 +438,7 @@
 <translation id="4915052247106771211">此操作會將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
-<translation id="491791267030419270">撰寫意見回饋的提示</translation>
+<translation id="491791267030419270">撰寫意見的提示</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4930320165497208503">如要設定或更新連線，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」頁面。</translation>
 <translation id="4932733599132424254">日期</translation>

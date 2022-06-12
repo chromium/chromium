@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers (opció recomanada)</translation>
 <translation id="2315043854645842844">El sistema operatiu no permet seleccionar el certificat del client.</translation>
 <translation id="2321958826496381788">Arrossega el control lliscant fins que puguis llegir aquest text còmodament. El text ha de ser almenys així de gran després de tocar dos cops un paràgraf.</translation>
+<translation id="2329473609445770916">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2379925928934107488">Aplica el tema fosc als llocs web quan Chrome l'utilitzi i sigui possible</translation>
 <translation id="2387895666653383613">Ajust del text</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Del web</translation>
 <translation id="321187648315454507">Perquè <ph name="APP_NAME" /> et pugui enviar notificacions, també has d'activar-les a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
+<translation id="3248611290851046188">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis. També obté els teus interessos de Chrome per mostrar-te anuncis més rellevants.</translation>
 <translation id="3277252321222022663">Permet que els llocs web accedeixin als sensors (opció recomanada)</translation>
 <translation id="3295602654194328831">Amaga la informació</translation>
 <translation id="3328801116991980348">Informació del lloc web</translation>

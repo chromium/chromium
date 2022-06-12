@@ -526,7 +526,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3845098929839618392">Atvērt inkognito cilnē</translation>
 <translation id="3856096718352044181">Pārbaudiet, vai pakalpojumu sniedzējs ir derīgs, vai arī vēlāk mēģiniet vēlreiz</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
-<translation id="3859206958100234503">Aktivizējiet sinhronizāciju, lai varētu skatīt paroles, grāmatzīmes un citu saturu visās savās ierīcēs.</translation>
 <translation id="3861633093716975811">Populāri videoklipi</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="3894427358181296146">Mapes pievienošana</translation>
@@ -790,6 +789,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5324858694974489420">Vecāku iestatījumi</translation>
 <translation id="5326921373682845375">Tā kā iepriekš ielādētās lapas ir šifrētas un vietne, kas novirza uz lapām, ir Google vietne, Google serveri nesaņem jaunu informāciju, ja šīs lapas tiek iepriekš ielādētas privāti.</translation>
 <translation id="5329858041417644019">Jūsu pārlūks netiek pārvaldīts</translation>
+<translation id="5339031667684712858">Jūsu noņemtās vietnes</translation>
 <translation id="5342314432463739672">Atļauju pieprasījumi</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="5368227114232678694">Lai pārlūkotu tīmekli privāti šajā ierīcē, izmēģiniet inkognito režīmu.</translation>
@@ -1065,6 +1065,7 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="6751521182688001123">Ātra jaunas cilnes atvēršana. Lai rediģētu šo īsinājumtaustiņu, pieskarieties un turiet.</translation>
 <translation id="6756507620369789050">Sniegt atsauksmes</translation>
 <translation id="6767294960381293877">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pusekrāna augstumā.</translation>
+<translation id="6770042910635026163">Jūsu apmeklētās vietnes, kas raksturo jūsu intereses</translation>
 <translation id="6770602306803890733">Tiek nodrošināta gan jūsu, gan visu pārējo tīmekļa lietotāju aizsardzība.</translation>
 <translation id="6785476624617658922">Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="6795633245022906657">Šeit varat ātri atvērt jaunu cilni. Lai rediģētu šo saīsni, pārejiet uz iestatījumiem.</translation>

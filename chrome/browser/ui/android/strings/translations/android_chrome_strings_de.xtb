@@ -526,7 +526,6 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="3845098929839618392">In Inkognitotab öffnen</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3859206958100234503">Mit der Synchronisierung kannst du Passwörter, Lesezeichen und weitere Elemente auf allen deinen Geräten abrufen</translation>
 <translation id="3861633093716975811">Beliebte Videos</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3894427358181296146">Ordner hinzufügen</translation>
@@ -790,6 +789,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5324858694974489420">Jugendschutzeinstellungen</translation>
 <translation id="5326921373682845375">Da die vorab geladenen Seiten verschlüsselt sind und es sich bei der Website, die zu den Seiten verlinkt, um eine Google Sites-Website handelt, erhalten die Google-Server beim privaten Vorabladen dieser Seiten keine neuen Informationen.</translation>
 <translation id="5329858041417644019">Dein Browser wird nicht verwaltet</translation>
+<translation id="5339031667684712858">Entfernte Websites</translation>
 <translation id="5342314432463739672">Berechtigungsanfragen</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5368227114232678694">Wenn du auf diesem Gerät privat surfen möchtest, probiere den Inkognitomodus aus</translation>
@@ -1065,6 +1065,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="6751521182688001123">Öffnet schnell einen neuen Tab. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="6756507620369789050">Feedback geben</translation>
 <translation id="6767294960381293877">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist halb geöffnet.</translation>
+<translation id="6770042910635026163">Von dir besuchte Websites, die deine Interessen definieren</translation>
 <translation id="6770602306803890733">Verbessert die Sicherheit für dich und alle im Internet</translation>
 <translation id="6785476624617658922">Zusätzliche Nutzungsbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="6795633245022906657">Öffnet schnell einen neuen Tab. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>

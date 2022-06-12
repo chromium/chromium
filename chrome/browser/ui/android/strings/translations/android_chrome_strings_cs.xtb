@@ -526,7 +526,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3845098929839618392">Otevřít na anonymní kartě</translation>
 <translation id="3856096718352044181">Zkontrolujte, zda se jedná o platného poskytovatele, nebo to zkuste znovu později</translation>
 <translation id="3858860766373142691">Název</translation>
-<translation id="3859206958100234503">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, zapněte synchronizaci</translation>
 <translation id="3861633093716975811">Populární videa</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="3894427358181296146">Přidat složku</translation>
@@ -790,6 +789,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5324858694974489420">Rodičovská nastavení</translation>
 <translation id="5326921373682845375">Protože jsou předběžně načítané stránky zašifrované a web, který na ně odkazuje, je webem Google, servery Google při soukromém načítání těchto stránek neobdrží nové informace.</translation>
 <translation id="5329858041417644019">Prohlížeč není spravován</translation>
+<translation id="5339031667684712858">Odstraněné weby</translation>
 <translation id="5342314432463739672">Žádosti o oprávnění</translation>
 <translation id="5355191726083956201">Je zapnutá vylepšená ochrana</translation>
 <translation id="5368227114232678694">Pokud na tomto zařízení chcete procházet internet v soukromí, vyzkoušejte anonymní režim</translation>
@@ -1065,6 +1065,7 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="6751521182688001123">Rychle otevřít novou kartu. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="6756507620369789050">Odeslat zpětnou vazbu</translation>
 <translation id="6767294960381293877">Seznam zařízení, se kterými se má karta sdílet, otevřený na poloviční výšku.</translation>
+<translation id="6770042910635026163">Navštívené weby, které stanovují vaše zájmy</translation>
 <translation id="6770602306803890733">Zlepšuje bezpečnost pro vás i všechny ostatní uživatele internetu</translation>
 <translation id="6785476624617658922">Dodatečné smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
 <translation id="6795633245022906657">Rychle otevřít novou kartu. Tuto zkratku můžete upravit v Nastavení.</translation>

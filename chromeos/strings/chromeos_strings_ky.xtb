@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
 <translation id="1047773237499189053">Жаңы функциялар бар. Кеңири маалымат алуу үчүн Өйдө жебе баскычын басыңыз.</translation>
 <translation id="1059913517121127803">Скандалып башталган жок</translation>
+<translation id="1062407476771304334">Алмаштыруу</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Тармактык коргоо аныкталды</translation>
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
@@ -288,6 +289,7 @@
 <translation id="3621202678540785336">Киргизүү</translation>
 <translation id="3632579075709132555">Купуялык экранын өчүрүү/күйгүзүү</translation>
 <translation id="3643810137582748570">Калибрлөөнү өткөрүп жиберүү</translation>
+<translation id="3651050199673793219">Температураны өлчөө бирдигин тандоо</translation>
 <translation id="3678765385266369662">Жазуудан коргоону кайсы жол менен өчүргүңүз келерин тандаңыз</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
 <translation id="370665806235115550">Жүктөлүүдө…</translation>
@@ -305,6 +307,7 @@
 <translation id="3856304145690230735">Негизги гироскоп</translation>
 <translation id="385832974417157471">Өчүрүүдөн мурда түзмөктү жууп салыңыз. Эгер түзмөгүңүздүн капкагы болсо, түзмөк жуулуп бүтмөйүнчө, капкакты жаппай туруңуз. Жууп салуу бир мүнөткө чейин созулушу мүмкүн.</translation>
 <translation id="3858860766373142691">Аталышы</translation>
+<translation id="3862598938296403232">Учкай маалымат талап кылынат</translation>
 <translation id="3865414814144988605">Чечилиш</translation>
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
@@ -678,6 +681,7 @@
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
 <translation id="714876143603641390">LAN байланышы</translation>
+<translation id="7154020516215182599">Пикириңизди бөлүшүп, көйгөйдү, эгер мүмкүн болсо, ага себеп болгон кадамдарды сүрөттөп бериңиз.</translation>
 <translation id="7155171745945906037">Камерадагы же файлдагы учурдагы сүрөт</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Профилдин сүрөтү</translation>

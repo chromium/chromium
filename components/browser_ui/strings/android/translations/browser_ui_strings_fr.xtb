@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth se trouvant à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection de certificat côté client n'est pas compatible avec le système d'exploitation.</translation>
 <translation id="2321958826496381788">Faites glisser le curseur pour lire le texte aisément. Sa taille doit être similaire à celle-ci lorsque vous appuyez deux fois sur un paragraphe.</translation>
+<translation id="2329473609445770916">Ce site définit les centres d'intérêt que les autres sites peuvent utiliser pour vous proposer des annonces</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si le thème sombre est activé dans Chrome, il sera appliqué aux sites, si possible</translation>
 <translation id="2387895666653383613">Mise à l'échelle du texte</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Sur le Web</translation>
 <translation id="321187648315454507">Pour autoriser <ph name="APP_NAME" /> à vous envoyer des notifications, activez également celles-ci dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micro</translation>
+<translation id="3248611290851046188">Ce site définit les centres d'intérêt que les autres sites peuvent utiliser pour vous proposer des annonces. Il obtient aussi vos centres d'intérêt via Chrome pour afficher des annonces plus pertinentes.</translation>
 <translation id="3277252321222022663">Autoriser les sites à accéder à vos capteurs (recommandé)</translation>
 <translation id="3295602654194328831">Masquer les informations</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>

@@ -527,7 +527,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3845098929839618392">Megnyitás inkognitó lapon</translation>
 <translation id="3856096718352044181">Ellenőrizze a szolgáltató érvényességét, vagy próbálkozzon újra.</translation>
 <translation id="3858860766373142691">Név</translation>
-<translation id="3859206958100234503">Szinkronizáljon, hogy az összes eszközén hozzáférjen jelszavaihoz, könyvjelzőihez stb.</translation>
 <translation id="3861633093716975811">Népszerű videók</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3894427358181296146">Mappa hozzáadása</translation>
@@ -791,6 +790,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5324858694974489420">Szülői beállítások</translation>
 <translation id="5326921373682845375">Mivel az előre betöltött oldalak titkosítottak, az oldalakkal összekapcsolt webhely pedig Google-webhely, a Google-szerverek nem kapnak új információt a szóban forgó oldalak privát módon való előzetes betöltésekor.</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
+<translation id="5339031667684712858">Eltávolított webhelyek</translation>
 <translation id="5342314432463739672">Engedélykérések</translation>
 <translation id="5355191726083956201">A Speciális védelem be van kapcsolva</translation>
 <translation id="5368227114232678694">Ha privát böngészést szeretne végezni ezen az eszközön, próbálja ki az Inkognitó módot</translation>
@@ -1067,6 +1067,7 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="6751521182688001123">Új lap gyors megnyitása. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
 <translation id="6756507620369789050">Visszajelzés megosztása</translation>
 <translation id="6767294960381293877">Lap megosztására szolgáló eszközök listája félmagasságban megnyitva.</translation>
+<translation id="6770042910635026163">A felkeresett webhelyek, amelyek meghatározzák az érdeklődési köröket</translation>
 <translation id="6770602306803890733">Mindenki, így az Ön számára is biztonságosabbá teszi az internetezést.</translation>
 <translation id="6785476624617658922">A Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételei</translation>
 <translation id="6795633245022906657">Új lap gyors megnyitása. A gyorsparancs szerkesztéséhez lépjen a Beálltásokhoz.</translation>

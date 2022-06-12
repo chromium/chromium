@@ -526,7 +526,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3845098929839618392">Ava inkognito vahelehel</translation>
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
 <translation id="3858860766373142691">Nimi</translation>
-<translation id="3859206958100234503">Kõigist oma seadmetest paroolide, järjehoidjate ja muu hankimiseks sünkroonige</translation>
 <translation id="3861633093716975811">Populaarsed videod</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="3894427358181296146">Kausta lisamine</translation>
@@ -790,6 +789,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5324858694974489420">Vanemlikud seaded</translation>
 <translation id="5326921373682845375">Kuna eellaaditud saidid on krüpteeritud ja lehtedele linkiv sait on Google'i sait, ei võta Google'i serverid nende lehtede privaatsel eellaadimisel vastu uut teavet.</translation>
 <translation id="5329858041417644019">Teie brauserit ei hallata</translation>
+<translation id="5339031667684712858">Teie eemaldatud saidid</translation>
 <translation id="5342314432463739672">Lubade taotlused</translation>
 <translation id="5355191726083956201">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="5368227114232678694">Selles seadmes privaatselt sirvimiseks proovige inkognito režiimi</translation>
@@ -1065,6 +1065,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="6751521182688001123">Uue vahelehe kiire avamine. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="6756507620369789050">Tagasiside jagamine</translation>
 <translation id="6767294960381293877">Vahelehe jagamise seadmete loend (poolel kõrgusel avatud).</translation>
+<translation id="6770042910635026163">Külastatavad saidid, mis defineerivad teie huvid</translation>
 <translation id="6770602306803890733">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks</translation>
 <translation id="6785476624617658922">Chrome'i ja Chrome OS-i lisateenusetingimused</translation>
 <translation id="6795633245022906657">Uue vahelehe kiire avamine. Selle otsetee muutmiseks avage menüü Seaded.</translation>

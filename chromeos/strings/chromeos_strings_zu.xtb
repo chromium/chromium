@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> uchungechunge, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Isici esisha siyatholakala, sebenzisa ukhiye Womcibisholo waphezulu ukuze ufunde kabanzi.</translation>
 <translation id="1059913517121127803">Ayikwazanga ukuqalisa ukuskena</translation>
+<translation id="1062407476771304334">Faka esikhundleni</translation>
 <translation id="1070066693520972135">I-WEP</translation>
 <translation id="1071587090247825784">Kutholwe uhlelo lokuvikela</translation>
 <translation id="1075811647922107217">Usayizi wekhasi</translation>
@@ -288,6 +289,7 @@
 <translation id="3621202678540785336">Okokufaka</translation>
 <translation id="3632579075709132555">Guqula isikrini sobumfihlo</translation>
 <translation id="3643810137582748570">Yeqa ukulinganisa</translation>
+<translation id="3651050199673793219">Khetha iyunithi yezinga lokushisa</translation>
 <translation id="3678765385266369662">Khetha ukuthi ungathanda ukuyivala kanjani i-Writ Protect</translation>
 <translation id="3689839747745352263">Ukuhlola kwe-<ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Kuyalayisha...</translation>
@@ -305,6 +307,7 @@
 <translation id="3856304145690230735">I-Gyroscope eyisisekelo</translation>
 <translation id="385832974417157471">Ngaphambi kokucisha, sebenzisa i-powerwash kudivayisi yakho. Uma idivayisi yakho inesivalo linda kuze kube yilapho i-powerwash isiqedile ngaphambi kokuvala isivalo. I-powerwash ingase ithathe umzuzu ngaphambi kokuthi iqede.</translation>
 <translation id="3858860766373142691">Igama</translation>
+<translation id="3862598938296403232">Kudingeka incazelo</translation>
 <translation id="3865414814144988605">Isixazululo</translation>
 <translation id="3866249974567520381">Incazelo</translation>
 <translation id="387301095347517405">Inani lezikhathi ibhethri yakho ebe nomjikelezo wokushaja ogcwele ngayo</translation>
@@ -678,6 +681,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
 <translation id="714876143603641390">Ukuxhumana kwe-LAN</translation>
+<translation id="7154020516215182599">Yabelana ngempendulo yakho noma uchaze inkinga yakho. Uma kungenzeka, faka nezinyathelo zokukhiqiza kabusha ushicilelo lwakho.</translation>
 <translation id="7155171745945906037">Isithombe esikhona kusukela kukhamera noma ifayela</translation>
 <translation id="7162487448488904999">Igalari</translation>
 <translation id="7170236477717446850">Isithombe sephrofayela</translation>

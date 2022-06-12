@@ -5568,7 +5568,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
 <translation id="7039815268521168329">Afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
-<translation id="7041170641363384736">Permet de planifier le redémarrage des appareils de manière personnalisée. La règle ne s'applique actuellement qu'aux appareils sur lesquels le démarrage automatique de l'application est activé dans la session Kiosque. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7047495632846973438">Indique si la règle display-capture permissions-policy est sélectionnée ou ignorée.</translation>
 <translation id="7066292150801784098">Désactiver les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
@@ -6547,7 +6546,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, la mise en surbrillance du curseur est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="8161536598508377155">Planifier de manière personnalisée le redémarrage des appareils en mode kiosque</translation>
 <translation id="8164144100557223371">Désactiver le point d'entrée de la barre d'outils pour accéder aux fonctionnalités expérimentales du navigateur</translation>
 <translation id="8164687848393015214">Si cette règle est activée, les paquets de réseau de contrôle (<ph name="HEARTBEATS_TERM" />) sont transmis au serveur de gestion pour vérifier l'état de connexion et permettre au serveur de détecter si l'appareil est hors connexion.
 

@@ -526,7 +526,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3845098929839618392">Apri in scheda incognito</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3859206958100234503">Attiva la sincronizzazione per recuperare password, preferiti e altri contenuti salvati su tutti i tuoi dispositivi</translation>
 <translation id="3861633093716975811">Video più visti</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3894427358181296146">Aggiungi cartella</translation>
@@ -790,6 +789,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5324858694974489420">Impostazioni controllo genitori</translation>
 <translation id="5326921373682845375">Poiché le pagine precaricate sono criptate e il sito che vi rimanda è un sito Google, i server di Google non ricevono nuove informazioni quando precaricano tali pagine privatamente.</translation>
 <translation id="5329858041417644019">Il browser in uso non è gestito</translation>
+<translation id="5339031667684712858">Siti rimossi</translation>
 <translation id="5342314432463739672">Richieste di autorizzazione</translation>
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5368227114232678694">Per navigare in privato su questo dispositivo, prova la modalità in incognito</translation>
@@ -1065,6 +1065,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6756507620369789050">Condividi feedback</translation>
 <translation id="6767294960381293877">Elenco di dispositivi con cui condividere una scheda aperto nella parte inferiore dello schermo.</translation>
+<translation id="6770042910635026163">Siti visitati che definiscono i tuoi interessi</translation>
 <translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del Web</translation>
 <translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e Chrome OS</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>

@@ -526,7 +526,6 @@
 <translation id="3845098929839618392">ማንነትን በማያሳውቅ ትር ክፈት</translation>
 <translation id="3856096718352044181">ይህ ልክ የሆነ አገልግሎት አቅራቢ መሆኑን እባክዎ ያረጋግጡ ወይም ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="3858860766373142691">ስም</translation>
-<translation id="3859206958100234503">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የይለፍ ቃላት፣ እልባቶች እና ተጨማሪ ነገሮችን ለማግኘት ያስምሩ።</translation>
 <translation id="3861633093716975811">ታዋቂ ቪዲዮዎች</translation>
 <translation id="3892148308691398805">ጽሑፍ ቅዳ</translation>
 <translation id="3894427358181296146">አቃፊ ያክሉ</translation>
@@ -790,6 +789,7 @@
 <translation id="5324858694974489420">የወላጅ መቆጣጠሪያዎች</translation>
 <translation id="5326921373682845375">ቅድሚያ የተጫኑ ገጾች የተመሠጠሩ ስለሆኑ እና ከገጾቹ ጋር የሚያገናኘው ጣቢያ የGoogle ጣቢያ ስለሆነ እነዚህ ገጾች በግል ቅድሚያ ሲጫኑ የGoogle አገልጋዮች አዲስ መረጃ አይደርሳቸውም።</translation>
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>
+<translation id="5339031667684712858">ያስወገዷቸው ጣቢያዎች</translation>
 <translation id="5342314432463739672">የፈቃድ ጥያቄዎች</translation>
 <translation id="5355191726083956201">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="5368227114232678694">በዚህ መሳሪያ ላይ በግል ለማሰስ፣ ማንነት የማያሳውቅን ይሞክሩ</translation>
@@ -1065,6 +1065,7 @@
 <translation id="6751521182688001123">አዲስ ትርን በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
 <translation id="6756507620369789050">ግብረመልስ ያጋሩ</translation>
 <translation id="6767294960381293877">በግማሽ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
+<translation id="6770042910635026163">የእርስዎ ዝንባሌዎች የሚገልጹ የሚጎበኟቸው ጣቢያዎች</translation>
 <translation id="6770602306803890733">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል</translation>
 <translation id="6785476624617658922">የChrome እና የChromeOS ተጨማሪ አገልግሎት ውል</translation>
 <translation id="6795633245022906657">አዲስ ትር በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>

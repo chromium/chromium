@@ -2622,6 +2622,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3482719661246593752"><ph name="ORIGIN" /> quyidagi fayllarni koʻra oladi</translation>
 <translation id="3484273680291419129">Zararli dastur o‘chirilmoqda...</translation>
 <translation id="3484869148456018791">Yangi sertifikat olish</translation>
+<translation id="3486950712960783074">Safaringiz</translation>
 <translation id="3487007233252413104">anonim funksiya</translation>
 <translation id="3490695139702884919">Yuklab olinmoqda... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Farzandingizning hisobi Family Link ota-ona nazorati uchun sozlanmagan. Sozlash tugashi bilan ota-ona nazoratini kirtishingiz mumkin. Ota-ona nazorati haqidagi axborotini “Tanishuv” ilovasi orqali topish mumkin.</translation>
@@ -2932,6 +2933,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" />Bu <ph name="DEVICE_TYPE" /> tashkilotingiz tomonidan boshqariladi<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> qidiruv tizimidan “<ph name="SEARCH_TERMS" />” deb &amp;qidirish</translation>
 <translation id="3798449238516105146">Versiya</translation>
+<translation id="3798632811625902122"><ph name="DEVICE" /> qurilmasiga Bluetooth orqali ulanish uchun ruxsat berish kerak.</translation>
 <translation id="3799128412641261490">Switch Access sozlamalari</translation>
 <translation id="3800806661949714323">Hammasini ko‘rsatish (tavsiya etiladi)</translation>
 <translation id="3800828618615365228">Google Chrome va ChromeOS qoʻshimcha shartlari</translation>
@@ -4919,6 +4921,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> uchun boshqa amallar</translation>
 <translation id="5792728279623964091">Quvvat tugmasini bosing</translation>
 <translation id="5793339252089865437">Yangilanishlarni mobil tarmoq orqali amalga oshirsangiz, ancha pulingiz ketib qoladi.</translation>
+<translation id="5793420564274426163">Ulanishni tasdiqlash</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> ish stolida <ph name="NUM_BROWSERS" /> ta brauzer oynasi ochilgan</translation>
 <translation id="5794414402486823030">Doim tizimdagi birlamchi ko‘rish dasturida ochish</translation>
 <translation id="5794700615121138172">Linux umumiy jildlari</translation>
@@ -7413,6 +7416,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8242426110754782860">Davom etish</translation>
 <translation id="8243948765190375130">Media sifati pasayishi mumkin</translation>
 <translation id="8244514732452879619">Tez orada uxlashingiz kerak</translation>
+<translation id="8245361042748627813">Bu tezkor tugma oʻzgartirildi. Tizim muloqot oynasi yordamida chop etish uchun <ph name="NEW_SHORTCUT_KEY" /> tugmalaridan foydalaning.</translation>
 <translation id="8246776524656196770">Elektron kalitni PIN kod bilan himoyalang</translation>
 <translation id="8248050856337841185">&amp;Joylash</translation>
 <translation id="8248381369318572865">Mikrofondan foydalanishga va nutqingizni tahlil qilishga ruxsat bering</translation>
@@ -7717,6 +7721,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8561565784790166472">Ehtiyotkorlik bilan davom eting</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Ilovaning avvalgi versiyasiga o‘tishga harakat.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> haqida batafsil</translation>
 <translation id="8569682776816196752">Mo‘ljal joylar topilmadi</translation>
 <translation id="8571213806525832805">Oxirgi 4 hafta</translation>
 <translation id="8571687764447439720">Kerberos chiptasini kiritish</translation>

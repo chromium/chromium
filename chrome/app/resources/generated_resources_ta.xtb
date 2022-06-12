@@ -190,6 +190,7 @@
 <translation id="1173894706177603556">மறுபெயரிடு</translation>
 <translation id="1174073918202301297">”Shortcut added to”</translation>
 <translation id="1174366174291287894">உங்கள் இணைப்பு எப்போதும் பாதுகாப்பாக இருக்கும், அப்படி இல்லாதபட்சத்தில் Chrome உலாவி உங்களுக்குத் தெரியப்படுத்தும்</translation>
+<translation id="1174391930667737831">தனியுரிமை Hub</translation>
 <translation id="117445914942805388">உங்கள் ஒத்திசைக்கப்பட்ட சாதனங்கள் அனைத்திலிருந்தும் Google கணக்கிலிருந்தும் உலாவல் தரவை முழுமையாக அழிக்க, <ph name="BEGIN_LINK" />ஒத்திசைவு அமைப்புகளைப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;அச்சிடு...</translation>
 <translation id="1176471985365269981">உங்கள் சாதனத்தில் உள்ள ஃபைல்களிலோ ஃபோல்டர்களிலோ மாற்றம் செய்ய அனுமதி இல்லாத தளங்கள்</translation>
@@ -2087,6 +2088,7 @@
 <ph name="DOMAIN" /> டொமைனைப் பயன்படுத்த, உங்கள் ஸ்மார்ட் கார்டு செருகப்பட்ட நிலையிலேயே இருக்க வேண்டும்.</translation>
 <translation id="2923234477033317484">இந்தக் கணக்கை அகற்று</translation>
 <translation id="2923644930701689793">உங்கள் மொபைலின் கேமரா ரோலை அணுகலாம்</translation>
+<translation id="2925658782192398150">முடிந்தது, சிக்கல்கள் இல்லை</translation>
 <translation id="2926085873880284723">இயல்பு ஷார்ட்கட்களை மீட்டமை</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> சாதனத்தில் பயன்படுத்த முடியாது.</translation>
 <translation id="2927017729816812676">தற்காலிகச் சேமிப்பிடம்</translation>
@@ -5029,6 +5031,7 @@
 <translation id="5891688036610113830">விருப்பமான வைஃபை நெட்வொர்க்குகள்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5895335062901455404">நீங்கள் சேமித்த விருப்பத்தேர்வுகளும் செயல்பாடுகளும் Google கணக்கின் மூலம் நீங்கள் உள்நுழையும் எந்தவொரு ChromeOS Flex சாதனத்திலும் ஒத்திசைக்கப்பட்டுத் தயாராக இருக்கும். எதையெல்லாம் ஒத்திசைக்க வேண்டுமென்பதை அமைப்புகளுக்குச் சென்று தேர்வுசெய்யலாம்.</translation>
+<translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் பக்கத்தைத் தேடு</translation>
 <translation id="5896436821193322561">அனுமதிக்காதே</translation>
 <translation id="5900186025777217044">Smart Lock அம்சம் நிறுத்தப்பட்டுவிட்டது</translation>
 <translation id="5900302528761731119">Google சுயவிவரப் புகைப்படம்</translation>
@@ -5080,6 +5083,7 @@
 <translation id="5941153596444580863">நபரைச் சேர்...</translation>
 <translation id="5941343993301164315">தயவுசெய்து <ph name="TOKEN_NAME" /> இல் உள்நுழைக.</translation>
 <translation id="5941711191222866238">சிறிதாக்கு</translation>
+<translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் பக்கத்தைத் தேடு</translation>
 <translation id="5942779427914696408">சாதனத்தின் தெரிவுநிலை</translation>
 <translation id="5943127421590245687">உங்கள் கணக்கு சரிபார்க்கப்பட்டது. சாதனத்தை அன்லாக் செய்து அதிலுள்ள தரவை மீட்டெடுக்க, <ph name="DEVICE_TYPE" /> இன் பழைய கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ஆபத்தானதாக இருக்கக்கூடும். ஸ்கேன் செய்ய இதை Google பாதுகாப்பு உலாவலுக்கு அனுப்பவா?</translation>
@@ -6723,6 +6727,7 @@
 <translation id="7582582252461552277">இந்த நெட்வொர்க்குக்கு முன்னுரிமை வழங்குக</translation>
 <translation id="7582844466922312471">மொபைல் தரவு</translation>
 <translation id="7583948862126372804">எண்ணிக்கை</translation>
+<translation id="7585106857920830898">உங்கள் நிறுவனத்தின் பாதுகாப்புக் கொள்கைகளுக்கு ஏற்ப உள்ளதா எனச் சரிபார்க்கிறது...</translation>
 <translation id="7586498138629385861">Chrome ஆப்ஸ் திறக்கப்பட்டிருக்கும்போதும், Chrome தொடர்ந்து இயங்கும்.</translation>
 <translation id="758895749110326677">Chromebookகுகளில் கேமிங்கை மேம்படுத்த உதவுங்கள்</translation>
 <translation id="7589461650300748890">கவனமாக இருக்கவும்.</translation>
@@ -7000,6 +7005,7 @@
 <translation id="7839051173341654115">மீடியாவைக் காட்டு/காப்புப்பிரதி எடு</translation>
 <translation id="7839192898639727867">சான்றிதழ் பொருள் விசை ID</translation>
 <translation id="7842692330619197998">புதிய கணக்கை உருவாக்க g.co/ChromeEnterpriseAccount என்பதற்குச் செல்லவும்.</translation>
+<translation id="78427265591841839">பக்கத்தின் எந்தப் பகுதியையும் <ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் தேடு</translation>
 <translation id="784273751836026224">Linuxஸை நிறுவல் நீக்கு</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" /> இல் உள்நுழைக</translation>
 <translation id="7844992432319478437">வேறுபாட்டைப் புதுப்பிக்கிறது</translation>
@@ -7007,6 +7013,7 @@
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> க்கு மாற Ctrl + Alt + S  என்பதை அழுத்தவும்</translation>
 <translation id="7849264908733290972">&amp;படத்தை புதிய தாவலில் திற</translation>
 <translation id="784934925303690534">நேர வரம்பு</translation>
+<translation id="7850353716413205957">பக்கத்தின் எந்தப் பகுதியையும் <ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் தேடு</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />தானியங்கு அறிக்கைகளை அனுப்ப ChromeOS சாதனங்களை அனுமதிப்பது ChromeOSஸில் எதை முதலில் சரிசெய்ய வேண்டும், மேம்படுத்த வேண்டும் என்பதை நாங்கள் தீர்மானிக்க உதவுகிறது. ChromeOS எப்போது செயலிழந்தது, என்னென்ன அம்சங்களை நீங்கள் பயன்படுத்தினீர்கள், வழக்கமாக எவ்வளவு நினைவகத்தைப் பயன்படுத்துகிறீர்கள், Android ஆப்ஸ் தரவு &amp; உபயோகத் தரவு போன்ற தகவல்கள் இந்த அறிக்கைகளில் இருக்கும். ஒருங்கிணைக்கப்பட்ட சில தரவு Google ஆப்ஸிற்கும் Android டெவெலப்பர்கள் போன்ற பார்ட்னர்களுக்கும் உதவும்.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />உங்கள் ChromeOS சாதன அமைப்புகளுக்குச் சென்று, இந்த அறிக்கைகள் அனுப்பப்படுவதை எப்போது வேண்டுமானாலும் அனுமதிக்கலாம் அல்லது தடுக்கலாம். நீங்கள் டொமைன் நிர்வாகி எனில் நிர்வாகிக் கன்சோலில் இந்த அமைப்பை மாற்றலாம்.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />உங்கள் Google கணக்கில் 'இணையம் மற்றும் ஆப்ஸ் செயல்பாடு' அமைப்பு இயக்கப்பட்டிருந்தால் உங்கள் Android தரவு உங்களுடைய Google கணக்கில் சேமிக்கப்படக்கூடும். account.google.com தளத்தில் உங்களின் தரவைப் பார்க்கலாம், நீக்கலாம், கணக்கு அமைப்புகளை மாற்றலாம்.<ph name="END_PARAGRAPH3" /></translation>

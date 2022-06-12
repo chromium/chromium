@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
 <translation id="2321958826496381788">편하게 읽을 수 있을 때까지 슬라이더를 드래그하세요. 단락을 두 번 탭하면 텍스트가 이 이상의 크기로 표시됩니다.</translation>
+<translation id="2329473609445770916">다른 사이트에서 이 사이트에서 정의하는 내 관심분야를 사용해 광고를 표시할 수 있습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2379925928934107488">가능하면 Chrome에서 어두운 테마를 사용할 때 사이트에도 어두운 테마를 적용합니다.</translation>
 <translation id="2387895666653383613">텍스트 크기 조정</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">웹에서 찾은 정보</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />에서 알림을 전송하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 알림을 사용 설정하세요.</translation>
 <translation id="3227137524299004712">마이크</translation>
+<translation id="3248611290851046188">다른 사이트에서 이 사이트에서 정의하는 내 관심분야를 사용해 광고를 표시할 수 있습니다. 이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시할 수도 있습니다.</translation>
 <translation id="3277252321222022663">사이트의 센서 액세스 허용(권장)</translation>
 <translation id="3295602654194328831">정보 숨기기</translation>
 <translation id="3328801116991980348">사이트 정보</translation>

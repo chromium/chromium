@@ -2084,6 +2084,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <ph name="DOMAIN" /> inahitaji usiondoe kadi yako mahiri.</translation>
 <translation id="2923234477033317484">Ondoa akaunti hii</translation>
 <translation id="2923644930701689793">Fikia albamu ya kamera ya simu yako</translation>
+<translation id="2925658782192398150">Imekamilika, hakuna hitilafu iliyopatikana</translation>
 <translation id="2926085873880284723">Rejesha njia chaguomsingi za mkato</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> haiwezi kutumika.</translation>
 <translation id="2927017729816812676">Hifadhi ya Akiba</translation>
@@ -5023,6 +5024,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5891688036610113830">Mitandao ya Wi-Fi inayopendelewa</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
 <translation id="5895335062901455404">Mapendeleo na shughuli ulizohifadhi zitakuwa tayari kwenye kifaa chochote kinachotumia ChromeOS Flex ukiingia kwa kutumia Akaunti yako ya Google. Unaweza kuchagua unachotaka kusawazisha katika Mipangilio.</translation>
+<translation id="589541317545606110">Tafuta Ukurasa ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Usiruhusu</translation>
 <translation id="5900186025777217044">Smart Lock imebadilishwa</translation>
 <translation id="5900302528761731119">Picha ya Wasifu katika Google</translation>
@@ -5074,6 +5076,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5941153596444580863">Ongeza mwingine...</translation>
 <translation id="5941343993301164315">Tafadhali ingia kwenye <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Punguza</translation>
+<translation id="594221546068848596">Tafuta Ukurasa ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Uonekanaji wa kifaa</translation>
 <translation id="5943127421590245687">Uthibitishaji wako umefaulu. Ili uweze kufungua na kurejesha data iliyo kwenye kompyuta yako, tafadhali weka nenosiri lako la zamani la <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055">Huenda <ph name="FILE_NAME" /> ni hatari. Ungependa kuituma kwa Kipengele cha Kuvinjari Salama na Google ili ikaguliwe?</translation>
@@ -6717,6 +6720,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7582582252461552277">Pendelea mtandao huu</translation>
 <translation id="7582844466922312471">Data ya Simu</translation>
 <translation id="7583948862126372804">Hesabu</translation>
+<translation id="7585106857920830898">Inakaguliwa kulingana na sera za usalama za shirika lako...</translation>
 <translation id="7586498138629385861">Chrome itaendelea kufanya kazi Programu za Chrome zikiwa wazi.</translation>
 <translation id="758895749110326677">Tusaidie kuboresha michezo ya video kwenye Chromebook</translation>
 <translation id="7589461650300748890">Lo! Kuwa mwangalifu!</translation>
@@ -6995,6 +6999,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7839051173341654115">Angalia/Hifadhi nakala rudufu ya maudhui</translation>
 <translation id="7839192898639727867">Utambulisho wa Ufunguo wa Kichwa cha Cheti</translation>
 <translation id="7842692330619197998">Tembelea g.co/ChromeEnterpriseAccount ikiwa unahitaji kufungua akaunti mpya.</translation>
+<translation id="78427265591841839">Tafuta sehemu yoyote ya ukurasa ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Ondoa Linux</translation>
 <translation id="7843786652787044762">Ingia katika akaunti kwenye <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Inasasisha tofauti</translation>
@@ -7002,6 +7007,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7847212883280406910">Bonyeza "Ctrl" na "Alt" na "S" kwa pamoja ili kubadilisha kwenda <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Fungua P&amp;icha katika Kichupo Kipya</translation>
 <translation id="784934925303690534">Muda</translation>
+<translation id="7850353716413205957">Tafuta Sehemu Yoyote ya Ukurasa ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vyako vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti kiotomatiki hutusaidia kujua vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile mfumo wa uendeshaji wa Chrome unapoacha kufanya kazi, vipengele unavyotumia, kadirio la kiasi cha hifadhi unachotumia na data ya uchunguzi na matumizi ya programu za Android. Baadhi ya data iliyojumlishwa pia itasaidia programu na washirika wa Google, kama vile wasanidi programu wa Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ikiwa umewasha mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu katika Akaunti yako ya Google, huenda data yako ya Android ikahifadhiwa kwenye Akaunti yako ya Google. Unaweza kuona data yako, kuifuta na kubadilisha mipangilio ya akaunti yako katika account.google.com.<ph name="END_PARAGRAPH3" /></translation>

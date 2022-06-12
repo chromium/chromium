@@ -2620,6 +2620,7 @@ Pretende pará-lo?</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> pode ver os seguintes ficheiros</translation>
 <translation id="3484273680291419129">A remover software prejudicial…</translation>
 <translation id="3484869148456018791">Obter novo certificado</translation>
+<translation id="3486950712960783074">A sua viagem</translation>
 <translation id="3487007233252413104">função anónima</translation>
 <translation id="3490695139702884919">A transferir… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">A conta da criança não está configurada para o controlo parental do Family Link. Quando concluir a configuração, pode adicionar o controlo parental. Encontrará informações sobre o controlo parental na app Explore.</translation>
@@ -2930,6 +2931,7 @@ Pretende pará-lo?</translation>
 <translation id="3797739167230984533">O <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> é gerido<ph name="END_LINK" /> pela sua entidade.</translation>
 <translation id="3797900183766075808">Pe&amp;squisar no <ph name="SEARCH_ENGINE" /> por "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Versão</translation>
+<translation id="3798632811625902122">O dispositivo Bluetooth <ph name="DEVICE" /> quer obter a autorização para sincronizar.</translation>
 <translation id="3799128412641261490">Definições do acesso por comutador</translation>
 <translation id="3800806661949714323">Mostrar tudo (recomendado)</translation>
 <translation id="3800828618615365228">Termos Adicionais do Google Chrome e Chrome OS</translation>
@@ -4917,6 +4919,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5792295754950501287">Mais ações para <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Toque no botão ligar/desligar</translation>
 <translation id="5793339252089865437">Transferir a atualização através da sua rede móvel pode resultar em custos adicionais.</translation>
+<translation id="5793420564274426163">Confirmação de sincronização</translation>
 <translation id="5794034487966529952">O espaço de trabalho <ph name="DESK_TITLE" /> tem <ph name="NUM_BROWSERS" /> janelas do navegador abertas</translation>
 <translation id="5794414402486823030">Abrir sempre com o visualizador do sistema</translation>
 <translation id="5794700615121138172">Pastas partilhadas do Linux</translation>
@@ -7413,6 +7416,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="8243948765190375130">A qualidade do conteúdo multimédia pode ser reduzida</translation>
 <translation id="8244514732452879619">O dispositivo será bloqueado em breve</translation>
+<translation id="8245361042748627813">Este atalho foi alterado. Use <ph name="NEW_SHORTCUT_KEY" /> para imprimir através da caixa de diálogo do sistema.</translation>
 <translation id="8246776524656196770">Proteja a sua chave de segurança com um PIN (número de identificação pessoal)</translation>
 <translation id="8248050856337841185">C&amp;olar</translation>
 <translation id="8248381369318572865">Aceder ao microfone e analisar o seu discurso</translation>
@@ -7717,6 +7721,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8561565784790166472">Continue com cuidado</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Tentativa de alterar a aplicação para a versão anterior</translation>
+<translation id="8569673829373920831">Mais sobre <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Não foram encontrados destinos</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8571687764447439720">Adicionar permissão Kerberos</translation>

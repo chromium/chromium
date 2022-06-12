@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
+<translation id="1062407476771304334">替换</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1190378975642195988">底座加速度计</translation>
 <translation id="1195447618553298278">未知错误。</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> 版</translation>
 <translation id="1199355487114804640">播放/暂停</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">固件更新期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。此更新可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="3486220673238053218">定义</translation>
 <translation id="3488065109653206955">部分激活</translation>
+<translation id="3492982278147736083">盖子陀螺仪</translation>
 <translation id="3517001332549868749">Chrome 操作系统更新</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
@@ -300,6 +303,7 @@
 <translation id="3820172043799983114">PIN 码无效。</translation>
 <translation id="3838338534323494292">新密码</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3856304145690230735">底座陀螺仪</translation>
 <translation id="385832974417157471">请先对您的设备执行 Powerwash 操作，然后再关机。如果您的设备配有盖子，请等到 Powerwash 完成后再合上盖子。Powerwash 最多可能需要 1 分钟才能完成。</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3865414814144988605">分辨率</translation>
@@ -371,6 +375,7 @@
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4500213108254186382">盖子加速度计</translation>
 <translation id="4503223151711056411">向左</translation>
 <translation id="4511264077854731334">门户网站</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
@@ -382,6 +387,7 @@
 <translation id="4561801978359312462">SIM 卡已解锁</translation>
 <translation id="4562494484721939086">无服务</translation>
 <translation id="4568938274596692027">安装完毕。正在准备重启…</translation>
+<translation id="4576943788798178439">触控笔支持</translation>
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
@@ -537,6 +543,7 @@
 <translation id="5866840822086176774">非常强</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5895138241574237353">重新启动</translation>
+<translation id="5898758006340607522">电源按钮</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903200662178656908">设备是键盘和鼠标的组合。</translation>
 <translation id="5916084858004523819">已禁止</translation>
@@ -859,6 +866,7 @@
 <translation id="8919792139048574232">查看已解决的问题</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8923267550422472772">每月重置流量使用情况的日期</translation>
+<translation id="8925613211674558308">已缓存 VPD</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>

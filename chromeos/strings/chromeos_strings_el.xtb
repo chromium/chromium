@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
+<translation id="1062407476771304334">Αντικατάσταση</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Μέτριο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
+<translation id="1190378975642195988">Επιταχύμετρο βάσης</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1196959502276349371">Έκδοση <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Αναπαραγωγή/Παύση</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">Κατά την ενημέρωση του υλικολογισμικού, μην αποσυνδέσετε αυτήν την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά για αυτήν την ενημέρωση και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
 <translation id="3486220673238053218">ορισμός</translation>
 <translation id="3488065109653206955">Μερικώς ενεργοποιημένο</translation>
+<translation id="3492982278147736083">Γυροσκόπιο καπακιού</translation>
 <translation id="3517001332549868749">Ενημέρωση ChromeOS</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
@@ -301,6 +304,7 @@
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="385051799172605136">Πίσω</translation>
+<translation id="3856304145690230735">Γυροσκόπιο βάσης</translation>
 <translation id="385832974417157471">Πριν από την απενεργοποίηση, κάντε Powerwash της συσκευής σας. Εάν η συσκευή σας έχει καπάκι, πριν το κλείσετε, περιμένετε να ολοκληρωθεί το Powerwash. Η ολοκλήρωση του Powerwash μπορεί να διαρκέσει έως και ένα λεπτό.</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3862598938296403232">Η περιγραφή απαιτείται</translation>
@@ -373,6 +377,7 @@
 <translation id="4472575034687746823">Έναρξη</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
+<translation id="4500213108254186382">Επιταχύμετρο καπακιού</translation>
 <translation id="4503223151711056411">Αριστερό βέλος</translation>
 <translation id="4511264077854731334">Πύλη</translation>
 <translation id="4521826082652183069">Αντιστοιχία εναλλακτικού ονόματος υποκειμένου</translation>
@@ -384,6 +389,7 @@
 <translation id="4561801978359312462">Ξεκλείδωτη SIM</translation>
 <translation id="4562494484721939086">Εκτός υπηρεσίας</translation>
 <translation id="4568938274596692027">Η εγκατάσταση ολοκληρώθηκε. Προετοιμασία επανεκκίνησης...</translation>
+<translation id="4576943788798178439">Υποστήριξη γραφίδας</translation>
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
 <translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
@@ -539,6 +545,7 @@
 <translation id="5866840822086176774">Πολύ ισχυρό</translation>
 <translation id="588258955323874662">Πλήρης οθόνη</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
+<translation id="5898758006340607522">Κουμπί λειτουργίας</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903200662178656908">Η συσκευή είναι ένας συνδυασμός πληκτρολογίου και ποντικιού.</translation>
 <translation id="5916084858004523819">Απαγορεύεται</translation>
@@ -862,6 +869,7 @@
 <translation id="8919792139048574232">Δείτε τι διορθώθηκε</translation>
 <translation id="8919837981463578619">Σφάλμα - Λείπει δίσκος</translation>
 <translation id="8923267550422472772">Ημέρα του μήνα για επαναφορά</translation>
+<translation id="8925613211674558308">Δεδομένα VPD αποθηκευμένα στην κρυφή μνήμη</translation>
 <translation id="8928727111548978589">Σφάλμα - Τελείωσε το χαρτί</translation>
 <translation id="8930521118335213258">Ομότιμη</translation>
 <translation id="8930622219860340959">Ασύρματο</translation>

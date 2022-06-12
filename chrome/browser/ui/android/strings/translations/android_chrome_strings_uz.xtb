@@ -527,7 +527,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3845098929839618392">Inkognito rejimida ochish</translation>
 <translation id="3856096718352044181">Bu ishonchli xizmat ekanini tekshiring yoki keyinroq qayta urining</translation>
 <translation id="3858860766373142691">Ism</translation>
-<translation id="3859206958100234503">Barcha qurilmalaringizdagi parol va bukmark kabilarni olish uchun sinxronlang</translation>
 <translation id="3861633093716975811">Mashhur videolar</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>
 <translation id="3894427358181296146">Jild qo‘shish</translation>
@@ -791,6 +790,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5324858694974489420">Ota-onalar sozlamalari</translation>
 <translation id="5326921373682845375">Oldindan yuklanadigan sahifalar shifrlangani va sahifalarga ulovchi sayt Google sayti boʻlgani bois, bunday sahifalar maxfiy tarzda oldindan yuklansa, Google serverlari yangi maʼlumotlarni qabul qila olmaydi.</translation>
 <translation id="5329858041417644019">Brauzeringiz mustaqil rejimda</translation>
+<translation id="5339031667684712858">Olib tashlangan saytlar</translation>
 <translation id="5342314432463739672">Ruxsat talablari</translation>
 <translation id="5355191726083956201">Kengaytirilgan himoya yoniq</translation>
 <translation id="5368227114232678694">Bu qurilmada maxfiy kezish uchun Inkognito rejimidan foydalaning</translation>
@@ -1067,6 +1067,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="6751521182688001123">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="6756507620369789050">Fikr-mulohaza</translation>
 <translation id="6767294960381293877">Yarim hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
+<translation id="6770042910635026163">Qiziqishlarni ifodalovchi siz kiradigan saytlar</translation>
 <translation id="6770602306803890733">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi</translation>
 <translation id="6785476624617658922">Google Chrome va ChromeOS qoʻshimcha shartlari</translation>
 <translation id="6795633245022906657">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun Sozlamalarga kiring.</translation>

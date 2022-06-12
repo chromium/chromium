@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
+<translation id="1062407476771304334">Badilisha</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Kinga mtandao imetambuliwa</translation>
 <translation id="1075811647922107217">Ukubwa wa ukurasa</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ondoa</translation>
+<translation id="1190378975642195988">Kipima mchapuko cha kitako</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
 <translation id="1196959502276349371">Toleo la <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Cheza/Simamisha</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">Usichomoe kifaa hiki cha nje wala usizime kompyuta yako programu dhibiti ikisasishwa. Unaweza kupunguza kidirisha hiki. Sasisho hili linaweza kuchukua dakika chache na kifaa chako cha nje huenda kisifanye kazi kwa wakati huu.</translation>
 <translation id="3486220673238053218">ufafanuzi</translation>
 <translation id="3488065109653206955">Imaeamilisha kidogo</translation>
+<translation id="3492982278147736083">Gurudumu tuzi la kifuniko</translation>
 <translation id="3517001332549868749">Sasisho la ChromeOS</translation>
 <translation id="3527036260304016759">Haijakamilika - Hitilafu isiyojulikana</translation>
 <translation id="3532980081107202182">Zimesalia takriban dakika <ph name="MIN_REMAINING" /></translation>
@@ -300,6 +303,7 @@
 <translation id="3820172043799983114">PIN si sahihi</translation>
 <translation id="3838338534323494292">Nenosiri jipya</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
+<translation id="3856304145690230735">Gurudumu tuzi la kitako</translation>
 <translation id="385832974417157471">Kabla haijazima, powerwash kifaa chako. Ikiwa kifaa chako kina mfuniko, subiri mpaka powerwash ikamilishe kabla ya kufunga mfuniko. Huenda powerwash ikachukua hadi dakika moja kukamilisha.</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3865414814144988605">Ubora</translation>
@@ -371,6 +375,7 @@
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
+<translation id="4500213108254186382">Kipima mchapuko cha kifuniko</translation>
 <translation id="4503223151711056411">Kishale cha kushoto</translation>
 <translation id="4511264077854731334">Tovuti kuu</translation>
 <translation id="4521826082652183069">Jina mbadala la kichwa linalolingana</translation>
@@ -382,6 +387,7 @@
 <translation id="4561801978359312462">SIM Imefunguliwa</translation>
 <translation id="4562494484721939086">Hakuna huduma</translation>
 <translation id="4568938274596692027">Usakinishaji umekamilika. Inajiandaa ili izime kisha iwake...</translation>
+<translation id="4576943788798178439">Kifaa hiki kinatumia Stylus</translation>
 <translation id="458794348635939462">Imeshindwa kusuluhisha seva pangishi zote</translation>
 <translation id="4593212453765072419">Uthibitishaji wa proksi unahitajika</translation>
 <translation id="4609350030397390689">Punguza mwangaza wa kibodi</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">Thabiti sana</translation>
 <translation id="588258955323874662">Skrini nzima</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
+<translation id="5898758006340607522">Kitufe cha kuwasha au kuzima</translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5903200662178656908">Kifaa ni muunganiko wa kibodi na kipanya.</translation>
 <translation id="5916084858004523819">Marufuku</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">Angalia vipengee vilivyorekebishwa</translation>
 <translation id="8919837981463578619">Haijakamilika - Trei haipo</translation>
 <translation id="8923267550422472772">Siku ya mwezi kwa ajili ya kuweka upya</translation>
+<translation id="8925613211674558308">Iliyowekwa katika akiba ya Vpd</translation>
 <translation id="8928727111548978589">Haijakamilika - Karatasi zimeisha</translation>
 <translation id="8930521118335213258">Programu nyingine</translation>
 <translation id="8930622219860340959">Bila Waya</translation>

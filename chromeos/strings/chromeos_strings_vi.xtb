@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
+<translation id="1062407476771304334">Thay thế</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
 <translation id="1075811647922107217">Kích thước trang</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="1175951029573070619">Trung bình (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Xóa</translation>
+<translation id="1190378975642195988">Gia tốc kế ở chân đế</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1196959502276349371">Phiên bản <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Phát/tạm dừng</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
+<translation id="3492982278147736083">Con quay hồi chuyển ở nắp</translation>
 <translation id="3517001332549868749">Bản cập nhật ChromeOS</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="3532980081107202182">Còn khoảng <ph name="MIN_REMAINING" /> phút nữa</translation>
@@ -301,6 +304,7 @@
 <translation id="3820172043799983114">Mã PIN không hợp lệ.</translation>
 <translation id="3838338534323494292">Mật khẩu mới</translation>
 <translation id="385051799172605136">Quay lại</translation>
+<translation id="3856304145690230735">Con quay hồi chuyển ở chân đế</translation>
 <translation id="385832974417157471">Trước khi tắt, hãy thực hiện chức năng Powerwash cho thiết bị. Nếu thiết bị có nắp, hãy đợi cho đến khi quá trình Powerwash hoàn tất trước khi đóng nắp. Quá trình Powerwash có thể mất tối đa một phút để hoàn tất.</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3862598938296403232">Bạn phải nhập nội dung mô tả</translation>
@@ -373,6 +377,7 @@
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4500213108254186382">Gia tốc kế ở nắp</translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4511264077854731334">Cổng</translation>
 <translation id="4521826082652183069">Khớp tên thay thế của tiêu đề</translation>
@@ -384,6 +389,7 @@
 <translation id="4561801978359312462">Đã mở khóa SIM</translation>
 <translation id="4562494484721939086">Không có dịch vụ</translation>
 <translation id="4568938274596692027">Đã cài đặt xong. Đang chuẩn bị khởi động lại...</translation>
+<translation id="4576943788798178439">Bộ phận hỗ trợ bút cảm ứng</translation>
 <translation id="458794348635939462">Không phân giải được một số máy chủ</translation>
 <translation id="4593212453765072419">Yêu cầu xác thực proxy</translation>
 <translation id="4609350030397390689">Giảm độ sáng đèn bàn phím</translation>
@@ -539,6 +545,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5866840822086176774">Rất mạnh</translation>
 <translation id="588258955323874662">Toàn màn hình</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
+<translation id="5898758006340607522">Nút nguồn</translation>
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5903200662178656908">Thiết bị là một bộ chuột và bàn phím.</translation>
 <translation id="5916084858004523819">Bị cấm</translation>
@@ -862,6 +869,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8919792139048574232">Xem những vấn đề đã được sửa</translation>
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
 <translation id="8923267550422472772">Ngày trong tháng để đặt lại</translation>
+<translation id="8925613211674558308">Đã lưu trong bộ nhớ đệm Vpd</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
 <translation id="8930521118335213258">Ứng dụng ngang hàng</translation>
 <translation id="8930622219860340959">Không dây</translation>

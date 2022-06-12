@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" /> GGs)</translation>
 <translation id="1047773237499189053">Yangi funksiya chiqdi, batafsil axborot uchun tepaga strelkani bosing</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
+<translation id="1062407476771304334">Almashtirish</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
@@ -62,6 +63,7 @@
 <translation id="1459784442280469416">USB qurilmaga saqlash</translation>
 <translation id="1468664791493211953">Takliflar</translation>
 <translation id="1476467821656042872">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
+<translation id="147809995039451286">Yangilanish yuklab olinmadi</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> mikrodasturi yangilanmoqda</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
@@ -178,6 +180,7 @@
 <translation id="2418150275289244458">Sozlamalar orqali ochish</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /> ta rasm</translation>
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
+<translation id="2447969267935997922">Oʻrnatildi. Endi USB xotira qurilmasi yoki SD kartani uzishingiz mumkin.</translation>
 <translation id="2448312741937722512">Turi</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
 <translation id="2480034874476596812">Mustaqil faolsizlantirish</translation>

@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (အတွဲ <ph name="THREAD_COUNT" /> ခု၊ <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ဝန်ဆောင်မှုအသစ် ရနိုင်သည်၊ ပိုမိုလေ့လာရန် အပေါ်ညွှန်မြားကို အသုံးပြုပါ။</translation>
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
+<translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall တွေ့ရှိသည်</translation>
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">စတင်ဝင်ရန် စာမျက်နှာ</translation>
 <translation id="2006864819935886708">ချိတ်ဆက်နိုင်မှု</translation>
 <translation id="2008685064673031089">အဓိက ရှာဖွေမှု</translation>
+<translation id="2011174342667534258">SDK ဗားရှင်း-</translation>
 <translation id="2016697457005847575">ပြဿနာရှာဖွေဖြေရှင်းခြင်း အဆင့်များ စမ်းကြည့်ရန်</translation>
 <translation id="2016848882344942759">--အဖြူရောင်-အညွှန်း မရှိပါ--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">စဖွင့်ခြင်း အခြေအနေ</translation>
 <translation id="2271469253353559191">အမှောင်မုဒ် အချိန်ဇယား</translation>
 <translation id="2275586345903859204">ပြင်ဆင်ပြီးပါပြီ</translation>
+<translation id="2276999893457278469">ထိပ်တန်းအကူအညီ အကြောင်းအရာ</translation>
 <translation id="2287186687001756809">ပုံမရရှိနိုင်ပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
 <translation id="2294753434210277304">ဒေါင်းလုဒ်လုပ်ထားသော Chromebook Recovery Utility ကွန်ပျူတာစနစ်မိတ္တူ ပါဝင်သည့် USB ဒရိုက်ဗ် (သို့) SD ကတ်ကဲ့သို့ ပြင်ပသိုလှောင်ခန်း ထည့်သွင်းပါ</translation>
 <translation id="2307344026739914387">လက်ရှိကီးအတွဲကို သုံးရန်</translation>
@@ -189,6 +192,7 @@
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="253029298928638905">ပြန်စနေသည်…</translation>
+<translation id="2533048460510040082">အကြံပြုထားသော အကူအညီ အကြောင်းအရာ</translation>
 <translation id="2536159006530886390">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
 <translation id="2584559707064218956">စနစ်ထည့်သွင်းရန် ဆက်တင်များသို့ သွားပါ</translation>
@@ -288,6 +292,7 @@
 <translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3643810137582748570">ချိန်ညှိမှုကို ကျော်ရန်</translation>
+<translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
 <translation id="3678765385266369662">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်လိုသည့်ပုံစံကို ရွေးပါ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
@@ -300,11 +305,13 @@
 <translation id="3784455785234192852">သော့ခတ်</translation>
 <translation id="38114475217616659">မှတ်တမ်းအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
+<translation id="3824259034819781947">ဖိုင်များပူးတွဲရန်</translation>
 <translation id="3838338534323494292">စကားဝှက်အသစ်</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3856304145690230735">ကိုင်းညွတ်မှုတိုင်း ကိရိယာ အောက်ခံပြား</translation>
 <translation id="385832974417157471">စက်မပိတ်ခင် Powerwash လုပ်ပါ။ သင့်စက်တွင် အဖုံးရှိပါက အဖုံးမပိတ်ခင် Powerwash ပြီးသည့်တိုင်အောင် စောင့်ပါ။ Powerwash ပြီးစီးရန် တစ်မိနစ်ခန့် ကြာနိုင်သည်။</translation>
 <translation id="3858860766373142691">အမည်</translation>
+<translation id="3862598938296403232">ဖော်ပြချက် လိုအပ်သည်</translation>
 <translation id="3865414814144988605">ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="3866249974567520381">ဖေါ်ပြချက်</translation>
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
@@ -677,6 +684,7 @@
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
+<translation id="7154020516215182599">သင့်အကြံပြုချက်ကို မျှဝေပါ (သို့) သင့်ပြဿနာကို ဖော်ပြပါ။ သင့်ပြဿနာ ပြန်လည်ဖော်ထုတ်ရန် လုပ်ဆောင်မှုအဆင့်များကို ဖြစ်နိုင်ပါက ထည့်သွင်းပါ။</translation>
 <translation id="7155171745945906037">ကင်မရာ သို့မဟုတ် ဖိုင်မှ လက်ရှိပုံ</translation>
 <translation id="7162487448488904999">ပြခန်း</translation>
 <translation id="7170236477717446850">ပရိုဖိုင် ပုံ</translation>
@@ -854,6 +862,7 @@
 <translation id="885701979325669005">သိုလှောင်ခန်း</translation>
 <translation id="8863170912498892583">မှောင်သည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="8863888432376731307">“<ph name="QUERY" />” စသည်တို့အတွက် <ph name="INTENT" /> ရယူပါ</translation>
+<translation id="8864415976656252616">အကြံပြုထားသောအကြောင်းအရာ မရှိပါ။ ထိပ်တန်းအကူအညီ အကြောင်းအရာကို ကြည့်ပါ။</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ကိရိယာသည် တက်ဘလက်ဖြစ်သည်</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>

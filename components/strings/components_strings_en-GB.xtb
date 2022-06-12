@@ -291,6 +291,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1662550410081243962">Save and fill payment methods</translation>
 <translation id="1663943134801823270">Cards and addresses are from Chrome. You can manage them in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on.</translation>
+<translation id="1673886523110456987">Check out with <ph name="CARD_DETAIL" /> to use offer</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Short edge first</translation>
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
@@ -589,6 +590,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2523886232349826891">Saved on this device only</translation>
 <translation id="2524461107774643265">Add More Information</translation>
 <translation id="2529899080962247600">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be ignored.</translation>
+<translation id="253493526287553278">See promo code details</translation>
 <translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2536110899380797252">Add Address</translation>
@@ -1105,6 +1107,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
 <translation id="3987940399970879459">Less than 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
+<translation id="3992684624889376114">About this page</translation>
 <translation id="3996311196211510766">The site <ph name="ORIGIN" /> has requested that an origin policy will
     apply to all requests to it, but this policy cannot presently be applied.</translation>
 <translation id="4006465311664329701">Payment methods, offers and addresses using Google Pay</translation>
@@ -1280,6 +1283,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
 <translation id="4441832193888514600">Ignored because the policy can only be set as a cloud user policy.</translation>
+<translation id="4442470707340296952">Chrome tabs</translation>
 <translation id="4450893287417543264">Don't show again</translation>
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
 <translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
@@ -1554,6 +1558,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5171045022955879922">Search or type URL</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Machine</translation>
+<translation id="5177076414499237632">Learn about this page's source and topic</translation>
 <translation id="5179510805599951267">Not in <ph name="ORIGINAL_LANGUAGE" />? Report this error</translation>
 <translation id="518639307526414276">Pet food and pet care supplies</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
@@ -2574,6 +2579,7 @@ Additional details:
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8075736640322370409">Create a new Google Sheet quickly</translation>
 <translation id="8075898834294118863">Manage site settings</translation>
+<translation id="8076492880354921740">Tabs</translation>
 <translation id="8078141288243656252">Cannot annotate when rotated</translation>
 <translation id="8079031581361219619">Reload site?</translation>
 <translation id="8081087320434522107">Sedans</translation>

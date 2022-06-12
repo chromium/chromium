@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
 <translation id="2321958826496381788">Húzza a csúszkát, amíg kényelmesen nem tudja olvasni a szöveget. A szövegnek legalább ekkorának kell lennie, miután duplán koppint egy bekezdésre.</translation>
+<translation id="2329473609445770916">Ez a webhely olyan érdeklődési köröket határoz meg, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2379925928934107488">A sötét téma alkalmazása a webhelyekre (amikor lehetséges), ha a Chrome-ban sötét téma van beállítva</translation>
 <translation id="2387895666653383613">Szöveg nagyítása</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Az internetről</translation>
 <translation id="321187648315454507">Ahhoz, hogy a(z) <ph name="APP_NAME" /> értesítéseket küldhessen, az értesítéseket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3248611290851046188">Ez a webhely olyan érdeklődési köröket határoz meg, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek. Ez a webhely ezenkívül a Chrome-tól is lekéri az érdeklődési köreit, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="3277252321222022663">Az érzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="3295602654194328831">Információk elrejtése…</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>

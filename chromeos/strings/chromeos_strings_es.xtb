@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
+<translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">cortafuegos detectado</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> gestiona el dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1175951029573070619">Ni buena ni mala (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Quitar</translation>
+<translation id="1190378975642195988">Acelerómetro de la base</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/Pausar</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">Mientras se actualiza el firmware, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Es posible que esta actualización tarde unos minutos en instalarse y que tu dispositivo externo no funcione durante ese tiempo.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activación parcial</translation>
+<translation id="3492982278147736083">Giroscopio de la pantalla</translation>
 <translation id="3517001332549868749">Actualiza Chrome OS</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
@@ -300,6 +303,7 @@
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
 <translation id="385051799172605136">Volver</translation>
+<translation id="3856304145690230735">Giroscopio de la base</translation>
 <translation id="385832974417157471">Antes de apagar el dispositivo, haz un Powerwash. Si el dispositivo tiene una tapa, espera a que se complete el Powerwash y, después, ciérrala. Este proceso puede tardar hasta un minuto.</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3865414814144988605">Resolución</translation>
@@ -371,6 +375,7 @@
 <translation id="4472575034687746823">Empezar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
+<translation id="4500213108254186382">Acelerómetro de la pantalla</translation>
 <translation id="4503223151711056411">Flecha hacia la izquierda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia de nombre alternativo del sujeto</translation>
@@ -382,6 +387,7 @@
 <translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
 <translation id="4568938274596692027">La instalación se ha completado. Preparándose para reiniciar...</translation>
+<translation id="4576943788798178439">Compatibilidad con lápices ópticos</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4609350030397390689">Reducir el brillo del teclado</translation>
@@ -536,6 +542,7 @@
 <translation id="5866840822086176774">Óptima</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5898758006340607522">Botón de encendido</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903200662178656908">El dispositivo es una combinación de teclado y ratón.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
@@ -858,6 +865,7 @@
 <translation id="8919792139048574232">Consulta qué se ha arreglado</translation>
 <translation id="8919837981463578619">No se ha podido imprimir - Falta una bandeja</translation>
 <translation id="8923267550422472772">Día del mes en el que se reiniciará</translation>
+<translation id="8925613211674558308">VPD almacenados en caché</translation>
 <translation id="8928727111548978589">No se ha podido imprimir - Sin papel</translation>
 <translation id="8930521118335213258">Emparejamiento</translation>
 <translation id="8930622219860340959">Conexión inalámbrica</translation>

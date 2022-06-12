@@ -2069,6 +2069,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.</translation>
 <translation id="2923234477033317484">Bu hesabı kaldır</translation>
 <translation id="2923644930701689793">Telefonunuzun film rulosuna erişin</translation>
+<translation id="2925658782192398150">Tarama tamamlandı, sorun bulunmadı</translation>
 <translation id="2926085873880284723">Varsayılan kısayolları geri yükle</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> desteklenmiyor.</translation>
 <translation id="2927017729816812676">Önbellek Depolama Alanı</translation>
@@ -5010,6 +5011,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5891688036610113830">Tercih edilen kablosuz ağlar</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5895335062901455404">Google Hesabınızla oturum açtığınızda kayıtlı tercihleriniz herhangi bir ChromeOS Flex cihazda hazır olur. Neyin senkronize edileceğini Ayarlar'dan seçebilirsiniz.</translation>
+<translation id="589541317545606110">Sayfada <ph name="VISUAL_SEARCH_PROVIDER" /> ile Arama Yap</translation>
 <translation id="5896436821193322561">İzin Verme</translation>
 <translation id="5900186025777217044">Smart Lock değişti</translation>
 <translation id="5900302528761731119">Google Profil fotoğrafı</translation>
@@ -5061,6 +5063,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5941153596444580863">Kişi ekle...</translation>
 <translation id="5941343993301164315">Lütfen şurada oturum açın: <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Küçült</translation>
+<translation id="594221546068848596">Sayfada <ph name="VISUAL_SEARCH_PROVIDER" /> ile arama yap</translation>
 <translation id="5942779427914696408">Cihaz görünürlüğü</translation>
 <translation id="5943127421590245687">Doğrulama işleminiz başarıyla tamamlandı. Kilidini açıp yerel verilerinizi geri yüklemek için lütfen eski <ph name="DEVICE_TYPE" /> cihazınızın şifresini girin.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> tehlikeli olabilir. Taranmak üzere Google Güvenli Tarama'ya gönderilsin mi?</translation>
@@ -6704,6 +6707,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7582582252461552277">Bu ağı tercih et</translation>
 <translation id="7582844466922312471">Mobil Veriler</translation>
 <translation id="7583948862126372804">Sayı</translation>
+<translation id="7585106857920830898">Kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...</translation>
 <translation id="7586498138629385861">Chrome, Chrome Uygulamaları açık olduğu sürece çalışmaya devam edecektir.</translation>
 <translation id="758895749110326677">Chromebook'larda oyun deneyimini iyileştirmemize yardımcı olun</translation>
 <translation id="7589461650300748890">Aman, dikkatli olun.</translation>
@@ -6981,6 +6985,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7839051173341654115">Medyayı görüntüle/yedekle</translation>
 <translation id="7839192898639727867">Sertifika Konusu Anahtar Kimliği</translation>
 <translation id="7842692330619197998">Yeni bir hesap oluşturmanız gerekiyorsa g.co/ChromeEnterpriseAccount adresini ziyaret edin.</translation>
+<translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" /> ile sayfanın bir kısmında arama yap</translation>
 <translation id="784273751836026224">Linux'u kaldır</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" /> cihazında oturum aç</translation>
 <translation id="7844992432319478437">Fark güncelleniyor</translation>
@@ -6988,6 +6993,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ürününe geçmek için Ctrl + Alt + S tuşlarına basın.</translation>
 <translation id="7849264908733290972">&amp;Resmi Yeni Sekmede Aç</translation>
 <translation id="784934925303690534">Zaman aralığı</translation>
+<translation id="7850353716413205957"><ph name="VISUAL_SEARCH_PROVIDER" /> ile Sayfanın Bir Kısmında Arama Yap</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazların otomatik raporlar göndermesine izin vererek ChromeOS ile ilgili düzeltme ve iyileştirme çalışmalarımızda nelere öncelik verileceğini belirlememize yardımcı olursunuz. Chrome OS kilitlenme zamanları, kullandığınız özellikler, genellikle kullandığınız bellek miktarı ve Android uygulamalarının teşhis ile kullanım verileri gibi bilgiler bu raporlarda yer alabilir. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />İstediğiniz zaman ChromeOS cihaz ayarlarınızda bu raporlara izin verebilir veya izni iptal edebilirsiniz. Alan yöneticisiyseniz bu ayarı yönetici konsolunda değiştirebilirsiniz.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Google Hesabınızda Web ve Uygulama Etkinliği ayarı açıksa Android verileriniz Google Hesabınıza kaydedilebilir. account.google.com adresinde verilerinizi görebilir, silebilir ve hesap ayarlarınızı değiştirebilirsiniz.<ph name="END_PARAGRAPH3" /></translation>

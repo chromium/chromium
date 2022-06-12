@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Spyrja þegar vefsvæði vill finna nálæg Bluetooth-tæki (ráðlagt)</translation>
 <translation id="2315043854645842844">Stýrikerfið styður ekki vottorðsval hjá biðlara.</translation>
 <translation id="2321958826496381788">Dragðu sleðann þangað til þú getur lesið þetta áreynslulaust. Texti ætti að vera að minnsta kosti svona stór eftir að ýtt hefur verið tvisvar á efnisgrein.</translation>
+<translation id="2329473609445770916">Þetta vefsvæði skilgreinir áhugasvið sem önnur vefsvæði geta notað til að birta þér auglýsingar</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2379925928934107488">Nota dökkt þema fyrir vefsvæði þegar Chrome notar dökkt þema, sé þess kostur</translation>
 <translation id="2387895666653383613">Textastærð</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Af vefnum</translation>
 <translation id="321187648315454507">Til að leyfa <ph name="APP_NAME" /> að senda þér tilkynningar þarftu einnig að kveikja á þeim í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
+<translation id="3248611290851046188">Þetta vefsvæði skilgreinir áhugasvið sem önnur vefsvæði geta notað til að birta þér auglýsingar. Þetta vefsvæði fær einnig upplýsingar um áhugasvið þín frá Chrome til að birta þér viðeigandi auglýsingar.</translation>
 <translation id="3277252321222022663">Leyfa vefsvæðum að fá aðgang að skynjurum (ráðlagt)</translation>
 <translation id="3295602654194328831">Fela upplýsingar</translation>
 <translation id="3328801116991980348">Upplýsingar um vefsvæði</translation>

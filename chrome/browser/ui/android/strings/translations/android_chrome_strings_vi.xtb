@@ -527,7 +527,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3845098929839618392">Mở trong thẻ Ẩn danh</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
 <translation id="3858860766373142691">Tên</translation>
-<translation id="3859206958100234503">Đồng bộ hoá để xem mật khẩu, dấu trang và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="3861633093716975811">Video phổ biến</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3894427358181296146">Thêm thư mục</translation>
@@ -791,6 +790,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5324858694974489420">Cài đặt dành cho cha mẹ</translation>
 <translation id="5326921373682845375">Vì các trang tải trước đã được mã hóa và trang web có đường liên kết đến các trang này là một trang web tạo bằng Google Sites, nên các máy chủ của Google không nhận được thông tin mới khi tải trước các trang này ở chế độ riêng tư.</translation>
 <translation id="5329858041417644019">Trình duyệt của bạn không được quản lý</translation>
+<translation id="5339031667684712858">Trang web bạn đã xoá</translation>
 <translation id="5342314432463739672">Yêu cầu cấp quyền</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
 <translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
@@ -1067,6 +1067,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="6751521182688001123">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="6756507620369789050">Chia sẻ ý kiến phản hồi</translation>
 <translation id="6767294960381293877">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở ở nửa dưới của màn hình.</translation>
+<translation id="6770042910635026163">Những trang web bạn truy cập giúp xác định mối quan tâm của bạn</translation>
 <translation id="6770602306803890733">Tăng cường bảo mật cho bạn và mọi người trên web</translation>
 <translation id="6785476624617658922">Điều khoản dịch vụ bổ sung của Chrome và ChromeOS</translation>
 <translation id="6795633245022906657">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>

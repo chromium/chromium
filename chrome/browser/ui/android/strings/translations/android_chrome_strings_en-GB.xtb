@@ -351,6 +351,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2861923151411510142">Some Chrome features won\u2019t be available anymore</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Preload pages</translation>
+<translation id="2886836735871983413">A list of sites will appear here as you browse the web</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2891154217021530873">Stop page loading</translation>
 <translation id="2892647708214602204">You'll see a notification when this file is ready</translation>
@@ -378,6 +379,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2987620471460279764">Text shared from other device</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2992473221983447149">Image descriptions</translation>
+<translation id="2994959273484668146">Remove <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Create passphrase</translation>
 <translation id="2996809686854298943">URL required</translation>
 <translation id="2997081575621687554">When a Google site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.</translation>
@@ -527,8 +529,8 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3845098929839618392">Open in Incognito tab</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3859206958100234503">Sync to get your passwords, bookmarks and more on all your devices</translation>
 <translation id="3861633093716975811">Popular videos</translation>
+<translation id="3874520961715512166">Site removed</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3894427358181296146">Add folder</translation>
 <translation id="3899682235662194879">Close all Incognito tabs</translation>
@@ -566,6 +568,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4095146165863963773">Delete app data?</translation>
 <translation id="4096227151372679484">Bookmark save flow opened at half height</translation>
 <translation id="4099578267706723511">Help make Chrome better by sending usage statistics and crash reports to Google.</translation>
+<translation id="4101475238162928417">Sync to get your passwords, bookmarks and more on your other devices</translation>
 <translation id="410351446219883937">Auto-play</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="4108314971463891922">Follow</translation>
@@ -791,6 +794,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5324858694974489420">Parental Settings</translation>
 <translation id="5326921373682845375">Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
+<translation id="5339031667684712858">Sites that you removed</translation>
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
@@ -1067,6 +1071,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>
 <translation id="6756507620369789050">Share feedback</translation>
 <translation id="6767294960381293877">List of devices to share a tab with, opened at half height.</translation>
+<translation id="6770042910635026163">Sites you visit that define your interests</translation>
 <translation id="6770602306803890733">Improves security for you and everyone on the web</translation>
 <translation id="6785476624617658922">Chrome and Chrome OS additional Terms of Service</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
@@ -1196,6 +1201,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="749294055653435199">Google Lens is not available on this device</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Please wait…</translation>
+<translation id="7502234197872745058">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK1" />sign out of Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Updates unavailable</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Download</translation>

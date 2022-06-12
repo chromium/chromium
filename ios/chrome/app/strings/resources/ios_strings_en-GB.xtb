@@ -27,6 +27,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
 <translation id="1154984953698510061">See other tabs</translation>
+<translation id="1161340988127985692">Ask to open links from other apps in Incognito</translation>
 <translation id="1164064664035028907">Use strong password:</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Next field</translation>
@@ -292,6 +293,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3443810440409579745">Tab received.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Split View</translation>
+<translation id="3450502512529866925">Bookmark this page</translation>
 <translation id="345565170154308620">Manage passwords…</translation>
 <translation id="3469166899695866866">Stop download?</translation>
 <translation id="3470502288861289375">Copying...</translation>
@@ -484,6 +486,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">You can save pages to read later or offline. Chrome will ask if you want to save long pages.</translation>
 <translation id="5094827893301452931">Tweet completed.</translation>
+<translation id="509789154667432072">Add a bookmark</translation>
 <translation id="5118713593561876160">Interests</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">Sync is off</translation>

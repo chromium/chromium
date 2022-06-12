@@ -2087,6 +2087,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="2923234477033317484">Ta bort det här kontot</translation>
 <translation id="2923644930701689793">Kom åt telefonens kamerabilder</translation>
+<translation id="2925658782192398150">Klart – inga problem hittades</translation>
 <translation id="2926085873880284723">Återställ standardgenvägarna</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> stöds inte.</translation>
 <translation id="2927017729816812676">Cachelagring</translation>
@@ -5028,6 +5029,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5891688036610113830">Föredragna wifi-nätverk</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5895335062901455404">När du är inloggad med ditt Google-konto har du tillgång till dina sparade inställningar och din sparade aktivitet på alla ChromeOS Flex-enheter. Du kan välja vad som ska synkroniseras i inställningarna.</translation>
+<translation id="589541317545606110">Sök på sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Tillåt inte</translation>
 <translation id="5900186025777217044">Smart Lock har ändrats</translation>
 <translation id="5900302528761731119">Profilbild i Google Profiler</translation>
@@ -5079,6 +5081,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5941153596444580863">Lägg till person …</translation>
 <translation id="5941343993301164315">Logga in på <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimera</translation>
+<translation id="594221546068848596">Sök på sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Enhetens synlighet</translation>
 <translation id="5943127421590245687">Verifieringen lyckades. Lås upp och återställ lokal data genom att ange ditt gamla lösenord för <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Google Säker webbsökning för genomsökning?</translation>
@@ -6722,6 +6725,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7582582252461552277">Föredra det här nätverket</translation>
 <translation id="7582844466922312471">Mobildata</translation>
 <translation id="7583948862126372804">Antal</translation>
+<translation id="7585106857920830898">Kontrollerar utifrån organisationens säkerhetspolicy …</translation>
 <translation id="7586498138629385861">Chrome fortsätter köras när Chrome-appar är öppna.</translation>
 <translation id="758895749110326677">Hjälp oss att göra Chromebook bättre att spela på</translation>
 <translation id="7589461650300748890">Ta det försiktigt.</translation>
@@ -6999,6 +7003,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7839051173341654115">Visa/säkerhetskopiera media</translation>
 <translation id="7839192898639727867">Certifikatämnets nyckel-ID</translation>
 <translation id="7842692330619197998">Besök g.co/ChromeEnterpriseAccount om du behöver skapa ett nytt konto.</translation>
+<translation id="78427265591841839">Sök på valfri del av sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Avinstallera Linux</translation>
 <translation id="7843786652787044762">Logga in på <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Uppdaterar skillnaden</translation>
@@ -7006,6 +7011,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7847212883280406910">Tryck på Ctrl+Alt+ S om du vill byta till <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Öppna &amp;bild i ny flik</translation>
 <translation id="784934925303690534">Tidsintervall</translation>
+<translation id="7850353716413205957">Sök på valfri del av sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från Chrome OS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i Chrome OS. Dessa rapporter kan innehålla information som när Chrome OS kraschar, vilka funktioner du använder, hur mycket minne som du brukar använda, diagnostikdata om Android-appar och data om användning. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome OS-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Om inställningen Webb- och appaktivitet har aktiverats för ditt Google-konto kan Android-datan sparas i Google-kontot. Du kan visa din data, radera den och ändra inställningarna på account.google.com.<ph name="END_PARAGRAPH3" /></translation>

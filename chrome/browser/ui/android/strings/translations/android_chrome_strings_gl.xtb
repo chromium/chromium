@@ -526,7 +526,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3845098929839618392">Abrir en pestana de incógnito</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3859206958100234503">Sincroniza os datos para ter os teus contrasinais, marcadores e máis en todos os teus dispositivos</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
@@ -790,6 +789,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5324858694974489420">Configuración parental</translation>
 <translation id="5326921373682845375">Como as páxinas precargadas están encriptadas e o sitio ao que están vinculadas é de Google, os nosos servidores non reciben información nova cando se precargan de forma privada.</translation>
 <translation id="5329858041417644019">O teu navegador non está xestionado</translation>
+<translation id="5339031667684712858">Sitios que quitaches</translation>
 <translation id="5342314432463739672">Solicitudes de permisos</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
 <translation id="5368227114232678694">Se queres navegar de forma privada neste dispositivo, proba o modo de incógnito</translation>
@@ -1065,6 +1065,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="6751521182688001123">Abrir rapidamente unha pestana nova. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="6756507620369789050">Compartir comentarios</translation>
 <translation id="6767294960381293877">A lista de dispositivos cos que compartir unha pestana está aberta a media pantalla.</translation>
+<translation id="6770042910635026163">Os teus intereses determínanse a partir dos sitios que visitas</translation>
 <translation id="6770602306803890733">Mellora a túa seguranza e a do resto dos usuarios da Web</translation>
 <translation id="6785476624617658922">Condicións de servizo adicionais de Chrome e Chrome OS</translation>
 <translation id="6795633245022906657">Abre rapidamente unha pestana nova. Para editar este atallo, vai a Configuración.</translation>

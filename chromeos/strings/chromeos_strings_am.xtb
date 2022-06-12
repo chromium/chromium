@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ተከታታይ፣ <ph name="CPU_MAX_CLOCK_SPEED" />ጊኸ)</translation>
 <translation id="1047773237499189053">አዲስ ባህሪ ይገኛል፣ የበለጠ ለመረዳት የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="1059913517121127803">ቅኝትን መጀመር አልተቻለም</translation>
+<translation id="1062407476771304334">ተካ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
 <translation id="1075811647922107217">የገጽ መጠን</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
 <translation id="1175951029573070619">መካከለኛ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
+<translation id="1190378975642195988">የሰሌዳ የፍጥነት መለኪያ መሣሪያ</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
 <translation id="1196959502276349371">ስሪት <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">አጫውት/ለአፍታ አቁም</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">ፊርምዌር በማዘመን ላይ ሳለ ይህን ውጫዊ መሣሪያ አይንቀሉት ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ዝማኔ ጥቂት ደቂቃዎች ሊወስድ ይችላል፣ እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="3486220673238053218">ብየና</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
+<translation id="3492982278147736083">የክዳን ጋይሮስኮፕ</translation>
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
@@ -300,6 +303,7 @@
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
 <translation id="385051799172605136">ተመለስ</translation>
+<translation id="3856304145690230735">የሰሌዳ ጋይሮስኮፕ</translation>
 <translation id="385832974417157471">ከመዘጋት በፊት መሣሪያዎን Powerwash ያድርጉት። መሣሪያዎ ክዳን ካለው ክዳኑን ከመዝጋትዎ በፊት Powerwash እስኪጠናቀቅ ይጠብቁ። Powerwash ለመጠናቀቅ አንድ ደቂቃ ያህል ሊወስድ ይችላል።</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
@@ -371,6 +375,7 @@
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
+<translation id="4500213108254186382">የክዳን የፍጥነት መለኪያ መሣሪያ</translation>
 <translation id="4503223151711056411">የግራ ቀስት</translation>
 <translation id="4511264077854731334">መተላለፊያ</translation>
 <translation id="4521826082652183069">ርዕስ ተለዋጭ ስም ዝምድና</translation>
@@ -382,6 +387,7 @@
 <translation id="4561801978359312462">ሲም ተከፍቷል</translation>
 <translation id="4562494484721939086">ምንም አገልግሎት የለም</translation>
 <translation id="4568938274596692027">መጫን ተጠናቅቋል። ዳግም ለማስነሳት በመዘጋጀት ላይ...</translation>
+<translation id="4576943788798178439">የብሮስፌ ድጋፍ</translation>
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
@@ -537,6 +543,7 @@
 <translation id="5866840822086176774">በጣም ጠንካራ</translation>
 <translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
+<translation id="5898758006340607522">የኃይል አዝራር</translation>
 <translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5903200662178656908">መሣሪያ የቁልፍ ሰሌዳ እና የመዳፊት ጥምር ነው።</translation>
 <translation id="5916084858004523819">የተከለከሉ</translation>
@@ -859,6 +866,7 @@
 <translation id="8919792139048574232">ምን እንደተጠገነ ይመልከቱ</translation>
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>
 <translation id="8923267550422472772">እንደገና ለማስጀመር የወር ቀን</translation>
+<translation id="8925613211674558308">የተሸጎጠው ቪፒዲ</translation>
 <translation id="8928727111548978589">አልተሳካም - ወረቀት አልቋል</translation>
 <translation id="8930521118335213258">አቻ</translation>
 <translation id="8930622219860340959">ገመድአልባ</translation>

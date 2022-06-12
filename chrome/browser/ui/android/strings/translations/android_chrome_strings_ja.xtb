@@ -527,7 +527,6 @@
 <translation id="3845098929839618392">シークレット タブで開く</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3858860766373142691">名前</translation>
-<translation id="3859206958100234503">同期すると、他のデバイスのパスワードやブックマークなどを使用できます</translation>
 <translation id="3861633093716975811">人気の動画</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="3894427358181296146">フォルダの追加</translation>
@@ -791,6 +790,7 @@
 <translation id="5324858694974489420">保護者設定</translation>
 <translation id="5326921373682845375">プリロードされたページが暗号化されており、ページへリンクしているサイトが Google のサイトであるため、これらのページを非公開でプリロードする際に Google サーバーは新しい情報を受信しません。</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
+<translation id="5339031667684712858">削除したサイト</translation>
 <translation id="5342314432463739672">権限のリクエスト</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
 <translation id="5368227114232678694">このデバイスで記録を残さずに閲覧するには、シークレット モードを使用してください</translation>
@@ -1067,6 +1067,7 @@
 <translation id="6751521182688001123">新しいタブをすばやく開きます。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="6756507620369789050">フィードバックを共有</translation>
 <translation id="6767294960381293877">タブを共有するデバイスのリストが画面の下半分に表示されました。</translation>
+<translation id="6770042910635026163">お客様の興味 / 関心を定義しているアクセスしたサイト</translation>
 <translation id="6770602306803890733">すべてのウェブユーザーの安全性を高めます</translation>
 <translation id="6785476624617658922">Chrome および Chrome OS 追加利用規約</translation>
 <translation id="6795633245022906657">新しいタブをすばやく開きます。このショートカットは [設定] で編集できます。</translation>

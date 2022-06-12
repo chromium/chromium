@@ -2088,6 +2088,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.</translation>
 <translation id="2923234477033317484">Xóa tài khoản này</translation>
 <translation id="2923644930701689793">Truy cập vào thư viện ảnh trên điện thoại</translation>
+<translation id="2925658782192398150">Xong, không thấy vấn đề</translation>
 <translation id="2926085873880284723">Khôi phục các phím tắt mặc định</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> không được hỗ trợ.</translation>
 <translation id="2927017729816812676">Bộ nhớ đệm</translation>
@@ -5029,6 +5030,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5891688036610113830">Các mạng Wi-Fi ưu tiên</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5895335062901455404">Các tuỳ chọn ưu tiên và hoạt động bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS Flex khi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn nội dung bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
+<translation id="589541317545606110">Tìm trên trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Không cho phép</translation>
 <translation id="5900186025777217044">Smart Lock đã thay đổi</translation>
 <translation id="5900302528761731119">Ảnh hồ sơ trên Google</translation>
@@ -5080,6 +5082,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5941153596444580863">Thêm người...</translation>
 <translation id="5941343993301164315">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
+<translation id="594221546068848596">Tìm trên trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
 <translation id="5943127421590245687">Đã xác minh thành công. Để mở khóa và khôi phục dữ liệu trên thiết bị, vui lòng nhập mật khẩu cũ của <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi đến tính năng Duyệt web An toàn của Google để quét?</translation>
@@ -6723,6 +6726,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7582582252461552277">Thích mạng này</translation>
 <translation id="7582844466922312471">Dữ liệu di động</translation>
 <translation id="7583948862126372804">Số lượng</translation>
+<translation id="7585106857920830898">Đang kiểm tra để xem tệp có tuân thủ các chính sách bảo mật của tổ chức bạn hay không...</translation>
 <translation id="7586498138629385861">Chrome sẽ tiếp tục chạy khi ứng dụng Chrome đang mở.</translation>
 <translation id="758895749110326677">Giúp chúng tôi cải thiện trải nghiệm chơi trên thiết bị Chromebook</translation>
 <translation id="7589461650300748890">Oa. Hãy cẩn thận.</translation>
@@ -7000,6 +7004,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7839051173341654115">Xem/Sao lưu phương tiện</translation>
 <translation id="7839192898639727867">ID Khoá Đối tượng của Chứng chỉ</translation>
 <translation id="7842692330619197998">Hãy truy cập vào g.co/ChromeEnterpriseAccount nếu bạn cần tạo một tài khoản mới.</translation>
+<translation id="78427265591841839">Tìm bất kỳ phần nào của trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Gỡ cài đặt Linux</translation>
 <translation id="7843786652787044762">Đăng nhập vào <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Đang cập nhật phần khác nhau</translation>
@@ -7007,6 +7012,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7847212883280406910">Nhấn Ctrl + Alt + S để chuyển sang <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Mở &amp;Hình ảnh trong Thẻ Mới</translation>
 <translation id="784934925303690534">Phạm vi thời gian</translation>
+<translation id="7850353716413205957">Tìm bất kỳ phần nào của trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị Chrome OS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong Chrome OS. Các báo cáo này có thể bao gồm những nội dung như thời điểm Chrome OS gặp sự cố, danh sách tính năng bạn sử dụng, mức bộ nhớ bạn thường sử dụng cũng như dữ liệu sử dụng và chẩn đoán của ứng dụng Android. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như các nhà phát triển Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong chế độ cài đặt trên thiết bị ChromeOS. Nếu là quản trị viên miền thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Nếu bạn bật chế độ Hoạt động trên web và ứng dụng cho Tài khoản Google, thì dữ liệu Android có thể sẽ được lưu vào Tài khoản Google của bạn. Bạn có thể xem, xoá dữ liệu và thay đổi các chế độ cài đặt tài khoản tại account.google.com.<ph name="END_PARAGRAPH3" /></translation>

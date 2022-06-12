@@ -5536,7 +5536,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Ist die Richtlinie nicht konfiguriert, erscheint die Ablage standardmäßig unten auf dem Bildschirm und der Nutzer hat die Möglichkeit, diese Position zu ändern.</translation>
 <translation id="7039815268521168329">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung anzeigen</translation>
 <translation id="7040229947030068419">Beispielwert</translation>
-<translation id="7041170641363384736">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Zurzeit gilt die Richtlinie nur für Geräte, auf denen „auto-launch app“ in der Kiosk-Sitzung aktiviert wurde. Sobald sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
 <translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
@@ -6504,7 +6503,6 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Ist die Richtlinie nicht konfiguriert, ist "Mauszeiger hervorheben" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="8161536598508377155">Benutzerdefinierten Zeitplan für den Neustart von Kioskgeräten festlegen</translation>
 <translation id="8164144100557223371">Eintrittspunkt für experimentelle Browserfunktionen auf Symbolleiste deaktivieren</translation>
 <translation id="8164687848393015214">Ist die Richtlinie aktiviert, werden Kontrollnetzwerkpakete (<ph name="HEARTBEATS_TERM" />) zur Überwachung des Onlinestatus an den Verwaltungsserver gesendet, damit er erkennt, wenn das Gerät offline ist.
 

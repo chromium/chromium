@@ -526,7 +526,6 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="3845098929839618392">Agor mewn tab Anhysbys</translation>
 <translation id="3856096718352044181">Cadarnhewch fod hwn yn ddarparwr dilys neu rhowch gynnig arall arni yn nes ymlaen</translation>
 <translation id="3858860766373142691">Enw</translation>
-<translation id="3859206958100234503">Cysonwch i gael eich cyfrineiriau, nodau tudalen a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="3861633093716975811">Fideos poblogaidd</translation>
 <translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="3894427358181296146">Ychwanegu ffolder</translation>
@@ -790,6 +789,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5324858694974489420">Gosodiadau Rhieni</translation>
 <translation id="5326921373682845375">Oherwydd bod y tudalennau sydd wedi'u rhaglwytho wedi'u hamgryptio, a bod y wefan sy'n cysylltu â'r tudalennau yn wefan Google, nid yw gweinyddion Google yn derbyn gwybodaeth newydd wrth raglwytho'r tudalennau hyn yn breifat.</translation>
 <translation id="5329858041417644019">Nid yw eich porwr yn cael ei reoli</translation>
+<translation id="5339031667684712858">Gwefannau a dynnwyd gennych</translation>
 <translation id="5342314432463739672">Ceisiadau am ganiatâd</translation>
 <translation id="5355191726083956201">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="5368227114232678694">I bori'n breifat ar y ddyfais hon, rhowch gynnig ar Anhysbys</translation>
@@ -1065,6 +1065,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="6751521182688001123">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
 <translation id="6756507620369789050">Rhannu adborth</translation>
 <translation id="6767294960381293877">Agorodd rhestr o ddyfeisiau i rannu tab â nhw ar hanner uchder.</translation>
+<translation id="6770042910635026163">Gwefannau rydych yn ymweld â nhw sy'n diffinio eich diddordebau</translation>
 <translation id="6770602306803890733">Mae'n gwella diogelwch i chi a phawb ar y we</translation>
 <translation id="6785476624617658922">Telerau Gwasanaeth Ychwanegol Chrome a ChromeOS</translation>
 <translation id="6795633245022906657">Agor tab newydd yn gyflym. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>

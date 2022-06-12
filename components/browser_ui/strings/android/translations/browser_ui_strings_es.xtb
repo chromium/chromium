@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Preguntar cuando un sitio web quiera buscar dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados de cliente.</translation>
 <translation id="2321958826496381788">Arrastra el control deslizante hasta que puedas leer cómodamente. El texto debe tener al menos este tamaño después de tocar un párrafo dos veces.</translation>
+<translation id="2329473609445770916">Este sitio define intereses que otros sitios pueden usar para mostrarte anuncios</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">El tema oscuro se aplica a los sitios si Chrome lo usa y es posible</translation>
 <translation id="2387895666653383613">Ajuste de texto</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Información del sitio web</translation>
 <translation id="321187648315454507">Para que <ph name="APP_NAME" /> pueda enviarte notificaciones, actívalas también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
+<translation id="3248611290851046188">Este sitio define intereses que otros sitios pueden usar para mostrarte anuncios. Este sitio también consulta tus intereses de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="3277252321222022663">Permitir que los sitios accedan a los sensores (recomendado)</translation>
 <translation id="3295602654194328831">Ocultar información</translation>
 <translation id="3328801116991980348">Información del sitio</translation>

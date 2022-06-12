@@ -2087,6 +2087,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.</translation>
 <translation id="2923234477033317484">Fjarlægja þennan reikning</translation>
 <translation id="2923644930701689793">Opna myndavélarmöppu símans</translation>
+<translation id="2925658782192398150">Lokið, engin vandamál fundust</translation>
 <translation id="2926085873880284723">Endurheimta sjálfgefnar flýtileiðir</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> er ekki stutt.</translation>
 <translation id="2927017729816812676">Geymslurými í biðminni</translation>
@@ -5028,6 +5029,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5891688036610113830">Wi-Fi forgangsnet</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5895335062901455404">Vistaðar kjörstillingar og virkni verða til reiðu í öllum ChromeOS Flex tækjum þegar þú skráir þig inn með Google reikningnum þínum. Þú getur alltaf valið hvað á að samstilla í stillingunum.</translation>
+<translation id="589541317545606110">Leita á síðu með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Ekki leyfa</translation>
 <translation id="5900186025777217044">Smart Lock breyttist</translation>
 <translation id="5900302528761731119">Google prófílmynd</translation>
@@ -5079,6 +5081,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5941153596444580863">Bæta notanda við...</translation>
 <translation id="5941343993301164315">Skráðu þig inn á <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minnka</translation>
+<translation id="594221546068848596">Leita á síðu með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Sýnileiki tækis</translation>
 <translation id="5943127421590245687">Staðfestingin tókst. Til að opna og endurheimta staðbundnu gögnin þín skaltu slá inn eldra aðgangsorðið þitt fyrir <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055">Skráin <ph name="FILE_NAME" /> gæti verið hættuleg. Viltu senda hana til öruggrar vefskoðunar Google og láta skanna hana?</translation>
@@ -6724,6 +6727,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7582582252461552277">Kjósa þetta net</translation>
 <translation id="7582844466922312471">Farsímagögn</translation>
 <translation id="7583948862126372804">Fjöldi</translation>
+<translation id="7585106857920830898">Athugar út frá öryggisreglum fyrirtækisins þíns…</translation>
 <translation id="7586498138629385861">Chrome verður áfram í gangi á meðan Chrome forrit eru opin.</translation>
 <translation id="758895749110326677">Hjálpaðu okkur að bæta leikjaspilun í Chromebook tölvum</translation>
 <translation id="7589461650300748890">Hægan, gæðingur! Gættu þín.</translation>
@@ -7001,6 +7005,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7839051173341654115">Skoða/afrita efni</translation>
 <translation id="7839192898639727867">Lykilauðkenni viðfangs vottorðs</translation>
 <translation id="7842692330619197998">Farðu á g.co/ChromeEnterpriseAccount ef þú þarft að búa til nýjan reikning.</translation>
+<translation id="78427265591841839">Leita á hvaða hluta síðunnar sem er með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Fjarlægja Linux</translation>
 <translation id="7843786652787044762">Skráðu þig inn á <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Uppfærir breytingaskrá</translation>
@@ -7008,6 +7013,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7847212883280406910">Ýttu á Ctrl + Alt + S til að skipta yfir í <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Opna mynd í nýjum fl&amp;ipa</translation>
 <translation id="784934925303690534">Tímabil</translation>
+<translation id="7850353716413205957">Leita á hvaða hluta síðunnar sem er með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar eru notaðir, hversu mikið minni er yfirleitt notað sem og greiningar- og notkunargögn Android forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ef kveikt er á vef- og forritavirkni á Google reikningnum þínum verða Android gögnin þín hugsanlega vistuð á Google reikningnum þínum. Þú getur skoðað gögnin þín, eytt þeim og breytt reikningsstillingunum á account.google.com.<ph name="END_PARAGRAPH3" /></translation>

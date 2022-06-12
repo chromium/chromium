@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
 <translation id="2321958826496381788">読みやすくなるまでスライダをドラッグしてください。段落をダブルタップするとテキストがこれより大きくなります。</translation>
+<translation id="2329473609445770916">このサイトでは、他のサイトが広告の表示に使用できる興味 / 関心を定義しています</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2379925928934107488">可能であれば、Chrome がダークモードを使用している場合にダークモードをサイトに適用します</translation>
 <translation id="2387895666653383613">テキストの拡大と縮小</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">ウェブから</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3227137524299004712">マイク</translation>
+<translation id="3248611290851046188">このサイトでは、他のサイトが広告の表示に使用できる興味 / 関心を定義しています。また、このサイトでは Chrome からお客様の興味 / 関心に関する情報を取得して、関連性の高い広告を表示しています。</translation>
 <translation id="3277252321222022663">サイトによるセンサーへのアクセスを許可する（推奨）</translation>
 <translation id="3295602654194328831">情報を表示しない</translation>
 <translation id="3328801116991980348">サイト情報</translation>

@@ -2074,6 +2074,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievietotai.</translation>
 <translation id="2923234477033317484">Noņemt šo kontu</translation>
 <translation id="2923644930701689793">Piekļūstiet sava tālruņa kameras fotoalbumam.</translation>
+<translation id="2925658782192398150">Gatavs; netika konstatēta neviena problēma</translation>
 <translation id="2926085873880284723">Atjaunot noklusējuma saīsnes</translation>
 <translation id="2926620265753325858">Ierīce <ph name="DEVICE_NAME" /> netiek atbalstīta.</translation>
 <translation id="2927017729816812676">Kešatmiņas krātuve</translation>
@@ -5012,6 +5013,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5891688036610113830">Vēlamie Wi-Fi tīkli</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5895335062901455404">Jūsu saglabātās preferences un darbības būs pieejamas jebkurā Chrome OS Flex ierīcē, kad pierakstīsieties savā Google kontā. Iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
+<translation id="589541317545606110">Meklēt lapā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Neatļaut</translation>
 <translation id="5900186025777217044">Izmaiņas Smart Lock funkcijās</translation>
 <translation id="5900302528761731119">Google profila fotoattēls</translation>
@@ -5063,6 +5065,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5941153596444580863">Pievienot lietotāju...</translation>
 <translation id="5941343993301164315">Pierakstieties ierīcē <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizēt</translation>
+<translation id="594221546068848596">Meklēt lapā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Ierīces redzamība</translation>
 <translation id="5943127421590245687">Verifikācija veikta sekmīgi. Lai atbloķētu un atjaunotu lokālos datus, lūdzu, ievadiet savu iepriekšējo ierīces <ph name="DEVICE_TYPE" /> paroli.</translation>
 <translation id="5945002094477276055">Fails <ph name="FILE_NAME" />, iespējams, ir bīstams. Vai nosūtīt to pārbaudīšanai Google drošas pārlūkošanas programmā?</translation>
@@ -6709,6 +6712,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7582582252461552277">Dot priekšroku šim tīklam</translation>
 <translation id="7582844466922312471">Mobile Data</translation>
 <translation id="7583948862126372804">Skaits</translation>
+<translation id="7585106857920830898">Tiek pārbaudīta atbilstība jūsu organizācijas drošības politikām…</translation>
 <translation id="7586498138629385861">Pārlūks Chrome turpinās darboties, kamēr būs atvērtas Chrome lietotnes.</translation>
 <translation id="758895749110326677">Palīdziet mums uzlabot spēļu spēlēšanas iespējas Chromebook datoros</translation>
 <translation id="7589461650300748890">Uzmanieties!</translation>
@@ -6985,6 +6989,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7839051173341654115">Skatīt/dublēt multivides saturu</translation>
 <translation id="7839192898639727867">Sertifikāta subjekta atslēgas ID</translation>
 <translation id="7842692330619197998">Ja nepieciešams izveidot jaunu kontu, apmeklējiet vietni g.co/ChromeEnterpriseAccount.</translation>
+<translation id="78427265591841839">Meklēt jebkurā lapas daļā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Linux atinstalēšana</translation>
 <translation id="7843786652787044762">Pierakstīties produktā <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Tiek augšupielādētas atšķirības</translation>
@@ -6992,6 +6997,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7847212883280406910">Nospiediet Ctrl+Alt+S, lai pārslēgtos uz <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7849264908733290972">Atvērt attēlu jaunā c&amp;ilnē</translation>
 <translation id="784934925303690534">Laika periods</translation>
+<translation id="7850353716413205957">Meklēt jebkurā lapas daļā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Atļaujot Chrome OS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt Chrome OS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, izmantotās funkcijas, atmiņas lietojuma apjomu un Android lietotņu diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome OS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ja jūsu Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, jūsu Android dati var tikt saglabāti jūsu Google kontā. Lai skatītu vai dzēstu datus vai mainītu konta iestatījumus, atveriet vietni account.google.com.<ph name="END_PARAGRAPH3" /></translation>

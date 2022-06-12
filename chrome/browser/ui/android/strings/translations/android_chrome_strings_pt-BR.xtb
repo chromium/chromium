@@ -527,7 +527,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3845098929839618392">Abrir em guia anônima</translation>
 <translation id="3856096718352044181">Verifique se o provedor é válido ou tente novamente mais tarde</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3859206958100234503">Sincronize para acessar seus favoritos, senhas e muito mais em todos os dispositivos</translation>
 <translation id="3861633093716975811">Vídeos mais acessados</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
@@ -792,6 +791,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5324858694974489420">Configurações para a família</translation>
 <translation id="5326921373682845375">As páginas pré-carregadas são criptografadas e o link que leva às páginas é de um site do Google. Portanto, os servidores do Google não recebem novas informações quando pré-carregam essas páginas de forma particular.</translation>
 <translation id="5329858041417644019">Seu navegador não é gerenciado</translation>
+<translation id="5339031667684712858">Sites que você removeu</translation>
 <translation id="5342314432463739672">Solicitações de permissão</translation>
 <translation id="5355191726083956201">A Proteção reforçada está ativa</translation>
 <translation id="5368227114232678694">Para navegar com privacidade no dispositivo, use a navegação anônima</translation>
@@ -1068,6 +1068,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="6751521182688001123">Abrir rapidamente uma nova guia. Para editar este atalho, toque e mantenha pressionado.</translation>
 <translation id="6756507620369789050">Compartilhar feedback</translation>
 <translation id="6767294960381293877">Lista de dispositivos com os quais é possível compartilhar uma guia aberta na metade da altura.</translation>
+<translation id="6770042910635026163">Sites que você visita que definem seus interesses</translation>
 <translation id="6770602306803890733">Melhora a segurança para você e para todos na Web</translation>
 <translation id="6785476624617658922">Termos de Serviço adicionais do Google Chrome e do ChromeOS</translation>
 <translation id="6795633245022906657">Abrir rapidamente uma nova guia. Para editar esse atalho, acesse as Configurações.</translation>

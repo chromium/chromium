@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="1062407476771304334">ಸ್ಥಾನಾಂತರಿಸು</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
@@ -288,6 +289,7 @@
 <translation id="3621202678540785336">ಇನ್‌ಪುಟ್</translation>
 <translation id="3632579075709132555">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್</translation>
 <translation id="3643810137582748570">ಕ್ಯಾಲಿಬ್ರೇಶನ್ ಅನ್ನು ಸ್ಕಿಪ್ ಮಾಡಿ</translation>
+<translation id="3651050199673793219">ತಾಪಮಾನ ಘಟಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3678765385266369662">ನೀವು Write Protect ಅನ್ನು ಹೇಗೆ ಆಫ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ</translation>
 <translation id="370665806235115550">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
@@ -305,6 +307,7 @@
 <translation id="3856304145690230735">ಮೂಲ ಗೈರೊಸ್ಕೋಪ್</translation>
 <translation id="385832974417157471">ಶಟ್ ಡೌನ್ ಮಾಡುವ ಮೊದಲು, ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ವಾಶ್ ಮಾಡಿ. ಸಾಧನವು ಮುಚ್ಚಳವನ್ನು ಹೊಂದಿದ್ದರೆ, ಪವರ್‌ವಾಶ್ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಮುಚ್ಚಳವನ್ನು ಮುಚ್ಚಬೇಡಿ. ಪವರ್‌ವಾಶ್ ಪೂರ್ಣಗೊಳ್ಳಲು ಒಂದು ನಿಮಿಷ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
+<translation id="3862598938296403232">ವಿವರಣೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3865414814144988605">ರೆಸಲ್ಯೂಶನ್</translation>
 <translation id="3866249974567520381">ವಿವರಣೆ</translation>
 <translation id="387301095347517405">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಮಾಡಿರುವ ಸಂಖ್ಯೆ</translation>
@@ -677,6 +680,7 @@
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="714876143603641390">LAN ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಿಕೆ</translation>
+<translation id="7154020516215182599">ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ. ಸಾಧ್ಯವಾದರೆ, ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ಮರು ರಚಿಸಲು ಹಂತಗಳನ್ನು ಸೇರಿಸಿ.</translation>
 <translation id="7155171745945906037">ಕ್ಯಾಮರಾ ಅಥವಾ ಫೈಲ್‌ನಿಂದ ಪ್ರಸ್ತುತ ಫೋಟೋ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">ಪ್ರೊಫೈಲ್‌ ಚಿತ್ರ</translation>

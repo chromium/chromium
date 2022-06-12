@@ -348,6 +348,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2842985007712546952">Nadređena mapa</translation>
 <translation id="2856503607207334158">Prijava nije uspjela</translation>
 <translation id="2860954141821109167">Provjerite je li na uređaju omogućena aplikacija telefona</translation>
+<translation id="2861923151411510142">Neke Chromeove značajke više neće biti dostupne</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2871733351037274014">Predučitavanje stranica</translation>
 <translation id="2888126860611144412">O Chromeu</translation>
@@ -526,7 +527,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3845098929839618392">Otvori u anonimnoj kartici</translation>
 <translation id="3856096718352044181">Potvrdite da je to valjani davatelj ili pokušajte ponovo kasnije</translation>
 <translation id="3858860766373142691">Naziv</translation>
-<translation id="3859206958100234503">Uključite sinkronizaciju za prikaz zaporki, oznaka i drugog na svim ostalim uređajima</translation>
 <translation id="3861633093716975811">Popularni videozapisi</translation>
 <translation id="3892148308691398805">Kopiranje teksta</translation>
 <translation id="3894427358181296146">Dodavanje mape</translation>
@@ -790,6 +790,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5324858694974489420">Postavke nadređenog računa</translation>
 <translation id="5326921373682845375">Budući da se predučitane stranice šifriraju i da je web-lokacija s vezom na stranice Googleova web-lokacija, Googleovi poslužitelji ne primaju nove podatke kad se te stranice anonimno predučitavaju.</translation>
 <translation id="5329858041417644019">Preglednikom se ne upravlja</translation>
+<translation id="5339031667684712858">Web-lokacije koje ste uklonili</translation>
 <translation id="5342314432463739672">Zahtjevi za dopuštenja</translation>
 <translation id="5355191726083956201">Uključena je Poboljšana zaštita</translation>
 <translation id="5368227114232678694">Da biste pregledavali u privatnosti na ovom uređaju, isprobajte anonimni način.</translation>
@@ -891,6 +892,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5869522115854928033">Spremljene zaporke</translation>
 <translation id="5869789175361934029">Nastavite na drugom uređaju</translation>
 <translation id="587735546353481577">Da biste pratili web-lokaciju, otvorite je, otvorite izbornik preglednika Chrome i dodirnite Prati.</translation>
+<translation id="5879072387416556377">Bolji prijedlozi</translation>
 <translation id="5880748256563468367">Otvori feed</translation>
 <translation id="5884076754568147479">Da bi vam pomogao sa zadacima, Google će primati URL-ove i sadržaje web-lokacija na kojima upotrebljavate Asistenta, kao i informacije koje šaljete putem Asistenta</translation>
 <translation id="5906513782029855931">Dopustite Google asistentu pristup URL-ovima web-lokacija kako bi vam pomogao s izvršavanjem zadataka. Asistenta možete isključiti u Chromeovim postavkama.</translation>
@@ -1065,6 +1067,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="6756507620369789050">Pošaljite povratne informacije</translation>
 <translation id="6767294960381293877">Popis za odabir uređaja s kojim će se dijeliti kartica otvoren na pola visine.</translation>
+<translation id="6770042910635026163">Web-lokacije koje posjećujete koje definiraju vaše interese</translation>
 <translation id="6770602306803890733">Poboljšava sigurnost za vas i sve ostale na webu</translation>
 <translation id="6785476624617658922">Dodatni uvjeti pružanja usluge za Chrome i Chrome OS</translation>
 <translation id="6795633245022906657">Brzo otvorite novu karticu. Da biste uredili prečac, otvorite Postavke.</translation>
@@ -1233,6 +1236,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="770741401784017797">Izrada GIF-a</translation>
 <translation id="7707922173985738739">Upotreba mobilnih podataka</translation>
 <translation id="7709094866268987903">Interesi koje ste uklonili prikazat će se ovdje</translation>
+<translation id="7709918231054955894">Pristupajte svim svojim karticama</translation>
 <translation id="7725024127233776428">Ovdje se prikazuju stranice koje označite</translation>
 <translation id="7757787379047923882">Tekst dijeljen s uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Odaberite datum i vrijeme</translation>
@@ -1428,6 +1432,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="8656747343598256512">Prijavite se na ovu web-lokaciju i Chrome pomoću Google računa. Sinkronizaciju možete uključiti kasnije.</translation>
 <translation id="8659579665266920523">Kako pretraživati u Chromeu</translation>
 <translation id="8662811608048051533">Odjavit ćete se s većine web-lokacija.</translation>
+<translation id="8664215986015753476">Upotrijebite Chrome na svoj način</translation>
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
 <translation id="8666759526542103597">O prilagodbi oglasa na temelju preglednika</translation>
 <translation id="8667760277771450375">Istražujemo načine ograničavanja praćenja na različitim web-lokacijama uz omogućivanje web-lokacijama da spriječe neželjene oglase i prijevare.</translation>

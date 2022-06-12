@@ -527,7 +527,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3845098929839618392">Openen op incognitotabblad</translation>
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
 <translation id="3858860766373142691">Naam</translation>
-<translation id="3859206958100234503">Voer een synchronisatie uit om onder meer je wachtwoorden en bookmarks op al je apparaten beschikbaar te maken</translation>
 <translation id="3861633093716975811">Populaire video's</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3894427358181296146">Map toevoegen</translation>
@@ -791,6 +790,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5324858694974489420">Instellingen voor ouders</translation>
 <translation id="5326921373682845375">Omdat de vooraf geladen pagina's versleuteld zijn en de site die naar de pagina's linkt een Google-site is, krijgen Google-servers geen nieuwe informatie als deze pagina's privé vooraf worden geladen.</translation>
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
+<translation id="5339031667684712858">Door jou verwijderde sites</translation>
 <translation id="5342314432463739672">Rechtenverzoeken</translation>
 <translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="5368227114232678694">Gebruik de incognitomodus als je privé wilt browsen op dit apparaat</translation>
@@ -1067,6 +1067,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="6751521182688001123">Open snel een nieuw tabblad. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
 <translation id="6756507620369789050">Feedback delen</translation>
 <translation id="6767294960381293877">De lijst met apparaten om een tabblad mee te delen, is op halve hoogte geopend.</translation>
+<translation id="6770042910635026163">Bezochte sites die je interesses bepalen</translation>
 <translation id="6770602306803890733">Verbetert de beveiliging voor jou en alle andere internetgebruikers</translation>
 <translation id="6785476624617658922">Aanvullende servicevoorwaarden van Google Chrome en Chrome OS</translation>
 <translation id="6795633245022906657">Open snel een nieuw tabblad. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>

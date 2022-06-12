@@ -2086,6 +2086,7 @@
 <ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານສຽບບັດອັດສະລິຍະຄ້າງໄວ້.</translation>
 <translation id="2923234477033317484">ລຶບບັນຊີນີ້ອອກ</translation>
 <translation id="2923644930701689793">ເຂົ້າເຖິງຮູບຈາກອະລະບໍ້າກ້ອງຂອງໂທລະສັບທ່ານ</translation>
+<translation id="2925658782192398150">ແລ້ວໆ, ບໍ່ພົບບັນຫາ</translation>
 <translation id="2926085873880284723">ກູ້ຄືນທາງລັດເລີ່ມຕົ້ນ</translation>
 <translation id="2926620265753325858">ບໍ່ຮອງຮັບ <ph name="DEVICE_NAME" />.</translation>
 <translation id="2927017729816812676">ແຄ​ຊ໌​ບ່ອນເກັບຂໍ້ມູນ</translation>
@@ -5026,6 +5027,7 @@
 <translation id="5891688036610113830">ເຄືອຂ່າຍ Wi-Fi ທີ່ຕ້ອງການ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5895335062901455404">ການຕັ້ງຄ່າ ແລະ ການເຄື່ອນໄຫວທີ່ທ່ານບັນທຶກໄວ້ຈະພ້ອມໃຊ້ຢູ່ອຸປະກອນ ChromeOS Flex ໃດກໍຕາມເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານ. ທ່ານສາມາດເລືອກໄດ້ວ່າຈະຊິ້ງຂໍ້ມູນຫຍັງໃນການຕັ້ງຄ່າ.</translation>
+<translation id="589541317545606110">ຊອກຫາໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">ບໍ່ອະນຸຍາດ</translation>
 <translation id="5900186025777217044">ປ່ຽນ Smart Lock ແລ້ວ</translation>
 <translation id="5900302528761731119">ຮູບໂປຣໄຟລ໌ Google</translation>
@@ -5077,6 +5079,7 @@
 <translation id="5941153596444580863">ເພີ່ມບຸກຄົນ...</translation>
 <translation id="5941343993301164315">ກະ​ລຸ​ນາ​ລົງຊື່ເຂົ້າ​ໃຊ້<ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
+<translation id="594221546068848596">ຊອກຫາໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">ການສະແດງອຸປະກອນ</translation>
 <translation id="5943127421590245687">ການຢັ້ງຢືນຂອງທ່ານສຳເລັດແລ້ວ. ເພື່ອ​ປົດ​ລັອກ ແລະ ​ກູ້​ຄື​ນ​ຂໍ້​ມູນ​ໃນ​ເຄື່ອງ​ຂອງ​ທ່ານ, ກະ​ລຸ​ນາ​ປ້ອນ​ລະ​ຫັດ​ຜ່ານ <ph name="DEVICE_TYPE" /> ເກົ່າ​ຂອງ​ທ່ານ.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ອາດເປັນອັນຕະລາຍ. ສົ່ງໄປໃຫ້ Google Safe Browsing ສະແກນບໍ?</translation>
@@ -6720,6 +6723,7 @@
 <translation id="7582582252461552277">ມັກ​ເຄືອ​ຂ່າຍ​ນີ້</translation>
 <translation id="7582844466922312471">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="7583948862126372804">ຈຳນວນ</translation>
+<translation id="7585106857920830898">ກຳລັງກວດສອບນຳນະໂຍບາຍຄວາມປອດໄພຂອງອົງການຂອງທ່ານ...</translation>
 <translation id="7586498138629385861">Chrome ຈະສືບຕໍ່ແລ່ນຢູ່ໃນຂະນະທີ່ແອັບ Chrome ເປີດ.</translation>
 <translation id="758895749110326677">ຊ່ວຍພວກເຮົາປັບປຸງການຫຼິ້ນເກມຢູ່ Chromebook</translation>
 <translation id="7589461650300748890">ໂຮ້​, ນັ້ນ. ​ລະ​ມັດ​ລະ​ວັງ!</translation>
@@ -6996,6 +7000,7 @@
 <translation id="7839051173341654115">ເບິ່ງ/ສໍາຮອງ​ມີ​ເດຍ</translation>
 <translation id="7839192898639727867">ID ປຸ່ມຫົວຂໍ້ໃບຢັ້ງຢືນ</translation>
 <translation id="7842692330619197998">ເຂົ້າຫາ g.co/ChromeEnterpriseAccount ຖ້າທ່ານຕ້ອງການສ້າງບັນຊີໃໝ່.</translation>
+<translation id="78427265591841839">ຊອກຫາສ່ວນໃດກໍໄດ້ຂອງໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">ຖອນການຕິດຕັ້ງ Linux</translation>
 <translation id="7843786652787044762">ເຂົ້າສູ່ລະບົບ <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">ກໍາລັງອັບເດດຄວາມແຕກຕ່າງ</translation>
@@ -7003,6 +7008,7 @@
 <translation id="7847212883280406910">ກົດ Ctrl + Alt + S ເພື່ອ​ຍ້າຍໄປຫາ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">ເປີດຮູບຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="784934925303690534">ຂອບເຂດເວລາ</translation>
+<translation id="7850353716413205957">ຊອກຫາສ່ວນໃດກໍໄດ້ຂອງໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />ການອະນຸຍາດໃຫ້ອຸປະກອນ ChromeOS ຂອງທ່ານສົ່ງລາຍງານອັດຕະໂນມັດຈະຊ່ວຍໃຫ້ພວກເຮົາຈັດລຳດັບຄວາມສຳຄັນໄດ້ວ່າຈະແກ້ໄຂ ແລະ ປັບປຸງຫຍັງໃນ ChromeOS. ລາຍງານເຫຼົ່ານີ້ສາມາດຮວມມີສິ່ງຕ່າງໆ ເຊັ່ນ: ChromeOS ຫຼົ້ມຕອນໃດ, ທ່ານໃຊ້ຄຸນສົມບັດໃດ, ປົກກະຕິທ່ານໃຊ້ໜ່ວຍຄວາມຈຳເທົ່າໃດ ແລະ ຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ແອັບ Android. ຂໍ້ມູນຮວມບາງຢ່າງຈະຊ່ວຍແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ໄດ້ນຳ, ເຊັ່ນ: ນັກພັດທະນາ Android. <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດເລີ່ມ ຫຼື ຢຸດການອະນຸຍາດລາຍງານເຫຼົ່ານີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າອຸປະກອນ ChromeOS ຂອງທ່ານ. ຫາກທ່ານເປັນຜູ້ເບິ່ງແຍງລະບົບໂດເມນ, ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ໃນຄອນໂຊຜູ້ເບິ່ງແຍງ.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ຫາກມີການເປີດໃຊ້ການເຄື່ອນໄຫວເວັບ ແລະ ແອັບສຳລັບບັນຊີ Google ຂອງທ່ານໄວ້, ຂໍ້ມູນ Android ຂອງທ່ານອາດຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ຂອງທ່ານນຳ. ທ່ານສາມາດເບິ່ງຂໍ້ມູນຂອງທ່ານ, ລຶບມັນອອກ ແລະ ປ່ຽນການຕັ້ງຄ່າບັນຊີຂອງທ່ານໄດ້ຢູ່ account.google.com.<ph name="END_PARAGRAPH3" /></translation>

@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Kysy aina, kun sivusto pyytää lupaa löytää lähellä olevat Bluetooth-laitteet (suositus)</translation>
 <translation id="2315043854645842844">Käyttöjärjestelmä ei tue palvelimen varmennevalintaa.</translation>
 <translation id="2321958826496381788">Vedä liukusäädintä, kunnes voit lukea tämän mukavasti. Tekstin tulisi olla vähintään näin suurta kaksoisnapautettuasi kappaletta.</translation>
+<translation id="2329473609445770916">Tämä sivusto päättelee kiinnostuksen kohteitasi, joita muut sivustot voivat käyttää näyttäessään sinulle mainoksia</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2379925928934107488">Jos mahdollista, käytä tummaa teemaa sivustoilla, kun se on Chromen käytössä</translation>
 <translation id="2387895666653383613">Tekstin skaalaus</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Verkosta</translation>
 <translation id="321187648315454507">Ota ilmoitukset käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi lähettää sinulle ilmoituksia.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
+<translation id="3248611290851046188">Tämä sivusto päättelee kiinnostuksen kohteitasi, joita muut sivustot voivat käyttää näyttäessään sinulle mainoksia. Sivusto myös saa kiinnostuksen kohteesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="3277252321222022663">Anna sivustojen käyttää tunnistimia (suositus)</translation>
 <translation id="3295602654194328831">Piilota tiedot</translation>
 <translation id="3328801116991980348">Tietoja sivustosta</translation>

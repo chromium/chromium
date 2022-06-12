@@ -163,7 +163,7 @@
 <translation id="236977714248711277">網站不可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品。
 
 網站不可使用 Cookie 來查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
-<translation id="2375243552872247702">為你顯示相關的內容</translation>
+<translation id="2375243552872247702">為您顯示精選內容</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2386793615875593361">已選取 1 張</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
@@ -604,7 +604,7 @@
 <translation id="6136914049981179737">幾秒前</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
 <translation id="6149061208933997199">使用密碼</translation>
-<translation id="6152406514676263192">系統會根據你的興趣同步處理最相關的內容。</translation>
+<translation id="6152406514676263192">系統會根據您的興趣同步最相關的內容。</translation>
 <translation id="6159839020698489198">選填</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
@@ -751,7 +751,7 @@
 <translation id="7189598951263744875">分享...</translation>
 <translation id="7192050974311852563">開始記錄</translation>
 <translation id="7203585745079012652">語音答覆</translation>
-<translation id="7207023858769244910">系統會根據你的興趣提供內容。</translation>
+<translation id="7207023858769244910">啟用同步功能，以便系統根據您的興趣提供內容。</translation>
 <translation id="7207383424303353046">新功能：將 Chrome 設為預設瀏覽器應用程式，即可自動以 Chrome 開啟網站。<ph name="BEGIN_LINK" />開啟設定<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">無效的信用卡暱稱</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>

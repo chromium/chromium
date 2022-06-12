@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
 <translation id="1059913517121127803">Не ўдалося запусціць сканіраванне</translation>
+<translation id="1062407476771304334">Замяніць</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Выяўлены брандмаўар</translation>
 <translation id="1075811647922107217">Памер старонкі</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">Сярэдні (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
+<translation id="1190378975642195988">Акселерометр корпуса</translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
 <translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Прайграць (прыпыніць)</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
+<translation id="3492982278147736083">Гіраскоп вечка</translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
@@ -300,6 +303,7 @@
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3856304145690230735">Гіраскоп корпуса</translation>
 <translation id="385832974417157471">Перад завяршэннем працы скіньце налады прылады з дапамогай Powerwash. Калі ў вашай прылады ёсць вечка, пачакайце завяршэння працэдуры Powerwash, перш чым яго закрываць. Сама працэдура можа заняць да хвіліны.</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
@@ -371,6 +375,7 @@
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
+<translation id="4500213108254186382">Акселерометр вечка</translation>
 <translation id="4503223151711056411">Стрэлка ўлева</translation>
 <translation id="4511264077854731334">Партал</translation>
 <translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб'екта</translation>
@@ -382,6 +387,7 @@
 <translation id="4561801978359312462">SIM-карта разблакіравана</translation>
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
 <translation id="4568938274596692027">Усталяванне завершана. Ідзе падрыхтоўка да перазапуску...</translation>
+<translation id="4576943788798178439">Падтрымка пяра</translation>
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
@@ -537,6 +543,7 @@
 <translation id="5866840822086176774">Вельмі моцны</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
+<translation id="5898758006340607522">Кнопка сілкавання</translation>
 <translation id="5901630391730855834">Жоўты</translation>
 <translation id="5903200662178656908">Прылада ўяўляе сабой камплект з клавіятуры і мышы.</translation>
 <translation id="5916084858004523819">Забароненая</translation>
@@ -859,6 +866,7 @@
 <translation id="8919792139048574232">Паказаць, што было выпраўлена</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
 <translation id="8923267550422472772">Дзень месяца для скіду</translation>
+<translation id="8925613211674558308">Кэшаваныя даныя аб прадукце (VPD)</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
 <translation id="8930521118335213258">Вузел</translation>
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>

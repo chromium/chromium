@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1059913517121127803">ບໍ່ສາມາດເລີ່ມສະແກນໄດ້</translation>
+<translation id="1062407476771304334">​ປ່ຽນ​ແທນ​</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ກວດເຫັນ Firewall</translation>
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
@@ -18,6 +19,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
+<translation id="1190378975642195988">ຕົວວັດແທກຄວາມເລັ່ງຖານ</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1196959502276349371">ເວີຊັນ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
@@ -267,6 +269,7 @@
 <translation id="3484914941826596830">ໃນຂະນະທີ່ກຳລັງອັບເດດເຟີມແວຢູ່, ກະລຸນາຢ່າຖອດອຸປະກອນພາຍນອກນີ້ອອກ ຫຼື ຢ່າປິດເຄື່ອງຄອມພິວເຕີຂອງທ່ານ. ທ່ານສາມາດຫຍໍ້ໜ້າຈໍນີ້ລົງໄດ້. ອັບເດດນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ ແລະ ອຸປະກອນພາຍນອກຂອງທ່ານອາດບໍ່ເຮັດວຽກໃນລະຫວ່າງນີ້.</translation>
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3488065109653206955">ເປີດ​​ໃຊ້ງານ​ບາງ​ສ່ວນເທົ່ານັ້ນ</translation>
+<translation id="3492982278147736083">ຕົວວັດແທກການໝຸນຮອບຝາ</translation>
 <translation id="3517001332549868749">ອັບເດດ ChromeOS</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
@@ -300,6 +303,7 @@
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="3838338534323494292">ລະຫັດຜ່ານໃໝ່</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
+<translation id="3856304145690230735">ຕົວວັດແທກການໝຸນຮອບຖານ</translation>
 <translation id="385832974417157471">ກ່ອນການປິດເຄື່ອງ, ໃຫ້ດຳເນີນການ Powerwash ອຸປະກອນຂອງທ່ານກ່ອນ. ຫາກອຸປະກອນຂອງທ່ານມີຝາປິດ, ໃຫ້ລໍຖ້າຈົນກວ່າຂັ້ນຕອນ Powerwash ຈະສຳເລັດກ່ອນການປິດຝາ. ຂັ້ນຕອນ Powerwash ອາດໃຊ້ເວລາຮອດໜຶ່ງນາທີຈຶ່ງຈະສຳເລັດ.</translation>
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
@@ -372,6 +376,7 @@
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4479639480957787382">ອີເທີເນັດ</translation>
 <translation id="4483049906298469269">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
+<translation id="4500213108254186382">ຕົວວັດແທກຄວາມເລັ່ງຝາ</translation>
 <translation id="4503223151711056411">ລູກສອນຊ້າຍ</translation>
 <translation id="4511264077854731334">ໜ້າເວັບ</translation>
 <translation id="4521826082652183069">ຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້</translation>
@@ -383,6 +388,7 @@
 <translation id="4561801978359312462">ປົດລັອກຊິມແລ້ວ</translation>
 <translation id="4562494484721939086">ບໍ່ມີການບໍລິການ</translation>
 <translation id="4568938274596692027">ຕິດຕັ້ງສຳເລັດແລ້ວ. ກຳລັງກະກຽມຣີສະຕາດ...</translation>
+<translation id="4576943788798178439">ການຮອງຮັບປາກກາ</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4609350030397390689">ແປ້ນພິມຫຼຸດຄວາມສະຫວ່າງ</translation>
@@ -538,6 +544,7 @@
 <translation id="5866840822086176774">ແຮງທີ່ສຸດ</translation>
 <translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
+<translation id="5898758006340607522">ປຸ່ມເປີດປິດ</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5903200662178656908">ອຸປະກອນແມ່ນຊຸດແປ້ນພິມ ແລະ ເມົ້າ.</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
@@ -861,6 +868,7 @@
 <translation id="8919792139048574232">ເບິ່ງວ່າມີການແກ້ໄຂຫຍັງ</translation>
 <translation id="8919837981463578619">ບໍ່ສຳເລັດ, ຖາດໃສ່ເຈ້ຍຫາຍໄປ</translation>
 <translation id="8923267550422472772">ວັນທີຂອງເດືອນສຳລັບການຣີເຊັດ</translation>
+<translation id="8925613211674558308">Vpd Cached</translation>
 <translation id="8928727111548978589">ບໍ່ສຳເລັດ, ເຈ້ຍໝົດ</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">ໄຮ້ສາຍ</translation>

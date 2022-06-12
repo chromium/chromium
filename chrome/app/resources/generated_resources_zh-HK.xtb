@@ -205,7 +205,7 @@
 <translation id="1188807932851744811">尚未上載記錄。</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{存取您電腦上儲存的 1 個檔案}other{存取您電腦上儲存的 # 個檔案}}</translation>
 <translation id="119092896208640858">如果只清除此裝置上的瀏覽資料，並保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出<ph name="END_LINK" />。</translation>
-<translation id="1191353342579061195">選擇符合自身需求的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要在桌面上按一下滑鼠右鍵即可。</translation>
+<translation id="1191353342579061195">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要在桌面上按一下右鍵即可。</translation>
 <translation id="1192706927100816598">{0,plural, =1{您將在 # 秒後自動登出。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}other{您將在 # 秒後自動登出。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。}}</translation>
@@ -1539,7 +1539,7 @@
 <translation id="241082044617551207">不明的外掛程式</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
-<translation id="2418307627282545839">讓畫面色調保持明亮輕盈</translation>
+<translation id="2418307627282545839">讓畫面保持鮮明光亮</translation>
 <translation id="2419131370336513030">查看已安裝的應用程式</translation>
 <translation id="2419706071571366386">為安全起見，當您未使用電腦時，請登出帳戶。</translation>
 <translation id="2422125132043002186">已取消 Linux 還原</translation>
@@ -6049,7 +6049,7 @@
 <translation id="6895032998810961280">在執行清理時，向 Google 報告任何在電腦上發現的有害軟件、系統設定及程序的詳細資料</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897363604023044284">選擇要清除的網站資料</translation>
-<translation id="6897688156970667447">適合在低光源環境中使用，且可以省電</translation>
+<translation id="6897688156970667447">適合在燈光微弱的環境中使用，且可以省電</translation>
 <translation id="6898440773573063262">Kiosk 應用程式現可設為自動在這部裝置上啟動。</translation>
 <translation id="6900284862687837908">背景應用程式：<ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">強化保護功能</translation>
@@ -7541,7 +7541,7 @@
 <translation id="8358685469073206162">您要還原網頁嗎？</translation>
 <translation id="8358912028636606457">此裝置不支援投放分頁音訊。</translation>
 <translation id="835951711479681002">儲存在 Google 帳戶中</translation>
-<translation id="8360140320636871023">打造個人化的螢幕主題</translation>
+<translation id="8360140320636871023">個人化您的螢幕主題</translation>
 <translation id="8363095875018065315">穩定</translation>
 <translation id="8363142353806532503">已禁止使用麥克風</translation>
 <translation id="8366396658833131068">您的網絡連線已恢復。請選取其他網絡，或按下方的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>

@@ -527,7 +527,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3845098929839618392">Otwórz w karcie incognito</translation>
 <translation id="3856096718352044181">Sprawdź, czy jest to prawidłowy dostawca, lub spróbuj ponownie później</translation>
 <translation id="3858860766373142691">Nazwa</translation>
-<translation id="3859206958100234503">Aby mieć dostęp do haseł, zakładek i innych danych na wszystkich swoich urządzeniach, włącz synchronizację.</translation>
 <translation id="3861633093716975811">Popularne filmy</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3894427358181296146">Dodaj folder</translation>
@@ -791,6 +790,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5324858694974489420">Ustawienia rodzicielskie</translation>
 <translation id="5326921373682845375">Wstępnie wczytywane strony są zaszyfrowane, a witryna prowadząca do tych stron jest witryną Google, dlatego serwery Google nie otrzymują nowych informacji przy prywatnym wstępnym wczytywaniu tych stron.</translation>
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
+<translation id="5339031667684712858">Usunięte witryny</translation>
 <translation id="5342314432463739672">Prośby o uprawnienia</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
 <translation id="5368227114232678694">Wypróbuj tryb incognito do prywatnego przeglądania internetu na tym urządzeniu</translation>
@@ -1067,6 +1067,7 @@ Tokeny zaufania zwiększają prywatność w sieci i nie można za ich pomocą 
 <translation id="6751521182688001123">Szybko otwórz nową kartę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="6756507620369789050">Prześlij opinię</translation>
 <translation id="6767294960381293877">Lista urządzeń, którym udostępnisz kartę, jest otwarta na połowę wysokości.</translation>
+<translation id="6770042910635026163">Odwiedzane przez Ciebie witryny, które określają Twoje zainteresowania</translation>
 <translation id="6770602306803890733">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu</translation>
 <translation id="6785476624617658922">Dodatkowe warunki korzystania z Chrome i Chrome OS</translation>
 <translation id="6795633245022906657">Szybko otwórz nową kartę. Aby edytować ten skrót, otwórz Ustawienia.</translation>

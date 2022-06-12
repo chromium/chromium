@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
 <translation id="1059913517121127803">Couldn't start scanning</translation>
+<translation id="1062407476771304334">Replace</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detected</translation>
 <translation id="1075811647922107217">Page size</translation>
@@ -62,6 +63,7 @@
 <translation id="1459784442280469416">Save to USB</translation>
 <translation id="1468664791493211953">Offers</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
+<translation id="147809995039451286">Couldn't download the update</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Updating firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> manages this user and may remotely manage settings and monitor user activity.</translation>
@@ -126,6 +128,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectivity</translation>
 <translation id="2008685064673031089">Prime search</translation>
+<translation id="2011174342667534258">SDK version:</translation>
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="2016848882344942759">--no white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +160,7 @@
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2275586345903859204">Repair is complete</translation>
+<translation id="2276999893457278469">Top help content</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Insert external storage, such as a USB drive or an SD card, with the downloaded Chromebook Recovery Utility image</translation>
 <translation id="2307344026739914387">Use current keypair</translation>
@@ -178,6 +182,7 @@
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
+<translation id="2447969267935997922">Installation is complete. You can now remove your USB drive or SD card.</translation>
 <translation id="2448312741937722512">Types</translation>
 <translation id="2461822463642141190">Current</translation>
 <translation id="2480034874476596812">Manually turn off</translation>
@@ -189,6 +194,7 @@
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Restarting...</translation>
+<translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
@@ -301,6 +307,7 @@
 <translation id="3784455785234192852">Lock</translation>
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
+<translation id="3824259034819781947">Attach files</translation>
 <translation id="3838338534323494292">New password</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3856304145690230735">Base gyroscope</translation>
@@ -858,6 +865,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="885701979325669005">Storage</translation>
 <translation id="8863170912498892583">Enable Dark theme</translation>
 <translation id="8863888432376731307">Get the <ph name="INTENT" /> for '<ph name="QUERY" />' and more</translation>
+<translation id="8864415976656252616">No suggested content. See top help content.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Device is a tablet.</translation>
 <translation id="8881098542468797602">Test succeeded</translation>

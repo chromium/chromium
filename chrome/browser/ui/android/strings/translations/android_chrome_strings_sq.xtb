@@ -526,7 +526,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3845098929839618392">Hape në skedë "të fshehtë"</translation>
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3858860766373142691">Emri</translation>
-<translation id="3859206958100234503">Sinkronizoje për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua</translation>
 <translation id="3861633093716975811">Video të njohura</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3894427358181296146">Shto dosje</translation>
@@ -790,6 +789,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5324858694974489420">Cilësimet prindërore</translation>
 <translation id="5326921373682845375">Për shkak se faqet e ngarkuara paraprakisht janë të enkriptuara dhe lidhja e sajtit në faqe është një sajt i Google, serverët e Google nuk marrin informacione të reja kur ngarkojnë paraprakisht këto faqe në mënyrë private.</translation>
 <translation id="5329858041417644019">Shfletuesi yt nuk është i menaxhuar</translation>
+<translation id="5339031667684712858">Sajtet që hoqe</translation>
 <translation id="5342314432463739672">Kërkesat për autorizim</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="5368227114232678694">Provo modalitetin "E fshehtë" për të shfletuar në mënyrë private në këtë pajisje</translation>
@@ -1065,6 +1065,7 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="6751521182688001123">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
 <translation id="6756507620369789050">Ndaj komente</translation>
 <translation id="6767294960381293877">Lista e pajisjeve për të ndarë një skedë e hapur në gjysmë lartësi.</translation>
+<translation id="6770042910635026163">Sajtet që viziton përcaktojnë interesat e tua</translation>
 <translation id="6770602306803890733">Përmirëson sigurinë për ty dhe këdo në ueb</translation>
 <translation id="6785476624617658922">"Kushtet shtesë të shërbimit" të Chrome dhe të ChromeOS</translation>
 <translation id="6795633245022906657">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, shko te "Cilësimet".</translation>

@@ -2072,6 +2072,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.</translation>
 <translation id="2923234477033317484">Quitar esta cuenta</translation>
 <translation id="2923644930701689793">Accede al carrete de tu teléfono</translation>
+<translation id="2925658782192398150">Hecho, no se han encontrado problemas</translation>
 <translation id="2926085873880284723">Restaurar accesos directos predeterminados</translation>
 <translation id="2926620265753325858">No se admite el dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
@@ -5011,6 +5012,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895335062901455404">Encontrarás tus preferencias y tu actividad guardadas en cualquier dispositivo ChromeOS Flex cuando inicies sesión con tu cuenta de Google. Puedes elegir qué contenido quieres sincronizar en Configuración.</translation>
+<translation id="589541317545606110">Buscar en la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">No permitir</translation>
 <translation id="5900186025777217044">Smart Lock ha cambiado</translation>
 <translation id="5900302528761731119">Foto de perfil de Google</translation>
@@ -5062,6 +5064,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5941153596444580863">Añadir perfil...</translation>
 <translation id="5941343993301164315">Inicia sesión en <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
+<translation id="594221546068848596">Buscar en la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilidad del dispositivo</translation>
 <translation id="5943127421590245687">Verificación realizada correctamente. Para desbloquear y restaurar tus datos locales, introduce la contraseña anterior de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> podría ser peligroso. ¿Enviar a Navegación segura de Google para analizarlo?</translation>
@@ -6705,6 +6708,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7582582252461552277">Establecer esta red como preferida</translation>
 <translation id="7582844466922312471">redes móviles</translation>
 <translation id="7583948862126372804">Recuento</translation>
+<translation id="7585106857920830898">Comprobando las políticas de seguridad de tu organización...</translation>
 <translation id="7586498138629385861">Chrome seguirá ejecutándose mientras estén abiertas aplicaciones de Chrome.</translation>
 <translation id="758895749110326677">Ayúdanos a mejorar la experiencia de juego en Chromebooks</translation>
 <translation id="7589461650300748890">¡Atención! Ten cuidado.</translation>
@@ -6982,6 +6986,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7839051173341654115">Ver archivos multimedia y realizar copia de seguridad</translation>
 <translation id="7839192898639727867">ID de clave de la entidad receptora del certificado</translation>
 <translation id="7842692330619197998">Si necesitas crear una cuenta, visita g.co/ChromeEnterpriseAccount.</translation>
+<translation id="78427265591841839">Buscar en cualquier parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Desinstalar Linux</translation>
 <translation id="7843786652787044762">Iniciar sesión en <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Actualizando archivo diff</translation>
@@ -6989,6 +6994,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7847212883280406910">Pulsa Ctrl + Alt + S para cambiar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7849264908733290972">Abrir &amp;imagen en una pestaña nueva</translation>
 <translation id="784934925303690534">Tiempo</translation>
+<translation id="7850353716413205957">Buscar en cualquier parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Si permites que tus dispositivos Chrome OS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en Chrome OS. Estos informes pueden incluir información como cuándo ha fallado Chrome OS, qué funciones utilizas y cuánta memoria sueles usar, así como datos de diagnóstico y de uso de aplicaciones Android. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo Chrome OS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si el ajuste Actividad en la Web y en Aplicaciones está activado en tu cuenta de Google, es posible que tus datos de Android se guarden en tu cuenta de Google. Puedes ver tus datos, eliminarlos y cambiar la configuración de tu cuenta en account.google.com.<ph name="END_PARAGRAPH3" /></translation>

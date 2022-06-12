@@ -354,7 +354,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="134589511016534552">Mediatabbladen worden ook getoond in het gedeelte Geopende tabbladen</translation>
 <translation id="1346630054604077329">Bevestigen en opnieuw opstarten</translation>
 <translation id="1346748346194534595">Rechts</translation>
-<translation id="1347256498747320987">Updates en apps installeren. Als je doorgaat, ga je ermee akkoord dat je apparaat ook automatisch updates en apps van Google, je provider en de fabrikant kan downloaden en installeren. Hiervoor worden mogelijk mobiele data gebruikt. Sommige van deze apps kunnen in-app-aankopen aanbieden. <ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
+<translation id="1347256498747320987">Updates en apps installeren. Als je doorgaat, ga je ermee akkoord dat je apparaat ook automatisch updates en apps van Google, je provider en de fabrikant kan downloaden en installeren. Hiervoor worden mogelijk mobiele data gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden. <ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-opslag</translation>
 <translation id="1347975661240122359">De update wordt gestart wanneer de batterij voor <ph name="BATTERY_LEVEL" />% vol is.</translation>
 <translation id="1353275871123211385">Als je opties voor ouderlijk toezicht, zoals app-goedkeuring en schermtijdlimieten, wilt gebruiken, moet je kind een Google-account hebben dat wordt beheerd door een ouder. Je kunt later een schoolaccount toevoegen voor tools zoals Google Classroom.</translation>
@@ -859,7 +859,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1809483812148634490">Apps die je hebt gedownload via Google Play worden van deze Chromebook verwijderd.
     <ph name="LINE_BREAKS1" />
-    De content die je hebt gekocht, zoals films, tv-programma's, muziek, boeken of andere in-app-aankopen, worden mogelijk ook verwijderd.
+    De content die je hebt gekocht, zoals films, tv-programma's, muziek, boeken of andere in-app aankopen, worden mogelijk ook verwijderd.
     <ph name="LINE_BREAKS2" />
     Dit is niet van invloed op apps of content op andere apparaten.</translation>
 <translation id="1809734401532861917">Mijn bookmarks, geschiedenis, wachtwoorden en andere instellingen toevoegen aan <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -3462,7 +3462,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
 <translation id="4315933848520197627">Account ontkoppelen</translation>
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
-<translation id="4317733381297736564">In-app-aankopen</translation>
+<translation id="4317733381297736564">In-app aankopen</translation>
 <translation id="4317820549299924617">Verificatie is mislukt</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="4322394346347055525">Andere tabbladen sluiten</translation>
@@ -4547,7 +4547,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5425863515030416387">Gemakkelijk inloggen bij apparaten</translation>
 <translation id="5427278936122846523">Altijd vertalen</translation>
 <translation id="5427459444770871191">Rechtsom &amp;draaien</translation>
-<translation id="542750953150239272">Als je doorgaat, ga je ermee akkoord dat dit apparaat ook automatisch updates of apps van Google, je provider of de fabrikant van je apparaat kan downloaden en installeren, en dat hiervoor mogelijk mobiele data worden gebruikt. Sommige van deze apps kunnen in-app-aankopen aanbieden.</translation>
+<translation id="542750953150239272">Als je doorgaat, ga je ermee akkoord dat dit apparaat ook automatisch updates of apps van Google, je provider of de fabrikant van je apparaat kan downloaden en installeren, en dat hiervoor mogelijk mobiele data worden gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is beschikbaar)</translation>
 <translation id="542948651837270806">Er moet een update voor de Trusted Platform Module-firmware worden geïnstalleerd. Zie <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
@@ -4593,7 +4593,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5471768120198416576">Hallo. Ik ben je stem voor tekst-naar-spraak.</translation>
 <translation id="5472627187093107397">Wachtwoorden voor deze site opslaan</translation>
 <translation id="5473075389972733037">IBM</translation>
-<translation id="5473099001878321374">Als je verdergaat, ga je ermee akkoord dat dit apparaat ook automatische updates en apps van Google, de provider van je kind en de fabrikant van dit apparaat kan downloaden en installeren, waarbij mogelijk mobiele data worden gebruikt. Sommige van deze apps kunnen in-app-aankopen aanbieden.</translation>
+<translation id="5473099001878321374">Als je verdergaat, ga je ermee akkoord dat dit apparaat ook automatische updates en apps van Google, de provider van je kind en de fabrikant van dit apparaat kan downloaden en installeren, waarbij mogelijk mobiele data worden gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{De pincode moet ten minste 1 teken bevatten}other{De pincode moet ten minste # tekens bevatten}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).</translation>
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
@@ -4960,7 +4960,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5844574845205796324">Nieuwe content voorstellen om te bekijken</translation>
 <translation id="5846200638699387931">Syntaxisfout in relatie: <ph name="ERROR_LINE" /></translation>
-<translation id="5846807460505171493">Installeer updates en apps. Als je doorgaat, ga je ermee akkoord dat je apparaat ook automatisch updates en apps van Google, je provider en de fabrikant kan downloaden en installeren. Hiervoor worden mogelijk mobiele data gebruikt. Sommige van deze apps kunnen in-app-aankopen aanbieden.</translation>
+<translation id="5846807460505171493">Installeer updates en apps. Als je doorgaat, ga je ermee akkoord dat je apparaat ook automatisch updates en apps van Google, je provider en de fabrikant kan downloaden en installeren. Hiervoor worden mogelijk mobiele data gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden.</translation>
 <translation id="5849212445710944278">Al toegevoegd</translation>
 <translation id="5851868085455377790">Uitgever</translation>
 <translation id="5852112051279473187">Oeps! Er is iets misgegaan bij de aanmelding van dit apparaat. Probeer het opnieuw of neem contact op met een medewerker van het supportteam.</translation>

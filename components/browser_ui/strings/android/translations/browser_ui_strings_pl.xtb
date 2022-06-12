@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
+<translation id="2329473609445770916">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2379925928934107488">Stosuj ciemny motyw witryn w przypadkach, w których stosuje go Chrome, tam, gdzie to możliwe</translation>
 <translation id="2387895666653383613">Skalowanie tekstu</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Z sieci</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3248611290851046188">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy. Witryna wykorzystuje też gromadzone przez Chrome informacje o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="3277252321222022663">Zezwalaj stronom na dostęp do czujników (zalecane)</translation>
 <translation id="3295602654194328831">Ukryj informacje</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>

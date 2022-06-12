@@ -526,7 +526,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3845098929839618392">Buka di tab Samaran</translation>
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
-<translation id="3859206958100234503">Sinkronkan untuk mendapatkan sandi dan bookmark Anda serta data lain di semua perangkat</translation>
 <translation id="3861633093716975811">Video populer</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
@@ -790,6 +789,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5324858694974489420">Setelan Orang Tua</translation>
 <translation id="5326921373682845375">Karena halaman yang dipramuat terenkripsi dan situs yang ditautkan ke halaman tersebut adalah situs Google, server Google tidak menerima informasi baru saat melakukan pramuat halaman ini secara pribadi.</translation>
 <translation id="5329858041417644019">Browser Anda tidak dikelola</translation>
+<translation id="5339031667684712858">Situs yang Anda hapus</translation>
 <translation id="5342314432463739672">Permintaan izin</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="5368227114232678694">Untuk menjelajah secara pribadi di perangkat ini, coba mode Samaran</translation>
@@ -1065,6 +1065,7 @@ Trust token meningkatkan privasi di web dan tidak dapat digunakan untuk menemuka
 <translation id="6751521182688001123">Buka tab baru dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="6756507620369789050">Bagikan masukan</translation>
 <translation id="6767294960381293877">Daftar perangkat yang dapat digunakan untuk berbagi tab terbuka dalam setengah layar.</translation>
+<translation id="6770042910635026163">Situs yang Anda buka yang menentukan minat Anda</translation>
 <translation id="6770602306803890733">Meningkatkan keamanan untuk Anda dan semua orang di web</translation>
 <translation id="6785476624617658922">Persyaratan Layanan Tambahan Chrome &amp; ChromeOS</translation>
 <translation id="6795633245022906657">Buka tab baru dengan cepat. Untuk mengedit pintasan ini, buka Setelan.</translation>

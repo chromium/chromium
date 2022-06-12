@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Pitaj kada web lokacija želi otkriti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sistem ne podržava odabir potvrde na strani klijenta.</translation>
 <translation id="2321958826496381788">Povlačite klizač dok vam tekst ne bude ugodan za čitanje. Nakon dvostrukog dodira na pasus, tekst bi trebao izgledati najmanje ove veličine.</translation>
+<translation id="2329473609445770916">Ova web lokacija definira koja interesovanja mogu koristiti druge web lokacije da vam prikažu oglase</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2379925928934107488">Tamna tema će se primjenjivati na web lokacije kada Chrome koristi tamnu temu, kada je to moguće</translation>
 <translation id="2387895666653383613">Promjena veličine teksta</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">S interneta</translation>
 <translation id="321187648315454507">Da dozvolite da vam aplikacija <ph name="APP_NAME" /> šalje obavještenja, također uključite obavještenja u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3248611290851046188">Ova web lokacija definira koja interesovanja mogu koristiti druge web lokacije da vam prikažu oglase. Ova web lokacija prikuplja vaša interesovanja iz Chromea da vam prikazuje relevantnije oglase.</translation>
 <translation id="3277252321222022663">Dozvolite web lokacijama pristup senzorima (preporučeno)</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
 <translation id="3328801116991980348">Informacije o web lokaciji</translation>

@@ -526,7 +526,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3845098929839618392">Ouvrir en navigation privée</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3859206958100234503">Synchronisez pour récupérer vos mots de passe, favoris, et plus encore sur tous vos appareils</translation>
 <translation id="3861633093716975811">Vidéos populaires</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
@@ -790,6 +789,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5324858694974489420">Paramètres parentaux</translation>
 <translation id="5326921373682845375">Étant donné que les pages préchargées sont chiffrées et que le site lié aux pages est un site Google, les serveurs de Google ne reçoivent pas de nouvelles informations lors du préchargement de ces pages en mode privé.</translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
+<translation id="5339031667684712858">Sites que vous avez supprimés</translation>
 <translation id="5342314432463739672">Demandes d'autorisation</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
@@ -1065,6 +1065,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="6751521182688001123">Ouvre rapidement un nouvel onglet. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
 <translation id="6756507620369789050">Envoyer des commentaires</translation>
 <translation id="6767294960381293877">La liste des appareils avec lesquels vous pouvez partager un onglet est ouverte à mi-hauteur.</translation>
+<translation id="6770042910635026163">Sites consultés qui définissent vos centres d'intérêt</translation>
 <translation id="6770602306803890733">Renforce votre sécurité et celle de tous les utilisateurs sur le Web</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Chrome et Chrome OS</translation>
 <translation id="6795633245022906657">Ouvrir rapidement un nouvel onglet. Pour modifier ce raccourci, accédez aux paramètres.</translation>

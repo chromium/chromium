@@ -54,6 +54,7 @@
 <translation id="2289270750774289114">Spørg, når et website vil søge efter Bluetooth-enheder i nærheden (anbefalet)</translation>
 <translation id="2315043854645842844">Klientens certifikatvalg understøttes ikke af operativsystemet.</translation>
 <translation id="2321958826496381788">Træk i skyderen, indtil du kan nemt læse dette. Teksten som minimum have denne størrelse, når du har trykket to gange på et afsnit.</translation>
+<translation id="2329473609445770916">Dette website definerer interesser, som andre websites kan bruge til at vise dig annoncer</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2379925928934107488">Anvend Mørkt tema på websites, når Chrome anvender Mørkt tema (når det er muligt)</translation>
 <translation id="2387895666653383613">Tekststørrelse</translation>
@@ -97,6 +98,7 @@
 <translation id="3203366800380907218">Fra nettet</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3248611290851046188">Dette website definerer interesser, som andre websites kan bruge til at vise dig annoncer. Dette website henter også dine interesser fra Chrome og bruger dem til at vise dig mere relevante annoncer.</translation>
 <translation id="3277252321222022663">Tillad, at websites kan få adgang til sensorer (anbefales)</translation>
 <translation id="3295602654194328831">Skjul oplysninger</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>

@@ -526,7 +526,6 @@
 <translation id="3845098929839618392">시크릿 탭에서 열기</translation>
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3858860766373142691">이름</translation>
-<translation id="3859206958100234503">동기화하여 모든 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
 <translation id="3861633093716975811">인기 동영상</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3894427358181296146">폴더 추가</translation>
@@ -790,6 +789,7 @@
 <translation id="5324858694974489420">자녀 보호 설정</translation>
 <translation id="5326921373682845375">미리 로드된 페이지는 암호화되어 있으며, 페이지로 연결하는 사이트가 Google 사이트이므로 이러한 페이지를 비공개로 미리 로드할 때 Google 서버에 새로운 정보가 수신되지 않습니다.</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>
+<translation id="5339031667684712858">삭제한 사이트</translation>
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="5368227114232678694">이 기기에서 비공개로 인터넷을 사용하려면 시크릿 모드를 사용하세요.</translation>
@@ -1065,6 +1065,7 @@
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="6756507620369789050">의견 공유</translation>
 <translation id="6767294960381293877">탭을 공유할 기기 목록이 절반 높이로 열렸습니다.</translation>
+<translation id="6770042910635026163">방문한 사이트 중 관심분야를 정의하는 사이트</translation>
 <translation id="6770602306803890733">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6785476624617658922">Chrome 및 ChromeOS 추가 서비스 약관</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>

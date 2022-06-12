@@ -6,6 +6,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नयाँ सुविधा उपलब्ध छ, थप जान्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
+<translation id="1062407476771304334">बदल्नुहोस्</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
@@ -288,6 +289,7 @@
 <translation id="3621202678540785336">आगत</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3643810137582748570">क्यालिब्रेट नगरिकन अगाडि बढ्नुहोस्</translation>
+<translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
 <translation id="3678765385266369662">तपाईं जुन विकल्प प्रयोग गरी Write Protect अफ गरियोस् भन्ने चाहनुहुन्छ सोही विकल्प चयन गर्नुहोस्</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
@@ -305,6 +307,7 @@
 <translation id="3856304145690230735">बेस जाइरोस्कप</translation>
 <translation id="385832974417157471">आफ्नो डिभाइस सट डाउन गर्नुअघि सो डिभाइस पावरवास गर्नुहोस्। तपाईंको डिभाइसको कभर छ भने पावरवास गर्ने कार्य पूरा भएपछि मात्र उक्त कभर लगाउनुहोस्। पावरवास गर्ने कार्य पूरा हुन एक मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="3858860766373142691">नाम</translation>
+<translation id="3862598938296403232">विवरण हाल्नु पर्ने हुन्छ</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="3866249974567520381">विवरण</translation>
 <translation id="387301095347517405">तपाईंको डिभाइसको ब्याट्री पूर्ण रूपमा चार्ज गरिएको सङ्ख्या</translation>
@@ -677,6 +680,7 @@
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
+<translation id="7154020516215182599">आफ्नो प्रतिक्रिया दिनुहोस् वा आफ्ना समस्याका बारेमा वर्णन गर्नुहोस्। सम्भव भएमा, आफ्ना समस्याका बारेमा क्रमिक रूपमा वर्णन गर्नुहोस्।</translation>
 <translation id="7155171745945906037">क्यामेरा वा फाइलको विद्यमान तस्बिर</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">प्रोफाइल तस्बिर</translation>
