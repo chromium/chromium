@@ -9,7 +9,6 @@ import androidx.collection.ArraySet;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ public class AutocompleteMatchBuilder {
     private String mPostContentType;
     private byte[] mPostData;
     private int mGroupId;
-    private List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
     private List<AutocompleteMatch.NavsuggestTile> mNavsuggestTiles;
@@ -90,7 +88,6 @@ public class AutocompleteMatchBuilder {
         mPostContentType = null;
         mPostData = null;
         mGroupId = AutocompleteMatch.INVALID_GROUP;
-        mQueryTiles = null;
         mClipboardImageData = null;
         mHasTabMatch = false;
         mNavsuggestTiles = null;
@@ -113,7 +110,7 @@ public class AutocompleteMatchBuilder {
                 mDisplayText, mDisplayTextClassifications, mDescription,
                 mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
                 mImageDominantColor, mIsDeletable, mPostContentType, mPostData, mGroupId,
-                mQueryTiles, mClipboardImageData, mHasTabMatch, mNavsuggestTiles, mOmniboxPedal);
+                mClipboardImageData, mHasTabMatch, mNavsuggestTiles, mOmniboxPedal);
     }
 
     /**

@@ -129,27 +129,18 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
             final Runnable startWithNativeRunnable, final Runnable rescheduleRunnable) {
         if (isNativeLoadedInFullBrowserMode()) {
             mRunningInMinimalBrowserMode = false;
-            getUmaReporter().reportNativeTaskStarted(mTaskId, mRunningInMinimalBrowserMode);
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, startWithNativeRunnable);
             return;
         }
 
         boolean wasInMinimalBrowserMode = isNativeLoadedInMinimalBrowserMode();
         mRunningInMinimalBrowserMode = supportsMinimalBrowser();
-        getUmaReporter().reportNativeTaskStarted(mTaskId, mRunningInMinimalBrowserMode);
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 // If task was stopped before we got here, don't start native initialization.
                 if (mTaskStopped) return;
-
-                // Record transitions from No Native to Minimal Browser Mode and from No Native
-                // to Full Browser mode, but not cases in which Minimal Browser Mode was
-                // already started.
-                if (!wasInMinimalBrowserMode) {
-                    getUmaReporter().reportTaskStartedNative(mTaskId, mRunningInMinimalBrowserMode);
-                }
 
                 // Start native initialization.
                 mDelegate.initializeNativeAsync(
@@ -240,11 +231,7 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
         ThreadUtils.assertOnUiThread();
         if (!mFinishMetricRecorded) {
             mFinishMetricRecorded = true;
-            getUmaReporter().reportNativeTaskFinished(mTaskId, mRunningInMinimalBrowserMode);
         }
     }
 
-    private BackgroundTaskSchedulerExternalUma getUmaReporter() {
-        return mDelegate.getUmaReporter();
-    }
 }

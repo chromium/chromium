@@ -275,7 +275,6 @@ android_library("chrome_java") {
     ":chrome_app_java_resources",
     ":chrome_public_android_manifest",
     ":chrome_public_apk_template_resources",
-    ":update_proto_java",
     ":usage_stats_proto_java",
     "$google_play_services_package:google_play_services_auth_base_java",
     "$google_play_services_package:google_play_services_base_java",
@@ -330,7 +329,6 @@ android_library("chrome_java") {
     "//chrome/browser/locale:java",
     "//chrome/browser/notifications/chime/android:java",
     "//chrome/browser/offline_pages/android:java",
-    "//chrome/browser/omaha/android:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/paint_preview/android:java",
@@ -471,7 +469,6 @@ android_library("chrome_java") {
     "//components/policy/android:policy_java",
     "//components/prefs/android:java",
     "//components/profile_metrics:browser_profile_type_enum_java",
-    "//components/query_tiles:java",
     "//components/safe_browsing/android:safe_browsing_java",
     "//components/schema_org/common:mojom_java",
     "//components/search_engines/android:java",
@@ -775,11 +772,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/notifications/notification_handler.h",
     "//chrome/browser/notifications/notification_platform_bridge_android.cc",
   ]
-}
-
-proto_java_library("update_proto_java") {
-  proto_path = "java/src/org/chromium/chrome/browser/omaha/metrics"
-  sources = [ "$proto_path/update_success_tracking.proto" ]
 }
 
 proto_java_library("usage_stats_proto_java") {
@@ -1437,15 +1429,12 @@ static_library("browser_test_support") {
     "../browser/android/ssl/mock_cert_verifier_rule_android.h",
     "../browser/offline_pages/android/offline_test_util_jni.cc",
     "../browser/offline_pages/android/prefetch_test_bridge.cc",
-    "../browser/query_tiles/query_tile_fake_server.cc",
   ]
   deps = [
     ":test_support_jni_headers",
     "//chrome/browser",
     "//chrome/browser/thumbnail:test_support",
     "//components/offline_pages/core/background:test_support",
-    "//components/query_tiles",
-    "//components/query_tiles/test:test_support",
     "//content/test:test_support",
     "//net:test_support",
     "//url:gurl_android_test_helper",
@@ -1584,7 +1573,6 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
-    "java/src/org/chromium/chrome/browser/omaha/OmahaClient.java",
     "java/src/org/chromium/chrome/browser/photo_picker/DecoderService.java",
     "java/src/org/chromium/chrome/browser/prerender/ChromePrerenderService.java",
     "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProvider.java",
@@ -2422,8 +2410,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTask.java",
-    "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeBackgroundTaskFactory.java",
-    "java/src/org/chromium/chrome/browser/background_task_scheduler/ProxyNativeTask.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
     "java/src/org/chromium/chrome/browser/browserservices/QualityEnforcer.java",
     "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",

@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
 
 using base::android::ConvertUTF16ToJavaString;
@@ -72,9 +71,6 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     clipboard_image_data = search_terms_args->image_thumbnail_content;
   }
 
-  ScopedJavaLocalRef<jobject> j_query_tiles =
-      query_tiles::TileConversionBridge::CreateJavaTiles(env, query_tiles);
-
   std::vector<std::u16string> navsuggest_titles;
   navsuggest_titles.reserve(navsuggest_tiles.size());
   std::vector<base::android::ScopedJavaLocalRef<jobject>> navsuggest_urls;
@@ -108,7 +104,7 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           j_post_content,
           suggestion_group_id.value_or(
               SearchSuggestionParser::kNoSuggestionGroupId),
-          j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
+          ToJavaByteArray(env, clipboard_image_data),
           has_tab_match.value_or(false),
           ToJavaArrayOfStrings(env, navsuggest_titles),
           url::GURLAndroid::ToJavaArrayOfGURLs(env, navsuggest_urls),

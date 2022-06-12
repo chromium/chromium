@@ -122,7 +122,6 @@
 #include "components/payments/core/features.h"
 #include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
-#include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
@@ -2317,20 +2316,6 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
      switches::kWebOtpBackendAuto},
 };
 
-const FeatureEntry::Choice kQueryTilesCountryChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kQueryTilesCountryCodeUS,
-     query_tiles::switches::kQueryTilesCountryCode, "US"},
-    {flag_descriptions::kQueryTilesCountryCodeIndia,
-     query_tiles::switches::kQueryTilesCountryCode, "IN"},
-    {flag_descriptions::kQueryTilesCountryCodeBrazil,
-     query_tiles::switches::kQueryTilesCountryCode, "BR"},
-    {flag_descriptions::kQueryTilesCountryCodeNigeria,
-     query_tiles::switches::kQueryTilesCountryCode, "NG"},
-    {flag_descriptions::kQueryTilesCountryCodeIndonesia,
-     query_tiles::switches::kQueryTilesCountryCode, "ID"},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The choices for --enable-experimental-cookie-features. This really should
@@ -4283,44 +4268,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOfflinePagesLivePageSharingName,
      flag_descriptions::kOfflinePagesLivePageSharingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(offline_pages::kOfflinePagesLivePageSharingFeature)},
-    {"query-tiles", flag_descriptions::kQueryTilesName,
-     flag_descriptions::kQueryTilesDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(query_tiles::features::kQueryTiles,
-                                    kQueryTilesVariations,
-                                    "QueryTilesVariations")},
-    {"query-tiles-ntp", flag_descriptions::kQueryTilesNTPName,
-     flag_descriptions::kQueryTilesNTPDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesInNTP)},
-    {"query-tiles-single-tier", flag_descriptions::kQueryTilesSingleTierName,
-     flag_descriptions::kQueryTilesSingleTierDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesSingleTier)},
-    {"query-tiles-enable-query-editing",
-     flag_descriptions::kQueryTilesEnableQueryEditingName,
-     flag_descriptions::kQueryTilesEnableQueryEditingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesEnableQueryEditing)},
-    {"query-tiles-enable-trending",
-     flag_descriptions::kQueryTilesEnableTrendingName,
-     flag_descriptions::kQueryTilesEnableTrendingDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesEnableTrending)},
-    {"query-tiles-country-code", flag_descriptions::kQueryTilesCountryCode,
-     flag_descriptions::kQueryTilesCountryCodeDescription, kOsAndroid,
-     MULTI_VALUE_TYPE(kQueryTilesCountryChoices)},
-    {"query-tiles-instant-fetch",
-     flag_descriptions::kQueryTilesInstantFetchName,
-     flag_descriptions::kQueryTilesInstantFetchDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(
-         query_tiles::switches::kQueryTilesInstantBackgroundTask)},
-    {"query-tiles-rank-tiles", flag_descriptions::kQueryTilesRankTilesName,
-     flag_descriptions::kQueryTilesRankTilesDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesRankTiles)},
-    {"query-tiles-segmentation", flag_descriptions::kQueryTilesSegmentationName,
-     flag_descriptions::kQueryTilesSegmentationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesSegmentation)},
-    {"query-tiles-swap-trending",
-     flag_descriptions::kQueryTilesSwapTrendingName,
-     flag_descriptions::kQueryTilesSwapTrendingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         query_tiles::features::kQueryTilesRemoveTrendingTilesAfterInactivity)},
     {"video-tutorials", flag_descriptions::kVideoTutorialsName,
      flag_descriptions::kVideoTutorialsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(video_tutorials::features::kVideoTutorials)},

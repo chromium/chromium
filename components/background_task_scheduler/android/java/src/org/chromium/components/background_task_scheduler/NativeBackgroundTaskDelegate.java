@@ -19,6 +19,4 @@ public interface NativeBackgroundTaskDelegate {
      */
     void initializeNativeAsync(boolean minimalBrowserMode, Runnable onSuccess, Runnable onFailure);
 
-    /** @return Helper class to report UMA stats. */
-    BackgroundTaskSchedulerExternalUma getUmaReporter();
 }

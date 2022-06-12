@@ -64,7 +64,6 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
             ThreadUtils.assertOnUiThread();
 
             boolean needsBackground = mBackgroundTask.onStartTask(mContext, mTaskParams, this);
-            BackgroundTaskSchedulerUma.getInstance().reportTaskStarted(mTaskParams.getTaskId());
             if (!needsBackground) return;
 
             PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT, this::timeout, MAX_TIMEOUT_MS);
@@ -81,11 +80,9 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
             mHasExecuted = true;
 
             Log.w(TAG, "Task execution failed. Task timed out.");
-            BackgroundTaskSchedulerUma.getInstance().reportTaskStopped(mTaskParams.getTaskId());
 
             boolean reschedule = mBackgroundTask.onStopTask(mContext, mTaskParams);
             if (reschedule) {
-                BackgroundTaskSchedulerUma.getInstance().reportTaskRescheduled();
                 mBackgroundTask.reschedule(mContext);
             }
         }
@@ -96,7 +93,6 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
             mHasExecuted = true;
 
             if (reschedule) {
-                BackgroundTaskSchedulerUma.getInstance().reportTaskRescheduled();
                 mBackgroundTask.reschedule(mContext);
             }
             // TODO(crbug.com/970160): Add UMA to record how long the tasks need to complete.

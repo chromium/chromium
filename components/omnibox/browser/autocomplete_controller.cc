@@ -45,7 +45,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
-#include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
@@ -381,9 +380,6 @@ AutocompleteController::AutocompleteController(
       providers_.push_back(clipboard_provider_.get());
     }
   }
-
-  if (provider_types & AutocompleteProvider::TYPE_QUERY_TILE)
-    providers_.push_back(new QueryTileProvider(provider_client_.get(), this));
 
   if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
     voice_suggest_provider_ =

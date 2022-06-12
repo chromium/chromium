@@ -23,7 +23,6 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/query_parser",
-  "+components/query_tiles",
   "+components/search",
   "+components/search_engines",
   "+components/security_state",

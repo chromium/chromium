@@ -10,7 +10,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -53,7 +52,6 @@ public class ChromeActivitySessionTracker {
     @SuppressLint("StaticFieldLeak")
     private static ChromeActivitySessionTracker sInstance;
 
-    private final PowerBroadcastReceiver mPowerBroadcastReceiver = new PowerBroadcastReceiver();
     private final Map<Activity, Supplier<TabModelSelector>> mTabModelSelectorSuppliers =
             new HashMap<>();
 
@@ -157,7 +155,6 @@ public class ChromeActivitySessionTracker {
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .onSystemFontScaleChanged();
             updateAcceptLanguages();
-            mPowerBroadcastReceiver.onForegroundSessionStart();
             AppHooks.get().getChimeDelegate().startSession();
             PasswordManagerLifecycleHelper.getInstance().onStartForegroundSession();
 
@@ -178,7 +175,6 @@ public class ChromeActivitySessionTracker {
         if (!mIsStarted) return;
         ProfileManagerUtils.flushPersistentDataForAllProfiles();
         mIsStarted = false;
-        mPowerBroadcastReceiver.onForegroundSessionEnd();
 
         IntentHandler.clearPendingReferrer();
         IntentHandler.clearPendingIncognitoUrl();
@@ -258,11 +254,4 @@ public class ChromeActivitySessionTracker {
                 .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED, systemEnabled);
     }
 
-    /**
-     * @return The PowerBroadcastReceiver for the browser process.
-     */
-    @VisibleForTesting
-    public PowerBroadcastReceiver getPowerBroadcastReceiverForTesting() {
-        return mPowerBroadcastReceiver;
-    }
 }

@@ -57,7 +57,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
-  query_tiles::TileService* GetQueryTileService() const override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
   ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites() override;
@@ -96,7 +95,6 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
-  std::unique_ptr<query_tiles::TileService> tile_service_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_{};
   ntp_tiles::MostVisitedSites* ntp_most_visited_sites_{};

@@ -21,9 +21,7 @@
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
-#include "chrome/browser/segmentation_platform/default_model/query_tiles_model.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
-#include "components/query_tiles/switches.h"
 #endif
 
 using optimization_guide::proto::OptimizationTarget;
@@ -46,17 +44,7 @@ constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
 
 constexpr int kChromeStartDefaultSelectionTTLDays = 30;
 constexpr int kChromeStartDefaultUnknownTTLDays = 7;
-// See
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java
-const char kNumDaysKeepShowingQueryTiles[] =
-    "num_days_keep_showing_query_tiles";
-const char kNumDaysMVCkicksBelowThreshold[] =
-    "num_days_mv_clicks_below_threshold";
 
-// DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES
-constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
-// DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD
-constexpr int kQueryTilesDefaultUnknownTTLDays = 7;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -121,33 +109,6 @@ std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   return config;
 }
 
-std::unique_ptr<ModelProvider> GetQueryTilesDefaultModel() {
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          query_tiles::features::kQueryTilesSegmentation,
-          kDefaultModelEnabledParam, false)) {
-    return nullptr;
-  }
-  return std::make_unique<QueryTilesModel>();
-}
-
-std::unique_ptr<Config> GetConfigForQueryTiles() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kQueryTilesSegmentationKey;
-  config->segment_ids = {
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-  };
-
-  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      query_tiles::features::kQueryTilesSegmentation,
-      kNumDaysKeepShowingQueryTiles, kQueryTilesDefaultSelectionTTLDays);
-  int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      query_tiles::features::kQueryTilesSegmentation,
-      kNumDaysMVCkicksBelowThreshold, kQueryTilesDefaultUnknownTTLDays);
-  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
-  config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
-  return config;
-}
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<ModelProvider> GetLowEngagementDefaultModel() {
@@ -209,10 +170,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   if (IsStartSurfaceBehaviouralTargetingEnabled()) {
     configs.emplace_back(GetConfigForChromeStartAndroid());
   }
-  if (base::FeatureList::IsEnabled(
-          query_tiles::features::kQueryTilesSegmentation)) {
-    configs.emplace_back(GetConfigForQueryTiles());
-  }
 #endif
   if (IsLowEngagementFeatureEnabled()) {
     configs.emplace_back(GetConfigForChromeLowUserEngagement());
@@ -223,10 +180,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
 std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
     optimization_guide::proto::OptimizationTarget target) {
 #if BUILDFLAG(IS_ANDROID)
-  if (target ==
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES) {
-    return GetQueryTilesDefaultModel();
-  }
   if (target == optimization_guide::proto::
                     OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID) {
     return GetChromeStartAndroidModel();

@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
-import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.Tab;
@@ -98,14 +97,6 @@ public abstract class AppHooks {
 
     public InstantAppsHandler createInstantAppsHandler() {
         return new InstantAppsHandler();
-    }
-
-    /**
-     * @return An instance of RequestGenerator to be used for Omaha XML creation.  Will be null if
-     *         a generator is unavailable.
-     */
-    public RequestGenerator createOmahaRequestGenerator() {
-        return null;
     }
 
     /**

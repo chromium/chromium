@@ -357,7 +357,6 @@ test("components_unittests") {
       "//components/permissions/prediction_service:unit_tests",
       "//components/policy/content:unit_tests",
       "//components/privacy_sandbox:unit_tests",
-      "//components/query_tiles:unit_tests",
 
       # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
       # can't be run on iOS until they are updated.
@@ -1029,7 +1028,6 @@ if (is_android) {
       "//components/permissions/android:components_permissions_junit_tests",
       "//components/policy/android:components_policy_junit_tests",
       "//components/prefs/android:junit",
-      "//components/query_tiles:query_tiles_junit_tests",
       "//components/subresource_filter/android:junit",
       "//components/variations/android:components_variations_junit_tests",
       "//components/webapk/android/libs/client:junit",

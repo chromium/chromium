@@ -225,7 +225,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                        : nullptr),
       additional_info(match.additional_info),
       duplicate_matches(match.duplicate_matches),
-      query_tiles(match.query_tiles),
       navsuggest_tiles(match.navsuggest_tiles) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
@@ -276,7 +275,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   post_content = std::move(match.post_content);
   additional_info = std::move(match.additional_info);
   duplicate_matches = std::move(match.duplicate_matches);
-  query_tiles = std::move(match.query_tiles);
   navsuggest_tiles = std::move(match.navsuggest_tiles);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
@@ -338,14 +336,13 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   from_previous = match.from_previous;
   search_terms_args.reset(
       match.search_terms_args
-          ? new TemplateURLRef::SearchTermsArgs(*match.search_terms_args)
+         ? new TemplateURLRef::SearchTermsArgs(*match.search_terms_args)
           : nullptr);
   post_content.reset(match.post_content
                          ? new TemplateURLRef::PostContent(*match.post_content)
                          : nullptr);
   additional_info = match.additional_info;
   duplicate_matches = match.duplicate_matches;
-  query_tiles = match.query_tiles;
   navsuggest_tiles = match.navsuggest_tiles;
 
 #if BUILDFLAG(IS_ANDROID)

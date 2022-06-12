@@ -16,7 +16,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -99,7 +98,6 @@ public class AutocompleteMatch {
     private String mPostContentType;
     private byte[] mPostData;
     private final int mGroupId;
-    private final List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
     private final @Nullable List<NavsuggestTile> mNavsuggestTiles;
@@ -112,7 +110,7 @@ public class AutocompleteMatch {
             List<MatchClassification> descriptionClassifications, SuggestionAnswer answer,
             String fillIntoEdit, GURL url, GURL imageUrl, String imageDominantColor,
             boolean isDeletable, String postContentType, byte[] postData, int groupId,
-            List<QueryTile> queryTiles, byte[] clipboardImageData, boolean hasTabMatch,
+            byte[] clipboardImageData, boolean hasTabMatch,
             List<NavsuggestTile> navsuggestTiles, OmniboxPedal omniboxPedal) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
@@ -137,7 +135,6 @@ public class AutocompleteMatch {
         mPostContentType = postContentType;
         mPostData = postData;
         mGroupId = groupId;
-        mQueryTiles = queryTiles;
         mClipboardImageData = clipboardImageData;
         mHasTabMatch = hasTabMatch;
         mNavsuggestTiles = navsuggestTiles;
@@ -151,7 +148,7 @@ public class AutocompleteMatch {
             String description, int[] descriptionClassificationOffsets,
             int[] descriptionClassificationStyles, SuggestionAnswer answer, String fillIntoEdit,
             GURL url, GURL imageUrl, String imageDominantColor, boolean isDeletable,
-            String postContentType, byte[] postData, int groupId, List<QueryTile> tiles,
+            String postContentType, byte[] postData, int groupId,
             byte[] clipboardImageData, boolean hasTabMatch, String[] navsuggestTitles,
             GURL[] navsuggestUrls, OmniboxPedal omniboxPedal) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
@@ -175,7 +172,7 @@ public class AutocompleteMatch {
         AutocompleteMatch match = new AutocompleteMatch(nativeType, subtypes, isSearchType,
                 relevance, transition, contents, contentClassifications, description,
                 new ArrayList<>(), answer, fillIntoEdit, url, imageUrl, imageDominantColor,
-                isDeletable, postContentType, postData, groupId, tiles, clipboardImageData,
+                isDeletable, postContentType, postData, groupId, clipboardImageData,
                 hasTabMatch, navsuggestTiles, omniboxPedal);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
@@ -309,10 +306,6 @@ public class AutocompleteMatch {
         return mPostContentType;
     }
 
-    public List<QueryTile> getQueryTiles() {
-        return mQueryTiles;
-    }
-
     public byte[] getPostData() {
         return mPostData;
     }
@@ -378,8 +371,7 @@ public class AutocompleteMatch {
                 && mIsDeletable == suggestion.mIsDeletable && mRelevance == suggestion.mRelevance
                 && ObjectsCompat.equals(mAnswer, suggestion.mAnswer)
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
-                && Arrays.equals(mPostData, suggestion.mPostData) && mGroupId == suggestion.mGroupId
-                && ObjectsCompat.equals(mQueryTiles, suggestion.mQueryTiles);
+                && Arrays.equals(mPostData, suggestion.mPostData) && mGroupId == suggestion.mGroupId;
     }
 
     /**

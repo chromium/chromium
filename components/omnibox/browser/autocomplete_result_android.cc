@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;

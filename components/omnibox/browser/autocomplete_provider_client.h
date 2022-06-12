@@ -94,7 +94,6 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() = 0;
   virtual std::unique_ptr<KeywordExtensionsDelegate>
   GetKeywordExtensionsDelegate(KeywordProvider* keyword_provider) = 0;
-  virtual query_tiles::TileService* GetQueryTileService() const = 0;
   virtual OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const = 0;
 

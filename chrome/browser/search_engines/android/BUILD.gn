@@ -18,7 +18,6 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/omaha/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/messages/android:java",

@@ -10,8 +10,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
-import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerExternalUma;
-import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTaskDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -50,8 +48,4 @@ public class ChromeNativeBackgroundTaskDelegate implements NativeBackgroundTaskD
         }
     }
 
-    @Override
-    public BackgroundTaskSchedulerExternalUma getUmaReporter() {
-        return BackgroundTaskSchedulerFactory.getUmaReporter();
-    }
 }

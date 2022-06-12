@@ -8,13 +8,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerFactoryInternal;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerPrefs;
-import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerUma;
 
 /**
  * A factory for {@link BackgroundTaskScheduler}.
  */
 public final class BackgroundTaskSchedulerFactory {
-    private static BackgroundTaskSchedulerExternalUma sExternalUmaForTesting;
 
     /**
      * @return the current instance of the {@link BackgroundTaskScheduler}. Creates one if none
@@ -35,19 +33,6 @@ public final class BackgroundTaskSchedulerFactory {
      */
     public static void setBackgroundTaskFactory(BackgroundTaskFactory backgroundTaskFactory) {
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(backgroundTaskFactory);
-    }
-
-    /**
-     * @return The helper class to report UMA.
-     */
-    public static BackgroundTaskSchedulerExternalUma getUmaReporter() {
-        return sExternalUmaForTesting == null ? BackgroundTaskSchedulerUma.getInstance()
-                                              : sExternalUmaForTesting;
-    }
-
-    @VisibleForTesting
-    public static void setUmaReporterForTesting(BackgroundTaskSchedulerExternalUma externalUma) {
-        sExternalUmaForTesting = externalUma;
     }
 
     /**

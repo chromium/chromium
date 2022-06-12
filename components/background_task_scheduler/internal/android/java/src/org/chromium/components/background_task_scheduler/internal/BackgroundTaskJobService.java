@@ -87,7 +87,6 @@ public class BackgroundTaskJobService extends JobService {
         }
 
         if (BackgroundTaskSchedulerJobService.didTaskExpire(params, mClock.currentTimeMillis())) {
-            BackgroundTaskSchedulerUma.getInstance().reportTaskExpired(params.getJobId());
             return false;
         }
 
@@ -96,7 +95,6 @@ public class BackgroundTaskJobService extends JobService {
         TaskParameters taskParams =
                 BackgroundTaskSchedulerJobService.getTaskParametersFromJobParameters(params);
 
-        BackgroundTaskSchedulerUma.getInstance().reportTaskStarted(taskParams.getTaskId());
         boolean taskNeedsBackgroundProcessing =
                 backgroundTask.onStartTask(ContextUtils.getApplicationContext(), taskParams,
                         new TaskFinishedCallbackJobService(this, backgroundTask, params));
@@ -119,7 +117,6 @@ public class BackgroundTaskJobService extends JobService {
 
         TaskParameters taskParams =
                 BackgroundTaskSchedulerJobService.getTaskParametersFromJobParameters(params);
-        BackgroundTaskSchedulerUma.getInstance().reportTaskStopped(taskParams.getTaskId());
         boolean taskNeedsReschedule =
                 backgroundTask.onStopTask(ContextUtils.getApplicationContext(), taskParams);
         mCurrentTasks.remove(params.getJobId());

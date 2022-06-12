@@ -5253,7 +5253,6 @@ test("unit_tests") {
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/proxy_config",
     "//components/query_parser",
-    "//components/query_tiles:unit_tests",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
     "//components/renderer_context_menu",

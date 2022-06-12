@@ -54,8 +54,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
             SchedulingVisitor schedulingVisitor = new SchedulingVisitor(context, taskInfo);
             taskInfo.getTimingInfo().accept(schedulingVisitor);
             boolean success = schedulingVisitor.getSuccess();
-            BackgroundTaskSchedulerUma.getInstance().reportTaskScheduled(
-                    taskInfo.getTaskId(), success);
 
             // Retain expiration metrics
             MetricsVisitor metricsVisitor = new MetricsVisitor(taskInfo.getTaskId());
@@ -109,19 +107,14 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
 
         @Override
         public void visit(TaskInfo.OneOffInfo oneOffInfo) {
-            BackgroundTaskSchedulerUma.getInstance().reportTaskCreatedAndExpirationState(
-                    mTaskId, oneOffInfo.expiresAfterWindowEndTime());
         }
 
         @Override
         public void visit(TaskInfo.PeriodicInfo periodicInfo) {
-            BackgroundTaskSchedulerUma.getInstance().reportTaskCreatedAndExpirationState(
-                    mTaskId, periodicInfo.expiresAfterWindowEndTime());
         }
 
         @Override
         public void visit(TaskInfo.ExactInfo exactInfo) {
-            BackgroundTaskSchedulerUma.getInstance().reportExactTaskCreated(mTaskId);
         }
     }
 
@@ -130,7 +123,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
         try (TraceEvent te = TraceEvent.scoped(
                      "BackgroundTaskScheduler.cancel", Integer.toString(taskId))) {
             ThreadUtils.assertOnUiThread();
-            BackgroundTaskSchedulerUma.getInstance().reportTaskCanceled(taskId);
 
             ScheduledTaskProto.ScheduledTask scheduledTask =
                     BackgroundTaskSchedulerPrefs.getScheduledTask(taskId);
@@ -176,11 +168,8 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
 
             // No OS upgrade detected or OS upgrade does not change delegate.
             if (oldSdkInt == newSdkInt || !osUpgradeChangesDelegateType(oldSdkInt, newSdkInt)) {
-                BackgroundTaskSchedulerUma.getInstance().flushStats();
                 return;
             }
-
-            BackgroundTaskSchedulerUma.getInstance().removeCachedStats();
 
             // Explicitly create and invoke old delegate type to cancel all scheduled tasks.
             // All preference entries are kept until reschedule call, which removes then then.
@@ -217,7 +206,6 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
                     continue;
                 }
 
-                BackgroundTaskSchedulerUma.getInstance().reportTaskRescheduled();
                 backgroundTask.reschedule(context);
             }
         }
