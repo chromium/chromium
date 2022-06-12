@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3632579075709132555">隱私保護功能切換</translation>
 <translation id="3643810137582748570">略過校正</translation>
+<translation id="3651050199673793219">選取溫度單位</translation>
 <translation id="3678765385266369662">選取你想用來關閉寫入保護的方式</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">底座陀螺儀</translation>
 <translation id="385832974417157471">關機前請先在裝置上執行 Powerwash。如果你的裝置有上蓋，在關閉上蓋前請先等待 Powerwash 完成。Powerwash 可能需要一分鐘的時間才會完成。</translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="3862598938296403232">必須輸入說明</translation>
 <translation id="3865414814144988605">解析度</translation>
 <translation id="3866249974567520381">說明</translation>
 <translation id="387301095347517405">電池經過的完整充電循環次數</translation>
@@ -678,6 +680,7 @@
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="714876143603641390">LAN 連線狀態</translation>
+<translation id="7154020516215182599">分享意見回饋或說明你的問題。可以的話，請提供重現問題的步驟。</translation>
 <translation id="7155171745945906037">現有的相機相片或圖庫相片</translation>
 <translation id="7162487448488904999">相片庫</translation>
 <translation id="7170236477717446850">個人資料相片</translation>

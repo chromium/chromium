@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectivity</translation>
 <translation id="2008685064673031089">Prime search</translation>
+<translation id="2011174342667534258">SDK version:</translation>
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
 <translation id="2016848882344942759">--no white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2275586345903859204">Repair is complete</translation>
+<translation id="2276999893457278469">Top help content</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Insert external storage, such as a USB drive or an SD card, with the downloaded Chromebook Recovery Utility image</translation>
 <translation id="2307344026739914387">Use current keypair</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Restarting...</translation>
+<translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
@@ -860,6 +863,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="885701979325669005">Storage</translation>
 <translation id="8863170912498892583">Enable Dark theme</translation>
 <translation id="8863888432376731307">Get the <ph name="INTENT" /> for '<ph name="QUERY" />' and more</translation>
+<translation id="8864415976656252616">No suggested content. See top help content.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Device is a tablet.</translation>
 <translation id="8881098542468797602">Test succeeded</translation>
