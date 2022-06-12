@@ -129,7 +129,6 @@ void RelaunchLast(Profile* profile) {
 
 }  // namespace
 
-LaunchedAppInfo::LaunchedAppInfo() = default;
 LaunchedAppInfo::~LaunchedAppInfo() = default;
 LaunchedAppInfo::LaunchedAppInfo(const std::string& package_name,
                                  const std::u16string& visible_name,

@@ -59,7 +59,7 @@ class LaunchedAppInfo {
     gfx::Image icon_;
   };
 
-  LaunchedAppInfo();
+  LaunchedAppInfo() = delete;
   LaunchedAppInfo(const LaunchedAppInfo&) = delete;
   LaunchedAppInfo& operator=(const LaunchedAppInfo&) = delete;
   ~LaunchedAppInfo();
@@ -111,6 +111,7 @@ class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   friend struct base::DefaultSingletonTraits<EcheAppManagerFactory>;
+  friend class EcheAppManagerFactoryTest;
 
   EcheAppManagerFactory();
   ~EcheAppManagerFactory() override;
