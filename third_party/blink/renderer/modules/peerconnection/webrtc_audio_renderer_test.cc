@@ -220,6 +220,9 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
     stream_descriptor_ = nullptr;
     source_.reset();
     agent_group_scheduler_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+    web_view_->Close();
+#endif
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
