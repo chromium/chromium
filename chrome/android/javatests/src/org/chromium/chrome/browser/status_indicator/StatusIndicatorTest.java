@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.status_indicator;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
@@ -201,13 +202,14 @@ public class StatusIndicatorTest {
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:start_surface_variation/single"})
-    @DisabledTest(message = "https://crbug.com/1109965")
     public void testShowAndHideOnStartSurface() {
         // clang-format on
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(withId(R.id.secondary_tasks_surface_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
+        // R.id.status_indicator won't be in the View tree until the indicator is shown for the
+        // first time and the corresponding ViewStub is inflated.
+        onView(withId(R.id.status_indicator)).check(doesNotExist());
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         Assert.assertFalse("Wrong initial composited view visibility.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
@@ -243,10 +245,6 @@ public class StatusIndicatorTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mStatusIndicatorCoordinator.hide());
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(getStatusIndicator(), Matchers.is(Matchers.nullValue()));
-        });
-
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(R.id.secondary_tasks_surface_view))
@@ -256,7 +254,6 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1109965")
     public void testShowAndHideOnNTP() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -265,7 +262,9 @@ public class StatusIndicatorTest {
         final View view = tab.getNativePage().getView();
         view.setId(viewId);
 
-        onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
+        // R.id.status_indicator won't be in the View tree until the indicator is shown for the
+        // first time and the corresponding ViewStub is inflated.
+        onView(withId(R.id.status_indicator)).check(doesNotExist());
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(viewId)).check(matches(withTopMargin(0)));
         Assert.assertFalse("Wrong initial composited view visibility.",
@@ -299,13 +298,14 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1109965")
     public void testShowAndHideOnRecentTabsPage() {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         RecentTabsPageTestUtils.waitForRecentTabsPageLoaded(tab);
 
-        onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
+        // R.id.status_indicator won't be in the View tree until the indicator is shown for the
+        // first time and the corresponding ViewStub is inflated.
+        onView(withId(R.id.status_indicator)).check(doesNotExist());
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(R.id.recent_tabs_root))
                 .check(matches(

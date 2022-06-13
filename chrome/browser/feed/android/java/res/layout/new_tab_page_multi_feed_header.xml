@@ -30,7 +30,7 @@
 
     <!-- Null content description for now because UX in flux. -->
     <ImageView
-        android:id="@+id/status_indicator"
+        android:id="@+id/section_status_indicator"
         android:layout_width="@dimen/feed_header_icon_size"
         android:layout_height="@dimen/feed_header_icon_size"
         android:src="@drawable/ic_visibility_off_black"

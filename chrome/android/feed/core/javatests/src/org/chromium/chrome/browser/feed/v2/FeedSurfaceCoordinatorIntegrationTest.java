@@ -75,7 +75,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
 
         // Make sure the eye icon starts off invisible, tab views enabled.
-        onView(withId(R.id.status_indicator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.section_status_indicator)).check(matches(not(isDisplayed())));
         // We need to select the TabView which is a parent of the text view with "Following".
         onView(allOf(isFocusable(), withContentDescription("Following"),
                        hasDescendant(withText("Following"))))
@@ -86,7 +86,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         onView(withText("Turn off")).perform(ViewActions.click());
 
         // Verify that the eye icon appears, and the tab view disables.
-        onView(withId(R.id.status_indicator)).check(matches(isDisplayed()));
+        onView(withId(R.id.section_status_indicator)).check(matches(isDisplayed()));
         // Make sure the tab gets disabled.
         onView(allOf(isFocusable(), withContentDescription("Following"),
                        hasDescendant(withText("Following"))))
@@ -97,7 +97,7 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         onView(withText("Turn on")).perform(ViewActions.click());
 
         // Verify that the eye icon is gone, and the text is enabled.
-        onView(withId(R.id.status_indicator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.section_status_indicator)).check(matches(not(isDisplayed())));
         onView(allOf(isFocusable(), withContentDescription("Following"),
                        hasDescendant(withText("Following"))))
                 .check(matches(isEnabled()));

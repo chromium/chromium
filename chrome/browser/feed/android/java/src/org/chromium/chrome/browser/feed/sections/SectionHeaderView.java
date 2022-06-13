@@ -168,7 +168,7 @@ public class SectionHeaderView extends LinearLayout {
 
         mTitleView = findViewById(R.id.header_title);
         mMenuView = findViewById(R.id.header_menu);
-        mLeadingStatusIndicator = findViewById(R.id.status_indicator);
+        mLeadingStatusIndicator = findViewById(R.id.section_status_indicator);
         mTabLayout = findViewById(R.id.tab_list_view);
         mContent = findViewById(R.id.main_content);
 
