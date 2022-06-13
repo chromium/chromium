@@ -744,7 +744,8 @@ TEST_F(SplitViewControllerTest,
 // Tests that if split view mode is active when entering overview, the overview
 // windows grid should show in the non-default side of the screen, and the
 // default snapped window should not be shown in the overview window grid.
-TEST_F(SplitViewControllerTest, EnterOverviewModeTest) {
+// TODO(crbug.com/1335854): Deflake this test.
+TEST_F(SplitViewControllerTest, DISABLED_EnterOverviewModeTest) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
