@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_ANOMALY_DETECTOR_ANOMALY_DETECTOR_CLIENT_H_
 #define CHROMEOS_DBUS_ANOMALY_DETECTOR_ANOMALY_DETECTOR_CLIENT_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/anomaly_detector/anomaly_detector.pb.h"
@@ -41,11 +39,20 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ANOMALY_DETECTOR) AnomalyDetectorClient
   // or we will be unable to detect if it's filesystem is corrupt.
   virtual bool IsGuestFileCorruptionSignalConnected() = 0;
 
-  // Creates an instance of AnomalyDetectorClient.
-  static std::unique_ptr<AnomalyDetectorClient> Create();
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance if not already created.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
+  // Returns the global instance if initialized. May return null.
+  static AnomalyDetectorClient* Get();
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   AnomalyDetectorClient();
 };
 

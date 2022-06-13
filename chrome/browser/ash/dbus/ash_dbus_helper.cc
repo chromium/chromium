@@ -38,6 +38,7 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
+#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
@@ -109,6 +110,7 @@ void InitializeDBus() {
 
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
+  InitializeDBusClient<chromeos::AnomalyDetectorClient>(bus);
   InitializeDBusClient<chromeos::ArcCameraClient>(bus);
   InitializeDBusClient<chromeos::ArcQuotaClient>(bus);
   InitializeDBusClient<chromeos::ArcSensorServiceClient>(bus);
@@ -258,6 +260,7 @@ void ShutdownDBus() {
   chromeos::AttestationClient::Shutdown();
   chromeos::ArcQuotaClient::Shutdown();
   chromeos::ArcCameraClient::Shutdown();
+  chromeos::AnomalyDetectorClient::Shutdown();
 
   chromeos::DBusThreadManager::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();

@@ -15,7 +15,6 @@ class Bus;
 
 namespace chromeos {
 
-class AnomalyDetectorClient;
 class ArcAppfuseProviderClient;
 class ArcDataSnapshotdClient;
 class ArcKeymasterClient;
@@ -59,7 +58,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   friend class DBusThreadManager;
   friend class DBusThreadManagerSetter;
 
-  std::unique_ptr<AnomalyDetectorClient> anomaly_detector_client_;
   std::unique_ptr<ArcAppfuseProviderClient> arc_appfuse_provider_client_;
   std::unique_ptr<ArcDataSnapshotdClient> arc_data_snapshotd_client_;
   std::unique_ptr<ArcKeymasterClient> arc_keymaster_client_;

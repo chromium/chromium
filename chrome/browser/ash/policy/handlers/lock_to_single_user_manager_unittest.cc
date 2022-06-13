@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "components/account_id/account_id.h"
@@ -56,6 +57,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
+    chromeos::AnomalyDetectorClient::InitializeFake();
     chromeos::CryptohomeMiscClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
@@ -100,6 +102,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
     chromeos::CryptohomeMiscClient::Shutdown();
+    chromeos::AnomalyDetectorClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();

@@ -7,14 +7,21 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "chromeos/dbus/anomaly_detector/fake_anomaly_detector_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/anomaly_detector/dbus-constants.h"
 
 namespace chromeos {
+namespace {
+
+AnomalyDetectorClient* g_instance = nullptr;
+
+}  // namespace
 
 class AnomalyDetectorClientImpl : public AnomalyDetectorClient {
  public:
@@ -36,7 +43,6 @@ class AnomalyDetectorClientImpl : public AnomalyDetectorClient {
     return is_guest_file_corruption_signal_connected_;
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     anomaly_detector_proxy_ = bus->GetObjectProxy(
         anomaly_detector::kAnomalyEventServiceName,
@@ -94,11 +100,36 @@ class AnomalyDetectorClientImpl : public AnomalyDetectorClient {
   base::WeakPtrFactory<AnomalyDetectorClientImpl> weak_ptr_factory_{this};
 };
 
-AnomalyDetectorClient::AnomalyDetectorClient() = default;
-AnomalyDetectorClient::~AnomalyDetectorClient() = default;
+AnomalyDetectorClient::AnomalyDetectorClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-std::unique_ptr<AnomalyDetectorClient> AnomalyDetectorClient::Create() {
-  return std::make_unique<AnomalyDetectorClientImpl>();
+AnomalyDetectorClient::~AnomalyDetectorClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+void AnomalyDetectorClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new AnomalyDetectorClientImpl())->Init(bus);
+}
+
+// static
+void AnomalyDetectorClient::InitializeFake() {
+  new FakeAnomalyDetectorClient();
+}
+
+// static
+void AnomalyDetectorClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+// static
+AnomalyDetectorClient* AnomalyDetectorClient::Get() {
+  return g_instance;
 }
 
 }  // namespace chromeos

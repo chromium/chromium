@@ -63,6 +63,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
@@ -94,10 +95,6 @@ ash::CiceroneClient* GetCiceroneClient() {
 
 ash::ConciergeClient* GetConciergeClient() {
   return ash::ConciergeClient::Get();
-}
-
-chromeos::AnomalyDetectorClient* GetAnomalyDetectorClient() {
-  return chromeos::DBusThreadManager::Get()->GetAnomalyDetectorClient();
 }
 
 // Find any callbacks for the specified |vm_name|, invoke them with
@@ -1245,7 +1242,9 @@ CrostiniManager::CrostiniManager(Profile* profile)
   GetCiceroneClient()->AddObserver(this);
   GetConciergeClient()->AddVmObserver(this);
   GetConciergeClient()->AddContainerObserver(this);
-  GetAnomalyDetectorClient()->AddObserver(this);
+  if (chromeos::AnomalyDetectorClient::Get()) {  // May be null in tests.
+    chromeos::AnomalyDetectorClient::Get()->AddObserver(this);
+  }
   if (chromeos::NetworkHandler::IsInitialized()) {
     chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
         this, ::base::Location::Current());
@@ -1292,7 +1291,9 @@ void CrostiniManager::RemoveDBusObservers() {
   dbus_observers_removed_ = true;
   GetCiceroneClient()->RemoveObserver(this);
   GetConciergeClient()->RemoveContainerObserver(this);
-  GetAnomalyDetectorClient()->RemoveObserver(this);
+  if (chromeos::AnomalyDetectorClient::Get()) {  // May be null in tests.
+    chromeos::AnomalyDetectorClient::Get()->RemoveObserver(this);
+  }
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   }
@@ -1476,7 +1477,9 @@ void CrostiniManager::StartTerminaVm(std::string name,
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  if (!GetAnomalyDetectorClient()->IsGuestFileCorruptionSignalConnected()) {
+  auto* anomaly_detector_client = chromeos::AnomalyDetectorClient::Get();
+  if (anomaly_detector_client &&
+      !anomaly_detector_client->IsGuestFileCorruptionSignalConnected()) {
     LOG(ERROR) << "GuestFileCorruptionSignal not connected, will not be "
                   "able to detect file system corruption.";
     std::move(callback).Run(/*success=*/false);

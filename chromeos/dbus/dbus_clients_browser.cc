@@ -5,8 +5,6 @@
 #include "chromeos/dbus/dbus_clients_browser.h"
 
 #include "base/check.h"
-#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
-#include "chromeos/dbus/anomaly_detector/fake_anomaly_detector_client.h"
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
@@ -73,8 +71,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       use_real_clients ? REAL_DBUS_CLIENT_IMPLEMENTATION
                        : FAKE_DBUS_CLIENT_IMPLEMENTATION;
 
-  anomaly_detector_client_ =
-      CREATE_DBUS_CLIENT(AnomalyDetectorClient, use_real_clients);
   arc_appfuse_provider_client_ =
       CREATE_DBUS_CLIENT(ArcAppfuseProviderClient, use_real_clients);
   arc_data_snapshotd_client_ =
@@ -121,7 +117,6 @@ DBusClientsBrowser::~DBusClientsBrowser() = default;
 void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   DCHECK(DBusThreadManager::IsInitialized());
 
-  anomaly_detector_client_->Init(system_bus);
   arc_appfuse_provider_client_->Init(system_bus);
   arc_data_snapshotd_client_->Init(system_bus);
   arc_keymaster_client_->Init(system_bus);
