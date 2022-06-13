@@ -49,10 +49,11 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
   }
 
   void OpenFileSystem(const blink::StorageKey& storage_key,
+                      const absl::optional<BucketLocator>& bucket_locator,
                       FileSystemType type,
                       OpenFileSystemMode mode) {
     delegate_->OpenFileSystem(
-        storage_key, type, mode,
+        storage_key, bucket_locator, type, mode,
         base::BindOnce(
             &SandboxFileSystemBackendDelegateTest::OpenFileSystemCallback,
             base::Unretained(this)),
@@ -126,7 +127,10 @@ TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
   const blink::StorageKey& storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
-  OpenFileSystem(storage_key, kFileSystemTypeTemporary,
+  // TODO(https://crbug.com/1330608): ensure that this test suite properly
+  // integrates non-default BucketLocators into OpenFileSystem.
+  OpenFileSystem(storage_key, /*bucket_locator=*/absl::nullopt,
+                 kFileSystemTypeTemporary,
                  OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
 
   EXPECT_EQ(callback_count(), 1);

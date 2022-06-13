@@ -90,7 +90,7 @@ void RootDeleteHelper::DidResetFileChangeTracker() {
 
   // Reopening the filesystem.
   file_system_context_->sandbox_delegate()->OpenFileSystem(
-      url_.storage_key(), url_.type(),
+      url_.storage_key(), url_.bucket(), url_.type(),
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&RootDeleteHelper::DidOpenFileSystem,
                      weak_factory_.GetWeakPtr()),

@@ -102,6 +102,7 @@ void LocalFileSyncContext::MaybeInitializeFileSystemContext(
       base::BindOnce(&storage::SandboxFileSystemBackendDelegate::OpenFileSystem,
                      base::Unretained(file_system_context->sandbox_delegate()),
                      blink::StorageKey(url::Origin::Create(source_url)),
+                     /*bucket_locator=*/absl::nullopt,
                      storage::kFileSystemTypeSyncable,
                      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
                      std::move(open_filesystem_callback), GURL()));
