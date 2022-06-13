@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 class PasswordChangeRunDisplay;
 
@@ -44,6 +45,7 @@ class MockPasswordChangeRunController : public PasswordChangeRunController {
                    GeneratedPasswordPromptSpecification&,
                const std::u16string&),
               (override));
+  MOCK_METHOD(void, ShowStartingScreen, (const GURL&), (override));
   MOCK_METHOD(void, OnGeneratedPasswordSelected, (bool), (override));
   base::WeakPtr<PasswordChangeRunController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

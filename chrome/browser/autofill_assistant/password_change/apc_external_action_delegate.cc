@@ -14,6 +14,9 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 // TODO(crbug.com/1324089): Implement once the side panel and
 // UpdateDesktopSideAction are available.
@@ -155,6 +158,17 @@ void ApcExternalActionDelegate::OnGeneratedPasswordSelected(bool selected) {
   SetTitle(std::u16string());
 
   // TODO(crbug.com/1331202): Terminate action and send return value.
+}
+
+void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
+  SetTopIcon(
+      autofill_assistant::password_change::TopIcon::TOP_ICON_UNSPECIFIED);
+  SetProgressBarStep(
+      autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_START);
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
+      base::UTF8ToUTF16(url.host_piece())));
+  SetDescription(std::u16string());
 }
 
 base::WeakPtr<PasswordChangeRunController>

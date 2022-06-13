@@ -137,6 +137,7 @@ ApcClientImpl::CreateExternalScriptController() {
   apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
       side_panel_coordinator_.get());
   apc_external_action_delegate_->SetupDisplay();
+  apc_external_action_delegate_->ShowStartingScreen(url_);
 
   std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(

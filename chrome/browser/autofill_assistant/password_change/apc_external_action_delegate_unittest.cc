@@ -12,8 +12,11 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_display.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
+#include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -35,6 +38,8 @@ constexpr ProgressStep kStep = ProgressStep::PROGRESS_STEP_START;
 
 constexpr char16_t kInterruptTitle[] = u"Title during interrupt";
 constexpr char16_t kInterruptDescription[] = u"Description during interrupt";
+
+constexpr char kUrl[] = "https://wwww.example.com";
 
 autofill_assistant::password_change::BasePromptSpecification
 CreateBasePrompt() {
@@ -175,4 +180,19 @@ TEST_F(ApcExternalActionDelegateTest, ShowGeneratedPasswordPromptAndAccept) {
 
   EXPECT_CALL(*display(), ClearPrompt);
   action_delegate()->OnGeneratedPasswordSelected(true);
+}
+
+TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
+  const GURL url(kUrl);
+
+  EXPECT_CALL(*display(), SetTopIcon(TopIcon::TOP_ICON_UNSPECIFIED));
+  EXPECT_CALL(*display(),
+              SetProgressBarStep(ProgressStep::PROGRESS_STEP_START));
+  EXPECT_CALL(*display(),
+              SetTitle(l10n_util::GetStringFUTF16(
+                  IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
+                  base::UTF8ToUTF16(url.host_piece()))));
+  EXPECT_CALL(*display(), SetDescription(std::u16string()));
+
+  action_delegate()->ShowStartingScreen(url);
 }

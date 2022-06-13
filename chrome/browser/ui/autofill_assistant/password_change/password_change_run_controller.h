@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
+#include "url/gurl.h"
 
 class PasswordChangeRunDisplay;
 
@@ -31,7 +32,7 @@ class PasswordChangeRunController {
 
   virtual ~PasswordChangeRunController() = default;
 
-  // Shows the |PasswordChangeRunDisplay|.
+  // Shows the `PasswordChangeRunDisplay`.
   virtual void Show(
       base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display) = 0;
 
@@ -45,11 +46,13 @@ class PasswordChangeRunController {
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
 
+  // Shows a base type prompt and receives the response from the view.
   virtual void ShowBasePrompt(
       const autofill_assistant::password_change::BasePromptSpecification&
           base_prompt) = 0;
   virtual void OnBasePromptChoiceSelected(int choice_index) = 0;
 
+  // Shows a generated password prompt and receives the response from the view.
   virtual void ShowGeneratedPasswordPrompt(
       const autofill_assistant::password_change::
           GeneratedPasswordPromptSpecification& password_prompt,
@@ -57,6 +60,10 @@ class PasswordChangeRunController {
   // Called on user interaction with the prompt. `selected` indicates whether
   // the automatically generated password was selected or not.
   virtual void OnGeneratedPasswordSelected(bool selected) = 0;
+
+  // Shows the intermediate starting screen until first actions are received
+  // from the script controller.
+  virtual void ShowStartingScreen(const GURL& url) = 0;
 
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;

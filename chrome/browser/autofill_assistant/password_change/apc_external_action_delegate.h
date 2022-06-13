@@ -16,6 +16,11 @@
 class PasswordChangeRunDisplay;
 class AssistantDisplayDelegate;
 
+// Receives actions from the `ExternalScriptController` and passes them on an
+// implementation of a `PasswordChangeRunDisplay`.
+// Currently `ApcExternalActionDelegate` implements two interfaces. If the
+// class becomes too complex, we may later separate out the
+// `PasswordChangeRunController` implementation and compose it instead.
 class ApcExternalActionDelegate
     : public autofill_assistant::ExternalActionDelegate,
       public PasswordChangeRunController {
@@ -57,6 +62,7 @@ class ApcExternalActionDelegate
           GeneratedPasswordPromptSpecification& password_prompt,
       const std::u16string& generated_password) override;
   void OnGeneratedPasswordSelected(bool selected) override;
+  void ShowStartingScreen(const GURL& url) override;
 
  private:
   friend class ApcExternalActionDelegateTest;
