@@ -94,6 +94,9 @@ const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 const base::Feature kDiscountConsentV2{"DiscountConsentV2",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCommerceHintAndroid{"CommerceHintAndroid",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
     "discount-consent-ntp-variation";
