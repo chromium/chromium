@@ -182,9 +182,9 @@ export class ChromeCartModuleElement extends I18nMixin
   private getFaviconUrl_(url: string): string {
     const faviconUrl = new URL('chrome://favicon2/');
     faviconUrl.searchParams.set('size', '24');
-    faviconUrl.searchParams.set('scale_factor', '1x');
-    faviconUrl.searchParams.set('show_fallback_monogram', '');
-    faviconUrl.searchParams.set('page_url', url);
+    faviconUrl.searchParams.set('scaleFactor', '1x');
+    faviconUrl.searchParams.set('showFallbackMonogram', '');
+    faviconUrl.searchParams.set('pageUrl', url);
     return faviconUrl.href;
   }
 

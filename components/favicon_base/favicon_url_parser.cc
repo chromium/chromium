@@ -97,20 +97,18 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
     const base::StringPiece key = it.GetKey();
     // Note: each of these keys can be used in chrome://favicon2 path. See file
     // "favicon_url_parser.h" for a description of what each one does.
-    if (key == "allow_google_server_fallback" ||
-        key == "allowGoogleServerFallback") {
+    if (key == "allowGoogleServerFallback") {
       const std::string val = it.GetUnescapedValue();
       if (!(val == "0" || val == "1"))
         return false;
       parsed->allow_favicon_server_fallback = val == "1";
-    } else if (key == "show_fallback_monogram" ||
-               key == "showFallbackMonogram") {
+    } else if (key == "showFallbackMonogram") {
       parsed->show_fallback_monogram = true;
-    } else if (key == "icon_url" || key == "iconUrl") {
+    } else if (key == "iconUrl") {
       parsed->icon_url = it.GetUnescapedValue();
-    } else if (key == "page_url" || key == "pageUrl") {
+    } else if (key == "pageUrl") {
       parsed->page_url = it.GetUnescapedValue();
-    } else if ((key == "scale_factor" || key == "scaleFactor") &&
+    } else if (key == "scaleFactor" &&
                !webui::ParseScaleFactor(it.GetUnescapedValue(),
                                         &parsed->device_scale_factor)) {
       return false;

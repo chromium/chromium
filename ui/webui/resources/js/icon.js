@@ -107,7 +107,7 @@ export function getImage(path) {
 function getBaseFaviconUrl() {
   const faviconUrl = new URL('chrome://favicon2/');
   faviconUrl.searchParams.set('size', '16');
-  faviconUrl.searchParams.set('scale_factor', 'SCALEFACTORx');
+  faviconUrl.searchParams.set('scaleFactor', 'SCALEFACTORx');
   return faviconUrl;
 }
 
@@ -119,7 +119,7 @@ function getBaseFaviconUrl() {
  */
 export function getFavicon(url) {
   const faviconUrl = getBaseFaviconUrl();
-  faviconUrl.searchParams.set('icon_url', url);
+  faviconUrl.searchParams.set('iconUrl', url);
   return getImageSet(faviconUrl.toString());
 }
 
@@ -142,13 +142,13 @@ export function getFaviconForPageURL(
   // chrome://favicon2 format in components/favicon_base/favicon_url_parser.h.
   const faviconUrl = getBaseFaviconUrl();
   faviconUrl.searchParams.set('size', size);
-  faviconUrl.searchParams.set('page_url', url);
-  // TODO(dbeam): use the presence of 'allow_google_server_fallback' to
+  faviconUrl.searchParams.set('pageUrl', url);
+  // TODO(dbeam): use the presence of 'allowGoogleServerFallback' to
   // indicate true, otherwise false.
   const fallback = isSyncedUrlForHistoryUi ? '1' : '0';
-  faviconUrl.searchParams.set('allow_google_server_fallback', fallback);
+  faviconUrl.searchParams.set('allowGoogleServerFallback', fallback);
   if (isSyncedUrlForHistoryUi) {
-    faviconUrl.searchParams.set('icon_url', remoteIconUrlForUma);
+    faviconUrl.searchParams.set('iconUrl', remoteIconUrlForUma);
   }
 
   return getImageSet(faviconUrl.toString());

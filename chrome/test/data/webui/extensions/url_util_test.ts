@@ -10,10 +10,10 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 suite('UrlUtilTest', function() {
   function getExpectedImageSet(url: string): string {
     return '-webkit-image-set(' +
-        'url("chrome://favicon2/?size=20&scale_factor=1x&page_url=' +
-        encodeURIComponent(url) + '&allow_google_server_fallback=0") 1x, ' +
-        'url("chrome://favicon2/?size=20&scale_factor=2x&page_url=' +
-        encodeURIComponent(url) + '&allow_google_server_fallback=0") 2x)';
+        'url("chrome://favicon2/?size=20&scaleFactor=1x&pageUrl=' +
+        encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
+        'url("chrome://favicon2/?size=20&scaleFactor=2x&pageUrl=' +
+        encodeURIComponent(url) + '&allowGoogleServerFallback=0") 2x)';
   }
 
   test('favicon for normal URL', function() {
