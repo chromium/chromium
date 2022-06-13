@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "test"
+PASS Audit report
+PASS > [test] Test webm decoding
+PASS   context.sampleRate is equal to 48000.
+PASS   Number of channels is equal to 2.
+PASS   Decoded number of frames is equal to 46080.
+FAIL X SNR between actual expected channel 0 is not greater than or equal to 110.97. Got 42.256522405112946. assert_true: expected true got false
+FAIL X Decoded channel 0 does not equal [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0.000040234,"relativeThreshold":0}.
+	Index	Actual			Expected		AbsError		RelError		Test threshold
+	[205]	8.8503677397966385e-4	8.2399975508451462e-4	6.1037018895149231e-5	7.4074074074074070e-2	4.0234000000000001e-5
+	[207]	1.8311105668544769e-4	1.2207403779029846e-4	6.1037018895149231e-5	5.0000000000000000e-1	4.0234000000000001e-5
+	[288]	2.3194067180156708e-3	2.3804437369108200e-3	6.1037018895149231e-5	2.5641025641025640e-2	4.0234000000000001e-5
+	[307]	1.0925626382231712e-2	1.0986663401126862e-2	6.1037018895149231e-5	5.5555555555555558e-3	4.0234000000000001e-5
+	[309]	2.8504287824034691e-2	2.8565324842929840e-2	6.1037018895149231e-5	2.1367521367521370e-3	4.0234000000000001e-5
+	...and 37692 more errors.
+	Max AbsError of 2.3926496505737305e-2 at index of 26809.
+	[26809]	9.9240088462829590e-1	9.6847438812255859e-1	2.3926496505737305e-2	2.4705347708905496e-2	4.0234000000000001e-5
+	Max RelError of 5.0000000000000000e-1 at index of 207.
+ assert_true: expected true got false
+FAIL X SNR between actual expected channel 1 is not greater than or equal to 110.97. Got 42.256522405112946. assert_true: expected true got false
+FAIL X Decoded channel 1 does not equal [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0.000040234,"relativeThreshold":0}.
+	Index	Actual			Expected		AbsError		RelError		Test threshold
+	[205]	8.8503677397966385e-4	8.2399975508451462e-4	6.1037018895149231e-5	7.4074074074074070e-2	4.0234000000000001e-5
+	[207]	1.8311105668544769e-4	1.2207403779029846e-4	6.1037018895149231e-5	5.0000000000000000e-1	4.0234000000000001e-5
+	[288]	2.3194067180156708e-3	2.3804437369108200e-3	6.1037018895149231e-5	2.5641025641025640e-2	4.0234000000000001e-5
+	[307]	1.0925626382231712e-2	1.0986663401126862e-2	6.1037018895149231e-5	5.5555555555555558e-3	4.0234000000000001e-5
+	[309]	2.8504287824034691e-2	2.8565324842929840e-2	6.1037018895149231e-5	2.1367521367521370e-3	4.0234000000000001e-5
+	...and 37692 more errors.
+	Max AbsError of 2.3926496505737305e-2 at index of 26809.
+	[26809]	9.9240088462829590e-1	9.6847438812255859e-1	2.3926496505737305e-2	2.4705347708905496e-2	4.0234000000000001e-5
+	Max RelError of 5.0000000000000000e-1 at index of 207.
+ assert_true: expected true got false
+FAIL < [test] 4 out of 7 assertions were failed. assert_true: expected true got false
+FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed. assert_true: expected true got false
+Harness: the test ran to completion.
+

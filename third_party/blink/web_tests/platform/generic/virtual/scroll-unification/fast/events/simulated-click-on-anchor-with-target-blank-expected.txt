@@ -1,0 +1,4 @@
+Default policy for navigation to 'blank' is 'new background tab'
+Tests that hitting ctrl-enter on a link with target=_blank still opens it in the background
+
+link

@@ -46,8 +46,7 @@
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:
-"Arial Unicode MS" : 4,
-"Hiragino Mincho ProN" : 4,
-"Apple Symbols" : 1
+"Apple Symbols" : 5,
+"Hiragino Mincho ProN" : 4
 
 

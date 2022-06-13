@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "load-reference"
+PASS Executing "generate-verify"
+PASS Audit report
+PASS > [load-reference] 
+PASS < [load-reference] All assertions passed. (total 0 assertions)
+PASS > [generate-verify] 
+FAIL X SNR is not greater than or equal to 93.32. Got 93.30261270501481. assert_true: expected true got false
+FAIL X : Maximum difference (in ulp units (16-bits)) is not less than or equal to 1.0352. Got 1.0390625. assert_true: expected true got false
+PASS   : Number of differences between results is less than or equal to 0.
+FAIL < [generate-verify] 2 out of 3 assertions were failed. assert_true: expected true got false
+FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 2 tasks were failed. assert_true: expected true got false
+Harness: the test ran to completion.
+

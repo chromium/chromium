@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL VTTCue(), initial values assert_equals: expected (string) "start" but got (undefined) undefined
+PASS VTTCue(), bad start time
+PASS VTTCue(), bad end time
+FAIL VTTCue(), unbounded end time Failed to construct 'VTTCue': The provided double value is non-finite.
+PASS VTTCue(), text formatting
+Harness: the test ran to completion.
+

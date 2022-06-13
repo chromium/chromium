@@ -1,0 +1,1 @@
+PASS: Plugin instance available while waiting for style sheets to load
