@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -934,6 +935,23 @@ public class TabSwitcherMediatorUnitTest {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
 
         verify(mMessageItemsController).restoreAllAppendedMessage();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testBackPress() {
+        initAndAssertAllProperties();
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+
+        mMediator.setTabGridDialogController(mTabGridDialogController);
+        doReturn(true).when(mTabGridDialogController).isVisible();
+        Assert.assertTrue("Should intercept back press if tab grid dialog is visible",
+                mMediator.shouldInterceptBackPress());
+
+        doReturn(false).when(mTabGridDialogController).isVisible();
+        mMediator.showTabSwitcherView(false);
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        Assert.assertTrue(mMediator.shouldInterceptBackPress());
     }
 
     private void initAndAssertAllProperties() {

@@ -360,6 +360,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (BackPressManager.isEnabled()) {
             backPressManager.addHandler(this, Type.START_SURFACE_MEDIATOR);
             notifyBackPressStateChanged();
+            mController.getHandleBackPressChangedSupplier().addObserver(
+                    (v) -> notifyBackPressStateChanged());
             mController.isDialogVisibleSupplier().addObserver((v) -> notifyBackPressStateChanged());
         }
     }
@@ -1097,7 +1099,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 
-    private boolean shouldInterceptBackPress() {
+    @VisibleForTesting
+    boolean shouldInterceptBackPress() {
         if (mSecondaryTasksSurfaceController != null
                 && mSecondaryTasksSurfaceController.isDialogVisible()) {
             return true;

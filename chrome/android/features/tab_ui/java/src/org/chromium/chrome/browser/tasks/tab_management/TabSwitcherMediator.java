@@ -515,6 +515,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         mContainerViewModel.set(IS_VISIBLE, isVisible);
+        notifyBackPressStateChangedInternal();
     }
 
     private void updateTopControlsProperties() {
@@ -1019,7 +1020,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
     }
 
-    private boolean shouldInterceptBackPress() {
+    @VisibleForTesting
+    boolean shouldInterceptBackPress() {
         if (isDialogVisible()) return true;
 
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
