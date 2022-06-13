@@ -736,8 +736,10 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       AttributionSrcNavigationSourceAndTrigger_ReportSent) {
+// TODO(crbug.com/1335817): Deflake this test.
+IN_PROC_BROWSER_TEST_F(
+    AttributionsBrowserTest,
+    DISABLED_AttributionSrcNavigationSourceAndTrigger_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
