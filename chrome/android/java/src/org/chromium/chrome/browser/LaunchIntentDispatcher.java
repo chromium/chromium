@@ -436,6 +436,11 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         if ((mIntent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0) {
             newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Startup.Android.NewInstance.LaunchedFromDraggedLinkViewIntent",
+                        mIntent.getBooleanExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, false));
+            }
         }
 
         Uri uri = newIntent.getData();

@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -207,6 +208,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                         mTab.getContext().getApplicationContext(),
                         MultiWindowUtils.getInstanceIdForViewIntent(), true, false);
                 intent.setData(Uri.parse(urlString));
+                intent.putExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, true);
             }
             return intent;
         }

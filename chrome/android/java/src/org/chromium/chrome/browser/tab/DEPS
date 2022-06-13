@@ -100,6 +100,9 @@ specific_include_rules = {
   'TabStateBrowserControlsVisibilityDelegate\.java': [
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
   ],
+  'TabViewAndroidDelegate\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
+  ],
   'TabViewManagerImpl\.java': [
     "+chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",
   ],
