@@ -10,8 +10,6 @@ option java_multiple_files = true;
 
 package autofill_assistant.password_change;
 
-import "components/autofill_assistant/browser/public/external_action.proto";
-
 enum TopIcon {
   TOP_ICON_UNSPECIFIED = 0;
 
@@ -35,20 +33,54 @@ enum ProgressStep {
   PROGRESS_STEP_END = 5;
 }
 
-message BasePrompt {
-  message Choice {
-    // The text shown on the chip/button.
-    optional string text = 1;
+// Represents a choice in a prompt-type action.
+message Choice {
+  // The text shown on the chip/button.
+  optional string text = 1;
 
-    // Tag that identifies a choice.
-    optional string tag = 2;
-  }
-  // List of available choices in a prompt
-  repeated Choice choices = 1;
+  // Tag that identifies a choice - will be returned as a result if this
+  // choice is selected.
+  optional string tag = 2;
+
+  // Whether the button is highlighted.
+  optional bool highlighted = 3;
+
+  // TODO(crbug.com/1331202): Add fields for select / enable on DOM condition.
+}
+
+// Prompts the user with a title and multiple choices.
+message BasePromptSpecification {
+  // Reserved value for the return key.
+  reserved 1;
+
+  // The title of the prompt.
+  optional string title = 2;
+
+  // List of available choices in a prompt.
+  repeated Choice choices = 3;
+}
+
+// Prompts the user to accept a generated password and shows that password
+// to the user.
+message GeneratedPasswordPromptSpecification {
+  // Reserved value for the return key.
+  reserved 1;
+
+  // The title of the prompt.
+  optional string title = 2;
+
+  // The description of the prompt.
+  optional string description = 3;
+
+  // The choice for a manually selected password.
+  optional Choice manual_password_choice = 4;
+
+  // The choice for the generated password.
+  optional Choice generated_password_choice = 5;
 }
 
 // Updates the side panel rendered in desktop during APC runs.
-message UpdateDesktopSidePanelSpecification {
+message UpdatepSidePanelSpecification {
   // Icon rendered on top of the side panel.
   optional TopIcon top_icon = 1;
 
@@ -60,18 +92,4 @@ message UpdateDesktopSidePanelSpecification {
 
   // The current password change flow step.
   optional ProgressStep progress_step = 4;
-
-  message Prompt {
-    oneof type {
-      // TODO(crbug.com/1328093): Add remaining prompt fieds .
-      BasePrompt prompt = 1;
-    }
-  }
-
-  // Optional prompt to ask for user input.
-  optional Prompt prompt = 5;
-}
-
-extend external.ActionInfo {
-  optional UpdateDesktopSidePanelSpecification update_side_panel = 447949102;
 }

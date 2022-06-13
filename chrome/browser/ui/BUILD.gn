@@ -5697,6 +5697,8 @@ static_library("test_support") {
       "autofill_assistant/password_change/mock_assistant_onboarding_prompt.h",
       "autofill_assistant/password_change/mock_password_change_run_controller.cc",
       "autofill_assistant/password_change/mock_password_change_run_controller.h",
+      "autofill_assistant/password_change/mock_password_change_run_display.cc",
+      "autofill_assistant/password_change/mock_password_change_run_display.h",
       "exclusive_access/exclusive_access_test.cc",
       "exclusive_access/exclusive_access_test.h",
       "exclusive_access/fullscreen_controller_state_test.cc",
@@ -5726,6 +5728,7 @@ static_library("test_support") {
       "webui/help/test_version_updater.h",
     ]
     deps += [
+      "//chrome/browser/autofill_assistant/password_change/proto:proto",
       "//chrome/test:test_support_ui",
       "//components/media_message_center:media_message_center",
       "//components/media_router/browser:browser",

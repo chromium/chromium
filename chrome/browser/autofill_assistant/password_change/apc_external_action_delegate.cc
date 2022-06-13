@@ -5,9 +5,11 @@
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
@@ -75,14 +77,64 @@ void ApcExternalActionDelegate::SetProgressBarStep(
 }
 
 void ApcExternalActionDelegate::ShowBasePrompt(
-    const autofill_assistant::password_change::BasePrompt& base_prompt) {}
+    const autofill_assistant::password_change::BasePromptSpecification&
+        base_prompt) {
+  // Showing the prompt will override the description, so set the model value
+  // to empty to ensure that it reflects the state of the view.
+  model_.description = std::u16string();
 
-void ApcExternalActionDelegate::OnBasePromptOptionSelected(int option_index) {}
+  std::vector<PasswordChangeRunDisplay::PromptChoice> choices;
+  choices.reserve(base_prompt.choices_size());
+  base_prompt_return_values_.clear();
+  base_prompt_return_values_.reserve(base_prompt.choices_size());
 
-void ApcExternalActionDelegate::ShowSuggestedPasswordPrompt(
-    const std::u16string& suggested_password) {}
+  for (const auto& choice : base_prompt.choices()) {
+    choices.push_back(PasswordChangeRunDisplay::PromptChoice{
+        .text = base::UTF8ToUTF16(choice.text()),
+        .highlighted = choice.highlighted()});
+    base_prompt_return_values_.push_back(choice.tag());
+  }
 
-void ApcExternalActionDelegate::OnSuggestedPasswordSelected(bool selected) {}
+  SetTitle(base::UTF8ToUTF16(base_prompt.title()));
+  password_change_run_display_->ShowBasePrompt(choices);
+}
+
+void ApcExternalActionDelegate::OnBasePromptChoiceSelected(int choice_index) {
+  password_change_run_display_->ClearPrompt();
+
+  // TODO(crbug.com/1331202): Terminate action and send return value.
+}
+
+void ApcExternalActionDelegate::ShowGeneratedPasswordPrompt(
+    const autofill_assistant::password_change::
+        GeneratedPasswordPromptSpecification& password_prompt,
+    const std::u16string& generated_password) {
+  // Showing the prompt will override both the title and the description. Since
+  // they cannot be reconstructed from the model due to the additional field
+  // for the password, we clear the model.
+  model_.title = std::u16string();
+  model_.description = std::u16string();
+  password_change_run_display_->ShowGeneratedPasswordPrompt(
+      base::UTF8ToUTF16(password_prompt.title()), generated_password,
+      base::UTF8ToUTF16(password_prompt.description()),
+      PasswordChangeRunDisplay::PromptChoice{
+          .text = base::UTF8ToUTF16(
+              password_prompt.manual_password_choice().text()),
+          .highlighted =
+              password_prompt.manual_password_choice().highlighted()},
+      PasswordChangeRunDisplay::PromptChoice{
+          .text = base::UTF8ToUTF16(
+              password_prompt.generated_password_choice().text()),
+          .highlighted =
+              password_prompt.generated_password_choice().highlighted()});
+}
+
+void ApcExternalActionDelegate::OnGeneratedPasswordSelected(bool selected) {
+  password_change_run_display_->ClearPrompt();
+  SetTitle(std::u16string());
+
+  // TODO(crbug.com/1331202): Terminate action and send return value.
+}
 
 base::WeakPtr<PasswordChangeRunController>
 ApcExternalActionDelegate::GetWeakPtr() {

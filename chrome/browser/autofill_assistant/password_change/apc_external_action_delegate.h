@@ -30,7 +30,7 @@ class ApcExternalActionDelegate
   // needs to be called BEFORE starting a script.
   void SetupDisplay();
 
-  // ExternalActionDelegate
+  // ExternalActionDelegate:
   void OnActionRequested(
       const autofill_assistant::external::Action& action_info,
       base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
@@ -39,7 +39,7 @@ class ApcExternalActionDelegate
   void OnInterruptStarted() override;
   void OnInterruptFinished() override;
 
-  // PasswordChangeRunController
+  // PasswordChangeRunController:
   void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) override;
   void SetTitle(const std::u16string& title) override;
@@ -47,19 +47,29 @@ class ApcExternalActionDelegate
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) override;
   base::WeakPtr<PasswordChangeRunController> GetWeakPtr() override;
-  void ShowBasePrompt(const autofill_assistant::password_change::BasePrompt&
-                          base_prompt) override;
-  void OnBasePromptOptionSelected(int option_index) override;
-  void ShowSuggestedPasswordPrompt(
-      const std::u16string& suggested_password) override;
-  void OnSuggestedPasswordSelected(bool selected) override;
+  void ShowBasePrompt(
+      const autofill_assistant::password_change::BasePromptSpecification&
+          base_prompt) override;
+  void OnBasePromptChoiceSelected(int choice_index) override;
+  void ShowGeneratedPasswordPrompt(
+      const autofill_assistant::password_change::
+          GeneratedPasswordPromptSpecification& password_prompt,
+      const std::u16string& generated_password) override;
+  void OnGeneratedPasswordSelected(bool selected) override;
 
  private:
-  // PasswordChangeRunController
+  friend class ApcExternalActionDelegateTest;
+
+  // PasswordChangeRunController:
   void Show(base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display)
       override;
+
   // Stores the UI state of a password change run.
   PasswordChangeRunController::Model model_;
+
+  // The return values associated with each currently shown base prompt choice.
+  // It is empty when no prompt is being displayed.
+  std::vector<std::string> base_prompt_return_values_;
 
   // The view that renders a password change run flow.
   base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display_ =

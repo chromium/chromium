@@ -44,12 +44,19 @@ class PasswordChangeRunController {
   virtual void SetDescription(const std::u16string& description) = 0;
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
+
   virtual void ShowBasePrompt(
-      const autofill_assistant::password_change::BasePrompt& base_prompt) = 0;
-  virtual void OnBasePromptOptionSelected(int option_index) = 0;
-  virtual void ShowSuggestedPasswordPrompt(
+      const autofill_assistant::password_change::BasePromptSpecification&
+          base_prompt) = 0;
+  virtual void OnBasePromptChoiceSelected(int choice_index) = 0;
+
+  virtual void ShowGeneratedPasswordPrompt(
+      const autofill_assistant::password_change::
+          GeneratedPasswordPromptSpecification& password_prompt,
       const std::u16string& suggested_password) = 0;
-  virtual void OnSuggestedPasswordSelected(bool selected) = 0;
+  // Called on user interaction with the prompt. `selected` indicates whether
+  // the automatically generated password was selected or not.
+  virtual void OnGeneratedPasswordSelected(bool selected) = 0;
 
   // Returns a weak pointer to this controller.
   virtual base::WeakPtr<PasswordChangeRunController> GetWeakPtr() = 0;

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_VIEW_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
@@ -14,6 +18,7 @@
 
 namespace views {
 class ImageView;
+class View;
 }  // namespace views
 
 class PasswordChangeRunController;
@@ -36,7 +41,8 @@ class PasswordChangeRunView : public views::View,
 
     kBody,
     kLineSeparator,
-    kDescription
+    kDescription,
+    kButtonContainer,
   };
 
   PasswordChangeRunView(base::WeakPtr<PasswordChangeRunController> controller,
@@ -46,7 +52,7 @@ class PasswordChangeRunView : public views::View,
   PasswordChangeRunView(const PasswordChangeRunView&) = delete;
   PasswordChangeRunView& operator=(const PasswordChangeRunView&) = delete;
 
-  // PasswordChangeRunDisplay
+  // PasswordChangeRunDisplay:
   void Show() override;
   void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) override;
@@ -54,16 +60,21 @@ class PasswordChangeRunView : public views::View,
   void SetDescription(const std::u16string& progress_description) override;
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) override;
-  void ShowBasePrompt(const std::vector<std::string>& options) override;
-  void ShowSuggestedPasswordPrompt(
-      const std::u16string& suggested_password) override;
+  void ShowBasePrompt(const std::vector<PromptChoice>& options) override;
+  void ShowGeneratedPasswordPrompt(
+      const std::u16string& title,
+      const std::u16string& generated_password,
+      const std::u16string& description,
+      const PromptChoice& manual_password_choice,
+      const PromptChoice& generated_password_choice) override;
+  void ClearPrompt() override;
   void OnControllerGone() override;
 
   // Returns a weak pointer to itself.
   base::WeakPtr<PasswordChangeRunView> GetWeakPtr();
 
  private:
-  // Create/initialise the view.
+  // Creates/initialises the view.
   void CreateView();
 
   // Closes the view by removing itself from the display.
@@ -72,13 +83,14 @@ class PasswordChangeRunView : public views::View,
 
   // The controller belonging to this view.
   base::WeakPtr<PasswordChangeRunController> controller_;
+
   // The display that owns this view.
   raw_ptr<AssistantDisplayDelegate> display_delegate_;
 
   raw_ptr<views::ImageView> top_icon_ = nullptr;
   raw_ptr<views::View> title_container_ = nullptr;
 
-  // The body is used to render stuff under the title, i.e
+  // The body is used to render content below the title, i.e
   // prompts and descriptions.
   raw_ptr<views::View> body_ = nullptr;
 
