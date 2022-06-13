@@ -505,6 +505,11 @@ public class GeolocationHeader {
         sUseAppPermissionGrantedForTesting = true;
     }
 
+    @VisibleForTesting
+    static long getFirstLocationTimeForTesting() {
+        return sFirstLocationTime;
+    }
+
     /** Records a data point for the Geolocation.HeaderSentOrNot histogram. */
     private static void recordHistogram(int result) {
         RecordHistogram.recordEnumeratedHistogram("Geolocation.HeaderSentOrNot", result, UMA_MAX);
