@@ -444,14 +444,18 @@ void DragWindowFromShelfController::OnDragEnded(
   switch (*window_drag_result_) {
     case ShelfWindowDragResult::kGoToHomeScreen:
       ScaleDownWindowAfterDrag();
+      windows_hider_.reset();
       break;
     case ShelfWindowDragResult::kRestoreToOriginalBounds:
       ScaleUpToRestoreWindowAfterDrag();
+      // Do not reset |windows_hider_| here because
+      // |ScaleUpToRestoreWindowAfterDrag()| ends up using |windows_hider_| in
+      // an async manner.
       break;
     case ShelfWindowDragResult::kGoToOverviewMode:
     case ShelfWindowDragResult::kGoToSplitviewMode:
     case ShelfWindowDragResult::kDragCanceled:
-      // No action is needed.
+      windows_hider_.reset();
       break;
   }
   window_drag_result_.reset();
