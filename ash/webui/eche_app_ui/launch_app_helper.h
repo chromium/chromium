@@ -68,8 +68,6 @@ class LaunchAppHelper {
       const absl::optional<int64_t>& user_id,
       const gfx::Image& icon)>;
 
-  using CloseEcheAppFunction = base::RepeatingCallback<void()>;
-
   // Enum representing potential reasons why an app is forbidden to launch.
   enum class AppLaunchProhibitedReason {
     // Launching app is allowed.
@@ -82,7 +80,6 @@ class LaunchAppHelper {
 
   LaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,
                   LaunchEcheAppFunction launch_eche_app_function,
-                  CloseEcheAppFunction close_eche_app_function,
                   LaunchNotificationFunction launch_notification_function);
   virtual ~LaunchAppHelper();
 
@@ -110,13 +107,10 @@ class LaunchAppHelper {
                      const absl::optional<int64_t>& user_id,
                      const gfx::Image& icon) const;
 
-  void CloseEcheApp() const;
-
  private:
   bool IsScreenLockRequired() const;
   phonehub::PhoneHubManager* phone_hub_manager_;
   LaunchEcheAppFunction launch_eche_app_function_;
-  CloseEcheAppFunction close_eche_app_function_;
   LaunchNotificationFunction launch_notification_function_;
 };
 

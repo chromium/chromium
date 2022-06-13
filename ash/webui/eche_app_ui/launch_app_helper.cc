@@ -34,11 +34,9 @@ LaunchAppHelper::NotificationInfo::~NotificationInfo() = default;
 LaunchAppHelper::LaunchAppHelper(
     phonehub::PhoneHubManager* phone_hub_manager,
     LaunchEcheAppFunction launch_eche_app_function,
-    CloseEcheAppFunction close_eche_app_function,
     LaunchNotificationFunction launch_notification_function)
     : phone_hub_manager_(phone_hub_manager),
       launch_eche_app_function_(launch_eche_app_function),
-      close_eche_app_function_(close_eche_app_function),
       launch_notification_function_(launch_notification_function) {}
 
 LaunchAppHelper::~LaunchAppHelper() = default;
@@ -85,10 +83,6 @@ void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
                                     const gfx::Image& icon) const {
   launch_eche_app_function_.Run(notification_id, package_name, visible_name,
                                 user_id, icon);
-}
-
-void LaunchAppHelper::CloseEcheApp() const {
-  close_eche_app_function_.Run();
 }
 
 }  // namespace eche_app

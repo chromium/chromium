@@ -185,11 +185,6 @@ void EcheAppManagerFactory::ShowNotification(
 }
 
 // static
-void EcheAppManagerFactory::CloseEche(Profile* profile) {
-  CloseBubble();
-}
-
-// static
 void EcheAppManagerFactory::LaunchEcheApp(
     Profile* profile,
     const absl::optional<int64_t>& notification_id,
@@ -261,7 +256,6 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       device_sync_client, multidevice_setup_client, secure_channel_client,
       std::move(presence_monitor_client),
       base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
-      base::BindRepeating(&EcheAppManagerFactory::CloseEche, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
                           weak_ptr_factory_.GetWeakPtr(), profile));
 }

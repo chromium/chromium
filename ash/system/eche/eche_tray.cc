@@ -378,31 +378,6 @@ void EcheTray::SetGracefulGoBackCallback(
   graceful_go_back_callback_ = std::move(graceful_go_back_callback);
 }
 
-void EcheTray::StartGracefulClose() {
-  if (init_stream_timestamp_.has_value()) {
-    base::UmaHistogramLongTimes100(
-        "Eche.StreamEvent.Duration.FromInitializeToClose",
-        base::TimeTicks::Now() - *init_stream_timestamp_);
-    init_stream_timestamp_.reset();
-  }
-
-  if (!graceful_close_callback_) {
-    PurgeAndClose();
-    return;
-  }
-  HideBubble();
-  std::move(graceful_close_callback_).Run();
-  // Graceful close will let Eche Web to close connection release then notify
-  // back to native code to close window. In case there is any exception happens
-  // in js layer, start a timer to force close widget in case unload can't be
-  // finished.
-  if (!unload_timer_) {
-    unload_timer_ = std::make_unique<base::DelayTimer>(
-        FROM_HERE, kUnloadTimeoutDuration, this, &EcheTray::PurgeAndClose);
-    unload_timer_->Reset();
-  }
-}
-
 void EcheTray::HideBubble() {
   if (!bubble_)
     return;
@@ -465,6 +440,31 @@ void EcheTray::InitBubble() {
 
   SetIsActive(true);
   bubble_->GetBubbleView()->UpdateBubble();
+}
+
+void EcheTray::StartGracefulClose() {
+  if (init_stream_timestamp_.has_value()) {
+    base::UmaHistogramLongTimes100(
+        "Eche.StreamEvent.Duration.FromInitializeToClose",
+        base::TimeTicks::Now() - *init_stream_timestamp_);
+    init_stream_timestamp_.reset();
+  }
+
+  if (!graceful_close_callback_) {
+    PurgeAndClose();
+    return;
+  }
+  HideBubble();
+  std::move(graceful_close_callback_).Run();
+  // Graceful close will let Eche Web to close connection release then notify
+  // back to native code to close window. In case there is any exception happens
+  // in js layer, start a timer to force close widget in case unload can't be
+  // finished.
+  if (!unload_timer_) {
+    unload_timer_ = std::make_unique<base::DelayTimer>(
+        FROM_HERE, kUnloadTimeoutDuration, this, &EcheTray::PurgeAndClose);
+    unload_timer_->Reset();
+  }
 }
 
 gfx::Size EcheTray::CalculateSizeForEche() const {

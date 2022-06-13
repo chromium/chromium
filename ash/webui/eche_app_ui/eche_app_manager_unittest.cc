@@ -33,8 +33,6 @@ namespace ash {
 namespace eche_app {
 
 namespace {
-void CloseEcheAppFunction() {}
-
 void LaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                            const std::string& package_name,
                            const std::u16string& visible_name,
@@ -118,7 +116,6 @@ class EcheAppManagerTest : public testing::Test {
         fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),
         std::move(fake_presence_monitor_client),
         base::BindRepeating(&LaunchEcheAppFunction),
-        base::BindRepeating(&CloseEcheAppFunction),
         base::BindRepeating(&LaunchNotificationFunction));
   }
 

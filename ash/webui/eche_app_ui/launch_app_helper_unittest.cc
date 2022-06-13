@@ -25,8 +25,6 @@ namespace ash {
 namespace eche_app {
 
 namespace {
-void CloseEcheAppFunction() {}
-
 void LaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                            const std::string& package_name,
                            const std::u16string& visible_name,
@@ -59,7 +57,6 @@ class LaunchAppHelperTest : public ash::AshTestBase {
     launch_app_helper_ = std::make_unique<LaunchAppHelper>(
         fake_phone_hub_manager_.get(),
         base::BindRepeating(&LaunchEcheAppFunction),
-        base::BindRepeating(&CloseEcheAppFunction),
         base::BindRepeating(&LaunchNotificationFunction));
     toast_manager_ = Shell::Get()->toast_manager();
   }

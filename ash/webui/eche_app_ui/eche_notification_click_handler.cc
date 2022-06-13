@@ -6,10 +6,8 @@
 
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
-#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 
 namespace ash {
@@ -77,12 +75,6 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
     handler_->RemoveNotificationClickHandler(this);
     is_click_handler_set_ = false;
   }
-
-  if (NeedClose(feature_status_provider_->GetStatus()) &&
-      !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
-    PA_LOG(INFO) << "Close Eche app window";
-    launch_app_helper_->CloseEcheApp();
-  }
 }
 
 bool EcheNotificationClickHandler::IsClickable(FeatureStatus status) {
@@ -91,11 +83,5 @@ bool EcheNotificationClickHandler::IsClickable(FeatureStatus status) {
          status == FeatureStatus::kConnected;
 }
 
-// Checks FeatureStatus that eche feature is not able to use.
-bool EcheNotificationClickHandler::NeedClose(FeatureStatus status) {
-  return status == FeatureStatus::kIneligible ||
-         status == FeatureStatus::kDisabled ||
-         status == FeatureStatus::kDependentFeature;
-}
 }  // namespace eche_app
 }  // namespace ash

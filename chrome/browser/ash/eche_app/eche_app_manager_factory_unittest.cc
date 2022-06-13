@@ -179,20 +179,6 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   EXPECT_EQ(widget, eche_tray()->GetBubbleWidget());
 }
 
-TEST_F(EcheAppManagerFactoryTest, CloseEche) {
-  const int64_t user_id = 1;
-  const char16_t visible_name[] = u"Fake App";
-  const char package_name[] = "com.fakeapp";
-  EcheAppManagerFactory::LaunchEcheApp(
-      GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, gfx::Image());
-  EcheAppManagerFactory::CloseEche(GetProfile());
-  // Wait for Eche Web to close
-  base::RunLoop().RunUntilIdle();
-  // Eche tray should not be visible after close.
-  EXPECT_FALSE(eche_tray()->is_active());
-}
-
 TEST_F(EcheAppManagerFactoryTest, LaunchedAppInfo) {
   const int64_t user_id = 1;
   const std::u16string visible_name = u"Fake App";

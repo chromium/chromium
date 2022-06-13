@@ -18,11 +18,9 @@ class MockLaunchAppHelper : public LaunchAppHelper {
  public:
   MockLaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,
                       LaunchEcheAppFunction launch_eche_app_function,
-                      CloseEcheAppFunction close_eche_app_function,
                       LaunchNotificationFunction launch_notification_function)
       : LaunchAppHelper(phone_hub_manager,
                         launch_eche_app_function,
-                        close_eche_app_function,
                         launch_notification_function) {}
 
   ~MockLaunchAppHelper() override = default;
@@ -53,8 +51,6 @@ class EcheAlertGeneratorTest : public testing::Test {
         &fake_phone_hub_manager_,
         base::BindRepeating(&EcheAlertGeneratorTest::FakeLaunchEcheAppFunction,
                             base::Unretained(this)),
-        base::BindRepeating(&EcheAlertGeneratorTest::FakeCloseEcheAppFunction,
-                            base::Unretained(this)),
         base::BindRepeating(
             &EcheAlertGeneratorTest::FakeLaunchNotificationFunction,
             base::Unretained(this)));
@@ -79,10 +75,6 @@ class EcheAlertGeneratorTest : public testing::Test {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
-    // Do nothing.
-  }
-
-  void FakeCloseEcheAppFunction() {
     // Do nothing.
   }
 

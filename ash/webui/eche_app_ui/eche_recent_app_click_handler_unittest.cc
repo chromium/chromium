@@ -44,9 +44,6 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
             &EcheRecentAppClickHandlerTest::FakeLaunchEcheAppFunction,
             base::Unretained(this)),
         base::BindRepeating(
-            &EcheRecentAppClickHandlerTest::FakeCloseEcheAppFunction,
-            base::Unretained(this)),
-        base::BindRepeating(
             &EcheRecentAppClickHandlerTest::FakeLaunchNotificationFunction,
             base::Unretained(this)));
     stream_status_change_handler_ =
@@ -77,10 +74,6 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
       const absl::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
     num_notifications_shown_++;
-  }
-
-  void FakeCloseEcheAppFunction() {
-    // Do nothing.
   }
 
   void SetStatus(FeatureStatus status) {

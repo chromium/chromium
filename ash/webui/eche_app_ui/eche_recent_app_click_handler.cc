@@ -105,8 +105,6 @@ void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
     recent_apps_handler_->AddRecentAppClickObserver(this);
     is_click_handler_set_ = true;
   } else if (is_click_handler_set_ && !clickable) {
-    // This handler doesn't run |CloseEcheApp| since it possibly
-    // closes twice on EcheNotificationClickHandler and here.
     notification_handler_->RemoveNotificationClickHandler(this);
     recent_apps_handler_->RemoveRecentAppClickObserver(this);
     is_click_handler_set_ = false;

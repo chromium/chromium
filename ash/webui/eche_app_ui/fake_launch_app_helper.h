@@ -14,7 +14,6 @@ class FakeLaunchAppHelper : public LaunchAppHelper {
  public:
   FakeLaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,
                       LaunchEcheAppFunction launch_eche_app_function,
-                      CloseEcheAppFunction close_eche_app_function,
                       LaunchNotificationFunction launch_notification_function);
   ~FakeLaunchAppHelper() override;
   FakeLaunchAppHelper(const FakeLaunchAppHelper&) = delete;

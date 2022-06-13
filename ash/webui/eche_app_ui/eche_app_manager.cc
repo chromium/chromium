@@ -42,7 +42,6 @@ EcheAppManager::EcheAppManager(
     std::unique_ptr<secure_channel::PresenceMonitorClient>
         presence_monitor_client,
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
-    LaunchAppHelper::CloseEcheAppFunction close_eche_app_function,
     LaunchAppHelper::LaunchNotificationFunction launch_notification_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
@@ -59,7 +58,6 @@ EcheAppManager::EcheAppManager(
       launch_app_helper_(
           std::make_unique<LaunchAppHelper>(phone_hub_manager,
                                             launch_eche_app_function,
-                                            close_eche_app_function,
                                             launch_notification_function)),
       stream_status_change_handler_(
           std::make_unique<EcheStreamStatusChangeHandler>()),
@@ -104,7 +102,8 @@ EcheAppManager::EcheAppManager(
           connection_manager_.get())),
       eche_tray_stream_status_observer_(
           std::make_unique<EcheTrayStreamStatusObserver>(
-              stream_status_change_handler_.get())) {
+              stream_status_change_handler_.get(),
+              feature_status_provider_.get())) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
