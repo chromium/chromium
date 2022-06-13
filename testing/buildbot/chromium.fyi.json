@@ -70725,7 +70725,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -70739,7 +70739,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPad Air 2 16.0",
+        "name": "base_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -70772,7 +70772,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -70985,7 +70985,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -70999,7 +70999,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests iPad Air 2 16.0",
+        "name": "components_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -71032,7 +71032,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -71245,7 +71245,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -71259,7 +71259,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests iPad Air 2 16.0",
+        "name": "gfx_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -71292,7 +71292,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -72579,7 +72579,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -72593,7 +72593,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests iPad Air 2 16.0",
+        "name": "ios_chrome_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -72626,7 +72626,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -73368,7 +73368,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -73382,7 +73382,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests iPad Air 2 16.0",
+        "name": "ios_web_inttests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -73415,7 +73415,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -73683,7 +73683,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -73697,7 +73697,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests iPad Air 2 16.0",
+        "name": "ios_web_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -73730,7 +73730,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -73839,7 +73839,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -73853,7 +73853,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests iPad Air 2 16.0",
+        "name": "ios_web_view_inttests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -73886,7 +73886,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -73995,7 +73995,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -74009,7 +74009,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests iPad Air 2 16.0",
+        "name": "ios_web_view_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -74042,7 +74042,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -74255,7 +74255,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -74269,7 +74269,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests iPad Air 2 16.0",
+        "name": "skia_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -74302,7 +74302,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -74463,7 +74463,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -74477,7 +74477,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests iPad Air 2 16.0",
+        "name": "ui_base_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -74510,7 +74510,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -74834,7 +74834,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -74848,7 +74848,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPad Air 2 16.0",
+        "name": "base_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -74881,7 +74881,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -75354,7 +75354,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -75368,7 +75368,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests iPad Air 2 16.0",
+        "name": "components_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -75401,7 +75401,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -75770,7 +75770,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -75784,7 +75784,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests iPad Air 2 16.0",
+        "name": "gfx_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -75817,7 +75817,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -76134,6 +76134,59 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -76236,59 +76289,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_bookmarks_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -76611,6 +76611,60 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_integration_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_integration_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 8
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -76715,60 +76769,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_integration_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_integration_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -77097,6 +77097,60 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_settings_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_settings_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -77201,60 +77255,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_settings_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_settings_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -77583,6 +77583,60 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_signin_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_signin_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -77687,60 +77741,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_signin_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_signin_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -78069,6 +78069,59 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_smoke_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_smoke_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -78171,59 +78224,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_smoke_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -78546,6 +78546,60 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_ui_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_ui_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -78650,60 +78704,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_ui_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_ui_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -79032,7 +79032,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -79046,7 +79046,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests iPad Air 2 16.0",
+        "name": "ios_chrome_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -79079,7 +79079,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -79240,6 +79240,59 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_chrome_web_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_chrome_web_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -79342,59 +79395,6 @@
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_chrome_web_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_chrome_web_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -80188,6 +80188,59 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_showcase_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_showcase_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -80290,59 +80343,6 @@
         },
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_showcase_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_showcase_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -80821,7 +80821,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -80835,7 +80835,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests iPad Air 2 16.0",
+        "name": "ios_web_inttests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -80868,7 +80868,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -81029,6 +81029,59 @@
       {
         "args": [
           "--platform",
+          "iPad Air (3rd generation)",
+          "--version",
+          "16.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5228q",
+          "--xctest",
+          "--xcode-parallelization"
+        ],
+        "isolate_name": "ios_web_shell_eg2tests_module",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_web_shell_eg2tests_module iPad Air (3rd generation) 16.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5228q",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_16_0",
+              "path": "Runtime-ios-16.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
+        "variant_id": "iPad Air (3rd generation) 16.0"
+      },
+      {
+        "args": [
+          "--platform",
           "iPad Air 2",
           "--version",
           "14.5",
@@ -81131,59 +81184,6 @@
         },
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "variant_id": "iPad Air 2 15.5"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air 2",
-          "--version",
-          "16.0",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14a5228q",
-          "--xctest",
-          "--xcode-parallelization"
-        ],
-        "isolate_name": "ios_web_shell_eg2tests_module",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_web_shell_eg2tests_module iPad Air 2 16.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14a5228q",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_0",
-              "path": "Runtime-ios-16.0"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air 2 16.0"
       },
       {
         "args": [
@@ -81506,7 +81506,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -81520,7 +81520,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests iPad Air 2 16.0",
+        "name": "ios_web_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -81553,7 +81553,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -81714,7 +81714,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -81728,7 +81728,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests iPad Air 2 16.0",
+        "name": "ios_web_view_inttests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -81761,7 +81761,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -81922,7 +81922,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -81936,7 +81936,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests iPad Air 2 16.0",
+        "name": "ios_web_view_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -81969,7 +81969,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -82442,7 +82442,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -82456,7 +82456,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests iPad Air 2 16.0",
+        "name": "skia_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -82489,7 +82489,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [
@@ -82806,7 +82806,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air 2",
+          "iPad Air (3rd generation)",
           "--version",
           "16.0",
           "--out-dir",
@@ -82820,7 +82820,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests iPad Air 2 16.0",
+        "name": "ui_base_unittests iPad Air (3rd generation) 16.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -82853,7 +82853,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Air 2 16.0"
+        "variant_id": "iPad Air (3rd generation) 16.0"
       },
       {
         "args": [

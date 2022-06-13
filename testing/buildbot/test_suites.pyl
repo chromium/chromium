@@ -6912,7 +6912,7 @@
         'variants': [
           'SIM_IPHONE_8_PLUS_16_0',
           'SIM_IPHONE_X_16_0',
-          'SIM_IPAD_AIR_2_16_0',
+          'SIM_IPAD_AIR_3RD_GEN_16_0',
         ],
       },
     },
@@ -6934,7 +6934,7 @@
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_8_16_0',
-          'SIM_IPAD_AIR_2_16_0',
+          'SIM_IPAD_AIR_3RD_GEN_16_0',
           'SIM_IPHONE_X_16_0',
           'SIM_IPHONE_7_15_5',
           'SIM_IPAD_AIR_2_15_5',
@@ -6948,7 +6948,7 @@
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_8_16_0',
-          'SIM_IPAD_AIR_2_16_0',
+          'SIM_IPAD_AIR_3RD_GEN_16_0',
           'SIM_IPHONE_X_16_0',
           'SIM_IPHONE_7_15_5',
           'SIM_IPAD_AIR_2_15_5',
@@ -6963,7 +6963,7 @@
           'SIM_IPHONE_8_PLUS_16_0',
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_SE_3RD_GEN_16_0',
-          'SIM_IPAD_AIR_2_16_0',
+          'SIM_IPAD_AIR_3RD_GEN_16_0',
         ],
       },
     },

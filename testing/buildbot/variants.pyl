@@ -158,18 +158,6 @@
       'ios_runtime_cache_15_5',
     ],
   },
-  'SIM_IPAD_AIR_2_16_0': {
-    'args': [
-      '--platform',
-      'iPad Air 2',
-      '--version',
-      '16.0'
-    ],
-    'identifier': 'iPad Air 2 16.0',
-    'mixins': [
-      'ios_runtime_cache_16_0',
-    ],
-  },
   'SIM_IPAD_AIR_3RD_GEN_14_5': {
     'args': [
       '--platform',
