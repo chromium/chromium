@@ -130,7 +130,7 @@ android_library("test_java") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/util:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill_assistant/android:java",
     "//components/autofill_assistant/android:java_resources",

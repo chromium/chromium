@@ -87,7 +87,7 @@ android_library("javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/policy/android:policy_java_test_support",

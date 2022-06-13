@@ -75,7 +75,7 @@ android_library("javatests") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
     "//chrome/browser/ui/messages/android:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/paint_preview/browser/android:java",
     "//components/paint_preview/player/android:java",
     "//content/public/android:content_java",
