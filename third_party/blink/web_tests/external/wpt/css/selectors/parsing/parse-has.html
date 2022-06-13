@@ -23,9 +23,7 @@
   test_valid_selector('.a .b:has(.c)');
   test_valid_selector('.a .b:has(.c .d)');
   test_valid_selector('.a .b:has(.c .d) .e');
-  test_valid_selector('.a:has(.b:has(.c))');
   test_valid_selector('.a:has(.b:is(.c .d))');
-  test_valid_selector('.a:has(.b:is(.c:has(.d) .e))');
   test_valid_selector('.a:is(.b:has(.c) .d)');
   test_valid_selector('.a:not(:has(.b))');
   test_valid_selector('.a:has(:not(.b))');
