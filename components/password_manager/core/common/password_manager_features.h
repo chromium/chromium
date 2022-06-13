@@ -36,6 +36,9 @@ extern const base::Feature kForceInitialSyncWhenDecryptionFails;
 #endif
 extern const base::Feature kInferConfirmationPasswordField;
 extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
+#if BUILDFLAG(IS_IOS)
+extern const base::Feature kIOSPasswordUISplit;
+#endif  // IS_IOS
 extern const base::Feature kMuteCompromisedPasswords;
 extern const base::Feature kPasswordNotes;
 extern const base::Feature kSendPasswords;

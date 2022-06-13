@@ -375,6 +375,11 @@ const char kIOSEnablePasswordManagerBrandingUpdateName[] =
 const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
     "Updates icons, strings, and views for Google Password Manager.";
 
+const char kIOSPasswordUISplitName[] = "Password Manager UI Split";
+const char kIOSPasswordUISplitDescription[] =
+    "Splits Password Settings and "
+    "Password Manager into two separate UIs.";
+
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
 const char kIOSSharedHighlightingColorChangeDescription[] =

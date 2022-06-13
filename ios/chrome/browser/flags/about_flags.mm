@@ -980,6 +980,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(policy::features::kDmTokenDeletion,
                                     kDmTokenDeletionVariation,
                                     "DmTokenDeletion")},
+    {"ios-password-ui-split", flag_descriptions::kIOSPasswordUISplitName,
+     flag_descriptions::kIOSPasswordUISplitDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordUISplit)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

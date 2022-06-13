@@ -89,6 +89,13 @@ const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
     "IOSEnablePasswordManagerBrandingUpdate",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_IOS)
+// Removes the list of passwords from the Settings UI and adds a separate
+// Password Manager view.
+const base::Feature kIOSPasswordUISplit = {"IOSPasswordUISplit",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // IS_IOS
+
 // Enables (un)muting compromised passwords from bulk leak check in settings.
 const base::Feature kMuteCompromisedPasswords {
   "MuteCompromisedPasswords",
