@@ -581,7 +581,7 @@ void FrameSinkVideoCapturerImpl::RefreshInternal(
     // If the capture region is empty, it means one of two things: the first
     // frame has not been composited yet or the current region selected for
     // capture has a current size of zero. We schedule a frame refresh here,
-    // although its not useful in all circumstances.
+    // although it's not useful in all circumstances.
     MaybeScheduleRefreshFrame();
     return;
   }
@@ -770,7 +770,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   DVLOG(3) << __func__
            << ": compositor_frame_region=" << compositor_frame_region.ToString()
            << ", capture_region=" << capture_region.ToString()
-           << ", capture_size=" << capture_size.ToString();
+           << ", capture_size=" << capture_size.ToString()
+           << ", event=" << event;
 
   const bool can_resurrect_content = CanResurrectFrame(capture_size);
   scoped_refptr<VideoFrame> frame;
@@ -1001,7 +1002,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     // parts of the frame that have changed whenever possible.
     blit_request =
         BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
-                    mailbox_holders);
+                    mailbox_holders, true);
 
     // We haven't captured the frame yet, but let's pretend that we did for the
     // sake of blend information computation. We will be asking for an entire

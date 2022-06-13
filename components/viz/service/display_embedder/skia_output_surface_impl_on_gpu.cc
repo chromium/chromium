@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,7 +39,9 @@
 #include "components/viz/service/display_embedder/skia_output_device_webview.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
+#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -66,6 +69,7 @@
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -864,10 +868,14 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
 bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     SkSurface* surface,
     std::vector<GrBackendSemaphore>& end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state) {
+    std::unique_ptr<GrBackendSurfaceMutableState> end_state,
+    GrGpuFinishedProc finished_proc,
+    GrGpuFinishedContext finished_context) {
   GrFlushInfo flush_info;
   flush_info.fNumSemaphores = end_semaphores.size();
   flush_info.fSignalSemaphores = end_semaphores.data();
+  flush_info.fFinishedProc = finished_proc;
+  flush_info.fFinishedContext = finished_context;
   gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
   GrSemaphoresSubmitted flush_result =
       surface->flush(flush_info, end_state.get());
@@ -1012,6 +1020,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   // - pass ownership of the textures to the caller (native textures result)
   // - schedule a read-back & expose its results to the caller (system memory
   // result)
+  //
+  // Note: in case the blit request populates the GMBs, the flow stays the same,
+  // but we need to ensure that the results are only sent out after the
+  // GpuMemoryBuffer is safe to map into system memory.
 
   // The size of the destination is passed in via `geometry.result_selection` -
   // it already takes into account the rect of the render pass that is being
@@ -1154,25 +1166,74 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   skia::BlitRGBAToYUVA(intermediate_image.get(), plane_surfaces.data(),
                        yuva_info, dst_region, clear_destination);
 
-  bool should_submit = false;
+  // Collect mailbox holders for the destination textures. They will be needed
+  // in case the result is kNativeTextures. It happens here in order to simplify
+  // the code in case we are populating the GpuMemoryBuffer-backed textures.
+  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>
+      plane_mailbox_holders = {
+          gpu::MailboxHolder(plane_access_datas[0].mailbox, gpu::SyncToken(),
+                             GL_TEXTURE_2D),
+          gpu::MailboxHolder(plane_access_datas[1].mailbox, gpu::SyncToken(),
+                             GL_TEXTURE_2D),
+          gpu::MailboxHolder(),
+      };
 
+  // If we are not the ones allocating the textures, they may come from a GMB,
+  // in which case we need to delay sending the results until we receive a
+  // callback that the GPU work has completed - otherwise, memory-mapping the
+  // GMB may not yield the latest version of the contents.
+  const bool should_wait_for_gpu_work =
+      request->result_destination() ==
+          CopyOutputRequest::ResultDestination::kNativeTextures &&
+      request->has_blit_request() &&
+      request->blit_request().populates_gpu_memory_buffer();
+
+  scoped_refptr<NV12PlanesReadyContext> nv12_planes_ready = nullptr;
+  if (should_wait_for_gpu_work) {
+    // Prepare a per-CopyOutputRequest context that will be responsible for
+    // sending the CopyOutputResult:
+    nv12_planes_ready = base::MakeRefCounted<NV12PlanesReadyContext>(
+        weak_ptr_, std::move(request), geometry.result_selection,
+        plane_mailbox_holders, color_space);
+  }
+
+  bool should_submit = false;
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     plane_access_datas[i].representation->SetCleared();
 
     should_submit |= !plane_access_datas[i].end_semaphores.empty();
 
-    if (!FlushSurface(plane_surfaces[i], plane_access_datas[i].end_semaphores,
-                      plane_access_datas[i].scoped_write->TakeEndState())) {
+    // Prepare a per-plane context that will notify the per-request context that
+    // GPU work that produces the contents of a plane that the GPU-side of the
+    // work has completed.
+    std::unique_ptr<NV12SinglePlaneReadyContext> nv12_plane_ready =
+        should_wait_for_gpu_work
+            ? std::make_unique<NV12SinglePlaneReadyContext>(nv12_planes_ready)
+            : nullptr;
+
+    if (should_wait_for_gpu_work) {
+      // Treat the fact that we're waiting for GPU work to finish the same way
+      // as a readback request. This would allow us to nudge Skia to fire the
+      // callbacks. See `SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion()`.
+      ++num_readbacks_pending_;
+    }
+
+    if (!FlushSurface(
+            plane_surfaces[i], plane_access_datas[i].end_semaphores,
+            plane_access_datas[i].scoped_write->TakeEndState(),
+            should_wait_for_gpu_work
+                ? &NV12SinglePlaneReadyContext::OnNV12PlaneReady
+                : nullptr,
+            should_wait_for_gpu_work ? nv12_plane_ready.release() : nullptr)) {
       // TODO(penghuang): handle vulkan device lost.
       FailedSkiaFlush("CopyOutputNV12 plane_surfaces[i]->flush()");
       return;
     }
   }
 
-  intermediate_representation->SetCleared();
-
   should_submit |= !end_semaphores.empty();
 
+  intermediate_representation->SetCleared();
   if (!FlushSurface(intermediate_scoped_write->surface(), end_semaphores,
                     intermediate_scoped_write->TakeEndState())) {
     // TODO(penghuang): handle vulkan device lost.
@@ -1185,26 +1246,35 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
+  if (should_wait_for_gpu_work) {
+    // Flow will continue after GPU work is done - see
+    // `NV12PlanesReadyContext::OnNV12PlaneReady()` that eventually gets called.
+    return;
+  }
+
+  // We conditionally move from request (if `should_wait_for_gpu_work` is true),
+  // DCHECK that we don't accidentally enter this codepath after the request was
+  // moved from.
+  DCHECK(request);
+
   switch (request->result_destination()) {
     case CopyOutputRequest::ResultDestination::kNativeTextures: {
       CopyOutputResult::ReleaseCallbacks release_callbacks;
-      std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> planes;
 
-      for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
-        if (!request->has_blit_request()) {
-          // In blit requests, we are not responsible for releasing the textures
-          // (the issuer of the request owns them), do not create the callbacks.
+      if (!request->has_blit_request()) {
+        // In blit requests, we are not responsible for releasing the textures
+        // (the issuer of the request owns them), create the callbacks only if
+        // we don't have blit request:
+        for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
           release_callbacks.push_back(
               CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
                   std::move(plane_access_datas[i].representation)));
         }
-
-        planes[i].mailbox = plane_access_datas[i].mailbox;
       }
 
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
           CopyOutputResult::Format::NV12_PLANES, geometry.result_selection,
-          CopyOutputResult::TextureResult(planes, color_space),
+          CopyOutputResult::TextureResult(plane_mailbox_holders, color_space),
           std::move(release_callbacks)));
 
       break;

@@ -33,10 +33,12 @@ BlitRequest::BlitRequest(
     const gfx::Point& destination_region_offset,
     LetterboxingBehavior letterboxing_behavior,
     const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
-        mailboxes)
+        mailboxes,
+    bool populates_gpu_memory_buffer)
     : destination_region_offset_(destination_region_offset),
       letterboxing_behavior_(letterboxing_behavior),
-      mailboxes_(mailboxes) {}
+      mailboxes_(mailboxes),
+      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {}
 
 BlitRequest::BlitRequest(BlitRequest&& other) = default;
 BlitRequest& BlitRequest::operator=(BlitRequest&& other) = default;
@@ -44,9 +46,10 @@ BlitRequest& BlitRequest::operator=(BlitRequest&& other) = default;
 BlitRequest::~BlitRequest() = default;
 
 std::string BlitRequest::ToString() const {
-  return base::StringPrintf("blit to %s, blend %u bitmaps",
+  return base::StringPrintf("blit to %s, blend %u bitmaps, populates GMB? %d",
                             destination_region_offset_.ToString().c_str(),
-                            static_cast<uint32_t>(blend_bitmaps_.size()));
+                            static_cast<uint32_t>(blend_bitmaps_.size()),
+                            populates_gpu_memory_buffer_);
 }
 
 }  // namespace viz
