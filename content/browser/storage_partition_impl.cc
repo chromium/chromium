@@ -725,9 +725,9 @@ void FinishGenerateNegotiateAuthToken(
 // surface to something simple and generic. It is designed to be used by
 // callsites in ClearDataImpl.
 //
-// Precondition: `matcher_func` and `storage_origin` cannot both be set.
-// If both `matcher_func` and `storage_origin` are null/empty, should return a
-// null callback that indicates all origins should match. This is an
+// Precondition: `matcher_func` and `storage_key`'s origin cannot both be set.
+// If both `matcher_func` and `storage_key`'s origin are null/empty, should
+// return a null callback that indicates all origins should match. This is an
 // optimization for backends to efficiently clear all data.
 //
 // TODO(csharrison, mek): Right now, the only storage backend that uses this is
@@ -736,12 +736,13 @@ void FinishGenerateNegotiateAuthToken(
 // rethinking this approach if / when storage backends move out of process
 // (see crbug.com/1016065 for initial work here).
 base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     StoragePartition::OriginMatcherFunction matcher_func,
     scoped_refptr<storage::SpecialStoragePolicy> policy) {
-  DCHECK(storage_origin.is_empty() || matcher_func.is_null());
+  const bool storage_key_origin_empty = storage_key.origin().opaque();
+  DCHECK(storage_key_origin_empty || matcher_func.is_null());
 
-  if (storage_origin.is_empty() && matcher_func.is_null())
+  if (storage_key_origin_empty && matcher_func.is_null())
     return base::NullCallback();
 
   if (matcher_func) {
@@ -753,9 +754,9 @@ base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
         },
         std::move(matcher_func), std::move(policy));
   }
-  DCHECK(!storage_origin.is_empty());
+  DCHECK(!storage_key_origin_empty);
   return base::BindRepeating(std::equal_to<const url::Origin&>(),
-                             url::Origin::Create(storage_origin));
+                             storage_key.origin());
 }
 
 }  // namespace
@@ -942,7 +943,7 @@ class StoragePartitionImpl::DataDeletionHelper {
   ~DataDeletionHelper() = default;
 
   void ClearDataOnUIThread(
-      const GURL& storage_origin,
+      const blink::StorageKey& storage_key,
       OriginMatcherFunction origin_matcher,
       CookieDeletionFilterPtr cookie_deletion_filter,
       const base::FilePath& path,
@@ -2163,8 +2164,9 @@ void StoragePartitionImpl::ClearDataImpl(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  const blink::StorageKey storage_key(url::Origin::Create(storage_origin));
   for (auto& observer : data_removal_observers_) {
-    auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,
+    auto filter = CreateGenericOriginMatcher(storage_key, origin_matcher,
                                              special_storage_policy_);
     observer.OnOriginDataCleared(remove_mask, std::move(filter), begin, end);
   }
@@ -2177,13 +2179,12 @@ void StoragePartitionImpl::ClearDataImpl(
   // DataDeletionHelper::DecrementTaskCount().
   deletion_helpers_running_++;
   helper->ClearDataOnUIThread(
-      storage_origin, std::move(origin_matcher),
-      std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
-      quota_manager_.get(), special_storage_policy_.get(),
-      filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      interest_group_manager_.get(), attribution_manager_.get(),
-      aggregation_service_.get(), shared_storage_manager_.get(),
-      perform_storage_cleanup, begin, end);
+      storage_key, std::move(origin_matcher), std::move(cookie_deletion_filter),
+      GetPath(), dom_storage_context_.get(), quota_manager_.get(),
+      special_storage_policy_.get(), filesystem_context_.get(),
+      GetCookieManagerForBrowserProcess(), interest_group_manager_.get(),
+      attribution_manager_.get(), aggregation_service_.get(),
+      shared_storage_manager_.get(), perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2372,7 +2373,7 @@ void StoragePartitionImpl::DataDeletionHelper::RecordUnfinishedSubTasks() {
 }
 
 void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     OriginMatcherFunction origin_matcher,
     CookieDeletionFilterPtr cookie_deletion_filter,
     const base::FilePath& path,
@@ -2391,8 +2392,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   DCHECK_NE(remove_mask_, 0u);
   DCHECK(callback_);
 
-  // Only one of `storage_origin` and `origin_matcher` can be set.
-  DCHECK(storage_origin.is_empty() || origin_matcher.is_null());
+  // Only one of `storage_key`'s origin and `origin_matcher` can be set.
+  const bool storage_key_origin_empty = storage_key.origin().opaque();
+  DCHECK(storage_key_origin_empty || origin_matcher.is_null());
 
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
@@ -2432,7 +2434,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS) {
     if (interest_group_manager) {
       interest_group_manager->DeleteInterestGroupData(
-          CreateGenericOriginMatcher(storage_origin, origin_matcher,
+          CreateGenericOriginMatcher(storage_key, origin_matcher,
                                      storage_policy_ref));
     }
   }
@@ -2450,26 +2452,25 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       remove_mask_ & REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &DataDeletionHelper::ClearQuotaManagedDataOnIOThread,
-            base::Unretained(this), base::WrapRefCounted(quota_manager), begin,
-            end, blink::StorageKey(url::Origin::Create(storage_origin)),
-            storage_policy_ref, origin_matcher, perform_storage_cleanup,
-            CreateTaskCompletionClosure(TracingDataType::kQuota)));
+        base::BindOnce(&DataDeletionHelper::ClearQuotaManagedDataOnIOThread,
+                       base::Unretained(this),
+                       base::WrapRefCounted(quota_manager), begin, end,
+                       storage_key, storage_policy_ref, origin_matcher,
+                       perform_storage_cleanup,
+                       CreateTaskCompletionClosure(TracingDataType::kQuota)));
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_LOCAL_STORAGE) {
     ClearLocalStorageOnUIThread(
         base::WrapRefCounted(dom_storage_context), storage_policy_ref,
-        origin_matcher, blink::StorageKey(url::Origin::Create(storage_origin)),
-        perform_storage_cleanup, begin, end,
+        origin_matcher, storage_key, perform_storage_cleanup, begin, end,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kLocalStorage)));
 
     // ClearDataImpl cannot clear session storage data when a particular origin
     // is specified. Therefore we ignore clearing session storage in this case.
     // TODO(lazyboy): Fix.
-    if (storage_origin.is_empty()) {
+    if (storage_key_origin_empty) {
       // TODO(crbug.com/960325): Sometimes SessionStorage fails to call its
       // callback. Figure out why.
       ClearSessionStorageOnUIThread(
@@ -2494,7 +2495,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
   }
 
-  auto filter = CreateGenericOriginMatcher(storage_origin, origin_matcher,
+  auto filter = CreateGenericOriginMatcher(storage_key, origin_matcher,
                                            storage_policy_ref);
 
   // It is not expected to only delete internal attribution reporting data.
@@ -2528,8 +2529,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         FROM_HERE,
         base::BindOnce(
             &ClearPluginPrivateDataOnFileTaskRunner,
-            base::WrapRefCounted(filesystem_context),
-            blink::StorageKey(url::Origin::Create(storage_origin)),
+            base::WrapRefCounted(filesystem_context), storage_key,
             origin_matcher, storage_policy_ref, begin, end,
             CreateTaskCompletionClosure(TracingDataType::kPluginPrivate)));
   }
