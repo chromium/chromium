@@ -11778,6 +11778,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Contained me card."/>
 </enum>
 
+<enum name="BooleanContainsMacros">
+  <int value="0" label="Does not contain macros"/>
+  <int value="1" label="Contains macros"/>
+</enum>
+
 <enum name="BooleanContainsPrice">
   <int value="0" label="Does not contain price"/>
   <int value="1" label="Contains price"/>
