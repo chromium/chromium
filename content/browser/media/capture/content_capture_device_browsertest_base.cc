@@ -120,7 +120,7 @@ void ContentCaptureDeviceBrowserTestBase::NavigateToInitialDocument() {
 
     // Confirm the iframe is a cross-process child render frame.
     auto* const child_frame =
-        ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+        ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
     ASSERT_TRUE(child_frame->IsCrossProcessSubframe());
   } else {

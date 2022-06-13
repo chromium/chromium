@@ -255,7 +255,7 @@ class SitePerProcessBrowserTestWithSadFrameTabReload
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {

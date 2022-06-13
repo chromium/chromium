@@ -169,7 +169,7 @@ void DidOpenURL(OpenURLCallback callback, WebContents* web_contents) {
   static_cast<WebContentsImpl*>(web_contents)->Activate();
 
   RenderFrameHostImpl* rfhi =
-      static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
   new OpenURLObserver(web_contents,
                       rfhi->frame_tree_node()->frame_tree_node_id(),
                       std::move(callback));

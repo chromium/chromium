@@ -271,9 +271,9 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
 
     auto info = ::mojom::WebContentsInfo::New();
     info->title = base::UTF16ToUTF8(web_contents->GetTitle());
-    info->root_frame =
-        RenderFrameHostToFrameInfo(web_contents, web_contents->GetMainFrame(),
-                                   ::mojom::FrameInfo::Type::kActive);
+    info->root_frame = RenderFrameHostToFrameInfo(
+        web_contents, web_contents->GetPrimaryMainFrame(),
+        ::mojom::FrameInfo::Type::kActive);
 
     // Retrieve all root frames from bfcache as well.
     NavigationControllerImpl& controller = web_contents->GetController();

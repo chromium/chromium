@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
   auto menu_interceptor = std::make_unique<ContextMenuInterceptor>(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   gfx::Point tree_point =

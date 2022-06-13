@@ -159,8 +159,8 @@ void ClipboardHostTestcase::SetUp() {
 }
 
 void ClipboardHostTestcase::SetUpOnUIThread() {
-  render_frame_host_ =
-      static_cast<content::TestWebContents*>(web_contents())->GetMainFrame();
+  render_frame_host_ = static_cast<content::TestWebContents*>(web_contents())
+                           ->GetPrimaryMainFrame();
   render_frame_host_->InitializeRenderFrameIfNeeded();
 }
 

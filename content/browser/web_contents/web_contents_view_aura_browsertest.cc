@@ -141,7 +141,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
     NavigationController& controller = web_contents->GetController();
-    RenderFrameHost* main_frame = web_contents->GetMainFrame();
+    RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
     EXPECT_FALSE(controller.CanGoBack());
     EXPECT_FALSE(controller.CanGoForward());
@@ -221,7 +221,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   int GetCurrentIndex() {
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
-    RenderFrameHost* main_frame = web_contents->GetMainFrame();
+    RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     base::Value value = ExecuteScriptAndGetValue(main_frame, "get_current()");
     if (!value.is_int())
       return -1;
@@ -234,7 +234,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
-        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   NavigationController& controller = web_contents->GetController();
-  RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/overscroll_navigation.html"));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   // This test triggers a large number of animations. Speed them up to ensure
   // the test completes within its time limit.
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  content::ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+  content::ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(),
                                     "navigate_next()");
   EXPECT_EQ(1, GetCurrentIndex());
 
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  content::ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+  content::ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(),
                                     "navigate_next()");
   EXPECT_EQ(1, GetCurrentIndex());
 
@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   NavigationController& controller = web_contents->GetController();
-  RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::ExecuteScriptAndGetValue(main_frame, "install_touch_handler()");
 
   // Navigate twice, then navigate back in history once.
@@ -877,16 +877,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   gfx::Rect bounds = content->GetBoundsInRootWindow();
   const int dx = 20;
 
-  content::ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+  content::ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(),
                                     "install_touchmove_handler()");
 
   WaitAFrame();
 
   for (int navigated = 0; navigated <= 1; ++navigated) {
     if (navigated) {
-      content::ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+      content::ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(),
                                         "navigate_next()");
-      content::ExecuteScriptAndGetValue(web_contents->GetMainFrame(),
+      content::ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(),
                                         "reset_touchmove_count()");
     }
     InputEventAckWaiter touch_start_waiter(

@@ -87,7 +87,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
 
   void SetUpOnMainThread() override {
     main_frame_token_ =
-        shell()->web_contents()->GetMainFrame()->GetFrameToken();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
   // DomSerializerDelegate.
@@ -125,13 +125,13 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   void LoadContents(const std::string& contents, const GURL& base_url) {
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     shell()->LoadDataWithBaseURL(
-        shell()->web_contents()->GetMainFrame()->GetLastCommittedURL(),
+        shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
         contents, base_url);
     navigation_observer.Wait();
     // After navigations, the RenderView for the new document might be a new
     // one.
     main_frame_token_ =
-        shell()->web_contents()->GetMainFrame()->GetFrameToken();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
   class SingleLinkRewritingDelegate

@@ -1770,7 +1770,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // and get deleted.
   rfh_a_deleted.WaitUntilDeleted();
   EXPECT_FALSE(site_instance_a->IsRelatedSiteInstance(
-      web_contents()->GetMainFrame()->GetSiteInstance()));
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -1811,7 +1811,7 @@ IN_PROC_BROWSER_TEST_F(
   // blocklisted features. Because we used sticky blocklisted features, we will
   // not do a proactive BrowsingInstance swap.
   EXPECT_TRUE(site_instance_a->IsRelatedSiteInstance(
-      web_contents()->GetMainFrame()->GetSiteInstance()));
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -1881,7 +1881,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Because we used sticky blocklisted features, we will not do a proactive
   // BrowsingInstance swap.
   EXPECT_TRUE(site_instance_1->IsRelatedSiteInstance(
-      web_contents()->GetMainFrame()->GetSiteInstance()));
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -1924,7 +1924,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(
-          web_contents()->GetMainFrame()->GetSiteInstance());
+          web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
 
   // 3) Navigate cross-site, browser-initiated.
   // The previous page won't get into the back-forward cache because of the
@@ -1934,7 +1934,7 @@ IN_PROC_BROWSER_TEST_F(
   // Because we only used non-sticky blocklisted features, we will still do a
   // proactive BrowsingInstance swap.
   EXPECT_FALSE(site_instance_a->IsRelatedSiteInstance(
-      web_contents()->GetMainFrame()->GetSiteInstance()));
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -1966,7 +1966,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(
-          web_contents()->GetMainFrame()->GetSiteInstance());
+          web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
 
   // 3) Navigate cross-site, renderer-inititated.
   // The previous page won't get into the back-forward cache because of the
@@ -1975,7 +1975,7 @@ IN_PROC_BROWSER_TEST_F(
   // Because we only used non-sticky blocklisted features, we will still do a
   // proactive BrowsingInstance swap.
   EXPECT_FALSE(site_instance_a->IsRelatedSiteInstance(
-      web_contents()->GetMainFrame()->GetSiteInstance()));
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -2005,7 +2005,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
       static_cast<SiteInstanceImpl*>(
-          web_contents()->GetMainFrame()->GetSiteInstance());
+          web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
 
   // 3) Navigate same-site.
   // The previous page won't get into the back-forward cache because of the
@@ -2015,7 +2015,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Because we only used non-sticky blocklisted features, we will still do a
   // proactive BrowsingInstance swap.
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(
-      web_contents()->GetMainFrame()->GetSiteInstance()));
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -2109,7 +2109,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerBackForwardCacheBrowserTest,
 
   // Connect the MockAppBannerService mojom to the renderer's frame.
   MockAppBannerService mock_app_banner_service;
-  web_contents()->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
+  web_contents()->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
       mock_app_banner_service.controller().BindNewPipeAndPassReceiver());
   // Send the request to the renderer's frame.
   mock_app_banner_service.SendBannerPromptRequest();
@@ -2758,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       "executeCommandOnServiceWorker('StoreClients')";
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker, script_to_store));
   RenderFrameHostImplWrapper rfh(
-      tab_to_be_bfcached->web_contents()->GetMainFrame());
+      tab_to_be_bfcached->web_contents()->GetPrimaryMainFrame());
 
   // 4) Navigate away to B in |tab_to_be_bfcached|.
   EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached,
@@ -4326,7 +4326,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
       shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
 
   // 2) Update the playback state change.
-  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetMainFrame(), R"(
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), R"(
     navigator.mediaSession.playbackState = 'playing';
   )"));
 

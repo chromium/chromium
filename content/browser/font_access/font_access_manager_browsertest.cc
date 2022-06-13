@@ -48,7 +48,7 @@ class FontAccessManagerBrowserBase : public ContentBrowserTest {
   }
 
   RenderFrameHost* main_rfh() {
-    return shell()->web_contents()->GetMainFrame();
+    return shell()->web_contents()->GetPrimaryMainFrame();
   }
 
   FontAccessManager* font_access_manager() {
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserBase,
   // feature flag is disabled.
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
       rfh->browser_interface_broker_receiver_for_testing();
   blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();

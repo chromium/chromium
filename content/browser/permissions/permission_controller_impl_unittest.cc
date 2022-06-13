@@ -228,7 +228,7 @@ TEST_F(PermissionControllerImplTest,
       WebContentsTester::For(web_contents.get());
   web_contents_tester->NavigateAndCommit(GURL(kTestUrl));
 
-  RenderFrameHost* rfh = web_contents->GetMainFrame();
+  RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   for (const auto& test_case : kTestCases) {
     // Need to reset overrides for each case to ensure delegation is as
     // expected.

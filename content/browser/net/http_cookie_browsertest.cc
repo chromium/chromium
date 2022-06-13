@@ -205,13 +205,13 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
       shell()->Reload();
     } else {
       ExecuteScriptAsync(
-          web_contents()->GetMainFrame(),
+          web_contents()->GetPrimaryMainFrame(),
           content::JsReplace("window.location.reload($1);", true));
     }
     nav_observer.Wait();
 
     // Return the cookies rendered on frame
-    return ExtractFrameContent(web_contents()->GetMainFrame());
+    return ExtractFrameContent(web_contents()->GetPrimaryMainFrame());
   }
 
  private:
@@ -227,24 +227,26 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies) {
   ASSERT_TRUE(
       NavigateToURL(web_contents(), EchoCookiesUrl(https_server(), kHostA)));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedElementsAre(
           Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
           Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
 
   // Main frame same-site (A => A) navigation sends all SameSite cookies.
-  ASSERT_TRUE(NavigateToURLFromRenderer(
-      web_contents()->GetMainFrame(), EchoCookiesUrl(https_server(), kHostA)));
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(web_contents()->GetPrimaryMainFrame(),
+                                EchoCookiesUrl(https_server(), kHostA)));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedElementsAre(
           Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
           Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
 
   // Main frame cross-site (A => B) navigation sends all but Strict cookies.
-  ASSERT_TRUE(NavigateToURLFromRenderer(
-      web_contents()->GetMainFrame(), EchoCookiesUrl(https_server(), kHostB)));
-  EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(web_contents()->GetPrimaryMainFrame(),
+                                EchoCookiesUrl(https_server(), kHostB)));
+  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
               net::CookieStringIs(UnorderedElementsAre(
                   Key(kSameSiteLaxCookieName), Key(kSameSiteNoneCookieName),
                   Key(kSameSiteUnspecifiedCookieName))));
@@ -276,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
                   EchoCookiesUrl(https_server(), kHostA)),
       /*expected_commit_url=*/EchoCookiesUrl(https_server(), kHostA)));
   EXPECT_THAT(
-      ExtractFrameContent(web_contents()->GetMainFrame()),
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
       net::CookieStringIs(UnorderedElementsAre(
           Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
           Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
@@ -289,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
         RedirectUrl(https_server(), kHostB,
                     EchoCookiesUrl(https_server(), kHostA)),
         /*expected_commit_url=*/EchoCookiesUrl(https_server(), kHostA)));
-    EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+    EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
                 net::CookieStringIs(UnorderedElementsAre(
                     Key(kSameSiteLaxCookieName), Key(kSameSiteNoneCookieName),
                     Key(kSameSiteUnspecifiedCookieName))));
@@ -301,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
                     RedirectUrl(https_server(), kHostB,
                                 EchoCookiesUrl(https_server(), kHostA))),
         /*expected_commit_url=*/EchoCookiesUrl(https_server(), kHostA)));
-    EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+    EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
                 net::CookieStringIs(UnorderedElementsAre(
                     Key(kSameSiteLaxCookieName), Key(kSameSiteNoneCookieName),
                     Key(kSameSiteUnspecifiedCookieName))));
@@ -313,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
         RedirectUrl(https_server(), kHostB,
                     EchoCookiesUrl(https_server(), kHostA)),
         /*expected_commit_url=*/EchoCookiesUrl(https_server(), kHostA)));
-    EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+    EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
                 net::CookieStringIs(UnorderedElementsAre(
                     Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
                     Key(kSameSiteNoneCookieName),
@@ -325,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSameSiteCookies_Redirect) {
                     RedirectUrl(https_server(), kHostB,
                                 EchoCookiesUrl(https_server(), kHostA))),
         /*expected_commit_url=*/EchoCookiesUrl(https_server(), kHostA)));
-    EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+    EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
                 net::CookieStringIs(UnorderedElementsAre(
                     Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
                     Key(kSameSiteNoneCookieName),
@@ -497,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSamePartyCookies) {
   // No embedded frame. The top-level site has access to its cookies.
   ASSERT_TRUE(NavigateToURL(
       web_contents(), https_server()->GetURL(kHostA, "/echoheader?Cookie")));
-  EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
               net::CookieStringIs(UnorderedElementsAre(
                   Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
                   Key(kSamePartyUnspecifiedCookieName))));
@@ -570,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SendSamePartyCookies) {
   // of whether the site is in an FPS, or whether the cookies are SameParty.
   ASSERT_TRUE(NavigateToURL(
       web_contents(), https_server()->GetURL(kHostD, "/echoheader?Cookie")));
-  EXPECT_THAT(ExtractFrameContent(web_contents()->GetMainFrame()),
+  EXPECT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
               net::CookieStringIs(UnorderedElementsAre(
                   Key(kSamePartyLaxCookieName), Key(kSamePartyNoneCookieName),
                   Key(kSamePartyUnspecifiedCookieName))));
@@ -900,7 +902,7 @@ class PartitionedCookiesOriginTrialBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), url));
     WebContents* contents = shell()->web_contents();
     EXPECT_TRUE(WaitForLoadStop(contents));
-    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
+    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
  protected:

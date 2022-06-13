@@ -226,7 +226,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostFencedFrameBrowserTest,
   content::RenderFrameHostImpl* fenced_frame_host =
       static_cast<content::RenderFrameHostImpl*>(
           fenced_frame_test_helper().CreateFencedFrame(
-              shell()->web_contents()->GetMainFrame(), fenced_frame_url));
+              shell()->web_contents()->GetPrimaryMainFrame(),
+              fenced_frame_url));
   ASSERT_TRUE(fenced_frame_host);
   // The client should be detached by the fenced frame calling
   // OnNavigationRequestWillBeSent through the outer document.

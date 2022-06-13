@@ -162,7 +162,10 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   }
 
   RenderWidgetHost* GetWidgetHost() {
-    return GetWebContents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+    return GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderViewHost()
+        ->GetWidget();
   }
 };
 

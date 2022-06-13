@@ -270,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
 
   // When the request is received, close the popup.
   response.WaitForRequest();
-  RenderFrameHostImplWrapper rfh_popup(popup->web_contents()->GetMainFrame());
+  RenderFrameHostImplWrapper rfh_popup(
+      popup->web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(ExecJs(rfh_popup.get(), "window.close();"));
   ASSERT_TRUE(rfh_popup.WaitUntilRenderFrameDeleted());
 
@@ -740,9 +741,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(NavigateToURL(shell(), error_url));
   EXPECT_TRUE(observer.is_error());
   EXPECT_EQ(net::ERR_DNS_TIMED_OUT, observer.net_error_code());
-  EXPECT_EQ(
-      GURL(kUnreachableWebDataURL),
-      shell()->web_contents()->GetMainFrame()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL), shell()
+                                              ->web_contents()
+                                              ->GetPrimaryMainFrame()
+                                              ->GetSiteInstance()
+                                              ->GetSiteURL());
   EXPECT_EQ(net::OK, current_frame_host()->last_http_status_code());
 
   RenderFrameDeletedObserver delete_rfh_a(current_frame_host());
@@ -1445,7 +1448,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to |url_1|.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImpl* main_frame_1 = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame_1 = web_contents->GetPrimaryMainFrame();
 
   // Create a pagehide handler that sets item "pagehide_storage" and a
   // visibilitychange handler that sets item "visibilitychange_storage" in
@@ -1493,7 +1496,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Navigate to |url_3| which is same-origin with |url_1|, so we can check
   // the localStorage values.
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  RenderFrameHostImpl* main_frame_3 = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame_3 = web_contents->GetPrimaryMainFrame();
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.

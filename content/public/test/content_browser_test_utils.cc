@@ -139,7 +139,7 @@ void AppModalDialogWaiter::EarlyCallback() {
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(Shell* shell) {
-  return shell->web_contents()->GetMainFrame();
+  return shell->web_contents()->GetPrimaryMainFrame();
 }
 
 void LookupAndLogNameAndIdOfFirstCamera() {
@@ -216,13 +216,13 @@ void IsolateOriginsForTesting(
   scoped_refptr<SiteInstanceImpl> new_site_instance;
   do {
     old_site_instance = static_cast<SiteInstanceImpl*>(
-        web_contents->GetMainFrame()->GetSiteInstance());
+        web_contents->GetPrimaryMainFrame()->GetSiteInstance());
     std::string cross_site_hostname = base::GenerateGUID() + ".com";
     EXPECT_TRUE(NavigateToURL(
         web_contents,
         embedded_test_server->GetURL(cross_site_hostname, "/title1.html")));
     new_site_instance = static_cast<SiteInstanceImpl*>(
-        web_contents->GetMainFrame()->GetSiteInstance());
+        web_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
     // The navigation might need to be repeated until we actually swap the
     // SiteInstance (no swap might happen when navigating away from the initial,

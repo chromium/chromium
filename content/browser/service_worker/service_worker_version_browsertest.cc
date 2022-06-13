@@ -1420,7 +1420,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest, RendererCrash) {
 
   // Crash the renderer process. The version should stop.
   RenderProcessHost* process =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   RenderProcessHostWatcher process_watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   base::RunLoop run_loop;

@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   // Simulate a condition where the RFH can't create a
   // BrowserAccessibilityManager - like if there's no view.
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   frame->set_no_create_browser_accessibility_manager_for_testing(true);
   ASSERT_EQ(nullptr, frame->GetOrCreateBrowserAccessibilityManager());
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   GURL url(url_str);
   EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
 
   {
     // Enable accessibility (passing ui::kAXModeComplete to

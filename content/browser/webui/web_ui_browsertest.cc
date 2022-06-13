@@ -174,7 +174,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   void AdvanceClock(base::TimeDelta delta) { clock_.Advance(delta); }
 
   WebContents* web_contents() { return shell()->web_contents(); }
-  RenderFrameHost* main_rfh() { return web_contents()->GetMainFrame(); }
+  RenderFrameHost* main_rfh() { return web_contents()->GetPrimaryMainFrame(); }
 
   TestWebUIMessageHandler* test_handler() { return test_handler_; }
 
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
       web_contents->GetBrowserContext(), web_ui_url));
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnDifferenteWebUITypes) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Tests that a WebUI page will use a separate SiteInstance when we navigated to
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
   auto* new_site_instance = web_contents->GetSiteInstance();
   EXPECT_NE(orig_site_instance, new_site_instance);
   EXPECT_FALSE(orig_site_instance->IsRelatedSiteInstance(new_site_instance));
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
 
   ASSERT_TRUE(NavigateToURL(web_contents, web_ui_url));
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromChromeToUntrusted) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Tests that navigating from chrome-untrusted:// to chrome:// results in
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   ASSERT_TRUE(NavigateToURL(web_contents,
                             GetChromeUntrustedUIURL("test-host/title1.html")));
   EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Capture the SiteInstance before navigating for later comparison.
   scoped_refptr<SiteInstance> orig_site_instance(
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ForceSwapOnFromUntrustedToChrome) {
   EXPECT_NE(orig_browsing_instance_id,
             new_site_instance->GetBrowsingInstanceId());
   EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
-      web_contents->GetMainFrame()->GetProcess()->GetID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
@@ -417,24 +417,26 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, DISABLED_NavigateWhileWebUISend) {
   web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
 
   auto* webui = static_cast<WebUIImpl*>(web_contents->GetWebUI());
-  EXPECT_EQ(web_contents->GetMainFrame(), webui->frame_host());
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame(), webui->frame_host());
 
-  test_handler->set_finish_closure(base::BindLambdaForTesting(
-      [&]() { EXPECT_NE(web_contents->GetMainFrame(), webui->frame_host()); }));
+  test_handler->set_finish_closure(base::BindLambdaForTesting([&]() {
+    EXPECT_NE(web_contents->GetPrimaryMainFrame(), webui->frame_host());
+  }));
 
   bool received_send_message = false;
   test_handler->set_send_message_closure(
       base::BindLambdaForTesting([&]() { received_send_message = true; }));
 
   base::RunLoop run_loop;
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"onunload=function() { chrome.send('sendMessage')}",
       base::BindOnce([](base::OnceClosure callback,
                         base::Value) { std::move(callback).Run(); },
                      run_loop.QuitClosure()));
   run_loop.Run();
 
-  RenderFrameDeletedObserver delete_observer(web_contents->GetMainFrame());
+  RenderFrameDeletedObserver delete_observer(
+      web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/simple_page.html")));
   delete_observer.WaitUntilDeleted();
@@ -454,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, CoopCoepPolicies) {
   const GURL isolated_url(GetChromeUntrustedUIURL("isolated/title2.html"));
   ASSERT_TRUE(NavigateToURL(web_contents, isolated_url));
 
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   EXPECT_EQ(true, EvalJs(main_frame, "window.crossOriginIsolated;",
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
 }
@@ -504,14 +506,14 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest, DefaultSchemesCanBeRequested) {
     url = GURL(base::StrCat(
         {requestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 
   for (const auto& unrequestable_scheme : unrequestable_schemes) {
     url = GURL(base::StrCat(
         {unrequestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 }
 
@@ -555,14 +557,14 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest,
     url = GURL(base::StrCat(
         {requestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_TRUE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 
   for (const auto& unrequestable_scheme : unrequestable_schemes) {
     url = GURL(base::StrCat(
         {unrequestable_scheme, url::kStandardSchemeSeparator, host_and_path}));
     EXPECT_FALSE(ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-        web_contents->GetMainFrame()->GetProcess()->GetID(), url));
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), url));
   }
 }
 
@@ -678,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
 
   // Navigate to a chrome:// main page.
   EXPECT_TRUE(NavigateToURL(web_contents, web_ui_url));
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   // Add an iframe in chrome-untrusted://.
   EXPECT_EQ(true,
             EvalJs(main_frame,
@@ -817,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,
 
   // Navigate to a chrome:// main page.
   EXPECT_TRUE(NavigateToURL(web_contents, web_ui_url));
-  auto* main_frame = web_contents->GetMainFrame();
+  auto* main_frame = web_contents->GetPrimaryMainFrame();
   // Add an iframe in chrome-untrusted://.
   EXPECT_EQ(true,
             EvalJs(main_frame,

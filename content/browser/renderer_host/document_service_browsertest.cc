@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(DocumentServiceBFCacheBrowserTest, DocumentService) {
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHost* rfh_a =
-      web_contents()->GetMainFrame();  // current_frame_host();
+      web_contents()->GetPrimaryMainFrame();  // current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   mojo::Remote<mojom::Echo> echo_remote;

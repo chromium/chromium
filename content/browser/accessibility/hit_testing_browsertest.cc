@@ -894,7 +894,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 
     // Simulate a tap at that point using TouchPassthroughManager.
     TouchPassthroughManager touch_passthrough_manager(
-        static_cast<WebContentsImpl*>(shell()->web_contents())->GetMainFrame());
+        static_cast<WebContentsImpl*>(shell()->web_contents())
+            ->GetPrimaryMainFrame());
     touch_passthrough_manager.OnTouchStart(CSSToFramePoint(key5_ctr));
     touch_passthrough_manager.OnTouchEnd();
     ASSERT_TRUE(event_waiter.WaitForNotification());

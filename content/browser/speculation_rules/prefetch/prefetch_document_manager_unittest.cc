@@ -64,7 +64,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::TearDown();
   }
 
-  RenderFrameHostImpl& GetMainFrame() {
+  RenderFrameHostImpl& GetPrimaryMainFrame() {
     return web_contents_->GetPrimaryPage().GetMainDocument();
   }
 
@@ -135,7 +135,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
 
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
-  PrefetchDocumentManager::GetOrCreateForCurrentDocument(&GetMainFrame())
+  PrefetchDocumentManager::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame())
       ->ProcessCandidates(candidates);
 
   // Check that the candidates that should be prefetched were sent to

@@ -300,7 +300,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
     blink::AssociatedInterfaceProvider* remote_interfaces =
         shell()
             ->web_contents()
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->GetRemoteAssociatedInterfaces();
     remote_interfaces->OverrideBinderForTesting(
         mojom::MhtmlFileWriter::Name_,

@@ -275,7 +275,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents_impl()->GetMainFrame();
+    return web_contents_impl()->GetPrimaryMainFrame();
   }
 
   void TestHostPrerenderingState(const GURL& prerender_url) {
@@ -1575,7 +1575,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Now navigate the primary page to the prerendered URL so that we activate
   // the prerender.
   {
-    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
     prerender_observer.WaitForActivation();
   }
@@ -2183,7 +2183,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   // event, to ensure the Activate IPC is sent.
   TestActivationManager prerendered_activation_navigation(web_contents(),
                                                           prerendering_url);
-  ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+  ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                      JsReplace("location = $1", prerendering_url)));
   prerendered_activation_navigation.WaitForNavigationFinished();
   EXPECT_TRUE(prerendered_activation_navigation.was_activated());
@@ -2503,7 +2503,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     // Start navigation in primary page to kPrerenderingUrl.
     TestActivationManager primary_page_manager(shell()->web_contents(),
                                                kPrerenderingUrl);
-    ASSERT_TRUE(ExecJs(shell()->web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
     NavigationRequest* request =
@@ -3058,7 +3058,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       osc.connect(context.destination);
       osc.start();
   )";
-  EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), audio_script));
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(), audio_script));
 }
 
 // The viewport meta tag is only enabled on Android.
@@ -3115,7 +3115,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ViewportFit) {
   int host_id = AddPrerender(kPrerenderingUrl);
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
-  RenderFrameHostImpl* primary_rfh = web_contents_impl()->GetMainFrame();
+  RenderFrameHostImpl* primary_rfh = web_contents_impl()->GetPrimaryMainFrame();
 
   {
     // Set viewport-fit property in the primary page and the prerendering page.
@@ -3414,7 +3414,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
 
   // Now navigate the primary page to the prerendered URL. Cancelling the
   // prerender disables the activation due to DidFailLoad.
-  ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+  ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                      JsReplace("location = $1", kPrerenderingUrl)));
   navigation_observer.WaitForNavigationFinished();
   EXPECT_FALSE(prerender_observer.was_activated());
@@ -3463,7 +3463,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   {
     test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                    kPrerenderingUrl);
-    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
     prerender_observer.WaitForActivation();
   }
@@ -3472,7 +3472,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Ensure the navigation completes in the iframe.
   {
     iframe_observer.WaitForNavigationFinished();
-    child_frame = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+    child_frame = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
     EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
   }
@@ -3504,7 +3504,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   TestActivationManager activation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
   {
-    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
     // Pause the activation before it's committed.
@@ -3889,7 +3889,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   TestActivationManager activation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
   {
-    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
     EXPECT_TRUE(activation_observer.WaitForBeforeChecks());
@@ -3958,7 +3958,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   TestActivationManager activation_observer(shell()->web_contents(),
                                             kPrerenderingUrl);
   {
-    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", kPrerenderingUrl)));
 
     EXPECT_TRUE(activation_observer.WaitForBeforeChecks());
@@ -4235,7 +4235,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  RenderFrameHostWrapper main_frame(shell()->web_contents()->GetMainFrame());
+  RenderFrameHostWrapper main_frame(
+      shell()->web_contents()->GetPrimaryMainFrame());
 
   AddPrerender(kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
@@ -4258,7 +4259,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBackForwardCacheBrowserTest,
 
   // Expect the navigation to be served from the back-forward cache to verify
   // the test is testing what is intended.
-  ASSERT_EQ(shell()->web_contents()->GetMainFrame(), main_frame.get());
+  ASSERT_EQ(shell()->web_contents()->GetPrimaryMainFrame(), main_frame.get());
 
   EXPECT_EQ(
       "activated, initial",
@@ -4943,7 +4944,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TriggeredPrerenderUkm) {
       ukm_recorder.GetEntriesByName(
           ukm::builders::PrerenderPageLoad::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
             entries.front()->source_id);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
@@ -5615,7 +5616,7 @@ IN_PROC_BROWSER_TEST_F(
   TestJavaScriptDialogManager dialog_manager;
   web_contents_impl()->SetDelegate(&dialog_manager);
   web_contents_impl()->RunJavaScriptDialog(
-      web_contents_impl()->GetMainFrame(), u"", u"",
+      web_contents_impl()->GetPrimaryMainFrame(), u"", u"",
       JAVASCRIPT_DIALOG_TYPE_ALERT, false, base::NullCallback());
 
   // Navigate subframe (with render document enabled, this should cause a RFH

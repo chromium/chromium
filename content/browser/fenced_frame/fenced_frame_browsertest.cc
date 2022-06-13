@@ -76,7 +76,7 @@ class FencedFrameBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -618,7 +618,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NodesForIsLoading) {
           primary_rfh.get()->child_at(0)->current_frame_host()));
   ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
 
-  RenderFrameHostImpl* inner_contents_rfh = inner_contents->GetMainFrame();
+  RenderFrameHostImpl* inner_contents_rfh =
+      inner_contents->GetPrimaryMainFrame();
   FrameTree& inner_contents_primary_frame_tree =
       inner_contents->GetPrimaryFrameTree();
   ASSERT_TRUE(inner_contents_rfh);
@@ -1269,8 +1270,8 @@ class FencedFrameNestedFrameBrowserTest
     const GURL main_url =
         https_server()->GetURL(kSameOriginHostName, "/title1.html");
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
-    RenderFrameHostImpl* frame =
-        static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
+        web_contents()->GetPrimaryMainFrame());
     int depth = 0;
     for (const auto& type : std::get<0>(GetParam())) {
       ++depth;
@@ -1398,7 +1399,7 @@ class FencedFrameNestedModesTest
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {

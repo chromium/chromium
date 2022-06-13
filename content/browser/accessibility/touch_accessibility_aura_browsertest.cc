@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
 
   // Get the BrowserAccessibilityManager for the first child frame.
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->frame_tree_node()->child_at(0)->current_frame_host();
   BrowserAccessibilityManager* child_manager =
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
 
   // Get the BrowserAccessibilityManager for the first child frame.
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->frame_tree_node()->child_at(0)->current_frame_host();
   BrowserAccessibilityManager* child_manager =

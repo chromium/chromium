@@ -307,7 +307,7 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
   // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
   // because some test pages have ContentSecurityPolicy and EvalJs cannot work
   // with it. See the quick migration guide for EvalJs for more information.
-  GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
@@ -383,8 +383,8 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
   // approach just to ignore it instead of fixing the timing issue. When
   // ExecJs() actually fails, the remaining test steps should fail, so it
   // should be safe to ignore it.
-  std::ignore =
-      ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl));
+  std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
+                       JsReplace("location = $1", gurl));
   observer.Wait();
 }
 

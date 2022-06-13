@@ -1265,7 +1265,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
 
   blink::mojom::TextAutosizerPageInfo received_page_info;
   auto interceptor = std::make_unique<TextAutosizerPageInfoInterceptor>(
-      web_contents()->GetMainFrame());
+      web_contents()->GetPrimaryMainFrame());
 #if BUILDFLAG(IS_ANDROID)
   prefs.device_scale_adjustment += 0.05f;
   // Change the device scale adjustment to trigger a RemotePageInfo update.

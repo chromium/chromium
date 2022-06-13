@@ -75,7 +75,7 @@ class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
  public:
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
-        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }
@@ -483,7 +483,7 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
 
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
-        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
   // The main_frame_a should have a focus to start with.
   // On renderer side, blink::FocusController's both 'active' and
   //'focus' states are set to true.
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
   EXPECT_TRUE(FrameIsFocused(main_frame));
   EXPECT_TRUE(FrameIsActivated(iframe));

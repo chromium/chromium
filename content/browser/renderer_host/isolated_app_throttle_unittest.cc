@@ -401,7 +401,8 @@ TEST_F(IsolatedAppThrottleTest, AllowHistoryNavigationFromErrorPage) {
             GetWebExposedIsolationLevel(main_frame_id()));
 
   auto* error_rfh = NavigationSimulator::NavigateAndFailFromDocument(
-      GURL(kAppUrl2), net::ERR_TIMED_OUT, web_contents()->GetMainFrame());
+      GURL(kAppUrl2), net::ERR_TIMED_OUT,
+      web_contents()->GetPrimaryMainFrame());
   EXPECT_NE(nullptr, error_rfh);
   EXPECT_EQ(GURL(kAppUrl2), error_rfh->GetLastCommittedURL());
   EXPECT_EQ(PAGE_TYPE_ERROR, GetPageType(error_rfh));

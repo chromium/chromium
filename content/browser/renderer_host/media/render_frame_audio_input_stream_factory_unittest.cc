@@ -236,7 +236,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
 
-  RenderFrameHost* main_frame = source_contents->GetMainFrame();
+  RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
                                        main_frame->GetRoutingID());
   base::UnguessableToken session_id =
@@ -264,7 +264,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
 
-  RenderFrameHost* main_frame = source_contents->GetMainFrame();
+  RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
   WebContentsMediaCaptureId capture_id(main_frame->GetProcess()->GetID(),
                                        main_frame->GetRoutingID());
   base::UnguessableToken session_id =

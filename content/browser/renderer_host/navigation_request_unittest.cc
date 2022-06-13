@@ -76,7 +76,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     CreateNavigationHandle();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
   void TearDown() override {

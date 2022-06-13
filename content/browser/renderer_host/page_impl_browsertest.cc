@@ -333,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PageObjectBeforeAndAfterCommit) {
 
   // 4) Let the navigation finish and make sure it has succeeded.
   manager.WaitForNavigationFinished();
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   RenderFrameHostImpl* rfh_b = primary_main_frame_host();
   EXPECT_EQ(pending_rfh, rfh_b);
@@ -505,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteNavigationAfterFrameCrash) {
       renderer_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   renderer_process->Shutdown(0);
   crash_observer.Wait();
-  EXPECT_TRUE(&(web_contents()->GetMainFrame()->GetPage()));
+  EXPECT_TRUE(&(web_contents()->GetPrimaryMainFrame()->GetPage()));
   EXPECT_TRUE(data);
 
   // 3) Navigate same-site to A2. This will result in invoking

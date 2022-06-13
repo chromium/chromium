@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_ShouldntRun) {
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
   content::RenderProcessHostWatcher renderer_shutdown_observer(
-      shell()->web_contents()->GetMainFrame()->GetProcess(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   EXPECT_FALSE(NavigateToURL(shell(), GetWebUIURL("crash")));

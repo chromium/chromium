@@ -41,7 +41,7 @@ class PolicyContainerHostBrowserTest : public content::ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 };
 }  // namespace
@@ -868,7 +868,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
   // Let the navigation finish.
   manager.WaitForNavigationFinished();
 
-  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(url_b,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // The referrer policy is initialized to default during the navigation (no
   // referrer-policy header in the response).

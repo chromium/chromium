@@ -43,7 +43,7 @@ class SyntheticInputTest : public ContentBrowserTest {
   RenderWidgetHostImpl* GetRenderWidgetHost() const {
     return RenderWidgetHostImpl::From(shell()
                                           ->web_contents()
-                                          ->GetMainFrame()
+                                          ->GetPrimaryMainFrame()
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }

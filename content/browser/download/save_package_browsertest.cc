@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageFencedFrameBrowserTest,
   GURL main_url = embedded_test_server()->GetURL(kTestFile);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Create an iframe.
   GURL iframe_url = embedded_test_server()->GetURL("/title2.html");
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageFencedFrameBrowserTest,
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   fenced_frame_test_helper().CreateFencedFrame(
-      shell()->web_contents()->GetMainFrame(), fenced_frame_url);
+      shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   auto* download_manager = static_cast<DownloadManagerImpl*>(
       shell()->web_contents()->GetBrowserContext()->GetDownloadManager());

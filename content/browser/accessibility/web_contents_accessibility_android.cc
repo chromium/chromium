@@ -531,12 +531,12 @@ bool WebContentsAccessibilityAndroid::OnHoverEvent(
   if (!GetRootBrowserAccessibilityManager()->touch_passthrough_enabled())
     return true;
 
-  if (!web_contents_ || !web_contents_->GetMainFrame())
+  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame())
     return true;
 
   if (!touch_passthrough_manager_) {
     touch_passthrough_manager_ = std::make_unique<TouchPassthroughManager>(
-        web_contents_->GetMainFrame());
+        web_contents_->GetPrimaryMainFrame());
   }
 
   switch (event.GetAction()) {

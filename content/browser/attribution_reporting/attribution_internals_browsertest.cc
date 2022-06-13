@@ -122,7 +122,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   // to execute the script because WebUI has a default CSP policy denying
   // "eval()", which is what EvalJs uses under the hood.
   bool ExecJsInWebUI(const std::string& script) {
-    return ExecJs(shell()->web_contents()->GetMainFrame(), script,
+    return ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), script,
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
   }
 
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Execute script to ensure the page has loaded correctly, executing similarly
   // to ExecJsInWebUI().
-  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                          "document.body.innerHTML.search('Attribution "
                          "Reporting API Internals') >= 0;",
                          EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));

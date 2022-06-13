@@ -288,10 +288,10 @@ TEST_P(WebAuthRequestSecurityCheckerSingleFrameTest,
       GURL("https://same-origin.com"), web_contents());
   navigation->SetPermissionsPolicyHeader(GetParam().policy);
   navigation->Commit();
-  ASSERT_NE(nullptr, web_contents()->GetMainFrame());
+  ASSERT_NE(nullptr, web_contents()->GetPrimaryMainFrame());
 
   scoped_refptr<WebAuthRequestSecurityChecker> checker =
-      static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame())
+      static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
           ->GetWebAuthRequestSecurityChecker();
 
   bool actual_is_cross_origin = false;

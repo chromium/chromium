@@ -648,7 +648,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   void NavigateIframeAndCheckURL(WebContents* web_contents,
                                  const GURL& url,
                                  const GURL& expected_commit_url) {
-    FrameTreeNode* parent = FrameTreeNode::From(web_contents->GetMainFrame());
+    FrameTreeNode* parent =
+        FrameTreeNode::From(web_contents->GetPrimaryMainFrame());
     CHECK(parent->child_count() > 0u);
     FrameTreeNode* iframe = parent->child_at(0);
     TestFrameNavigationObserver nav_observer(iframe->current_frame_host());
@@ -1475,7 +1476,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   url::Origin group_origin = https_server_->GetOrigin("a.test");
 
-  FrameTreeNode* parent = FrameTreeNode::From(web_contents()->GetMainFrame());
+  FrameTreeNode* parent =
+      FrameTreeNode::From(web_contents()->GetPrimaryMainFrame());
   ASSERT_GT(parent->child_count(), 0u);
   RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
 
@@ -1563,7 +1565,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                             ")");
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
 
-  FrameTreeNode* parent = FrameTreeNode::From(web_contents()->GetMainFrame());
+  FrameTreeNode* parent =
+      FrameTreeNode::From(web_contents()->GetPrimaryMainFrame());
   ASSERT_GT(parent->child_count(), 0u);
   RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
 
@@ -1607,7 +1610,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(kSuccess,
             JoinInterestGroupAndVerify(allow_leave_origin, kJoinSucceedsGroup));
 
-  FrameTreeNode* parent = FrameTreeNode::From(web_contents()->GetMainFrame());
+  FrameTreeNode* parent =
+      FrameTreeNode::From(web_contents()->GetPrimaryMainFrame());
   ASSERT_GT(parent->child_count(), 0u);
   RenderFrameHost* iframe = parent->child_at(0)->current_frame_host();
 
@@ -3611,9 +3615,11 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
               .c_str()));
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  RenderFrameHost* rfh1 = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* rfh1 =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(rfh1);
-  RenderFrameHost* rfh2 = ChildFrameAt(web_contents()->GetMainFrame(), 1);
+  RenderFrameHost* rfh2 =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
   ASSERT_TRUE(rfh2);
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -4036,7 +4042,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
         shell(),
         https_server_->GetURL(kTopFrameHost, test_case.top_frame_path)));
 
-    RenderFrameHost* frame = web_contents()->GetMainFrame();
+    RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
     EXPECT_EQ(https_server_->GetOrigin(kTopFrameHost),
               frame->GetLastCommittedOrigin());
     for (int i = 0; i < test_case.depth; ++i) {
@@ -4109,7 +4115,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
               .c_str()));
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  RenderFrameHost* iframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
   EXPECT_EQ(kIframeHost, iframe->GetLastCommittedOrigin().host());
 
@@ -7204,7 +7211,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // clang-format on
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* same_origin_iframe = ChildFrameAt(main_frame, 0);
   RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
   RenderFrameHost* inner_cross_origin_iframe =
@@ -7332,7 +7339,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "/interest_group/page-with-fledge-permissions-policy-disabled.html");
   url::Origin origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
 
   for (auto* execution_target : {main_frame, iframe}) {
@@ -7356,7 +7363,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   RenderFrameHost* same_origin_iframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   ExpectNotAllowedToJoinOrUpdateInterestGroup(origin, same_origin_iframe);
   ExpectNotAllowedToRunAdAuction(
       origin,
@@ -7387,7 +7394,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   // clang-format on
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* same_origin_iframe = ChildFrameAt(main_frame, 0);
   RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
   RenderFrameHost* inner_cross_origin_iframe =
@@ -7486,7 +7493,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   // clang-format on
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   RenderFrameHost* outter_iframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   RenderFrameHost* inner_iframe = ChildFrameAt(outter_iframe, 0);
 
   for (auto* execution_target : {outter_iframe, inner_iframe}) {
@@ -7506,7 +7513,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   url::Origin origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   RenderFrameHost* same_origin_iframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   ExpectNotAllowedToJoinOrUpdateInterestGroup(origin, same_origin_iframe);
   ExpectNotAllowedToRunAdAuction(
       origin,
@@ -7531,9 +7538,9 @@ IN_PROC_BROWSER_TEST_F(
   // clang-format on
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   RenderFrameHost* iframe_interest_group =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   RenderFrameHost* iframe_ad_auction =
-      ChildFrameAt(web_contents()->GetMainFrame(), 1);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
 
   // Interest group APIs succeed and run ad auction fails for
   // iframe_interest_group.
@@ -7597,7 +7604,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
       "/interest_group/page-with-fledge-permissions-policy-disabled.html");
   url::Origin origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
 
   for (auto* execution_target : {main_frame, iframe}) {
@@ -7734,7 +7741,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupAuctionLimitBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   const url::Origin test_origin = url::Origin::Create(test_url);
   RenderFrameHost* const b_iframe =
-      ChildFrameAt(web_contents()->GetMainFrame(), 0);
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   EXPECT_EQ(
       kSuccess,

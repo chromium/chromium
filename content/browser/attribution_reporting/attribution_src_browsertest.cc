@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
   GURL fenced_frame_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
 
-  RenderFrameHost* parent = web_contents()->GetMainFrame();
+  RenderFrameHost* parent = web_contents()->GetPrimaryMainFrame();
 
   RenderFrameHost* fenced_frame_host;
   if (fenced_frame_helper_) {

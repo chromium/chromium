@@ -125,7 +125,7 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
   // for windows opened from the renderer) then the Shell won't hear about the
   // main frame being created as a WebContentsObservers. This gives the delegate
   // a chance to act on the main frame accordingly.
-  if (raw_web_contents->GetMainFrame()->IsRenderFrameLive())
+  if (raw_web_contents->GetPrimaryMainFrame()->IsRenderFrameLive())
     g_platform->MainFrameCreated(shell);
 
   return shell;
@@ -225,7 +225,7 @@ Shell* Shell::CreateNewWindow(BrowserContext* browser_context,
 }
 
 void Shell::RenderFrameCreated(RenderFrameHost* frame_host) {
-  if (frame_host == web_contents_->GetMainFrame())
+  if (frame_host == web_contents_->GetPrimaryMainFrame())
     g_platform->MainFrameCreated(this);
 }
 
@@ -469,7 +469,7 @@ void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
 #endif
   if (is_fullscreen_ != enter_fullscreen) {
     is_fullscreen_ = enter_fullscreen;
-    web_contents->GetMainFrame()
+    web_contents->GetPrimaryMainFrame()
         ->GetRenderViewHost()
         ->GetWidget()
         ->SynchronizeVisualProperties();

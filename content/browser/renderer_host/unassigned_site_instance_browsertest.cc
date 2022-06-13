@@ -211,14 +211,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        RendererInitiatedNavigationTo) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), regular_url()));
-  RenderFrameHostImpl* initial_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* initial_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> initial_si = initial_rfh->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
 
   // Do a renderer-initiated navigation to an unassigned url.
   EXPECT_TRUE(NavigateToURLFromRenderer(initial_rfh, unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   if (!BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
     // Normally we reuse the SiteInstance.
@@ -237,13 +237,13 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
 
   // Do a browser initiated navigation to an unassigned url.
   EXPECT_TRUE(NavigateToURL(shell(), unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   if (!BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
     // Normally we reuse the SiteInstance.
@@ -261,7 +261,8 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        RendererInitiatedNavigationFrom) {
   // Get a base page without a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), unassigned_url()));
-  RenderFrameHostImpl* unassigned_url_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* unassigned_url_rfh =
+      web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> unassigned_si =
       unassigned_url_rfh->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
@@ -270,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // unassigned SiteInstance and set its site.
   EXPECT_TRUE(NavigateToURLFromRenderer(unassigned_url_rfh, regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   EXPECT_EQ(unassigned_si, initial_si);
 }
@@ -280,14 +281,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Get a base page without a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
 
   // Do a browser-initiated navigation to an assigned url. We reuse the
   // unassigned SiteInstance and set its site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   EXPECT_EQ(unassigned_si, initial_si);
 }
@@ -296,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        RendererInitiatedNavigationTo_CustomUrl) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* initial_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* initial_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> initial_si = initial_rfh->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
 
@@ -309,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(initial_rfh,
                                         embedder_defined_unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
   if (CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
     EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
@@ -323,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
 
   // Do a browser initiated navigation to an embedder-defined unassigned url.
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // BrowsingInstance swap.
   EXPECT_TRUE(NavigateToURL(web_contents(), embedder_defined_unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
   EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
 }
@@ -344,7 +345,8 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        RendererInitiatedNavigationFrom_CustomUrl) {
   // Get a base page without a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), embedder_defined_unassigned_url()));
-  RenderFrameHostImpl* unassigned_url_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* unassigned_url_rfh =
+      web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> unassigned_si =
       unassigned_url_rfh->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
@@ -353,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // unassigned SiteInstance and set its site, because the process is unused.
   EXPECT_TRUE(NavigateToURLFromRenderer(unassigned_url_rfh, regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   EXPECT_EQ(unassigned_si, initial_si);
 }
@@ -363,14 +365,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Get a base page without a site.
   EXPECT_TRUE(NavigateToURL(web_contents(), embedder_defined_unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
 
   // Do a browser-initiated navigation to an assigned url. We reuse the
   // unassigned SiteInstance and set its site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   EXPECT_EQ(unassigned_si, initial_si);
 }
@@ -380,7 +382,8 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Get a base page without a site that commits content.
   EXPECT_TRUE(NavigateToURL(web_contents(),
                             embedder_defined_nonempty_unassigned_url()));
-  RenderFrameHostImpl* unassigned_url_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* unassigned_url_rfh =
+      web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> unassigned_si =
       unassigned_url_rfh->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
@@ -394,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // schemes that do not load content into a renderer.
   EXPECT_TRUE(NavigateToURLFromRenderer(unassigned_url_rfh, regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   if (AreAllSitesIsolatedForTesting())
     EXPECT_NE(unassigned_si, initial_si);
@@ -408,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(NavigateToURL(web_contents(),
                             embedder_defined_nonempty_unassigned_url()));
   scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
 
   // Do a browser-initiated navigation to an assigned url. We cannot reuse the
@@ -420,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // schemes that do not load content into a renderer.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
   scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   if (AreAllSitesIsolatedForTesting())
     EXPECT_NE(unassigned_si, initial_si);
@@ -432,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InPopup_InitialAboutBlank) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -441,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(ExecJs(original_rfh, "window.open()"));
   scoped_refptr<SiteInstanceImpl> popup_si =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents())
-          ->GetMainFrame()
+          ->GetPrimaryMainFrame()
           ->GetSiteInstance();
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
@@ -451,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InPopup_RendererInitiatedNavigateTo) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -463,7 +466,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   EXPECT_TRUE(WaitForLoadStop(popup_web_contents));
   scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
@@ -472,10 +475,10 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
 
   // In the popup, do a renderer-initiated navigation to an unassigned url. We
   // should reuse the SiteInstance.
-  EXPECT_TRUE(NavigateToURLFromRenderer(popup_web_contents->GetMainFrame(),
-                                        unassigned_url()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      popup_web_contents->GetPrimaryMainFrame(), unassigned_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(post_navigation_si->HasSite());
   EXPECT_EQ(post_navigation_si, original_si);
 }
@@ -484,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InPopup_BrowserInitiatedNavigateTo) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -496,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   EXPECT_TRUE(WaitForLoadStop(popup_web_contents));
   scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
@@ -507,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // should reuse the SiteInstance.
   EXPECT_TRUE(NavigateToURL(popup_web_contents, unassigned_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(post_navigation_si->HasSite());
   EXPECT_EQ(post_navigation_si, original_si);
 }
@@ -516,7 +519,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InPopup_RendererInitiatedNavigateTo_CustomUrl) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -528,7 +531,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   EXPECT_TRUE(WaitForLoadStop(popup_web_contents));
   scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
@@ -539,10 +542,11 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // unassigned url. We use another related SiteInstance. Note that contrary to
   // its main window counterpart, here we never swap BrowsingInstance, because
   // ProactivelySwapBrowsingInstance never applies to popups.
-  EXPECT_TRUE(NavigateToURLFromRenderer(popup_web_contents->GetMainFrame(),
-                                        embedder_defined_unassigned_url()));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(popup_web_contents->GetPrimaryMainFrame(),
+                                embedder_defined_unassigned_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(post_navigation_si->HasSite());
   EXPECT_TRUE(post_navigation_si->IsRelatedSiteInstance(original_si.get()));
 }
@@ -551,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InPopup_BrowserInitiatedNavigateTo_CustomUrl) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -563,7 +567,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   EXPECT_TRUE(WaitForLoadStop(popup_web_contents));
   scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
@@ -576,7 +580,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(popup_web_contents, embedder_defined_unassigned_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(post_navigation_si->HasSite());
   EXPECT_FALSE(post_navigation_si->IsRelatedSiteInstance(original_si.get()));
 }
@@ -599,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(
   // Get a base page with an embedder-defined non-empty unassigned url.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedder_defined_nonempty_unassigned_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_FALSE(original_si->HasSite());
   RenderProcessHost* original_process = original_si->GetProcess();
@@ -611,7 +615,7 @@ IN_PROC_BROWSER_TEST_P(
   WebContentsImpl* popup_web_contents =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
@@ -622,10 +626,10 @@ IN_PROC_BROWSER_TEST_P(
   //
   // This used to reuse the unassigned SiteInstance, even though the process had
   // already loaded a real page and the new URL requires a dedicated process.
-  EXPECT_TRUE(NavigateToURLFromRenderer(popup_web_contents->GetMainFrame(),
-                                        regular_url()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      popup_web_contents->GetPrimaryMainFrame(), regular_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_NE(original_si, post_navigation_si);
   EXPECT_NE(original_process, post_navigation_si->GetProcess());
   EXPECT_FALSE(original_si->HasSite());
@@ -659,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Get a base page with an embedder-defined non-empty unassigned url.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedder_defined_nonempty_unassigned_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_FALSE(original_si->HasSite());
   RenderProcessHost* original_process = original_si->GetProcess();
@@ -671,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   WebContentsImpl* popup_web_contents =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
   scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(popup_si->HasSite());
   EXPECT_EQ(popup_si, original_si);
 
@@ -680,7 +684,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // loaded a real page and the new URL requires a dedicated process.
   EXPECT_TRUE(NavigateToURL(popup_web_contents, regular_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetMainFrame()->GetSiteInstance();
+      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_NE(original_si, post_navigation_si);
   EXPECT_NE(original_process, post_navigation_si->GetProcess());
   EXPECT_FALSE(original_si->HasSite());
@@ -701,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InIframe_InitialAboutBlank) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -721,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InIframe_RendererInitiatedNavigateTo) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -754,7 +758,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        InIframe_RendererInitiatedNavigateTo_CustomUrl) {
   // Get a base page with a site.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
   scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
   EXPECT_TRUE(original_si->HasSite());
 
@@ -804,14 +808,15 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_EQ(embedder_defined_unassigned_url(),
             web_contents()->GetLastCommittedURL());
   scoped_refptr<SiteInstanceImpl> instance1(
-      web_contents()->GetMainFrame()->GetSiteInstance());
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   RenderProcessHost* process1 = instance1->GetProcess();
   EXPECT_EQ(GURL(), instance1->GetSiteURL());
 
   // Navigate to page that uses up the site. It should reuse the previous
   // SiteInstance and set its site URL.
   EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  EXPECT_EQ(instance1, web_contents()->GetMainFrame()->GetSiteInstance());
+  EXPECT_EQ(instance1,
+            web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_TRUE(instance1->HasSite());
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
@@ -852,13 +857,14 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
     // and verify that it is not related to |instance1| because the navigation
     // swapped to a new BrowsingInstance.
     EXPECT_TRUE(web_contents()
-                    ->GetMainFrame()
+                    ->GetPrimaryMainFrame()
                     ->GetSiteInstance()
                     ->IsDefaultSiteInstance());
     EXPECT_FALSE(instance1->IsRelatedSiteInstance(
-        web_contents()->GetMainFrame()->GetSiteInstance()));
+        web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
   } else {
-    EXPECT_NE(instance1, web_contents()->GetMainFrame()->GetSiteInstance());
+    EXPECT_NE(instance1,
+              web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   }
 
   // At this point, process1 is deleted, and the first entry is unfortunately
@@ -888,7 +894,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   web_contents()->GetController().GoToOffset(-2);
   observer.Wait();
   scoped_refptr<SiteInstanceImpl> new_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(embedder_defined_unassigned_url(),
             web_contents()->GetLastCommittedURL());
   EXPECT_NE(instance1, new_instance);
@@ -989,11 +995,13 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Check that the renderer hasn't been killed.  At this point, it should've
   // successfully committed the navigation to |embedder_defined_unassigned_url|,
   // and it shouldn't be locked.
-  EXPECT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_EQ(embedder_defined_unassigned_url(),
-            web_contents->GetMainFrame()->GetLastCommittedURL());
-  RenderProcessHost* process1 = web_contents->GetMainFrame()->GetProcess();
-  EXPECT_FALSE(web_contents->GetMainFrame()->GetSiteInstance()->HasSite());
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+  RenderProcessHost* process1 =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_FALSE(
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->HasSite());
   auto process1_lock = process1->GetProcessLock();
   EXPECT_FALSE(process1_lock.is_invalid());
   EXPECT_TRUE(process1_lock.allows_any_site());
@@ -1001,16 +1009,19 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // Now wait for second navigation to finish and ensure it also succeeds.
   regular_manager.WaitForNavigationFinished();
   EXPECT_TRUE(regular_manager.was_successful());
-  EXPECT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(regular_url(), web_contents->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(regular_url(),
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // The regular url navigation should've used a different process, locked to
   // a.test.
   BrowserContext* browser_context = web_contents->GetBrowserContext();
-  RenderProcessHost* process2 = web_contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* process2 =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(process1, process2);
-  EXPECT_EQ(GURL("http://a.test"),
-            web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(
+      GURL("http://a.test"),
+      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(
       ProcessLock::FromSiteInfo(SiteInfo(
           GURL("http://a.test"), GURL("http://a.test"),

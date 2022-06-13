@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        UnloadACKArrivesPriorToProcessShutdownRequest) {
   GURL start_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
-  RenderFrameHostImpl* rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* rfh = web_contents()->GetPrimaryMainFrame();
   rfh->DisableUnloadTimerForTesting();
 
   // Navigate cross-site.  Since the current frame is the last active frame in
@@ -342,7 +342,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Navigate first tab to a.com.
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
-  RenderProcessHost* a_process = web_contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* a_process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Open b.com in a second tab.  Using a renderer-initiated navigation is
   // important to leave a.com and b.com SiteInstances in the same
@@ -352,14 +353,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   Shell* new_shell = OpenPopup(web_contents, b_url, "newtab");
   WebContents* new_contents = new_shell->web_contents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));
-  RenderProcessHost* b_process = new_contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* b_process =
+      new_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(a_process, b_process);
 
   // Disable the beforeunload hang monitor (otherwise there will be a race
   // between the beforeunload dialog and the beforeunload hang timer) and give
   // the page a gesture to allow dialogs.
-  web_contents->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
-  web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+  web_contents->GetPrimaryMainFrame()
+      ->DisableBeforeUnloadHangMonitorForTesting();
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       std::u16string(), base::NullCallback());
 
   // Hang the first contents in a beforeunload dialog.
@@ -424,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   UnloadPrint(root->child_at(0)->child_at(1)->child_at(0), "A2");
   UnloadPrint(root->child_at(0)->child_at(1)->child_at(0)->child_at(0), "C3");
   DOMMessageQueue dom_message_queue(
-      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
 
   // Disable the unload timer on B1.
   root->child_at(0)->current_frame_host()->DisableUnloadTimerForTesting();
@@ -531,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, Unload_ABAB) {
   root->current_frame_host()->DisableUnloadTimerForTesting();
 
   DOMMessageQueue dom_message_queue(
-      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
   RenderProcessHostWatcher shutdown_A(
       root->current_frame_host()->GetProcess(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
@@ -584,7 +587,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
 
   // 1) Navigate to a page with an iframe.
   EXPECT_TRUE(NavigateToURL(shell(), url_abc));
-  RenderFrameHostImpl* rfh_a = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
   RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
@@ -693,7 +696,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, PartialUnloadHandler) {
   UnloadPrint(a2->frame_tree_node(), "A2");
 
   DOMMessageQueue dom_message_queue(
-      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
 
   // 2) Navigate cross process.
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
@@ -1220,7 +1223,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FocusedFrameUnload) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "a.com", "/cross_site_iframe_factory.html?a(b,c)")));
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* C3 = A1->child_at(1)->current_frame_host();
   FrameTree* frame_tree = A1->frame_tree();
@@ -1259,7 +1262,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadTimeout) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
 
   // Simulate the iframe being slow to unload by dropping the
@@ -1278,7 +1281,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
   RenderFrameDeletedObserver delete_B2(B2);
   EXPECT_TRUE(ExecJs(B2, R"(
@@ -1306,7 +1309,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* A2 = A1->child_at(0)->current_frame_host();
   RenderFrameDeletedObserver delete_A1(A2);
   EXPECT_TRUE(ExecJs(A2, R"(
@@ -1343,7 +1346,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL A3_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), A1_url));
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B1 = A1->child_at(0)->current_frame_host();
 
   A1->DoNotDeleteForTesting();
@@ -1369,7 +1372,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // In the document tree: A1(B2(B3,C4)) navigate B2 to B5.
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* B3 = B2->child_at(0)->current_frame_host();
   RenderFrameHostImpl* C4 = B2->child_at(1)->current_frame_host();
@@ -1386,7 +1389,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ExecuteScriptAsync(B2, JsReplace("location.href = $1", iframe_new_url));
 
   DOMMessageQueue dom_message_queue(
-      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
 
   // All the documents must be properly deleted:
   if (ShouldCreateNewHostForSameSiteSubframe())
@@ -1468,7 +1471,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
       https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(b)");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
 
   // Increase Unload timeout to prevent the previous document from
@@ -1528,7 +1531,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   EXPECT_EQ(
       2u, CollectAllRenderFrameHosts(web_contents()->GetPrimaryPage()).size());
 
-  RenderFrameHostImpl* A4 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A4 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B5 = A4->child_at(0)->current_frame_host();
 
   // Verify that we can recover the data that should have been persisted by the
@@ -1572,7 +1575,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
                                     "/cross_site_iframe_factory.html?a(b(c))");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  RenderFrameHostImpl* A1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B2 = A1->child_at(0)->current_frame_host();
   RenderFrameHostImpl* C3 = B2->child_at(0)->current_frame_host();
 
@@ -1636,7 +1639,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   EXPECT_EQ(
       3u, CollectAllRenderFrameHosts(web_contents()->GetPrimaryPage()).size());
 
-  RenderFrameHostImpl* A5 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* A5 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* B6 = A5->child_at(0)->current_frame_host();
   RenderFrameHostImpl* C7 = B6->child_at(0)->current_frame_host();
 
@@ -1665,7 +1668,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)");
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  RenderFrameHostImpl* a1 = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* a1 = web_contents()->GetPrimaryMainFrame();
   RenderFrameHostImpl* b2 = a1->child_at(0)->current_frame_host();
 
   // 2. Create a new frame without navigating it. It stays on the initial empty
@@ -1691,7 +1694,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // 3. A1 deletes B2. This triggers the unload handler from B3.
   DOMMessageQueue dom_message_queue(
-      WebContents::FromRenderFrameHost(web_contents()->GetMainFrame()));
+      WebContents::FromRenderFrameHost(web_contents()->GetPrimaryMainFrame()));
   ExecuteScriptAsync(a1, "document.querySelector('iframe').remove();");
 
   // Check the unload handler is executed.

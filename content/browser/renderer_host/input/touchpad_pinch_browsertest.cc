@@ -67,7 +67,7 @@ void PerformTouchpadPinch(WebContents* web_contents,
                           gfx::PointF position,
                           float scale_factor) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   SyntheticPinchGestureParams params;
   params.gesture_source_type =

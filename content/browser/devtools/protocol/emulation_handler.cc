@@ -586,7 +586,7 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   for (auto* web_contents : GetWebContents()->GetWebContentsAndAllInner()) {
     if (web_contents->IsPortal()) {
       UpdateDeviceEmulationStateForHost(
-          web_contents->GetMainFrame()->GetRenderWidgetHost());
+          web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
     }
   }
 }

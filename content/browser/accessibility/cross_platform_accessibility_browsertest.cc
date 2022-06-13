@@ -95,7 +95,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                               std::vector<base::Feature>* disabled_features);
 
   void ExecuteScript(const char* script) {
-    shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(script), base::NullCallback());
   }
 

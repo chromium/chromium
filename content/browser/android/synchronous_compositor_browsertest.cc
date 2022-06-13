@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SynchronousCompositorBrowserTest,
       static_cast<WebContentsImpl*>(popup->web_contents());
   SynchronousCompositor::SetClientForWebContents(popup_contents,
                                                  &compositor_client_);
-  RenderFrameHostImpl* rfh = popup_contents->GetMainFrame();
+  RenderFrameHostImpl* rfh = popup_contents->GetPrimaryMainFrame();
   RenderViewHostImpl* rvh = rfh->render_view_host();
   viz::FrameSinkId id = rvh->GetWidget()->GetFrameSinkId();
   {

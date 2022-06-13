@@ -57,7 +57,7 @@ class DocumentServiceTest : public RenderViewHostTestHarness {
   }
 
   void Initialize() {
-    RenderFrameHost* main_rfh = web_contents()->GetMainFrame();
+    RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
     RenderFrameHostTester::For(main_rfh)->InitializeRenderFrameIfNeeded();
     main_rfh_ = SimulateNavigation(main_rfh, GURL(kFooOrigin));
   }

@@ -147,7 +147,7 @@ void AudioContextManagerTestcase::SetUpOnUIThread(
 
   render_frame_host_ =
       static_cast<content::TestWebContents*>(test_adapter_.web_contents())
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
   render_frame_host_->InitializeRenderFrameIfNeeded();
 
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));

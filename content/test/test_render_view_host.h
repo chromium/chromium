@@ -345,16 +345,16 @@ class RenderViewHostImplTestHarness : public RenderViewHostTestHarness {
   // RVH/RFH getters are shorthand for oft-used bits of web_contents().
 
   // test_rvh() is equivalent to any of the following:
-  //   contents()->GetMainFrame()->GetRenderViewHost()
+  //   contents()->GetPrimaryMainFrame()->GetRenderViewHost()
   //   contents()->GetRenderViewHost()
   //   static_cast<TestRenderViewHost*>(rvh())
   //
   // Since most functionality will eventually shift from RVH to RFH, you may
-  // prefer to use the GetMainFrame() method in tests.
+  // prefer to use the GetPrimaryMainFrame() method in tests.
   TestRenderViewHost* test_rvh();
 
-  // main_test_rfh() is equivalent to contents()->GetMainFrame()
-  // TODO(nick): Replace all uses with contents()->GetMainFrame()
+  // main_test_rfh() is equivalent to contents()->GetPrimaryMainFrame()
+  // TODO(nick): Replace all uses with contents()->GetPrimaryMainFrame()
   TestRenderFrameHost* main_test_rfh();
 
  private:

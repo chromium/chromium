@@ -164,7 +164,7 @@ void MediaStreamDispatcherHostTestcase::SetUpOnUIThread(
     base::OnceClosure done_closure) {
   render_frame_host_ =
       static_cast<content::TestWebContents*>(test_adapter_.web_contents())
-          ->GetMainFrame();
+          ->GetPrimaryMainFrame();
 
   render_frame_host_->InitializeRenderFrameIfNeeded();
 

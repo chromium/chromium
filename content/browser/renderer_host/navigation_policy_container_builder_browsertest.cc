@@ -63,7 +63,7 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
   // Returns a pointer to the current root RenderFrameHostImpl.
   RenderFrameHostImpl* root_frame_host() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
   // Returns the URL of a page in the local address space.

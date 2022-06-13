@@ -83,7 +83,7 @@ TEST_F(PromptBasedUserConsentHandlerTest, PromptsUser) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   base::RunLoop loop;
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
@@ -96,7 +96,7 @@ TEST_F(PromptBasedUserConsentHandlerTest, ConfirmInvokedCallback) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
   PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
@@ -116,7 +116,7 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelingInvokedCallback) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
   PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
@@ -136,7 +136,7 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents());

@@ -63,7 +63,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
   std::string GetReason() {
     bool executing = true;
     std::string reason;
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         script_, base::BindOnce(
                      [](bool* flag, std::string* reason, base::Value value) {
                        *flag = false;

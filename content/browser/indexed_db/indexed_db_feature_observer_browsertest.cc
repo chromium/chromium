@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
   GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Use EvalJs() instead of ExecJs() to ensure that this doesn't return before
   // the lock is acquired and released by the worker.
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Use EvalJs() instead of ExecJs() to ensure that this doesn't return before
   // the lock is acquired and released by the worker.
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   if (!CheckShouldRunTestAndNavigate())
     return;
 
-  RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
 
   // Use EvalJs() instead of ExecJs() to ensure that this doesn't return before
   // the lock is acquired and released by the worker.

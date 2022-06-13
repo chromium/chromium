@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(RenderViewBrowserTest,
     base::RunLoop run_loop;
     content::StoragePartition* partition = shell()
                                                ->web_contents()
-                                               ->GetMainFrame()
+                                               ->GetPrimaryMainFrame()
                                                ->GetProcess()
                                                ->GetStoragePartition();
     partition->GetNetworkContext()->ClearHttpCache(

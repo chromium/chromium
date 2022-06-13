@@ -358,8 +358,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // Execute and wait for specified string
   for (const auto& function_name : scenario_.execute) {
     DLOG(INFO) << "executing: " << function_name;
-    base::Value result =
-        ExecuteScriptAndGetValue(web_contents->GetMainFrame(), function_name);
+    base::Value result = ExecuteScriptAndGetValue(
+        web_contents->GetPrimaryMainFrame(), function_name);
     const std::string& str = result.is_string() ? result.GetString() : "";
     // If no string is specified, do not wait.
     bool wait_for_string = str != "";
@@ -448,7 +448,7 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded() {
   for (;;) {
     VLOG(1) << "Top of WaitForAllFramesLoaded() loop";
     RenderFrameHostImpl* main_frame =
-        static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
+        static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
     BrowserAccessibilityManager* manager =
         main_frame->browser_accessibility_manager();
     if (manager) {

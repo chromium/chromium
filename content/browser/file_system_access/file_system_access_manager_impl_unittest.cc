@@ -415,7 +415,8 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
   quota_manager_proxy_->CreateBucketForTesting(
@@ -446,7 +447,8 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_BadBucket) {
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   const auto bucket = storage::BucketLocator(
       storage::BucketId(12), kTestStorageKey,
       blink::mojom::StorageType::kUnknown, /*is_default=*/false);
@@ -1276,12 +1278,13 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   entry.path = test_file;
   manager_->SetFilePickerResultForTesting(std::move(entry));
 
-  static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1308,7 +1311,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_file,
           FileSystemAccessPermissionContext::HandleType::kFile,
-          web_contents_->GetMainFrame()->GetGlobalId(), testing::_))
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
@@ -1357,12 +1360,13 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   entry.path = test_file;
   manager_->SetFilePickerResultForTesting(std::move(entry));
 
-  static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1392,7 +1396,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_file,
           FileSystemAccessPermissionContext::HandleType::kFile,
-          web_contents_->GetMainFrame()->GetGlobalId(), testing::_))
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
@@ -1440,12 +1444,13 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   entry.path = test_dir;
   manager_->SetFilePickerResultForTesting(std::move(entry));
 
-  static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1466,12 +1471,13 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
               SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
                                      test_dir, PathType::kLocal));
 
-  EXPECT_CALL(permission_context_,
-              ConfirmSensitiveDirectoryAccess_(
-                  kTestStorageKey.origin(),
-                  FileSystemAccessPermissionContext::PathType::kLocal, test_dir,
-                  FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  web_contents_->GetMainFrame()->GetGlobalId(), testing::_))
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveDirectoryAccess_(
+          kTestStorageKey.origin(),
+          FileSystemAccessPermissionContext::PathType::kLocal, test_dir,
+          FileSystemAccessPermissionContext::HandleType::kDirectory,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
@@ -1515,12 +1521,13 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
   entry.path = test_dir;
   manager_->SetFilePickerResultForTesting(std::move(entry));
 
-  static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 

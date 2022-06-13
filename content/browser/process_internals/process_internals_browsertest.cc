@@ -20,7 +20,7 @@ class ProcessInternalsWebUiBrowserTest : public ContentBrowserTest {
   // to execute the script because WebUI has a default CSP policy denying
   // "eval()", which is what EvalJs uses under the hood.
   bool ExecJsInWebUI(const std::string& script) {
-    return ExecJs(shell()->web_contents()->GetMainFrame(), script,
+    return ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), script,
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */);
   }
 };
@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(ProcessInternalsWebUiBrowserTest, NoProcessBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Execute script to ensure the page has loaded correctly and was successful
   // at retrieving data from the browser process.
@@ -40,8 +40,9 @@ IN_PROC_BROWSER_TEST_F(ProcessInternalsWebUiBrowserTest, NoProcessBindings) {
   // script because WebUI has a default CSP policy denying "eval()", which is
   // what EvalJs uses under the hood.
   std::string page_contents =
-      EvalJs(shell()->web_contents()->GetMainFrame(), "document.body.innerHTML",
-             EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */)
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+             "document.body.innerHTML", EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+             1 /* world_id */)
           .ExtractString();
 
   // Crude verification that the page had the right content.

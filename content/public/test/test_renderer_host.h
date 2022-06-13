@@ -236,11 +236,11 @@ class RenderViewHostTestHarness : public ::testing::Test {
   // RVH/RFH getters are shorthand for oft-used bits of web_contents().
 
   // rvh() is equivalent to either of:
-  //   web_contents()->GetMainFrame()->GetRenderViewHost()
+  //   web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()
   //   web_contents()->GetRenderViewHost()
   RenderViewHost* rvh();
 
-  // main_rfh() is equivalent to web_contents()->GetMainFrame()
+  // main_rfh() is equivalent to web_contents()->GetPrimaryMainFrame()
   RenderFrameHost* main_rfh();
 
   BrowserContext* browser_context();

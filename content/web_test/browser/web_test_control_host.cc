@@ -218,7 +218,7 @@ std::string DumpFailLoad(WebContents* web_contents,
   if (!result)
     return std::string();
 
-  std::string log = (web_contents->GetMainFrame() == render_frame_host)
+  std::string log = (web_contents->GetPrimaryMainFrame() == render_frame_host)
                         ? "main frame "
                         : "frame ";
   std::string name = GetFrameNameFromBrowserForWebTests(render_frame_host);
@@ -597,7 +597,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   // we update the |test_phase_| here allowing us to now track the RenderFrames
   // in that window, and call HandleNewRenderFrameHost() explicitly.
   test_phase_ = DURING_TEST;
-  HandleNewRenderFrameHost(main_window_->web_contents()->GetMainFrame());
+  HandleNewRenderFrameHost(main_window_->web_contents()->GetPrimaryMainFrame());
 
   if (is_devtools_protocol_test) {
     devtools_protocol_test_bindings_ =
@@ -613,7 +613,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   main_window_->ActivateContents(main_window_->web_contents());
 
   RenderViewHost* main_render_view_host =
-      main_window_->web_contents()->GetMainFrame()->GetRenderViewHost();
+      main_window_->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
   {
     TRACE_EVENT0("shell", "WebTestControlHost::PrepareForWebTest::Flush");
     // Round-trip through the InputHandler mojom interface to the compositor
@@ -795,7 +795,7 @@ void WebTestControlHost::InitiateCaptureDump(
   if (!renderer_dump_result_->layout) {
     DCHECK_EQ(0, waiting_for_layout_dumps_);
 
-    main_window_->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+    main_window_->web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
         base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
           if (!render_frame_host->IsRenderFrameLive())
             return;
@@ -833,7 +833,7 @@ void WebTestControlHost::InitiateCaptureDump(
 
 void WebTestControlHost::TestFinishedInSecondaryRenderer() {
   GetWebTestRenderThreadRemote(main_window_->web_contents()
-                                   ->GetMainFrame()
+                                   ->GetPrimaryMainFrame()
                                    ->GetRenderViewHost()
                                    ->GetProcess())
       ->TestFinishedFromSecondaryRenderer();
@@ -935,7 +935,7 @@ WebTestControlHost::Node* WebTestControlHost::BuildFrameTree(
 
   //  Collect all live frames in web_contents.
   std::vector<RenderFrameHost*> frames;
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
         if (render_frame_host->IsRenderFrameLive())
           frames.push_back(render_frame_host);
@@ -1269,7 +1269,7 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
 
   // Stitch the frame-specific results in the right order.
   std::string stitched_layout_dump;
-  web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
         auto it = frame_to_layout_dump_map_.find(
             render_frame_host->GetFrameTreeNodeId());
@@ -1731,7 +1731,7 @@ void WebTestControlHost::WorkItemAdded(mojom::WorkItemPtr work_item) {
 void WebTestControlHost::RequestWorkItem() {
   DCHECK(main_window_);
   RenderProcessHost* main_frame_process = main_window_->web_contents()
-                                              ->GetMainFrame()
+                                              ->GetPrimaryMainFrame()
                                               ->GetRenderViewHost()
                                               ->GetProcess();
   if (work_queue_.empty()) {
@@ -1795,7 +1795,7 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   // that the test page does not remain in the back/forward cache after the
   // test.
   BackForwardCache::DisableForRenderFrameHost(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       BackForwardCache::DisabledReason(
           {BackForwardCache::DisabledSource::kTesting, 0,
            "disabled for web_test not to cache the test page after the test "
@@ -1843,7 +1843,7 @@ void WebTestControlHost::DidFinishNavigation(NavigationHandle* navigation) {
   content::WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(main_window_->web_contents());
   RenderProcessHost* main_rfh_process =
-      web_contents->GetMainFrame()->GetProcess();
+      web_contents->GetPrimaryMainFrame()->GetProcess();
   GetWebTestRenderThreadRemote(main_rfh_process)->ResetRendererAfterWebTest();
 
   PrepareRendererForNextWebTestDone();
@@ -1857,8 +1857,9 @@ void WebTestControlHost::PrepareRendererForNextWebTestDone() {
     if (!check_for_leaked_windows_)
       CloseTestOpenedWindows();
 
-    RenderViewHost* rvh =
-        main_window_->web_contents()->GetMainFrame()->GetRenderViewHost();
+    RenderViewHost* rvh = main_window_->web_contents()
+                              ->GetPrimaryMainFrame()
+                              ->GetRenderViewHost();
     RenderProcessHost* rph = rvh->GetProcess();
     CHECK(rph->GetProcess().IsValid());
     leak_detector_->TryLeakDetection(

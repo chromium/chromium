@@ -668,7 +668,7 @@ void RenderFrameDevToolsAgentHost::DisconnectWebContents() {
 
 void RenderFrameDevToolsAgentHost::ConnectWebContents(WebContents* wc) {
   RenderFrameHostImpl* host =
-      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+      static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
   DCHECK(host);
   SetFrameTreeNode(host->frame_tree_node());
   UpdateFrameHost(host);

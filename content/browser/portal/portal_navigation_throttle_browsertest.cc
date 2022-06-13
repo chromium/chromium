@@ -78,17 +78,17 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
   WebContentsImpl* GetWebContents() {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
-  RenderFrameHostImpl* GetMainFrame() {
-    return GetWebContents()->GetMainFrame();
+  RenderFrameHostImpl* GetPrimaryMainFrame() {
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
   Portal* InsertAndWaitForPortal(const GURL& url,
                                  bool expected_to_succeed = true) {
     TestNavigationObserver navigation_observer(/*web_contents=*/nullptr, 1);
     navigation_observer.StartWatchingNewWebContents();
-    PortalCreatedObserver portal_created_observer(GetMainFrame());
+    PortalCreatedObserver portal_created_observer(GetPrimaryMainFrame());
     EXPECT_TRUE(ExecJs(
-        GetMainFrame(),
+        GetPrimaryMainFrame(),
         base::StringPrintf("var portal = document.createElement('portal');\n"
                            "portal.src = '%s';\n"
                            "document.body.appendChild(portal);",
@@ -109,7 +109,7 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
     TestNavigationObserver navigation_observer(portal->GetPortalContents(),
                                                number_of_navigations);
     EXPECT_TRUE(
-        ExecJs(GetMainFrame(),
+        ExecJs(GetPrimaryMainFrame(),
                base::StringPrintf(
                    "document.querySelector('body > portal').src = '%s';",
                    url.spec().c_str())));
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
   EXPECT_NE(portal, nullptr);
 
   std::string result =
-      EvalJs(GetMainFrame(),
+      EvalJs(GetPrimaryMainFrame(),
              "document.querySelector('body > portal').activate()"
              ".then(() => 'activated', e => e.message)")
           .ExtractString();
@@ -440,7 +440,8 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleFencedFrameBrowserTest,
       "fencedframe.test", "/fenced_frames/title1.html");
   RenderFrameHostImplWrapper fenced_frame_host(
       fenced_frame_test_helper().CreateFencedFrame(
-          portal->GetPortalContents()->GetMainFrame(), fenced_frame_url));
+          portal->GetPortalContents()->GetPrimaryMainFrame(),
+          fenced_frame_url));
 
   // A fenced frame's FrameTree embedded inside a portal is not considered to be
   // portal frame tree.

@@ -55,7 +55,8 @@ class WebContentsObserverBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* top_frame_host() {
-    return static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    return static_cast<RenderFrameHostImpl*>(
+        web_contents()->GetPrimaryMainFrame());
   }
 
   base::test::ScopedFeatureList feature_list_;

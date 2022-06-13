@@ -67,7 +67,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     mock_manager->SetDataHostManager(std::move(data_host_manager));
     OverrideAttributionManager(std::move(mock_manager));
 
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
   TestWebContents* contents() {

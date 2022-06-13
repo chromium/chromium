@@ -119,7 +119,7 @@ void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
   // We use the signal that the RenderView has been created in the renderer as
   // a proxy for knowing when the top level RenderWidgetHostView is created,
   // since they are created at the same time.
-  DCHECK(shell->web_contents()->GetMainFrame()->GetView());
+  DCHECK(shell->web_contents()->GetPrimaryMainFrame()->GetView());
   ResizeWebContent(shell, shell_data.initial_size);
 }
 
@@ -145,7 +145,7 @@ void WebTestShellPlatformDelegate::ResizeWebContent(
   // the widget's screen rects, since the RenerWidgetHostView is not attached to
   // a window in headless mode. So this call causes them to be updated so they
   // are not left as 0x0.
-  auto* rwhv_mac = shell->web_contents()->GetMainFrame()->GetView();
+  auto* rwhv_mac = shell->web_contents()->GetPrimaryMainFrame()->GetView();
   if (rwhv_mac)
     rwhv_mac->SetWindowFrameInScreen(gfx::Rect(content_size));
 }
@@ -166,14 +166,14 @@ void WebTestShellPlatformDelegate::ActivateContents(Shell* shell,
     if (window != shell) {
       WebContents* other_top_contents = window->web_contents();
       auto* other_rwhv_mac = static_cast<RenderWidgetHostViewMac*>(
-          other_top_contents->GetMainFrame()->GetView());
+          other_top_contents->GetPrimaryMainFrame()->GetView());
       other_rwhv_mac->OnFirstResponderChanged(false);
       other_rwhv_mac->GetRenderWidgetHost()->SetActive(false);
     }
   }
 
   auto* top_rwhv_mac = static_cast<RenderWidgetHostViewMac*>(
-      top_contents->GetMainFrame()->GetView());
+      top_contents->GetPrimaryMainFrame()->GetView());
   top_rwhv_mac->OnFirstResponderChanged(true);
   top_rwhv_mac->GetRenderWidgetHost()->SetActive(true);
   activated_headless_shell_ = shell;

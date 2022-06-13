@@ -47,7 +47,8 @@ class EmbeddingTokenBrowserTest : public ContentBrowserTest {
   WebContents* web_contents() { return shell()->web_contents(); }
 
   RenderFrameHostImpl* top_frame_host() {
-    return static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame());
+    return static_cast<RenderFrameHostImpl*>(
+        web_contents()->GetPrimaryMainFrame());
   }
 
   EmbeddingTokenBrowserTest(const EmbeddingTokenBrowserTest&) = delete;

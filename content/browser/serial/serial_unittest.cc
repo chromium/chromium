@@ -98,7 +98,7 @@ TEST_F(SerialTest, OpenAndClosePort) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -128,7 +128,7 @@ TEST_F(SerialTest, OpenWithoutPermission) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -157,7 +157,7 @@ TEST_F(SerialTest, OpenFailure) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -187,7 +187,7 @@ TEST_F(SerialTest, OpenAndNavigateCrossOrigin) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -217,7 +217,7 @@ TEST_F(SerialTest, OpenAndNavigateCrossOrigin) {
 
 TEST_F(SerialTest, AddAndRemovePorts) {
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   MockSerialServiceClient client;
@@ -272,7 +272,7 @@ TEST_F(SerialTest, OpenAndClosePortManagerConnection) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -306,7 +306,7 @@ TEST_F(SerialTest, OpenAndRevokePermission) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -344,7 +344,7 @@ TEST_F(SerialTest, OpenAndRevokePermissionOnDifferentOrigin) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token = base::UnguessableToken::Create();
@@ -380,7 +380,7 @@ TEST_F(SerialTest, OpenTwoPortsAndRevokePermission) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::SerialService> service;
-  contents()->GetMainFrame()->BindSerialService(
+  contents()->GetPrimaryMainFrame()->BindSerialService(
       service.BindNewPipeAndPassReceiver());
 
   auto token1 = base::UnguessableToken::Create();

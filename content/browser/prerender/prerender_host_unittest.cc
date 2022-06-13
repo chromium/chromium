@@ -49,9 +49,9 @@ std::unique_ptr<NavigationSimulatorImpl> CreateActivation(
     WebContentsImpl& web_contents) {
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(
-          prerendering_url, web_contents.GetMainFrame());
+          prerendering_url, web_contents.GetPrimaryMainFrame());
   navigation->SetReferrer(blink::mojom::Referrer::New(
-      web_contents.GetMainFrame()->GetLastCommittedURL(),
+      web_contents.GetPrimaryMainFrame()->GetLastCommittedURL(),
       network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   return navigation;
 }
@@ -254,7 +254,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
 
   // The activation falls back to regular navigation.
   navigation->Commit();
-  EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(),
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             kPrerenderingUrl);
 }
 
@@ -263,7 +263,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
 TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // Start prerendering a page.
@@ -299,7 +299,7 @@ TEST_F(PrerenderHostTest, ActivationAfterPageStateUpdate) {
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 
   // Ensure that the the page_state was preserved.
-  EXPECT_EQ(web_contents->GetMainFrame(), prerender_rfh);
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame(), prerender_rfh);
   NavigationEntryImpl* activated_nav_entry =
       web_contents->GetController().GetLastCommittedEntry();
   EXPECT_EQ(page_state,
@@ -375,7 +375,7 @@ TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
@@ -394,7 +394,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
@@ -416,7 +416,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
@@ -437,7 +437,7 @@ TEST_F(PrerenderHostTest, UrlMatchPredicate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
-  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   base::RepeatingCallback callback =
       base::BindRepeating([](const GURL&) { return true; });

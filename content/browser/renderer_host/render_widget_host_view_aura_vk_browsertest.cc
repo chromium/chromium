@@ -140,7 +140,7 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
 
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
-        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }

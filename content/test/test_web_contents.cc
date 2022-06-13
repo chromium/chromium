@@ -87,7 +87,11 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
 TestWebContents::~TestWebContents() = default;
 
 TestRenderFrameHost* TestWebContents::GetMainFrame() {
-  auto* instance = WebContentsImpl::GetMainFrame();
+  return GetPrimaryMainFrame();
+}
+
+TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() {
+  auto* instance = WebContentsImpl::GetPrimaryMainFrame();
   DCHECK(instance->IsTestRenderFrameHost())
       << "You may want to instantiate RenderViewHostTestEnabler.";
   return static_cast<TestRenderFrameHost*>(instance);
@@ -188,7 +192,7 @@ void TestWebContents::TestSetFaviconURL(
 
 void TestWebContents::TestUpdateFaviconURL(
     const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
-  GetMainFrame()->UpdateFaviconURL(mojo::Clone(favicon_urls));
+  GetPrimaryMainFrame()->UpdateFaviconURL(mojo::Clone(favicon_urls));
 }
 
 void TestWebContents::SetLastCommittedURL(const GURL& url) {
@@ -232,7 +236,7 @@ void TestWebContents::TestDidFinishLoad(const GURL& url) {
 
 void TestWebContents::TestDidFailLoadWithError(const GURL& url,
                                                int error_code) {
-  GetMainFrame()->DidFailLoadWithError(url, error_code);
+  GetPrimaryMainFrame()->DidFailLoadWithError(url, error_code);
 }
 
 bool TestWebContents::CrossProcessNavigationPending() {
@@ -291,7 +295,7 @@ void TestWebContents::NavigateAndFail(const GURL& url, int error_code) {
 
 void TestWebContents::TestSetIsLoading(bool value) {
   if (value) {
-    DidStartLoading(GetMainFrame()->frame_tree_node(), true);
+    DidStartLoading(GetPrimaryMainFrame()->frame_tree_node(), true);
   } else {
     for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
       RenderFrameHostImpl* current_frame_host =
@@ -410,16 +414,16 @@ base::UnguessableToken TestWebContents::GetAudioGroupId() {
 const blink::PortalToken& TestWebContents::CreatePortal(
     std::unique_ptr<WebContents> web_contents) {
   auto portal =
-      std::make_unique<Portal>(GetMainFrame(), std::move(web_contents));
+      std::make_unique<Portal>(GetPrimaryMainFrame(), std::move(web_contents));
   const blink::PortalToken& token = portal->portal_token();
   portal->CreateProxyAndAttachPortal();
-  GetMainFrame()->OnPortalCreatedForTesting(std::move(portal));
+  GetPrimaryMainFrame()->OnPortalCreatedForTesting(std::move(portal));
   return token;
 }
 
 WebContents* TestWebContents::GetPortalContents(
     const blink::PortalToken& portal_token) {
-  Portal* portal = GetMainFrame()->FindPortalByToken(portal_token);
+  Portal* portal = GetPrimaryMainFrame()->FindPortalByToken(portal_token);
   if (!portal)
     return nullptr;
   return portal->GetPortalContents();
@@ -437,7 +441,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kPrerender2MemoryControls));
 
-  TestRenderFrameHost* rfhi = GetMainFrame();
+  TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(
       PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
                           /*embedder_histogram_suffix=*/"", Referrer(),
@@ -490,14 +494,15 @@ void TestWebContents::ActivatePrerenderedPage(const GURL& url) {
   // Activate the prerendered page.
   test::PrerenderHostObserver prerender_host_observer(*this, prerender_host_id);
   std::unique_ptr<NavigationSimulatorImpl> navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(url, GetMainFrame());
+      NavigationSimulatorImpl::CreateRendererInitiated(url,
+                                                       GetPrimaryMainFrame());
   navigation->SetReferrer(blink::mojom::Referrer::New(
-      GetMainFrame()->GetLastCommittedURL(),
+      GetPrimaryMainFrame()->GetLastCommittedURL(),
       network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
   navigation->Commit();
   prerender_host_observer.WaitForDestroyed();
 
-  DCHECK_EQ(GetMainFrame()->GetLastCommittedURL(), url);
+  DCHECK_EQ(GetPrimaryMainFrame()->GetLastCommittedURL(), url);
 
   DCHECK(prerender_host_observer.was_activated());
   DCHECK_EQ(registry->FindReservedHostById(prerender_host_id), nullptr);

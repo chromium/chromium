@@ -2034,7 +2034,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to |url_1| and hide the tab.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImpl* main_frame_1 = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame_1 = web_contents->GetPrimaryMainFrame();
   // We need to set it to Visibility::VISIBLE first in case this is the first
   // time the visibility is updated.
   web_contents->UpdateWebContentsVisibility(Visibility::VISIBLE);
@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Navigate to |url_3| which is same-origin with |url_1|, so we can check
   // the localStorage values.
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  RenderFrameHostImpl* main_frame_3 = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame_3 = web_contents->GetPrimaryMainFrame();
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
@@ -3103,7 +3103,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFencedFrameBrowserTest,
   content::RenderFrameHostImpl* fenced_frame_host =
       static_cast<content::RenderFrameHostImpl*>(
           fenced_frame_test_helper().CreateFencedFrame(
-              web_contents()->GetMainFrame(), url_b));
+              web_contents()->GetPrimaryMainFrame(), url_b));
   RenderFrameHostWrapper fenced_frame_host_wrapper(fenced_frame_host);
 
   // 3) Navigate to C on the fenced frame host.

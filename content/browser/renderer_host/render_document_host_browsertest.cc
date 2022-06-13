@@ -125,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_TRUE(WaitForLoadStop(new_contents));
 
   // Both content have the same origin, so they are cross-scriptable.
-  EXPECT_EQ(new_contents->GetMainFrame()->GetLastCommittedOrigin(),
-            web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // 2) Reference a variable in between the two windows.
   EXPECT_TRUE(ExecJs(web_contents(),
@@ -138,9 +138,10 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_EQ("bar_1", EvalJs(new_contents, "window.foo;"));
 
   // 3) Navigate the new window same-process.
-  int process_id = new_contents->GetMainFrame()->GetProcess()->GetID();
+  int process_id = new_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURL(new_contents, url_2));
-  EXPECT_EQ(process_id, new_contents->GetMainFrame()->GetProcess()->GetID());
+  EXPECT_EQ(process_id,
+            new_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // The object is no longer accessible from each side.
   EXPECT_EQ(nullptr, EvalJs(web_contents(), "other_window.foo;"));

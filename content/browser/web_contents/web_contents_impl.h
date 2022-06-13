@@ -1770,8 +1770,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns UKM source id for the currently displayed page.
   // Intentionally kept private, prefer using
   // render_frame_host->GetPageUkmSourceId() if you already have a
-  // |render_frame_host| reference or GetMainFrame()->GetPageUkmSourceId()
-  // if you don't.
+  // |render_frame_host| reference or
+  // GetPrimaryMainFrame()->GetPageUkmSourceId() if you don't.
   ukm::SourceId GetCurrentPageUkmSourceId() override;
 
   // Bit mask to indicate what types of RenderViewHosts to be returned in

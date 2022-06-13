@@ -86,7 +86,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
   RenderWidgetHostImpl* GetWidgetHost() {
     return RenderWidgetHostImpl::From(shell()
                                           ->web_contents()
-                                          ->GetMainFrame()
+                                          ->GetPrimaryMainFrame()
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   // The test below only makes sense for same-site same-RFH navigations, so we
   // need to ensure that we won't trigger a same-site cross-RFH navigation.
   DisableProactiveBrowsingInstanceSwapFor(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
 
   SynchronizeThreads();
   SimulateTouchscreenFling(GetWidgetHost());

@@ -58,7 +58,7 @@ Portal::Portal(RenderFrameHostImpl* owner_render_frame_host,
 
 Portal::~Portal() {
   devtools_instrumentation::PortalDetached(
-      GetPortalHostContents()->GetMainFrame());
+      GetPortalHostContents()->GetPrimaryMainFrame());
   Observe(nullptr);
 }
 
@@ -187,7 +187,7 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
   }
 
   RenderFrameProxyHost* proxy_host =
-      portal_contents_->GetMainFrame()->GetProxyToOuterDelegate();
+      portal_contents_->GetPrimaryMainFrame()->GetProxyToOuterDelegate();
   proxy_host->SetRenderFrameProxyCreated(true);
   portal_contents_->ReattachToOuterWebContentsFrame();
 
@@ -196,7 +196,8 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
 
   outer_contents_impl->NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
 
-  devtools_instrumentation::PortalAttached(outer_contents_impl->GetMainFrame());
+  devtools_instrumentation::PortalAttached(
+      outer_contents_impl->GetPrimaryMainFrame());
 
   return proxy_host;
 }
@@ -370,24 +371,24 @@ void Portal::PostMessageToGuest(blink::TransferableMessage message) {
         owner_render_frame_host());
     return;
   }
-  portal_contents_->GetMainFrame()->ForwardMessageFromHost(
+  portal_contents_->GetPrimaryMainFrame()->ForwardMessageFromHost(
       std::move(message), owner_render_frame_host_->GetLastCommittedOrigin());
 }
 
 void Portal::PostMessageToHost(blink::TransferableMessage message) {
   DCHECK(GetPortalContents());
   if (!IsSameOrigin()) {
-    GetPortalContents()->GetMainFrame()->AddMessageToConsole(
+    GetPortalContents()->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         kCrossOriginPostMessageError);
 
     devtools_instrumentation::DidRejectCrossOriginPortalMessage(
-        GetPortalContents()->GetMainFrame());
+        GetPortalContents()->GetPrimaryMainFrame());
     return;
   }
   client().ForwardMessageFromGuest(
       std::move(message),
-      GetPortalContents()->GetMainFrame()->GetLastCommittedOrigin());
+      GetPortalContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 void Portal::OnFrameTreeNodeDestroyed(FrameTreeNode* frame_tree_node) {
@@ -429,8 +430,9 @@ void Portal::CloseContents(WebContents* web_contents) {
   if (portal_contents_->GetOuterWebContents()) {
     // This portal was still attached, we shouldn't have received a request to
     // close it.
-    bad_message::ReceivedBadMessage(web_contents->GetMainFrame()->GetProcess(),
-                                    bad_message::RWH_CLOSE_PORTAL);
+    bad_message::ReceivedBadMessage(
+        web_contents->GetPrimaryMainFrame()->GetProcess(),
+        bad_message::RWH_CLOSE_PORTAL);
   } else {
     // Orphaned portal was closed.
     DestroySelf();  // Deletes |this|.
@@ -466,7 +468,7 @@ void Portal::CanDownload(const GURL& url,
 }
 
 base::UnguessableToken Portal::GetDevToolsFrameToken() const {
-  return portal_contents_->GetMainFrame()->GetDevToolsFrameToken();
+  return portal_contents_->GetPrimaryMainFrame()->GetDevToolsFrameToken();
 }
 
 WebContentsImpl* Portal::GetPortalContents() {
@@ -480,7 +482,7 @@ WebContentsImpl* Portal::GetPortalHostContents() {
 
 bool Portal::IsSameOrigin() const {
   return owner_render_frame_host_->GetLastCommittedOrigin().IsSameOriginWith(
-      portal_contents_->GetMainFrame()->GetLastCommittedOrigin());
+      portal_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
@@ -610,14 +612,14 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
       static_cast<WebContentsImpl*>(successor_contents.get());
 
   auto* outer_contents_main_frame_view = static_cast<RenderWidgetHostViewBase*>(
-      outer_contents->GetMainFrame()->GetView());
+      outer_contents->GetPrimaryMainFrame()->GetView());
   DCHECK(!outer_contents->GetPrimaryFrameTree()
               .root()
               ->render_manager()
               ->speculative_frame_host());
   auto* portal_contents_main_frame_view =
       static_cast<RenderWidgetHostViewBase*>(
-          successor_contents_raw->GetMainFrame()->GetView());
+          successor_contents_raw->GetPrimaryMainFrame()->GetView());
 
   std::vector<std::unique_ptr<ui::TouchEvent>> touch_events;
 
@@ -633,7 +635,8 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
 
   TakeHistoryForActivation(successor_contents_raw, outer_contents);
 
-  devtools_instrumentation::PortalActivated(outer_contents->GetMainFrame());
+  devtools_instrumentation::PortalActivated(
+      outer_contents->GetPrimaryMainFrame());
   successor_contents_raw->set_portal(nullptr);
 
   // It's important we call this before destroying the outer contents'
@@ -657,7 +660,7 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
   }
 
   // Remove page focus from the now orphaned predecessor.
-  outer_contents->GetMainFrame()->GetRenderWidgetHost()->Blur();
+  outer_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()->Blur();
 
   // These pointers are cleared so that they don't dangle in the event this
   // object isn't immediately deleted. It isn't done sooner because
@@ -671,7 +674,7 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
   auto client_receiver = pending_client.InitWithNewEndpointAndPassReceiver();
 
   RenderFrameHostImpl* successor_main_frame =
-      successor_contents_raw->GetMainFrame();
+      successor_contents_raw->GetPrimaryMainFrame();
   auto predecessor = std::make_unique<Portal>(
       successor_main_frame, std::move(predecessor_web_contents));
   predecessor->Bind(std::move(portal_receiver), std::move(pending_client));

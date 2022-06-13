@@ -30,7 +30,7 @@ gfx::NativeViewAccessible AccessibilityBrowserTest::GetRendererAccessible() {
 }
 
 void AccessibilityBrowserTest::ExecuteScript(const std::u16string& script) {
-  shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+  shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       script, base::NullCallback());
 }
 

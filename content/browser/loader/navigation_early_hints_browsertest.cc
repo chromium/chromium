@@ -325,7 +325,7 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
 
   PreloadedResources WaitForPreloadedResources() {
     return WaitForPreloadedResources(static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame()));
+        shell()->web_contents()->GetPrimaryMainFrame()));
   }
 
   PreloadedResources WaitForPreloadedResources(RenderFrameHostImpl* rfh) {
@@ -790,9 +790,10 @@ IN_PROC_BROWSER_TEST_P(NavigationEarlyHintsPreconnectTest, SimplePreconnect) {
   } else {
     EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 0UL);
   }
-  EXPECT_TRUE(GetEarlyHintsManager(static_cast<RenderFrameHostImpl*>(
-                                       shell()->web_contents()->GetMainFrame()))
-                  ->WasResourceHintsReceived());
+  EXPECT_TRUE(
+      GetEarlyHintsManager(static_cast<RenderFrameHostImpl*>(
+                               shell()->web_contents()->GetPrimaryMainFrame()))
+          ->WasResourceHintsReceived());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, InvalidHeader_NewLine) {
@@ -1196,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsFencedFrameTest,
   // Create a fenced frame.
   RenderFrameHostImpl* fenced_frame_host = static_cast<RenderFrameHostImpl*>(
       fenced_frame_test_helper().CreateFencedFrame(
-          shell()->web_contents()->GetMainFrame(),
+          shell()->web_contents()->GetPrimaryMainFrame(),
           net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath)));
   EXPECT_NE(fenced_frame_host, nullptr);
   EXPECT_EQ(fenced_frame_host->early_hints_manager(), nullptr);
@@ -1231,7 +1232,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsPortalTest,
 
   // Create a portal.
   EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetMainFrame(),
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
              JsReplace("{"
                        "  let portal = document.createElement('portal');"
                        "  portal.src = $1;"
@@ -1244,10 +1245,10 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsPortalTest,
   EXPECT_NE(portal_web_contents, nullptr);
   portal_nav_observer.WaitForNavigationFinished();
 
-  EXPECT_EQ(
-      static_cast<RenderFrameHostImpl*>(portal_web_contents->GetMainFrame())
-          ->early_hints_manager(),
-      nullptr);
+  EXPECT_EQ(static_cast<RenderFrameHostImpl*>(
+                portal_web_contents->GetPrimaryMainFrame())
+                ->early_hints_manager(),
+            nullptr);
 }
 
 }  // namespace content

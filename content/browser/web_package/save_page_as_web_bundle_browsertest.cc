@@ -144,7 +144,8 @@ class SavePageAsWebBundleBrowserTest : public ContentBrowserTest {
   NavigateAndGetSnapshot(const GURL& url) {
     NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
     mojo::Remote<data_decoder::mojom::ResourceSnapshotForWebBundle> snapshot;
-    static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+    static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame())
         ->GetAssociatedLocalFrame()
         ->GetResourceSnapshotForWebBundle(
             snapshot.BindNewPipeAndPassReceiver());
@@ -351,10 +352,11 @@ IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleFencedFrameBrowserTest,
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   fenced_frame_test_helper().CreateFencedFrame(
-      shell()->web_contents()->GetMainFrame(), fenced_frame_url);
+      shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   mojo::Remote<data_decoder::mojom::ResourceSnapshotForWebBundle> snapshot;
-  static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+  static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame())
       ->GetAssociatedLocalFrame()
       ->GetResourceSnapshotForWebBundle(snapshot.BindNewPipeAndPassReceiver());
 
@@ -392,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleFencedFrameBrowserTest,
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   fenced_frame_test_helper().CreateFencedFrame(
-      shell()->web_contents()->GetMainFrame(), fenced_frame_url);
+      shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
 
   ASSERT_TRUE(CreateSaveDir());
   const auto file_path =

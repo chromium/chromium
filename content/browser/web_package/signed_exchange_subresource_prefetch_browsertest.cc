@@ -67,8 +67,8 @@ std::string GetHeaderIntegrityString(const net::SHA256HashValue& hash) {
 }
 
 PrefetchedSignedExchangeCache::EntryMap GetCachedExchanges(Shell* shell) {
-  RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(shell->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      shell->web_contents()->GetPrimaryMainFrame());
   scoped_refptr<PrefetchedSignedExchangeCache> cache =
       rfh->EnsurePrefetchedSignedExchangeCache();
   PrefetchedSignedExchangeCache::EntryMap results;

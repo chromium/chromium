@@ -34,7 +34,7 @@ accepts `RenderFrameHost`, `WebContents`, and other types.
   // Executes in the first child frame of the main frame.
   EXPECT_EQ(
       false,
-      EvalJs(ChildFrameAt(shell()->GetWebContents()->GetMainFrame(), 0),
+      EvalJs(ChildFrameAt(shell()->GetWebContents()->GetPrimaryMainFrame(), 0),
              "window.top == window"));
 ```
 
@@ -134,7 +134,7 @@ as if the navigation was renderer-initiated, e.g. by setting `window.location`:
   GURL url_3(embedded_test_server()->GetURL("a.com", "/empty.html"));
   EXPECT_TRUE(
       NavigateToURLFromRenderer(
-          ChildFrameAt(shell()->GetWebContents()->GetMainFrame(), 0),
+          ChildFrameAt(shell()->GetWebContents()->GetPrimaryMainFrame(), 0),
           url_3));
 ```
 

@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(RootScrollerScrollIntoViewBrowserTest,
   // scroller.
   {
     base::RunLoop loop;
-    shell()->web_contents()->GetMainFrame()->InsertVisualStateCallback(
+    shell()->web_contents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
         base::BindLambdaForTesting(
             [&loop](bool visual_state_updated) { loop.Quit(); }));
     loop.Run();

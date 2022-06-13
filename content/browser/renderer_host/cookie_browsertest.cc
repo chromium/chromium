@@ -162,33 +162,35 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   EXPECT_NE(web_contents_http->GetSiteInstance()->GetProcess(),
             web_contents_https->GetSiteInstance()->GetProcess());
 
-  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // Non-TLS page writes secure cookie.
-  EXPECT_TRUE(ExecJs(web_contents_http->GetMainFrame(),
+  EXPECT_TRUE(ExecJs(web_contents_http->GetPrimaryMainFrame(),
                      "document.cookie = 'A=1; secure;';"));
-  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // Non-TLS page writes not-secure cookie.
-  EXPECT_TRUE(
-      ExecJs(web_contents_http->GetMainFrame(), "document.cookie = 'B=2';"));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_TRUE(ExecJs(web_contents_http->GetPrimaryMainFrame(),
+                     "document.cookie = 'B=2';"));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // TLS page writes secure cookie.
-  EXPECT_TRUE(ExecJs(web_contents_https->GetMainFrame(),
+  EXPECT_TRUE(ExecJs(web_contents_https->GetPrimaryMainFrame(),
                      "document.cookie = 'C=3;secure;';"));
-  EXPECT_EQ("B=2; C=3", GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetMainFrame()));
+  EXPECT_EQ("B=2; C=3",
+            GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 
   // TLS page writes not-secure cookie.
-  EXPECT_TRUE(
-      ExecJs(web_contents_https->GetMainFrame(), "document.cookie = 'D=4';"));
+  EXPECT_TRUE(ExecJs(web_contents_https->GetPrimaryMainFrame(),
+                     "document.cookie = 'D=4';"));
   EXPECT_EQ("B=2; C=3; D=4",
-            GetCookieFromJS(web_contents_https->GetMainFrame()));
-  EXPECT_EQ("B=2; D=4", GetCookieFromJS(web_contents_http->GetMainFrame()));
+            GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2; D=4",
+            GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
 }
 
 // Ensure "priority" cookie option is settable via document.cookie.
@@ -251,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHost* main_frame = web_contents->GetMainFrame();
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   RenderFrameHost* a_iframe = web_contents->GetPrimaryFrameTree()
                                   .root()
                                   ->child_at(0)
@@ -442,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "      B = http://baz.com/",
       v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 
-  RenderFrameHost* main_frame = tab->GetMainFrame();
+  RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   RenderFrameHost* iframe =
       tab->GetPrimaryFrameTree().root()->child_at(0)->current_frame_host();
 
@@ -544,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(SamePartyEnabledCookieBrowserTest, SamePartyCookies) {
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents->GetMainFrame();
+  RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
   ASSERT_EQ(3u, main_frame->child_count());
 
   RenderFrameHostImpl* a_iframe = main_frame->child_at(0)->current_frame_host();

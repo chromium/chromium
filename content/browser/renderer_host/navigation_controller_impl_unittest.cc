@@ -257,7 +257,7 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   TestRenderFrameHost* GetNavigatingRenderFrameHost() {
     return AreAllSitesIsolatedForTesting()
                ? contents()->GetSpeculativePrimaryMainFrame()
-               : contents()->GetMainFrame();
+               : contents()->GetPrimaryMainFrame();
   }
 
   FrameTreeNode* root_ftn() { return contents()->GetPrimaryFrameTree().root(); }
@@ -2279,7 +2279,7 @@ TEST_F(NavigationControllerTest, PushStateWithOnlyInitialEntry) {
   main_test_rfh()->SendRendererInitiatedNavigationRequest(
       url, false /* has_user_gesture */);
   main_test_rfh()->PrepareForCommit();
-  contents()->GetMainFrame()->SendNavigateWithParams(
+  contents()->GetPrimaryMainFrame()->SendNavigateWithParams(
       std::move(params), true /* was_within_same_document */);
   // We pass if we don't crash.
 }
@@ -3360,7 +3360,7 @@ TEST_F(NavigationControllerTest, CopyStateFromAndPruneTargetPending2) {
   EXPECT_EQ(url2b, other_controller.GetPendingEntry()->GetURL());
 
   // Let the pending entry commit.
-  other_contents->GetMainFrame()->SendNavigateWithTransition(
+  other_contents->GetPrimaryMainFrame()->SendNavigateWithTransition(
       0, false, url2b, ui::PAGE_TRANSITION_LINK);
 }
 

@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
 
   // Ensure the view and frame are live.
   RenderFrameHostImpl* rfh1 = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderViewHostImpl* rvh = rfh1->render_view_host();
   EXPECT_TRUE(rvh->IsRenderViewLive());
   EXPECT_TRUE(rfh1->IsRenderFrameLive());
@@ -154,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   ASSERT_TRUE(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->Shutdown(0));
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+          0));
   crash_observer.Wait();
 
   // The frame tree should be cleared.
@@ -296,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   // Navigating to a data URL should set a unique origin.  This is represented
   // as "null" per RFC 6454.
   EXPECT_EQ("null", root->current_origin().Serialize());
-  EXPECT_TRUE(contents->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_TRUE(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
   EXPECT_EQ("null", GetOriginFromRenderer(root));
 
   // Re-navigating to a normal URL should update the origin.
@@ -305,8 +307,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
             root->current_origin().Serialize() + '/');
   EXPECT_EQ(
       main_url.DeprecatedGetOriginAsURL().spec(),
-      contents->GetMainFrame()->GetLastCommittedOrigin().Serialize() + '/');
-  EXPECT_FALSE(contents->GetMainFrame()->GetLastCommittedOrigin().opaque());
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize() +
+          '/');
+  EXPECT_FALSE(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
   EXPECT_EQ(root->current_origin().Serialize(), GetOriginFromRenderer(root));
 }
 
@@ -1027,7 +1031,7 @@ class FencedFrameTreeBrowserTest
   }
 
   RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 
  private:
@@ -2234,9 +2238,9 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, ShouldIgnoreJsDialog) {
   // Setup test dialog manager and create dialog.
   TestJavaScriptDialogManager dialog_manager;
   web_contents()->SetDelegate(&dialog_manager);
-  web_contents()->RunJavaScriptDialog(web_contents()->GetMainFrame(), u"", u"",
-                                      JAVASCRIPT_DIALOG_TYPE_ALERT, false,
-                                      base::NullCallback());
+  web_contents()->RunJavaScriptDialog(web_contents()->GetPrimaryMainFrame(),
+                                      u"", u"", JAVASCRIPT_DIALOG_TYPE_ALERT,
+                                      false, base::NullCallback());
 
   {
     // Navigate fenced frame.
@@ -3706,9 +3710,10 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   RenderViewHost* rvh = child->current_frame_host()->render_view_host();
   RenderProcessHost* rph = child->current_frame_host()->GetProcess();
 
-  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetRenderViewHost(), rvh);
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost(),
+            rvh);
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(), child_instance);
-  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(), rph);
 
   // Ensure that the root node has a proxy for the child node's SiteInstance.
   EXPECT_TRUE(root->current_frame_host()
@@ -4252,7 +4257,7 @@ class MPArchFencedFramesFrameTreeBrowserTest : public FrameTreeBrowserTest {
 
   RenderFrameHostImpl* current_frame_host() {
     return static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
  private:

@@ -448,7 +448,7 @@ void WebContentsObserverConsistencyChecker::AssertRenderFrameExists(
 }
 
 void WebContentsObserverConsistencyChecker::AssertMainFrameExists() {
-  AssertRenderFrameExists(web_contents()->GetMainFrame());
+  AssertRenderFrameExists(web_contents()->GetPrimaryMainFrame());
 }
 
 std::string WebContentsObserverConsistencyChecker::Format(

@@ -81,7 +81,7 @@ class CdmStorageTest : public base::test::WithFeatureOverride,
  protected:
   void SetUp() final {
     RenderViewHostTestHarness::SetUp();
-    rfh_ = web_contents()->GetMainFrame();
+    rfh_ = web_contents()->GetPrimaryMainFrame();
     RenderFrameHostTester::For(rfh_)->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&rfh_, GURL(kTestOrigin));
 

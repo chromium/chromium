@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_SyncXMLHttpRequest_Cancelled) {
 
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &CancelOnRequest, "/hung",
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       base::BindRepeating(&BrowserTestBase::SimulateNetworkServiceCrash,
                           base::Unretained(this))));
 

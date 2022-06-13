@@ -179,11 +179,11 @@ WebContents* RenderViewHostTestHarness::web_contents() {
 }
 
 RenderViewHost* RenderViewHostTestHarness::rvh() {
-  return web_contents()->GetMainFrame()->GetRenderViewHost();
+  return web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
 }
 
 RenderFrameHost* RenderViewHostTestHarness::main_rfh() {
-  return web_contents()->GetMainFrame();
+  return web_contents()->GetPrimaryMainFrame();
 }
 
 BrowserContext* RenderViewHostTestHarness::browser_context() {
@@ -192,7 +192,7 @@ BrowserContext* RenderViewHostTestHarness::browser_context() {
 
 MockRenderProcessHost* RenderViewHostTestHarness::process() {
   auto* contents = static_cast<TestWebContents*>(web_contents());
-  return contents->GetMainFrame()->GetProcess();
+  return contents->GetPrimaryMainFrame()->GetProcess();
 }
 
 void RenderViewHostTestHarness::DeleteContents() {

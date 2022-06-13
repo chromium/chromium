@@ -189,7 +189,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
         static_cast<TestWebContents*>(web_contents_)
             ->NavigateAndCommit(GURL(kTestUrl));
         static_cast<TestWebContents*>(web_contents_)
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->GetHidService(service_.BindNewPipeAndPassReceiver());
         break;
       case kCreateUsingBrowserContextAndOrigin:
@@ -355,7 +355,7 @@ TEST_F(HidServiceRenderFrameHostTest, DISABLED_OpenAndNavigateCrossOrigin) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::HidService> service;
-  contents()->GetMainFrame()->GetHidService(
+  contents()->GetPrimaryMainFrame()->GetHidService(
       service.BindNewPipeAndPassReceiver());
 
   auto device_info = CreateDeviceWithOneReport();

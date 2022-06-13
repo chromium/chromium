@@ -818,8 +818,9 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
 
   // Fetch a same-origin resource.
   GURL resource_url("http://foo.com/site_isolation/nosniff.html");
-  EXPECT_EQ(url::Origin::Create(resource_url),
-            shell()->web_contents()->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      url::Origin::Create(resource_url),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   FetchHistogramsFromChildProcesses();
   base::HistogramTester histograms;
   std::string fetch_result =
@@ -853,9 +854,10 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BackToAboutBlank) {
   ASSERT_TRUE(ExecJs(shell(), "var popup = window.open('title1.html')"));
   WebContents* popup = popup_observer.GetWebContents();
   EXPECT_TRUE(WaitForLoadStop(popup));
-  EXPECT_EQ(initial_url, popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetLastCommittedOrigin(),
-            popup->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(initial_url, popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Navigate the popup to about:blank. Note that we didn't directly
   // window.open() to about:blank because otherwise the about:blank page will
@@ -866,9 +868,12 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BackToAboutBlank) {
     nav_observer.Wait();
     EXPECT_EQ(2, popup->GetController().GetEntryCount());
     EXPECT_EQ(GURL(url::kAboutBlankURL),
-              popup->GetMainFrame()->GetLastCommittedURL());
-    EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetLastCommittedOrigin(),
-              popup->GetMainFrame()->GetLastCommittedOrigin());
+              popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(shell()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin(),
+              popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   // Verify that CORB doesn't block same-origin request from the popup.
@@ -887,11 +892,12 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BackToAboutBlank) {
   ASSERT_TRUE(ExecJs(shell(), "popup.history.back()"));
   back_observer.WaitForNavigationFinished();
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            popup->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetLastCommittedOrigin(),
-            popup->GetMainFrame()->GetLastCommittedOrigin());
+            popup->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(url::Origin::Create(resource_url),
-            popup->GetMainFrame()->GetLastCommittedOrigin());
+            popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Verify that CORB doesn't block same-origin request from the popup.
   {

@@ -29,7 +29,8 @@ IN_PROC_BROWSER_TEST_F(WebClipboardImplTest, PasteRTF) {
   const std::string rtf_content = "{\\rtf1\\ansi Hello, {\\b world.}}";
   clipboard.SetRtf(rtf_content);
 
-  FrameFocusedObserver focus_observer(shell()->web_contents()->GetMainFrame());
+  FrameFocusedObserver focus_observer(
+      shell()->web_contents()->GetPrimaryMainFrame());
   // paste_listener.html takes RTF from the clipboard and sets the title.
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "paste_listener.html")));
   focus_observer.Wait();

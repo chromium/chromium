@@ -471,7 +471,7 @@ class FileSystemURLLoaderFactoryTest
   }
 
   RenderFrameHost* render_frame_host() const {
-    return shell()->web_contents()->GetMainFrame();
+    return shell()->web_contents()->GetPrimaryMainFrame();
   }
 
   std::unique_ptr<network::TestURLLoaderClient> TestLoadHelper(

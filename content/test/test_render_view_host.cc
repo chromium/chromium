@@ -491,7 +491,7 @@ TestRenderViewHost* RenderViewHostImplTestHarness::test_rvh() {
 }
 
 TestRenderFrameHost* RenderViewHostImplTestHarness::main_test_rfh() {
-  return contents()->GetMainFrame();
+  return contents()->GetPrimaryMainFrame();
 }
 
 TestWebContents* RenderViewHostImplTestHarness::contents() {

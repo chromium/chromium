@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), empty_site_url));
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site_url);
   scoped_refptr<SiteInstanceImpl> site_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(GURL(), site_instance->GetSiteURL());
   int page_process_id = current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);

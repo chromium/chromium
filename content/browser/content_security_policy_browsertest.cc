@@ -37,7 +37,7 @@ class ContentSecurityPolicyBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetMainFrame();
+    return web_contents()->GetPrimaryMainFrame();
   }
 };
 

@@ -55,7 +55,7 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
  protected:
   void SendFakeScreenOrientation(unsigned angle, const std::string& str_type) {
     RenderWidgetHostImpl* main_frame_rwh = static_cast<RenderWidgetHostImpl*>(
-        web_contents()->GetMainFrame()->GetRenderWidgetHost());
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
 
     display::mojom::ScreenOrientation type =
         display::mojom::ScreenOrientation::kUndefined;
@@ -77,7 +77,7 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
 
   int GetOrientationAngle() {
     int angle =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "screen.orientation.angle")
             .GetInt();
     return angle;
@@ -85,7 +85,7 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
 
   std::string GetOrientationType() {
     std::string type =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "screen.orientation.type")
             .GetString();
     return type;
@@ -93,7 +93,7 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
 
   bool ScreenOrientationSupported() {
     bool support =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "'orientation' in screen")
             .GetBool();
     return support;
@@ -101,7 +101,7 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
 
   bool WindowOrientationSupported() {
     bool support =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "'orientation' in window")
             .GetBool();
     return support;
@@ -109,7 +109,7 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
 
   int GetWindowOrientationAngle() {
     int angle =
-        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "window.orientation")
             .GetInt();
     return angle;
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
 
   // Set up a fake Resize message with a screen orientation change.
   RenderWidgetHost* main_frame_rwh =
-      web_contents()->GetMainFrame()->GetRenderWidgetHost();
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
   display::ScreenInfo screen_info = main_frame_rwh->GetScreenInfo();
   int expected_angle = (screen_info.orientation_angle + 90) % 360;
 
@@ -368,7 +368,8 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
 
   // Let the navigation finish and make sure it succeeded.
   delayer.WaitForNavigationFinished();
-  EXPECT_EQ(second_url, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(second_url,
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
 
 #if USE_AURA || BUILDFLAG(IS_ANDROID)
   WaitForResizeComplete(shell()->web_contents());
@@ -484,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), initial_url, 1);
 
-  EXPECT_TRUE(ExecuteScript(web_contents()->GetMainFrame(),
+  EXPECT_TRUE(ExecuteScript(web_contents()->GetPrimaryMainFrame(),
                             "screen.orientation.lock('portrait')"));
 
   // Delegate did apply lock once.

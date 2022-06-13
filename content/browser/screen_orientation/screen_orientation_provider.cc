@@ -50,7 +50,7 @@ void ScreenOrientationProvider::LockOrientation(
 
   if (delegate_->FullScreenRequired(web_contents())) {
     RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(
-        web_contents()->GetMainFrame()->GetRenderViewHost());
+        web_contents()->GetPrimaryMainFrame()->GetRenderViewHost());
     if (!rvhi) {
       NotifyLockResult(ScreenOrientationLockResult::
                            SCREEN_ORIENTATION_LOCK_RESULT_ERROR_CANCELED);
@@ -151,7 +151,7 @@ void ScreenOrientationProvider::PrimaryPageChanged(Page& page) {
 device::mojom::ScreenOrientationLockType
 ScreenOrientationProvider::GetNaturalLockType() const {
   RenderWidgetHost* rwh =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   if (!rwh)
     return device::mojom::ScreenOrientationLockType::DEFAULT;
 
@@ -183,7 +183,7 @@ ScreenOrientationProvider::GetNaturalLockType() const {
 bool ScreenOrientationProvider::LockMatchesCurrentOrientation(
     device::mojom::ScreenOrientationLockType lock) {
   RenderWidgetHost* rwh =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+      web_contents()->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
   if (!rwh)
     return false;
 

@@ -45,7 +45,7 @@ void SignedExchangeDevToolsProxy::ReportError(
       WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   if (!web_contents)
     return;
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError, message);
 }
 

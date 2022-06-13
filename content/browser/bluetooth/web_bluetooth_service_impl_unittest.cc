@@ -496,7 +496,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     // Hook up the test bluetooth delegate.
     old_browser_client_ = SetBrowserClientForTesting(&browser_client_);
 
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
 
     // Navigate to a URL so that WebBluetoothServiceImpl::GetOrigin() returns a
     // valid origin. This is required when checking for Bluetooth permissions.
@@ -505,8 +505,9 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
                                                       GURL(kTestURL));
 
     // Simulate a frame connected to a bluetooth service.
-    service_ =
-        contents()->GetMainFrame()->CreateWebBluetoothServiceForTesting();
+    service_ = contents()
+                   ->GetPrimaryMainFrame()
+                   ->CreateWebBluetoothServiceForTesting();
 
     // GetAvailability connects the Web Bluetooth service to the adapter. Call
     // it twice in parallel to exercise what happens when multiple requests to

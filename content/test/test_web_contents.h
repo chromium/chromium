@@ -55,6 +55,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   // WebContentsImpl overrides (returning the same values, but in Test* types)
   TestRenderFrameHost* GetMainFrame() override;
+  TestRenderFrameHost* GetPrimaryMainFrame() override;
   TestRenderViewHost* GetRenderViewHost() override;
   // Overrides to avoid establishing Mojo connection with renderer process.
   int DownloadImage(const GURL& url,

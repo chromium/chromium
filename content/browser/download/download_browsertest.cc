@@ -4069,14 +4069,14 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   mouse_event.click_count = 1;
   shell()
       ->web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
   shell()
       ->web_contents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->GetRenderViewHost()
       ->GetWidget()
       ->ForwardMouseEvent(mouse_event);
@@ -4894,7 +4894,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SaveImageAt) {
 
   // Ask the frame to save a data-URL image at the given coordinates.
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
-  shell()->web_contents()->GetMainFrame()->SaveImageAt(100, 100);
+  shell()->web_contents()->GetPrimaryMainFrame()->SaveImageAt(100, 100);
   observer->WaitForFinished();
   EXPECT_EQ(
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
@@ -5161,7 +5161,7 @@ IN_PROC_BROWSER_TEST_P(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
   // Create fenced frame
   EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
   RenderFrameHost* fenced_frame_host = CreateFencedFrame(
-      shell()->web_contents()->GetMainFrame(), kFencedFrameUrl);
+      shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
 
   // Do a download without navigation from the fenced frame render frame host.
   // The download will be dropped.

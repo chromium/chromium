@@ -232,7 +232,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
   size_t total_ukm_entry_count = 0;
   contents()->NavigateAndCommit(url);
   ukm::SourceId source_id = static_cast<WebContentsImpl*>(contents())
-                                ->GetMainFrame()
+                                ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
   EXPECT_NE(ukm::kInvalidSourceId, source_id);
   for (bool rendering_on_main : {false, true}) {
@@ -342,7 +342,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
   size_t total_ukm_entry_count = 0;
   contents()->NavigateAndCommit(url);
   ukm::SourceId source_id = static_cast<WebContentsImpl*>(contents())
-                                ->GetMainFrame()
+                                ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
   EXPECT_NE(ukm::kInvalidSourceId, source_id);
   for (bool rendering_on_main : {false, true}) {
@@ -516,7 +516,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
   contents()->NavigateAndCommit(url);
   size_t total_ukm_entry_count = 0;
   ukm::SourceId source_id = static_cast<WebContentsImpl*>(contents())
-                                ->GetMainFrame()
+                                ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
   EXPECT_NE(ukm::kInvalidSourceId, source_id);
   for (bool rendering_on_main : {false, true}) {
@@ -633,7 +633,7 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestTouchToScrollHistograms) {
   contents()->NavigateAndCommit(url);
   size_t total_ukm_entry_count = 0;
   ukm::SourceId source_id = static_cast<WebContentsImpl*>(contents())
-                                ->GetMainFrame()
+                                ->GetPrimaryMainFrame()
                                 ->GetPageUkmSourceId();
   EXPECT_NE(ukm::kInvalidSourceId, source_id);
   for (bool rendering_on_main : {false, true}) {

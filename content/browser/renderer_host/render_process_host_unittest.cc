@@ -882,7 +882,7 @@ TEST_F(RenderProcessHostUnitTest,
   std::unique_ptr<WebContents> contents(CreateTestWebContents());
   static_cast<TestWebContents*>(contents.get())->NavigateAndCommit(kUrl);
   RenderProcessHost* foo_process_in_new_partition =
-      contents->GetMainFrame()->GetProcess();
+      contents->GetPrimaryMainFrame()->GetProcess();
 
   // Create another reusable foo.com SiteInstance in the new StoragePartition,
   // and ensure that this SiteInstance reuse the process just created in that
@@ -932,7 +932,7 @@ TEST_F(RenderProcessHostUnitTest,
   std::unique_ptr<WebContents> contents(CreateTestWebContents());
   static_cast<TestWebContents*>(contents.get())->NavigateAndCommit(kUrl);
   RenderProcessHost* foo_process_in_new_partition =
-      contents->GetMainFrame()->GetProcess();
+      contents->GetPrimaryMainFrame()->GetProcess();
 
   // Create a second foo.com service worker, this time in the new
   // StoragePartition. Ensure that it reuses the process registered for foo.com
@@ -1211,7 +1211,7 @@ TEST_F(SpareRenderProcessHostUnitTest, AtProcessLimit) {
   std::unique_ptr<WebContents> contents1(CreateTestWebContents());
   static_cast<TestWebContents*>(contents1.get())->NavigateAndCommit(kUrl1);
   EXPECT_NE(RenderProcessHostImpl::GetSpareRenderProcessHostForTesting(),
-            contents1->GetMainFrame()->GetProcess());
+            contents1->GetPrimaryMainFrame()->GetProcess());
 
   // Warm up a mismatched spare.
   std::unique_ptr<BrowserContext> alternate_context(new TestBrowserContext());
@@ -1231,8 +1231,8 @@ TEST_F(SpareRenderProcessHostUnitTest, AtProcessLimit) {
   // one - instead the spare should be dropped to stay under the process limit.
   EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
   EXPECT_FALSE(RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
-  EXPECT_NE(contents1->GetMainFrame()->GetProcess(),
-            contents2->GetMainFrame()->GetProcess());
+  EXPECT_NE(contents1->GetPrimaryMainFrame()->GetProcess(),
+            contents2->GetPrimaryMainFrame()->GetProcess());
 }
 
 }  // namespace content

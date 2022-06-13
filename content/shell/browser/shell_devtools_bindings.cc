@@ -337,7 +337,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     resource_request->headers.AddHeadersFromString(*headers);
 
     auto* partition =
-        inspected_contents()->GetMainFrame()->GetStoragePartition();
+        inspected_contents()->GetPrimaryMainFrame()->GetStoragePartition();
     auto factory = partition->GetURLLoaderFactoryForBrowserProcess();
 
     auto simple_url_loader = network::SimpleURLLoader::Create(
@@ -422,7 +422,7 @@ void ShellDevToolsBindings::CallClientFunction(
     base::OnceCallback<void(base::Value)> cb) {
   std::string javascript;
 
-  web_contents()->GetMainFrame()->AllowInjectingJavaScript();
+  web_contents()->GetPrimaryMainFrame()->AllowInjectingJavaScript();
 
   base::Value::List arguments;
   if (!arg1.is_none()) {
@@ -434,7 +434,7 @@ void ShellDevToolsBindings::CallClientFunction(
       }
     }
   }
-  web_contents()->GetMainFrame()->ExecuteJavaScriptMethod(
+  web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptMethod(
       base::ASCIIToUTF16(object_name), base::ASCIIToUTF16(method_name),
       std::move(arguments), std::move(cb));
 }

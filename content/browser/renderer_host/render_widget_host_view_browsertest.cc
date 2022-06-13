@@ -131,7 +131,7 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
 
   RenderViewHost* GetRenderViewHost() const {
     RenderViewHost* const rvh =
-        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // Notify that this pending commit has no RenderFrameHost with which to get a
   // Fallback Surface. This should evict the Fallback Surface.
   web_contents->NotifySwappedFromRenderManagerWithoutFallbackContent(
-      web_contents->GetMainFrame());
+      web_contents->GetPrimaryMainFrame());
   EXPECT_FALSE(rwhvb->HasFallbackSurface());
 
   // Actually complete a navigation once we've removed the Fallback Surface.
@@ -547,8 +547,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
     CommitBeforeSwapAckSentHelper commit_helper(web_contents,
                                                 frame_observer.get());
     EXPECT_TRUE(WaitForLoadStop(web_contents));
-    EXPECT_NE(web_contents->GetMainFrame()->GetProcess(),
-              new_web_contents->GetMainFrame()->GetProcess());
+    EXPECT_NE(web_contents->GetPrimaryMainFrame()->GetProcess(),
+              new_web_contents->GetPrimaryMainFrame()->GetProcess());
   }
 
   // Go back and verify that the renderer continues to draw new frames.
@@ -556,10 +556,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
   // Stop observing before we destroy |web_contents| in WaitForLoadStop.
   frame_observer.reset();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
-  EXPECT_EQ(web_contents->GetMainFrame()->GetProcess(),
-            new_web_contents->GetMainFrame()->GetProcess());
+  EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetProcess(),
+            new_web_contents->GetPrimaryMainFrame()->GetProcess());
   MainThreadFrameObserver observer(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   for (int i = 0; i < 5; ++i)
     observer.Wait();
 }

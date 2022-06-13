@@ -158,7 +158,7 @@ class IsolatedAppThrottleBrowserTest : public HttpsBrowserTest {
     return navigation_observer;
   }
 
-  RenderFrameHost* main_rfh() { return web_contents()->GetMainFrame(); }
+  RenderFrameHost* main_rfh() { return web_contents()->GetPrimaryMainFrame(); }
 
   WebContents* web_contents() { return shell()->web_contents(); }
 

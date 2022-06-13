@@ -68,8 +68,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, UntrustedNoBindings) {
   EXPECT_TRUE(NavigateToURL(web_contents, untrusted_url));
 
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(0, shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(
+      0, shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // Loads a WebUI which does not have any bindings.
@@ -78,8 +79,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, NoBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(0, shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(
+      0, shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // Loads a WebUI which has WebUI bindings.
@@ -89,9 +91,10 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
-            shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(
+      BINDINGS_POLICY_WEB_UI,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // Loads a WebUI which has Mojo bindings.
@@ -101,9 +104,10 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MojoBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(BINDINGS_POLICY_MOJO_WEB_UI,
-            shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(
+      BINDINGS_POLICY_MOJO_WEB_UI,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // Loads a WebUI which has both WebUI and Mojo bindings.
@@ -114,9 +118,10 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIAndMojoBindings) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID()));
-  EXPECT_EQ(BINDINGS_POLICY_WEB_UI | BINDINGS_POLICY_MOJO_WEB_UI,
-            shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_EQ(
+      BINDINGS_POLICY_WEB_UI | BINDINGS_POLICY_MOJO_WEB_UI,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 // Verify that reloading a WebUI document or navigating between documents on
@@ -373,8 +378,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WindowOpenWebUI) {
   GURL test_url(GetWebUIURL("web-ui/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(test_url, shell()->web_contents()->GetLastCommittedURL());
-  EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->GetEnabledBindings() &
-              BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings() &
+      BINDINGS_POLICY_WEB_UI);
 
   TestNavigationObserver new_contents_observer(nullptr, 1);
   new_contents_observer.StartWatchingNewWebContents();
@@ -390,19 +396,21 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WindowOpenWebUI) {
   Shell* new_shell = Shell::windows()[1];
 
   EXPECT_EQ(new_tab_url, new_shell->web_contents()->GetLastCommittedURL());
-  EXPECT_TRUE(new_shell->web_contents()->GetMainFrame()->GetEnabledBindings() &
-              BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(
+      new_shell->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings() &
+      BINDINGS_POLICY_WEB_UI);
 
   // SiteInstances should be different and unrelated due to the
   // BrowsingInstance swaps on navigation.
-  EXPECT_NE(new_shell->web_contents()->GetMainFrame()->GetSiteInstance(),
-            shell()->web_contents()->GetMainFrame()->GetSiteInstance());
-  EXPECT_FALSE(
-      new_shell->web_contents()
-          ->GetMainFrame()
-          ->GetSiteInstance()
-          ->IsRelatedSiteInstance(
-              shell()->web_contents()->GetMainFrame()->GetSiteInstance()));
+  EXPECT_NE(new_shell->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+            shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+  EXPECT_FALSE(new_shell->web_contents()
+                   ->GetPrimaryMainFrame()
+                   ->GetSiteInstance()
+                   ->IsRelatedSiteInstance(shell()
+                                               ->web_contents()
+                                               ->GetPrimaryMainFrame()
+                                               ->GetSiteInstance()));
 
   EXPECT_NE(shell()->web_contents()->GetWebUI(),
             new_shell->web_contents()->GetWebUI());
@@ -417,8 +425,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIFailedNavigation) {
   GURL start_url(GetWebUIURL("web-ui/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
   EXPECT_EQ(start_url, shell()->web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(BINDINGS_POLICY_WEB_UI,
-            shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
+  EXPECT_EQ(
+      BINDINGS_POLICY_WEB_UI,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetEnabledBindings());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
@@ -890,9 +899,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
 // Test that there's no crash when a navigation to a WebUI page reuses an
 // inactive RenderViewHost. Previously, this led to a browser process crash in
 // WebUI pages that use MojoWebUIController, which tried to use the
-// RenderViewHost's GetMainFrame() when it was invalid in RenderViewCreated().
-// See https://crbug.com/627027.
-// Flaky on Mac. See https://crbug.com/1044335.
+// RenderViewHost's GetPrimaryMainFrame() when it was invalid in
+// RenderViewCreated(). See https://crbug.com/627027. Flaky on Mac. See
+// https://crbug.com/1044335.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
 #else
@@ -915,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MAYBE_ReuseRVHWithWebUI) {
   Shell* new_shell = new_shell_observer.GetShell();
   WebContents* new_contents = new_shell->web_contents();
   EXPECT_TRUE(WaitForLoadStop(new_contents));
-  RenderFrameHost* webui_rfh = new_contents->GetMainFrame();
+  RenderFrameHost* webui_rfh = new_contents->GetPrimaryMainFrame();
   EXPECT_EQ(webui_rfh->GetLastCommittedURL(), webui_url);
   EXPECT_TRUE(BINDINGS_POLICY_MOJO_WEB_UI & webui_rfh->GetEnabledBindings());
   RenderViewHostImpl* webui_rvh =
@@ -924,17 +933,19 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, MAYBE_ReuseRVHWithWebUI) {
   // Navigate to another page in the opened tab.
   const GURL nonwebui_url(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(NavigateToURL(new_shell, nonwebui_url));
-  EXPECT_NE(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
+  EXPECT_NE(webui_rvh,
+            new_contents->GetPrimaryMainFrame()->GetRenderViewHost());
 
   // Go back in the opened tab.  This should finish without crashing and should
   // reuse the old RenderViewHost.
   TestNavigationObserver back_load_observer(new_contents);
   new_contents->GetController().GoBack();
   back_load_observer.Wait();
-  EXPECT_EQ(webui_rvh, new_contents->GetMainFrame()->GetRenderViewHost());
+  EXPECT_EQ(webui_rvh,
+            new_contents->GetPrimaryMainFrame()->GetRenderViewHost());
   EXPECT_TRUE(webui_rvh->IsRenderViewLive());
   EXPECT_TRUE(BINDINGS_POLICY_MOJO_WEB_UI &
-              new_contents->GetMainFrame()->GetEnabledBindings());
+              new_contents->GetPrimaryMainFrame()->GetEnabledBindings());
 }
 
 class WebUIBrowserSideSecurityTest : public WebUISecurityTest {

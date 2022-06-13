@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, DISABLED_KeyboardEventAck) {
   auto filter = std::make_unique<InputMsgWatcher>(
       RenderWidgetHostImpl::From(shell()
                                      ->web_contents()
-                                     ->GetMainFrame()
+                                     ->GetPrimaryMainFrame()
                                      ->GetRenderViewHost()
                                      ->GetWidget()),
       blink::WebInputEvent::Type::kRawKeyDown);
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, DISABLED_MouseEventAck) {
   auto filter = std::make_unique<InputMsgWatcher>(
       RenderWidgetHostImpl::From(shell()
                                      ->web_contents()
-                                     ->GetMainFrame()
+                                     ->GetPrimaryMainFrame()
                                      ->GetRenderViewHost()
                                      ->GetWidget()),
       blink::WebInputEvent::Type::kMouseDown);
@@ -1999,7 +1999,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), a_url));
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
 
   // Create iframe and start navigation.
   GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -2060,7 +2060,7 @@ class DevToolsProtocolDeviceEmulationTest : public DevToolsProtocolTest {
   gfx::Size GetViewSize() {
     return shell()
         ->web_contents()
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetView()
         ->GetViewBounds()
         .size();

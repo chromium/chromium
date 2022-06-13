@@ -2726,11 +2726,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Navigate to title1.html.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   // Navigate to title2.html. The navigation is document/renderer initiated.
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
   scoped_refptr<SiteInstanceImpl> site_instance_2 =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   // Check that title1.html and title2.html are in different BrowsingInstances
   // but have the same renderer process.
@@ -2748,11 +2748,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 1) Navigate to title1.html.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   // 2) Navigate to title2.html. The navigation is browser initiated.
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
   scoped_refptr<SiteInstanceImpl> site_instance_2 =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   // Check that title1.html and title2.html are in different BrowsingInstances
   // but have the same renderer process.
@@ -2763,7 +2763,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_1);
   scoped_refptr<SiteInstanceImpl> site_instance_1_history_nav =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   // We will reuse the SiteInstance and renderer process of |site_instance_1|.
   EXPECT_EQ(site_instance_1_history_nav, site_instance_1);
@@ -2782,11 +2782,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), a1_url));
   scoped_refptr<SiteInstanceImpl> a1_site_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   // Navigate to B. The navigation is browser initiated.
   EXPECT_TRUE(NavigateToURL(shell(), b_url));
   scoped_refptr<SiteInstanceImpl> b_site_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   // Check that A1 and B are in different BrowsingInstances and renderer
   // processes.
@@ -2796,7 +2796,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Navigate to A2. The navigation is renderer-initiated.
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), a2_url));
   scoped_refptr<SiteInstanceImpl> a2_site_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
 
   // Check that B and A2 are in different BrowsingInstances and renderer
   // processes.

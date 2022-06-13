@@ -216,8 +216,9 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   void CreateAndClickSource(WebContents* web_contents,
                             const GURL& href,
                             const GURL& attribution_src) {
-    CreateAndClickSourceInFrame(web_contents, web_contents->GetMainFrame(),
-                                href, attribution_src,
+    CreateAndClickSourceInFrame(web_contents,
+                                web_contents->GetPrimaryMainFrame(), href,
+                                attribution_src,
                                 /*target=*/"_top");
   }
 
@@ -225,7 +226,8 @@ class AttributionsBrowserTest : public ContentBrowserTest {
                                          const GURL& href,
                                          const GURL& attribution_src,
                                          const std::string& target) {
-    return CreateAndClickSourceInFrame(nullptr, web_contents->GetMainFrame(),
+    return CreateAndClickSourceInFrame(nullptr,
+                                       web_contents->GetPrimaryMainFrame(),
                                        href, attribution_src, target);
   }
 
@@ -415,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
     let frame= document.getElementById('test_iframe');
     frame.setAttribute('allow', 'attribution-reporting');)"));
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
-  RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
 
   GURL conversion_url = https_server()->GetURL(
       "d.test", "/attribution_reporting/page_with_conversion_redirect.html");

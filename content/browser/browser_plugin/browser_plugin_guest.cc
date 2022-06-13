@@ -70,7 +70,7 @@ WebContentsImpl* BrowserPluginGuest::CreateNewGuestWindow(
 
 void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {
   RenderWidgetHostImpl* rwhi =
-      GetWebContents()->GetMainFrame()->GetRenderWidgetHost();
+      GetWebContents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
   DCHECK(rwhi);
   // The initial state will not be focused but the plugin may be active so
   // set that appropriately.
@@ -222,7 +222,7 @@ void BrowserPluginGuest::ShowPopupMenu(
       guest->GetRenderWidgetHostView()->TransformPointToRootCoordSpace(
           translated_bounds.origin()));
   BrowserPluginPopupMenuHelper popup_menu_helper(
-      owner_web_contents_->GetMainFrame(), render_frame_host,
+      owner_web_contents_->GetPrimaryMainFrame(), render_frame_host,
       std::move(*popup_client));
   popup_menu_helper.ShowPopupMenu(translated_bounds, item_height, font_size,
                                   selected_item, std::move(*menu_items),

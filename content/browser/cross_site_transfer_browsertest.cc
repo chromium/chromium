@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
 
   // Remember the old process id for a sanity check below.
   int old_process_id =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
 
   // Submit the form.
   TestNavigationObserver form_post_observer(shell()->web_contents(), 1);
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, PostWithFileData) {
 
   // Verify that the test really verifies access of a *new* renderer process.
   int new_process_id =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   ASSERT_NE(new_process_id, old_process_id);
 
   // MAIN VERIFICATION: Check if the new renderer process is able to read the
@@ -365,8 +365,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   // and |form_contents|.
   EXPECT_EQ(initial_target_url, target_contents->GetLastCommittedURL());
   EXPECT_EQ(form_url, form_contents->GetLastCommittedURL());
-  EXPECT_NE(target_contents->GetMainFrame()->GetProcess()->GetID(),
-            form_contents->GetMainFrame()->GetProcess()->GetID());
+  EXPECT_NE(target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            form_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Prepare a file to upload.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -389,20 +389,21 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(security_policy->CanReadFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
 
   // Simulate a malicious situation, where the renderer doesn't really have
   // access to the file.
   security_policy->RevokeAllPermissionsForFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path);
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path);
   EXPECT_FALSE(security_policy->CanReadFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
-      target_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      file_path));
 
   // Submit the form and wait until the malicious renderer gets killed.
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      form_contents->GetMainFrame()->GetProcess());
+      form_contents->GetPrimaryMainFrame()->GetProcess());
   EXPECT_TRUE(ExecJs(
       form_contents,
       "setTimeout(\n"
@@ -416,9 +417,10 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, MaliciousPostWithFileData) {
 
   // Both processes still shouldn't have access.
   EXPECT_FALSE(security_policy->CanReadFile(
-      form_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      form_contents->GetPrimaryMainFrame()->GetProcess()->GetID(), file_path));
   EXPECT_FALSE(security_policy->CanReadFile(
-      target_contents->GetMainFrame()->GetProcess()->GetID(), file_path));
+      target_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      file_path));
 }
 
 // Regression test for https://crbug.com/538784 -- ensures that one can't
@@ -441,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest, NoDeliveryToDetachedFrame) {
   TestNavigationManager target_navigation(shell()->web_contents(),
                                           target_resource);
   EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetMainFrame(),
+      ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
              base::StringPrintf("document.getElementById('child-0').src='%s'",
                                 target_resource.spec().c_str())));
 

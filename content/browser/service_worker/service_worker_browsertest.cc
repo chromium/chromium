@@ -977,8 +977,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, GetRunningServiceWorkerInfos) {
   const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/fetch_event.js"),
             running_info.script_url);
-  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            running_info.render_process_id);
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      running_info.render_process_id);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, StartWorkerWhileInstalling) {
@@ -1257,7 +1258,7 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   // UserAgentReduction OT.
   EXPECT_EQ(
       "DONE",
-      EvalJs(shell()->web_contents()->GetMainFrame(),
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
              base::StrCat({"register('", service_worker_url.spec(), "');"})));
   // Reload the page so that the service worker handles the request.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
@@ -1265,7 +1266,7 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   // Fetch the response containing the result of navigator.userAgent from the
   // service worker.
   const std::string navigator_user_agent =
-      EvalJs(shell()->web_contents()->GetMainFrame(),
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
              "fetch('./user_agent_sw').then(response => response.text())")
           .ExtractString();
   EXPECT_EQ(GetExpectedUserAgent(), navigator_user_agent);
@@ -1448,7 +1449,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   std::string GetTextContent() {
     base::RunLoop run_loop;
     std::string text_content;
-    shell()->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"document.body.textContent;",
         base::BindOnce(&StoreString, &text_content, run_loop.QuitClosure()));
     run_loop.Run();
@@ -2619,7 +2620,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
 IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,
                        V8CacheOnCacheStorage) {
   RenderProcessHostBadMojoMessageWaiter rph_kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   RegisterAndActivateServiceWorker();
 
@@ -2900,7 +2901,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Extract the headers.
-  EvalJsResult result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
   ASSERT_TRUE(result.error.empty());
   std::unique_ptr<base::DictionaryValue> dict = base::DictionaryValue::From(
@@ -2956,7 +2957,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   // URL, since throttles should have redirected before interception.
   base::Value list(base::Value::Type::LIST);
   list.Append(redirect_url.spec());
-  EXPECT_EQ(list, EvalJs(shell()->web_contents()->GetMainFrame(), script));
+  EXPECT_EQ(list,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), script));
 
   SetBrowserClientForTesting(old_content_browser_client);
 }
@@ -2982,12 +2984,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that there is a controller to check that the test is really testing
   // service worker network fallback.
-  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                          "!!navigator.serviceWorker.controller"));
 
   // The injected header should be present.
-  EXPECT_EQ("injected value", EvalJs(shell()->web_contents()->GetMainFrame(),
-                                     "document.body.textContent"));
+  EXPECT_EQ("injected value",
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "document.body.textContent"));
 
   SetBrowserClientForTesting(old_content_browser_client);
 }
@@ -3017,7 +3020,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
       "/echoheader?Service-Worker-Navigation-Preload&x-injected");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_EQ("true\ninjected value",
-            EvalJs(shell()->web_contents()->GetMainFrame(),
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                    "document.body.textContent"));
 
   SetBrowserClientForTesting(old_content_browser_client);
@@ -3313,7 +3316,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
             running_info.script_url);
 
   bool is_in_process =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_TRUE(is_in_process);
@@ -3378,7 +3381,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
             running_info.script_url);
 
   bool is_in_process =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   bool should_be_in_process =
       IsPageCrossOriginIsolated() == IsServiceWorkerCrossOriginIsolated();
@@ -3426,7 +3429,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, FreshInstall) {
             running_info.script_url);
 
   bool is_in_process =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   EXPECT_TRUE(is_in_process);
 }
@@ -3471,7 +3474,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCoopBrowserTest, MAYBE_PostInstallRun) {
             running_info.script_url);
 
   bool is_in_process =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   EXPECT_TRUE(is_in_process);
 }
@@ -3690,7 +3693,7 @@ IN_PROC_BROWSER_TEST_F(
       nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(new_shell, url_2));
   RenderFrameHostImpl* rfh_2 = static_cast<RenderFrameHostImpl*>(
-      new_shell->web_contents()->GetMainFrame());
+      new_shell->web_contents()->GetPrimaryMainFrame());
 
   // |rfh_1| and |rfh_2| are in different renderer processes because they are
   // in different tabs.

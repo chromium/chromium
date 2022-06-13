@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(HidFencedFramesBrowserTest, BlockFromFencedFrame) {
       embedded_test_server()->GetURL("/fenced_frames/empty.html");
   content::RenderFrameHost* render_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+          GetWebContents()->GetPrimaryMainFrame(), kFencedFrameUrl);
   ASSERT_NE(nullptr, render_frame_host);
 
   // Tries to request a device from the fenced frame, which must cause an error.

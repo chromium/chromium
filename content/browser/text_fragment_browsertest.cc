@@ -87,13 +87,13 @@ class TextFragmentAnchorBrowserTest : public ContentBrowserTest {
 
   void WaitForPageLoad(WebContents* contents) {
     EXPECT_TRUE(WaitForLoadStop(contents));
-    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetMainFrame()));
+    EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
   RenderWidgetHostImpl* GetWidgetHost() {
     return RenderWidgetHostImpl::From(shell()
                                           ->web_contents()
-                                          ->GetMainFrame()
+                                          ->GetPrimaryMainFrame()
                                           ->GetRenderViewHost()
                                           ->GetWidget());
   }

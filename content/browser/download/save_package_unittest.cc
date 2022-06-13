@@ -84,7 +84,7 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
   }
 
   GURL GetUrlToBeSaved() {
-    return SavePackage::GetUrlToBeSaved(contents()->GetMainFrame());
+    return SavePackage::GetUrlToBeSaved(contents()->GetPrimaryMainFrame());
   }
 
  protected:
@@ -336,10 +336,10 @@ TEST_F(SavePackageFencedFrameTest,
   NavigateAndCommit(GURL("https://www.example.com"));
 
   // Create a fenced frame.
-  RenderFrameHostTester::For(contents()->GetMainFrame())
+  RenderFrameHostTester::For(contents()->GetPrimaryMainFrame())
       ->InitializeRenderFrameIfNeeded();
   RenderFrameHost* fenced_frame_rfh =
-      CreateFencedFrame(contents()->GetMainFrame());
+      CreateFencedFrame(contents()->GetPrimaryMainFrame());
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -350,9 +350,9 @@ TEST_F(SavePackageFencedFrameTest,
       temp_dir.GetPath().AppendASCII("testfile_files")));
 
   FakeLocalFrameWithSavableResourceLinks local_frame_for_primary(
-      contents()->GetMainFrame());
+      contents()->GetPrimaryMainFrame());
   local_frame_for_primary.Init(
-      contents()->GetMainFrame()->GetRemoteAssociatedInterfaces());
+      contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces());
 
   FakeLocalFrameWithSavableResourceLinks local_frame_for_fenced_frame(
       fenced_frame_rfh);

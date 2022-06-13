@@ -123,7 +123,7 @@ TEST_F(SensorProviderProxyImplTest, DestructionOrderWithOngoingCallback) {
   set_fake_sensor_provider(std::move(intercepting_fake_sensor_provider));
 
   mojo::Remote<device::mojom::SensorProvider> provider;
-  contents()->GetMainFrame()->GetSensorProvider(
+  contents()->GetPrimaryMainFrame()->GetSensorProvider(
       provider.BindNewPipeAndPassReceiver());
 
   base::RunLoop run_loop;

@@ -72,7 +72,7 @@ void WebRTCInternalsMessageHandler::RegisterMessages() {
 }
 
 RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() {
-  RenderFrameHost* host = web_ui()->GetWebContents()->GetMainFrame();
+  RenderFrameHost* host = web_ui()->GetWebContents()->GetPrimaryMainFrame();
   if (host) {
     // Make sure we only ever execute the script in the webrtc-internals page.
     const GURL url(host->GetLastCommittedURL());

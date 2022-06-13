@@ -222,7 +222,7 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
 TEST_F(SharedWorkerServiceImplTest, BasicTest) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
   const int process_id = renderer_host->GetID();
   renderer_host->OverrideBinderForTesting(
@@ -316,7 +316,7 @@ TEST_F(SharedWorkerServiceImplTest, BasicTest) {
 TEST_F(SharedWorkerServiceImplTest, DISABLED_WebContentsDestroyed) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
   const int process_id = renderer_host->GetID();
   renderer_host->OverrideBinderForTesting(
@@ -349,7 +349,8 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
 
   MockSharedWorkerClient client0;
@@ -429,7 +430,8 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
 
   MockSharedWorkerClient client1;
@@ -493,7 +495,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
   const int process_id0 = renderer_host0->GetID();
   renderer_host0->OverrideBinderForTesting(
@@ -504,7 +507,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase) {
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   // First client, creates worker.
 
@@ -562,12 +566,14 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_URLMismatch) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
 
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   // First client, creates worker.
 
@@ -637,7 +643,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_NameMismatch) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
   const int process_id0 = renderer_host0->GetID();
   renderer_host0->OverrideBinderForTesting(
@@ -648,7 +655,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_NameMismatch) {
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
   const int process_id1 = renderer_host1->GetID();
   renderer_host1->OverrideBinderForTesting(
@@ -723,7 +731,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
   const int process_id0 = renderer_host0->GetID();
   renderer_host0->OverrideBinderForTesting(
@@ -734,7 +743,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase) {
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
   const int process_id1 = renderer_host1->GetID();
   renderer_host1->OverrideBinderForTesting(
@@ -801,12 +811,14 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_URLMismatch) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
 
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   // First client and second client are created before the workers start.
 
@@ -880,7 +892,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_NameMismatch) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
   const int process_id0 = renderer_host0->GetID();
   renderer_host0->OverrideBinderForTesting(
@@ -891,7 +904,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_NameMismatch) {
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   // First client and second client are created before the workers start.
 
@@ -965,15 +979,18 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
 
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
 
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   std::unique_ptr<TestWebContents> web_contents2 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host2 = web_contents2->GetMainFrame();
+  TestRenderFrameHost* render_frame_host2 =
+      web_contents2->GetPrimaryMainFrame();
 
   MockSharedWorkerClient client0;
   MessagePortChannel local_port0;
@@ -1063,15 +1080,18 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest2) {
 
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
 
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   std::unique_ptr<TestWebContents> web_contents2 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host2 = web_contents2->GetMainFrame();
+  TestRenderFrameHost* render_frame_host2 =
+      web_contents2->GetPrimaryMainFrame();
 
   MockSharedWorkerClient client0;
   MessagePortChannel local_port0;
@@ -1143,7 +1163,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
+  TestRenderFrameHost* render_frame_host0 =
+      web_contents0->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
   const int process_id0 = renderer_host0->GetID();
   renderer_host0->OverrideBinderForTesting(
@@ -1154,7 +1175,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
+  TestRenderFrameHost* render_frame_host1 =
+      web_contents1->GetPrimaryMainFrame();
 
   // Both clients try to connect/create a worker.
 
@@ -1271,7 +1293,7 @@ TEST_F(SharedWorkerServiceImplTest, Observer) {
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
   MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
   const int process_id = renderer_host->GetID();
   renderer_host->OverrideBinderForTesting(
@@ -1321,7 +1343,7 @@ TEST_F(SharedWorkerServiceImplTest, EnumerateSharedWorkers) {
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
 
   MockSharedWorkerClient client;
   MessagePortChannel local_port;
@@ -1378,7 +1400,7 @@ TEST_F(SharedWorkerServiceImplTest, CollapseDuplicateNotifications) {
   // The first renderer host.
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
 
   // First client, creates worker.
 
@@ -1459,7 +1481,7 @@ TEST_F(SharedWorkerServiceImplTest, Observer_OnClientConnectionLost) {
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
 
   MockSharedWorkerClient client;
   MessagePortChannel local_port;

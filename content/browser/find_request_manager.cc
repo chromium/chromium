@@ -378,7 +378,7 @@ void FindRequestManager::EmitFindRequest(int request_id,
 
 void FindRequestManager::ForEachAddedFindInPageRenderFrameHost(
     FrameIterationCallback callback) {
-  contents_->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](FindRequestManager* manager, FrameIterationCallback callback,
          RenderFrameHostImpl* rfh) {
         if (!manager->CheckFrame(rfh))
@@ -707,7 +707,7 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   // ForEachRenderFrameHost instead of ForEachAddedFindInPageRenderFrameHost
   // because that calls CheckFrame() which will only be true if we've called
   // AddFrame() for the frame.
-  contents_->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](FindRequestManager* manager, WebContents* web_contents,
          RenderFrameHostImpl* rfh) {
         // Portals can't receive keyboard events or be focused, so we don't

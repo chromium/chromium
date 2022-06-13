@@ -75,7 +75,7 @@ class NavigationPolicyContainerBuilderTest
  protected:
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
   }
 };
 
@@ -277,7 +277,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 TEST_F(NavigationPolicyContainerBuilderTest, InitiatorPoliciesWithInitiator) {
   PolicyContainerPolicies initiator_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  TestRenderFrameHost* initiator = contents()->GetPrimaryMainFrame();
   initiator->SetPolicyContainerHost(NewHost(initiator_policies.Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
@@ -294,7 +294,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        FinalPoliciesAboutBlankWithInitiator) {
   PolicyContainerPolicies initiator_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  TestRenderFrameHost* initiator = contents()->GetPrimaryMainFrame();
   initiator->SetPolicyContainerHost(NewHost(initiator_policies.Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
@@ -310,7 +310,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 // builder's final policies are copied from the initiator.
 TEST_F(NavigationPolicyContainerBuilderTest, FinalPoliciesBlobWithInitiator) {
   PolicyContainerPolicies initiator_policies = MakeTestPolicies();
-  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  TestRenderFrameHost* initiator = contents()->GetPrimaryMainFrame();
   initiator->SetPolicyContainerHost(NewHost(initiator_policies.Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
@@ -331,7 +331,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        FinalPoliciesAboutBlankWithInitiatorAndAdditionalCSP) {
   PolicyContainerPolicies initiator_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  TestRenderFrameHost* initiator = contents()->GetPrimaryMainFrame();
   initiator->SetPolicyContainerHost(NewHost(initiator_policies.Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
@@ -360,7 +360,7 @@ TEST_F(NavigationPolicyContainerBuilderTest, ParentPoliciesWithoutParent) {
 TEST_F(NavigationPolicyContainerBuilderTest, ParentPoliciesWithParent) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -374,7 +374,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        FinalPoliciesAboutSrcdocWithParent) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -427,7 +427,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
   parent_policies.is_web_secure_context = false;
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -447,7 +447,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
   parent_policies.is_web_secure_context = true;
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -471,7 +471,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
   parent_policies.is_web_secure_context = true;
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -495,7 +495,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        FinalPoliciesAboutSrcdocWithParentAndAdditionalCSP) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -533,7 +533,7 @@ TEST_F(NavigationPolicyContainerBuilderTest, ComputePoliciesThenError) {
 TEST_F(NavigationPolicyContainerBuilderTest,
        AccessInitiatorAfterComputingPolicies) {
   PolicyContainerPolicies initiator_policies = MakeTestPolicies();
-  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  TestRenderFrameHost* initiator = contents()->GetPrimaryMainFrame();
   initiator->SetPolicyContainerHost(NewHost(initiator_policies.Clone()));
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
 
@@ -557,7 +557,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 TEST_F(NavigationPolicyContainerBuilderTest,
        AccessParentAfterComputingPolicies) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -578,7 +578,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        ResetForCrossDocumentRestartParentPolicies) {
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()));
 
   NavigationPolicyContainerBuilder builder(parent, nullptr, nullptr);
@@ -600,7 +600,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        ResetForCrossDocumentRestartInitiatorPolicies) {
   PolicyContainerPolicies initiator_policies = MakeTestPolicies();
 
-  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  TestRenderFrameHost* initiator = contents()->GetPrimaryMainFrame();
   initiator->SetPolicyContainerHost(NewHost(initiator_policies.Clone()));
 
   // Force implicit conversion from LocalFrameToken to UnguessableToken.

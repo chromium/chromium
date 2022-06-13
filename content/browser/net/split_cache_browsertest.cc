@@ -201,7 +201,8 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     // 1) Prevent the old page from entering the back-forward cache. Otherwise
     //    the old process will be kept alive, because it is still being used.
     // 2) Navigate to a WebUI URL, which uses a new process.
-    DisableBFCacheForRFHForTesting(shell()->web_contents()->GetMainFrame());
+    DisableBFCacheForRFHForTesting(
+        shell()->web_contents()->GetPrimaryMainFrame());
     EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("blob-internals")));
 
     // In the case of a redirect, the observed URL will be different from
@@ -212,7 +213,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       EXPECT_TRUE(NavigateToURL(shell(), url));
 
     RenderFrameHost* host_to_load_resource =
-        shell()->web_contents()->GetMainFrame();
+        shell()->web_contents()->GetPrimaryMainFrame();
     RenderFrameHostImpl* main_frame =
         static_cast<RenderFrameHostImpl*>(host_to_load_resource);
 
@@ -224,7 +225,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
         shell_to_observe = OpenPopup(main_frame, new_frame, "");
         host_to_load_resource =
             static_cast<WebContentsImpl*>(shell_to_observe->web_contents())
-                ->GetMainFrame();
+                ->GetPrimaryMainFrame();
       } else {
         host_to_load_resource = CreateSubframe(new_frame);
       }
@@ -304,7 +305,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
 
     RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
+        shell()->web_contents()->GetPrimaryMainFrame());
 
     observer.WaitForResourceCompletion(url);
 
@@ -340,7 +341,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
     RenderFrameHost* host_to_load_resource =
-        shell()->web_contents()->GetMainFrame();
+        shell()->web_contents()->GetPrimaryMainFrame();
 
     // If there is supposed to be a subframe, create it.
     if (sub_frame.is_valid()) {
@@ -744,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
       GenURL("main.com", "/navigation_controller/page_with_iframe.html"),
       GenURL("evil.com", "/title1.html"), false);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(1U, main_frame->frame_tree_node()->child_count());
 
   // Observe network requests.
@@ -1189,10 +1190,10 @@ IN_PROC_BROWSER_TEST_F(SplitCacheByIncludeCredentialsTest, DifferentProcess) {
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
   EXPECT_NE(static_cast<WebContentsImpl*>(shell()->web_contents())
-                ->GetMainFrame()
+                ->GetPrimaryMainFrame()
                 ->GetProcess(),
             static_cast<WebContentsImpl*>(new_shell->web_contents())
-                ->GetMainFrame()
+                ->GetPrimaryMainFrame()
                 ->GetProcess());
 
   EXPECT_EQ(0, cacheable_request_count());
@@ -1228,10 +1229,10 @@ IN_PROC_BROWSER_TEST_F(SplitCacheByIncludeCredentialsTest,
   EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
   EXPECT_NE(static_cast<WebContentsImpl*>(shell()->web_contents())
-                ->GetMainFrame()
+                ->GetPrimaryMainFrame()
                 ->GetProcess(),
             static_cast<WebContentsImpl*>(new_shell->web_contents())
-                ->GetMainFrame()
+                ->GetPrimaryMainFrame()
                 ->GetProcess());
 
   EXPECT_EQ(0, cacheable_request_count());

@@ -93,8 +93,8 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
   void EnterFullscreen() {
     WebContentsImpl* web_contents_impl =
         static_cast<WebContentsImpl*>(shell()->web_contents());
-    web_contents_impl->EnterFullscreenMode(web_contents_impl->GetMainFrame(),
-                                           {});
+    web_contents_impl->EnterFullscreenMode(
+        web_contents_impl->GetPrimaryMainFrame(), {});
   }
 
   base::FilePath CreateTestFile(const std::string& contents) {
@@ -491,8 +491,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -571,8 +571,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -655,8 +655,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -751,8 +751,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -816,8 +816,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
 
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
@@ -924,8 +924,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       BackForwardCacheDisable::DisabledReason(
           BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess)));
 }
@@ -955,8 +955,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1040,8 +1040,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1131,8 +1131,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1218,8 +1218,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
@@ -1311,8 +1311,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   auto origin =
       url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
   auto frame_id = GlobalRenderFrameHostId(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 

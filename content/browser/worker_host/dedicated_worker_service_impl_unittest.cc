@@ -235,7 +235,7 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
-  TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
 
   // At first, there is no live dedicated worker.
   EXPECT_TRUE(observer.dedicated_worker_infos().empty());

@@ -31,7 +31,7 @@ void ArrangeFramesAndNavigate(WebContents* web_contents,
 RenderFrameHostImpl* SelectDescendentFrame(WebContents* web_contents,
                                            const std::vector<int>& indices) {
   RenderFrameHostImpl* selected_frame =
-      static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
   for (int index : indices) {
     selected_frame = selected_frame->child_at(index)->current_frame_host();
   }

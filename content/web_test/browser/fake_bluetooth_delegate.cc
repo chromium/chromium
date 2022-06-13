@@ -220,9 +220,9 @@ void FakeBluetoothDelegate::GrantUnionOfServicesAndManufacturerDataForDevice(
 FakeBluetoothDelegate::AddressToIdMap&
 FakeBluetoothDelegate::GetAddressToIdMapForOrigin(RenderFrameHost* frame) {
   auto* web_contents = WebContents::FromRenderFrameHost(frame);
-  auto origin_pair =
-      std::make_pair(frame->GetLastCommittedOrigin(),
-                     web_contents->GetMainFrame()->GetLastCommittedOrigin());
+  auto origin_pair = std::make_pair(
+      frame->GetLastCommittedOrigin(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   return device_address_to_id_map_for_origin_[origin_pair];
 }
 

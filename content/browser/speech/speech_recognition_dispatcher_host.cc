@@ -102,7 +102,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   if (outer_web_contents) {
     RenderFrameHost* embedder_frame = nullptr;
 
-    FrameTreeNode* embedder_frame_node = web_contents->GetMainFrame()
+    FrameTreeNode* embedder_frame_node = web_contents->GetPrimaryMainFrame()
                                              ->frame_tree_node()
                                              ->render_manager()
                                              ->GetOuterDelegateNode();
@@ -112,7 +112,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
       // The outer web contents is embedded using the browser plugin. Fall back
       // to a simple lookup of the main frame. TODO(avi): When the browser
       // plugin is retired, remove this code.
-      embedder_frame = outer_web_contents->GetMainFrame();
+      embedder_frame = outer_web_contents->GetPrimaryMainFrame();
     }
 
     embedder_render_process_id = embedder_frame->GetProcess()->GetID();

@@ -92,7 +92,7 @@ class WorkerNetworkIsolationKeyBrowserTest : public ContentBrowserTest {
 
     std::string subframe_name = GetUniqueSubframeName();
     EvalJsResult result = EvalJs(
-        shell()->web_contents()->GetMainFrame(),
+        shell()->web_contents()->GetPrimaryMainFrame(),
         JsReplace("createFrame($1, $2)", subframe_url.spec(), subframe_name));
     DCHECK(result.error.empty());
     navigation_observer.Wait();

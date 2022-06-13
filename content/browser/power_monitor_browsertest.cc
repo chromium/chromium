@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestRendererProcess) {
 
   mojo::Remote<mojom::PowerMonitorTest> power_monitor_renderer;
   RenderProcessHost* rph =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   rph->BindReceiver(power_monitor_renderer.BindNewPipeAndPassReceiver());
 
   // Ensure that the PowerMonitorTestImpl instance has been created and is

@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, GetPageTextForSpeech) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
 
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
       root, root->current_frame_host()->GetSiteInstance()->group());
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, UpdateInputFlags) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
   RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderWidgetHostView* rwhv =
-      shell()->web_contents()->GetMainFrame()->GetView();
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
   RenderWidgetHostViewMac* rwhv_mac =
       static_cast<RenderWidgetHostViewMac*>(rwhv);
   RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();

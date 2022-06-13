@@ -283,12 +283,12 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, EndToEndCommunication) {
 
   // We expect two independent chrome://foo tabs/shells to use a separate
   // process.
-  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(),
-            other_shell->web_contents()->GetMainFrame()->GetProcess());
+  EXPECT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
 
   // Close the second shell and wait until its process exits.
   RenderProcessHostWatcher process_watcher(
-      other_shell->web_contents()->GetMainFrame()->GetProcess(),
+      other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   other_shell->Close();
   process_watcher.Wait();
@@ -300,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, EndToEndCommunication) {
 
   other_shell = CreateBrowser();
   EXPECT_TRUE(NavigateToURL(other_shell, kTestUrl));
-  EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetProcess(),
-            other_shell->web_contents()->GetMainFrame()->GetProcess());
+  EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            other_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
   EXPECT_EQ(true, EvalJs(other_shell->web_contents(), kTestScript,
                          EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, ChromeSendAvailable_AfterCrash) {
   EXPECT_TRUE(EvalJs(shell(), "isChromeSendAvailable()").ExtractBool());
 
   WebUIImpl* web_ui = static_cast<WebUIImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetWebUI());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetWebUI());
 
   // Simulate a crash on the page.
   content::ScopedAllowRendererCrashes allow_renderer_crashes(shell());
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(WebUIMojoTest, ChromeSendAvailable_AfterCrash) {
   EXPECT_TRUE(EvalJs(shell(), "isChromeSendAvailable()").ExtractBool());
   // The RenderFrameHost has been replaced after the crash, so get web_ui again.
   web_ui = static_cast<WebUIImpl*>(
-      shell()->web_contents()->GetMainFrame()->GetWebUI());
+      shell()->web_contents()->GetPrimaryMainFrame()->GetWebUI());
   EXPECT_TRUE(web_ui->GetRemoteForTest().is_bound());
 }
 

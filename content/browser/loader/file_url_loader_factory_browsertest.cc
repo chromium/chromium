@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryBrowserTest,
       RedirectToFileURL().spec().c_str());
   // Unfortunately, fetch doesn't provide a way to unambiguously know if the
   // request failed due to the redirect being unsafe.
-  EXPECT_EQ("error", EvalJs(shell()->web_contents()->GetMainFrame(),
+  EXPECT_EQ("error", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                             fetch_redirect_to_file));
   // There should never have been a request for the file URL.
   EXPECT_TRUE(test_browser_client.access_allowed_args().empty());
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(FileURLLoaderFactoryDisabledSecurityBrowserTest,
   // switch (this is what this test suite is doing) or 2) the following Android
   // WebView API: android.webkit.WebSettings.setAllowFileAccess.  This is why
   // the test asserts below that the access is successful.
-  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   const char kScriptTemplateToTriggerSubresourceFetch[] = R"(
       new Promise(function (resolve, reject) {

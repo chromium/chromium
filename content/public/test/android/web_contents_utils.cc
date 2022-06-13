@@ -73,8 +73,9 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
 
   if (!callback) {
     // No callback requested.
-    web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-        ConvertJavaStringToUTF16(env, script), base::NullCallback());
+    web_contents->GetPrimaryMainFrame()
+        ->ExecuteJavaScriptWithUserGestureForTests(
+            ConvertJavaStringToUTF16(env, script), base::NullCallback());
     return;
   }
 
@@ -83,7 +84,7 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
   ScopedJavaGlobalRef<jobject> j_callback;
   j_callback.Reset(env, callback);
 
-  web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       ConvertJavaStringToUTF16(env, script),
       base::BindOnce(&JavaScriptResultCallback, std::move(j_callback)));
 }
@@ -92,7 +93,8 @@ void JNI_WebContentsUtils_CrashTab(JNIEnv* env,
                                    const JavaParamRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
-  web_contents->GetMainFrame()->GetProcess()->Shutdown(RESULT_CODE_KILLED);
+  web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      RESULT_CODE_KILLED);
 }
 
 }  // namespace content

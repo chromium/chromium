@@ -106,7 +106,7 @@ class NavigationURLLoaderTest : public testing::Test {
         browser_context_->GetDefaultStoragePartition();
 
     uint32_t frame_tree_node_id =
-        web_contents_->GetMainFrame()->GetFrameTreeNodeId();
+        web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
     url::Origin origin = url::Origin::Create(url);
     std::unique_ptr<NavigationRequestInfo> request_info(

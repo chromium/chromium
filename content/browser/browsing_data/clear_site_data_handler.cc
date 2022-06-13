@@ -53,7 +53,8 @@ void OutputFormattedMessage(WebContents* web_contents,
                             blink::mojom::ConsoleMessageLevel level,
                             const std::string& formatted_text) {
   if (web_contents)
-    web_contents->GetMainFrame()->AddMessageToConsole(level, formatted_text);
+    web_contents->GetPrimaryMainFrame()->AddMessageToConsole(level,
+                                                             formatted_text);
 }
 
 }  // namespace

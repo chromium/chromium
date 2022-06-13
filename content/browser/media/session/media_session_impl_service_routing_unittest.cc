@@ -132,10 +132,10 @@ class MediaSessionImplServiceRoutingTest
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     contents()->NavigateAndCommit(GURL("http://www.example.com"));
 
-    main_frame_ = contents()->GetMainFrame();
+    main_frame_ = contents()->GetPrimaryMainFrame();
     sub_frame_ = main_frame_->AppendChild("sub_frame");
 
     empty_metadata_.title = contents()->GetTitle();
@@ -817,7 +817,8 @@ TEST_F(MediaSessionImplServiceRoutingTest, NotifyObserverOnTitleChange) {
   expected_metadata.title = u"new title";
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
-  contents()->UpdateTitle(contents()->GetMainFrame(), expected_metadata.title,
+  contents()->UpdateTitle(contents()->GetPrimaryMainFrame(),
+                          expected_metadata.title,
                           base::i18n::TextDirection::LEFT_TO_RIGHT);
 
   observer.WaitForExpectedMetadata(expected_metadata);

@@ -110,7 +110,7 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
     WebContents* contents = Navigate(domain, oac_state);
     DCHECK(contents);
     return static_cast<WebContentsImpl*>(contents)
-        ->GetMainFrame()
+        ->GetPrimaryMainFrame()
         ->GetProcess();
   }
 

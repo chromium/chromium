@@ -272,7 +272,7 @@ void InjectRawKeyEvent(WebContents* web_contents,
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* main_frame_rwh =
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   web_contents_impl->GetFocusedRenderWidgetHost(main_frame_rwh)
       ->ForwardKeyboardEvent(event);
 }
@@ -844,18 +844,19 @@ bool WaitForLoadStop(WebContents* web_contents) {
 
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation) {
-  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
-        if (trigger_user_activation) {
-          render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-              std::u16string(), base::NullCallback());
-        }
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating(
+          [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
+            if (trigger_user_activation) {
+              render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
+                  std::u16string(), base::NullCallback());
+            }
 
-        // Disable the hang monitor, otherwise there will be a race between the
-        // beforeunload dialog and the beforeunload hang timer.
-        render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
-      },
-      trigger_user_activation));
+            // Disable the hang monitor, otherwise there will be a race between
+            // the beforeunload dialog and the beforeunload hang timer.
+            render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
+          },
+          trigger_user_activation));
 }
 
 bool IsLastCommittedEntryOfPageType(WebContents* web_contents,
@@ -872,7 +873,7 @@ void OverrideLastCommittedOrigin(RenderFrameHost* render_frame_host,
 }
 
 void CrashTab(WebContents* web_contents) {
-  RenderProcessHost* rph = web_contents->GetMainFrame()->GetProcess();
+  RenderProcessHost* rph = web_contents->GetPrimaryMainFrame()->GetProcess();
   RenderProcessHostWatcher watcher(
       rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   EXPECT_TRUE(rph->Shutdown(RESULT_CODE_KILLED));
@@ -913,7 +914,7 @@ void WaitForResizeComplete(WebContents* web_contents) {
   aura::WindowEventDispatcher* dispatcher = window_host->dispatcher();
   aura::test::WindowEventDispatcherTestApi dispatcher_test(dispatcher);
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(&dispatcher_test, widget_host)) {
     ResizeObserver resize_observer(
         widget_host,
@@ -1041,7 +1042,7 @@ void SimulateMouseWheelEvent(WebContents* web_contents,
   wheel_event.delta_y = delta.y();
   wheel_event.phase = phase;
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
@@ -1061,7 +1062,7 @@ void SimulateMouseWheelCtrlZoomEvent(WebContents* web_contents,
   wheel_event.wheel_ticks_y = (zoom_in ? 1.0 : -1.0);
   wheel_event.phase = phase;
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardWheelEvent(wheel_event);
 }
 
@@ -1094,7 +1095,7 @@ void SimulateGesturePinchSequence(WebContents* web_contents,
                                   float scale,
                                   blink::WebGestureDevice source_device) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent pinch_begin(
       blink::WebInputEvent::Type::kGesturePinchBegin,
@@ -1123,7 +1124,7 @@ void SimulateGestureScrollSequence(WebContents* web_contents,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   blink::WebGestureEvent scroll_begin(
       blink::WebGestureEvent::Type::kGestureScrollBegin,
@@ -1168,7 +1169,7 @@ void SimulateTouchGestureAt(WebContents* web_contents,
                                  blink::WebGestureDevice::kTouchscreen);
   gesture.SetPositionInWidget(gfx::PointF(point));
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardGestureEvent(gesture);
 }
 
@@ -1190,7 +1191,7 @@ void SimulateTapWithModifiersAt(WebContents* web_contents,
                              blink::WebGestureDevice::kTouchpad);
   tap.SetPositionInWidget(gfx::PointF(point));
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
   widget_host->ForwardGestureEvent(tap);
 }
 
@@ -1364,7 +1365,7 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents) {
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents) {
-  return web_contents->GetMainFrame();
+  return web_contents->GetPrimaryMainFrame();
 }
 
 RenderFrameHost* ConvertToRenderFrameHost(RenderFrameHost* render_frame_host) {
@@ -2245,7 +2246,7 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
   WebContentsImpl* web_contents_impl = static_cast<WebContentsImpl*>(
       web_contents);
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      web_contents_impl->GetMainFrame());
+      web_contents_impl->GetPrimaryMainFrame());
   BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   while (!main_frame_manager || !AccessibilityTreeContainsNodeWithName(
@@ -2382,7 +2383,7 @@ bool RequestKeyboardLock(WebContents* web_contents,
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* render_widget_host_impl =
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   return render_widget_host_impl->RequestKeyboardLock(std::move(codes));
 }
 
@@ -2390,7 +2391,7 @@ void CancelKeyboardLock(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   RenderWidgetHostImpl* render_widget_host_impl =
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   render_widget_host_impl->CancelKeyboardLock();
 }
 
@@ -2409,7 +2410,7 @@ RenderWidgetHost* GetFocusedRenderWidgetHost(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
   return web_contents_impl->GetFocusedRenderWidgetHost(
-      web_contents_impl->GetMainFrame()->GetRenderWidgetHost());
+      web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost());
 }
 
 bool IsRenderWidgetHostFocused(const RenderWidgetHost* host) {
@@ -2437,12 +2438,14 @@ RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromFrameTreeNode(
 RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromWebContents(
     WebContents* web_contents) {
   DCHECK(web_contents);
-  DCHECK(web_contents->GetMainFrame()->GetRenderViewHost());
-  DCHECK(RenderWidgetHostImpl::From(
-             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
-             ->render_frame_metadata_provider());
-  return RenderWidgetHostImpl::From(
-             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
+  DCHECK(web_contents->GetPrimaryMainFrame()->GetRenderViewHost());
+  DCHECK(
+      RenderWidgetHostImpl::From(
+          web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget())
+          ->render_frame_metadata_provider());
+  return RenderWidgetHostImpl::From(web_contents->GetPrimaryMainFrame()
+                                        ->GetRenderViewHost()
+                                        ->GetWidget())
       ->render_frame_metadata_provider();
 }
 
@@ -2499,8 +2502,9 @@ RenderProcessHostWatcher::RenderProcessHostWatcher(
 
 RenderProcessHostWatcher::RenderProcessHostWatcher(WebContents* web_contents,
                                                    WatchType type)
-    : RenderProcessHostWatcher(web_contents->GetMainFrame()->GetProcess(),
-                               type) {}
+    : RenderProcessHostWatcher(
+          web_contents->GetPrimaryMainFrame()->GetProcess(),
+          type) {}
 RenderProcessHostWatcher::~RenderProcessHostWatcher() = default;
 
 void RenderProcessHostWatcher::Wait() {
@@ -2739,8 +2743,9 @@ WebContents* WebContentsAddedObserver::GetWebContents() {
 
 bool RequestFrame(WebContents* web_contents) {
   DCHECK(web_contents);
-  return RenderWidgetHostImpl::From(
-             web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget())
+  return RenderWidgetHostImpl::From(web_contents->GetPrimaryMainFrame()
+                                        ->GetRenderViewHost()
+                                        ->GetWidget())
       ->RequestRepaintForTesting();
 }
 
@@ -4094,7 +4099,7 @@ bool CompareWebContentsOutputToReference(
   // known state.
   {
     base::RunLoop run_loop;
-    web_contents->GetMainFrame()->InsertVisualStateCallback(
+    web_contents->GetPrimaryMainFrame()->InsertVisualStateCallback(
         base::BindLambdaForTesting([&](bool visual_state_updated) {
           ASSERT_TRUE(visual_state_updated);
           run_loop.Quit();
@@ -4103,7 +4108,7 @@ bool CompareWebContentsOutputToReference(
   }
 
   auto* rwh = RenderWidgetHostImpl::From(
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget());
 
   if (!rwh->GetView() || !rwh->GetView()->IsSurfaceAvailableForCopy()) {
     ADD_FAILURE() << "RWHV surface not available for copy.";

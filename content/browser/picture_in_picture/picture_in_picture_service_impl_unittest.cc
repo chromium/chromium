@@ -151,7 +151,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
     SetBrowserClientForTesting(&browser_client_);
 
-    TestRenderFrameHost* render_frame_host = contents()->GetMainFrame();
+    TestRenderFrameHost* render_frame_host = contents()->GetPrimaryMainFrame();
     render_frame_host->InitializeRenderFrameIfNeeded();
 
     contents()->SetDelegate(&delegate_);

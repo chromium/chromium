@@ -665,7 +665,7 @@ void ApplyNetworkRequestOverrides(
     DCHECK(!agent_host);
     agent_host = RenderFrameDevToolsAgentHost::GetFor(
         WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->frame_tree_node());
   }
   if (!agent_host)
@@ -711,7 +711,7 @@ bool ApplyUserAgentMetadataOverrides(
     DCHECK(!agent_host);
     agent_host = RenderFrameDevToolsAgentHost::GetFor(
         WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-            ->GetMainFrame()
+            ->GetPrimaryMainFrame()
             ->frame_tree_node());
   }
   if (!agent_host)

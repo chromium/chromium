@@ -77,7 +77,7 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
         ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
 
     interceptor_ = std::make_unique<TestPrefetchURLLoaderInterceptor>(
-        web_contents()->GetMainFrame()->GetFrameTreeNodeId());
+        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
   }
 
   void TearDown() override {

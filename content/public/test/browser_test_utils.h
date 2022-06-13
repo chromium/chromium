@@ -466,9 +466,9 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents);
 
 // Allow ExecuteScript* methods to target either a WebContents or a
 // RenderFrameHost.  Targeting a WebContents means executing the script in the
-// RenderFrameHost returned by WebContents::GetMainFrame(), which is the main
-// frame.  Pass a specific RenderFrameHost to target it. Embedders may declare
-// additional ConvertToRenderFrameHost functions for convenience.
+// RenderFrameHost returned by WebContents::GetPrimaryMainFrame(), which is the
+// main frame.  Pass a specific RenderFrameHost to target it. Embedders may
+// declare additional ConvertToRenderFrameHost functions for convenience.
 class ToRenderFrameHost {
  public:
   template <typename T>

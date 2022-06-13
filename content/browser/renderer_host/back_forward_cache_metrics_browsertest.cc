@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ("success", EvalJs(main_frame, R"(
     new Promise(resolve => {
       navigator.geolocation.getCurrentPosition(
@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
-  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsFencedFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   auto* fenced_frame = fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(), fenced_frame_url1);
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url1);
   NavigationEntryImpl* fenced_frame_entry = FrameTreeNode::From(fenced_frame)
                                                 ->frame_tree()
                                                 ->controller()

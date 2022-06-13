@@ -540,7 +540,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
   void ConnectToAuthenticator() {
     if (authenticator_remote_.is_bound())
       authenticator_remote_.reset();
-    static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+    static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame())
         ->GetWebAuthenticationService(
             authenticator_remote_.BindNewPipeAndPassReceiver());
   }
@@ -849,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        CreatePublicKeyCredentialInvalidRp) {
   CreateParameters parameters;
   parameters.rp_id = "localhost";
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters),
                               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
@@ -870,8 +871,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   ASSERT_TRUE(offset != std::string::npos);
   script.replace(offset, sizeof(kExpectedSubstr) - 1, "null");
 
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
   ASSERT_EQ(kPublicKeyErrorMessage, result);
 }
@@ -882,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        CreatePublicKeyWithInsecureUserIconURL) {
   CreateParameters parameters;
   parameters.user_icon = "http://fidoalliance.co.nz/testimages/catimage.png";
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters),
                               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
@@ -895,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        CreatePublicKeyWithInsecureRpIconURL) {
   CreateParameters parameters;
   parameters.rp_icon = "http://fidoalliance.co.nz/testimages/catimage.png";
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildCreateCallWithParameters(parameters),
                               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
@@ -913,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     CreateParameters parameters;
     parameters.user_verification = "required";
     parameters.timeout = kShortTimeout;
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                 BuildCreateCallWithParameters(parameters),
                                 EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
@@ -931,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 
     CreateParameters parameters;
     parameters.require_resident_key = true;
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                 BuildCreateCallWithParameters(parameters),
                                 EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
@@ -951,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     CreateParameters parameters;
     parameters.algorithm_identifier = "123";
     parameters.timeout = kShortTimeout;
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                 BuildCreateCallWithParameters(parameters),
                                 EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
@@ -971,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     CreateParameters parameters;
     parameters.authenticator_attachment = "platform";
     parameters.timeout = kShortTimeout;
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                 BuildCreateCallWithParameters(parameters),
                                 EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
@@ -994,8 +995,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         "authAbortSignal = authAbortController.signal;" +
         BuildCreateCallWithParameters(parameters);
 
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                                script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
     ASSERT_EQ(kOkMessage, result);
   }
@@ -1013,8 +1014,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "authAbortController.abort();" +
       BuildCreateCallWithParameters(parameters);
 
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
@@ -1042,8 +1043,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       BuildCreateCallWithParameters(parameters) +
       "authAbortController.abort();";
 
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
@@ -1061,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 
     GetParameters parameters;
     parameters.user_verification = "required";
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                 BuildGetCallWithParameters(parameters),
                                 EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
@@ -1083,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "  transports: ['carrierpigeon'],"
       "}]";
   parameters.timeout = kShortTimeout;
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildGetCallWithParameters(parameters),
                               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
@@ -1097,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   InjectVirtualFidoDeviceFactory();
   GetParameters parameters;
   parameters.allow_credentials = "[]";
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(),
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                               BuildGetCallWithParameters(parameters),
                               EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
@@ -1120,8 +1121,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         "authAbortSignal = authAbortController.signal;" +
         BuildGetCallWithParameters(parameters);
 
-    std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                                EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+    std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                                script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                              .ExtractString();
     ASSERT_EQ(kNotAllowedErrorMessage, result);
   }
@@ -1139,8 +1140,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "authAbortController.abort();" +
       BuildGetCallWithParameters(parameters);
 
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
@@ -1167,8 +1168,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "authAbortSignal = authAbortController.signal;" +
       BuildGetCallWithParameters(parameters) + "authAbortController.abort();";
 
-  std::string result = EvalJs(shell()->web_contents()->GetMainFrame(), script,
-                              EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              script, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                            .ExtractString();
   ASSERT_EQ(kAbortErrorMessage, result.substr(0, strlen(kAbortErrorMessage)));
 }
@@ -1184,7 +1185,7 @@ absl::optional<std::string> ExecuteScriptAndExtractPrefixedString(
     const std::string& script,
     const std::string& result_prefix) {
   DOMMessageQueue dom_message_queue(web_contents);
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(script), base::NullCallback());
 
   for (;;) {
@@ -1246,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
         "document.getElementById('test_iframe').setAttribute('allow', '%s'); "
         "'OK';",
         test.allow_value);
-    ASSERT_EQ("OK", EvalJs(shell()->web_contents()->GetMainFrame(),
+    ASSERT_EQ("OK", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                            setAllowJS.c_str()));
 
     if (test.cross_origin) {
@@ -1412,7 +1413,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       "  }]"
       "}";
   ASSERT_EQ(kNotAllowedErrorMessage,
-            EvalJs(shell()->web_contents()->GetMainFrame(),
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                    BuildGetCallWithParameters(parameters),
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
@@ -1567,8 +1568,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBackForwardCacheBrowserTest,
                        WebAuthDisablesBackForwardCache) {
   // Initialisation of the test should disable bfcache.
   EXPECT_TRUE(tester_.IsDisabledForFrameWithReason(
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetMainFrame()->GetRoutingID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       BackForwardCacheDisable::DisabledReason(
           BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI)));
 }

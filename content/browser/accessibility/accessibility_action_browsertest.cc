@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   // Raise the ShowContextMenu event from the second link.
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   // Raise the ShowContextMenu event from the link.
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   // Raise the ShowContextMenu event from the link.
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
-      shell()->web_contents()->GetMainFrame(),
+      shell()->web_contents()->GetPrimaryMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
 
   // Raise the ShowContextMenu event from the link.

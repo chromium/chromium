@@ -238,7 +238,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
     url::Origin origin = url::Origin::Create(url);
 
     uint32_t frame_tree_node_id =
-        web_contents_->GetMainFrame()->GetFrameTreeNodeId();
+        web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
     bool is_primary_main_frame = is_main_frame;
     bool is_outermost_main_frame = is_main_frame;
