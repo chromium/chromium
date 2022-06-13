@@ -6026,7 +6026,7 @@
   {
     "name" : "unified-side-panel",
     "owners": [ "chrome-desktop-ui-sea@google.com", "corising", "pbos", "tluk" ],
-    "expiry_milestone" : 105
+    "expiry_milestone" : 107
   },
   {
     "name": "unsafely-treat-insecure-origin-as-secure",
