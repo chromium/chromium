@@ -4336,7 +4336,7 @@ bool AXObject::IsEditable() const {
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (HasEditableStyle(*node))
+  if (blink::IsEditable(*node))
     return true;
 
   // For the purposes of accessibility, atomic text fields  i.e. input and

@@ -257,7 +257,7 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
       EnclosingNodeOfType(visible_start_of_paragraph.DeepEquivalent(),
                           &IsHTMLListOrBlockquoteElement));
   // We can't outdent if there is no place to go!
-  if (!enclosing_element || !HasEditableStyle(*enclosing_element->parentNode()))
+  if (!enclosing_element || !IsEditable(*enclosing_element->parentNode()))
     return;
 
   // Use InsertListCommand to remove the selection from the list
@@ -316,7 +316,7 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
         // We can't outdent if there is no place to go!
         if (split_point_parent->HasTagName(html_names::kBlockquoteTag) &&
             !split_point->HasTagName(html_names::kBlockquoteTag) &&
-            HasEditableStyle(*split_point_parent->parentNode()))
+            IsEditable(*split_point_parent->parentNode()))
           SplitElement(split_point_parent, split_point);
       }
     }

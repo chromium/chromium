@@ -2064,7 +2064,7 @@ int EditorCommand::IdForHistogram() const {
 
 const StaticRangeVector* EditorCommand::GetTargetRanges() const {
   const Node* target = EventTargetNodeForDocument(frame_->GetDocument());
-  if (!IsSupported() || !frame_ || !target || !HasRichlyEditableStyle(*target))
+  if (!IsSupported() || !frame_ || !target || !IsRichlyEditable(*target))
     return nullptr;
 
   switch (command_->command_type) {

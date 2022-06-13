@@ -282,7 +282,7 @@ bool ClipboardCommands::CanDeleteRange(const EphemeralRange& range) {
   const Node& start_container = *range.StartPosition().ComputeContainerNode();
   const Node& end_container = *range.EndPosition().ComputeContainerNode();
 
-  return HasEditableStyle(start_container) && HasEditableStyle(end_container);
+  return IsEditable(start_container) && IsEditable(end_container);
 }
 
 static DeleteMode ConvertSmartReplaceOptionToDeleteMode(

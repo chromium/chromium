@@ -1259,7 +1259,7 @@ Element* FocusController::FindFocusableElementAfter(
 }
 
 static bool RelinquishesEditingFocus(const Element& element) {
-  DCHECK(HasEditableStyle(element));
+  DCHECK(IsEditable(element));
   return element.GetDocument().GetFrame() && RootEditableElement(element);
 }
 

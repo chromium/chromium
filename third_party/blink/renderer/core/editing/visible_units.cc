@@ -115,8 +115,8 @@ static PositionType CanonicalPosition(const PositionType& position) {
   // editable body.
   Node* const node = position.ComputeContainerNode();
   if (node && node->GetDocument().documentElement() == node &&
-      !HasEditableStyle(*node) && node->GetDocument().body() &&
-      HasEditableStyle(*node->GetDocument().body()))
+      !IsEditable(*node) && node->GetDocument().body() &&
+      IsEditable(*node->GetDocument().body()))
     return next.IsNotNull() ? next : prev;
 
   Element* const editing_root = RootEditableElementOf(position);
@@ -242,7 +242,7 @@ AdjustForwardPositionToAvoidCrossingEditingBoundariesTemplate(
   if (!highest_root) {
     const Node* last_non_editable = anchor.ComputeContainerNode();
     for (const Node& ancestor : Strategy::AncestorsOf(*last_non_editable)) {
-      if (HasEditableStyle(ancestor)) {
+      if (IsEditable(ancestor)) {
         return PositionWithAffinityTemplate<Strategy>(
             PositionTemplate<Strategy>::LastPositionInNode(*last_non_editable));
       }
@@ -292,8 +292,7 @@ static Node* ParentEditingBoundary(const PositionTemplate<Strategy>& position) {
   Node* boundary = position.ComputeContainerNode();
   while (boundary != document_element &&
          NonShadowBoundaryParentNode<Strategy>(boundary) &&
-         HasEditableStyle(*anchor_node) ==
-             HasEditableStyle(*Strategy::Parent(*boundary)))
+         IsEditable(*anchor_node) == IsEditable(*Strategy::Parent(*boundary)))
     boundary = NonShadowBoundaryParentNode<Strategy>(boundary);
 
   return boundary;
@@ -656,7 +655,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
   DCHECK(adjusted_position.IsNotNull()) << position;
 #endif
   PositionIteratorAlgorithm<Strategy> last_visible(adjusted_position);
-  const bool start_editable = HasEditableStyle(*start_node);
+  const bool start_editable = IsEditable(*start_node);
   Node* last_node = start_node;
   bool boundary_crossed = false;
   absl::optional<WritingMode> writing_mode;
@@ -664,10 +663,10 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
        !current_pos.AtStart(); current_pos.Decrement()) {
     Node* current_node = current_pos.GetNode();
     // Don't check for an editability change if we haven't moved to a different
-    // node, to avoid the expense of computing hasEditableStyle().
+    // node, to avoid the expense of computing IsEditable().
     if (current_node != last_node) {
       // Don't change editability.
-      const bool current_editable = HasEditableStyle(*current_node);
+      const bool current_editable = IsEditable(*current_node);
       if (start_editable != current_editable) {
         if (rule == kCannotCrossEditingBoundary)
           break;
@@ -806,7 +805,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
                 position.AnchorNode(),
                 Strategy::CaretMaxOffset(*position.AnchorNode()))
           : position);
-  const bool start_editable = HasEditableStyle(*start_node);
+  const bool start_editable = IsEditable(*start_node);
   Node* last_node = start_node;
   bool boundary_crossed = false;
   absl::optional<WritingMode> writing_mode;
@@ -814,10 +813,10 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
        !current_pos.AtEnd(); current_pos.Increment()) {
     Node* current_node = current_pos.GetNode();
     // Don't check for an editability change if we haven't moved to a different
-    // node, to avoid the expense of computing hasEditableStyle().
+    // node, to avoid the expense of computing IsEditable().
     if (current_node != last_node) {
       // Don't change editability.
-      const bool current_editable = HasEditableStyle(*current_node);
+      const bool current_editable = IsEditable(*current_node);
       if (start_editable != current_editable) {
         if (rule == kCannotCrossEditingBoundary)
           break;
@@ -929,19 +928,18 @@ static bool AtEditingBoundary(const PositionTemplate<Strategy> positions) {
   PositionTemplate<Strategy> next_position =
       MostForwardCaretPosition(positions, kCanCrossEditingBoundary);
   if (positions.AtFirstEditingPositionForNode() && next_position.IsNotNull() &&
-      !HasEditableStyle(*next_position.AnchorNode()))
+      !IsEditable(*next_position.AnchorNode()))
     return true;
 
   PositionTemplate<Strategy> prev_position =
       MostBackwardCaretPosition(positions, kCanCrossEditingBoundary);
   if (positions.AtLastEditingPositionForNode() && prev_position.IsNotNull() &&
-      !HasEditableStyle(*prev_position.AnchorNode()))
+      !IsEditable(*prev_position.AnchorNode()))
     return true;
 
   return next_position.IsNotNull() &&
-         !HasEditableStyle(*next_position.AnchorNode()) &&
-         prev_position.IsNotNull() &&
-         !HasEditableStyle(*prev_position.AnchorNode());
+         !IsEditable(*next_position.AnchorNode()) &&
+         prev_position.IsNotNull() && !IsEditable(*prev_position.AnchorNode());
 }
 
 template <typename Strategy>
@@ -1008,10 +1006,10 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))
         return position.AtFirstEditingPositionForNode();
-      return HasEditableStyle(*anchor_node) && AtEditingBoundary(position);
+      return IsEditable(*anchor_node) && AtEditingBoundary(position);
     }
   } else {
-    return HasEditableStyle(*anchor_node) && AtEditingBoundary(position);
+    return IsEditable(*anchor_node) && AtEditingBoundary(position);
   }
 
   return false;

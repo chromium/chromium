@@ -786,9 +786,10 @@ void LocalFrameMojoHandler::ClearFocusedElement() {
   // processing keyboard events even though focus has been moved to the page and
   // keystrokes get eaten as a result.
   document->UpdateStyleAndLayoutTree();
-  if (HasEditableStyle(*old_focused_element) ||
-      old_focused_element->IsTextControl())
+  if (IsEditable(*old_focused_element) ||
+      old_focused_element->IsTextControl()) {
     frame_->Selection().Clear();
+  }
 }
 
 void LocalFrameMojoHandler::GetResourceSnapshotForWebBundle(

@@ -88,7 +88,7 @@ bool LayoutBox::CanBeProgrammaticallyScrolled() const {
   if (ScrollsOverflow() && has_scrollable_overflow)
     return true;
 
-  return node && HasEditableStyle(*node);
+  return node && IsEditable(*node);
 }
 
 const NGLayoutResult* LayoutBox::CachedLayoutResult(

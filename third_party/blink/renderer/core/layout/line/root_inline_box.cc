@@ -417,7 +417,7 @@ LineLayoutBlockFlow RootInlineBox::Block() const {
 
 static bool IsEditableLeaf(InlineBox* leaf) {
   return leaf && leaf->GetLineLayoutItem().GetNode() &&
-         HasEditableStyle(*leaf->GetLineLayoutItem().GetNode());
+         IsEditable(*leaf->GetLineLayoutItem().GetNode());
 }
 
 const LayoutObject* RootInlineBox::ClosestLeafChildForPoint(

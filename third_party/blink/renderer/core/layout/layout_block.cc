@@ -1388,8 +1388,8 @@ static inline bool IsEditingBoundary(const LayoutObject* ancestor,
   DCHECK(child.NonPseudoNode());
   return !ancestor || !ancestor->Parent() ||
          (ancestor->HasLayer() && IsA<LayoutView>(ancestor->Parent())) ||
-         HasEditableStyle(*ancestor->NonPseudoNode()) ==
-             HasEditableStyle(*child.NonPseudoNode());
+         IsEditable(*ancestor->NonPseudoNode()) ==
+             IsEditable(*child.NonPseudoNode());
 }
 
 // FIXME: This function should go on LayoutObject.

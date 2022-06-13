@@ -6831,7 +6831,7 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
 }
 
 bool Element::MayTriggerVirtualKeyboard() const {
-  return HasEditableStyle(*this);
+  return IsEditable(*this);
 }
 
 bool Element::matches(const AtomicString& selectors,

@@ -57,7 +57,7 @@ void WrapContentsInDummySpanCommand::DoApply(EditingState*) {
 void WrapContentsInDummySpanCommand::DoUnapply() {
   DCHECK(element_);
 
-  if (!dummy_span_ || !HasEditableStyle(*element_))
+  if (!dummy_span_ || !IsEditable(*element_))
     return;
 
   NodeVector children;
@@ -72,7 +72,7 @@ void WrapContentsInDummySpanCommand::DoUnapply() {
 void WrapContentsInDummySpanCommand::DoReapply() {
   DCHECK(element_);
 
-  if (!dummy_span_ || !HasEditableStyle(*element_))
+  if (!dummy_span_ || !IsEditable(*element_))
     return;
 
   ExecuteApply();

@@ -511,7 +511,7 @@ bool HitTestResult::IsContentEditable() const {
   if (auto* input = DynamicTo<HTMLInputElement>(*inner_node_))
     return !input->IsDisabledOrReadOnly() && input->IsTextField();
 
-  return HasEditableStyle(*inner_node_);
+  return IsEditable(*inner_node_);
 }
 
 std::tuple<bool, ListBasedHitTestBehavior>

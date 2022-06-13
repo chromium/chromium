@@ -64,7 +64,7 @@ bool WebElement::IsEditable() const {
   const Element* element = ConstUnwrap<Element>();
 
   element->GetDocument().UpdateStyleAndLayoutTree();
-  if (HasEditableStyle(*element))
+  if (blink::IsEditable(*element))
     return true;
 
   if (auto* text_control = ToTextControlOrNull(element)) {

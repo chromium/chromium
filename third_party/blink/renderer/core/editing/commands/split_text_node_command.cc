@@ -47,7 +47,7 @@ SplitTextNodeCommand::SplitTextNodeCommand(Text* text, int offset)
 
 void SplitTextNodeCommand::DoApply(EditingState*) {
   ContainerNode* parent = text2_->parentNode();
-  if (!parent || !HasEditableStyle(*parent))
+  if (!parent || !IsEditable(*parent))
     return;
 
   String prefix_text =
@@ -63,7 +63,7 @@ void SplitTextNodeCommand::DoApply(EditingState*) {
 }
 
 void SplitTextNodeCommand::DoUnapply() {
-  if (!text1_ || !HasEditableStyle(*text1_))
+  if (!text1_ || !IsEditable(*text1_))
     return;
 
   DCHECK_EQ(text1_->GetDocument(), GetDocument());
@@ -82,7 +82,7 @@ void SplitTextNodeCommand::DoReapply() {
     return;
 
   ContainerNode* parent = text2_->parentNode();
-  if (!parent || !HasEditableStyle(*parent))
+  if (!parent || !IsEditable(*parent))
     return;
 
   GetDocument().Markers().MoveMarkers(*text2_, offset_, *text1_);

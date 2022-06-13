@@ -376,7 +376,7 @@ bool ScrollAnchor::FindAnchorInPriorityCandidates() {
   LayoutObject* candidate = nullptr;
   ExamineResult result{kSkip};
   auto* focused_element = document.FocusedElement();
-  if (focused_element && HasEditableStyle(*focused_element)) {
+  if (focused_element && IsEditable(*focused_element)) {
     candidate = PriorityCandidateFromNode(focused_element);
     if (candidate) {
       result = ExaminePriorityCandidate(candidate);

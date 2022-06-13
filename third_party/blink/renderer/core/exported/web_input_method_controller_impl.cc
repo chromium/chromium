@@ -90,7 +90,7 @@ bool WebInputMethodControllerImpl::SetComposition(
   if (range.IsNotNull()) {
     Node* node = range.StartPosition().ComputeContainerNode();
     GetFrame()->GetDocument()->UpdateStyleAndLayoutTree();
-    if (!node || !HasEditableStyle(*node))
+    if (!node || !IsEditable(*node))
       return false;
   }
 

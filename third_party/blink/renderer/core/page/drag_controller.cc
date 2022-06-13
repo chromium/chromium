@@ -497,8 +497,8 @@ DragOperation DragController::OperationForLoad(DragData* drag_data,
   Document* doc = local_root.DocumentAtPoint(
       PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
 
-  if (doc && (did_initiate_drag_ || IsA<PluginDocument>(doc) ||
-              HasEditableStyle(*doc)))
+  if (doc &&
+      (did_initiate_drag_ || IsA<PluginDocument>(doc) || IsEditable(*doc)))
     return DragOperation::kNone;
   return GetDragOperation(drag_data);
 }
@@ -753,9 +753,9 @@ bool DragController::CanProcessDrag(DragData* drag_data,
     return true;
 
   if (auto* plugin = DynamicTo<HTMLPlugInElement>(result.InnerNode())) {
-    if (!plugin->CanProcessDrag() && !HasEditableStyle(*result.InnerNode()))
+    if (!plugin->CanProcessDrag() && !IsEditable(*result.InnerNode()))
       return false;
-  } else if (!HasEditableStyle(*result.InnerNode())) {
+  } else if (!IsEditable(*result.InnerNode())) {
     return false;
   }
 
@@ -836,7 +836,7 @@ bool SelectTextInsteadOfDrag(const Node& node) {
 
   // Editable elements loose their draggability,
   // see https://github.com/whatwg/html/issues/3114.
-  if (HasEditableStyle(node))
+  if (IsEditable(node))
     return true;
 
   for (Node& ancestor_node : NodeTraversal::InclusiveAncestorsOf(node)) {
@@ -936,7 +936,7 @@ static void PrepareDataTransferForImageDrag(LocalFrame* source,
                                             const KURL& image_url,
                                             const String& label) {
   node->GetDocument().UpdateStyleAndLayoutTree();
-  if (HasRichlyEditableStyle(*node)) {
+  if (IsRichlyEditable(*node)) {
     // TODO(editing-dev): We should use |EphemeralRange| instead of |Range|.
     Range* range = source->GetDocument()->createRange();
     range->selectNode(node, ASSERT_NO_EXCEPTION);

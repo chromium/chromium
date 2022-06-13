@@ -519,11 +519,11 @@ bool FrameSelection::SelectionHasFocus() const {
       ComputeVisibleSelectionInFlatTree().End() >= focused_position)
     return true;
 
-  bool has_editable_style = HasEditableStyle(*current);
+  bool is_editable = IsEditable(*current);
   do {
     // If the selection is within an editable sub tree and that sub tree
     // doesn't have focus, the selection doesn't have focus either.
-    if (has_editable_style && !HasEditableStyle(*current))
+    if (is_editable && !IsEditable(*current))
       return false;
 
     // Selection has focus if its sub tree has focus.
@@ -721,7 +721,7 @@ void FrameSelection::SelectFrameElementInParentIfFullySelected() {
 
   // This method's purpose is it to make it easier to select iframes (in order
   // to delete them).  Don't do anything if the iframe isn't deletable.
-  if (!blink::HasEditableStyle(*owner_element_parent))
+  if (!blink::IsEditable(*owner_element_parent))
     return;
 
   // Focus on the parent frame, and then select from before this element to
@@ -1101,7 +1101,7 @@ void FrameSelection::SetSelectionFromNone() {
 
   Document* document = frame_->GetDocument();
   if (!ComputeVisibleSelectionInDOMTreeDeprecated().IsNone() ||
-      !(blink::HasEditableStyle(*document)))
+      !(blink::IsEditable(*document)))
     return;
 
   Element* document_element = document->documentElement();

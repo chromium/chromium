@@ -608,19 +608,19 @@ class EditingBoundaryAdjuster final {
   static bool IsEditingBoundary(const Node& node,
                                 const Node& previous_node,
                                 bool is_previous_node_editable) {
-    return HasEditableStyle(node) != is_previous_node_editable;
+    return IsEditable(node) != is_previous_node_editable;
   }
 
   // Returns the highest ancestor of |start| along the parent chain, so that
   // all node in between them including the ancestor have the same
-  // HasEditableStyle() bit with |start|. Note that it only consider the <body>
+  // IsEditable() bit with |start|. Note that it only consider the <body>
   // subtree.
   template <typename Strategy>
   static const Node& RootBoundaryElementOf(const Node& start) {
     if (IsA<HTMLBodyElement>(start))
       return start;
 
-    const bool is_editable = HasEditableStyle(start);
+    const bool is_editable = IsEditable(start);
     const Node* result = &start;
     for (const Node& ancestor : Strategy::AncestorsOf(start)) {
       if (IsEditingBoundary<Strategy>(ancestor, *result, is_editable))
@@ -672,7 +672,7 @@ class EditingBoundaryAdjuster final {
     // extent in |base_rbe| subtree that RBE(ancestor) != |base_rbe|.
     const Node* boundary = &extent_rbe;
     const Node* previous_ancestor = &extent_rbe;
-    bool previous_editable = HasEditableStyle(extent_rbe);
+    bool previous_editable = IsEditable(extent_rbe);
     for (const Node& ancestor : Strategy::AncestorsOf(extent_rbe)) {
       if (IsEditingBoundary<Strategy>(ancestor, *previous_ancestor,
                                       previous_editable))
@@ -680,7 +680,7 @@ class EditingBoundaryAdjuster final {
 
       if (ancestor == base_rbe || IsA<HTMLBodyElement>(ancestor))
         break;
-      previous_editable = HasEditableStyle(ancestor);
+      previous_editable = IsEditable(ancestor);
       previous_ancestor = &ancestor;
     }
 
@@ -701,7 +701,7 @@ EditingBoundaryAdjuster::IsEditingBoundary<EditingInFlatTreeStrategy>(
   if (IsShadowHost(&node) && is_previous_node_editable &&
       previous_node.OwnerShadowHost() == &node)
     return true;
-  return HasEditableStyle(node) != is_previous_node_editable;
+  return IsEditable(node) != is_previous_node_editable;
 }
 
 SelectionInDOMTree

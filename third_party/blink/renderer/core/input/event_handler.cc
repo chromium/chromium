@@ -441,7 +441,7 @@ static bool IsSubmitImage(const Node* node) {
 bool EventHandler::UsesHandCursor(const Node* node) {
   if (!node)
     return false;
-  return ((node->IsLink() || IsSubmitImage(node)) && !HasEditableStyle(*node));
+  return ((node->IsLink() || IsSubmitImage(node)) && !IsEditable(*node));
 }
 
 void EventHandler::CursorUpdateTimerFired(TimerBase*) {
@@ -520,7 +520,7 @@ bool EventHandler::ShouldShowIBeamForNode(const Node* node,
   if (node->IsTextNode() && (node->CanStartSelection() || result.IsOverLink()))
     return true;
 
-  return HasEditableStyle(*node);
+  return IsEditable(*node);
 }
 
 absl::optional<ui::Cursor> EventHandler::SelectCursor(

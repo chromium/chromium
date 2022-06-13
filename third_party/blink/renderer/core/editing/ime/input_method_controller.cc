@@ -93,7 +93,7 @@ AtomicString GetInputModeAttribute(Element* element) {
     query_attribute = true;
   } else {
     element->GetDocument().UpdateStyleAndLayoutTree();
-    if (HasEditableStyle(*element))
+    if (IsEditable(*element))
       query_attribute = true;
   }
 
@@ -116,7 +116,7 @@ AtomicString GetEnterKeyHintAttribute(Element* element) {
     query_attribute = true;
   } else {
     element->GetDocument().UpdateStyleAndLayoutTree();
-    if (HasEditableStyle(*element))
+    if (IsEditable(*element))
       query_attribute = true;
   }
 
@@ -1814,7 +1814,7 @@ WebTextInputType InputMethodController::TextInputType() const {
   }
 
   GetDocument().UpdateStyleAndLayoutTree();
-  if (HasEditableStyle(*element))
+  if (IsEditable(*element))
     return kWebTextInputTypeContentEditable;
 
   return kWebTextInputTypeNone;

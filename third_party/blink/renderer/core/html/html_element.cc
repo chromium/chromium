@@ -1773,7 +1773,7 @@ void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
   // <textarea>) or has contentEditable attribute on, we should enter a space or
   // newline even in spatial navigation mode instead of handling it as a "click"
   // action.
-  if (IsTextControl() || HasEditableStyle(*this))
+  if (IsTextControl() || IsEditable(*this))
     return;
   int char_code = event.charCode();
   if (char_code == '\r' || char_code == ' ') {

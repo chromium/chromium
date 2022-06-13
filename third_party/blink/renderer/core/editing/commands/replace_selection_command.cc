@@ -190,12 +190,12 @@ ReplacementFragment::ReplacementFragment(Document* document,
       !(shadow_ancestor_element && shadow_ancestor_element->GetLayoutObject() &&
         shadow_ancestor_element->GetLayoutObject()
             ->IsTextControlIncludingNG()) &&
-      HasRichlyEditableStyle(*editable_root)) {
+      IsRichlyEditable(*editable_root)) {
     RemoveInterchangeNodes(fragment_);
     return;
   }
 
-  if (!HasRichlyEditableStyle(*editable_root)) {
+  if (!IsRichlyEditable(*editable_root)) {
     bool is_plain_text = true;
     for (Node& node : NodeTraversal::ChildrenOf(*fragment_)) {
       if (IsInterchangeHTMLBRElement(&node) && &node == fragment_->lastChild())
@@ -245,7 +245,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
   // Give the root a chance to change the text.
   auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
   editable_root->DefaultEventHandler(*evt);
-  if (text != evt->GetText() || !HasRichlyEditableStyle(*editable_root)) {
+  if (text != evt->GetText() || !IsRichlyEditable(*editable_root)) {
     RestoreAndRemoveTestRenderingNodesToFragment(holder);
 
     // TODO(editing-dev): Use of UpdateStyleAndLayout
@@ -653,9 +653,8 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
       continue;
     }
 
-    if (element->parentNode() &&
-        HasRichlyEditableStyle(*element->parentNode()) &&
-        HasRichlyEditableStyle(*element)) {
+    if (element->parentNode() && IsRichlyEditable(*element->parentNode()) &&
+        IsRichlyEditable(*element)) {
       RemoveElementAttribute(element, html_names::kContenteditableAttr);
     }
   }
@@ -762,7 +761,7 @@ void ReplaceSelectionCommand::MoveElementOutOfAncestor(
     Element* ancestor,
     EditingState* editing_state) {
   DCHECK(element);
-  if (!HasEditableStyle(*ancestor->parentNode()))
+  if (!IsEditable(*ancestor->parentNode()))
     return;
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
@@ -1385,7 +1384,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   if ((IsHTMLListElement(inserted_nodes.RefNode()) ||
        (IsHTMLListElement(inserted_nodes.RefNode()->firstChild()))) &&
       block_start && block_start->GetLayoutObject()->IsListItemIncludingNG() &&
-      HasEditableStyle(*block_start->parentNode())) {
+      IsEditable(*block_start->parentNode())) {
     inserted_nodes.SetRefNode(InsertAsListItems(
         To<HTMLElement>(inserted_nodes.RefNode()), block_start, insertion_pos,
         inserted_nodes, editing_state));

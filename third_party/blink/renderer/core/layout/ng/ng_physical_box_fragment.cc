@@ -1614,9 +1614,9 @@ NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
     ancestor = ancestor->Parent();
   if (!ancestor || !ancestor->Parent() ||
       (ancestor->HasLayer() && ancestor->Parent()->IsLayoutView()) ||
-      HasEditableStyle(*ancestor->NonPseudoNode()) ==
-          HasEditableStyle(*child_node))
+      IsEditable(*ancestor->NonPseudoNode()) == IsEditable(*child_node)) {
     return child.PositionForPoint(point_in_child);
+  }
 
   // If editiability isn't the same in the ancestor and the child, then we
   // return a visible position just before or after the child, whichever side is

@@ -405,8 +405,8 @@ bool SelectionController::HandleSingleClick(
   }
 
   bool is_handle_visible = false;
-  const bool has_editable_style = HasEditableStyle(*inner_node);
-  if (has_editable_style) {
+  const bool is_editable = IsEditable(*inner_node);
+  if (is_editable) {
     const bool is_text_box_empty =
         !RootEditableElement(*inner_node)->HasChildren();
     const bool not_left_click =
@@ -434,7 +434,7 @@ bool SelectionController::HandleSingleClick(
 
   // SelectionControllerTest_SetCaretAtHitTestResultWithDisconnectedPosition
   // makes the IsValidFor() check fail.
-  if (has_editable_style && event.Event().FromTouch() &&
+  if (is_editable && event.Event().FromTouch() &&
       position_to_use.IsValidFor(*frame_->GetDocument())) {
     frame_->GetTextSuggestionController().HandlePotentialSuggestionTap(
         position_to_use.GetPosition());
@@ -646,7 +646,7 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
     const String word = PlainText(
         range, TextIteratorBehavior::Builder()
                    .SetEmitsObjectReplacementCharacter(
-                       HasEditableStyle(*range.StartPosition().AnchorNode()))
+                       IsEditable(*range.StartPosition().AnchorNode()))
                    .Build());
     if (word.length() >= 1 && word[0] == '\n') {
       // We should not select word from end of line, e.g.
@@ -1090,7 +1090,7 @@ bool SelectionController::HandleMouseReleaseEvent(
 
     SelectionInFlatTree::Builder builder;
     Node* node = event.InnerNode();
-    if (node && node->GetLayoutObject() && HasEditableStyle(*node)) {
+    if (node && node->GetLayoutObject() && IsEditable(*node)) {
       const PositionInFlatTreeWithAffinity pos =
           CreateVisiblePosition(
               PositionWithAffinityOfHitTestResult(event.GetHitTestResult()))
@@ -1166,7 +1166,7 @@ bool SelectionController::HandleGestureLongPress(
 
   Node* inner_node = hit_test_result.InnerPossiblyPseudoNode();
   inner_node->GetDocument().UpdateStyleAndLayoutTree();
-  bool inner_node_is_selectable = HasEditableStyle(*inner_node) ||
+  bool inner_node_is_selectable = IsEditable(*inner_node) ||
                                   inner_node->IsTextNode() ||
                                   inner_node->CanStartSelection();
   if (!inner_node_is_selectable)

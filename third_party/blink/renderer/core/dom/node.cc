@@ -1667,7 +1667,7 @@ bool Node::NeedsLayoutSubtreeUpdate() const {
 bool Node::CanStartSelection() const {
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this))
     GetDocument().UpdateStyleAndLayoutTreeForNode(this);
-  if (HasEditableStyle(*this))
+  if (IsEditable(*this))
     return true;
 
   if (GetLayoutObject()) {
@@ -1693,7 +1693,7 @@ bool Node::IsRichlyEditableForAccessibility() const {
       << GetDocument().Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  return HasRichlyEditableStyle(*this);
+  return IsRichlyEditable(*this);
 }
 
 void Node::NotifyPriorityScrollAnchorStatusChanged() {
@@ -2326,7 +2326,7 @@ String Node::ToString() const {
   DumpAttributeDesc(*this, html_names::kIdAttr, builder);
   DumpAttributeDesc(*this, html_names::kClassAttr, builder);
   DumpAttributeDesc(*this, html_names::kStyleAttr, builder);
-  if (HasEditableStyle(*this))
+  if (IsEditable(*this))
     builder.Append(" (editable)");
   if (GetDocument().FocusedElement() == this)
     builder.Append(" (focused)");
@@ -3050,7 +3050,7 @@ bool Node::WillRespondToMouseClickEvents() {
   if (IsDisabledFormControl(this))
     return false;
   GetDocument().UpdateStyleAndLayoutTree();
-  return HasEditableStyle(*this) ||
+  return IsEditable(*this) ||
          HasAnyEventListeners(event_util::MouseButtonEventTypes());
 }
 

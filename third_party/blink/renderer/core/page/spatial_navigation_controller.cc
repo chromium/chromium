@@ -187,7 +187,7 @@ bool SpatialNavigationController::HandleArrowKeyboardEvent(
   // suggestions.
   if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
     if (focused) {
-      if (HasEditableStyle(*focused) || focused->IsTextControl())
+      if (IsEditable(*focused) || focused->IsTextControl())
         return true;
     }
   }

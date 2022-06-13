@@ -835,7 +835,7 @@ Node* WebViewImpl::BestTapNode(
   }
 
   // Editable nodes should not be highlighted (e.g., <input>)
-  if (HasEditableStyle(*best_touch_node))
+  if (IsEditable(*best_touch_node))
     return nullptr;
 
   Node* hand_cursor_ancestor = FindLinkHighlightAncestor(best_touch_node);
@@ -1871,7 +1871,7 @@ void WebViewImpl::SetPageFocus(bool enable) {
         focused_frame->GetDocument()->UpdateStyleAndLayoutTree();
         if (element->IsTextControl()) {
           element->UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
-        } else if (HasEditableStyle(*element)) {
+        } else if (IsEditable(*element)) {
           // updateFocusAppearance() selects all the text of
           // contentseditable DIVs. So we set the selection explicitly
           // instead. Note that this has the side effect of moving the

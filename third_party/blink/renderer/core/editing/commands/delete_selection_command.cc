@@ -477,7 +477,7 @@ bool DeleteSelectionCommand::HandleSpecialCaseBRDelete(
 static Position FirstEditablePositionInNode(Node* node) {
   DCHECK(node);
   Node* next = node;
-  while (next && !HasEditableStyle(*next))
+  while (next && !IsEditable(*next))
     next = NodeTraversal::Next(*next, node);
   return next ? FirstPositionInOrBeforeNode(*next) : Position();
 }
@@ -494,7 +494,7 @@ void DeleteSelectionCommand::RemoveNode(
                                     node->IsDescendantOf(end_root_.Get()))) {
     // If a node is not in both the start and end editable roots, remove it only
     // if its inside an editable region.
-    if (!HasEditableStyle(*node->parentNode())) {
+    if (!IsEditable(*node->parentNode())) {
       // Don't remove non-editable atomic nodes.
       if (!node->hasChildren())
         return;
@@ -625,7 +625,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
           node_to_be_removed->IsDescendantOf(end_root_.Get()))) {
       // If a node is not in both the start and end editable roots, remove it
       // only if its inside an editable region.
-      if (!HasEditableStyle(*node_to_be_removed->parentNode())) {
+      if (!IsEditable(*node_to_be_removed->parentNode())) {
         // Don't remove non-editable atomic nodes.
         if (!node_to_be_removed->hasChildren())
           continue;
