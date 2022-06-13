@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/webui/diagnostics_ui/url_constants.h"
+#include "ash/webui/help_app_ui/url_constants.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -120,6 +121,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
   }
 
   GURL diagnostics_url_ = GURL(ash::kChromeUIDiagnosticsAppUrl);
+  GURL explore_url_ = GURL(ash::kChromeUIHelpAppURL);
 };
 
 // Test GetApplicationLocale returns a valid locale.
@@ -251,6 +253,23 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenDiagnosticsApp) {
 
   EXPECT_TRUE(app_browser);
   EXPECT_EQ(diagnostics_url_, FindActiveUrl(app_browser));
+}
+
+// Test if Explore app is opened.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenExploreApp) {
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+
+  feedback_delegate_.OpenExploreApp();
+
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      browser()->profile(), ash::SystemWebAppType::HELP);
+
+  EXPECT_TRUE(app_browser);
+  EXPECT_EQ(explore_url_, FindActiveUrl(app_browser));
 }
 
 }  // namespace ash

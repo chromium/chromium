@@ -59,6 +59,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
   }
 
   void OpenDiagnosticsApp() override {}
+
+  void OpenExploreApp() override {}
 };
 
 class FeedbackServiceProviderTest : public testing::Test {

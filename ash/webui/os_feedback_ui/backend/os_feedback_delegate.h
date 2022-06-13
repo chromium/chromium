@@ -41,6 +41,8 @@ class OsFeedbackDelegate {
                           SendReportCallback callback) = 0;
   // Open Diagnostics app.
   virtual void OpenDiagnosticsApp() = 0;
+  // Open Explore app.
+  virtual void OpenExploreApp() = 0;
 };
 
 }  // namespace ash

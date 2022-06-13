@@ -127,6 +127,9 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
       case 'diagnostics':
         this.feedbackServiceProvider_.openDiagnosticsApp();
         break;
+      case 'explore':
+        this.feedbackServiceProvider_.openExploreApp();
+        break;
       default:
         console.warn('unexpected caller id: ', e.target.id);
     }

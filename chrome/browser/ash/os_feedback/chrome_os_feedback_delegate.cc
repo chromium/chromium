@@ -206,4 +206,8 @@ void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
                                    ash::SystemWebAppType::DIAGNOSTICS);
 }
 
+void ChromeOsFeedbackDelegate::OpenExploreApp() {
+  web_app::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP);
+}
+
 }  // namespace ash

@@ -128,5 +128,7 @@ interface FeedbackServiceProvider {
   // Sends a feedback report and returns its status.
   SendReport(Report report) => (SendReportStatus status);
   // Open Diagnostics app.
-  OpenDiagnosticsApp() => ();
+  OpenDiagnosticsApp();
+  // Open Explore app.
+  OpenExploreApp();
 };

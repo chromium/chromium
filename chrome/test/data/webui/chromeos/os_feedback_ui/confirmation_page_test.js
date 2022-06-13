@@ -225,4 +225,16 @@ export function confirmationPageTest() {
 
     assertEquals(1, feedbackServiceProvider.getOpenDiagnosticsAppCallCount());
   });
+
+  // Test clicking explore app link.
+  test('openExploreApp', async () => {
+    await initializePage();
+
+    assertEquals(0, feedbackServiceProvider.getOpenExploreAppCallCount());
+
+    const link = getElement(page, '#explore');
+    link.click();
+
+    assertEquals(1, feedbackServiceProvider.getOpenExploreAppCallCount());
+  });
 }
