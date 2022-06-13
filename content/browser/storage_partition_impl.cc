@@ -387,23 +387,19 @@ void ClearLocalStorageOnUIThread(
     const scoped_refptr<DOMStorageContextWrapper>& dom_storage_context,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
     StoragePartition::OriginMatcherFunction origin_matcher,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!storage_origin.is_empty()) {
-    bool can_delete = !origin_matcher ||
-                      origin_matcher.Run(url::Origin::Create(storage_origin),
-                                         special_storage_policy.get());
+  if (!storage_key.origin().opaque()) {
+    bool can_delete =
+        !origin_matcher ||
+        origin_matcher.Run(storage_key.origin(), special_storage_policy.get());
     if (can_delete) {
-      dom_storage_context->DeleteLocalStorage(
-          // TODO(https://crbug.com/1199077): Pass the real StorageKey
-          // when StoragePartitionImpl is converted.
-          blink::StorageKey(url::Origin::Create(storage_origin)),
-          std::move(callback));
+      dom_storage_context->DeleteLocalStorage(storage_key, std::move(callback));
     } else {
       std::move(callback).Run();
     }
@@ -2465,7 +2461,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   if (remove_mask_ & REMOVE_DATA_MASK_LOCAL_STORAGE) {
     ClearLocalStorageOnUIThread(
         base::WrapRefCounted(dom_storage_context), storage_policy_ref,
-        origin_matcher, storage_origin, perform_storage_cleanup, begin, end,
+        origin_matcher, blink::StorageKey(url::Origin::Create(storage_origin)),
+        perform_storage_cleanup, begin, end,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kLocalStorage)));
 
