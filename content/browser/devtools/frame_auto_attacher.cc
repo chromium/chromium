@@ -134,7 +134,7 @@ void FrameAutoAttacher::SetRenderFrameHost(
 
 void FrameAutoAttacher::DidFinishNavigation(
     NavigationRequest* navigation_request) {
-  if (!render_frame_host_)
+  if (!auto_attach() || !render_frame_host_)
     return;
 
   if (navigation_request->frame_tree_node() ==
@@ -158,7 +158,11 @@ void FrameAutoAttacher::DidFinishNavigation(
   // navigation started, so no throttle was installed. We auto-attach them
   // here instead (note that we cannot honor |wait_for_debugger_on_start_| in
   // this case).
-  AutoAttachToFrame(navigation_request, false);
+  constexpr bool wait_for_debugger_on_start = false;
+  scoped_refptr<RenderFrameDevToolsAgentHost> agent_host =
+      HandleNavigation(navigation_request, wait_for_debugger_on_start);
+  if (agent_host)
+    DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start);
 }
 
 void FrameAutoAttacher::UpdatePages() {

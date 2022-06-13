@@ -155,7 +155,7 @@ bool RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
 }
 
 // static
-scoped_refptr<DevToolsAgentHost>
+scoped_refptr<RenderFrameDevToolsAgentHost>
 RenderFrameDevToolsAgentHost::CreateForLocalRootOrEmbeddedPageNavigation(
     NavigationRequest* request) {
   // Note that this method does not use FrameTreeNode::current_frame_host(),
@@ -170,8 +170,8 @@ RenderFrameDevToolsAgentHost::CreateForLocalRootOrEmbeddedPageNavigation(
 }
 
 // static
-scoped_refptr<DevToolsAgentHost> RenderFrameDevToolsAgentHost::FindForDangling(
-    FrameTreeNode* frame_tree_node) {
+scoped_refptr<RenderFrameDevToolsAgentHost>
+RenderFrameDevToolsAgentHost::FindForDangling(FrameTreeNode* frame_tree_node) {
   return FindAgentHost(frame_tree_node);
 }
 

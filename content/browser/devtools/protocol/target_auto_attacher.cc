@@ -30,12 +30,10 @@ bool TargetAutoAttacher::wait_for_debugger_on_start() const {
   return !clients_requesting_wait_for_debugger_.empty();
 }
 
-DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
-    NavigationRequest* navigation_request,
-    bool wait_for_debugger_on_start) {
-  if (!auto_attach())
-    return nullptr;
-
+scoped_refptr<RenderFrameDevToolsAgentHost>
+TargetAutoAttacher::HandleNavigation(NavigationRequest* navigation_request,
+                                     bool wait_for_debugger_on_start) {
+  DCHECK(auto_attach());
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   RenderFrameHostImpl* new_host = navigation_request->GetRenderFrameHost();
 
@@ -45,7 +43,7 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
   if (!new_host)
     return nullptr;
 
-  scoped_refptr<DevToolsAgentHost> agent_host =
+  scoped_refptr<RenderFrameDevToolsAgentHost> agent_host =
       RenderFrameDevToolsAgentHost::FindForDangling(frame_tree_node);
 
   bool is_portal_main_frame =
@@ -60,17 +58,14 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
       agent_host = RenderFrameDevToolsAgentHost::
           CreateForLocalRootOrEmbeddedPageNavigation(navigation_request);
     }
-    return DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start)
-               ? agent_host.get()
-               : nullptr;
+    return agent_host;
   }
-
-  if (!agent_host)
-    return nullptr;
 
   // At this point we don't need a host, so we must auto detach if we auto
   // attached earlier.
-  DispatchAutoDetach(agent_host.get());
+  if (agent_host)
+    DispatchAutoDetach(agent_host.get());
+
   return nullptr;
 }
 
@@ -118,18 +113,14 @@ void TargetAutoAttacher::AppendNavigationThrottles(
   }
 }
 
-bool TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
+void TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
                                             bool waiting_for_debugger) {
-  bool attached = false;
   for (auto& client : clients_) {
-    attached =
-        client.AutoAttach(
-            this, host,
-            waiting_for_debugger &&
-                clients_requesting_wait_for_debugger_.contains(&client)) ||
-        attached;
+    client.AutoAttach(
+        this, host,
+        waiting_for_debugger &&
+            clients_requesting_wait_for_debugger_.contains(&client));
   }
-  return attached;
 }
 
 void TargetAutoAttacher::DispatchAutoDetach(DevToolsAgentHost* host) {
