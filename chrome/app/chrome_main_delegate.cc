@@ -92,7 +92,6 @@
 
 #include <algorithm>
 
-#include "base/debug/handle_hooks_win.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
@@ -893,24 +892,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 
   // HandleVerifier detects and reports incorrect handle manipulations. It
   // tracks handle operations on builds that support DCHECK only.
-#if DCHECK_IS_ON()
-  // This portion of the hook setup is just for child processes. Browser part is
-  // in ChromeBrowserMainPartsWin::PostProfileInit.
-  if (!is_browser) {
-    // Performing EAT interception first is safer in the presence of other
-    // threads attempting to call CloseHandle.
-#if defined(ARCH_CPU_32_BITS)
-    // Patching EAT of kernel32.dll is only supported on 32-bit because RVA can
-    // only hold 32-bit values.
-    base::debug::HandleHooks::AddEATPatch();
-#endif
-    // Patch once. Cannot monitor for further modules in a child process as
-    // monitoring needs ModuleWatcher, but likely no more should really load in
-    // a child process from this point on. If we miss any then we will lose some
-    // detection but still generate no false positive crashes.
-    base::debug::HandleHooks::PatchLoadedModules();
-  }
-#else
+#if !DCHECK_IS_ON()
   base::win::DisableHandleVerifier();
 #endif
 

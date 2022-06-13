@@ -21,7 +21,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/handle_hooks_win.h"
 #include "base/enterprise_util.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
@@ -605,18 +604,6 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
             .get());
 #endif
 
-#if DCHECK_IS_ON()
-    // Patching EAT of kernel32.dll is only supported on 32-bit because RVA can
-    // only hold 32-bit values.
-#if defined(ARCH_CPU_32_BITS)
-  base::debug::HandleHooks::AddEATPatch();
-#endif
-  // Patch currently loaded modules. Future ones will get patched by the module
-  // watcher. Note: if any modules load between now and when SetupModuleDatabase
-  // is called then these will be missed.
-  base::debug::HandleHooks::PatchLoadedModules();
-#endif  // DCHECK_IS_ON()
-
   // Create the module database and hook up the in-process module watcher. This
   // needs to be done before any child processes are initialized as the
   // ModuleDatabase is an endpoint for IPC from child processes.
@@ -925,14 +912,6 @@ void ChromeBrowserMainPartsWin::OnModuleEvent(
         break;
       }
       case ModuleWatcher::ModuleEventType::kModuleLoaded: {
-#if DCHECK_IS_ON() && defined(ARCH_CPU_64_BITS)
-        // This is only needed on 64-bit because on 32-bit the EAT from kernel32
-        // is already patched. This is thread safe against itself as this is
-        // always called under loader lock.
-        HMODULE module =
-            reinterpret_cast<HMODULE>(event.module_load_address.get());
-        base::debug::HandleHooks::AddIATPatch(module);
-#endif  // DCHECK_IS_ON() && defined(ARCH_CPU_64_BITS)
         ModuleDatabase::HandleModuleLoadEvent(
             content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
             GetModuleTimeDateStamp(event.module_load_address));
