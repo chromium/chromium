@@ -446,6 +446,8 @@ void BatchElementChecker::AddElementConditionResults(
       result.strict = proto.require_unique_element();
       if (result.selector.empty()) {
         // Empty selectors never match.
+        VLOG(1) << __func__
+                << " Received invalid selector: " << result.selector;
         result.match = {/* has_value= */ true, /* value= */ false};
       } else {
         unique_selectors_[std::make_pair(result.selector, result.strict)]
