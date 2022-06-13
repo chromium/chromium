@@ -5072,12 +5072,7 @@
   {
     "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 104
-  },
-  {
-    "name": "productivity-launcher-animation",
-    "owners": [ "jamescook", "tbarzic", "cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 106
   },
   {
     "name":"productivity-reorder-apps",
