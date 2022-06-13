@@ -1537,10 +1537,6 @@
       name: "MobileLayoutTheme",
     },
     {
-      name: "ModuleServiceWorker",
-      status: "stable",
-    },
-    {
       name: "MojoJS",
       status: "test",
     },
