@@ -82,6 +82,7 @@ try_.builder(
 try_.orchestrator_builder(
     name = "mac-rel",
     compilator = "mac-rel-compilator",
+    check_for_flakiness = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Mac Builder",
@@ -105,6 +106,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac-rel-compilator",
+    check_for_flakiness = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     os = os.MAC_DEFAULT,
