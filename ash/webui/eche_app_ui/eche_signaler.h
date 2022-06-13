@@ -8,6 +8,7 @@
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -40,6 +41,24 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   void OnMessageReceived(const std::string& payload) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenNoReceiveAnyMessage);
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenSignalingHasLateRequest);
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenSignalingHasLateResponse);
+  FRIEND_TEST_ALL_PREFIXES(EcheSignalerTest,
+                           TestConnectionFailWhenSecurityChannelDisconnected);
+
+  void RecordSignalingTimeout();
+
+  // The signaling timer to log fail reason in case response timeout.
+  std::unique_ptr<base::DelayTimer> signaling_timeout_timer_;
+
+  // This is for identify the timeout reason.
+  eche_app::mojom::ConnectionFailReason probably_connection_failed_reason_ =
+      eche_app::mojom::ConnectionFailReason::kUnknown;
+
   EcheConnector* eche_connector_;
   secure_channel::ConnectionManager* connection_manager_;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;

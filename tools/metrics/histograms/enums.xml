@@ -17507,6 +17507,14 @@ Called by update_net_error_codes.py.-->
   <int value="22" label="Placeholder 4."/>
 </enum>
 
+<enum name="ConnectionFailReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No signaling response and no signaling request"/>
+  <int value="2" label="Has signaling response but probably late"/>
+  <int value="3" label="Has signaling request but probably late"/>
+  <int value="4" label="Security channel disconnects"/>
+</enum>
+
 <enum name="ConnectionFailureReason">
   <int value="0" label="Unknown (deprecated)"/>
   <int value="1" label="Bad Passphrase"/>

@@ -5202,7 +5202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connection.Duration" units="ms"
-    expires_after="2022-05-30">
+    expires_after="2022-10-04">
   <owner>samchiu@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -5260,6 +5260,17 @@ chromium-metrics-reviews@google.com.
     Events logged in the Eche stream state. Records when a stream is started and
     initialized after the user interacts with a PhoneHub notification or the
     recent app by clicking it to launch the app streaming window.
+  </summary>
+</histogram>
+
+<histogram name="Eche.StreamEvent.ConnectionFail" enum="ConnectionFailReason"
+    expires_after="M107">
+  <owner>paulzchen@google.com</owner>
+  <owner>andychou@google.com</owner>
+  <owner>exo-core-eng@google.com</owner>
+  <summary>
+    Events logged the root cause of Eche connection failure. Records when
+    signaling timeout.
   </summary>
 </histogram>
 
