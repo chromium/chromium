@@ -2613,10 +2613,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary text for a download item that was blocked by the organization.">
         Your organization blocked this file because it didn't meet a security policy
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
-               desc="Subpage summary text of warning for download item that was blocked by the organization.">
-        Your organization blocked this file because it has sensitive content
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_WRONG"
                desc="Status text for a download item that had something go wrong.">
         Something went wrong
@@ -2685,9 +2681,21 @@ are declared in tools/grit/grit_rule.gni.
                desc="Dangerous warning for a file with sensitive content">
         Sensitive content
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT"
-               desc="Subpage summary of dangerous warning for a file with sensitive content">
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_WARNING"
+               desc="Subpage summary text of warning for download item that contains sensitive content">
         Your organization recommends deleting this file because it has sensitive content
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK"
+               desc="Subpage summary text of warning for download item that was blocked by the organization.">
+        Your organization blocked this file because it has sensitive or dangerous content. Ask its owner to fix.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ENCRYPTED"
+               desc="Subpage summary of dangerous warning for an encrypted file.">
+        Your organization blocked this file because it is encrypted. Ask its owner to decrypt.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG"
+               desc="Subpage summary of warning for a file blocked for being too large.">
+        Your organization blocked this file because it is too big for a security check. You can open files up to 50 MB.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">

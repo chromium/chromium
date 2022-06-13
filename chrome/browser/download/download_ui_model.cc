@@ -715,6 +715,46 @@ DownloadUIModel::BubbleUIInfo::SetProgressBarLooping() {
 
 DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
     FailState fail_state) const {
+  // Only handle danger types that are terminated in the interrupted state in
+  // this function. The other danger types are handled in
+  // `GetBubbleUIInfoForInProgressOrComplete`.
+  switch (GetDangerType()) {
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+      return DownloadUIModel::BubbleUIInfo(
+                 l10n_util::GetStringUTF16(
+                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ENCRYPTED))
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity);
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+      return DownloadUIModel::BubbleUIInfo(
+                 l10n_util::GetStringUTF16(
+                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG))
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity);
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return DownloadUIModel::BubbleUIInfo(
+                 l10n_util::GetStringUTF16(
+                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK))
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity);
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
+    case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_MAX:
+      break;
+  }
+
   switch (fail_state) {
     case FailState::FILE_BLOCKED:
       return DownloadUIModel::BubbleUIInfo(
@@ -873,19 +913,6 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
               DownloadCommands::Command::DISCARD,
               /*is_prominent=*/true);
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
-      return DownloadUIModel::BubbleUIInfo(
-                 l10n_util::GetStringUTF16(
-                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ENCRYPTED))
-          .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
-          .AddSubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
-              DownloadCommands::Command::KEEP,
-              /*is_prominent=*/false)
-          .AddSubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD,
-              /*is_prominent=*/true);
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -903,16 +930,6 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
               DownloadCommands::Command::DISCARD,
               /*is_prominent=*/true);
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
-      return DownloadUIModel::BubbleUIInfo(
-                 l10n_util::GetStringUTF16(
-                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG))
-          .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
-          .AddSubpageButton(
-              l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
-              DownloadCommands::Command::DISCARD,
-              /*is_prominent=*/true);
-
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
       bool request_ap_verdicts = false;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -954,7 +971,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
-                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT))
+                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_WARNING))
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
           .AddPrimaryButton(DownloadCommands::Command::DISCARD)
           .AddSubpageButton(
@@ -965,11 +982,6 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
               DownloadCommands::Command::DISCARD,
               /*is_prominent=*/true);
-    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
-      return DownloadUIModel::BubbleUIInfo(
-                 l10n_util::GetStringUTF16(
-                     IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION))
-          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
@@ -993,6 +1005,9 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
       }
       return bubble_ui_info;
     }
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
