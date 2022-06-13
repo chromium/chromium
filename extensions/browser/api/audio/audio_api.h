@@ -76,6 +76,8 @@ class AudioGetDevicesFunction : public ExtensionFunction {
  protected:
   ~AudioGetDevicesFunction() override {}
   ResponseAction Run() override;
+  void OnResponse(bool success,
+                  std::vector<api::audio::AudioDeviceInfo> devices);
 };
 
 class AudioSetActiveDevicesFunction : public ExtensionFunction {
@@ -85,6 +87,7 @@ class AudioSetActiveDevicesFunction : public ExtensionFunction {
  protected:
   ~AudioSetActiveDevicesFunction() override {}
   ResponseAction Run() override;
+  void OnResponse(bool success);
 };
 
 class AudioSetPropertiesFunction : public ExtensionFunction {
@@ -94,6 +97,7 @@ class AudioSetPropertiesFunction : public ExtensionFunction {
  protected:
   ~AudioSetPropertiesFunction() override {}
   ResponseAction Run() override;
+  void OnResponse(bool success);
 };
 
 class AudioSetMuteFunction : public ExtensionFunction {
@@ -103,6 +107,7 @@ class AudioSetMuteFunction : public ExtensionFunction {
  protected:
   ~AudioSetMuteFunction() override {}
   ResponseAction Run() override;
+  void OnResponse(bool success);
 };
 
 class AudioGetMuteFunction : public ExtensionFunction {
@@ -112,6 +117,7 @@ class AudioGetMuteFunction : public ExtensionFunction {
  protected:
   ~AudioGetMuteFunction() override {}
   ResponseAction Run() override;
+  void OnResponse(bool success, bool is_muted);
 };
 
 }  // namespace extensions

@@ -31,6 +31,7 @@ class DigitalGoodsFactoryAsh;
 namespace crosapi {
 
 class ArcAsh;
+class AudioServiceAsh;
 class AuthenticationAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
@@ -116,6 +117,8 @@ class CrosapiAsh : public mojom::Crosapi {
 
   // crosapi::mojom::Crosapi:
   void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
+  void BindAudioService(
+      mojo::PendingReceiver<mojom::AudioService> receiver) override;
   void BindAuthentication(
       mojo::PendingReceiver<mojom::Authentication> receiver) override;
   void BindAutomationDeprecated(
@@ -382,6 +385,7 @@ class CrosapiAsh : public mojom::Crosapi {
   void OnDisconnected();
 
   std::unique_ptr<ArcAsh> arc_ash_;
+  std::unique_ptr<AudioServiceAsh> audio_service_ash_;
   std::unique_ptr<AuthenticationAsh> authentication_ash_;
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
