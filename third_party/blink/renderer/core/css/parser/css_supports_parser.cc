@@ -31,8 +31,11 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsCondition(
     CSSParserTokenStream& stream) {
   // not <supports-in-parens>
   stream.ConsumeWhitespace();
-  if (ConsumeIfIdent(stream, "not"))
-    return !ConsumeSupportsInParens(stream);
+  if (ConsumeIfIdent(stream, "not")) {
+    Result result = ConsumeSupportsInParens(stream);
+    stream.ConsumeWhitespace();
+    return !result;
+  }
 
   // <supports-in-parens> [ and <supports-in-parens> ]*
   // | <supports-in-parens> [ or <supports-in-parens> ]*
