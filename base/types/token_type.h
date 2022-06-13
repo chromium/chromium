@@ -23,9 +23,6 @@ class TokenType : public StrongAlias<TypeMarker, UnguessableToken> {
 
  public:
   TokenType() : Super(UnguessableToken::Create()) {}
-  // The parameter |unused| is here to prevent multiple definitions of a
-  // single argument constructor. This is only needed during the migration to
-  // strongly typed frame tokens.
   explicit TokenType(const UnguessableToken& token) : Super(token) {}
   TokenType(const TokenType& token) : Super(token.value()) {}
   TokenType(TokenType&& token) noexcept : Super(token.value()) {}
