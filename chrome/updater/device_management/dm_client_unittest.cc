@@ -107,7 +107,7 @@ class TestConfigurator : public DMClient::Configurator {
 // A policy service with default values.
 scoped_refptr<PolicyService> CreateTestPolicyService() {
   PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
   return base::MakeRefCounted<PolicyService>(std::move(managers));
 }
 

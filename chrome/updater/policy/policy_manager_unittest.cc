@@ -1,57 +1,28 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/policy/win/group_policy_manager.h"
+#include "chrome/updater/policy/policy_manager.h"
 
 #include <memory>
 #include <string>
+#include <utility>
 
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/test_reg_util_win.h"
-#include "base/win/registry.h"
-#include "base/win/win_util.h"
-#include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/win_util.h"
+#include "base/strings/strcat.h"
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
-#define TEST_APP_ID L"{D07D2B56-F583-4631-9E8E-9942F63765BE}"
+constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
 
-class GroupPolicyManagerTests : public ::testing::Test {
- protected:
-  void SetUp() override;
-  void TearDown() override;
+class PolicyManagerTests : public ::testing::Test {};
 
-  registry_util::RegistryOverrideManager registry_override_;
-
- private:
-  void DeletePolicyKey();
-};
-
-void GroupPolicyManagerTests::SetUp() {
-  DeletePolicyKey();
-}
-
-void GroupPolicyManagerTests::TearDown() {
-  DeletePolicyKey();
-}
-
-void GroupPolicyManagerTests::DeletePolicyKey() {
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", Wow6432(DELETE));
-  LONG result = key.DeleteKey(UPDATER_POLICIES_KEY);
-  ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-}
-
-TEST_F(GroupPolicyManagerTests, NoPolicySet) {
-  std::unique_ptr<PolicyManagerInterface> policy_manager =
-      std::make_unique<GroupPolicyManager>();
+TEST_F(PolicyManagerTests, NoPolicySet) {
+  auto policy_manager = std::make_unique<PolicyManager>(base::Value::Dict());
   EXPECT_FALSE(policy_manager->IsManaged());
 
-  EXPECT_EQ(policy_manager->source(), "GroupPolicy");
+  EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
 
   int check_period = 0;
   EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
@@ -77,73 +48,63 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   std::string proxy_pac_url;
   EXPECT_FALSE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
 
-  std::string app_id = base::WideToUTF8(TEST_APP_ID);
   int install_policy = -1;
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
-      app_id, &install_policy));
+      kTestAppID, &install_policy));
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
       "non-exist-app-fallback-to-global", &install_policy));
 
   int update_policy = -1;
-  EXPECT_FALSE(
-      policy_manager->GetEffectivePolicyForAppUpdates(app_id, &update_policy));
+  EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID,
+                                                               &update_policy));
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(
       "non-exist-app-fallback-to-global", &update_policy));
 
   std::string target_channel;
-  EXPECT_FALSE(policy_manager->GetTargetChannel(app_id, &target_channel));
+  EXPECT_FALSE(policy_manager->GetTargetChannel(kTestAppID, &target_channel));
   EXPECT_FALSE(
       policy_manager->GetTargetChannel("non-exist-app", &target_channel));
 
   std::string target_version_prefix;
-  EXPECT_FALSE(
-      policy_manager->GetTargetVersionPrefix(app_id, &target_version_prefix));
+  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix(kTestAppID,
+                                                      &target_version_prefix));
   EXPECT_FALSE(policy_manager->GetTargetVersionPrefix("non-exist-app",
                                                       &target_version_prefix));
 
   bool is_rollback_allowed = false;
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      app_id, &is_rollback_allowed));
+      kTestAppID, &is_rollback_allowed));
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
       "non-exist-app", &is_rollback_allowed));
 }
 
-TEST_F(GroupPolicyManagerTests, PolicyRead) {
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        Wow6432(KEY_ALL_ACCESS));
+TEST_F(PolicyManagerTests, PolicyRead) {
+  base::Value::Dict policies;
 
-  // Set global policies.
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"AutoUpdateCheckPeriodMinutes", 480));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"UpdatesSuppressedStartHour", 2));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"UpdatesSuppressedStartMin", 30));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"UpdatesSuppressedDurationMin", 500));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"DownloadPreference", L"cacheable"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"PackageCacheSizeLimit", 100));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"PackageCacheLifeLimit", 45));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"ProxyMode", L"fixed_servers"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"ProxyServer", L"http://foo.bar"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"ProxyPacUrl", L"go/pac.url"));
+  policies.Set("AutoUpdateCheckPeriodMinutes", 480);
+  policies.Set("UpdatesSuppressedStartHour", 2);
+  policies.Set("UpdatesSuppressedStartMin", 30);
+  policies.Set("UpdatesSuppressedDurationMin", 500);
+  policies.Set("DownloadPreference", "cacheable");
+  policies.Set("PackageCacheSizeLimit", 100);
+  policies.Set("PackageCacheLifeLimit", 45);
+  policies.Set("ProxyMode", "fixed_servers");
+  policies.Set("ProxyServer", "http://foo.bar");
+  policies.Set("ProxyPacUrl", "go/pac.url");
 
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"InstallDefault", 2));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"UpdateDefault", 1));
+  policies.Set("InstallDefault", 2);
+  policies.Set("UpdateDefault", 1);
 
   // Set app policies
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"Install" TEST_APP_ID, 3));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"Update" TEST_APP_ID, 2));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"TargetVersionPrefix" TEST_APP_ID, L"55.55."));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"TargetChannel" TEST_APP_ID, L"beta"));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, 1));
+  policies.Set(base::StrCat({"Install", kTestAppID}), 3);
+  policies.Set(base::StrCat({"Update", kTestAppID}), 2);
+  policies.Set(base::StrCat({"TargetVersionPrefix", kTestAppID}), "55.55.");
+  policies.Set(base::StrCat({"TargetChannel", kTestAppID}), "beta");
+  policies.Set(base::StrCat({"RollbackToTargetVersion", kTestAppID}), 1);
 
-  std::unique_ptr<PolicyManagerInterface> policy_manager =
-      std::make_unique<GroupPolicyManager>();
-  EXPECT_EQ(policy_manager->IsManaged(), base::win::IsEnrolledToDomain());
+  auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
+
+  EXPECT_TRUE(policy_manager->IsManaged());
 
   int check_period = 0;
   EXPECT_TRUE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
@@ -179,78 +140,71 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
   EXPECT_TRUE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
   EXPECT_EQ(proxy_pac_url, "go/pac.url");
 
-  std::string app_id = base::WideToUTF8(TEST_APP_ID);
   int install_policy = -1;
   EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppInstalls(
-      app_id, &install_policy));
+      kTestAppID, &install_policy));
   EXPECT_EQ(install_policy, 3);
   EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppInstalls(
       "non-exist-app-fallback-to-global", &install_policy));
   EXPECT_EQ(install_policy, 2);
 
   int update_policy = -1;
-  EXPECT_TRUE(
-      policy_manager->GetEffectivePolicyForAppUpdates(app_id, &update_policy));
+  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID,
+                                                              &update_policy));
   EXPECT_EQ(update_policy, 2);
   EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
       "non-exist-app-fallback-to-global", &update_policy));
   EXPECT_EQ(update_policy, 1);
 
   std::string target_channel;
-  EXPECT_TRUE(policy_manager->GetTargetChannel(app_id, &target_channel));
+  EXPECT_TRUE(policy_manager->GetTargetChannel(kTestAppID, &target_channel));
   EXPECT_EQ(target_channel, "beta");
   EXPECT_FALSE(
       policy_manager->GetTargetChannel("non-exist-app", &target_channel));
 
   std::string target_version_prefix;
-  EXPECT_TRUE(
-      policy_manager->GetTargetVersionPrefix(app_id, &target_version_prefix));
+  EXPECT_TRUE(policy_manager->GetTargetVersionPrefix(kTestAppID,
+                                                     &target_version_prefix));
   EXPECT_EQ(target_version_prefix, "55.55.");
   EXPECT_FALSE(policy_manager->GetTargetVersionPrefix("non-exist-app",
                                                       &target_version_prefix));
 
   bool is_rollback_allowed = false;
   EXPECT_TRUE(policy_manager->IsRollbackToTargetVersionAllowed(
-      app_id, &is_rollback_allowed));
+      kTestAppID, &is_rollback_allowed));
   EXPECT_TRUE(is_rollback_allowed);
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
       "non-exist-app", &is_rollback_allowed));
 }
 
-TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        Wow6432(KEY_ALL_ACCESS));
+TEST_F(PolicyManagerTests, WrongPolicyValueType) {
+  base::Value::Dict policies;
 
   // Set global policies.
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"AutoUpdateCheckPeriodMinutes", L"NotAnInteger"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"UpdatesSuppressedStartHour", L""));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"UpdatesSuppressedStartMin", L"30"));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"UpdatesSuppressedDurationMin", L"WrongType"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"DownloadPreference", 15));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"PackageCacheSizeLimit", L"100"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"PackageCacheLifeLimit", L"45"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"ProxyMode", 10));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"ProxyServer", 1));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"ProxyPacUrl", 2));
+  policies.Set("AutoUpdateCheckPeriodMinutes", "NotAnInteger");
+  policies.Set("UpdatesSuppressedStartHour", "");
+  policies.Set("UpdatesSuppressedStartMin", "30");
+  policies.Set("UpdatesSuppressedDurationMin", "WrongType");
+  policies.Set("DownloadPreference", 15);
+  policies.Set("PackageCacheSizeLimit", "100");
+  policies.Set("PackageCacheLifeLimit", "45");
+  policies.Set("ProxyMode", 10);
+  policies.Set("ProxyServer", 1);
+  policies.Set("ProxyPacUrl", 2);
 
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"InstallDefault", L"install"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"UpdateDefault", L"automatic"));
+  policies.Set("InstallDefault", "install");
+  policies.Set("UpdateDefault", "automatic");
 
   // Set app policies
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"Install" TEST_APP_ID, L"3"));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"Update" TEST_APP_ID, L"2"));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"TargetVersionPrefix" TEST_APP_ID, 55));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(L"TargetChannel" TEST_APP_ID, 10));
-  EXPECT_EQ(ERROR_SUCCESS,
-            key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, L"1"));
+  policies.Set(base::StrCat({"Install", kTestAppID}), "3");
+  policies.Set(base::StrCat({"Update", kTestAppID}), "2");
+  policies.Set(base::StrCat({"TargetVersionPrefix", kTestAppID}), 55);
+  policies.Set(base::StrCat({"TargetChannel", kTestAppID}), 10);
+  policies.Set(base::StrCat({"RollbackToTargetVersion", kTestAppID}), "1");
 
-  std::unique_ptr<PolicyManagerInterface> policy_manager =
-      std::make_unique<GroupPolicyManager>();
+  auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
+
+  EXPECT_TRUE(policy_manager->IsManaged());
 
   int check_period = 0;
   EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
@@ -276,33 +230,32 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
   std::string proxy_pac_url;
   EXPECT_FALSE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
 
-  std::string app_id = base::WideToUTF8(TEST_APP_ID);
   int install_policy = -1;
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
-      app_id, &install_policy));
+      kTestAppID, &install_policy));
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppInstalls(
       "non-exist-app-fallback-to-global", &install_policy));
 
   int update_policy = -1;
-  EXPECT_FALSE(
-      policy_manager->GetEffectivePolicyForAppUpdates(app_id, &update_policy));
+  EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(kTestAppID,
+                                                               &update_policy));
   EXPECT_FALSE(policy_manager->GetEffectivePolicyForAppUpdates(
       "non-exist-app-fallback-to-global", &update_policy));
 
   std::string target_channel;
-  EXPECT_FALSE(policy_manager->GetTargetChannel(app_id, &target_channel));
+  EXPECT_FALSE(policy_manager->GetTargetChannel(kTestAppID, &target_channel));
   EXPECT_FALSE(
       policy_manager->GetTargetChannel("non-exist-app", &target_channel));
 
   std::string target_version_prefix;
-  EXPECT_FALSE(
-      policy_manager->GetTargetVersionPrefix(app_id, &target_version_prefix));
+  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix(kTestAppID,
+                                                      &target_version_prefix));
   EXPECT_FALSE(policy_manager->GetTargetVersionPrefix("non-exist-app",
                                                       &target_version_prefix));
 
   bool is_rollback_allowed = false;
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      app_id, &is_rollback_allowed));
+      kTestAppID, &is_rollback_allowed));
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
       "non-exist-app", &is_rollback_allowed));
 }

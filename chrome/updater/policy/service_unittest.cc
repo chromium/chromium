@@ -108,7 +108,7 @@ class FakePolicyManager : public PolicyManagerInterface {
 
 TEST(PolicyService, DefaultPolicyValue) {
   PolicyService::PolicyManagerVector managers;
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
   EXPECT_EQ(policy_service->source(), "default");
@@ -192,7 +192,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   managers.push_back(std::move(manager));
 
   // The default policy manager.
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
 
   auto policy_service =
       base::MakeRefCounted<PolicyService>(std::move(managers));
@@ -292,8 +292,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetDownloadPreferenceGroupPolicy("cacheable");
   managers.push_back(std::move(manager));
 
-  // The default policy manager.
-  managers.push_back(GetPolicyManager());
+  managers.push_back(GetDefaultValuesPolicyManager());
 
   manager = std::make_unique<FakePolicyManager>(false, "group_policy");
   updates_suppressed_times.start_hour_ = 5;

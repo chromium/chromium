@@ -111,7 +111,7 @@ class PolicyManagerInterface {
                                 std::string* channel) const = 0;
 };
 
-std::unique_ptr<PolicyManagerInterface> GetPolicyManager();
+std::unique_ptr<PolicyManagerInterface> GetDefaultValuesPolicyManager();
 
 }  // namespace updater
 

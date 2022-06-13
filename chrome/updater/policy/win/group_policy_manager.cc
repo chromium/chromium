@@ -6,61 +6,20 @@
 
 #include <ostream>
 #include <string>
-#include <utility>
 
 #include <userenv.h>
 
+#include "base/check.h"
 #include "base/enterprise_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/scoped_generic.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-#include "chrome/updater/external_constants.h"
-#include "chrome/updater/policy/manager.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
 
 namespace {
-
-// Registry values.
-// Preferences Category.
-const char kRegValueAutoUpdateCheckPeriodOverrideMinutes[] =
-    "AutoUpdateCheckPeriodMinutes";
-const char kRegValueUpdatesSuppressedStartHour[] = "UpdatesSuppressedStartHour";
-const char kRegValueUpdatesSuppressedStartMin[] = "UpdatesSuppressedStartMin";
-const char kRegValueUpdatesSuppressedDurationMin[] =
-    "UpdatesSuppressedDurationMin";
-
-// This policy specifies what kind of download URLs could be returned to the
-// client in the update response and in which order of priority. The client
-// provides this information in the update request as a hint for the server.
-// The server may decide to ignore the hint. As a general idea, some urls are
-// cacheable, some urls have higher bandwidth, and some urls are slightly more
-// secure since they are https.
-const char kRegValueDownloadPreference[] = "DownloadPreference";
-
-// Proxy Server Category.  (The registry keys used, and the values of ProxyMode,
-// directly mirror that of Chrome.  However, we omit ProxyBypassList, as the
-// domains that Omaha uses are largely fixed.)
-const char kRegValueProxyMode[] = "ProxyMode";
-const char kRegValueProxyServer[] = "ProxyServer";
-const char kRegValueProxyPacUrl[] = "ProxyPacUrl";
-
-// Package cache constants.
-const char kRegValueCacheSizeLimitMBytes[] = "PackageCacheSizeLimit";
-const char kRegValueCacheLifeLimitDays[] = "PackageCacheLifeLimit";
-
-// Applications Category.
-// The prefix strings have the app's GUID appended to them.
-const char kRegValueInstallAppsDefault[] = "InstallDefault";
-const char kRegValueInstallAppPrefix[] = "Install";
-const char kRegValueUpdateAppsDefault[] = "UpdateDefault";
-const char kRegValueUpdateAppPrefix[] = "Update";
-const char kRegValueTargetVersionPrefix[] = "TargetVersionPrefix";
-const char kRegValueTargetChannel[] = "TargetChannel";
-const char kRegValueRollbackToTargetVersion[] = "RollbackToTargetVersion";
 
 struct ScopedHCriticalPolicySectionTraits {
   static HANDLE InvalidValue() { return nullptr; }
@@ -75,142 +34,10 @@ struct ScopedHCriticalPolicySectionTraits {
 using scoped_hpolicy =
     base::ScopedGeneric<HANDLE, updater::ScopedHCriticalPolicySectionTraits>;
 
-}  // namespace
-
-GroupPolicyManager::GroupPolicyManager(
-    scoped_refptr<ExternalConstants> external_constants)
-    : external_constants_group_policies_(external_constants->GroupPolicies()) {
-  LoadAllPolicies();
-}
-
-GroupPolicyManager::~GroupPolicyManager() = default;
-
-bool GroupPolicyManager::IsManaged() const {
-  return !policies_.empty() && IsManagedInternal();
-}
-
-bool GroupPolicyManager::IsManagedInternal() const {
-  return !external_constants_group_policies_.empty() || base::IsManagedDevice();
-}
-
-std::string GroupPolicyManager::source() const {
-  return std::string("GroupPolicy");
-}
-
-bool GroupPolicyManager::GetLastCheckPeriodMinutes(int* minutes) const {
-  return GetIntPolicy(kRegValueAutoUpdateCheckPeriodOverrideMinutes, minutes);
-}
-
-bool GroupPolicyManager::GetUpdatesSuppressedTimes(
-    UpdatesSuppressedTimes* suppressed_times) const {
-  return GetIntPolicy(kRegValueUpdatesSuppressedStartHour,
-                      &suppressed_times->start_hour_) &&
-         GetIntPolicy(kRegValueUpdatesSuppressedStartMin,
-                      &suppressed_times->start_minute_) &&
-         GetIntPolicy(kRegValueUpdatesSuppressedDurationMin,
-                      &suppressed_times->duration_minute_);
-}
-
-bool GroupPolicyManager::GetDownloadPreferenceGroupPolicy(
-    std::string* download_preference) const {
-  return GetStringPolicy(kRegValueDownloadPreference, download_preference);
-}
-
-bool GroupPolicyManager::GetPackageCacheSizeLimitMBytes(
-    int* cache_size_limit) const {
-  return GetIntPolicy(kRegValueCacheSizeLimitMBytes, cache_size_limit);
-}
-
-bool GroupPolicyManager::GetPackageCacheExpirationTimeDays(
-    int* cache_life_limit) const {
-  return GetIntPolicy(kRegValueCacheLifeLimitDays, cache_life_limit);
-}
-
-bool GroupPolicyManager::GetEffectivePolicyForAppInstalls(
-    const std::string& app_id,
-    int* install_policy) const {
-  std::string app_value_name(kRegValueInstallAppPrefix);
-  app_value_name.append(app_id);
-  return GetIntPolicy(app_value_name.c_str(), install_policy)
-             ? true
-             : GetIntPolicy(kRegValueInstallAppsDefault, install_policy);
-}
-
-bool GroupPolicyManager::GetEffectivePolicyForAppUpdates(
-    const std::string& app_id,
-    int* update_policy) const {
-  std::string app_value_name(kRegValueUpdateAppPrefix);
-  app_value_name.append(app_id);
-  return GetIntPolicy(app_value_name.c_str(), update_policy)
-             ? true
-             : GetIntPolicy(kRegValueUpdateAppsDefault, update_policy);
-}
-
-bool GroupPolicyManager::GetTargetChannel(const std::string& app_id,
-                                          std::string* channel) const {
-  std::string app_value_name(kRegValueTargetChannel);
-  app_value_name.append(app_id);
-  return GetStringPolicy(app_value_name.c_str(), channel);
-}
-
-bool GroupPolicyManager::GetTargetVersionPrefix(
-    const std::string& app_id,
-    std::string* target_version_prefix) const {
-  std::string app_value_name(kRegValueTargetVersionPrefix);
-  app_value_name.append(app_id);
-  return GetStringPolicy(app_value_name.c_str(), target_version_prefix);
-}
-
-bool GroupPolicyManager::IsRollbackToTargetVersionAllowed(
-    const std::string& app_id,
-    bool* rollback_allowed) const {
-  std::string app_value_name(kRegValueRollbackToTargetVersion);
-  app_value_name.append(app_id);
-  int is_rollback_allowed = 0;
-  if (GetIntPolicy(app_value_name.c_str(), &is_rollback_allowed)) {
-    *rollback_allowed = is_rollback_allowed;
-    return true;
-  }
-
-  return false;
-}
-
-bool GroupPolicyManager::GetProxyMode(std::string* proxy_mode) const {
-  return GetStringPolicy(kRegValueProxyMode, proxy_mode);
-}
-
-bool GroupPolicyManager::GetProxyPacUrl(std::string* proxy_pac_url) const {
-  return GetStringPolicy(kRegValueProxyPacUrl, proxy_pac_url);
-}
-
-bool GroupPolicyManager::GetProxyServer(std::string* proxy_server) const {
-  return GetStringPolicy(kRegValueProxyServer, proxy_server);
-}
-
-bool GroupPolicyManager::GetIntPolicy(const std::string& key,
-                                      int* value) const {
-  absl::optional<int> policy = policies_.FindInt(key);
-  if (!policy.has_value())
-    return false;
-
-  *value = *policy;
-  return true;
-}
-
-bool GroupPolicyManager::GetStringPolicy(const std::string& key,
-                                         std::string* value) const {
-  const std::string* policy = policies_.FindString(key);
-  if (policy == nullptr)
-    return false;
-
-  *value = *policy;
-  return true;
-}
-
-void GroupPolicyManager::LoadAllPolicies() {
+base::Value::Dict LoadGroupPolicies() {
   scoped_hpolicy policy_lock;
 
-  if (IsManagedInternal()) {
+  if (base::IsManagedDevice()) {
     // GPO rules mandate a call to EnterCriticalPolicySection() before reading
     // policies (and a matching LeaveCriticalPolicySection() call after read).
     // Acquire the lock for managed machines because group policies are
@@ -218,11 +45,6 @@ void GroupPolicyManager::LoadAllPolicies() {
     // time, in the worst case scenarios.
     policy_lock.reset(::EnterCriticalPolicySection(true));
     CHECK(policy_lock.is_valid()) << "Failed to get policy lock.";
-  }
-
-  if (!external_constants_group_policies_.empty()) {
-    policies_ = external_constants_group_policies_.Clone();
-    return;
   }
 
   base::Value::Dict policies;
@@ -246,7 +68,21 @@ void GroupPolicyManager::LoadAllPolicies() {
     }
   }
 
-  policies_ = std::move(policies);
+  return policies;
+}
+
+}  // namespace
+
+GroupPolicyManager::GroupPolicyManager() : PolicyManager(LoadGroupPolicies()) {}
+
+GroupPolicyManager::~GroupPolicyManager() = default;
+
+bool GroupPolicyManager::IsManaged() const {
+  return PolicyManager::IsManaged() && base::IsManagedDevice();
+}
+
+std::string GroupPolicyManager::source() const {
+  return std::string("GroupPolicy");
 }
 
 }  // namespace updater

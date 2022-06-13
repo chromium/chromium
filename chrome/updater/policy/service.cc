@@ -16,6 +16,7 @@
 #include "chrome/updater/external_constants.h"
 
 #include "chrome/updater/policy/dm_policy_manager.h"
+#include "chrome/updater/policy/policy_manager.h"
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/policy/win/group_policy_manager.h"
 #elif BUILDFLAG(IS_MAC)
@@ -213,17 +214,21 @@ bool PolicyService::QueryAppPolicy(
 scoped_refptr<PolicyService> PolicyService::Create(
     scoped_refptr<ExternalConstants> external_constants) {
   PolicyManagerVector managers;
+  managers.push_back(
+      std::make_unique<PolicyManager>(external_constants->GroupPolicies()));
 #if BUILDFLAG(IS_WIN)
-  managers.push_back(std::make_unique<GroupPolicyManager>(external_constants));
+  managers.push_back(std::make_unique<GroupPolicyManager>());
 #endif
   std::unique_ptr<PolicyManagerInterface> dm_policy_manager =
       CreateDMPolicyManager();
   if (dm_policy_manager)
     managers.push_back(std::move(dm_policy_manager));
 #if BUILDFLAG(IS_MAC)
+  // Managed preference policy manager is being deprecated and thus has a lower
+  // priority than DM policy manager.
   managers.push_back(CreateManagedPreferencePolicyManager());
 #endif
-  managers.push_back(GetPolicyManager());  // For default values.
+  managers.push_back(GetDefaultValuesPolicyManager());
 
   return base::MakeRefCounted<PolicyService>(std::move(managers));
 }
