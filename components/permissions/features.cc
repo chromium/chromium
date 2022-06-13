@@ -57,12 +57,6 @@ const base::Feature kPermissionChipGestureSensitive{
 const base::Feature kPermissionChipRequestTypeSensitive{
     "PermissionChipRequestTypeSensitive", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When kPermissionChip (above) is enabled, controls whether or not the
-// permission chip should be shown in the prominent style (white on blue) or in
-// the secondary style (blue on white).
-const base::Feature kPermissionChipIsProminentStyle{
-    "PermissionChipIsProminentStyle", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, use the value of the `service_url` FeatureParam as the url
 // for the Web Permission Predictions Service.
 const base::Feature kPermissionPredictionServiceUseUrlOverride{

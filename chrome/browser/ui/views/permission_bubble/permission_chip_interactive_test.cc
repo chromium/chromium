@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/location_bar/permission_request_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -116,7 +118,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
 
     EXPECT_FALSE(chip->should_expand_for_testing());
     EXPECT_FALSE(chip->get_chip_button_for_testing()->is_animating());
-    EXPECT_EQ(OmniboxChipButton::Theme::kLowVisibility,
+    EXPECT_EQ(OmniboxChipTheme::kLowVisibility,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
   }
 
@@ -130,7 +132,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
 
     EXPECT_TRUE(chip->should_expand_for_testing());
     EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
-    EXPECT_EQ(OmniboxChipButton::Theme::kLowVisibility,
+    EXPECT_EQ(OmniboxChipTheme::kLowVisibility,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
   }
 
@@ -144,7 +146,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
     // TODO(crbug.com/1232460): Verify that OmniboxChipButton::is_animating is
     // true. Right now the value is flaky.
-    EXPECT_EQ(OmniboxChipButton::Theme::kNormalVisibility,
+    EXPECT_EQ(OmniboxChipTheme::kNormalVisibility,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
   }
 
@@ -950,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
   ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
       ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
   EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  EXPECT_FALSE(GetChip());
+  EXPECT_FALSE(GetChip()->IsActive());
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
@@ -979,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
     ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
         ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
     EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    EXPECT_FALSE(GetChip());
+    EXPECT_FALSE(GetChip()->IsActive());
 
     RequestPermission(permissions::RequestType::kGeolocation);
 
@@ -1009,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
     ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
         ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
     EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    EXPECT_FALSE(GetChip());
+    EXPECT_FALSE(GetChip()->IsActive());
 
     RequestPermission(permissions::RequestType::kGeolocation);
 

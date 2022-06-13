@@ -7,13 +7,13 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -95,15 +95,8 @@ PermissionRequestChip::PermissionRequestChip(
     Browser* browser,
     permissions::PermissionPrompt::Delegate* delegate,
     bool should_bubble_start_open)
-    : PermissionChip(
-          delegate,
-          {GetPermissionIconId(delegate), GetBlockedPermissionIconId(delegate),
-           GetPermissionMessage(delegate), should_bubble_start_open,
-           base::FeatureList::IsEnabled(
-               permissions::features::kPermissionChipIsProminentStyle),
-           OmniboxChipButton::Theme::kNormalVisibility,
-           /*should_expand=*/true}),
-      browser_(browser) {
+    : browser_(browser), delegate_(delegate) {
+  should_bubble_start_open_ = should_bubble_start_open;
   chip_shown_time_ = base::TimeTicks::Now();
   VerifyCameraAndMicRequest(delegate);
 }
@@ -112,7 +105,7 @@ PermissionRequestChip::~PermissionRequestChip() = default;
 
 views::View* PermissionRequestChip::CreateBubble() {
   prompt_bubble_ = new PermissionPromptBubbleView(
-      browser_, delegate(), chip_shown_time_, PermissionPromptStyle::kChip);
+      browser_, delegate_, chip_shown_time_, PermissionPromptStyle::kChip);
   RecordChipButtonPressed();
 
   return prompt_bubble_;
@@ -121,25 +114,39 @@ views::View* PermissionRequestChip::CreateBubble() {
 void PermissionRequestChip::ShowBubble() {
   if (prompt_bubble_) {
     prompt_bubble_->Show();
-    prompt_bubble_->GetWidget()->AddObserver(this);
   }
 }
 
-void PermissionRequestChip::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(prompt_bubble_->GetWidget(), widget);
-  prompt_bubble_ = nullptr;
-  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
-      widget->closed_reason() ==
-          views::Widget::ClosedReason::kCloseButtonClicked) {
-    OnPromptBubbleDismissed();
-  }
-  PermissionChip::OnWidgetDestroying(widget);
+const gfx::VectorIcon& PermissionRequestChip::GetIconOn() {
+  return GetPermissionIconId(delegate_);
+}
+
+const gfx::VectorIcon& PermissionRequestChip::GetIconOff() {
+  return GetBlockedPermissionIconId(delegate_);
+}
+
+std::u16string PermissionRequestChip::GetMessage() {
+  return GetPermissionMessage(delegate_);
+}
+
+bool PermissionRequestChip::ShouldStartOpen() {
+  return should_bubble_start_open_;
+}
+
+bool PermissionRequestChip::ShouldExpand() {
+  return true;
+}
+
+OmniboxChipTheme PermissionRequestChip::GetTheme() {
+  return OmniboxChipTheme::kNormalVisibility;
+}
+
+permissions::PermissionPrompt::Delegate*
+PermissionRequestChip::GetPermissionPromptDelegate() {
+  return delegate_;
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {
   base::UmaHistogramMediumTimes("Permissions.Chip.TimeToInteraction",
                                 base::TimeTicks::Now() - chip_shown_time_);
 }
-
-BEGIN_METADATA(PermissionRequestChip, views::View)
-END_METADATA
