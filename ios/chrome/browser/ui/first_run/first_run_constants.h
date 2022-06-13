@@ -19,6 +19,10 @@ extern NSString* const kFirstRunWelcomeScreenAccessibilityIdentifier;
 // The accessibility identifier for the Sign in screen shown in first run.
 extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
 
+// The accessibility identifier for the Legacy Sign in screen shown in first
+// run.
+extern NSString* const kFirstRunLegacySignInScreenAccessibilityIdentifier;
+
 // The accessibility identifier for the Sync screen shown in first run.
 extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
 

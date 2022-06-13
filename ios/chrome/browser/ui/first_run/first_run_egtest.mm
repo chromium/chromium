@@ -174,9 +174,10 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the forced sign-in screen is displayed.
 - (void)verifyForcedSigninScreenIsDisplayed {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunLegacySignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
 }
 

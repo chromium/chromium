@@ -72,15 +72,16 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
 // Returns a matcher for the whole forced sign-in screen.
 id<GREYMatcher> GetForcedSigninScreenMatcher() {
   return grey_accessibilityID(
-      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
+      first_run::kFirstRunLegacySignInScreenAccessibilityIdentifier);
 }
 
 // Checks that the forced sign-in prompt is fully dismissed by making sure
 // that there isn't any forced sign-in screen displayed.
 void VerifyForcedSigninFullyDismissed() {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunLegacySignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
 
   [[EarlGrey selectElementWithMatcher:

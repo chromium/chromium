@@ -64,7 +64,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
-      first_run::kFirstRunSignInScreenAccessibilityIdentifier;
+      first_run::kFirstRunLegacySignInScreenAccessibilityIdentifier;
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
   self.readMoreString =
