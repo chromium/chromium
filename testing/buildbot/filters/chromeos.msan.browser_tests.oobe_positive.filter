@@ -87,7 +87,9 @@ FamilyLinkNoticeScreenTest.*
 FingerprintSetupTest.*
 ForceMaximizeOnFirstRunTest.*
 ForceMaximizePolicyFalseTest.*
+HIDDetectionDeviceOwnedTest.*
 HIDDetectionScreenChromebookTest.*
+HidDetectionSkipTestLegacy.*
 HidDetectionSkipTest.*
 HidDetectionTest.*
 InitialEnrollmentTest.*

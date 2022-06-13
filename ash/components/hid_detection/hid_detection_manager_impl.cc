@@ -4,6 +4,7 @@
 
 #include "ash/components/hid_detection/hid_detection_manager_impl.h"
 
+#include "ash/components/hid_detection/bluetooth_hid_detector_impl.h"
 #include "ash/components/hid_detection/hid_detection_utils.h"
 #include "base/no_destructor.h"
 #include "components/device_event_log/device_event_log.h"
@@ -25,10 +26,9 @@ void HidDetectionManagerImpl::SetInputDeviceManagerBinderForTest(
 }
 
 HidDetectionManagerImpl::HidDetectionManagerImpl(
-    device::mojom::DeviceService* device_service,
-    BluetoothHidDetector* bluetooth_hid_detector)
+    device::mojom::DeviceService* device_service)
     : device_service_{device_service},
-      bluetooth_hid_detector_{bluetooth_hid_detector} {}
+      bluetooth_hid_detector_{std::make_unique<BluetoothHidDetectorImpl>()} {}
 
 HidDetectionManagerImpl::~HidDetectionManagerImpl() = default;
 
@@ -250,6 +250,11 @@ void HidDetectionManagerImpl::SetInputDevicesStatus() {
   bluetooth_hid_detector_->SetInputDevicesStatus(
       {.pointer_is_missing = !connected_pointer_id_.has_value(),
        .keyboard_is_missing = !connected_keyboard_id_.has_value()});
+}
+
+void HidDetectionManagerImpl::SetBluetoothHidDetectorForTest(
+    std::unique_ptr<BluetoothHidDetector> bluetooth_hid_detector) {
+  bluetooth_hid_detector_ = std::move(bluetooth_hid_detector);
 }
 
 }  // namespace ash::hid_detection

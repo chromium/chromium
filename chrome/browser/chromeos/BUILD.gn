@@ -2991,6 +2991,7 @@ source_set("chromeos") {
       "//ash/services/chromebox_for_meetings/public/mojom",
       "//chromeos/ash/components/dbus/chromebox_for_meetings",
       "//chromeos/components/chromebox_for_meetings/features",
+      "//components/hid_detection:hid_detection",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:report_queue_configuration",
       "//components/reporting/client:report_queue_provider",

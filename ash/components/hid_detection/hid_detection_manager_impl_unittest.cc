@@ -73,9 +73,13 @@ class HidDetectionManagerImplTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kOobeHidDetectionRevamp);
-    fake_bluetooth_hid_detector_ = std::make_unique<FakeBluetoothHidDetector>();
+    auto fake_bluetooth_hid_detector =
+        std::make_unique<FakeBluetoothHidDetector>();
+    fake_bluetooth_hid_detector_ = fake_bluetooth_hid_detector.get();
     hid_detection_manager_ = std::make_unique<HidDetectionManagerImpl>(
-        /*device_service=*/nullptr, fake_bluetooth_hid_detector_.get());
+        /*device_service=*/nullptr);
+    hid_detection_manager_->SetBluetoothHidDetectorForTest(
+        std::move(fake_bluetooth_hid_detector));
 
     HidDetectionManagerImpl::SetInputDeviceManagerBinderForTest(
         base::BindRepeating(&device::FakeInputServiceLinux::Bind,
@@ -223,9 +227,10 @@ class HidDetectionManagerImplTest : public testing::Test {
   size_t num_devices_created_ = 0;
 
   FakeHidDetectionManagerDelegate delegate_;
-  std::unique_ptr<FakeBluetoothHidDetector> fake_bluetooth_hid_detector_;
+  FakeBluetoothHidDetector* fake_bluetooth_hid_detector_ = nullptr;
 
-  std::unique_ptr<hid_detection::HidDetectionManager> hid_detection_manager_;
+  std::unique_ptr<hid_detection::HidDetectionManagerImpl>
+      hid_detection_manager_;
 };
 
 TEST_F(HidDetectionManagerImplTest,
