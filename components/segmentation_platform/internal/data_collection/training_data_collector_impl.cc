@@ -275,10 +275,10 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
 void TrainingDataCollectorImpl::OnGetTrainingTensors(
     const absl::optional<ImmediaCollectionParam>& param,
     const proto::SegmentInfo& segment_info,
-    bool success,
+    bool has_error,
     const std::vector<float>& input_tensors,
     const std::vector<float>& output_tensors) {
-  if (!success) {
+  if (has_error) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kGetInputTensorsFailed);
