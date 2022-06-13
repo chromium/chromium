@@ -233,7 +233,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   DCHECK(!app_id.empty());
 
   const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
-  std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
+  auto app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
 
   const std::string* app_name =
@@ -264,6 +264,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   if (app_id != app_constants::kChromeAppId &&
       app_id != app_constants::kLacrosAppId &&
       (app_type == apps::AppType::kChromeApp ||
+       app_type == apps::AppType::kStandaloneBrowserChromeApp ||
        app_type == apps::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the
     // application. See http://crbug.com/1232520 for more information.
@@ -279,16 +280,19 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
     app_launch_info->active_tab_index = tab_strip_model->active_index();
     std::move(callback).Run(std::move(app_launch_info));
-  } else {
+    return;
+  }
+
+  if (app_id == app_constants::kLacrosAppId) {
     const std::string* lacros_window_id =
         window->GetProperty(app_restore::kLacrosWindowId);
-    if (!lacros_window_id) {
-      std::move(callback).Run(std::move(app_launch_info));
-      return;
-    }
+    DCHECK(lacros_window_id);
     const_cast<ChromeDesksTemplatesDelegate*>(this)->GetLacrosChromeUrls(
         std::move(callback), *lacros_window_id, std::move(app_launch_info));
+    return;
   }
+
+  std::move(callback).Run(std::move(app_launch_info));
 }
 
 desks_storage::DeskModel* ChromeDesksTemplatesDelegate::GetDeskModel() {
