@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
@@ -2498,6 +2499,35 @@ Element& StyleResolver::EnsureElementForCanvasFormattedText() {
     canvas_formatted_text_element_ =
         MakeGarbageCollected<Element>(html_names::kSpanTag, &GetDocument());
   return *canvas_formatted_text_element_;
+}
+
+scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
+    Element& element,
+    unsigned index) {
+  const ComputedStyle& base_style = element.ComputedStyleRef();
+  // TODO(crbug.com/1309178): Support tree-scoped fallback name lookup.
+  StyleRulePositionFallback* position_fallback_rule =
+      GetDocument().GetScopedStyleResolver()->PositionFallbackForName(
+          base_style.PositionFallback());
+  if (!position_fallback_rule ||
+      index >= position_fallback_rule->TryRules().size())
+    return nullptr;
+  StyleRuleTry* try_rule = position_fallback_rule->TryRules()[index];
+  StyleResolverState state(GetDocument(), element);
+  state.SetStyle(ComputedStyle::Clone(base_style));
+  const CSSPropertyValueSet& properties = try_rule->Properties();
+  for (unsigned i = 0; i < properties.PropertyCount(); ++i) {
+    CSSPropertyValueSet::PropertyReference property_ref =
+        properties.PropertyAt(i);
+    if (property_ref.Value().IsVariableReferenceValue()) {
+      // TODO(crbug.com/1309178): Resolve var() references.
+      continue;
+    }
+    StyleBuilder::ApplyProperty(
+        property_ref.Name(), state,
+        ScopedCSSValue(property_ref.Value(), &GetDocument()));
+  }
+  return state.TakeStyle();
 }
 
 }  // namespace blink

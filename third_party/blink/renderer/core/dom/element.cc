@@ -8454,4 +8454,24 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
          GetPseudoId() == kPseudoIdPageTransitionOutgoingImage;
 }
 
+const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
+  // @position-fallback style must be computed out of the main style recalc,
+  // after the base style has been computed.
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kStyleClean);
+  const ComputedStyle* base_style = GetComputedStyle();
+  if (!base_style)
+    return nullptr;
+  if (const ComputedStyle* cached_style =
+          base_style->GetCachedPositionFallbackStyle(index))
+    return cached_style;
+
+  scoped_refptr<const ComputedStyle> style =
+      GetDocument().GetStyleResolver().ResolvePositionFallbackStyle(*this,
+                                                                    index);
+  if (!style)
+    return nullptr;
+  return base_style->AddCachedPositionFallbackStyle(std::move(style), index);
+}
+
 }  // namespace blink

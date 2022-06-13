@@ -195,6 +195,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);
 
+  scoped_refptr<const ComputedStyle> ResolvePositionFallbackStyle(
+      Element&,
+      unsigned index);
+
   // Check if the BODY or HTML element's display or containment stops
   // propagation of BODY style to HTML and viewport.
   bool ShouldStopBodyPropagation(const Element& body_or_html);

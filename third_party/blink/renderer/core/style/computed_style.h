@@ -303,6 +303,9 @@ class ComputedStyle : public ComputedStyleBase,
   Vector<AtomicString>& EnsureVariableNamesCache() const;
   void ClearVariableNamesCache() const;
 
+  PositionFallbackStyleCache& EnsurePositionFallbackStyleCache(
+      unsigned ensure_size) const;
+
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
   ALWAYS_INLINE ComputedStyle();
@@ -431,6 +434,11 @@ class ComputedStyle : public ComputedStyleBase,
       PseudoId pseudo_id,
       const AtomicString& pseudo_argument) const;
   void ClearCachedPseudoElementStyles() const;
+
+  const ComputedStyle* GetCachedPositionFallbackStyle(unsigned index) const;
+  const ComputedStyle* AddCachedPositionFallbackStyle(
+      scoped_refptr<const ComputedStyle>,
+      unsigned index) const;
 
   // If this ComputedStyle is affected by animation/transitions, then the
   // unanimated "base" style can be retrieved with this function.

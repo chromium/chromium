@@ -177,6 +177,32 @@ void ComputedStyle::ClearVariableNamesCache() const {
     cached_data_->variable_names_.reset();
 }
 
+const ComputedStyle* ComputedStyle::AddCachedPositionFallbackStyle(
+    scoped_refptr<const ComputedStyle> style,
+    unsigned index) const {
+  EnsurePositionFallbackStyleCache(index + 1)[index] = std::move(style);
+  return (*cached_data_->position_fallback_styles_)[index].get();
+}
+
+const ComputedStyle* ComputedStyle::GetCachedPositionFallbackStyle(
+    unsigned index) const {
+  if (!cached_data_ || !cached_data_->position_fallback_styles_ ||
+      index >= cached_data_->position_fallback_styles_->size())
+    return nullptr;
+  return (*cached_data_->position_fallback_styles_)[index].get();
+}
+
+PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
+    unsigned ensure_size) const {
+  if (!cached_data_ || !cached_data_->position_fallback_styles_) {
+    EnsureCachedData().position_fallback_styles_ =
+        std::make_unique<PositionFallbackStyleCache>();
+  }
+  if (cached_data_->position_fallback_styles_->size() < ensure_size)
+    cached_data_->position_fallback_styles_->resize(ensure_size);
+  return *cached_data_->position_fallback_styles_;
+}
+
 scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
   return base::AdoptRef(new ComputedStyle(PassKey(), other));
 }

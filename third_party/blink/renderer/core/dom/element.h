@@ -899,6 +899,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   scoped_refptr<ComputedStyle> StyleForPseudoElement(const StyleRecalcContext&,
                                                      const StyleRequest&);
 
+  // Returns the ComputedStyle after applying the declarations in the @try block
+  // at the given index. Returns nullptr if the current element doesn't use
+  // position fallback, or if the index is out of bound.
+  // The style is computed on demand and cached on the ComputedStyle of |this|.
+  const ComputedStyle* StyleForPositionFallback(unsigned index);
+
   virtual bool CanGeneratePseudoElement(PseudoId) const;
 
   virtual bool MatchesDefaultPseudoClass() const { return false; }
