@@ -5,21 +5,24 @@
 #ifndef REMOTING_CLIENT_NOTIFICATION_GSTATIC_JSON_FETCHER_H_
 #define REMOTING_CLIENT_NOTIFICATION_GSTATIC_JSON_FETCHER_H_
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "remoting/client/notification/json_fetcher.h"
+#include "services/network/transitional_url_loader_factory_owner.h"
 #include "url/gurl.h"
+
+namespace network {
+class SimpleURLLoader;
+}
 
 namespace remoting {
 
-class URLRequestContextGetter;
-
 // A JsonFetcher implementation that actually talks to the gstatic server to
 // get back the JSON files.
-class GstaticJsonFetcher final : public JsonFetcher,
-                                 public net::URLFetcherDelegate {
+class GstaticJsonFetcher final : public JsonFetcher {
  public:
   explicit GstaticJsonFetcher(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
@@ -40,12 +43,14 @@ class GstaticJsonFetcher final : public JsonFetcher,
 
   static GURL GetFullUrl(const std::string& relative_path);
 
-  // net::URLFetcherDelegate implementation.
-  void OnURLFetchComplete(const net::URLFetcher* source) override;
+  void OnURLLoadComplete(const network::SimpleURLLoader* source,
+                         std::unique_ptr<std::string> body);
 
-  scoped_refptr<URLRequestContextGetter> request_context_getter_;
-  base::flat_map<std::unique_ptr<net::URLFetcher>, FetchJsonFileCallback>
-      fetcher_callback_map_;
+  network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner_;
+
+  base::flat_map<std::unique_ptr<network::SimpleURLLoader>,
+                 FetchJsonFileCallback>
+      loader_callback_map_;
 };
 
 }  // namespace remoting

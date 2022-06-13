@@ -42,7 +42,6 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
-#include "net/url_request/url_fetcher.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/cpu_utils.h"
@@ -606,11 +605,6 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
     return false;
   }
 #endif  // !defined(REMOTING_MULTI_PROCESS)
-
-  // Ignore certificate requests - the host currently has no client certificate
-  // support, so ignoring certificate requests allows connecting to servers that
-  // request, but don't require, a certificate (optional client authentication).
-  net::URLFetcher::SetIgnoreCertificateRequests(true);
 
   signal_parent_ = cmd_line->HasSwitch(kSignalParentSwitchName);
 

@@ -40,10 +40,6 @@ ChromotingClientRuntime::ChromotingClientRuntime() {
   ui_task_executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
       base::MessagePumpType::UI);
 
-#if defined(DEBUG)
-  net::URLFetcher::SetIgnoreCertificateRequests(true);
-#endif  // DEBUG
-
   // |ui_task_executor_| runs on the main thread, so |ui_task_runner_| will run
   // on the main thread.  We can not kill the main thread when the message loop
   // becomes idle so the callback function does nothing (as opposed to the
