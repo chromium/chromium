@@ -1,9 +1,6 @@
 {
     "0": {
         "benchmarks": {
-            "jetstream2": {
-                "abridged": false
-            },
             "media.mobile": {
                 "abridged": false
             },
@@ -29,7 +26,7 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 37,
-                "end": 121,
+                "end": 120,
                 "abridged": false
             }
         }
@@ -37,8 +34,8 @@
     "2": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 121,
-                "end": 250,
+                "begin": 120,
+                "end": 251,
                 "abridged": false
             }
         }
@@ -46,7 +43,7 @@
     "3": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 250,
+                "begin": 251,
                 "end": 346,
                 "abridged": false
             }
@@ -56,17 +53,12 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 346,
-                "end": 420,
                 "abridged": false
             }
         }
     },
     "5": {
         "benchmarks": {
-            "rendering.mobile": {
-                "begin": 420,
-                "abridged": false
-            },
             "speedometer": {
                 "abridged": false
             },
@@ -79,16 +71,16 @@
         }
     },
     "extra_infos": {
-        "num_stories": 522,
-        "predicted_min_shard_time": 1945.0,
-        "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 1977.0,
-        "predicted_max_shard_index": 5,
-        "shard #0": 1965.0,
-        "shard #1": 1964.0,
-        "shard #2": 1959.0,
-        "shard #3": 1945.0,
+        "num_stories": 521,
+        "predicted_min_shard_time": 1939.0,
+        "predicted_min_shard_index": 5,
+        "predicted_max_shard_time": 1972.0,
+        "predicted_max_shard_index": 3,
+        "shard #0": 1969.0,
+        "shard #1": 1956.0,
+        "shard #2": 1960.0,
+        "shard #3": 1972.0,
         "shard #4": 1964.0,
-        "shard #5": 1977.0
+        "shard #5": 1939.0
     }
 }
