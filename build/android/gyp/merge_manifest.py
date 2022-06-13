@@ -45,7 +45,7 @@ def _ProcessManifest(manifest_path, min_sdk_version, target_sdk_version,
   manifest_utils.AssertPackage(manifest, manifest_package)
   if manifest_package:
     manifest.set('package', manifest_package)
-  tmp_prefix = os.path.basename(manifest_path)
+  tmp_prefix = manifest_path.replace(os.path.sep, '-')
   with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
     manifest_utils.SaveManifest(doc, patched_manifest.name)
     yield patched_manifest.name, manifest_utils.GetPackage(manifest)
@@ -61,7 +61,7 @@ def _SetTargetApi(manifest_path, target_sdk_version):
   """
   doc, manifest, _ = manifest_utils.ParseManifest(manifest_path)
   manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
-  tmp_prefix = os.path.basename(manifest_path)
+  tmp_prefix = manifest_path.replace(os.path.sep, '-')
   with tempfile.NamedTemporaryFile(prefix=tmp_prefix) as patched_manifest:
     manifest_utils.SaveManifest(doc, patched_manifest.name)
     yield patched_manifest.name
