@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Բացված է արտաքին սարքերի համար ներկառուցված ծրագրաշարի թարմացման պատուհանը։ Հասանելի է <ph name="NUM_UPDATES" /> թարմացում։</translation>
+<translation id="1165039591588034296">Սխալ</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
 <translation id="1175951029573070619">Միջին (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5179530508336824319">Հաջորդ էկրանին անցնելու համար միացրեք write-protect-ը։ Անցեք սարքի արտադրողի աջակցման ծառայության էջ՝ ցուցումներին ծանոթանալու համար։</translation>
+<translation id="5181140330217080051">Ներբեռնում</translation>
 <translation id="5190187232518914472">Վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
 Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
@@ -520,6 +522,7 @@
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5649768706273821470">Լսել</translation>
 <translation id="5655283760733841251">Ստեղնաշարի պայծառության ավելացում</translation>
+<translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ընտանիք</translation>
@@ -532,6 +535,7 @@
 <translation id="57838592816432529">Անջատել ձայնը</translation>
 <translation id="5784136236926853061">HTTP-ի բարձր հապաղում</translation>
 <translation id="578753362485952307">Եթե դուք փոփոխում եք մայր պլատան՝ այլ սարքում օգտագործման համար, անցեք <ph name="LINK_BEGIN" />համապատասխան գործընթացին<ph name="LINK_END" />։</translation>
+<translation id="5790085346892983794">Հաջողվեց</translation>
 <translation id="5832805196449965646">Ավելացնել անձ</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5843706793424741864">Ֆարենհայտ</translation>

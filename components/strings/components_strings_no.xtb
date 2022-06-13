@@ -291,6 +291,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1662550410081243962">Lagre og fyll ut betalingsmåter</translation>
 <translation id="1663943134801823270">Kortene og adressene er fra Chrome. Du kan administrere dem i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Fra nå av oversettes sider på <ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" />.</translation>
+<translation id="1673886523110456987">Betal med <ph name="CARD_DETAIL" /> for å bruke tilbudet</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Kortsiden først</translation>
 <translation id="168693727862418163">Denne regelverdien kunne ikke valideres mot oppsettet og blir derfor ignorert.</translation>
@@ -1106,6 +1107,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3986705137476756801">Slå av Direkteteksting inntil videre</translation>
 <translation id="3987940399970879459">Under 1 MB</translation>
 <translation id="3990250421422698716">Støtforskyvning</translation>
+<translation id="3992684624889376114">Om denne siden</translation>
 <translation id="3996311196211510766">Nettstedet <ph name="ORIGIN" /> har bedt om at en opphavsregel
     skal gjelde for alle forespørsler som sendes til det, men denne regelen kan ikke tas i bruk akkurat nå.</translation>
 <translation id="4006465311664329701">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
@@ -1555,6 +1557,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Datamaskin</translation>
+<translation id="5177076414499237632">Finn ut mer om sidens kilde og emne</translation>
 <translation id="5179510805599951267">Er ikke dette <ph name="ORIGINAL_LANGUAGE" />? Rapportér denne feilen</translation>
 <translation id="518639307526414276">Dyremat og -utstyr</translation>
 <translation id="5190835502935405962">Bokmerkerad</translation>

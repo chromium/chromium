@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">開咗更新外部裝置韌體嘅視窗。有 <ph name="NUM_UPDATES" /> 項可用嘅更新。</translation>
+<translation id="1165039591588034296">錯誤</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5179530508336824319">啟用「寫入保護」功能即可繼續前往下一個畫面。請前往裝置製造商的支援網頁取得相關指示。</translation>
+<translation id="5181140330217080051">下載中</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
 <translation id="5212543919916444558">系統在您的畫面上找不到任何可提供協助的內容。
 請嘗試輕按麥克風並發問。</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">只供內部使用</translation>
 <translation id="5649768706273821470">收聽</translation>
 <translation id="5655283760733841251">鍵盤校光亮度</translation>
+<translation id="5659593005791499971">電郵</translation>
 <translation id="5669267381087807207">啟用</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家庭</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
 <translation id="578753362485952307">如果您正在重新整理主機板以便在其他裝置上使用，請前往<ph name="LINK_BEGIN" />重新操作流程<ph name="LINK_END" />。</translation>
+<translation id="5790085346892983794">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5843706793424741864">華氏</translation>
@@ -545,7 +549,7 @@
 <translation id="5866840822086176774">非常強</translation>
 <translation id="588258955323874662">全螢幕</translation>
 <translation id="5895138241574237353">重新啟動</translation>
-<translation id="5898758006340607522">電源按鈕</translation>
+<translation id="5898758006340607522">開關按鈕</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5903200662178656908">裝置係鍵盤同滑鼠組合。</translation>
 <translation id="5916084858004523819">禁止</translation>
@@ -869,7 +873,7 @@
 <translation id="8919792139048574232">查看已修正的項目</translation>
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8923267550422472772">每月重設日</translation>
-<translation id="8925613211674558308">已快取的 VPD</translation>
+<translation id="8925613211674558308">完成快取的 VPD</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
 <translation id="8930521118335213258">對等</translation>
 <translation id="8930622219860340959">無線</translation>

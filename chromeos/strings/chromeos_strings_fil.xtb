@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Nakabukas ang window para i-update ang firmware para sa mga external device. <ph name="NUM_UPDATES" /> (na) update ang available.</translation>
+<translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="1175951029573070619">Katamtaman (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alisin</translation>
@@ -63,6 +64,7 @@
 <translation id="1459784442280469416">I-save sa USB</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
+<translation id="147809995039451286">Hindi ma-download ang update</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Nag-a-update ng firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
@@ -179,6 +181,7 @@
 <translation id="2418150275289244458">Buksan sa mga setting</translation>
 <translation id="2421798028054665193">Larawan <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
+<translation id="2447969267935997922">Tapos na ang pag-install. Puwede mo nang alisin ang iyong USB drive o SD card.</translation>
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2480034874476596812">Manual na i-off</translation>
@@ -466,6 +469,7 @@
 <translation id="5168185087976003268">Tagal ng baterya</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5179530508336824319">I-enable ang write-protect para magpatuloy sa susunod na screen. Pumunta sa page ng suporta ng manufacturer ng device para sa mga tagubilin.</translation>
+<translation id="5181140330217080051">Nagda-download</translation>
 <translation id="5190187232518914472">Balikan ang iyong mga paboritong alaala. Para magdagdag o mag-edit ng mga album, pumunta sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Wala akong makitang kahit ano sa iyong screen kung saan ako makakatulong.
 Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
@@ -522,6 +526,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
+<translation id="5659593005791499971">Email</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Pamilya</translation>
@@ -534,6 +539,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
 <translation id="578753362485952307">Kung babaguhin mo ang isang mainboard na gagamitin sa ibang device, pumunta sa <ph name="LINK_BEGIN" />daloy ng pagbabago<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Tagumpay</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

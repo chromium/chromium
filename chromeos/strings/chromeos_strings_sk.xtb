@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizácie firmvéru externých zariadení je otvorené. K dispozícii je tento počet aktualizácií: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Chyba</translation>
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Priemerné (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Stav batérie</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5179530508336824319">Ak chcete pokračovať na ďalšiu obrazovku, zapnite ochranu proti zápisu. Pokyny nájdete na stránke podpory výrobcu zariadenia.</translation>
+<translation id="5181140330217080051">Sťahovanie</translation>
 <translation id="5190187232518914472">Pripomeňte si obľúbené spomienky. Ak chcete pridať alebo upraviť albumy, prejdite do <ph name="LINK_BEGIN" />Fotiek Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
@@ -522,6 +524,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5649768706273821470">Počúvať</translation>
 <translation id="5655283760733841251">Zvýšenie jasu obrazovky</translation>
+<translation id="5659593005791499971">E-mail</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -534,6 +537,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
 <translation id="578753362485952307">Ak upravujete hlavný panel na použitie v inom zariadení, prejdite na <ph name="LINK_BEGIN" />tok úprav<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Úspešné</translation>
 <translation id="5832805196449965646">Pridať osobu</translation>
 <translation id="583281660410589416">Neznáme</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

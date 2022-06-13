@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">更新外部裝置韌體的視窗已開啟。<ph name="NUM_UPDATES" /> 項可用的更新。</translation>
+<translation id="1165039591588034296">錯誤</translation>
 <translation id="1175697296044146566">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">電池壽命</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5179530508336824319">啟用寫入保護功能即可繼續前往下一個畫面。相關操作說明請參閱裝置製造商的支援網頁。</translation>
+<translation id="5181140330217080051">下載中</translation>
 <translation id="5190187232518914472">重溫你最珍視的美好回憶。如要新增或編輯相簿，請前往 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />。</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5649768706273821470">聆聽</translation>
 <translation id="5655283760733841251">鍵盤亮度調高</translation>
+<translation id="5659593005791499971">電子郵件</translation>
 <translation id="5669267381087807207">啟用中</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家用</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">靜音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
 <translation id="578753362485952307">如果你正在重新整理主機板以便用於另一部裝置，請前往<ph name="LINK_BEGIN" />重新作業流程<ph name="LINK_END" />。</translation>
+<translation id="5790085346892983794">成功</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5843706793424741864">華氏</translation>

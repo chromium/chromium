@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utilizator</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Fereastra de actualizare a firmware-ului pentru dispozitivele externe este deschisă. <ph name="NUM_UPDATES" /> actualizări disponibile.</translation>
+<translation id="1165039591588034296">Eroare</translation>
 <translation id="1175697296044146566">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Medie (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Elimină</translation>
@@ -63,6 +64,7 @@
 <translation id="1459784442280469416">Salvează pe USB</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
+<translation id="147809995039451286">Nu s-a putut descărca actualizarea</translation>
 <translation id="1478594628797167447">Scaner</translation>
 <translation id="1491076385728777984">Se actualizează firmware-ul pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
@@ -179,6 +181,7 @@
 <translation id="2418150275289244458">Deschide în setări</translation>
 <translation id="2421798028054665193">Imaginea <ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
+<translation id="2447969267935997922">Instalarea s-a finalizat. Poți să scoți unitatea USB sau cardul SD.</translation>
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Dezactivează manual</translation>
@@ -289,6 +292,7 @@
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
 <translation id="3643810137582748570">Omite calibrarea</translation>
+<translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
 <translation id="3678765385266369662">Selectează cum dorești să dezactivezi protecția la scriere</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
@@ -306,6 +310,7 @@
 <translation id="3856304145690230735">Giroscopul bazei</translation>
 <translation id="385832974417157471">Înainte de închidere, rulează funcția Powerwash pe dispozitiv. Dacă dispozitivul are capac, așteaptă să se finalizeze funcția Powerwash înainte de a închide capacul. Finalizarea funcției Powerwash poate dura maximum un minut.</translation>
 <translation id="3858860766373142691">Nume</translation>
+<translation id="3862598938296403232">Descrierea este obligatorie</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="3866249974567520381">Descriere</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
@@ -464,6 +469,7 @@
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5179530508336824319">Activează protecția la scriere ca să treci la ecranul următor. Accesează pagina de asistență a producătorului dispozitivului pentru instrucțiuni.</translation>
+<translation id="5181140330217080051">Se descarcă</translation>
 <translation id="5190187232518914472">Retrăiește amintirile preferate. Pentru a adăuga sau a edita albume, accesează <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
 Atinge microfonul și întreabă orice dorești.</translation>
@@ -520,6 +526,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5649768706273821470">Ascultă</translation>
 <translation id="5655283760733841251">Creșterea luminozității tastaturii</translation>
+<translation id="5659593005791499971">Adresă de e-mail</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -532,6 +539,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
 <translation id="5784136236926853061">Latență mare a solicitărilor HTTP</translation>
 <translation id="578753362485952307">Dacă repari o placă de bază ca să o folosești cu alt dispozitiv, accesează <ph name="LINK_BEGIN" />fluxul de reparare<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Ai reușit</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +687,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
+<translation id="7154020516215182599">Trimite feedback sau descrie problema. Dacă este posibil, include pașii pentru reproducerea problemei.</translation>
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>

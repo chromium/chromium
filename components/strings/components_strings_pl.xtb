@@ -586,6 +586,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2523886232349826891">Zapisana tylko na tym urządzeniu</translation>
 <translation id="2524461107774643265">Dodaj więcej informacji</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
+<translation id="253493526287553278">Zobacz szczegóły kodu promocyjnego</translation>
 <translation id="2535585790302968248">Otwórz nową kartę incognito, aby przeglądać prywatnie</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
 <translation id="2536110899380797252">Dodaj adres</translation>
@@ -1272,6 +1273,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4435702339979719576">pocztówka)</translation>
 <translation id="443673843213245140">Korzystanie z serwera proxy jest wyłączone, ale podano konfigurację proxy.</translation>
 <translation id="4441832193888514600">Ignorowana, ponieważ tę zasadę można skonfigurować wyłącznie jako dotyczącą użytkowników i obowiązującą w chmurze.</translation>
+<translation id="4442470707340296952">Karty w Chrome</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="4451135742916150903">Może prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="4452328064229197696">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>

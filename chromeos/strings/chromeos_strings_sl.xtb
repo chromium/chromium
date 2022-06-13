@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno za posodobitev vdelane programske opreme za zunanje naprave je odprto. Na voljo je toliko posodobitev: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Napaka</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Povprečna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrani</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Vhod</translation>
 <translation id="3632579075709132555">Preklop zaslona za zasebnost</translation>
 <translation id="3643810137582748570">Preskoči umerjanje</translation>
+<translation id="3651050199673793219">Izbira enote temperature</translation>
 <translation id="3678765385266369662">Izberite, kako želite izklopiti zaščito pred pisanjem</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Osnovni žiroskop</translation>
 <translation id="385832974417157471">Pred zaustavitvijo uporabite funkcijo Powerwash za napravo. Če ima naprava pokrov, počakajte do konca delovanja funkcije Powerwash, preden ga zaprete. Delovanje funkcije Powerwash lahko traja do eno minuto.</translation>
 <translation id="3858860766373142691">Ime</translation>
+<translation id="3862598938296403232">Opis je obvezen.</translation>
 <translation id="3865414814144988605">Ločljivost</translation>
 <translation id="3866249974567520381">Opis</translation>
 <translation id="387301095347517405">Število ciklov popolnega polnjenja baterije.</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5179530508336824319">Omogočite zaščito pred pisanjem, če želite nadaljevati na naslednji zaslon. Poiščite navodila na strani za podporo proizvajalca naprave.</translation>
+<translation id="5181140330217080051">Prenos</translation>
 <translation id="5190187232518914472">Podoživite svoje najlepše spomine. Če želite dodati ali urediti albume, odprite <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na zaslonu ni ničesar uporabnega.
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
@@ -520,6 +524,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5655283760733841251">Povečanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="5659593005791499971">E-pošta</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Družina</translation>
@@ -532,6 +537,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5784136236926853061">Velika zakasnitev HTTP</translation>
 <translation id="578753362485952307">Če želite predelati matično ploščo za uporabo v drugi napravi, si oglejte <ph name="LINK_BEGIN" />potek predelave<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Uspešno</translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
+<translation id="7154020516215182599">Pošljite povratne informacije ali opišite težavo. Če je mogoče, vključite postopek za ponovitev težave.</translation>
 <translation id="7155171745945906037">Obstoječa fotografija iz fotoaparata ali datoteke</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Profilna slika</translation>

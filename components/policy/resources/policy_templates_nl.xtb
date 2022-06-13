@@ -1737,6 +1737,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="283478052049914107">Als je het beleid toepast en een niet-standaard poort opgeeft (dat wil zeggen, een andere poort dan 80 of 443), wordt deze poort opgenomen in de gegenereerde Kerberos-SPN.
 
       Als je het beleid niet toepast of niet instelt, bevat de gegenereerde Kerberos-SPN geen poort.</translation>
+<translation id="2835686964326214400">Aangepast schema instellen om apparaten opnieuw op te starten</translation>
 <translation id="2838830882081735096">Gegevensmigratie en ARC niet toestaan</translation>
 <translation id="2839294585867804686">Instellingen voor Network File Shares</translation>
 <translation id="284288632677954003">URL van een XML-bestand dat URL's bevat die nooit overschakeling naar een andere browser veroorzaken.</translation>
@@ -2964,6 +2965,16 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
           Als dit beleid niet is ingesteld, staat de markering van het caret-teken in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="4183229833636799228">Standaardinstelling voor <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="4186244263855283575">Hiermee kun je een aangepast schema instellen om apparaten opnieuw op te starten. Als dit beleid is ingesteld op True, wordt het apparaat opnieuw opgestart volgens het schema. Het beleid moet worden verwijderd om meer instanties van gepland opnieuw opstarten te annuleren.
+
+      Het volgende geldt voor gebruikerssessies en gastsessies:
+
+* De gebruikers krijgen 1 uur vóór de geplande tijd een melding dat het apparaat opnieuw wordt opgestart. Ze kunnen ervoor kiezen op dat moment opnieuw op te starten of te wachten op het gepland opnieuw opstarten. Gepland opnieuw opstarten kan niet worden uitgesteld.
+
+        * Er is een respijtperiode van 1 uur nadat het apparaat is opgestart. Instanties van gepland opnieuw opstarten worden overgeslagen tijdens deze periode en opnieuw gepland voor de volgende dag, week of maand, afhankelijk van de instelling.
+
+      In kiosksessies is er geen respijtperiode en zijn er geen meldingen over opnieuw opstarten.
+</translation>
 <translation id="4187576366596772431">De WebHID API op deze sites blokkeren</translation>
 <translation id="4192388905594723944">URL voor het valideren van verificatietoken voor client voor externe toegang</translation>
 <translation id="4203055629055264833">Als je dit beleid toepast of niet instelt, kunnen gebruikers de meest recente resultatenpagina van de standaard zoekmachine in een zijvenster tonen door een icoon in de werkbalk aan/uit te zetten.

@@ -2637,6 +2637,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> သည် အောက်ပါဖိုင်များကို ကြည့်နိုင်သည်</translation>
 <translation id="3484273680291419129">အန္တရာယ်ဖြစ်စေနိုင်သော ဆော့ဖ်ဝဲများကို ဖယ်ရှားနေပါသည်...</translation>
 <translation id="3484869148456018791">အသိမှတ်ပြု လက်မှတ်အသစ် ရယူရန်</translation>
+<translation id="3486950712960783074">သင်၏ခရီးစဉ်</translation>
 <translation id="3487007233252413104">အမည်မသိရ လုပ်ကိုင်မှု</translation>
 <translation id="3490695139702884919">ဒေါင်းလုဒ်လုပ်နေသည်... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">သင့်ကလေး၏အကောင့်ကို Family Link မိဘ အထိန်းအချုပ်များအတွက် စနစ်ထည့်သွင်းမထားပါ။ စနစ်ထည့်သွင်းမှုကို အပြီးသတ်ပြီးပါက မိဘ အထိန်းအချုပ်များကို ထည့်သွင်းနိုင်သည်။ မိဘ အထိန်းအချုပ်များအကြောင်း အချက်အလက်များကို Explore အက်ပ်တွင် ရှာတွေ့နိုင်သည်။</translation>
@@ -2949,6 +2950,7 @@
 <translation id="3797739167230984533">သင့်အဖွဲ့အစည်းက သင်၏ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲထားပါသည်<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />”အတွက် <ph name="SEARCH_ENGINE" /> ကို ရှာဖွေပါ</translation>
 <translation id="3798449238516105146">ဗားရှင်း</translation>
+<translation id="3798632811625902122">ဘလူးတုသ်သုံးစက် <ph name="DEVICE" /> က တွဲချိတ်ခွင့် ရလိုသည်။</translation>
 <translation id="3799128412641261490">ခလုတ်သုံးခြင်း ဆက်တင်များ</translation>
 <translation id="3800806661949714323">အားလုံးပြရန် (အကြံပြုထားသည်)</translation>
 <translation id="3800828618615365228">Google Chrome and ChromeOS နောက်ဆက်တွဲ စည်းမျဉ်းများ</translation>
@@ -4939,6 +4941,7 @@
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="5792728279623964091">သင့်ဖွင့်ပိတ်ခလုတ်ကို တို့ပါ</translation>
 <translation id="5793339252089865437">အပ်ဒိတ်ကို သင့်မိုဘိုင်းကွန်ရက်မှတစ်ဆင့် ဒေါင်းလုဒ်လုပ်လျှင် ကျသင့်ငွေများ အများအပြားပေးရနိုင်ပါသည်။</translation>
+<translation id="5793420564274426163">တွဲချိတ်ရန် အတည်ပြုချက်</translation>
 <translation id="5794034487966529952">မျက်နှာပြင်နေရာ ‘<ph name="DESK_TITLE" />’ တွင် ဘရောင်ဇာဝင်းဒိုး <ph name="NUM_BROWSERS" /> ခု ဖွင့်ထားသည်</translation>
 <translation id="5794414402486823030">အမြဲတမ်း စနစ် ကြည့်ရှုသူဖြင့် ဖွင့်ပါ</translation>
 <translation id="5794700615121138172">Linux မျှဝေထားသော ဖိုင်တွဲများ</translation>
@@ -7432,6 +7435,7 @@
 <translation id="8242426110754782860">ဆက်လက်လုပ်ဆောင်ပါ</translation>
 <translation id="8243948765190375130">မီဒီယာ အရည်အသွေးကို လျှော့ချနိုင်သည်</translation>
 <translation id="8244514732452879619">မကြာမီ မီးပိတ်ပါတော့မည်</translation>
+<translation id="8245361042748627813">ဤဖြတ်လမ်းလင့်ခ် ပြောင်းသွားသည်။ စနစ်ဒိုင်ယာလော့သုံး၍ ပုံနှိပ်ထုတ်ယူရန် <ph name="NEW_SHORTCUT_KEY" /> သုံးပါ။</translation>
 <translation id="8246776524656196770">သင့်လုံခြုံရေးကီးကို ပင်နံပါတ် (ကိုယ်ပိုင်စိစစ်ရေး အမှတ်) နှင့် ကာကွယ်ပါ</translation>
 <translation id="8248050856337841185">&amp;ကပ်ပေးရန်</translation>
 <translation id="8248381369318572865">သင့်မိုက်ခရိုဖုန်းကို သုံးပြီး သင့်စကားပြောကို ပိုင်းခြားစိတ်ဖြာနိုင်သည်</translation>
@@ -7736,6 +7740,7 @@
 <translation id="8561565784790166472">သတိထားပြီး ရှေ့ဆက်ပါ</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /><ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">အက်ပ် ကို အဆင့်နှိမ့်ရန် ကြိုးပမ်းခဲ့သည်။</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> အကြောင်း ပိုမိုသိရှိရန်</translation>
 <translation id="8569682776816196752">သွားမည့် ခရီးဆုံးများ မတွေ့ရ</translation>
 <translation id="8571213806525832805">ပြီးခဲ့သည့် ၄ ပတ်</translation>
 <translation id="8571687764447439720">Kerberos လက်မှတ် ထည့်ရန်</translation>

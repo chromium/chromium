@@ -348,6 +348,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2842985007712546952">Pasta superior</translation>
 <translation id="2856503607207334158">Falha ao iniciar sessão</translation>
 <translation id="2860954141821109167">Certifique-se de que uma aplicação de telefone está ativada neste dispositivo.</translation>
+<translation id="2861923151411510142">Algumas funcionalidades do Chrome vão deixar de estar disponíveis</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Pré-carregar páginas</translation>
 <translation id="2888126860611144412">Acerca do Chrome</translation>
@@ -494,7 +495,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3622349720008044802">Faça a gestão das janelas</translation>
 <translation id="3631987586758005671">A partilhar com <ph name="DEVICE_NAME" />…</translation>
 <translation id="363596933471559332">Inicie automaticamente sessão em Sites com as credenciais armazenadas. Quando a funcionalidade está desativada, é-lhe sempre pedida validação antes de iniciar sessão num Website.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Pedir site para dispositivos móveis</translation>
 <translation id="3687645719033307815">Está a ver uma pré-visualização desta página.</translation>
 <translation id="3690369331356918524">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
@@ -891,6 +891,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5869789175361934029">Continue a partir de outro dispositivo</translation>
 <translation id="587735546353481577">Para seguir um site, aceda ao site, abra o menu do Chrome e toque em Seguir.</translation>
+<translation id="5879072387416556377">Obtenha sugestões melhores</translation>
 <translation id="5880748256563468367">Aceder ao feed</translation>
 <translation id="5884076754568147479">Para ajudar a concluir as tarefas, a Google vai receber os URLs e os conteúdos dos sites nos quais utiliza o Assistente, bem como as informações que envia através do mesmo</translation>
 <translation id="5906513782029855931">Conhecer os URLs dos sites permite que o Assistente Google ajude a concluir tarefas. Pode desativar o Assistente nas definições do Chrome.</translation>
@@ -1234,6 +1235,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="770741401784017797">A criar GIF</translation>
 <translation id="7707922173985738739">Utilizar dados móveis</translation>
 <translation id="7709094866268987903">Os interesses que removeu serão apresentados aqui</translation>
+<translation id="7709918231054955894">Obtenha todos os seus separadores</translation>
 <translation id="7725024127233776428">As páginas que adiciona aos marcadores aparecem aqui.</translation>
 <translation id="7757787379047923882">Texto partilhado a partir do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Escolher data e hora</translation>
@@ -1429,6 +1431,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8656747343598256512">Inicie sessão neste site e no Chrome com a sua Conta Google. Pode ativar a sincronização mais tarde.</translation>
 <translation id="8659579665266920523">Como pesquisar com o Chrome</translation>
 <translation id="8662811608048051533">A sua sessão é terminada na maioria dos sites.</translation>
+<translation id="8664215986015753476">Use o Chrome à sua maneira</translation>
 <translation id="8664979001105139458">O nome do ficheiro já existe</translation>
 <translation id="8666759526542103597">Acerca da personalização de anúncios com base no navegador</translation>
 <translation id="8667760277771450375">Estamos a explorar formas de restringir a monitorização entre sites enquanto permitimos que os sites acabem com as fraudes e o spam de anúncios.</translation>

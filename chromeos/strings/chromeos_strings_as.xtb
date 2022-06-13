@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰ আপডে’ট কৰা ৱিণ্ড’খন খোলা আছে। <ph name="NUM_UPDATES" /> টা আপডে’ট উপলব্ধ।</translation>
+<translation id="1165039591588034296">আসোঁৱাহ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
 <translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">ইনপুট</translation>
 <translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
 <translation id="3643810137582748570">কেলিব্ৰে’শ্বন বাদ দিয়ক</translation>
+<translation id="3651050199673793219">তাপমানৰ এটা একক বাছনি কৰক</translation>
 <translation id="3678765385266369662">আপুনি ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাৰ সুবিধাটো কেনেকৈ অফ কৰিব বিচাৰে সেয়া বাছনি কৰক</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="370665806235115550">ল'ড হৈ আছে...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">বে’ছ জাইৰোস্ক’প</translation>
 <translation id="385832974417157471">শ্বাট ডাউন কৰাৰ আগতে আপোনাৰ ডিভাইচটো পাৱাৰৱাশ্ব কৰক। যদি আপোনাৰ ডিভাইচটোৰ ঢাকনী আছে, ঢাকনীখন বন্ধ কৰাৰ আগতে পাৱাৰৱাশ্ব সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰক। পাৱাৰৱাশ্ব সম্পূৰ্ণ হ’বলৈ এক মিনিটলৈকে সময় ল’ব পাৰে।</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="3862598938296403232">বিৱৰণৰ আৱশ্যক</translation>
 <translation id="3865414814144988605">ৰিজ'লিউশ্বন</translation>
 <translation id="3866249974567520381">বিৱৰণ</translation>
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5179530508336824319">পৰৱৰ্তী স্ক্ৰীনলৈ যাবলৈ ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাৰ সুবিধাটো সক্ষম কৰক। নিৰ্দেশাৱলীৰ বাবে ডিভাইচৰ নিৰ্মাতাৰ সহায়ক পৃষ্ঠাখনলৈ যাওক।</translation>
+<translation id="5181140330217080051">ডাউনল’ড হৈ আছে</translation>
 <translation id="5190187232518914472">আপোনাৰ প্ৰিয় স্মৃতি ৰোমন্থন কৰক। এলবাম যোগ দিবলৈ অথবা সম্পাদনা কৰিবলৈ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
 মোক কিবা সুধিবলৈ মাইকটো টিপক।</translation>
@@ -520,6 +524,7 @@
 <translation id="5620281292257375798">কেৱল অভ্যন্তৰীণ</translation>
 <translation id="5649768706273821470">শুনক</translation>
 <translation id="5655283760733841251">কীব’ৰ্ডৰ উজ্জ্বলতা আপ</translation>
+<translation id="5659593005791499971">ইমেইল</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পৰিয়াল</translation>
@@ -532,6 +537,7 @@
 <translation id="57838592816432529">মিউট কৰক</translation>
 <translation id="5784136236926853061">HTTPৰ উচ্চ বিলম্বতা</translation>
 <translation id="578753362485952307">যদি আপুনি অন্য এটা ডিভাইচত ব্যৱহাৰ কৰিবলৈ এখন মূলব’ৰ্ডত পুনৰ কাম কৰি আছে, <ph name="LINK_BEGIN" />পুনৰ কাৰ্য কৰাৰ ফ্ল’<ph name="LINK_END" />লৈ যাওক।</translation>
+<translation id="5790085346892983794">সফল হৈছে</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5843706793424741864">ফাৰেনহাইট</translation>
@@ -679,6 +685,7 @@
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="714876143603641390">LAN সংযোগ</translation>
+<translation id="7154020516215182599">আপোনাৰ মতামত পঠিয়াওক অথবা আপোনাৰ সমস্যাটো বৰ্ণনা কৰক। যদি সম্ভৱ, আপোনাৰ সমস্যাটোৰ পুনৰ সৃষ্টি কৰাৰ বাবে ল’বলগীয়া পদক্ষেপসমূহ বৰ্ণনা কৰক।</translation>
 <translation id="7155171745945906037">কেমেৰা বা ফাইলৰ পৰা ইতিমধ্যে থকা ফট’</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">প্ৰ’ফাইলৰ চিত্ৰ</translation>

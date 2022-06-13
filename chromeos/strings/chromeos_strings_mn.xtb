@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Хэрэглэгч</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Гадаад төхөөрөмжүүдийн жижиг программыг шинэчлэх цонх нээлттэй байна. <ph name="NUM_UPDATES" /> шинэчлэлт боломжтой байна.</translation>
+<translation id="1165039591588034296">Алдаа</translation>
 <translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="1175951029573070619">Дундаж (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Хасах</translation>
@@ -63,6 +64,7 @@
 <translation id="1459784442280469416">USB-д хадгалах</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
+<translation id="147809995039451286">Шинэчлэлтийг татаж чадсангүй</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> дээр жижиг программыг шинэчилж байна</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> энэ хэрэглэгчийг удирддаг бөгөөд алсаас тохиргоог удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
@@ -179,6 +181,7 @@
 <translation id="2418150275289244458">Тохиргоонд нээх</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-с <ph name="CURRENT_PAGE" />-р зураг</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
+<translation id="2447969267935997922">Суулгаж дууслаа. Та одоо USB драйв эсвэл SD картаа салгах боломжтой.</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="2480034874476596812">Гар аргаар унтраах</translation>
@@ -289,6 +292,7 @@
 <translation id="3621202678540785336">Оролт</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="3643810137582748570">Тохируулгыг алгасах</translation>
+<translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
 <translation id="3678765385266369662">Та Write Protect-г хэрхэн унтраахыг хүсэж байгаагаа сонгоно уу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
@@ -306,6 +310,7 @@
 <translation id="3856304145690230735">Суурийн гироскоп</translation>
 <translation id="385832974417157471">Унтраахаасаа өмнө төхөөрөмжөө powerwash хийнэ үү. Хэрэв таны төхөөрөмж тагтай бол тагийг нь хаахаас өмнө powerwash хийж дуустал хүлээнэ үү. Powerwash хийж дуусахад хэдэн минут зарцуулж магадгүй.</translation>
 <translation id="3858860766373142691">Нэр</translation>
+<translation id="3862598938296403232">Тайлбар шаардлагатай</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
@@ -464,6 +469,7 @@
 <translation id="5168185087976003268">Батарей барилт</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5179530508336824319">Дараагийн дэлгэц рүү үргэлжлүүлэхийн тулд бичихээс хамгаалахыг идэвхжүүлнэ үү. Төхөөрөмжийн үйлдвэрлэгчийн тусламжийн хуудас руу очиж, зааварчилгааг авна уу.</translation>
+<translation id="5181140330217080051">Татаж байна</translation>
 <translation id="5190187232518914472">Дуртай дурсамжуудаа сэргээгээрэй. Цомог нэмэх эсвэл засахын тулд <ph name="LINK_BEGIN" />Google Зураг<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
 Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
@@ -520,6 +526,7 @@
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5649768706273821470">Сонсох</translation>
 <translation id="5655283760733841251">Гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
+<translation id="5659593005791499971">И-мэйл хаяг</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Гэр бүл</translation>
@@ -532,6 +539,7 @@
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
 <translation id="578753362485952307">Хэрэв та эх хавтанг өөр төхөөрөмжид ашиглахын тулд дахин боловсруулж байвал <ph name="LINK_BEGIN" />дахин боловсруулах урсгал<ph name="LINK_END" /> руу очно уу.</translation>
+<translation id="5790085346892983794">Амжилттай гүйцэтгэлээ</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
@@ -679,6 +687,7 @@
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
+<translation id="7154020516215182599">Санал хүсэлтээ хуваалц эсвэл асуудлаа тайлбарлана уу. Боломжтой бол асуудлаа дахин гаргах алхмуудыг оруулаарай.</translation>
 <translation id="7155171745945906037">Камер эсвэл файлд байгаа зураг</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Профайлын зураг</translation>

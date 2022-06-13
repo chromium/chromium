@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1128128132059598906">EAP – TTLS</translation>
 <translation id="1145018782460575098">Вікно "Оновіть мікропрограму для зовнішніх пристроїв" відкрито. Доступно оновлень: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Помилка</translation>
 <translation id="1175697296044146566">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Середній сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Видалити</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Вхід</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3643810137582748570">Пропустити калібрування</translation>
+<translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
 <translation id="3678765385266369662">Виберіть спосіб, у який хочете вимкнути захист від запису</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Гіроскоп корпусу</translation>
 <translation id="385832974417157471">Перш ніж завершити роботу, скиньте його налаштування за допомогою функції Powerwash. Якщо пристрій має кришку, не закривайте її, доки триває скидання налаштувань. Це може зайняти до однієї хвилини.</translation>
 <translation id="3858860766373142691">Назва</translation>
+<translation id="3862598938296403232">Введіть опис</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5179530508336824319">Увімкніть захист від запису, щоб перейти на наступний екран. Вказівки можна дізнатися на сторінці підтримки виробника пристрою.</translation>
+<translation id="5181140330217080051">Завантаження</translation>
 <translation id="5190187232518914472">Пориньте в улюблені спогади. Щоб додати або змінити альбом, перейдіть у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
 Торкніться значка мікрофона, щоб поставити запитання.</translation>
@@ -520,6 +524,7 @@
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5649768706273821470">Слухати</translation>
 <translation id="5655283760733841251">Збільшити яскравість клавіатури</translation>
+<translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сім’я</translation>
@@ -532,6 +537,7 @@
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
 <translation id="578753362485952307">Якщо ви модифікуєте материнську плату для використання на іншому пристрої, застосуйте <ph name="LINK_BEGIN" />цей процес<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Готово</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5843706793424741864">Градуси Фаренгейта</translation>
@@ -679,6 +685,7 @@
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
+<translation id="7154020516215182599">Залиште відгук або опишіть проблему. За можливості перелічіть дії, після яких виникає ця проблема.</translation>
 <translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Зображення профілю</translation>

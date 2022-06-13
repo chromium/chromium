@@ -505,6 +505,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 minuto}other{Cambia el dispositivo a la versión anterior en un plazo de # minutos}}</translation>
 <translation id="3923494859158167397">No se han configurado redes móviles</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934456833412894880">La función Carga inteligente está activada. La batería llegará hasta el 80 % de carga para prolongar su duración y se cargará al 100 % cuando lo necesites.</translation>
 <translation id="3943857333388298514">Pegar</translation>
@@ -1056,6 +1057,10 @@ Nueva instalación</translation>
 <translation id="7258828758145722155">Editado ayer</translation>
 <translation id="726276584504105859">Arrastra hasta aquí para utilizar la pantalla dividida</translation>
 <translation id="7262906531272962081">Crear recordatorio</translation>
+<translation id="7297440678881127227">De <ph name="START_TIME" /> a
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Selecciona esta entrada para ver más detalles en Google Calendar.</translation>
 <translation id="7302889331339392448">Subtítulos automáticos desactivados.</translation>
 <translation id="7303365578352795231">Se está respondiendo en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>

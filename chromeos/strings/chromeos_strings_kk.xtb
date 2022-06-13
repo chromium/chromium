@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Сыртқы құрылғылардың микробағдарламасын жаңарту терезесі ашық. <ph name="NUM_UPDATES" /> жаңа нұсқа бар.</translation>
+<translation id="1165039591588034296">Қате</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="1175951029573070619">Орташа (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Өшіру</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Батарея күйі</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5179530508336824319">Келесі экранға өту үшін Write Protect функциясын қосыңыз. Нұсқаулықтар үшін құрылғы өндірушісінің қолдау көрсету бетіне өтіңіз.</translation>
+<translation id="5181140330217080051">Жүктеу</translation>
 <translation id="5190187232518914472">Өміріңіздегі ерекше сәттерді қайта өткеріңіз. Альбомдарды қосу немесе өзгерту үшін <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> қызметіне өтіңіз.</translation>
 <translation id="5212543919916444558">Экранда мен көмектесе алатын ештеңе жоқ. Микрофон белгішесін түртіп, маған сұрақ қойыңыз.</translation>
 <translation id="5212593641110061691">Шағын формат</translation>
@@ -519,6 +521,7 @@
 <translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5655283760733841251">Пернетақта жарықтығын арттыру</translation>
+<translation id="5659593005791499971">Электрондық пошта</translation>
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Отбасы</translation>
@@ -531,6 +534,7 @@
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
 <translation id="578753362485952307">Жүйелік тақтаны басқа құрылғыда пайдалану үшін ондағы ақауларды жойып жатсаңыз, <ph name="LINK_BEGIN" />осы бетке<ph name="LINK_END" /> өтіңіз.</translation>
+<translation id="5790085346892983794">Орындалды</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>

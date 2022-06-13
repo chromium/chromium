@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Përditëso firmuerin për pajisjet e jashtme kur dritarja është e hapur. Ofrohen <ph name="NUM_UPDATES" /> përditësime.</translation>
+<translation id="1165039591588034296">Gabim</translation>
 <translation id="1175697296044146566">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Mesatar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Hiq</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5179530508336824319">Aktivizo mbrojtjen nga shkrimi për të vazhduar në ekranin tjetër. Shko te faqja e mbështetjes e prodhuesit të pajisjes për udhëzime.</translation>
+<translation id="5181140330217080051">Po shkarkon</translation>
 <translation id="5190187232518914472">Rijeto kujtimet e tua të preferuara. Për të shtuar ose modifikuar albume, shko te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -519,6 +521,7 @@
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5655283760733841251">Ngritja e ndriçimit të tastierës</translation>
+<translation id="5659593005791499971">Mail-i</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familja</translation>
@@ -531,6 +534,7 @@
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="578753362485952307">Nëse po riparon një pllakë kryesore të qarkut për ta përdorur në një pajisje tjetër, shko te <ph name="LINK_BEGIN" />fluksi i riparimit<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Me sukses</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5843706793424741864">Farenhait</translation>

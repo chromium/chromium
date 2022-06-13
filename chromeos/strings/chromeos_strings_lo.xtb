@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ເປີດໜ້າຈໍອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍນອກແລ້ວ. ມີ <ph name="NUM_UPDATES" /> ອັບເດດໃໝ່.</translation>
+<translation id="1165039591588034296">ຜິດພາດ</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
@@ -63,6 +64,7 @@
 <translation id="1459784442280469416">ບັນທຶກໄປໃສ່ USB</translation>
 <translation id="1468664791493211953">ຂໍ້ສະເໜີ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ອາດຈະສາມາດຕິດຕາມການເຄື່ອນໄຫວຂອງທ່ານໄດ້.</translation>
+<translation id="147809995039451286">ບໍ່ສາມາດດາວໂຫຼດການອັບເດດໄດ້</translation>
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
 <translation id="1491076385728777984">ກຳລັງອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
@@ -179,6 +181,7 @@
 <translation id="2418150275289244458">ເປີດໃນການຕັ້ງຄ່າ</translation>
 <translation id="2421798028054665193">ຮູບທີ <ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
+<translation id="2447969267935997922">ຕິດຕັ້ງສຳເລັດແລ້ວ. ຕອນນີ້ທ່ານສາມາດຖອດໄດຣຟ໌ USB ຫຼື SD card ຂອງທ່ານອອກໄດ້ແລ້ວ.</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="2480034874476596812">ປິດໄວ້ດ້ວຍຕົວເອງ</translation>
@@ -289,6 +292,7 @@
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3632579075709132555">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="3643810137582748570">ຂ້າມການປັບທຽບ</translation>
+<translation id="3651050199673793219">ເລືອກຫົວໜ່ວຍອຸນຫະພູມ</translation>
 <translation id="3678765385266369662">ເລືອກວິທີທີ່ທ່ານຕ້ອງການປິດການປ້ອງກັນການຂຽນ</translation>
 <translation id="3689839747745352263">ການທົດສອບ <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
@@ -306,6 +310,7 @@
 <translation id="3856304145690230735">ຕົວວັດແທກການໝຸນຮອບຖານ</translation>
 <translation id="385832974417157471">ກ່ອນການປິດເຄື່ອງ, ໃຫ້ດຳເນີນການ Powerwash ອຸປະກອນຂອງທ່ານກ່ອນ. ຫາກອຸປະກອນຂອງທ່ານມີຝາປິດ, ໃຫ້ລໍຖ້າຈົນກວ່າຂັ້ນຕອນ Powerwash ຈະສຳເລັດກ່ອນການປິດຝາ. ຂັ້ນຕອນ Powerwash ອາດໃຊ້ເວລາຮອດໜຶ່ງນາທີຈຶ່ງຈະສຳເລັດ.</translation>
 <translation id="3858860766373142691">ຊື່</translation>
+<translation id="3862598938296403232">ຕ້ອງລະບຸຄຳອະທິບາຍ</translation>
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
 <translation id="3866249974567520381">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
@@ -465,6 +470,7 @@
 <translation id="5168185087976003268">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="5179530508336824319">ກະລຸນາເປີດການນຳໃຊ້ Write Protect ເພື່ອສືບຕໍ່ຫາໜ້າຈໍຕໍ່ໄປ. ໃຫ້ເຂົ້າໄປໜ້າຊ່ວຍເຫຼືອຂອງຜູ້ຜະລິດອຸປະກອນເພື່ອເບິ່ງຄຳແນະນຳ.</translation>
+<translation id="5181140330217080051">ກໍາລັງດາວ​ໂຫຼດ</translation>
 <translation id="5190187232518914472">ຫວນຄືນຄວາມຊົງຈຳທີ່ທ່ານມັກ. ເພື່ອເພີ່ມ ຫຼື ແກ້ໄຂອະລະບໍ້າ, ກະລຸນາໄປທີ່ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">ຂ້ອຍບໍ່ສາມາດຊອກເຫັນອັນໃດຢູ່ໃນໜ້າຈໍຂອງທ່ານທີ່ຂ້ອຍສາມາດຊ່ວຍໄດ້.
 ລອງແຕະໄມເພື່ອຖາມຂ້ອຍອັນໃດກໍໄດ້.</translation>
@@ -521,6 +527,7 @@
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5649768706273821470">​ຟັງ</translation>
 <translation id="5655283760733841251">ແປ້ນພິມເພີ່ມຄວາມສະຫວ່າງ</translation>
+<translation id="5659593005791499971">ອີເມວ</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ຄອບຄົວ</translation>
@@ -533,6 +540,7 @@
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
 <translation id="578753362485952307">ຫາກທ່ານກຳລັງສ້ອມແປງເມນບອດເພື່ອໃຊ້ໃນອຸປະກອນອື່ນ, ກະລຸນາເຂົ້າໄປ <ph name="LINK_BEGIN" />ຂັ້ນຕອນການສ້ອມແປງ<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">ສໍາ​ເລັດ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="5843706793424741864">ຟາເຣນຮາຍ</translation>
@@ -681,6 +689,7 @@
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
+<translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
 <translation id="7155171745945906037">ຮູບຖ່າຍທີ່ມີຢູ່ຈາກກ້ອງຖ່າຍຮູບ ຫຼື ໄຟລ໌</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7170236477717446850">ຮູບໂປຣໄຟລ໌</translation>

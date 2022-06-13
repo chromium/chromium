@@ -5080,7 +5080,7 @@
 <translation id="5941153596444580863">新增使用者…</translation>
 <translation id="5941343993301164315">請登入 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
-<translation id="594221546068848596">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 搜尋網頁</translation>
+<translation id="594221546068848596">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋網頁</translation>
 <translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5943127421590245687">您已完成驗證程序。如果要解鎖並還原本機資料，請輸入舊的 <ph name="DEVICE_TYPE" /> 密碼。</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 安全瀏覽」進行掃瞄嗎？</translation>
@@ -6724,7 +6724,7 @@
 <translation id="7582582252461552277">偏好使用這個網絡</translation>
 <translation id="7582844466922312471">流動數據</translation>
 <translation id="7583948862126372804">計數</translation>
-<translation id="7585106857920830898">正在檢查下載內容是否符合貴機構的安全性政策...</translation>
+<translation id="7585106857920830898">正在檢查是否符合您機構的安全性政策…</translation>
 <translation id="7586498138629385861">Chrome 會在 Chrome 應用程式開啟的狀態下持續運作。</translation>
 <translation id="758895749110326677">協助我們改善 Chromebook 的遊戲體驗</translation>
 <translation id="7589461650300748890">噢，請注意！</translation>
@@ -7002,7 +7002,7 @@
 <translation id="7839051173341654115">查看/備份媒體</translation>
 <translation id="7839192898639727867">憑證主體金鑰識別碼</translation>
 <translation id="7842692330619197998">如需建立新帳戶，請前往 g.co/ChromeEnterpriseAccount。</translation>
-<translation id="78427265591841839">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的任何內容</translation>
+<translation id="78427265591841839">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋頁面上的任何內容</translation>
 <translation id="784273751836026224">解除安裝 Linux</translation>
 <translation id="7843786652787044762">登入「<ph name="WEB_DRIVE" />」</translation>
 <translation id="7844992432319478437">正在更新差異部分</translation>
@@ -7010,7 +7010,7 @@
 <translation id="7847212883280406910">按下 Ctrl + Alt + S 鍵切換至 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">在新分頁中開啟圖片(&amp;I)</translation>
 <translation id="784934925303690534">時間範圍</translation>
-<translation id="7850353716413205957">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的任何內容</translation>
+<translation id="7850353716413205957">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋頁面上的任何內容</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這類報告可能包括 Chrome OS 當機時間、您所使用的功能、記憶體一般使用量，以及 Android 應用程式診斷和使用資料。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在 Chrome OS 裝置的設定中啟用或停用傳送報告功能。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />如果您為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您的 Android 資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>

@@ -504,6 +504,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3901991538546252627">Připojování k síti <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Do 1 minuty zařízení převeďte na předchozí verzi}few{Do # minut zařízení převeďte na předchozí verzi}many{Do # minuty zařízení převeďte na předchozí verzi}other{Do # minut zařízení převeďte na předchozí verzi}}</translation>
 <translation id="3923494859158167397">Nejsou nastaveny žádné mobilní sítě</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, načítání událostí.</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3934456833412894880">Je zapnuté adaptivní nabíjení. Baterie zůstane nabitá na 80 %, aby se prodloužila její životnost, a plně se nabije, jen když to budete potřebovat.</translation>
 <translation id="3943857333388298514">Vložit</translation>
@@ -1055,6 +1056,10 @@ Nová instalace</translation>
 <translation id="7258828758145722155">Upraveno včera</translation>
 <translation id="726276584504105859">Chcete-li použít rozdělenou obrazovku, přetáhněte okno sem</translation>
 <translation id="7262906531272962081">Vytvořit připomenutí</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> až
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Výběrem zobrazíte další podrobnosti v Kalendáři Google.</translation>
 <translation id="7302889331339392448">Živý přepis je vypnutý.</translation>
 <translation id="7303365578352795231">Odpověď dostanete v jiném zařízení.</translation>
 <translation id="7305884605064981971">EDGE</translation>

@@ -2074,6 +2074,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="2923234477033317484">Supprimer ce compte</translation>
 <translation id="2923644930701689793">Accédez à la pellicule de votre téléphone</translation>
+<translation id="2925658782192398150">Terminé; aucun problème détecté</translation>
 <translation id="2926085873880284723">Rétablir les raccourcis par défaut</translation>
 <translation id="2926620265753325858">L'appareil <ph name="DEVICE_NAME" /> n'est pas pris en charge.</translation>
 <translation id="2927017729816812676">Stockage du cache</translation>
@@ -5014,6 +5015,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5891688036610113830">Réseaux Wi-Fi préférés</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5895335062901455404">Votre activité et vos préférences enregistrées seront prêtes sur tout appareil Chrome OS Flex lorsque vous vous connectez à votre compte Google. Vous pouvez choisir les éléments à synchroniser dans les paramètres.</translation>
+<translation id="589541317545606110">Rechercher la page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Ne pas autoriser</translation>
 <translation id="5900186025777217044">Smart Lock a changé</translation>
 <translation id="5900302528761731119">Photo du profil Google</translation>
@@ -5065,6 +5067,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5941153596444580863">Ajouter une personne...</translation>
 <translation id="5941343993301164315">Veuillez vous connecter à <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Réduire</translation>
+<translation id="594221546068848596">Rechercher la page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibilité de l'appareil</translation>
 <translation id="5943127421590245687">Votre vérification a réussi. Pour déverrouiller et restaurer vos données locales, veuillez entrer votre ancien mot de passe <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5945002094477276055">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer au service de navigation sécurisée Google pour le faire analyser?</translation>
@@ -6710,6 +6713,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7582582252461552277">Préférer ce réseau</translation>
 <translation id="7582844466922312471">Données mobiles</translation>
 <translation id="7583948862126372804">Compte</translation>
+<translation id="7585106857920830898">Vérification de la conformité du fichier aux politiques de sécurité de votre organisation en cours…</translation>
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome seront ouvertes.</translation>
 <translation id="758895749110326677">Aidez-nous à améliorer l'expérience de jeu sur les Chromebook</translation>
 <translation id="7589461650300748890">Attention!</translation>
@@ -6987,6 +6991,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7839051173341654115">Afficher/Sauvegarder les médias</translation>
 <translation id="7839192898639727867">Identifiant de la clé du destinataire du certificat</translation>
 <translation id="7842692330619197998">Si vous devez créer un compte, visitez la page g.co/ChromeEnterpriseAccount.</translation>
+<translation id="78427265591841839">Rechercher n'importe quelle partie de la page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Désinstaller Linux</translation>
 <translation id="7843786652787044762">Se connecter à <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Mise à jour des différences</translation>
@@ -6994,6 +6999,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7847212883280406910">Appuyez sur Ctrl + Alt + S pour passer à <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7849264908733290972">Ouvrir l'&amp;image dans un nouvel onglet</translation>
 <translation id="784934925303690534">Intervalle de temps</translation>
+<translation id="7850353716413205957">Rechercher n'importe quelle partie de la page avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Le fait d'autoriser vos appareils Chrome OS à envoyer des rapports automatiques nous permet de prioriser les éléments à corriger et à améliorer dans Chrome OS. Ces rapports peuvent comprendre des renseignements sur, entre autres, le moment où Chrome OS plante, les fonctionnalités que vous utilisez, la quantité de mémoire que vous utilisez normalement ainsi que les données d'utilisation et de diagnostic des applications Android. Certaines données agrégées contribueront également à améliorer les applications Google et à aider nos partenaires tels que les développeurs Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de votre appareil Chrome OS. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si le paramètre Activité sur le Web et dans les applications est activé pour votre compte Google, vos données Android peuvent être enregistrées dans ce dernier. Vous pouvez consulter et supprimer vos données ainsi que modifier vos paramètres de compte sur le site account.google.com.<ph name="END_PARAGRAPH3" /></translation>

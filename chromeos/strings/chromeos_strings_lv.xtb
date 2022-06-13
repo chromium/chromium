@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Ir atvērts ārējo ierīču aparātprogrammatūras atjaunināšanas logs. Pieejamie atjauninājumi: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Kļūda</translation>
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Noņemt</translation>
@@ -127,6 +128,7 @@
 <translation id="1999615961760456652">Caurlaides lapa</translation>
 <translation id="2006864819935886708">Savienojamība</translation>
 <translation id="2008685064673031089">Pirmskaitļu meklēšana</translation>
+<translation id="2011174342667534258">SDK versija:</translation>
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
 <translation id="2016848882344942759">--bez baltās etiķetes--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +160,7 @@
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
 <translation id="2271469253353559191">Tumšā režīma grafiks</translation>
 <translation id="2275586345903859204">Remonts ir pabeigts</translation>
+<translation id="2276999893457278469">Populārākais palīdzības saturs</translation>
 <translation id="2287186687001756809">Nav pieejams neviens attēls. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
 <translation id="2294753434210277304">Ievietojiet ārējās atmiņas ierīci, piemēram, USB disku vai SD karti, ar lejupielādēto Chromebook atkopšanas utilītprogrammas attēlu</translation>
 <translation id="2307344026739914387">Izmantot pašreizējo atslēgu pāri</translation>
@@ -190,6 +193,7 @@
 <translation id="2517472476991765520">Meklēt</translation>
 <translation id="2526590354069164005">Darbvirsma</translation>
 <translation id="253029298928638905">Notiek restartēšana...</translation>
+<translation id="2533048460510040082">Ieteiktais palīdzības saturs</translation>
 <translation id="2536159006530886390">Nevar izveidot savienojumu ar internetu.</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2584559707064218956">Lai iestatītu, pārejiet uz iestatījumiem.</translation>
@@ -289,6 +293,7 @@
 <translation id="3621202678540785336">Ievade</translation>
 <translation id="3632579075709132555">Konfidencialitātes ekrāna slēdzis</translation>
 <translation id="3643810137582748570">Izlaist kalibrēšanu</translation>
+<translation id="3651050199673793219">Atlasīt temperatūras mērvienību</translation>
 <translation id="3678765385266369662">Atlasiet, kā vēlaties izslēgt aizsardzību pret rakstīšanu</translation>
 <translation id="3689839747745352263">Pārbaude: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
@@ -301,11 +306,13 @@
 <translation id="3784455785234192852">Bloķēt</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
+<translation id="3824259034819781947">Pievienot failus</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3856304145690230735">Pamatnes žiroskops</translation>
 <translation id="385832974417157471">Pirms ierīces izslēgšanas izmantojiet tajā funkciju Powerwash. Ja jūsu ierīcei ir vāks, neaizveriet to, līdz funkcija Powerwash ir veikusi vajadzīgās darbības. Funkcijas Powerwash darbību izpilde var ilgt līdz pat vienai minūtei.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
+<translation id="3862598938296403232">Nepieciešams apraksts</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
 <translation id="3866249974567520381">Apraksts</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
@@ -464,6 +471,7 @@
 <translation id="5168185087976003268">Akumulatora stāvoklis</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5179530508336824319">Iespējojiet aizsardzību pret rakstīšanu, lai pārietu uz nākamo ekrānu. Norādījumus skatiet ierīces ražotāja atbalsta lapā.</translation>
+<translation id="5181140330217080051">Notiek lejupielāde</translation>
 <translation id="5190187232518914472">Iedzīviniet savas mīļākās atmiņas. Lai pievienotu vai rediģētu albumus, pārejiet uz pakalpojumu <ph name="LINK_BEGIN" />Google fotoattēli<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
 Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
@@ -520,6 +528,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5649768706273821470">Klausīties</translation>
 <translation id="5655283760733841251">Palielināt tastatūras spilgtumu</translation>
+<translation id="5659593005791499971">E-pasts</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ģimene</translation>
@@ -532,6 +541,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
 <translation id="5784136236926853061">Liels HTTP latentums</translation>
 <translation id="578753362485952307">Ja pārveidojat mātesplati, lai to izmantotu citā ierīcē, pārejiet uz <ph name="LINK_BEGIN" />pārveides plūsmu<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Veiksmīgi pabeigts</translation>
 <translation id="5832805196449965646">Pievienot personu</translation>
 <translation id="583281660410589416">Nezināms</translation>
 <translation id="5843706793424741864">Fārenheita skala</translation>
@@ -679,6 +689,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
+<translation id="7154020516215182599">Sniedziet atsauksmes vai aprakstiet problēmu. Ja iespējams, norādiet darbības, ko veicāt, kad radās problēma.</translation>
 <translation id="7155171745945906037">Esošs fotoattēls no kameras vai faila</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Profila attēls</translation>
@@ -856,6 +867,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="885701979325669005">Krātuve</translation>
 <translation id="8863170912498892583">Iespējot tumšo motīvu</translation>
 <translation id="8863888432376731307">Pieejama informācija par vaicājumu “<ph name="QUERY" />”: <ph name="INTENT" /> un daudz kas cits</translation>
+<translation id="8864415976656252616">Nav ieteikta satura. Skatiet populārāko palīdzības saturu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Ierīce ir planšetdators.</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>

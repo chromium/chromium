@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Открыто окно со сведениями о доступных обновлениях (<ph name="NUM_UPDATES" />) встроенного ПО для внешних устройств.</translation>
+<translation id="1165039591588034296">Ошибка</translation>
 <translation id="1175697296044146566">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средний (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5179530508336824319">Чтобы продолжить, включите защиту от записи. Подробную инструкцию ищите на сайте службы поддержки производителя.</translation>
+<translation id="5181140330217080051">Скачивается</translation>
 <translation id="5190187232518914472">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5649768706273821470">Прослушать</translation>
 <translation id="5655283760733841251">Увеличение яркости клавиатуры</translation>
+<translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
 <translation id="578753362485952307">Если вы устраняете неполадки материнской платы, чтобы использовать ее в другом устройстве, перейдите к <ph name="LINK_BEGIN" />подходящей процедуре<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Выполнено</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5843706793424741864">По шкале Фаренгейта</translation>

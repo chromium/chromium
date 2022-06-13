@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ವಿಂಡೋ ತೆರೆದಿದೆ. <ph name="NUM_UPDATES" /> ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿದೆ.</translation>
+<translation id="1165039591588034296">ದೋಷ</translation>
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
 <translation id="1175951029573070619">ಸರಾಸರಿ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5179530508336824319">ಮುಂದಿನ ಸ್ಕ್ರೀನ್‌ಗೆ ಮುಂದುವರಿಯಲು ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. ಸೂಚನೆಗಳಿಗಾಗಿ ಸಾಧನ ತಯಾರಕರ ಬೆಂಬಲ ಪುಟಕ್ಕೆ ಹೋಗಿ.</translation>
+<translation id="5181140330217080051">ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="5190187232518914472">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಮಧುರ ಕ್ಷಣಗಳನ್ನು ಮೆಲುಕು ಹಾಕಿ. ಆಲ್ಬಮ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಅಥವಾ ಎಡಿಟ್ ಮಾಡಲು, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ಗೆ ಹೋಗಿ.</translation>
 <translation id="5212543919916444558">ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದಾದ ಯಾವುದೇ ವಿಷಯ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನನಗೆ ಕಾಣಿಸಿಲ್ಲ. ನನ್ನ ಬಳಿ ಏನಾದರೂ ಕೇಳಬೇಕಿದ್ದರೆ, ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -521,6 +523,7 @@
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5649768706273821470">ಆಲಿಸು</translation>
 <translation id="5655283760733841251">ಕೀ ಬೋರ್ಡ್ ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸಿ</translation>
+<translation id="5659593005791499971">ಇಮೇಲ್</translation>
 <translation id="5669267381087807207">ಸಕ್ರಿಯವಾಗುತ್ತಿದೆ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ಕುಟುಂಬ</translation>
@@ -533,6 +536,7 @@
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5784136236926853061">ಅಧಿಕ HTTP ವಿಳಂಬ</translation>
 <translation id="578753362485952307">ನೀವು ಇನ್ನೊಂದು ಸಾಧನದಲ್ಲಿ ಬಳಸಲು ಮುಖ್ಯ ಬೋರ್ಡ್ ಅನ್ನು ರೀವರ್ಕ್ ಮಾಡುತ್ತಿದ್ದರೆ, <ph name="LINK_BEGIN" />ರೀವರ್ಕ್ ಫ್ಲೋ<ph name="LINK_END" /> ಗೆ ಹೋಗಿ.</translation>
+<translation id="5790085346892983794">ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5843706793424741864">ಫ್ಯಾರನ್‌ಹೀಟ್</translation>

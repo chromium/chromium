@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">"Proqramı xarici cihazlar üçün güncəlləyin" pəncərəsi açıqdır. <ph name="NUM_UPDATES" /> güncəlləmə əlçatandır.</translation>
+<translation id="1165039591588034296">Xəta</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur.</translation>
 <translation id="1175951029573070619">Orta (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Silin</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Daxiletmə</translation>
 <translation id="3632579075709132555">Məxfilik ekranı keçiricisi</translation>
 <translation id="3643810137582748570">Tənzimləməni keçin</translation>
+<translation id="3651050199673793219">Temperatur vahidi seçin</translation>
 <translation id="3678765385266369662">Yazıdan Qorunmanı necə deaktiv etmək istədiyinizi seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Baza Giroskopu</translation>
 <translation id="385832974417157471">Söndürməzdən əvvəl cihazınızı yenidən formaylayın. Cihazınızın qapağı varsa, qapağı bağlamazdan əvvəl yenidən formatlamanın tamamlanmasını gözləyin. Yenidən formatlamanın tamamlanması bir dəqiqə çəkə bilər.</translation>
 <translation id="3858860766373142691">Ad</translation>
+<translation id="3862598938296403232">Təsvir tələb olunur</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
 <translation id="3866249974567520381">Təsvir</translation>
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Enerji statusu</translation>
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="5179530508336824319">Növbəti ekrana keçmək üçün yazma qoruyucusunu aktiv edin. Təlimatlar üçün cihaz istehsalçısının dəstək səhifəsinə keçin.</translation>
+<translation id="5181140330217080051">Endirilir</translation>
 <translation id="5190187232518914472">Sevimli xatirələrinizi canlandırın. Albomlarə əlavə və ya redaktə etmək üçün <ph name="LINK_BEGIN" />Google Fotoya<ph name="LINK_END" /> keçin.</translation>
 <translation id="5212543919916444558">Ekranınızda kömək edə biləcəyim heç nə tapmadım. Məndən hər hansı bir şey soruşmaq üçün mikrofona klikləyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -519,6 +523,7 @@
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5649768706273821470">Dinləyin</translation>
 <translation id="5655283760733841251">Klaviatura parlaqlığını artırın</translation>
+<translation id="5659593005791499971">E-poçt</translation>
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ailə</translation>
@@ -531,6 +536,7 @@
 <translation id="57838592816432529">Səssiz</translation>
 <translation id="5784136236926853061">Yüksək HTTP gecikməsi</translation>
 <translation id="578753362485952307">Anakartı başqa cihazda istifadə etmək üçün hazırlayırsınızsa, <ph name="LINK_BEGIN" />hazırlama mərhələsinə<ph name="LINK_END" /> keçin.</translation>
+<translation id="5790085346892983794">Uğur</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
 <translation id="583281660410589416">Naməlum</translation>
 <translation id="5843706793424741864">Farenheyt</translation>
@@ -678,6 +684,7 @@
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="714876143603641390">Lan Bağlantısı</translation>
+<translation id="7154020516215182599">Rəyinizi paylaşın və ya probleminizi təsvir edin. Mümkünsə, probleminizi təkrarlamaq üçün addımlar əlavə edin.</translation>
 <translation id="7155171745945906037">Kamera və ya fayldan mövcud foto</translation>
 <translation id="7162487448488904999">Qalereya</translation>
 <translation id="7170236477717446850">Profil şəkli</translation>

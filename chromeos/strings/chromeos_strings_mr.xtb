@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">वापरकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">बाह्य डिव्हाइससाठी फर्मवेअर अपडेट करण्याची विंडो खुली आहे. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध आहेत.</translation>
+<translation id="1165039591588034296">एरर</translation>
 <translation id="1175697296044146566">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="1175951029573070619">सरासरी (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3643810137582748570">कॅलिब्रेशन वगळा</translation>
+<translation id="3651050199673793219">तापमान युनिट निवडा</translation>
 <translation id="3678765385266369662">तुम्हाला Write Protect कसे बंद करायचे आहे ते निवडा</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">बेस जायरोस्‍कोप</translation>
 <translation id="385832974417157471">बंद करण्यापूर्वी तुमचे डिव्हाइस पॉवरवॉश करा. तुमच्या डिव्हाइसला लिड असल्यास, लिड बंद करण्यापूर्वी पॉवरवॉश पूर्ण होईपर्यंत प्रतीक्षा करा. पॉवरवॉश पूर्ण होण्यासाठी कमाल एक मिनिट लागू शकतो.</translation>
 <translation id="3858860766373142691">नाव</translation>
+<translation id="3862598938296403232">वर्णन आवश्यक आहे</translation>
 <translation id="3865414814144988605">रिझोल्युशन</translation>
 <translation id="3866249974567520381">वर्णन</translation>
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5179530508336824319">पुढील स्क्रीनवर सुरू ठेवण्यासाठी राइट प्रोटेक्ट सुरू करा. सूचनांसाठी डिव्हाइस निर्मात्याच्या सपोर्ट पेजवर जा.</translation>
+<translation id="5181140330217080051">डाउनलोड करीत आहे</translation>
 <translation id="5190187232518914472">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
 मला काहीही विचारण्यासाठी माइकवर टॅप करून पहा.</translation>
@@ -520,6 +524,7 @@
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5649768706273821470">ऐका</translation>
 <translation id="5655283760733841251">कीबोर्डचा ब्राइटनेस वाढवा</translation>
+<translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">कुटुंब</translation>
@@ -532,6 +537,7 @@
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5784136236926853061">उच्च HTTP लेटन्सी</translation>
 <translation id="578753362485952307">तुम्ही दुसर्‍या डिव्‍हाइसमध्‍ये वापरण्‍यासाठी मेनबोर्डवर काम करत असल्‍यास, <ph name="LINK_BEGIN" />रीवर्क फ्लो<ph name="LINK_END" /> वर जा.</translation>
+<translation id="5790085346892983794">यशस्वी</translation>
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फॅरेनहाइट</translation>
@@ -679,6 +685,7 @@
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
+<translation id="7154020516215182599">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा. शक्य असल्यास, तुमची समस्या पुन्हा तयार करता येण्यासाठी पायऱ्या समाविष्ट करा.</translation>
 <translation id="7155171745945906037">कॅमेरा किंवा फाईल मधील विद्यमान फोटो</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">प्रोफाइल फोटो</translation>

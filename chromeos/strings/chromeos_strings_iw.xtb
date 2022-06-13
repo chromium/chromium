@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">החלון של עדכון הקושחה למכשירים חיצוניים פתוח. יש <ph name="NUM_UPDATES" /> עדכונים זמינים.</translation>
+<translation id="1165039591588034296">שגיאה</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ממוצע (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">הסרה</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5179530508336824319">‏יש להפעיל את Write Protect כדי להמשיך למסך הבא. לקבלת הוראות, יש לעבור לדף התמיכה של יצרן המכשיר.</translation>
+<translation id="5181140330217080051">מוריד</translation>
 <translation id="5190187232518914472">‏זיכרונות אהובים מתעוררים לחיים. כדי להוסיף או לערוך אלבומים, יש לעבור ל-<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
 אפשר להקיש על המיקרופון כדי לשאול אותי משהו.</translation>
@@ -520,6 +522,7 @@
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5649768706273821470">האזנה</translation>
 <translation id="5655283760733841251">הגברת הבהירות של המקלדת</translation>
+<translation id="5659593005791499971">אימייל</translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">משפחה</translation>
@@ -532,6 +535,7 @@
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
 <translation id="578753362485952307">אם בכוונתך לעבד מחדש את לוח האם לשימוש במכשיר אחר, עליך לעבור אל <ph name="LINK_BEGIN" />תהליך העיבוד מחדש<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">הצלחה</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5843706793424741864">פרנהייט</translation>

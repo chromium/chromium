@@ -2636,6 +2636,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3482719661246593752">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga sumusunod na file</translation>
 <translation id="3484273680291419129">Inaalis ang mapaminsalang software...</translation>
 <translation id="3484869148456018791">Kumuha ng bagong certificate</translation>
+<translation id="3486950712960783074">Ang iyong biyahe</translation>
 <translation id="3487007233252413104">hindi kilalang function</translation>
 <translation id="3490695139702884919">Dina-download... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Hindi naka-set up ang account ng iyong anak para sa parental controls ng Family Link. Puwede kang magdagdag ng parental controls kapag natapos mo na ang pag-set up. Makikita mo ang impormasyon tungkol sa parental controls sa Explore app.</translation>
@@ -2946,6 +2947,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3797739167230984533">Ang iyong <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ay pinapamahalaan<ph name="END_LINK" /> ng iyong organisasyon</translation>
 <translation id="3797900183766075808">&amp;Maghanap sa <ph name="SEARCH_ENGINE" /> ng “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Bersyon</translation>
+<translation id="3798632811625902122">Gusto ng bluetooth device na <ph name="DEVICE" /> ng pahintulot na magpares.</translation>
 <translation id="3799128412641261490">Mga setting ng switch access</translation>
 <translation id="3800806661949714323">Ipakita lahat (inirerekomenda)</translation>
 <translation id="3800828618615365228">Mga Karagdagang Tuntunin ng Google Chrome at ChromeOS</translation>
@@ -4933,6 +4935,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5792295754950501287">Higit pang aksyon para sa <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Paki-tap ang iyong power button</translation>
 <translation id="5793339252089865437">Kung ida-download mo ang update sa pamamagitan ng iyong mobile network, maaaring magkaroon ng mga overage na singil.</translation>
+<translation id="5793420564274426163">Pagkumpirma ng Pagpapares</translation>
 <translation id="5794034487966529952">Mayroong nakabukas na <ph name="NUM_BROWSERS" /> (na) window ng browser sa desk na <ph name="DESK_TITLE" /></translation>
 <translation id="5794414402486823030">Palaging buksan gamit ang system viewer</translation>
 <translation id="5794700615121138172">Mga nakabahaging folder ng Linux</translation>
@@ -7431,6 +7434,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8242426110754782860">Magpatuloy</translation>
 <translation id="8243948765190375130">Posibleng bumaba ang kalidad ng media</translation>
 <translation id="8244514732452879619">Malapit nang magpatay ng ilaw</translation>
+<translation id="8245361042748627813">Nagbago ang shortcut na ito. Pakigamit ang <ph name="NEW_SHORTCUT_KEY" /> para mag-print gamit ang dialog ng system.</translation>
 <translation id="8246776524656196770">Protektahan ang iyong security key gamit ang PIN (Personal Identification Number)</translation>
 <translation id="8248050856337841185">I-&amp;paste</translation>
 <translation id="8248381369318572865">I-access ang iyong mikropono at suriin ang pagsasalita mo</translation>
@@ -7736,6 +7740,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8561565784790166472">Maingat na magpatuloy</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Tinangkang i-downgrade ang app.</translation>
+<translation id="8569673829373920831">Higit pa tungkol sa <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Walang nahanap na mga destinasyon</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
 <translation id="8571687764447439720">Magdagdag ng ticket ng Kerberos</translation>

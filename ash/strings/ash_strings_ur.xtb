@@ -504,6 +504,7 @@
 <translation id="3901991538546252627"><ph name="NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="3922427723338465344">{0,plural, =1{1 منٹ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# منٹ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="3923494859158167397">کوئی موبائل نیٹ ورک سیٹ اپ نہیں کیا گیا</translation>
+<translation id="3925540965556789199"><ph name="DATE" />، ایونٹس لوڈ ہو رہے ہیں۔</translation>
 <translation id="3932043219784172185">کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="3934456833412894880">اڈاپٹیو چارجنگ آن ہے بیٹری لائف کو بڑھانے کے لیے آپ کی بیٹری %80 پر رہے گی اور جب آپ کو ضرورت ہو تو پوری طرح سے چارج ہو جائے گی۔</translation>
 <translation id="3943857333388298514">پیسٹ کریں</translation>
@@ -1054,6 +1055,10 @@
 <translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7262906531272962081">یاد دہانی تخلیق کریں</translation>
+<translation id="7297440678881127227">‏<ph name="START_TIME" /> سے
+        <ph name="END_TIME" />،
+        <ph name="TIME_ZONE" />،
+        <ph name="EVENT_SUMMARY" />۔ Google کیلنڈر میں مزید تفصیلات کے لیے منتخب کریں۔</translation>
 <translation id="7302889331339392448">لائیو کیپشن آف ہے۔</translation>
 <translation id="7303365578352795231">ایک دوسرے آلہ پر جواب دیا جا رہا ہے۔</translation>
 <translation id="7305884605064981971">EDGE</translation>

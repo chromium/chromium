@@ -348,6 +348,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2842985007712546952">Cartella principale</translation>
 <translation id="2856503607207334158">Accesso non riuscito</translation>
 <translation id="2860954141821109167">Assicurati che su questo dispositivo ci sia un'app per telefono attiva</translation>
+<translation id="2861923151411510142">Alcune funzionalità di Chrome non saranno più disponibili</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2871733351037274014">Precarica le pagine</translation>
 <translation id="2888126860611144412">Informazioni su Chrome</translation>
@@ -494,7 +495,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3622349720008044802">Gestisci finestre</translation>
 <translation id="3631987586758005671">Condivisione con <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la verifica prima di ogni accesso ai siti web.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Richiedi sito per dispositivi mobili</translation>
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="3690369331356918524">Ricevi un avviso se le password sono esposte a violazione dei dati</translation>
@@ -891,6 +891,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5869522115854928033">Password salvate</translation>
 <translation id="5869789175361934029">Continua da un altro dispositivo</translation>
 <translation id="587735546353481577">Per seguire un sito, aprilo, vai al menu Chrome e tocca Segui.</translation>
+<translation id="5879072387416556377">Ricevi suggerimenti migliori</translation>
 <translation id="5880748256563468367">Vai al feed</translation>
 <translation id="5884076754568147479">Per aiutarti a completare le attività, Google riceverà gli URL e i contenuti dei siti su cui utilizzi l'assistente, oltre alle informazioni che invii attraverso l'assistente</translation>
 <translation id="5906513782029855931">Conoscere gli URL dei siti consente all'Assistente Google di aiutarti a completare le attività. Puoi disattivare l'assistente nelle impostazioni di Chrome.</translation>
@@ -1234,6 +1235,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="770741401784017797">Creazione GIF in corso…</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709094866268987903">Gli interessi che rimuovi verranno visualizzati qui</translation>
+<translation id="7709918231054955894">Visualizza tutte le tue schede</translation>
 <translation id="7725024127233776428">Le pagine aggiunte ai preferiti saranno mostrate qui</translation>
 <translation id="7757787379047923882">Testo condiviso da <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Scegli data e ora</translation>
@@ -1429,6 +1431,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8656747343598256512">Accedi a questo sito e a Chrome con il tuo Account Google. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="8659579665266920523">Come eseguire ricerche con Chrome</translation>
 <translation id="8662811608048051533">Verrai disconnesso dalla maggior parte dei siti.</translation>
+<translation id="8664215986015753476">Usa Chrome a modo tuo</translation>
 <translation id="8664979001105139458">Nome file già esistente</translation>
 <translation id="8666759526542103597">Informazioni sull'impostazione Personalizzazione degli annunci basata sul browser</translation>
 <translation id="8667760277771450375">Stiamo esaminando dei metodi per limitare il tracciamento tra siti e consentire ai siti di contrastare spam negli annunci e attività fraudolente.</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Defnyddiwr</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Mae ffenestr diweddaru cadarnwedd ar gyfer dyfeisiau allanol ar agor. Mae <ph name="NUM_UPDATES" /> o ddiweddariadau ar gael.</translation>
+<translation id="1165039591588034296">Gwall</translation>
 <translation id="1175697296044146566">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Cymedrol <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1181037720776840403">Dileu</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Mewnbwn</translation>
 <translation id="3632579075709132555">Togl sgrîn preifatrwydd</translation>
 <translation id="3643810137582748570">Hepgor calibradu</translation>
+<translation id="3651050199673793219">Dewiswch uned tymheredd</translation>
 <translation id="3678765385266369662">Dewiswch sut yr hoffech ddiffodd Diogelu Ysgrifennu</translation>
 <translation id="3689839747745352263">Prawf <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Geirosgop Gwaelod</translation>
 <translation id="385832974417157471">Cyn diffodd, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="3858860766373142691">Enw</translation>
+<translation id="3862598938296403232">Mae angen disgrifiad</translation>
 <translation id="3865414814144988605">Cydraniad</translation>
 <translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Iechyd y batri</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="5179530508336824319">Galluogwch ddiogelu ysgrifennu i barhau i'r sgrîn nesaf. Ewch i dudalen gymorth gwneuthurwr y ddyfais am gyfarwyddiadau.</translation>
+<translation id="5181140330217080051">Wrthi'n lawrlwytho</translation>
 <translation id="5190187232518914472">Ail-fyw eich hoff atgofion. I ychwanegu neu olygu albymau, ewch i <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ni allaf ddod o hyd i unrhyw beth ar eich sgrîn y gallaf helpu ag ef.
 Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
@@ -520,6 +524,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5620281292257375798">Mewnol yn unig</translation>
 <translation id="5649768706273821470">Gwrando</translation>
 <translation id="5655283760733841251">Disgleirdeb y bysellfwrdd i fyny</translation>
+<translation id="5659593005791499971">E-bost</translation>
 <translation id="5669267381087807207">Yn gweithredu</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Teulu</translation>
@@ -532,6 +537,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="57838592816432529">Distewi</translation>
 <translation id="5784136236926853061">Cuddni HTTP uchel</translation>
 <translation id="578753362485952307">Os ydych yn ailweithio prif fwrdd i'w ddefnyddio mewn dyfais arall, ewch i'r <ph name="LINK_BEGIN" />llif ailweithio<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Llwyddiant</translation>
 <translation id="5832805196449965646">Ychwanegu Person</translation>
 <translation id="583281660410589416">Anhysbys</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
 <translation id="714876143603641390">Cysylltedd LAN</translation>
+<translation id="7154020516215182599">Rhannwch eich adborth neu disgrifiwch eich problem. Os yn bosib, cynhwyswch gamau i atgynhyrchu'ch problem.</translation>
 <translation id="7155171745945906037">Llun presennol o'r camera neu ffeil</translation>
 <translation id="7162487448488904999">Oriel</translation>
 <translation id="7170236477717446850">Llun proffil</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Mtumiaji</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Sasisho la programu dhibiti kwa ajili ya dirisha la vifaa vinavyochomekwa lipo wazi. Masasisho <ph name="NUM_UPDATES" /> yanapatikana.</translation>
+<translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ondoa</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Ingizo</translation>
 <translation id="3632579075709132555">Kugeuza skrini ya faragha</translation>
 <translation id="3643810137582748570">Ruka marekebisho</translation>
+<translation id="3651050199673793219">Chagua kizio cha halijoto</translation>
 <translation id="3678765385266369662">Chagua namna ambavyo ungependa kuzima Write Protect</translation>
 <translation id="3689839747745352263">Jaribio la <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Inapakia...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Gurudumu tuzi la kitako</translation>
 <translation id="385832974417157471">Kabla haijazima, powerwash kifaa chako. Ikiwa kifaa chako kina mfuniko, subiri mpaka powerwash ikamilishe kabla ya kufunga mfuniko. Huenda powerwash ikachukua hadi dakika moja kukamilisha.</translation>
 <translation id="3858860766373142691">Jina</translation>
+<translation id="3862598938296403232">Ni sharti ujaze maelezo</translation>
 <translation id="3865414814144988605">Ubora</translation>
 <translation id="3866249974567520381">Maelezo</translation>
 <translation id="387301095347517405">Mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Muda wa kudumu wa betri</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5179530508336824319">Washa mfumo wa Write Protect ili uendelee kwenye skrini inayofuata. Nenda kwenye ukurasa wa usaidizi wa mtengenezaji kifaa ili upate maagizo.</translation>
+<translation id="5181140330217080051">Inapakua</translation>
 <translation id="5190187232518914472">Jikumbushe matukio uyapendayo. Ili uongeze au ubadilishe albamu, nenda katika<ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Sijapata swali lolote kwenye skrini yako. Jaribu kugonga maikrofoni ili uniulize chochote.</translation>
 <translation id="5212593641110061691">Kijigazeti</translation>
@@ -519,6 +523,7 @@
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
 <translation id="5655283760733841251">Ongeza mwangaza wa kibodi</translation>
+<translation id="5659593005791499971">Barua pepe</translation>
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -531,6 +536,7 @@
 <translation id="57838592816432529">Zima sauti</translation>
 <translation id="5784136236926853061">Muda mwingi wa kusubiri maombi ya HTTP</translation>
 <translation id="578753362485952307">Iwapo unaweka mipangilio upya ya ubao mkuu wa vipengele ili uutumie kwenye kifaa kingine, nenda kwenye <ph name="LINK_BEGIN" />mtiririko wa kuweka mipangilio upya<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Mafanikio</translation>
 <translation id="5832805196449965646">Ongeza Mtumiaji Mwingine</translation>
 <translation id="583281660410589416">Haijulikani</translation>
 <translation id="5843706793424741864">Farenhaiti</translation>
@@ -678,6 +684,7 @@
 <translation id="7143207342074048698">Inaunganisha</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
 <translation id="714876143603641390">Muunganisho wa LAN</translation>
+<translation id="7154020516215182599">Shiriki maoni yako au fafanua hitilafu iliyojitokeza. Ikiwezekana, jumuisha hatua zinazosababisha kutokea kwa hitilafu hiyo.</translation>
 <translation id="7155171745945906037">Picha iliyopo kutoka kwenye kamera au faili</translation>
 <translation id="7162487448488904999">Matunzio</translation>
 <translation id="7170236477717446850">Picha ya wasifu</translation>

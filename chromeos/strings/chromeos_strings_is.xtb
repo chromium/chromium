@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Glugginn fyrir uppfærslu fastbúnaðar fyrir ytri tæki er opinn. <ph name="NUM_UPDATES" /> uppfærslur í boði.</translation>
+<translation id="1165039591588034296">Villa</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Í meðallagi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Inntak</translation>
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
 <translation id="3643810137582748570">Sleppa kvörðun</translation>
+<translation id="3651050199673793219">Velja mælieiningu hitastigs</translation>
 <translation id="3678765385266369662">Veldu hvernig þú vilt slökkva á skrifvörn</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
 <translation id="370665806235115550">Hleður...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Snúðvísir í grunnfleti</translation>
 <translation id="385832974417157471">Djúphreinsaðu tækið áður en þú slekkur á því. Ef lok er á tækinu skaltu bíða þar til djúphreinsun lýkur áður en þú lokar því. Djúphreinsun getur tekið allt að mínútu.</translation>
 <translation id="3858860766373142691">Heiti</translation>
+<translation id="3862598938296403232">Lýsing er áskilin</translation>
 <translation id="3865414814144988605">Upplausn</translation>
 <translation id="3866249974567520381">Lýsing</translation>
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5179530508336824319">Kveiktu á skrifvörn til að halda áfram á næsta skjá. Opnaðu hjálparsíðu framleiðanda tækisins til að fá frekari leiðbeiningar.</translation>
+<translation id="5181140330217080051">Sækir</translation>
 <translation id="5190187232518914472">Upplifðu uppáhaldsstundirnar aftur. Opnaðu <ph name="LINK_BEGIN" />Google myndir<ph name="LINK_END" /> til að bæta við eða breyta albúmum.</translation>
 <translation id="5212543919916444558">Ég finn ekkert á skjánum sem ég get aðstoðað þig með.
 Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</translation>
@@ -520,6 +524,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5649768706273821470">Hlusta</translation>
 <translation id="5655283760733841251">Auka birtustig lyklaborðs</translation>
+<translation id="5659593005791499971">Netfang</translation>
 <translation id="5669267381087807207">Virkjar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Fjölskylda</translation>
@@ -532,6 +537,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="57838592816432529">Þagga</translation>
 <translation id="5784136236926853061">Langur HTTP-biðtími</translation>
 <translation id="578753362485952307">Ef þú ert að endurvinna móðurborðið til notkunar í öðru tæki skaltu fara í <ph name="LINK_BEGIN" />flæði endurvinnslu<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Tókst</translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
+<translation id="7154020516215182599">Sendu ábendingu eða lýstu vandamálinu. Ef mögulegt er skaltu taka fram skrefin sem leiddu til vandamálsins.</translation>
 <translation id="7155171745945906037">Fyrirliggjandi mynd úr myndavél eða skrá</translation>
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7170236477717446850">Prófílmynd</translation>

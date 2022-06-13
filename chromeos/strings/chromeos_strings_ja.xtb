@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">外部デバイスのファームウェアを更新するためのウィンドウが開いています。<ph name="NUM_UPDATES" /> 件のアップデートがあります。</translation>
+<translation id="1165039591588034296">エラー</translation>
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
 <translation id="1175951029573070619">普通（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5179530508336824319">次の画面に進むには、書き込み保護をオンにします。デバイスのメーカーのサポートページで手順をご確認ください。</translation>
+<translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5190187232518914472">いつでも思い出の写真を。アルバムを追加または編集するには、<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />にアクセスしてください。</translation>
 <translation id="5212543919916444558">画面からはサポートできる内容が見つかりませんでした。
 マイクをタップして質問してみてください。</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5655283760733841251">キーボードの明るさを上げる</translation>
+<translation id="5659593005791499971">メール</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ファミリー</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
 <translation id="578753362485952307">メインボードを別のデバイスで使用する場合は、<ph name="LINK_BEGIN" />再利用フロー<ph name="LINK_END" />を行ってください。</translation>
+<translation id="5790085346892983794">完了</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5843706793424741864">華氏</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Umsebenzisi</translation>
 <translation id="1128128132059598906">I-EAP-TTLS</translation>
 <translation id="1145018782460575098">Iwindi lesibuyekezo se-firmware samadivayisi wangaphandle livuliwe. izibuyekezo ezitholakalayo <ph name="NUM_UPDATES" /></translation>
+<translation id="1165039591588034296">Iphutha</translation>
 <translation id="1175697296044146566">Le-<ph name="DEVICE_TYPE" /> iphethwe yi-<ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Ngokusesilinganisweni (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Susa</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Impilo yebhethri</translation>
 <translation id="5170568018924773124">Bonisa kufolda</translation>
 <translation id="5179530508336824319">Nika amandla i-write-protect ukuze uqhubekele esikrinini esilandelayo. Iya ekhasini losekelo lomkhiqizi wedivayisi ukuze uthole imiyalelo.</translation>
+<translation id="5181140330217080051">Iyalanda</translation>
 <translation id="5190187232518914472">Khulula izinkumbulo zakho eziyintandokazi. Ukuze ungeze noma uhlele ama-albhamu, iya <ph name="LINK_BEGIN" />Ezithombeni ze-Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Angikwazi ukuthola lutho kusikrini sakho engingasiza ngakho. 
 Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
@@ -522,6 +524,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5620281292257375798">Kwangaphakathi kuphela</translation>
 <translation id="5649768706273821470">Lalela</translation>
 <translation id="5655283760733841251">Ukugqama kwekhibhodi kuphezulu</translation>
+<translation id="5659593005791499971">I-imeyili</translation>
 <translation id="5669267381087807207">Yenza isebenze</translation>
 <translation id="5670702108860320605">I-BSSID</translation>
 <translation id="5691511426247308406">Umndeni</translation>
@@ -534,6 +537,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="57838592816432529">Thulisa</translation>
 <translation id="5784136236926853061">Ukubambezeleka kwe-HTTP okuphakeme</translation>
 <translation id="578753362485952307">Uma usebenza kabusha ibhodi eliyinhloko ozolisebenzisa kwenye idivayisi, iya <ph name="LINK_BEGIN" />ekugelezeni kokusebenza kabusha<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Impumelelo</translation>
 <translation id="5832805196449965646">Engeza umuntu</translation>
 <translation id="583281660410589416">Akwaziwa</translation>
 <translation id="5843706793424741864">I-Fahrenheit</translation>

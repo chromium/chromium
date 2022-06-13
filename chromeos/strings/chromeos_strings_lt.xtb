@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Naudotojas</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Išorinių įrenginių programinės aparatinės įrangos atnaujinimo langas atidarytas. Pasiekiama naujinių: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Klaida</translation>
 <translation id="1175697296044146566">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidutiniškas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5179530508336824319">Įgalinkite įrašymo apsaugą, kad galėtumėte pereiti į kitą ekraną. Instrukcijas rasite įrenginio gamintojo palaikymo puslapyje.</translation>
+<translation id="5181140330217080051">Atsisiunčiama</translation>
 <translation id="5190187232518914472">Atgaivinkite mėgstamiausius prisiminimus. Norėdami pridėti ar redaguoti albumus, eikite į <ph name="LINK_BEGIN" />„Google“ nuotraukas<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
 Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
@@ -520,6 +522,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5649768706273821470">Klausyti</translation>
 <translation id="5655283760733841251">Padidinti klaviatūros šviesumą</translation>
+<translation id="5659593005791499971">El. paštas</translation>
 <translation id="5669267381087807207">Aktyvinama</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Šeima</translation>
@@ -532,6 +535,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="57838592816432529">Nutildyti</translation>
 <translation id="5784136236926853061">Didelė HTTP delsa</translation>
 <translation id="578753362485952307">Jei perdarote pagrindinę plokštę, kad galėtumėte naudoti kitame įrenginyje, žr. <ph name="LINK_BEGIN" />perdarymo veiksmus<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Atlikta</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5843706793424741864">Farenheito laipsniai</translation>

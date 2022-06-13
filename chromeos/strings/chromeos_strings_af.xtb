@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">"Dateer fermware op vir eksterne toestelle"-venster is oop. <ph name="NUM_UPDATES" /> opdaterings beskikbaar.</translation>
+<translation id="1165039591588034296">Fout</translation>
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwyder</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Batterygesondheid</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5179530508336824319">Aktiveer skryfbeskerming om na die volgende skerm voort te gaan. Gaan na die toestelvervaardiger se steundienstebladsy vir instruksies.</translation>
+<translation id="5181140330217080051">Laai tans af</translation>
 <translation id="5190187232518914472">Herleef jou gunstelingherinneringe. Gaan na <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> toe om albums by te voeg of te wysig.</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
 Probeer die mikrofoon tik om my enigiets te vra.</translation>
@@ -522,6 +524,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5649768706273821470">Luister</translation>
 <translation id="5655283760733841251">Verhoog sleutelbordhelderheid</translation>
+<translation id="5659593005791499971">E-pos</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -534,6 +537,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="57838592816432529">Demp</translation>
 <translation id="5784136236926853061">Hoë HTTP-traagheid</translation>
 <translation id="578753362485952307">Gaan na die <ph name="LINK_BEGIN" />oordoenvloei<ph name="LINK_END" /> as jy besig is om ’n hoofbord oor te doen om in ’n ander toestel te gebruik.</translation>
+<translation id="5790085346892983794">Suksesvol</translation>
 <translation id="5832805196449965646">Voeg persoon by</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

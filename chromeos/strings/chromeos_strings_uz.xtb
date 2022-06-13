@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Tashqi qurilmalar uchun mikrodasturni yangilash oynasi ochiq. <ph name="NUM_UPDATES" /> ta yangilanish chiqdi.</translation>
+<translation id="1165039591588034296">Xatolik</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="1175951029573070619">Oʻrtacha (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
@@ -468,6 +469,7 @@
 <translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5179530508336824319">Keyingi ekranga oʻtish uchun yozishdan himoyani yoqing. Koʻrsatmalar uchun qurilma ishlab chiqaruvchisining yordam sahifasini oching.</translation>
+<translation id="5181140330217080051">Yuklab olinmoqda</translation>
 <translation id="5190187232518914472">Sevimli xotiralaringizga qayting. Albom kiritish yoki tahrirlash uchun <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> xizmatini oching.</translation>
 <translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
 Mikrofon ustiga bosing va savolni ayting.</translation>
@@ -524,6 +526,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5620281292257375798">Maxfiy</translation>
 <translation id="5649768706273821470">Tinglash</translation>
 <translation id="5655283760733841251">Klaviatura yorqinligini oshirish</translation>
+<translation id="5659593005791499971">Email</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Oilaviy</translation>
@@ -536,6 +539,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
 <translation id="5784136236926853061">HTTP kechikishi yuqori</translation>
 <translation id="578753362485952307">Ona plata boshqa qurilmada qayta ishlatilsa, <ph name="LINK_BEGIN" />qayta ishlash oqimi<ph name="LINK_END" /> sahifasini oching.</translation>
+<translation id="5790085346892983794">Bajarildi</translation>
 <translation id="5832805196449965646">Foydalanuvchi qo‘shish</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5843706793424741864">Farengeyt</translation>

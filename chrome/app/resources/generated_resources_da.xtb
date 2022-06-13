@@ -190,6 +190,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1173894706177603556">Omdøb</translation>
 <translation id="1174073918202301297">Genvejen blev tilføjet</translation>
 <translation id="1174366174291287894">Din forbindelse er altid sikker, medmindre Chrome angiver andet.</translation>
+<translation id="1174391930667737831">Center for beskyttelse af personlige oplysninger</translation>
 <translation id="117445914942805388"><ph name="BEGIN_LINK" />Gå til indstillingerne for synkronisering<ph name="END_LINK" /> for at rydde browserdata fra alle dine synkroniserede enheder og din Google-konto.</translation>
 <translation id="1175364870820465910">&amp;Udskriv...</translation>
 <translation id="1176471985365269981">Har ikke tilladelse til at redigere filer og mapper på din enhed</translation>
@@ -3404,7 +3405,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="424963718355121712">Apps, der styrer et website, kan kun downloades fra det pågældende website</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nej</translation>
-<translation id="4251377547188244181">Tilmelding af terminal- og signeringsenhed</translation>
+<translation id="4251377547188244181">Tilmelding af enhed til terminal- og signeringstilstand</translation>
 <translation id="4252035718262427477">Webside, enkelt fil (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth er deaktiveret</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – faneindholdet deles</translation>

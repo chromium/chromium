@@ -504,6 +504,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3901991538546252627">Inaunganisha kwenye <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Badilisha utumie toleo la awali kwenye kifaa ndani ya dakika moja}other{Badilisha utumie toleo la awali kwenye kifaa ndani ya dakika #}}</translation>
 <translation id="3923494859158167397">Hujaweka mitandao yoyote ya simu</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, Inapakia matukio.</translation>
 <translation id="3932043219784172185">Hakuna kifaa kilichounganishwa</translation>
 <translation id="3934456833412894880">Hali ya kuchaji inayojirekebisha imewashwa. Betri yako itasalia na asilimia 80 ili kuongeza muda wa matumizi ya betri na itachaji kikamilifu utakapohitaji.</translation>
 <translation id="3943857333388298514">Bandika</translation>
@@ -1055,6 +1056,10 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7258828758145722155">Ilibadilishwa jana</translation>
 <translation id="726276584504105859">Buruta hapa ili utumie skrini iliyogawanywa</translation>
 <translation id="7262906531272962081">Weka kikumbusho</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> hadi
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Chagua ili uone maelezo zaidi katika Kalenda ya Google.</translation>
 <translation id="7302889331339392448">Kipengele cha Manukuu Papo Hapo kimezimwa.</translation>
 <translation id="7303365578352795231">Hoja inajibiwa kwa kutumia kifaa kingine.</translation>
 <translation id="7305884605064981971">EDGE</translation>

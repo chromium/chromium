@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Fönstret Uppdatera firmware för externa enheter är öppet. <ph name="NUM_UPDATES" /> uppdateringar är tillgängliga.</translation>
+<translation id="1165039591588034296">Fel</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Genomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ta bort</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Batterinivå</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5179530508336824319">Aktivera skrivskydd för att fortsätta till nästa skärm. Du hittar anvisningar på enhetstillverkarens supportsida.</translation>
+<translation id="5181140330217080051">Nedladdning</translation>
 <translation id="5190187232518914472">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
 Tryck på mikrofonen och fråga om något.</translation>
@@ -520,6 +522,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5620281292257375798">Endast internt</translation>
 <translation id="5649768706273821470">Lyssna</translation>
 <translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
+<translation id="5659593005791499971">E-post</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familj</translation>
@@ -532,6 +535,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5784136236926853061">Hög HTTP-latens</translation>
 <translation id="578753362485952307">Om du återanvänder ett moderkort i en annan enhet öppnar du <ph name="LINK_BEGIN" />flödet för återanvändning<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Klart</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ଉପଯୋଗକର୍ତ୍ତା</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟ ୱିଣ୍ଡୋ ଖୋଲା ଅଛି। <ph name="NUM_UPDATES" />ଟି ଅପଡେଟ ଉପଲବ୍ଧ ଅଛି।</translation>
+<translation id="1165039591588034296">ତ୍ରୁଟି</translation>
 <translation id="1175697296044146566">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="1175951029573070619">ସାଧାରଣ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">ବ୍ୟାଟେରୀ ହେଲ୍ଥ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5179530508336824319">ପରବର୍ତ୍ତୀ ସ୍କ୍ରିନକୁ ଯିବା ପାଇଁ ରାଇଟ ପ୍ରୋଟେକ୍ଟକୁ ସକ୍ଷମ କରନ୍ତୁ। ନିର୍ଦ୍ଦେଶାବଳୀ ପାଇଁ ଡିଭାଇସ ନିର୍ମାତାଙ୍କ ସହାୟତା ପୃଷ୍ଠାକୁ ଯାଆନ୍ତୁ।</translation>
+<translation id="5181140330217080051">ଡାଉନ୍‍‍ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="5190187232518914472">ଆପଣଙ୍କର ପ୍ରିୟ ସ୍ମୃତିଗୁଡ଼ିକୁ ପୁନର୍ଜୀବିତ କରନ୍ତୁ। ଆଲବମଗୁଡ଼ିକ ଯୋଗ କରିବା କିମ୍ବା ସେଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବା ପାଇଁ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="5212543919916444558">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ରେ ମୁଁ କିଛି ଖୋଜିପାଇଲି ନାହିଁ ଯାହାଦ୍ୱାରା ମୁଁ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିପାରିବି।
 ମୋତେ ଯାହା କିଛି ପଚାରିବା ପାଇଁ ମାଇକ୍‌ ଟାପ୍‌ କରି ଦେଖନ୍ତୁ।</translation>
@@ -520,6 +522,7 @@
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
 <translation id="5655283760733841251">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
+<translation id="5659593005791499971">ଇମେଲ୍</translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
@@ -532,6 +535,7 @@
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="578753362485952307">ଯଦି ଆପଣ ଅନ୍ୟ ଏକ ଡିଭାଇସରେ ବ୍ୟବହାର କରିବା ପାଇଁ ମେନବୋର୍ଡରେ କୌଣସି ରିୱାର୍କ କରନ୍ତି, ତେବେ <ph name="LINK_BEGIN" />ରିୱାର୍କ ଫ୍ଲୋ<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
+<translation id="5790085346892983794">ସଫଳ ହୋଇଛି</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5843706793424741864">ଫାରେନହାଇଟ୍</translation>

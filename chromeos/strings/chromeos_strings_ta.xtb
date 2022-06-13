@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புச் சாளரம் திறந்துள்ளது. <ph name="NUM_UPDATES" /> புதுப்பிப்புகள் உள்ளன.</translation>
+<translation id="1165039591588034296">பிழை</translation>
 <translation id="1175697296044146566">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="1175951029573070619">சுமாராக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">அகற்று</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">பேட்டரி நிலை</translation>
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="5179530508336824319">அடுத்த திரைக்குச் செல்ல திருத்துவதைத் தடுக்கும் அம்சத்தை இயக்கவும். வழிமுறைகளைத் தெரிந்துகொள்ள சாதன உற்பத்தியாளரின் உதவிப் பக்கத்திற்குச் செல்லவும்.</translation>
+<translation id="5181140330217080051">பதிவிறக்குகிறது</translation>
 <translation id="5190187232518914472">உங்களின் மனதிற்கினிய நினைவுகளை அசைபோடுங்கள். ஆல்பங்களைச் சேர்க்கவோ திருத்தவோ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />ஸிற்குச் செல்லுங்கள்.</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">அகப் பயன்பாட்டிற்கானது</translation>
 <translation id="5649768706273821470">கேள்</translation>
 <translation id="5655283760733841251">கீபோர்டு ஒளிர்வை அதிகரிக்கும்</translation>
+<translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">குடும்பம்</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">ஒலியடக்கு</translation>
 <translation id="5784136236926853061">HTTP கோரிக்கைகள் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="578753362485952307">மற்றொரு சாதனத்தில் பயன்படுத்துவதற்காக மதர்போர்டில் மாற்றங்களைச் செய்ய விரும்பினால் <ph name="LINK_BEGIN" />மறு செயல்முறைக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
+<translation id="5790085346892983794">வெற்றி</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5843706793424741864">ஃபாரன்ஹீட்</translation>

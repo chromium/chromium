@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
+<translation id="1165039591588034296">ਗੜਬੜ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="1175951029573070619">ਔਸਤ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5179530508336824319">ਅਗਲੀ ਸਕ੍ਰੀਨ 'ਤੇ ਜਾਣਾ ਜਾਰੀ ਰੱਖਣ ਲਈ, 'ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ' ਨੂੰ ਚਾਲੂ ਕਰੋ। ਹਿਦਾਇਤਾਂ ਲਈ ਡੀਵਾਈਸ ਨਿਰਮਾਤਾ ਦੇ ਸਹਾਇਤਾ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
+<translation id="5181140330217080051">ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5190187232518914472">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਯਾਦਾਂ ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ। ਐਲਬਮਾਂ ਸ਼ਾਮਲ ਜਾਂ ਉਹਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="5212543919916444558">ਮੈਨੂੰ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ ਅਜਿਹਾ ਕੁਝ ਵੀ ਨਹੀਂ ਮਿਲਿਆ ਜਿਸ ਵਿੱਚ ਮੈਂ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਾਂ। ਮੇਰੇ ਤੋਂ ਕੁਝ ਵੀ ਪੁੱਛਣ ਲਈ ਮਾਈਕ 'ਤੇ ਟੈਪ ਕਰਕੇ ਦੇਖੋ।</translation>
 <translation id="5212593641110061691">ਪੱਤਰਕਾ</translation>
@@ -519,6 +521,7 @@
 <translation id="5620281292257375798">ਸਿਰਫ਼ ਅੰਦਰੂਨੀ</translation>
 <translation id="5649768706273821470">ਸੁਣਿਆ</translation>
 <translation id="5655283760733841251">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
+<translation id="5659593005791499971">ਈਮੇਲ</translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ਪਰਿਵਾਰ</translation>
@@ -531,6 +534,7 @@
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="578753362485952307">ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਵਿੱਚ ਵਰਤਣ ਲਈ ਮੁੱਖ-ਬੋਰਡ 'ਤੇ ਮੁੜ-ਕੰਮ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ <ph name="LINK_BEGIN" />ਮੁੜ-ਕੰਮ ਦੇ ਪ੍ਰਵਾਹ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
+<translation id="5790085346892983794">ਸਫਲਤਾ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
 <translation id="5843706793424741864">ਫਾਰੇਨਹੀਟ</translation>

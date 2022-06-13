@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utilizador</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A janela de atualização do firmware para dispositivos externos está aberta. <ph name="NUM_UPDATES" /> atualizações disponíveis</translation>
+<translation id="1165039591588034296">Erro</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Média (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -291,6 +292,7 @@
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
 <translation id="3643810137582748570">Ignorar calibração</translation>
+<translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3678765385266369662">Selecione como quer desativar a proteção contra escrita</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
@@ -308,6 +310,7 @@
 <translation id="3856304145690230735">Giroscópio da base</translation>
 <translation id="385832974417157471">Antes de encerrar, faça um Powerwash ao seu dispositivo. Se o seu dispositivo tiver tampa, aguarde pela conclusão do Powerwash antes de a fechar. A conclusão do Powerwash poderá demorar até um minuto.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3862598938296403232">É necessária uma descrição</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
@@ -466,6 +469,7 @@
 <translation id="5168185087976003268">Condição da bateria</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5179530508336824319">Ative a proteção contra escrita para continuar para o ecrã seguinte. Aceda à página de apoio técnico do fabricante do dispositivo para obter instruções.</translation>
+<translation id="5181140330217080051">A transferir</translation>
 <translation id="5190187232518914472">Reviva as suas memórias favoritas. Para adicionar ou editar álbuns, aceda ao <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
 Experimente tocar no microfone para me perguntar o que quiser.</translation>
@@ -522,6 +526,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
 <translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
+<translation id="5659593005791499971">Email</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -534,6 +539,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">Latência elevada de HTTP</translation>
 <translation id="578753362485952307">Se estiver a reparar uma placa principal para usar noutro dispositivo, aceda ao <ph name="LINK_BEGIN" />fluxo de reparação<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Sucesso</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -681,6 +687,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
+<translation id="7154020516215182599">Partilhe o seu feedback ou descreva o problema. Se possível, inclua passos para reproduzir o problema.</translation>
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>

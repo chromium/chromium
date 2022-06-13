@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">બાહ્ય ડિવાઇસનું ફર્મવેયર અપડેટ કરવા માટેની વિન્ડો ખુલ્લી છે. <ph name="NUM_UPDATES" /> અપડેટ ઉપલબ્ધ છે.</translation>
+<translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
 <translation id="1175951029573070619">સરેરાશ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">બૅટરીની ક્ષમતા</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5179530508336824319">આગલી સ્ક્રીન પર આગળ વધવા માટે Write-Protectને ચાલુ કરો. સૂચનાઓ માટે ડિવાઇસ નિર્માતાના સપોર્ટ પેજ પર જાઓ.</translation>
+<translation id="5181140330217080051">ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="5190187232518914472">તમારી મનગમતી યાદગીરીઓને ફરીથી માણો. આલ્બમ ઉમેરવા અથવા તેમાં ફેરફાર કરવા માટે, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="5212543919916444558">મને તમારી સ્ક્રીન પર એવી કોઈપણ વસ્તુ મળી નથી કે જેમાં હું તમારી સહાય કરી શકું. મને કંઈપણ પૂછવા માટે માઇકને ટૅપ કરી જુઓ.</translation>
 <translation id="5212593641110061691">ટેબ્લોઇડ</translation>
@@ -519,6 +521,7 @@
 <translation id="5620281292257375798">માત્ર આંતરિક</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
 <translation id="5655283760733841251">કીબોર્ડનું બ્રાઇટનેસ વધારવાની કી</translation>
+<translation id="5659593005791499971">ઇમેઇલ</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">કુટુંબ</translation>
@@ -531,6 +534,7 @@
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
 <translation id="5784136236926853061">HTTPની ઉચ્ચ વિલંબતા</translation>
 <translation id="578753362485952307">જો તમે મેઇનબોર્ડનો અન્ય કોઈ ડિવાઇસમાં ઉપયોગ કરવા માટે તેના પર રીવર્ક કરી રહ્યાં હો, તો <ph name="LINK_BEGIN" />રીવર્ક ફ્લો<ph name="LINK_END" /> પર જાઓ.</translation>
+<translation id="5790085346892983794">સફળતા</translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5843706793424741864">ફેરનહીટ</translation>

@@ -505,6 +505,7 @@
 <translation id="3901991538546252627"><ph name="NAME" />కి కనెక్ట్ చేస్తోంది</translation>
 <translation id="3922427723338465344">{0,plural, =1{1 నిమిషంలోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}other{# నిమిషాల్లోపు పరికరాన్ని మునపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="3923494859158167397">ఎలాంటి మొబైల్ నెట్‌వర్క్‌లు సెటప్ చేయబడలేదు</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, ఈవెంట్‌లు లోడ్ అవుతున్నాయి.</translation>
 <translation id="3932043219784172185">పరికరం ఏదీ కనెక్ట్ చేయబడలేదు</translation>
 <translation id="3934456833412894880">అనుకూల ఛార్జింగ్ ఆన్‌లో ఉంది. ఇది మీ బ్యాటరీ జీవితకాలాన్ని పొడిగించడానికి 80% వద్ద ఉంటుంది, అలాగే మీకు అవసరమైనప్పుడు పూర్తిగా ఛార్జ్ చేయబడుతుంది.</translation>
 <translation id="3943857333388298514">అతికించు</translation>
@@ -1056,6 +1057,10 @@
 <translation id="7258828758145722155">నిన్న ఎడిట్ చేశారు</translation>
 <translation id="726276584504105859">విభజన స్క్రీన్‌ను ఉపయోగించడానికి ఇక్కడికి లాగండి</translation>
 <translation id="7262906531272962081">రిమైండర్‌ను క్రియేట్ చేయండి</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> నుండి
+        <ph name="END_TIME" /> వరకు,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. మరిన్ని వివరాల కోసం Google Calendarలో ఎంచుకోండి.</translation>
 <translation id="7302889331339392448">లైవ్ క్యాప్షన్ ఆఫ్ చేయబడింది.</translation>
 <translation id="7303365578352795231">మరొక పరికరంలో సమాధానం ఇవ్వబడుతోంది.</translation>
 <translation id="7305884605064981971">EDGE</translation>

@@ -504,6 +504,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3901991538546252627">Verbindung mit <ph name="NAME" /> wird hergestellt.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Gerät innerhalb von einer Minute auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Minuten auf eine frühere Version zurücksetzen}}</translation>
 <translation id="3923494859158167397">Es sind keine Mobilfunknetze eingerichtet</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, Termine werden geladen.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3934456833412894880">Adaptives Laden ist aktiviert. Der Akku bleibt bei 80 %, um seine Lebensdauer zu verlängern. Er wird vollständig aufgeladen, wenn du einen vollen Akku brauchst.</translation>
 <translation id="3943857333388298514">Einfügen</translation>
@@ -1055,6 +1056,10 @@ Neuinstallation</translation>
 <translation id="7258828758145722155">Gestern bearbeitet</translation>
 <translation id="726276584504105859">Hierher ziehen, um den Bildschirm zu teilen</translation>
 <translation id="7262906531272962081">Erinnerung erstellen</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> bis
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Für weitere Details Termin in Google Kalender auswählen.</translation>
 <translation id="7302889331339392448">Automatische Untertitel sind aus.</translation>
 <translation id="7303365578352795231">Antwort auf einem anderen Gerät.</translation>
 <translation id="7305884605064981971">EDGE</translation>

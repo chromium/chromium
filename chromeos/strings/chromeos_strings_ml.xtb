@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">'ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്‌ഡേറ്റ് ചെയ്യുക' വിൻഡോ തുറന്നിരിക്കുന്നു. <ph name="NUM_UPDATES" /> അപ്ഡേറ്റുകൾ ലഭ്യമാണ്.</translation>
+<translation id="1165039591588034296">പിശക്</translation>
 <translation id="1175697296044146566">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>
 <translation id="1175951029573070619">ശരാശരി (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">ബാറ്ററിയുടെ പ്രവർത്തനക്ഷമത</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="5179530508336824319">അടുത്ത സ്ക്രീനിലേക്ക് പോകാൻ റൈറ്റ് പരിരക്ഷ പ്രവർത്തനക്ഷമമാക്കുക. നിർദ്ദേശങ്ങൾക്ക്, ഉപകരണ നിർമ്മാതാവിന്റെ പിന്തുണാ പേജിലേക്ക് പോകുക.</translation>
+<translation id="5181140330217080051">ഡൗൺലോഡുചെയ്യുന്നു</translation>
 <translation id="5190187232518914472">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഓർമ്മകളെ പുനരുജ്ജീവിപ്പിക്കുക. ആൽബങ്ങൾ ചേർക്കാനോ എഡിറ്റ് ചെയ്യാനോ <ph name="LINK_BEGIN" />Google Photos-ലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5212593641110061691">ടാബ്ലോയ്‌ഡ്</translation>
@@ -521,6 +523,7 @@
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5649768706273821470">കേൾക്കുക</translation>
 <translation id="5655283760733841251">കീബോർഡ് തെളിച്ചം കൂട്ടുക</translation>
+<translation id="5659593005791499971">ഇമെയില്‍</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">കുടുംബം</translation>
@@ -533,6 +536,7 @@
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="578753362485952307">മറ്റൊരു ഉപകരണത്തിൽ ഉപയോഗിക്കേണ്ട മെയിൻബോർഡിൽ റീവർക്ക് നടത്തുകയാണെങ്കിൽ, <ph name="LINK_BEGIN" />റീവർക്ക് ഫ്ലോയിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
+<translation id="5790085346892983794">വിജയകരം</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5843706793424741864">ഫാരൻഹീറ്റ്</translation>

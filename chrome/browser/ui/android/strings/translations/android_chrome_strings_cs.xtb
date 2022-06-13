@@ -348,6 +348,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2842985007712546952">Nadřazená složka</translation>
 <translation id="2856503607207334158">Přihlášení se nezdařilo</translation>
 <translation id="2860954141821109167">Zkontrolujte zda je na tomto zařízení povolená aplikace k telefonování</translation>
+<translation id="2861923151411510142">Některé funkce Chromu už nebudou dostupné</translation>
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2871733351037274014">Předběžně načítat stránky</translation>
 <translation id="2888126860611144412">O aplikaci Chrome</translation>
@@ -494,7 +495,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3622349720008044802">Spravovat okna</translation>
 <translation id="3631987586758005671">Sdílení se zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Přihlašovat se na weby automaticky pomocí uložených identifikačních údajů. Když je tato funkce vypnutá, budete před každým přihlášením na web požádáni o ověření.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Požadovat mobilní web</translation>
 <translation id="3687645719033307815">Prohlížíte si náhled této stránky</translation>
 <translation id="3690369331356918524">Upozorní vás v případě vyzrazení hesel při porušení zabezpečení</translation>
@@ -891,6 +891,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5869522115854928033">Uložená hesla</translation>
 <translation id="5869789175361934029">Pokračujte z jiného zařízení</translation>
 <translation id="587735546353481577">Pokud nějaký web chcete sledovat, přejděte na něj, otevřené nabídku Chrome a klepněte na Sledovat.</translation>
+<translation id="5879072387416556377">Získejte lepší návrhy</translation>
 <translation id="5880748256563468367">Přejít na informační kanál</translation>
 <translation id="5884076754568147479">Abyste mohli provádět akce, Google bude dostávat adresy URL a obsah webů, ve kterých používáte Asistenta, a informace, které prostřednictvím Asistenta odesíláte</translation>
 <translation id="5906513782029855931">Když bude Asistent Google znát adresy URL webů, bude vám moci pomáhat s plněním úkolů. Asistenta můžete vypnout v nastavení Chromu.</translation>
@@ -1234,6 +1235,7 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="770741401784017797">Vytváření obrázku GIF</translation>
 <translation id="7707922173985738739">Bude používat mobilní data</translation>
 <translation id="7709094866268987903">Zde se budou zobrazovat odstraněné zájmy</translation>
+<translation id="7709918231054955894">Načtěte všechny své karty</translation>
 <translation id="7725024127233776428">Zde se zobrazují stránky přidané do záložek</translation>
 <translation id="7757787379047923882">Text sdílený ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Vybrat datum a čas</translation>
@@ -1429,6 +1431,7 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="8656747343598256512">Přihlaste se na tento web a do Chromu pomocí svého účtu Google. Synchronizaci můžete zapnout později.</translation>
 <translation id="8659579665266920523">Vyhledávání v Chromu</translation>
 <translation id="8662811608048051533">Odhlásí vás z většiny webů.</translation>
+<translation id="8664215986015753476">Používejte Chrome po svém</translation>
 <translation id="8664979001105139458">Název souboru již existuje</translation>
 <translation id="8666759526542103597">Personalizace reklam na základě prohlížeče</translation>
 <translation id="8667760277771450375">Zkoumáme možnosti, jak zabránit sledování mezi weby a zároveň webům umožnit potírání reklamního spamu a podvodů.</translation>

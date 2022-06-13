@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A janela de atualização de firmware para dispositivos externos está aberta. <ph name="NUM_UPDATES" /> atualizações disponíveis.</translation>
+<translation id="1165039591588034296">Erro</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Médio (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Integridade da bateria</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5179530508336824319">Ative a proteção contra gravação e prossiga para a próxima tela. Acesse a página de suporte do fabricante do dispositivo para ver as instruções.</translation>
+<translation id="5181140330217080051">Fazendo download</translation>
 <translation id="5190187232518914472">Reviva suas lembranças favoritas. Para adicionar ou editar álbuns, acesse o <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
 Tente tocar no microfone para me pedir algo.</translation>
@@ -522,6 +524,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
 <translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
+<translation id="5659593005791499971">E-mail</translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -534,6 +537,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">A latência do HTTP está alta</translation>
 <translation id="578753362485952307">Se você está, reformulando uma placa-mãe para usar em outro dispositivo, acesse o <ph name="LINK_BEGIN" />fluxo de reformulação<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Sucesso</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

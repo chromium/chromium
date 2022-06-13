@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Отворен е прозорецът за актуализиране на фърмуера на външни устройства. Налице са <ph name="NUM_UPDATES" /> актуализации.</translation>
+<translation id="1165039591588034296">Грешка</translation>
 <translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Средна (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Състояние на батерията</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5179530508336824319">Активирайте защитата срещу записване, за да продължите към следващия екран. За инструкции отворете страницата за поддръжка на производителя на устройството.</translation>
+<translation id="5181140330217080051">Изтегля се</translation>
 <translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5649768706273821470">Слушане</translation>
 <translation id="5655283760733841251">Увеличаване на яркостта на клавиатурата</translation>
+<translation id="5659593005791499971">Имейл</translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">Заглушаване</translation>
 <translation id="5784136236926853061">Голямо забавяне на HTTP</translation>
 <translation id="578753362485952307">Ако преработвате дънна платка, за да я използвате в друго устройство, отворете <ph name="LINK_BEGIN" />съответния работен процес<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Успех</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5843706793424741864">Фаренхайт</translation>

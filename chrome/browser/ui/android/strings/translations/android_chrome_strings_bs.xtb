@@ -495,7 +495,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatski se prijavite na web lokacije korištenjem pohranjenih akreditiva. Kada je ova funkcija isključena, od vas će se tražiti potvrda prilikom svake prijave na web lokaciju.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Zatraži web lokaciju za mobilni uređaj</translation>
 <translation id="3687645719033307815">Prikazan vam je pregled ove stranice</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke izložene prilikom narušavanja podataka</translation>
@@ -734,6 +733,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4985248278475639481">O Personalizaciji oglasa</translation>
 <translation id="4987271110129728827">Nije moguće pronaći tu stranicu. Provjerite pravopis ili pokušajte pretražiti internet.</translation>
 <translation id="4988526792673242964">Stranice</translation>
+<translation id="499724277181351974">Navigacija: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Pratite web lokaciju ovdje</translation>
 <translation id="500351648694011114">Jednostavnije pregledajte</translation>
 <translation id="5004416275253351869">Kontrole aktivnosti na Googleu</translation>
@@ -983,6 +983,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 Na osnovu vaše interakcije s web lokacijom, kao što je redovna prijava na račun, ta web lokacija može izdati token povjerenja vašem pregledniku. Kasnije, ako druga web lokacija koju ste posjetili provjeri i pronađe važeći token povjerenja, veća je vjerovatnoća da će vas tretirati kao stvarnu osobu, a ne kao bota.
 
 Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvrđivanje vašeg identiteta.</translation>
+<translation id="6394791151443660613">Pretraživanje: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Ponovo na mreži</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> na <ph name="VIOLATED_URL" /></translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Uživatel</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizace firmwaru externích zařízení je otevřené. Dostupné aktualizace: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Chyba</translation>
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Průměrný (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odebrat</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3643810137582748570">Přeskočit kalibraci</translation>
+<translation id="3651050199673793219">Vyberte jednotku teploty</translation>
 <translation id="3678765385266369662">Vyberte, jak chcete vypnout ochranu proti zápisu</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Gyroskop v těle</translation>
 <translation id="385832974417157471">Před vypnutím obnovte zařízení pomocí funkce Powerwash. Pokud má zařízení víko, zavřete ho až po dokončení procesu Powerwash. Dokončení může trvat až jednu minutu.</translation>
 <translation id="3858860766373142691">Název</translation>
+<translation id="3862598938296403232">Je nutné zadat popis</translation>
 <translation id="3865414814144988605">Rozlišení</translation>
 <translation id="3866249974567520381">Popis</translation>
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Opotřebení baterie</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5179530508336824319">Než budete pokračovat na další obrazovku, zapněte ochranu proti zápisu. Pokyny najdete na stránce podpory výrobce zařízení.</translation>
+<translation id="5181140330217080051">Stahování</translation>
 <translation id="5190187232518914472">Oživte své oblíbené vzpomínky. Alba můžete přidat a upravit ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
 Zkuste klepnout na mikrofon a zeptat se.</translation>
@@ -520,6 +524,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
 <translation id="5655283760733841251">Zvýšit jas</translation>
+<translation id="5659593005791499971">E-mail</translation>
 <translation id="5669267381087807207">Aktivování</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -532,6 +537,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784136236926853061">Vysoká latence požadavků HTTP</translation>
 <translation id="578753362485952307">Pokud předěláváte základní desku k použití v jiném zařízení, přejděte na <ph name="LINK_BEGIN" />postup předělání<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Úspěšně provedeno</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5843706793424741864">Stupně Fahrenheita</translation>
@@ -679,6 +685,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
+<translation id="7154020516215182599">Sdělte nám svůj názor nebo popište svůj problém. Pokud je to možné, uveďte postup, jak problém reprodukovat.</translation>
 <translation id="7155171745945906037">Stávající fotka z fotoaparátu nebo souboru</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>

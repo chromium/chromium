@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Το παράθυρο Ενημέρωσης υλικολογισμικού για εξωτερικές συσκευές είναι ανοικτό. <ph name="NUM_UPDATES" /> διαθέσιμες ενημερώσεις.</translation>
+<translation id="1165039591588034296">Σφάλμα</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Μέτριο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5179530508336824319">Ενεργοποιήστε την προστασία εγγραφής για να συνεχίσετε στην επόμενη οθόνη. Μεταβείτε στη σελίδα υποστήριξης του κατασκευαστή για οδηγίες.</translation>
+<translation id="5181140330217080051">Λήψη</translation>
 <translation id="5190187232518914472">Ξαναζήστε τις αγαπημένες σας αναμνήσεις. Για προσθήκη ή επεξεργασία λευκωμάτων, μεταβείτε στις <ph name="LINK_BEGIN" />Φωτογραφίες Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Δεν βρέθηκε κάτι με το οποίο να μπορώ να σας βοηθήσω στην οθόνη σας.
 Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">Εσωτερική χρήση μόνο</translation>
 <translation id="5649768706273821470">Ακρόαση</translation>
 <translation id="5655283760733841251">Αύξηση φωτεινότητας πληκτρολογίου</translation>
+<translation id="5659593005791499971">Ηλεκτρονικό ταχυδρομείο</translation>
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5784136236926853061">Υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="578753362485952307">Εάν πραγματοποιείτε εργασίες επισκευής σε μια κεντρική πλακέτα για χρήση σε άλλη συσκευή, μεταβείτε στη <ph name="LINK_BEGIN" />ροή επισκευής<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Επιτυχία</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5843706793424741864">Βαθμοί Φαρενάιτ</translation>

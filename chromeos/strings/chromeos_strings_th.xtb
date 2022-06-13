@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">หน้าต่างการอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอกเปิดอยู่ <ph name="NUM_UPDATES" /> การอัปเดตที่พร้อมใช้งาน</translation>
+<translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="1175951029573070619">ปานกลาง (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">นำออก</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">อินพุต</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="3643810137582748570">ข้ามการปรับเทียบ</translation>
+<translation id="3651050199673793219">เลือกหน่วยวัดอุณหภูมิ</translation>
 <translation id="3678765385266369662">เลือกว่าคุณต้องการปิด Write Protect อย่างไร</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">กำลังโหลด ...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">เครื่องวัดการหมุนในส่วนฐาน</translation>
 <translation id="385832974417157471">ทำ Powerwash อุปกรณ์ก่อนปิด หากอุปกรณ์มีฝา ให้รอจนกว่าจะทำ Powerwash เสร็จจึงค่อยปิดฝา การทำ Powerwash อาจใช้เวลาถึง 1 นาทีจึงจะเสร็จสมบูรณ์</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
+<translation id="3862598938296403232">ต้องป้อนคำอธิบาย</translation>
 <translation id="3865414814144988605">ความละเอียด</translation>
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5179530508336824319">เปิดใช้ Write Protect เพื่อดำเนินการต่อในหน้าจอถัดไป ดูวิธีการได้ที่หน้าการสนับสนุนของผู้ผลิตอุปกรณ์</translation>
+<translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>
@@ -520,6 +524,7 @@
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5649768706273821470">ฟัง</translation>
 <translation id="5655283760733841251">เพิ่มความสว่างของแป้นพิมพ์</translation>
+<translation id="5659593005791499971">อีเมล</translation>
 <translation id="5669267381087807207">กำลังเปิดใช้</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ครอบครัว</translation>
@@ -532,6 +537,7 @@
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5784136236926853061">เวลาในการตอบสนองของ HTTP สูง</translation>
 <translation id="578753362485952307">หากคุณปรับปรุงเมนบอร์ดใหม่เพื่อใช้ในอุปกรณ์อื่น ให้ไปที่<ph name="LINK_BEGIN" />ขั้นตอนการปรับปรุงใหม่<ph name="LINK_END" /></translation>
+<translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5843706793424741864">ฟาเรนไฮต์</translation>
@@ -679,6 +685,7 @@
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
+<translation id="7154020516215182599">แชร์ความคิดเห็นหรืออธิบายปัญหาของคุณ หากเป็นไปได้ ให้ระบุขั้นตอนต่างๆ เพื่อจำลองปัญหา</translation>
 <translation id="7155171745945906037">รูปภาพที่มีอยู่จากกล้องหรือไฟล์</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7170236477717446850">รูปโปรไฟล์</translation>

@@ -494,7 +494,6 @@
 <translation id="3622349720008044802">管理視窗</translation>
 <translation id="3631987586758005671">正在分享至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="363596933471559332">自動使用已儲存的憑證登入網站。如果關閉這項功能，每次在您登入網站之前，網站一律會要求驗證。</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">切換為行動版網站</translation>
 <translation id="3687645719033307815">目前顯示的是這個網頁的預覽畫面</translation>
 <translation id="3690369331356918524">可在發生資料侵害事件導致密碼外洩時顯示警告訊息</translation>

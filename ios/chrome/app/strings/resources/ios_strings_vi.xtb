@@ -27,6 +27,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
 <translation id="1154984953698510061">Xem các thẻ khác</translation>
+<translation id="1161340988127985692">Yêu cầu Mở đường liên kết từ các Ứng dụng khác ở Chế độ ẩn danh</translation>
 <translation id="1164064664035028907">Dùng mật khẩu mạnh:</translation>
 <translation id="1165039591588034296">Lỗi</translation>
 <translation id="1172898394251786223">Trường tiếp theo</translation>
@@ -292,6 +293,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3443810440409579745">Đã nhận thẻ.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="3448016392200048164">Chế độ xem phân tách</translation>
+<translation id="3450502512529866925">Đánh dấu trang này</translation>
 <translation id="345565170154308620">Quản lý mật khẩu...</translation>
 <translation id="3469166899695866866">Dừng tải xuống?</translation>
 <translation id="3470502288861289375">Đang sao chép...</translation>
@@ -484,6 +486,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Bạn có thể lưu các trang để đọc vào lúc khác hoặc khi không có kết nối mạng. Chrome sẽ hỏi xem bạn có muốn lưu các trang dài hay không.</translation>
 <translation id="5094827893301452931">Đã đăng lên Twitter.</translation>
+<translation id="509789154667432072">Thêm Dấu trang</translation>
 <translation id="5118713593561876160">Sở thích</translation>
 <translation id="5118764316110575523">Đang tắt</translation>
 <translation id="5127805178023152808">Tính năng đồng bộ hóa đang tắt</translation>

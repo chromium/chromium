@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Прозор за ажурирање фирмвера за спољне уређаје је отворен. Доступних ажурирања: <ph name="NUM_UPDATES" />.</translation>
+<translation id="1165039591588034296">Грешка</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
 <translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Уклони</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Стање батерије</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5179530508336824319">Омогућите заштиту од уписивања да бисте прешли на следећи екран. Информације потражите на страници за подршку произвођача уређаја.</translation>
+<translation id="5181140330217080051">Преузимање</translation>
 <translation id="5190187232518914472">Поново проживите омиљене успомене. Да бисте додали или изменили албуме, идите у <ph name="LINK_BEGIN" />Google слике<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Не могу да пронађем на екрану ништа око чега могу да помогнем.
 Пробајте да додирнете микрофон да бисте ме питали нешто.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5649768706273821470">Слушај</translation>
 <translation id="5655283760733841251">Повећајте осветљеност тастатуре</translation>
+<translation id="5659593005791499971">Имејл</translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Породица</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">Искључи звук</translation>
 <translation id="5784136236926853061">Велико HTTP кашњење</translation>
 <translation id="578753362485952307">Ако пренамените матичну плочу да би се користила на другом уређају, идите на <ph name="LINK_BEGIN" />ток за пренамену<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Успешно</translation>
 <translation id="5832805196449965646">Додај особу</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5843706793424741864">Фаренхајт</translation>

@@ -348,6 +348,7 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="2842985007712546952">Ffolder rhiant</translation>
 <translation id="2856503607207334158">Wedi methu â mewngofnodi</translation>
 <translation id="2860954141821109167">Gwnewch yn siŵr bod ap ffôn wedi'i alluogi ar y ddyfais hon</translation>
+<translation id="2861923151411510142">Ni fydd rhai nodweddion Chrome ar gael mwyach</translation>
 <translation id="2870560284913253234">Gwefan</translation>
 <translation id="2871733351037274014">Rhaglwytho tudalennau</translation>
 <translation id="2888126860611144412">Ynghylch Chrome</translation>
@@ -494,7 +495,6 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="3622349720008044802">Rheoli ffenestri</translation>
 <translation id="3631987586758005671">Wrthi'n rhannu i <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Mewngofnodi'n awtomatig i wefannau gan ddefnyddio manylion adnabod sydd wedi'u cadw. Pan fydd y gosodiad hwn wedi'i ddiffodd, gofynnir i chi gadarnhau bob tro cyn mewngofnodi i wefan.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Gofyn am wefan symudol</translation>
 <translation id="3687645719033307815">Rydych yn edrych ar ragolwg o'r dudalen hon</translation>
 <translation id="3690369331356918524">Yn eich rhybuddio os yw cyfrineiriau'n cael eu datgelu mewn tor data</translation>
@@ -891,6 +891,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5869522115854928033">Cyfrineiriau sydd wedi'u cadw</translation>
 <translation id="5869789175361934029">Parhau o ddyfais arall</translation>
 <translation id="587735546353481577">I ddilyn gwefan, ewch i'r wefan, agorwch ddewislen Chrome, a thapiwch Dilyn.</translation>
+<translation id="5879072387416556377">Cael awgrymiadau gwell</translation>
 <translation id="5880748256563468367">Mynd i'r ffrwd</translation>
 <translation id="5884076754568147479">Er mwyn eich helpu i gwblhau tasgau, bydd Google yn cael URL a chynnwys gwefannau rydych yn defnyddio Assistant arnynt, yn ogystal â gwybodaeth rydych yn ei chyflwyno drwy Assistant</translation>
 <translation id="5906513782029855931">Mae gwybod cyfeiriadau URL gwefannau yn caniatáu i Google Assistant eich helpu i gwblhau tasgau. Gallwch ddiffodd Assistant yn y gosodiadau Chrome.</translation>
@@ -1234,6 +1235,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="770741401784017797">Wrthi'n creu GIF</translation>
 <translation id="7707922173985738739">Defnyddio data symudol</translation>
 <translation id="7709094866268987903">Bydd diddordebau a dynnwyd gennych yn ymddangos yma</translation>
+<translation id="7709918231054955894">Cael eich holl dabiau</translation>
 <translation id="7725024127233776428">Bydd tudalennau rydych yn creu nodau tudalen ohonynt yn ymddangos yma</translation>
 <translation id="7757787379047923882">Testun wedi'i rannu gan <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Dewis dyddiad ac amser</translation>
@@ -1429,6 +1431,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8656747343598256512">Mewngofnodi i'r wefan hon a Chrome gyda'ch Cyfrif Google. Gallwch droi cysoni ymlaen yn nes ymlaen.</translation>
 <translation id="8659579665266920523">Sut i chwilio gyda Chrome</translation>
 <translation id="8662811608048051533">Yn eich allgofnodi o'r mwyafrif o wefannau.</translation>
+<translation id="8664215986015753476">Defnyddiwch Chrome eich ffordd chi</translation>
 <translation id="8664979001105139458">Mae'r enw ffeil eisoes yn bodoli</translation>
 <translation id="8666759526542103597">Ynglŷn â phersonoleiddio hysbysebion ar sail Porwr</translation>
 <translation id="8667760277771450375">Rydym yn archwilio ffyrdd i gyfyngu ar olrhain traws-wefan tra'n galluogi gwefannau i stopio sothach hysbysebion a thwyll.</translation>

@@ -504,6 +504,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3901991538546252627">A ligar a <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Altere o dispositivo para uma versão anterior dentro de 1 minuto}other{Altere o dispositivo para uma versão anterior dentro de # minutos}}</translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, a carregar eventos.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
 <translation id="3934456833412894880">O carregamento adaptável está ativado. A bateria vai permanecer nos 80% para prolongar a autonomia da mesma e ser carregada totalmente quando precisar.</translation>
 <translation id="3943857333388298514">Colar</translation>
@@ -1055,6 +1056,10 @@ Nova instalação</translation>
 <translation id="7258828758145722155">Editado ontem</translation>
 <translation id="726276584504105859">Arraste para aqui para utilizar o ecrã dividido</translation>
 <translation id="7262906531272962081">Criar lembrete</translation>
+<translation id="7297440678881127227">Da(s) <ph name="START_TIME" /> à(s)
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Selecione para obter mais detalhes no Calendário Google.</translation>
 <translation id="7302889331339392448">As Legendas instantâneas estão desativadas.</translation>
 <translation id="7303365578352795231">A responder noutro dispositivo…</translation>
 <translation id="7305884605064981971">EDGE</translation>

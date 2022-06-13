@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">외부 기기용 펌웨어 업데이트 창이 열려 있습니다. 업데이트가 <ph name="NUM_UPDATES" />개 있습니다.</translation>
+<translation id="1165039591588034296">오류</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="1175951029573070619">평균(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">입력</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3643810137582748570">보정 건너뛰기</translation>
+<translation id="3651050199673793219">온도 단위 선택</translation>
 <translation id="3678765385266369662">쓰기 방지를 사용 중지할 방법 선택</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">베이스 자이로스코프</translation>
 <translation id="385832974417157471">종료하기 전에 기기를 파워워시하세요. 기기에 커버가 있다면 파워워시가 끝난 다음에 커버를 닫으세요. 파워워시가 완료되려면 최대 1분 정도 걸립니다.</translation>
 <translation id="3858860766373142691">이름</translation>
+<translation id="3862598938296403232">설명은 필수 항목입니다.</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="3866249974567520381">설명</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">배터리 상태</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5179530508336824319">다음 화면으로 넘어가려면 쓰기 방지를 사용 설정하세요. 자세한 내용은 기기 제조업체의 지원 페이지를 참고하세요.</translation>
+<translation id="5181140330217080051">다운로드 중</translation>
 <translation id="5190187232518914472">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
 마이크를 탭하여 무엇이든지 물어보세요.</translation>
@@ -520,6 +524,7 @@
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5649768706273821470">듣기</translation>
 <translation id="5655283760733841251">키보드 밝기 높이기</translation>
+<translation id="5659593005791499971">이메일</translation>
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">가족</translation>
@@ -532,6 +537,7 @@
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784136236926853061">HTTP 지연 시간 높음</translation>
 <translation id="578753362485952307">다른 기기에서 사용할 메인보드를 재작업 중인 경우 <ph name="LINK_BEGIN" />재작업 흐름<ph name="LINK_END" />으로 이동하세요.</translation>
+<translation id="5790085346892983794">완료</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5843706793424741864">화씨</translation>
@@ -679,6 +685,7 @@
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>
+<translation id="7154020516215182599">의견을 공유하거나 문제를 설명해 주세요. 가능하면 문제를 재현하는 방법도 알려주세요.</translation>
 <translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7170236477717446850">프로필 사진</translation>

@@ -348,6 +348,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2842985007712546952">Nadrejena mapa</translation>
 <translation id="2856503607207334158">Prijava ni uspela</translation>
 <translation id="2860954141821109167">V tej napravi mora biti omogočena aplikacija Telefon</translation>
+<translation id="2861923151411510142">Nekatere Chromove funkcije ne bodo več na voljo.</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
 <translation id="2871733351037274014">Vnaprejšnje nalaganje strani</translation>
 <translation id="2888126860611144412">O brskalniku Chrome</translation>
@@ -494,7 +495,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3622349720008044802">Upravljanje oken</translation>
 <translation id="3631987586758005671">Deljenje z napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Samodejna prijava v spletna mesta s shranjenimi poverilnicami. Ko je ta funkcija izklopljena, bo pri vsaki prijavi v spletno mesto potrebno preverjanje.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Zahtevaj spletno mesto za mobilno napravo</translation>
 <translation id="3687645719033307815">Ogledujete si predogled te strani</translation>
 <translation id="3690369331356918524">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
@@ -891,6 +891,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5869522115854928033">Shranjena gesla</translation>
 <translation id="5869789175361934029">Nadaljevanje iz druge naprave</translation>
 <translation id="587735546353481577">Če želite spremljati spletno mesto, odprite spletno mesto, nato odprite Chromov meni in se dotaknite možnosti za spremljanje.</translation>
+<translation id="5879072387416556377">Prejmite boljše predloge</translation>
 <translation id="5880748256563468367">Na vir</translation>
 <translation id="5884076754568147479">Zaradi zagotavljanja pomoči pri dokončanju opravil bo Google prejel URL-je in vsebino spletnih mest, na katerih uporabljate Pomočnika, ter podatke, ki jih pošljete prek Pomočnika.</translation>
 <translation id="5906513782029855931">Če Pomočnik Google pozna URL-je spletnih mest, vam lahko pomaga dokončati opravila. Pomočnika lahko izklopite v nastavitvah Chroma.</translation>
@@ -1234,6 +1235,7 @@ Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahk
 <translation id="770741401784017797">Ustvarjanje GIF-a</translation>
 <translation id="7707922173985738739">Uporaba prenosa podatkov v mobilnem omrežju</translation>
 <translation id="7709094866268987903">Zanimanja, ki ste jih odstranili, bodo prikazana tukaj.</translation>
+<translation id="7709918231054955894">Prejmite vse zavihke</translation>
 <translation id="7725024127233776428">Strani, ki jih dodate med zaznamke, so prikazane tukaj</translation>
 <translation id="7757787379047923882">Besedilo v skupni rabi iz naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Izberi datum in uro</translation>
@@ -1429,6 +1431,7 @@ Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahk
 <translation id="8656747343598256512">Prijavite se na tem spletnem mestu in v Chrome z računom Google. Sinhronizacijo lahko vklopite pozneje.</translation>
 <translation id="8659579665266920523">Kako iskati s Chromom</translation>
 <translation id="8662811608048051533">Odjavi vas iz večine spletnih mest.</translation>
+<translation id="8664215986015753476">Uporabljajte Chrome po svoji meri</translation>
 <translation id="8664979001105139458">Ime datoteke že obstaja</translation>
 <translation id="8666759526542103597">O osebnem prilagajanju oglasov na podlagi dejavnosti v brskalniku</translation>
 <translation id="8667760277771450375">Raziskujemo načine, kako omejiti sledenje na več spletnih mestih, hkrati pa spletnim mestom omogočiti preprečevanje prevar in prikazovanja vsiljenih oglasov.</translation>

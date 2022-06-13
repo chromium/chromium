@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Колдонуучу</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Тышкы түзмөктөрдө орнотулган программаны жаңыртуу терезеси ачык. <ph name="NUM_UPDATES" /> жаңыртуу бар.</translation>
+<translation id="1165039591588034296">Ката</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат.</translation>
 <translation id="1175951029573070619">Орточо (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Батареянын иштөө мөөнөтү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5179530508336824319">Кийинки экранга өтүү үчүн жазуудан коргоону иштетиңиз. Нускамаларды көрүү үчүн түзмөктү өндүрүүчүнүн колдоо көрсөтүү барагына өтүңүз.</translation>
+<translation id="5181140330217080051">Жүктөлүп алынууда</translation>
 <translation id="5190187232518914472">Эсте калган учурларды кайра көз алдыңыздан өткөрүңүз. Альбомдорду кошуу же түзөтүү үчүн <ph name="LINK_BEGIN" />Google Фотого<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
 Мага суроо берүү үчүн микрофонду таптап коюңуз.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">Ички колдонуу үчүн</translation>
 <translation id="5649768706273821470">Угуу</translation>
 <translation id="5655283760733841251">Баскычтоптун жарыктыгын көбөйтүү</translation>
+<translation id="5659593005791499971">Электрондук почта</translation>
 <translation id="5669267381087807207">Жандырылууда</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Үй-бүлөлүк</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5784136236926853061">HTTP күтүү убакыты жогору</translation>
 <translation id="578753362485952307">Эгер негизги платаны башка түзмөктө колдонуу үчүн оңдоп жатсаңыз, <ph name="LINK_BEGIN" />оңдоо агымына<ph name="LINK_END" /> өтүңүз.</translation>
+<translation id="5790085346892983794">Ийгилик</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>

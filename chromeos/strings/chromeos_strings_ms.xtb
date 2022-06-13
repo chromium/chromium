@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Kemaskinian perisian tegar untuk tetingkap peranti luaran dibuka. <ph name="NUM_UPDATES" /> kemaskinian tersedia.</translation>
+<translation id="1165039591588034296">Ralat</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3643810137582748570">Langkau penentukuran</translation>
+<translation id="3651050199673793219">Pilih unit suhu</translation>
 <translation id="3678765385266369662">Pilih cara anda mahu mematikan Perlindungan Tulis</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Giroskop Dasar</translation>
 <translation id="385832974417157471">Sebelum mematikan, Powerwash peranti anda. Jika peranti anda mempunyai penutup, tunggu sehingga Powerwash selesai sebelum mengenakan penutup. Powerwash mungkin mengambil masa hingga seminit untuk selesai.</translation>
 <translation id="3858860766373142691">Nama</translation>
+<translation id="3862598938296403232">Perihalan diperlukan</translation>
 <translation id="3865414814144988605">Peleraian</translation>
 <translation id="3866249974567520381">Huraian</translation>
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Kesihatan bateri</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5179530508336824319">Dayakan perlindungan tulis untuk meneruskan langkah ke skrin seterusnya. Pergi ke halaman sokongan pengeluar peranti untuk mendapatkan arahan.</translation>
+<translation id="5181140330217080051">Memuat turun</translation>
 <translation id="5190187232518914472">Kenang kembali memori kegemaran anda. Untuk menambah atau mengedit album, pergi ke <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Saya tidak menemui apa-apa pada skrin anda yang boleh saya bantu.
 Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation>
@@ -520,6 +524,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5649768706273821470">Dengar</translation>
 <translation id="5655283760733841251">Meningkatkan kecerahan papan kekunci</translation>
+<translation id="5659593005791499971">E-mel</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
@@ -532,6 +537,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="57838592816432529">Redam</translation>
 <translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
 <translation id="578753362485952307">Jika anda sedang mengubah suai papan utama untuk digunakan dalam peranti lain, pergi ke <ph name="LINK_BEGIN" />aliran kerja semula<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Berjaya</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="714876143603641390">Kesambungan LAN</translation>
+<translation id="7154020516215182599">Kongsi maklum balas anda atau huraikan isu anda. Jika boleh, sertakan langkah untuk menghasilkan semula isu anda.</translation>
 <translation id="7155171745945906037">Foto sedia ada daripada kamera atau fail</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Gambar profil</translation>

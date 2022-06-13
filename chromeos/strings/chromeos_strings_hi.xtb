@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">बाहरी डिवाइसों के लिए फ़र्मवेयर को अपडेट करने वाली विंडो खुली है. <ph name="NUM_UPDATES" /> अपडेट उपलब्ध हैं.</translation>
+<translation id="1165039591588034296">गड़बड़ी</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="1175951029573070619">सिग्नल ठीक-ठाक है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">हटाएं</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">बैटरी की स्थिति</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5179530508336824319">अगली स्क्रीन पर जाने के लिए, 'राइट प्रोटेक्ट' को चालू करें. निर्देशों के लिए, डिवाइस बनाने वाली कंपनी के सहायता पेज पर जाएं.</translation>
+<translation id="5181140330217080051">डाउनलोड हो रहा है</translation>
 <translation id="5190187232518914472">अपनी पसंदीदा यादें ताज़ा करें. एल्बम जोड़ने या उनमें बदलाव करने के लिए, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="5212543919916444558">मुझे आपकी स्क्रीन पर ऐसा कुछ नहीं मिला जिसमें मैं आपकी सहायता कर पाऊं.
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>
@@ -522,6 +524,7 @@
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5649768706273821470">सुनें</translation>
 <translation id="5655283760733841251">कीबोर्ड की रोशनी बढ़ाने वाला बटन</translation>
+<translation id="5659593005791499971">ईमेल</translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">परिवार</translation>
@@ -534,6 +537,7 @@
 <translation id="57838592816432529">म्यूट करें</translation>
 <translation id="5784136236926853061">एचटीटीपी अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="578753362485952307">अगर किसी दूसरे डिवाइस में इस्तेमाल करने के लिए मेनबोर्ड पर काम किया जा रहा है, तो <ph name="LINK_BEGIN" />रीवर्क फ़्लो पर जाएं<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">सफलता</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फ़ैरनहाइट</translation>

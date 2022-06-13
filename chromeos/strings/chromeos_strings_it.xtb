@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">È aperta la finestra per aggiornare il firmware dei dispositivi esterni. <ph name="NUM_UPDATES" /> aggiornamenti disponibili.</translation>
+<translation id="1165039591588034296">Errore</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Nella media (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Ingresso</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3643810137582748570">Salta calibrazione</translation>
+<translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
 <translation id="3678765385266369662">Specifica come vuoi disattivare la protezione della scrittura</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Giroscopio base</translation>
 <translation id="385832974417157471">Prima di procedere con l'arresto, esegui il Powerwash del dispositivo. Se il dispositivo ha un coperchio, attendi il completamento del Powerwash prima di chiuderlo. Potrebbe essere necessario fino a un minuto prima che il Powerwash venga completato.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3862598938296403232">La descrizione è obbligatoria</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="3866249974567520381">Descrizione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Condizioni batteria</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5179530508336824319">Attiva la protezione scrittura per continuare con la prossima schermata. Vai alla pagina di assistenza del produttore del dispositivo per istruzioni in proposito.</translation>
+<translation id="5181140330217080051">Download in corso</translation>
 <translation id="5190187232518914472">Rivivi i tuoi ricordi più cari. Per aggiungere o modificare gli album, vai a<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
 Prova a toccare il microfono per chiedermi qualcosa.</translation>
@@ -520,6 +524,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5649768706273821470">Ascolta</translation>
 <translation id="5655283760733841251">Aumenta la luminosità della tastiera</translation>
+<translation id="5659593005791499971">Email</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famiglia</translation>
@@ -532,6 +537,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
 <translation id="5784136236926853061">Latenza HTTP elevata</translation>
 <translation id="578753362485952307">Se vuoi fare il rework di una scheda madre per usarla in un altro dispositivo, vai al <ph name="LINK_BEGIN" />flusso di rework<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Completato</translation>
 <translation id="5832805196449965646">Aggiungi persona</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
+<translation id="7154020516215182599">Condividi il tuo feedback o descrivi il problema. Se possibile, includi i passaggi per riprodurre il problema.</translation>
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7170236477717446850">Immagine del profilo</translation>

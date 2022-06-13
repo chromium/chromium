@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Harici cihazlar için donanım yazılımını güncelleme penceresi açık. <ph name="NUM_UPDATES" /> güncelleme var.</translation>
+<translation id="1165039591588034296">Hata</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="1175951029573070619">Ortalama (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Kaldır</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5179530508336824319">Sonraki ekrana devam etmek için yazma korumayı etkinleştirin. Talimatları görmek için cihaz üreticisinin destek sayfasına gidin.</translation>
+<translation id="5181140330217080051">İndiriliyor</translation>
 <translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
@@ -520,6 +522,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5649768706273821470">Dinle</translation>
 <translation id="5655283760733841251">Klavye parlaklığını artır</translation>
+<translation id="5659593005791499971">E-posta</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Aile</translation>
@@ -532,6 +535,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
 <translation id="578753362485952307">Başka cihazda kullanacağınız bir anakartla ilgili yeniden çalışma yapıyorsanız <ph name="LINK_BEGIN" />yeniden çalışma akışına<ph name="LINK_END" /> gidin.</translation>
+<translation id="5790085346892983794">Başarılı</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5843706793424741864">Fahrenhayt</translation>

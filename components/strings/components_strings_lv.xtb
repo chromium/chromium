@@ -590,6 +590,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2523886232349826891">Tiks saglabāta tikai šajā ierīcē</translation>
 <translation id="2524461107774643265">Papildu informācijas pievienošana</translation>
 <translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
+<translation id="253493526287553278">Skatīt akcijas koda informāciju</translation>
 <translation id="2535585790302968248">Atvērt jaunu inkognito cilni privātai pārlūkošanai</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{un vēl 1}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
 <translation id="2536110899380797252">Pievienot adresi</translation>
@@ -1280,6 +1281,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4435702339979719576">Pastkarte)</translation>
 <translation id="443673843213245140">Starpniekservera lietošana ir atspējota, bet ir norādīta atklāta starpniekservera konfigurācija.</translation>
 <translation id="4441832193888514600">Ignorēta, jo šo politiku var iestatīt tikai kā mākoņa lietotāja politiku.</translation>
+<translation id="4442470707340296952">Chrome cilnes</translation>
 <translation id="4450893287417543264">Vairs nerādīt</translation>
 <translation id="4451135742916150903">Var pieprasīt atļauju veidot savienojumu ar HID ierīcēm</translation>
 <translation id="4452328064229197696">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
@@ -2997,6 +2999,7 @@ Papildu informācija:
 <translation id="988159990683914416">Attīstītāja konstrukcija</translation>
 <translation id="989988560359834682">Rediģēt adresi</translation>
 <translation id="991413375315957741">kustību un gaismas sensori</translation>
+<translation id="992110854164447044">Virtuāla karte paslēpj jūsu faktisko karti, lai efektīvāk aizsargātu jūs pret iespējamu krāpšanu. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Rozā</translation>
 <translation id="992432478773561401">Programmatūra <ph name="SOFTWARE_NAME" /> netika pareizi instalēta datorā vai tīklā.

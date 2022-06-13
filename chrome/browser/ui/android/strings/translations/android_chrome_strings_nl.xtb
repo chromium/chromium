@@ -351,6 +351,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2861923151411510142">Sommige Chrome-functies zijn niet meer beschikbaar</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Pagina's vooraf laden</translation>
+<translation id="2886836735871983413">Hier komt een lijst met sites als je browst op internet</translation>
 <translation id="2888126860611144412">Over Chrome</translation>
 <translation id="2891154217021530873">Stoppen met het laden van de pagina</translation>
 <translation id="2892647708214602204">Je ziet een melding als dit bestand klaar is</translation>
@@ -378,6 +379,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2987620471460279764">Gedeelde tekst van ander apparaat</translation>
 <translation id="2989523299700148168">Onlangs bezocht</translation>
 <translation id="2992473221983447149">Afbeeldingsbeschrijvingen</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" /> verwijderen</translation>
 <translation id="2996291259634659425">Wachtwoordzin maken</translation>
 <translation id="2996809686854298943">URL vereist</translation>
 <translation id="2997081575621687554">Als een Google-site vraagt om links op de sitepagina privé vooraf te laden, versleutelt en laadt Chrome de pagina's vooraf via Google-servers zonder cookies. Hierdoor wordt je identiteit voor de vooraf geladen site verborgen.</translation>
@@ -495,7 +497,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3622349720008044802">Vensters beheren</translation>
 <translation id="3631987586758005671">Delen met <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit verifiëren voordat je kunt inloggen bij een website.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Mobiele site opvragen</translation>
 <translation id="3687645719033307815">Je bekijkt een voorbeeld van deze pagina</translation>
 <translation id="3690369331356918524">Waarschuwt als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
@@ -528,6 +529,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3861633093716975811">Populaire video's</translation>
+<translation id="3874520961715512166">Site verwijderd</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3894427358181296146">Map toevoegen</translation>
 <translation id="3899682235662194879">Alle incognitotabbladen sluiten</translation>
@@ -565,6 +567,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4095146165863963773">App-gegevens verwijderen?</translation>
 <translation id="4096227151372679484">Proces voor bookmark opslaan is op halve hoogte geopend</translation>
 <translation id="4099578267706723511">Verzend automatisch gebruiksstatistieken en crashmeldingen naar Google.</translation>
+<translation id="4101475238162928417">Voer een synchronisatie uit om onder meer de wachtwoorden en bookmarks van je andere apparaten op te halen</translation>
 <translation id="410351446219883937">Automatisch afspelen</translation>
 <translation id="4106587138345390261">Chrome bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="4108314971463891922">Volgen</translation>
@@ -734,6 +737,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4985248278475639481">Over advertentiepersonalisatie</translation>
 <translation id="4987271110129728827">Kan die pagina niet vinden. Check je spelling of voer een online zoekopdracht uit.</translation>
 <translation id="4988526792673242964">Pagina's</translation>
+<translation id="499724277181351974">Navigeren: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Volg deze site hier</translation>
 <translation id="500351648694011114">Browse makkelijker</translation>
 <translation id="5004416275253351869">Google-activiteitsopties</translation>
@@ -983,6 +987,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 Op basis van je interactie met een site, zoals vaak inloggen op een account, kan die site een Trust Token naar je browser sturen. Later kunnen andere bezochte sites checken op tokens. Als ze een geldig Trust Token vinden, is het waarschijnlijker dat je voor een persoon wordt aangezien dan voor een bot.
 
 Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om je identiteit te achterhalen.</translation>
+<translation id="6394791151443660613">Zoeken: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Weer online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> op <ph name="VIOLATED_URL" /></translation>
@@ -1197,6 +1202,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="749294055653435199">Google Lens is niet beschikbaar op dit apparaat</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (geüpdatet: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Een ogenblik geduld…</translation>
+<translation id="7502234197872745058">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK1" />log je uit van Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Updates niet beschikbaar</translation>
 <translation id="7507207699631365376">Het <ph name="BEGIN_LINK" />privacybeleid<ph name="END_LINK" /> van deze provider bekijken</translation>
 <translation id="7514365320538308">Downloaden</translation>

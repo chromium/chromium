@@ -504,6 +504,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
 <translation id="3922427723338465344">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’1 minut}other{Canvia el dispositiu a la versió anterior en el termini de # minuts}}</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
+<translation id="3925540965556789199"><ph name="DATE" />. S'estan carregant els esdeveniments.</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3934456833412894880">La funció Càrrega intel·ligent està activada. La bateria es mantindrà al 80% per allargar-ne la durada i poder carregar-la completament quan ho necessitis.</translation>
 <translation id="3943857333388298514">Enganxa</translation>
@@ -1055,6 +1056,7 @@ Instal·lació nova</translation>
 <translation id="7258828758145722155">Editat ahir</translation>
 <translation id="726276584504105859">Arrossega-la aquí per utilitzar la pantalla dividida</translation>
 <translation id="7262906531272962081">Crea un recordatori</translation>
+<translation id="7297440678881127227">De les <ph name="START_TIME" /> a les <ph name="END_TIME" />, <ph name="TIME_ZONE" />. <ph name="EVENT_SUMMARY" />. Selecciona-ho per obtenir més informació a Google Calendar.</translation>
 <translation id="7302889331339392448">La funció Subtítols instantanis està desactivada.</translation>
 <translation id="7303365578352795231">S'està responent en un altre dispositiu.</translation>
 <translation id="7305884605064981971">EDGE</translation>

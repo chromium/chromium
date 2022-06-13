@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Erabiltzailea</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Kanpoko gailuen firmwarea eguneratzeko leihoa irekita dago. <ph name="NUM_UPDATES" /> eguneratze daude.</translation>
+<translation id="1165039591588034296">Errorea</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="1175951029573070619">Normala (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Kendu</translation>
@@ -466,6 +467,7 @@
 <translation id="5168185087976003268">Bateriaren egoera</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5179530508336824319">Gaitu idazketaren aurkako babesa hurrengo pantailara joateko. Argibideak lortzeko, joan gailuaren fabrikatzailearen laguntza-zerbitzuaren orrira.</translation>
+<translation id="5181140330217080051">Deskargatzen</translation>
 <translation id="5190187232518914472">Ekarri gogora gogoko oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
 <translation id="5212543919916444558">Ezin dizut lagundu pantailako ezerekin.
 Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
@@ -522,6 +524,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5649768706273821470">Entzun</translation>
 <translation id="5655283760733841251">Teklatuaren distira igotzeko tekla</translation>
+<translation id="5659593005791499971">Helbide elektronikoa</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -534,6 +537,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5784136236926853061">HTTP eskaeren latentzia luzea da</translation>
 <translation id="578753362485952307">Beste gailu batean erabiltzeko ari bazara plaka nagusi bat moldatzen, joan <ph name="LINK_BEGIN" />moldaketa-fluxura<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Behar bezala egin da</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

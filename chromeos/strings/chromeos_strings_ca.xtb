@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">La finestra d'actualització de microprogramari per a dispositius externs està oberta. <ph name="NUM_UPDATES" /> actualitzacions disponibles.</translation>
+<translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Normal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
 <translation id="3643810137582748570">Omet la calibració</translation>
+<translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
 <translation id="3678765385266369662">Selecciona com vols desactivar la protecció contra escriptura</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">S'està carregant...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Giroscopi de la base</translation>
 <translation id="385832974417157471">Abans d'apagar el dispositiu, fes-hi un Powerwash. Si el dispositiu té tapa, espera fins que el Powerwash es completi per tancar-la. Pot tardar fins a un minut a completar-se.</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3862598938296403232">La descripció és obligatòria</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5179530508336824319">Activa la protecció contra l'escriptura per continuar a la pantalla següent. Consulta la pàgina d'assistència del fabricant del dispositiu per obtenir instruccions.</translation>
+<translation id="5181140330217080051">S'està baixant</translation>
 <translation id="5190187232518914472">Reviu els teus records preferits. Per afegir o editar àlbums, ves a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
@@ -520,6 +524,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5649768706273821470">Escolta</translation>
 <translation id="5655283760733841251">Augmenta la brillantor del teclat</translation>
+<translation id="5659593005791499971">Adreça electrònica</translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -532,6 +537,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="57838592816432529">Silencia</translation>
 <translation id="5784136236926853061">La latència d'HTTP és alta</translation>
 <translation id="578753362485952307">Si vols reorganitzar la placa base per utilitzar-la en un altre dispositiu, ves al <ph name="LINK_BEGIN" />flux de reorganització<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Amb èxit</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
+<translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>

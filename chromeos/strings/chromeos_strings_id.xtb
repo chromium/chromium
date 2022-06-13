@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Jendela update firmware untuk perangkat eksternal terbuka. <ph name="NUM_UPDATES" /> update tersedia.</translation>
+<translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Standar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -464,6 +465,7 @@
 <translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5179530508336824319">Aktifkan proteksi tulis untuk melanjutkan ke layar berikutnya. Buka halaman dukungan produsen perangkat untuk mendapatkan petunjuk.</translation>
+<translation id="5181140330217080051">Mendownload</translation>
 <translation id="5190187232518914472">Hidupkan kembali memori favorit Anda. Untuk menambahkan atau mengedit album, buka <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
 Ketuk mikrofon untuk bertanya apa saja.</translation>
@@ -520,6 +522,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5649768706273821470">Dengar</translation>
 <translation id="5655283760733841251">Tingkatkan kecerahan keyboard</translation>
+<translation id="5659593005791499971">Email</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
@@ -532,6 +535,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784136236926853061">Latensi HTTP tinggi</translation>
 <translation id="578753362485952307">Jika Anda sedang mengerjakan ulang mainboard untuk digunakan di perangkat lain, buka <ph name="LINK_BEGIN" />alur pengerjaan ulang<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Berhasil</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

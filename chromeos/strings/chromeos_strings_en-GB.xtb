@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Update firmware for external devices window is open. <ph name="NUM_UPDATES" /> updates available.</translation>
+<translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Average (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -233,6 +234,7 @@
 <translation id="3083667275341675831">Connectivity diagnostics</translation>
 <translation id="3084958266922136097">Disable screensaver</translation>
 <translation id="3091839911843451378">Failed – Stopped</translation>
+<translation id="3096753366938912951">Put lid on flat surface</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Device is connected.</translation>
@@ -290,9 +292,11 @@
 <translation id="3604713164406837697">Change wallpaper</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
+<translation id="361575905210396100">Thanks for your feedback</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
+<translation id="3643198267586205643">Update OS</translation>
 <translation id="3643810137582748570">Skip calibration</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
 <translation id="3678765385266369662">Select how you would like to turn off write protect</translation>
@@ -411,6 +415,7 @@
 <translation id="469379815867856270">Signal strength</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="473775607612524610">Update</translation>
+<translation id="4740255236714854844">Put base on flat surface</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
 <translation id="4751272708893364980">See RMA logs</translation>
 <translation id="4773299976671772492">Stopped</translation>
@@ -458,6 +463,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">When your screen is idle, show photos, time, weather and media info.</translation>
 <translation id="5039804452771397117">Allow</translation>
+<translation id="5044978354634658544">Insert USB</translation>
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
 <translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
@@ -472,6 +478,7 @@
 <translation id="5168185087976003268">Battery health</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5179530508336824319">Enable write-protect to continue to the next screen. Go to the device manufacturer's support page for instructions.</translation>
+<translation id="5181140330217080051">Downloading</translation>
 <translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">I can't find anything on your screen that I can help with.
 Try tapping the mic to ask me anything.</translation>
@@ -528,6 +535,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5649768706273821470">Listen</translation>
 <translation id="5655283760733841251">Keyboard brightness up</translation>
+<translation id="5659593005791499971">Email</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Family</translation>
@@ -540,6 +548,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
 <translation id="578753362485952307">If you are reworking a mainboard to use in another device, go to the <ph name="LINK_BEGIN" />rework flow<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Success</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -739,6 +748,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> repair error</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665800271478495366">Change avatar</translation>
+<translation id="7682274994254393134">Repair start</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7705524343798198388">VPN</translation>

@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Das Fenster für Firmwareupdates für externe Geräte ist geöffnet. Es sind <ph name="NUM_UPDATES" /> Updates verfügbar.</translation>
+<translation id="1165039591588034296">Fehler</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1175951029573070619">Durchschnittlich (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Entfernen</translation>
@@ -289,6 +290,7 @@
 <translation id="3621202678540785336">Eingang</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
 <translation id="3643810137582748570">Kalibrierung überspringen</translation>
+<translation id="3651050199673793219">Temperatureinheit auswählen</translation>
 <translation id="3678765385266369662">Wähle aus, wie du den Schreibschutz deaktivieren möchtest</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
@@ -306,6 +308,7 @@
 <translation id="3856304145690230735">Gyroskop im Unterbau</translation>
 <translation id="385832974417157471">Führe vor dem Herunterfahren einen Powerwash deines Geräts durch. Bei Geräten mit Klappmechanismus: Warte, bis der Powerwash abgeschlossen ist, bevor du das Gerät zuklappst. Ein Powerwash kann bis zu einer Minute lang dauern.</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3862598938296403232">Gib eine Beschreibung ein</translation>
 <translation id="3865414814144988605">Auflösung</translation>
 <translation id="3866249974567520381">Beschreibung</translation>
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
@@ -464,6 +467,7 @@
 <translation id="5168185087976003268">Akkuzustand</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5179530508336824319">Aktiviere den Schreibschutz, um zur nächsten Seite zu gelangen. Besuche die Supportseite des Geräteherstellers, um eine Anleitung zu erhalten.</translation>
+<translation id="5181140330217080051">Download wird ausgeführt...</translation>
 <translation id="5190187232518914472">Die schönsten Erinnerungen immer vor Augen. Wenn du Alben hinzufügst oder bearbeiten möchtest, gehe zu <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
 Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
@@ -520,6 +524,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
 <translation id="5649768706273821470">Anhören</translation>
 <translation id="5655283760733841251">Tastaturhelligkeit erhöhen</translation>
+<translation id="5659593005791499971">E-Mail</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -532,6 +537,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5784136236926853061">Hohe HTTP-Latenz</translation>
 <translation id="578753362485952307">Wenn du die Hauptplatine in einem anderen Gerät wiederverwenden möchtest, folge dem <ph name="LINK_BEGIN" />Vorgang zur Wiederverwendung<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Abgeschlossen</translation>
 <translation id="5832805196449965646">Person hinzufügen</translation>
 <translation id="583281660410589416">Unbekannt</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -679,6 +685,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
+<translation id="7154020516215182599">Gib uns Feedback oder beschreibe das Problem. Teile uns nach Möglichkeit auch mit, wie wir das Problem reproduzieren können.</translation>
 <translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Profilbild</translation>

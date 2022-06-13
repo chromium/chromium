@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Okno aktualizowania oprogramowania układowego urządzeń zewnętrznych jest otwarte. Dostępne są aktualizacje (<ph name="NUM_UPDATES" />).</translation>
+<translation id="1165039591588034296">Błąd</translation>
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -127,6 +128,7 @@
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2006864819935886708">Łączność</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
+<translation id="2011174342667534258">Wersja SDK:</translation>
 <translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
 <translation id="2016848882344942759">– brak etykiety bez oznaczenia marki –</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +160,7 @@
 <translation id="225692081236532131">Stan aktywacji</translation>
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
 <translation id="2275586345903859204">Naprawa została ukończona</translation>
+<translation id="2276999893457278469">Najlepsze materiały pomocy</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Podłącz dysk zewnętrzny (np. dysk USB lub kartę SD) z pobranym obrazem aplikacji Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
@@ -190,6 +193,7 @@
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2526590354069164005">Pulpit</translation>
 <translation id="253029298928638905">Uruchamiam ponownie…</translation>
+<translation id="2533048460510040082">Sugerowane materiały pomocy</translation>
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
@@ -302,6 +306,7 @@
 <translation id="3784455785234192852">Zablokuj</translation>
 <translation id="38114475217616659">Wyczyść całą historię</translation>
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
+<translation id="3824259034819781947">Dołącz pliki</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3856304145690230735">Żyroskop podstawy</translation>
@@ -466,6 +471,7 @@
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5179530508336824319">Aby przejść na następny ekran, włącz zabezpieczenie przed zapisem. Instrukcje znajdziesz na stronie pomocy udostępnianej przez producenta urządzenia.</translation>
+<translation id="5181140330217080051">Pobieranie</translation>
 <translation id="5190187232518914472">Przeżyj to jeszcze raz. Aby dodawać lub edytować albumy, otwórz <ph name="LINK_BEGIN" />Zdjęcia Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>
@@ -522,6 +528,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
 <translation id="5649768706273821470">Posłuchaj</translation>
 <translation id="5655283760733841251">Zwiększ jasność klawiatury</translation>
+<translation id="5659593005791499971">E-mail</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodzina</translation>
@@ -534,6 +541,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
 <translation id="578753362485952307">Jeśli przerabiasz płytę główną, aby użyć jej w innym urządzeniu, przejdź do <ph name="LINK_BEGIN" />procesu przerabiania<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Udało się</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5843706793424741864">Stopnie Fahrenheita</translation>
@@ -859,6 +867,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="885701979325669005">Pamięć</translation>
 <translation id="8863170912498892583">Włącz ciemny motyw</translation>
 <translation id="8863888432376731307">Pobierz <ph name="INTENT" />, aby znajdować odpowiedzi na pytania takie jak „<ph name="QUERY" />” i inne</translation>
+<translation id="8864415976656252616">Brak sugerowanych treści. Zapoznaj się z najpopularniejszymi materiałami pomocy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>

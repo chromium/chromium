@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Het venster voor het updaten van firmware voor externe apparaten is geopend. <ph name="NUM_UPDATES" /> updates beschikbaar.</translation>
+<translation id="1165039591588034296">Fout</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -127,6 +128,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectiviteit</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
+<translation id="2011174342667534258">SDK-versie:</translation>
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="2016848882344942759">--geen white label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +160,7 @@
 <translation id="225692081236532131">Activeringsstatus</translation>
 <translation id="2271469253353559191">Planning voor donkere modus</translation>
 <translation id="2275586345903859204">Reparatie is klaar</translation>
+<translation id="2276999893457278469">Belangrijkste Help-content</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
 <translation id="2294753434210277304">Plaats een externe opslag, zoals een USB-drive of een SD-kaart, met de gedownloade image van het Chromebook-herstelprogramma</translation>
 <translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
@@ -190,6 +193,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
 <translation id="253029298928638905">Opnieuw opstarten…</translation>
+<translation id="2533048460510040082">Voorgestelde Help-content</translation>
 <translation id="2536159006530886390">Kan geen verbinding met internet maken.</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
@@ -228,6 +232,7 @@
 <translation id="3083667275341675831">Verbindingsdiagnose</translation>
 <translation id="3084958266922136097">Screensaver uitzetten</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
+<translation id="3096753366938912951">De klep op een vlakke ondergrond leggen</translation>
 <translation id="3102119246920354026">Cachegeheugen</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Apparaat is verbonden.</translation>
@@ -285,9 +290,11 @@
 <translation id="3604713164406837697">Achtergrond wijzigen</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
+<translation id="361575905210396100">Bedankt voor je feedback</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
+<translation id="3643198267586205643">OS updaten</translation>
 <translation id="3643810137582748570">Kalibratie overslaan</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
 <translation id="3678765385266369662">Selecteer hoe je Write Protect wilt uitzetten</translation>
@@ -302,6 +309,7 @@
 <translation id="3784455785234192852">Vergrendelen</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
+<translation id="3824259034819781947">Bestanden bijvoegen</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3856304145690230735">Basisgyroscoop</translation>
@@ -405,6 +413,7 @@
 <translation id="469379815867856270">Signaalsterkte</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="473775607612524610">Updaten</translation>
+<translation id="4740255236714854844">De basis op een vlakke ondergrond leggen</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
 <translation id="4751272708893364980">RMA-logboeken bekijken</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
@@ -452,6 +461,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Foto's, tijd, weer en mediagegevens tonen als je scherm inactief is.</translation>
 <translation id="5039804452771397117">Toestaan</translation>
+<translation id="5044978354634658544">USB plaatsen</translation>
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepsnaam</translation>
 <translation id="5051044138948155788">Dit is de enige pagina. Hierna kom je op het startscherm voor scannen.</translation>
@@ -466,6 +476,7 @@
 <translation id="5168185087976003268">Batterijprestaties</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5179530508336824319">Zet Write Protect aan om door te gaan naar het volgende scherm. Ga naar de supportpagina van de fabrikant voor instructies.</translation>
+<translation id="5181140330217080051">Downloaden</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
@@ -522,6 +533,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5649768706273821470">Luisteren</translation>
 <translation id="5655283760733841251">Helderheid van toetsenbord verhogen</translation>
+<translation id="5659593005791499971">E-mail</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Gezin</translation>
@@ -534,6 +546,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
 <translation id="578753362485952307">Als je een moederbord wilt hergebruiken voor een ander apparaat, ga je naar het <ph name="LINK_BEGIN" />proces voor hergebruik<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Geslaagd</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -733,6 +746,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7657530360897961171">Fout met <ph name="DEVICE_TYPE" />-reparatie</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7665800271478495366">Avatar wijzigen</translation>
+<translation id="7682274994254393134">Begin van reparatie</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -859,6 +873,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="885701979325669005">Opslag</translation>
 <translation id="8863170912498892583">Donker thema aanzetten</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> ophalen voor <ph name="QUERY" /> en meer</translation>
+<translation id="8864415976656252616">Geen voorgestelde content. Bekijk de belangrijkste Help-content.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Apparaat is een tablet.</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>

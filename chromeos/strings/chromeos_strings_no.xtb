@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Vinduet for oppdatering av fastvare på eksterne enheter er åpent. <ph name="NUM_UPDATES" /> oppdateringer er tilgjengelige.</translation>
+<translation id="1165039591588034296">Feil</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Gjennomsnittlig (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Fjern</translation>
@@ -63,6 +64,7 @@
 <translation id="1459784442280469416">Lagre på USB</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer denne enheten og kan muligens overvåke aktiviteten din.</translation>
+<translation id="147809995039451286">Kunne ikke laste ned oppdateringen</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1491076385728777984">Oppdaterer fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
@@ -179,6 +181,7 @@
 <translation id="2418150275289244458">Åpne i innstillingene</translation>
 <translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
+<translation id="2447969267935997922">Installasjonen er fullført. Nå kan du ta ut USB-stasjonen eller SD-kortet.</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2480034874476596812">Slå av manuelt</translation>
@@ -466,6 +469,7 @@
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5179530508336824319">Slå på skrivebeskyttelsen for å gå videre til det neste skjermbildet. Gå til enhetsprodusentens støtteside for å få veiledning.</translation>
+<translation id="5181140330217080051">Laster ned</translation>
 <translation id="5190187232518914472">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
@@ -522,6 +526,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5649768706273821470">Lytt</translation>
 <translation id="5655283760733841251">Tastaturlysstyrke opp</translation>
+<translation id="5659593005791499971">E-post</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -534,6 +539,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5784136236926853061">Høy HTTP-tidsforsinkelse</translation>
 <translation id="578753362485952307">Hvis du skal gjenbruke et hovedkort i en annen enhet, går du til <ph name="LINK_BEGIN" />gjenbruksflyten<ph name="LINK_END" />.</translation>
+<translation id="5790085346892983794">Fullført</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>

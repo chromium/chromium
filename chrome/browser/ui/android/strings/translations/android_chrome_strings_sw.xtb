@@ -348,6 +348,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="2842985007712546952">Folda kuu</translation>
 <translation id="2856503607207334158">Imeshindwa kuingia katika akaunti</translation>
 <translation id="2860954141821109167">Hakikisha kuwa programu ya simu imewashwa kwenye kifaa hiki</translation>
+<translation id="2861923151411510142">Baadhi ya vipengele vya Chrome havitapatikana tena\u2019</translation>
 <translation id="2870560284913253234">Tovuti</translation>
 <translation id="2871733351037274014">Kupakia kurasa mapema</translation>
 <translation id="2888126860611144412">Kuhusu Chrome</translation>
@@ -494,7 +495,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3622349720008044802">Dhibiti madirisha</translation>
 <translation id="3631987586758005671">Inashiriki kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Ingia katika tovuti kiotomatiki kwa kutumia kitambulisho kilichohifadhiwa. Kipengele kikiwa kimezimwa, utaombwa kuthibitisha kila wakati kabla ya kuingia katika tovuti.</translation>
-<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Omba tovuti ya kifaa cha mkononi</translation>
 <translation id="3687645719033307815">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="3690369331356918524">Hukuonya iwapo manenosiri yamefichuliwa katika tukio la ufichuzi haramu wa data</translation>
@@ -891,6 +891,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5869522115854928033">Manenosiri yaliyohifadhiwa</translation>
 <translation id="5869789175361934029">Endelea kutoka kwenye kifaa kingine</translation>
 <translation id="587735546353481577">Ili uweze kufuatilia tovuti, nenda kwenye tovuti hiyo, fungua menyu ya Chrome kisha uguse Fuatilia.</translation>
+<translation id="5879072387416556377">Pata mapendekezo bora</translation>
 <translation id="5880748256563468367">Nenda kwenye mipasho</translation>
 <translation id="5884076754568147479">Ili tukusaidie ukamilishe majukumu, Google itapokea URL na maudhui ya tovuti ambako unatumia programu ya Mratibu na pia maelezo unayotuma kupitia programu ya Mratibu</translation>
 <translation id="5906513782029855931">Kujua URL za tovuti huwezesha Mratibu wa Google kukusaidia kukamilisha majukumu. Unaweza kuzima programu ya Mratibu katika mipangilio ya Chrome.</translation>
@@ -1234,6 +1235,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="770741401784017797">Inaunda GIF</translation>
 <translation id="7707922173985738739">Tumia data ya mtandao wa simu</translation>
 <translation id="7709094866268987903">Mambo yanayokuvutia uliyoyaondoa yataonekana hapa</translation>
+<translation id="7709918231054955894">Angalia vichupo vyako</translation>
 <translation id="7725024127233776428">Kurasa unazoalamisha zitaonekana hapa</translation>
 <translation id="7757787379047923882">Maandishi yameshirikiwa kutoka <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Chagua tarehe na saa</translation>
@@ -1429,6 +1431,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="8656747343598256512">Ingia katika tovuti hii na Chrome ukitumia Akaunti yako ya Google. Unaweza kuwasha kipengele cha kusawazisha baadaye.</translation>
 <translation id="8659579665266920523">Jinsi ya kutafuta kwa kutumia Chrome</translation>
 <translation id="8662811608048051533">Hukuondoa kwenye tovuti nyingi.</translation>
+<translation id="8664215986015753476">Tumia Chrome kulingana na mapendeleo yako</translation>
 <translation id="8664979001105139458">Jina la faili tayari lipo</translation>
 <translation id="8666759526542103597">Maelezo kuhusu kuweka mapendeleo ya matangazo kwenye kivinjari</translation>
 <translation id="8667760277771450375">Tunachunguza njia za kuzuia ufuatiliaji katika tovuti mbalimbali huku tukiziruhusu tovuti zizuie matangazo taka na ulaghai.</translation>

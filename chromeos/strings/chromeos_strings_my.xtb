@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ပြင်ပစက်ပစ္စည်းများအတွက် ဖာမ်းဝဲအပ်ဒိတ်ဝင်းဒိုး ဖွင့်ထားသည်။ <ph name="NUM_UPDATES" /> အပ်ဒိတ်များ ရနိုင်ပါပြီ။</translation>
+<translation id="1165039591588034296">အမှား</translation>
 <translation id="1175697296044146566">ဤ <ph name="DEVICE_TYPE" /> ကို <ph name="MANAGER" /> က စီမံသည်။</translation>
 <translation id="1175951029573070619">သာမန် (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
@@ -63,6 +64,7 @@
 <translation id="1459784442280469416">USB တွင် သိမ်းရန်</translation>
 <translation id="1468664791493211953">ကမ်းလှမ်းချက်များ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် သင်၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်ပါသည်။</translation>
+<translation id="147809995039451286">အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ</translation>
 <translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="1499900233129743732">ဤအသုံးပြုသူကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
@@ -181,6 +183,7 @@
 <translation id="2418150275289244458">ဆက်တင်များတွင် ဖွင့်ရန်</translation>
 <translation id="2421798028054665193">ပုံ <ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
+<translation id="2447969267935997922">ထည့်သွင်းပြီးပြီ။ USB ဒရိုက်ဗ် (သို့) SD ကတ်ကို ယခု ဖယ်ရှားနိုင်ပြီ။</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
 <translation id="2480034874476596812">ကိုယ်တိုင်ပိတ်ပါ</translation>
@@ -470,6 +473,7 @@
 <translation id="5168185087976003268">ဘက်ထရီအခြေအနေ</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5179530508336824319">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် ပြင်ခွင့်မရှိမုဒ်ကို ဖွင့်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
+<translation id="5181140330217080051">ဒေါင်းလုဒ် လုပ်နေ</translation>
 <translation id="5190187232518914472">သင့်အကြိုက်ဆုံး အမှတ်တရအချိန်များကို ပြန်လည်ခံစားကြည့်ပါ။ အယ်လ်ဘမ်များ ထည့်ရန် သို့မဟုတ် တည်းဖြတ်ရန် <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> သို့သွားပါ။</translation>
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -525,6 +529,7 @@
 <translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
 <translation id="5655283760733841251">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
+<translation id="5659593005791499971">အီးမေးလ်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">မိသားစု</translation>
@@ -537,6 +542,7 @@
 <translation id="57838592816432529">တိတ်ရန်</translation>
 <translation id="5784136236926853061">HTTP တုံ့ပြန်ချိန် ကြာနေသည်</translation>
 <translation id="578753362485952307">အခြားစက်တွင် ပင်မဘုတ်ပြားကို ပြန်လည်သုံးစွဲလိုပါက <ph name="LINK_BEGIN" />ပြန်လည်သုံးစွဲခြင်း လုပ်ငန်းစဉ်<ph name="LINK_END" /> သို့ သွားပါ။</translation>
+<translation id="5790085346892983794">အောင်မြင်ခြင်း</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5843706793424741864">ဖာရင်ဟိုက်</translation>
