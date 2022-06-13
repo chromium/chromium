@@ -2888,6 +2888,12 @@ void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
 }
 
 bool NavigationRequest::IsOptInIsolationRequested() {
+  // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
+  // may only consider them in final responses, according to spec.
+  // https://crbug.com/1329061
+  if (state_ < WILL_PROCESS_RESPONSE)
+    return false;
+
   if (!response())
     return false;
 

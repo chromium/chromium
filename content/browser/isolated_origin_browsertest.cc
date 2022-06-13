@@ -258,6 +258,10 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
     header_ = header_value;
   }
 
+  void SetRedirectTarget(const std::string& redirect_target) {
+    redirect_target_ = redirect_target;
+  }
+
   // Allows specifying what content to return when an opt-in isolation header is
   // intercepted. Uses a queue so that multiple requests can be handled without
   // returning to the test body. If the queue is empty, the document content is
@@ -300,6 +304,13 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
         response->set_content("isolate me!");
       }
       return std::move(response);
+    } else if (request.relative_url == "/redirect_me") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_MOVED_PERMANENTLY);
+      response->AddCustomHeader("Location", *redirect_target_);
+      response->AddCustomHeader("Origin-Agent-Cluster", *header_);
+      response->set_content("redirected");
+      return std::move(response);
     }
 
     // If we return nullptr, then the server will go ahead and actually serve
@@ -311,6 +322,7 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   base::test::ScopedFeatureList feature_list_;
 
   absl::optional<std::string> header_;
+  absl::optional<std::string> redirect_target_;
   std::queue<std::string> content_;
 };
 
@@ -572,6 +584,68 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
       browser_context, url::Origin::Create(isolated_base_origin_url)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
       browser_context, url::Origin::Create(non_isolated_sub_origin)));
+}
+
+// A test to confirm that if an Origin-Agent-Cluster header is encountered (but
+// not committed) as part of a redirect, that it does not opt-in to
+// OriginAgentCluster isolation. The setup in this test is subtle, since in
+// order for the call to NavigationRequest::OnRequestRedirected() to attempt to
+// create a new SiteInstance, we must load the same origin the redirect wants to
+// use, and load it without OriginAgentCluster isolation. Prior to the fix for
+// https://crbug.com/1329061 the redirect would result in opting the origin into
+// OriginAgentCluster isolation since no global walk is present to detect that
+// it has already been loaded without.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       RedirectSameSiteWithOACDoesntOptIn) {
+  GURL main_frame_url(https_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(foo.com)"));
+  GURL redirect_url(https_server()->GetURL("foo.com", "/redirect_me"));
+  GURL expected_commit_url(https_server()->GetURL("foo.com", "/title1.html"));
+  url::Origin origin(url::Origin::Create(main_frame_url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+
+  SetRedirectTarget("/title1.html");
+  SetHeaderValue("?1");
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node, redirect_url,
+                                        expected_commit_url));
+  // This next line verifies that the OriginAgentCluster header sent with the
+  // 301 redirect failed to opt foo.com into OriginAgentCluster isolation, as
+  // it should. The check will fail if the origin was opted-in to
+  // OriginAgentCluster isolation.
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+}
+
+// Same as the preceding test, but the redirect is cross-site.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       RedirectCrossSiteWithOACDoesntOptIn) {
+  GURL main_frame_url(https_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(foo.com)"));
+  GURL redirect_url(https_server()->GetURL("bar.com", "/redirect_me"));
+  GURL expected_commit_url(https_server()->GetURL("foo.com", "/title1.html"));
+  url::Origin origin(url::Origin::Create(main_frame_url));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+
+  SetRedirectTarget(expected_commit_url.spec());
+  SetHeaderValue("?1");
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node, redirect_url,
+                                        expected_commit_url));
+
+  // This next line verifies that the OriginAgentCluster header sent with the
+  // 301 redirect failed to opt foo.com into OriginAgentCluster isolation, as
+  // it should. The check will fail if the origin was opted-in to
+  // OriginAgentCluster isolation.
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
 }
 
 // This tests that header-based opt-in causes the origin to end up in the
