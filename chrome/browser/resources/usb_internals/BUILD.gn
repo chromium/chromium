@@ -36,7 +36,7 @@ grit("resources") {
 
 web_components_files = [ "app.js" ]
 non_web_components_files = [
-  "descriptor_panel.js",
+  "descriptor_panel.ts",
   "devices_page.js",
 ]
 
@@ -45,17 +45,26 @@ html_to_js("web_components") {
 }
 
 copy("copy_files") {
-  deps = [ "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js" ]
-  sources = non_web_components_files + [ "${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js" ]
+  deps = [
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
+    "//services/device/public/mojom:usb_webui_js",
+  ]
+  sources = non_web_components_files + [
+              "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_device.mojom-webui.js",
+              "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js",
+            ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
   root_dir = target_gen_dir
-  in_files = web_components_files + non_web_components_files +
-             [ "usb_internals.mojom-webui.js" ]
+  in_files = web_components_files + non_web_components_files + [
+               "usb_internals.mojom-webui.js",
+               "usb_device.mojom-webui.js",
+             ]
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
+
   deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",

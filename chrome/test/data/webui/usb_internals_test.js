@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://usb-internals/app.js';
-
 import 'chrome://test/mojo_webui_test_support.js';
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceError, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
 import {UsbInternalsPageHandler, UsbInternalsPageHandlerReceiver, UsbInternalsPageHandlerRemote} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
 import {UsbDeviceManagerReceiver, UsbDeviceManagerRemote} from 'chrome://usb-internals/usb_manager.mojom-webui.js';
@@ -235,7 +235,8 @@ function usbControlTransferParamsToString(params) {
 const setupResolver = new PromiseResolver();
 const deviceManagerGetDevicesResolver = new PromiseResolver();
 const deviceTabInitializedResolver = new PromiseResolver();
-let deviceDescriptorRenderResolver = new PromiseResolver();
+let deviceDescriptorRenderPromise =
+    eventToPromise('device-descriptor-complete-for-test', document.body);
 let pageHandler = null;
 
 window.deviceListCompleteFn = () => {
@@ -244,10 +245,6 @@ window.deviceListCompleteFn = () => {
 
 window.deviceTabInitializedFn = () => {
   deviceTabInitializedResolver.resolve();
-};
-
-window.deviceDescriptorCompleteFn = () => {
-  deviceDescriptorRenderResolver.resolve();
 };
 
 window.setupFn = () => {
@@ -369,7 +366,7 @@ suite('UsbInternalsUITest', function() {
     const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
     deviceTab.querySelector('.device-descriptor-button').click();
 
-    await deviceDescriptorRenderResolver.promise;
+    await deviceDescriptorRenderPromise;
     const panel = deviceTab.querySelector('.device-descriptor-panel');
     assertEquals(1, panel.querySelectorAll('descriptorpanel').length);
     assertEquals(0, panel.querySelectorAll('error').length);
@@ -434,10 +431,11 @@ suite('UsbInternalsUITest', function() {
     const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[3];
 
     await deviceTabInitializedResolver.promise;
-    deviceDescriptorRenderResolver = new PromiseResolver();
+    deviceDescriptorRenderPromise =
+        eventToPromise('device-descriptor-complete-for-test', document.body);
     deviceTab.querySelector('.device-descriptor-button').click();
 
-    await deviceDescriptorRenderResolver.promise;
+    await deviceDescriptorRenderPromise;
     const panel = deviceTab.querySelector('.device-descriptor-panel');
 
     assertEquals(1, panel.querySelectorAll('descriptorpanel').length);

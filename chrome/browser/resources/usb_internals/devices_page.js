@@ -14,9 +14,35 @@ import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-import {CrTreeElement, CrTreeItemElement, DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
+import {DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
 import {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbDeviceRemote, UsbEndpointInfo, UsbInterfaceInfo, UsbTransferDirection, UsbTransferType} from './usb_device.mojom-webui.js';
 import {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
+
+// TODO (rbpotter): Remove these temporary definitions after migrating to TS.
+/**
+ * @typedef {{
+ *   expanded: boolean,
+ *   add: function(CrTreeItemElement): void,
+ *   labelElement: HTMLElement,
+ *   rowElement: HTMLElement,
+ *   forceHoverStyle: function(boolean): void,
+ * }}
+ */
+export let CrTreeItemElement;
+
+/**
+ * @typedef {{
+ *   add: function(CrTreeItemElement): void,
+ *   detail: {payload: Object, children: Object},
+ *   removeTreeItem: function(CrTreeItemElement): void,
+ *   expanded: boolean,
+ *   items: Array<CrTreeItemElement>,
+ *   selectedItem: CrTreeItemElement,
+ * }}
+ */
+export let CrTreeElement;
+
+
 
 /**
  * Page that contains a tab header and a tab panel displaying devices table.

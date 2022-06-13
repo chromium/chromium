@@ -10,8 +10,9 @@
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceInterface, UsbTransferStatus} from './usb_device.mojom-webui.js';
 
@@ -40,7 +41,6 @@ const MAX_STRING_DESCRIPTOR_LENGTH = 0xFF;
 const INTERFACE_DESCRIPTOR_LENGTH = 9;
 const ENDPOINT_DESCRIPTOR_LENGTH = 7;
 const BOS_DESCRIPTOR_HEADER_LENGTH = 5;
-const PLATFORM_DESCRIPTOR_HEADER_LENGTH = 20;
 const MAX_URL_DESCRIPTOR_LENGTH = 0xFF;
 
 const CONTROL_TRANSFER_TIMEOUT_MS = 2000;  // 2 seconds
@@ -64,7 +64,6 @@ const WIN_81_HEADER = 0x06030000;
 
 // These constants are defined by the WebUSB specification:
 // http://wicg.github.io/webusb/
-const WEB_USB_DESCRIPTOR_LENGTH = 24;
 
 const GET_URL_REQUEST = 0x02;
 
@@ -79,7 +78,6 @@ const WEB_USB_CAPABILITY_UUID = [
 
 // These constants are defined by Microsoft OS 2.0 Descriptors Specification
 // (July, 2018).
-const MS_OS_20_DESCRIPTOR_SET_INFORMATION_LENGTH = 8;
 
 const MS_OS_20_DESCRIPTOR_INDEX = 0x07;
 const MS_OS_20_SET_ALT_ENUMERATION = 0x08;
@@ -116,51 +114,25 @@ const MS_OS_20_PLATFORM_CAPABILITY_UUID = [
   0x64, 0x8A, 0x9F
 ];
 
-// TODO (rbpotter): Remove these temporary definitions after migrating to TS.
-/**
- * @typedef {{
- *   expanded: boolean,
- *   add: function(CrTreeItemElement): void,
- *   labelElement: HTMLElement,
- *   rowElement: HTMLElement,
- *   forceHoverStyle: function(boolean): void,
- * }}
- */
-export let CrTreeItemElement;
-
-/**
- * @typedef {{
- *   add: function(CrTreeItemElement): void,
- *   detail: {payload: Object, children: Object},
- *   removeTreeItem: function(CrTreeItemElement): void,
- *   expanded: boolean,
- *   items: Array<CrTreeItemElement>,
- *   selectedItem: CrTreeItemElement,
- * }}
- */
-export let CrTreeElement;
-
-
 export class DescriptorPanel {
-  /**
-   * @param {!UsbDeviceInterface} usbDeviceProxy
-   * @param {!HTMLElement} rootElement
-   */
-  constructor(usbDeviceProxy, rootElement) {
-    /** @type {!UsbDeviceInterface} */
-    this.usbDeviceProxy_ = usbDeviceProxy;
+  private usbDeviceProxy_: UsbDeviceInterface;
+  private rootElement_: HTMLElement;
+  private stringDescriptorPanel_: DescriptorPanel|null = null;
+  private languageCodesListElement_: HTMLElement|null = null;
+  private indexInput_: HTMLInputElement|null = null;
+  stringDescriptorIndexes: Set<number> = new Set();
+  indexesListElement: HTMLElement|null = null;
 
-    /** @type {!HTMLElement} */
+  constructor(usbDeviceProxy: UsbDeviceInterface, rootElement: HTMLElement) {
+    this.usbDeviceProxy_ = usbDeviceProxy;
     this.rootElement_ = rootElement;
   }
 
   /**
    * Adds the reference of the string descriptor panel of the device for
    * string descriptor functionality.
-   * @param {!DescriptorPanel} stringDescriptorPanel
    */
-  setStringDescriptorPanel(stringDescriptorPanel) {
-    /** @type {!DescriptorPanel} */
+  setStringDescriptorPanel(stringDescriptorPanel: DescriptorPanel) {
     this.stringDescriptorPanel_ = stringDescriptorPanel;
   }
 
@@ -175,40 +147,51 @@ export class DescriptorPanel {
         .forEach(el => el.remove());
   }
 
+  private getButtonElementFromTemplate_(): HTMLButtonElement {
+    const buttonTemplate =
+        (this.rootElement_.getRootNode() as DocumentFragment | HTMLElement)
+            .querySelector<HTMLTemplateElement>('#raw-data-tree-button');
+    assert(buttonTemplate);
+    const button = document.importNode(buttonTemplate.content, true)
+                       .querySelector('button');
+    assert(button);
+    return button;
+  }
+
   /**
    * Adds a button for getting string descriptor to the string descriptor
    * index item, and adds an autocomplete value to the index input area in
    * the string descriptor panel.
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The offset of the string descriptor index field.
-   * @param {!CrTreeItemElement} item
-   * @param {string} fieldLabel
-   * @private
+   * @param offset The offset of the string descriptor index field.
    */
-  renderIndexItem_(rawData, offset, item, fieldLabel) {
-    const index = rawData[offset];
+  private renderIndexItem_(
+      rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+      fieldLabel: string) {
+    const index = rawData[offset]!;
     if (index > 0) {
+      assert(this.stringDescriptorPanel_);
       if (!this.stringDescriptorPanel_.stringDescriptorIndexes.has(index)) {
         const optionElement = document.createElement('option');
-        optionElement.label = index;
-        optionElement.value = index;
+        optionElement.label = index.toString();
+        optionElement.value = index.toString();
+        assert(this.stringDescriptorPanel_.indexesListElement);
         this.stringDescriptorPanel_.indexesListElement.appendChild(
             optionElement);
 
         this.stringDescriptorPanel_.stringDescriptorIndexes.add(index);
       }
 
-      const buttonTemplate = queryRequiredElement(
-          '#raw-data-tree-button',
-          /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
-      const button = document.importNode(buttonTemplate.content, true)
-                         .querySelector('button');
+      const button = this.getButtonElementFromTemplate_();
       item.labelElement.appendChild(button);
       button.style.marginInlineStart = '16px';
-      button.addEventListener('click', (event) => {
+      button.addEventListener('click', (event: MouseEvent) => {
         event.stopPropagation();
         // Clear the previous string descriptors.
-        item.shadowRoot.querySelector('.tree-children').textContent = '';
+        const children =
+            item.shadowRoot!.querySelector<HTMLElement>('.tree-children');
+        assert(children);
+        children.textContent = '';
+        assert(this.stringDescriptorPanel_);
         this.stringDescriptorPanel_.clearView();
         this.stringDescriptorPanel_.getStringDescriptorForAllLanguages_(
             index, item);
@@ -225,26 +208,22 @@ export class DescriptorPanel {
 
   /**
    * Adds a button for getting URL descriptor.
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The offset of the URL descriptor index.
-   * @param {!CrTreeItemElement} item
-   * @param {string} fieldLabel Not used in this function, but used to match
-   *     other extraTreeItemFormatter.
-   * @private
+   * @param offset The offset of the URL descriptor index.
    */
-  renderUrlDescriptorIndexItem_(rawData, offset, item, fieldLabel) {
-    const index = rawData[offset];
+  private renderUrlDescriptorIndexItem_(
+      rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+      _fieldLabel: string) {
+    const index = rawData[offset]!;
     if (index > 0) {
-      const buttonTemplate = queryRequiredElement(
-          '#raw-data-tree-button',
-          /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
-      const button = document.importNode(buttonTemplate.content, true)
-                         .querySelector('button');
+      const button = this.getButtonElementFromTemplate_();
       item.labelElement.appendChild(button);
-      button.addEventListener('click', (event) => {
+      button.addEventListener('click', (event: MouseEvent) => {
         event.stopPropagation();
         // Clear the previous URL descriptors.
-        item.shadowRoot.querySelector('.tree-children').textContent = '';
+        const children =
+            item.shadowRoot!.querySelector<HTMLElement>('.tree-children');
+        assert(children);
+        children.textContent = '';
         this.getUrlDescriptor_(
             rawData, offset - WEB_USB_URL_DESCRIPTOR_INDEX_OFFSET, item);
       });
@@ -255,33 +234,24 @@ export class DescriptorPanel {
    * Adds a button for getting the Microsoft OS 2.0 vendor-specific descriptor
    * to the Microsoft OS 2.0 descriptor set information vendor-specific code
    * item.
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the Microsoft OS 2.0
+   * @param offset The start offset of the Microsoft OS 2.0
    *     descriptor set information.
-   * @param {!CrTreeItemElement} item
-   * @param {string} fieldLabel Not used in this function, but used to match
-   *     other extraTreeItemFormatter.
-   * @private
    */
-  async renderMsOs20DescriptorVendorSpecific_(
-      rawData, offset, item, fieldLabel) {
+  private async renderMsOs20DescriptorVendorSpecific_(
+      rawData: Uint8Array, offset: number, item: CrTreeItemElement) {
     // Use the vendor specified code and the length of Microsoft OS 2.0
     // descriptor Set that contained in Microsoft OS 2.0 descriptor Set Info
     // to get Microsoft OS 2.0 Descriptor Set.
     // This is defined by Microsoft OS 2.0 Descriptors Specification (July,
     // 2018).
-    const vendorCode = rawData[offset + MS_OS_20_VENDOR_CODE_ITEM_OFFSET];
+    const vendorCode = rawData[offset + MS_OS_20_VENDOR_CODE_ITEM_OFFSET]!;
     const data = new DataView(rawData.buffer, offset);
     const msOs20DescriptorSetLength =
         data.getUint16(MS_OS_20_SET_TOTAL_LENGTH_OFFSET, true);
 
-    const buttonTemplate = queryRequiredElement(
-        '#raw-data-tree-button',
-        /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
-    const button = document.importNode(buttonTemplate.content, true)
-                       .querySelector('button');
+    const button = this.getButtonElementFromTemplate_();
     item.labelElement.appendChild(button);
-    button.addEventListener('click', async (event) => {
+    button.addEventListener('click', async (event: MouseEvent) => {
       event.stopPropagation();
       // Clear all the descriptor display elements except the first one, which
       // displays the original BOS descriptor.
@@ -299,30 +269,22 @@ export class DescriptorPanel {
   /**
    * Adds a button for sending a Microsoft OS 2.0 descriptor set alternate
    * enumeration command to the USB device.
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the Microsoft OS 2.0
+   * @param offset The start offset of the Microsoft OS 2.0
    *     descriptor set information.
-   * @param {!CrTreeItemElement} item
-   * @param {string} fieldLabel Not used in this function, but used to match
-   *     other extraTreeItemFormatter.
-   * @private
    */
-  async renderMsOs20DescriptorSetAltEnum_(rawData, offset, item, fieldLabel) {
+  private async renderMsOs20DescriptorSetAltEnum_(
+      rawData: Uint8Array, offset: number, item: CrTreeItemElement) {
     // Use the vendor specified code, alternate enumeration code to send a
     // Microsoft OS 2.0 set alternate enumeration command.
     // This is defined by Microsoft OS 2.0 Descriptors Specification (July,
     // 2018).
-    const altEnumCode = rawData[offset + MS_OS_20_ALT_ENUM_CODE_ITEM_OFFSET];
+    const altEnumCode = rawData[offset + MS_OS_20_ALT_ENUM_CODE_ITEM_OFFSET]!;
     if (altEnumCode !== 0) {
-      const vendorCode = rawData[offset + MS_OS_20_VENDOR_CODE_ITEM_OFFSET];
+      const vendorCode = rawData[offset + MS_OS_20_VENDOR_CODE_ITEM_OFFSET]!;
 
-      const buttonTemplate = queryRequiredElement(
-          '#raw-data-tree-button',
-          /** @type {!DocumentFragment} */ (this.rootElement_.getRootNode()));
-      const button = document.importNode(buttonTemplate.content, true)
-                         .querySelector('button');
+      const button = this.getButtonElementFromTemplate_();
       item.labelElement.appendChild(button);
-      button.addEventListener('click', async (event) => {
+      button.addEventListener('click', async (event: MouseEvent) => {
         event.stopPropagation();
         await this.sendMsOs20DescriptorSetAltEnumCommand_(
             vendorCode, altEnumCode);
@@ -333,19 +295,14 @@ export class DescriptorPanel {
   /**
    * Changes the display text in tree item for the Microsoft OS 2.0 registry
    * property descriptor.
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the registry Property
+   * @param offset The start offset of the registry Property
    *     descriptor.
-   * @param {!CrTreeItemElement} item
-   * @param {string} fieldLabel Not used in this function, but used to match
-   *     other extraTreeItemFormatter.
-   * @param {number} featureRegistryPropertyDataType
-   * @private
    */
-  renderFeatureRegistryPropertyDataItem_(
-      rawData, offset, item, fieldLabel, featureRegistryPropertyDataType,
-      length) {
-    let data;
+  private renderFeatureRegistryPropertyDataItem_(
+      rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+      _fieldLabel: string, featureRegistryPropertyDataType: number,
+      length: number) {
+    let data: DataView;
     switch (featureRegistryPropertyDataType) {
       case MS_OS_20_FEATURE_REG_PROPERTY_DATA_TYPE_REG_BINARY:
         break;
@@ -375,17 +332,12 @@ export class DescriptorPanel {
   /**
    * Renders a view to display standard descriptor hex data in both tree view
    * and raw form view.
-   * @param {!Uint8Array} data
-   * @param {number=} languageCode
-   * @param {CrTreeItemElement=} treeItem
-   * @private
    */
-  async renderStandardDescriptor_(
-      data, languageCode = 0, treeItem = undefined) {
+  private async renderStandardDescriptor_(
+      data: Uint8Array, languageCode: number = 0,
+      treeItem?: CrTreeItemElement) {
     const displayElement = addNewDescriptorDisplayElement(this.rootElement_);
-    /** @type {!CrTreeElement} */
     const rawDataTreeRoot = displayElement.rawDataTreeRoot;
-    /** @type {!HTMLElement} */
     const rawDataByteElement = displayElement.rawDataByteElement;
 
     renderRawDataBytes(rawDataByteElement, data);
@@ -405,8 +357,8 @@ export class DescriptorPanel {
     // Stop if accessing the descriptor type would cause us to read past the
     // end of the buffer.
     while (offset + STANDARD_DESCRIPTOR_TYPE_OFFSET < data.length) {
-      const length = data[offset + STANDARD_DESCRIPTOR_LENGTH_OFFSET];
-      const descriptorType = data[offset + STANDARD_DESCRIPTOR_TYPE_OFFSET];
+      const length = data[offset + STANDARD_DESCRIPTOR_LENGTH_OFFSET]!;
+      const descriptorType = data[offset + STANDARD_DESCRIPTOR_TYPE_OFFSET]!;
       switch (descriptorType) {
         case DEVICE_DESCRIPTOR_TYPE:
           this.renderDeviceDescriptor_(
@@ -415,7 +367,7 @@ export class DescriptorPanel {
         case CONFIGURATION_DESCRIPTOR_TYPE:
           if (CONFIGURATION_DESCRIPTOR_NUM_INTERFACES_OFFSET < length) {
             expectNumInterfaces =
-                data[offset + CONFIGURATION_DESCRIPTOR_NUM_INTERFACES_OFFSET];
+                data[offset + CONFIGURATION_DESCRIPTOR_NUM_INTERFACES_OFFSET]!;
           }
           this.renderConfigurationDescriptor_(
               rawDataTreeRoot, rawDataByteElement, data, offset);
@@ -428,7 +380,7 @@ export class DescriptorPanel {
         case INTERFACE_DESCRIPTOR_TYPE:
           if (INTERFACE_DESCRIPTOR_NUM_ENDPOINTS_OFFSET < length) {
             expectNumEndpoints +=
-                data[offset + INTERFACE_DESCRIPTOR_NUM_ENDPOINTS_OFFSET];
+                data[offset + INTERFACE_DESCRIPTOR_NUM_ENDPOINTS_OFFSET]!;
           }
           lastInterfaceItem = this.renderInterfaceDescriptor_(
               rawDataTreeRoot, rawDataByteElement, data, offset,
@@ -445,7 +397,7 @@ export class DescriptorPanel {
           this.renderBosDescriptor_(
               rawDataTreeRoot, rawDataByteElement, data, offset);
           expectNumDevCapabilities =
-              data[BOS_DESCRIPTOR_NUM_DEVICE_CAPABILITIES_OFFSET];
+              data[BOS_DESCRIPTOR_NUM_DEVICE_CAPABILITIES_OFFSET]!;
           break;
         case DEVICE_CAPABILITY_DESCRIPTOR_TYPE:
           await this.renderDeviceCapabilityDescriptor_(
@@ -490,8 +442,7 @@ export class DescriptorPanel {
    * Gets device descriptor of current device, and display it.
    */
   async getDeviceDescriptor() {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+    const usbControlTransferParams: UsbControlTransferParams = {
       type: UsbControlTransferType.STANDARD,
       recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
@@ -509,7 +460,7 @@ export class DescriptorPanel {
           this.rootElement_);
       this.renderStandardDescriptor_(new Uint8Array(response.data.buffer));
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
     } finally {
       await this.usbDeviceProxy_.close();
     }
@@ -518,14 +469,11 @@ export class DescriptorPanel {
   /**
    * Renders a view to display device descriptor hex data in both tree view
    * and raw form.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the device descriptor.
-   * @private
+   * @param offset The start offset of the device descriptor.
    */
-  async renderDeviceDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset) {
+  private async renderDeviceDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number) {
     const fields = [
       {
         label: `Length (should be ${DEVICE_DESCRIPTOR_LENGTH}): `,
@@ -606,17 +554,16 @@ export class DescriptorPanel {
         rawDataTreeRoot, rawDataByteElement, fields, rawData, offset,
         this.rootElement_);
 
-    // window.deviceDescriptorCompleteFn() provides a hook for the test suite
-    // to perform test actions after the device descriptor is rendered.
-    window.deviceDescriptorCompleteFn();
+    document.body.dispatchEvent(new CustomEvent(
+        'device-descriptor-complete-for-test',
+        {bubbles: true, composed: true}));
   }
 
   /**
    * Gets configuration descriptor of current device, and display it.
    */
   async getConfigurationDescriptor() {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+    const usbControlTransferParams: UsbControlTransferParams = {
       type: UsbControlTransferType.STANDARD,
       recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
@@ -647,7 +594,7 @@ export class DescriptorPanel {
           this.rootElement_);
       this.renderStandardDescriptor_(new Uint8Array(response.data.buffer));
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
     } finally {
       await this.usbDeviceProxy_.close();
     }
@@ -656,14 +603,11 @@ export class DescriptorPanel {
   /**
    * Renders a view to display configuration descriptor hex data in both tree
    * view and raw form.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the configuration descriptor.
-   * @private
+   * @param offset The start offset of the configuration descriptor.
    */
-  async renderConfigurationDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset) {
+  private async renderConfigurationDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number) {
     const fields = [
       {
         label: `Length (should be ${CONFIGURATION_DESCRIPTOR_LENGTH}): `,
@@ -716,17 +660,12 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display interface descriptor at index
    * indexInterface.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the interface
-   *     descriptor.
-   * @param {number} indexInterface
-   * @return {!CrTreeItemElement}
-   * @private
+   * @param offset The start offset of the interface descriptor.
    */
-  renderInterfaceDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset, indexInterface) {
+  private renderInterfaceDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number,
+      indexInterface: number): CrTreeItemElement {
     const parentClassName = `descriptor-interface-${indexInterface}`;
     const interfaceItem =
         customTreeItem(`Interface ${indexInterface}`, parentClassName);
@@ -791,16 +730,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display endpoint descriptor at index
    * indexEndpoint.
-   * @param {!CrTreeElement|!CrTreeItemElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the endpoint
+   * @param offset The start offset of the endpoint
    *     descriptor.
-   * @param {number} indexEndpoint
-   * @private
    */
-  renderEndpointDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset, indexEndpoint) {
+  private renderEndpointDescriptor_(
+      rawDataTreeRoot: CrTreeElement|CrTreeItemElement,
+      rawDataByteElement: HTMLElement, rawData: Uint8Array, offset: number,
+      indexEndpoint: number) {
     const parentClassName = `descriptor-endpoint-${indexEndpoint}`;
     const endpointItem =
         customTreeItem(`Endpoint ${indexEndpoint}`, parentClassName);
@@ -847,17 +783,12 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display length and type of unknown descriptor at
    * index indexUnknown.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the this descriptor.
-   * @param {number} indexUnknown
-   * @private
+   * @param originalOffset The start offset of the this descriptor.
    */
-  renderUnknownDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexUnknown) {
-    const length = rawData[originalOffset + STANDARD_DESCRIPTOR_LENGTH_OFFSET];
+  private renderUnknownDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number, indexUnknown: number) {
+    const length = rawData[originalOffset + STANDARD_DESCRIPTOR_LENGTH_OFFSET]!;
     const parentClassName = `descriptor-unknown-${indexUnknown}`;
     const unknownItem =
         customTreeItem(`Unknown Descriptor ${indexUnknown}`, parentClassName);
@@ -883,8 +814,8 @@ export class DescriptorPanel {
     const rawDataByteElements = rawDataByteElement.querySelectorAll('span');
 
     for (; offset < originalOffset + length; offset++) {
-      rawDataByteElements[offset].classList.add(`field-offset-${offset}`);
-      rawDataByteElements[offset].classList.add(parentClassName);
+      rawDataByteElements[offset]!.classList.add(`field-offset-${offset}`);
+      rawDataByteElements[offset]!.classList.add(parentClassName);
     }
   }
 
@@ -892,11 +823,9 @@ export class DescriptorPanel {
    * Gets all the supported language codes of this device, and adds them as
    * autocompletions for the language code input area in the string descriptor
    * panel.
-   * @return {!Promise<!Array<number>>}
    */
-  async getAllLanguageCodes() {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+  async getAllLanguageCodes(): Promise<number[]> {
+    const usbControlTransferParams: UsbControlTransferParams = {
       type: UsbControlTransferType.STANDARD,
       recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
@@ -918,7 +847,7 @@ export class DescriptorPanel {
               'all supported languages.',
           this.rootElement_);
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
       // Stop rendering autocomplete datalist if failed to read the string
       // descriptor.
       return [];
@@ -927,6 +856,7 @@ export class DescriptorPanel {
     }
 
     const responseData = new Uint8Array(response.data.buffer);
+    assert(this.languageCodesListElement_);
     this.languageCodesListElement_.innerText = '';
 
     const optionAllElement = document.createElement('option');
@@ -952,15 +882,10 @@ export class DescriptorPanel {
   /**
    * Gets the string descriptor for the current device with the given index
    * and language code, and display it.
-   * @param {number} index
-   * @param {number} languageCode
-   * @param {!CrTreeItemElement=} treeItem
-   * @private
    */
-  async getStringDescriptorForLanguageCode_(
-      index, languageCode, treeItem = undefined) {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+  private async getStringDescriptorForLanguageCode_(
+      index: number, languageCode: number, treeItem?: CrTreeItemElement) {
+    const usbControlTransferParams: UsbControlTransferParams = {
       type: UsbControlTransferType.STANDARD,
       recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
@@ -979,11 +904,12 @@ export class DescriptorPanel {
               index}, language: ${parseLanguageCode(languageCode)}.`,
           this.rootElement_);
 
-      this.indexInput_.value = index;
+      assert(this.indexInput_);
+      this.indexInput_.value = index.toString();
       this.renderStandardDescriptor_(
           new Uint8Array(response.data.buffer), languageCode, treeItem);
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
     } finally {
       await this.usbDeviceProxy_.close();
     }
@@ -992,17 +918,12 @@ export class DescriptorPanel {
   /**
    * Renders string descriptor of current device with given index and language
    * code.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the string descriptor.
-   * @param {number=} languageCode
-   * @param {CrTreeItemElement=} treeItem
-   * @private
+   * @param offset The start offset of the string descriptor.
    */
-  renderStringDescriptorForLanguageCode_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset, languageCode = 0,
-      treeItem = undefined) {
+  private renderStringDescriptorForLanguageCode_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number, languageCode: number = 0,
+      treeItem?: CrTreeItemElement) {
     this.rootElement_.hidden = false;
 
     const languageStr = parseLanguageCode(languageCode);
@@ -1038,7 +959,7 @@ export class DescriptorPanel {
     rawDataTreeRoot.add(stringDescriptorItem);
     if (treeItem) {
       treeItem.add(customTreeItem(`${languageStr}: ${stringDescriptor}`));
-      treeItem.expanded = true;
+      treeItem.toggleAttribute('expanded', true);
     }
 
     renderRawDataTree(
@@ -1049,45 +970,45 @@ export class DescriptorPanel {
   /**
    * Gets string descriptor in all supported languages of current device with
    * given index.
-   * @param {number} index
-   * @param {CrTreeItemElement=} treeItem
-   * @private
    */
-  async getStringDescriptorForAllLanguages_(index, treeItem = undefined) {
+  private async getStringDescriptorForAllLanguages_(
+      index: number, treeItem?: CrTreeItemElement) {
     this.rootElement_.hidden = false;
 
-    this.indexInput_.value = index;
+    assert(this.indexInput_);
+    this.indexInput_.value = index.toString();
 
-    /** @type {!Array<number>} */
     const languageCodesList = await this.getAllLanguageCodes();
 
+    assert(treeItem);
     for (const languageCode of languageCodesList) {
       await this.getStringDescriptorForLanguageCode_(
-          index, languageCode, assert(treeItem));
+          index, languageCode, treeItem);
     }
   }
 
   /**
    * Initializes the string descriptor panel for autocomplete functionality.
-   * @param {string} tabId
    */
-  initialStringDescriptorPanel(tabId) {
+  initialStringDescriptorPanel(tabId: string) {
     // Binds the input area and datalist use each tab's unique id.
     this.rootElement_.querySelectorAll('input').forEach(
         el => el.setAttribute('list', `${el.getAttribute('list')}-${tabId}`));
     this.rootElement_.querySelectorAll('datalist')
         .forEach(el => el.id = `${el.id}-${tabId}`);
 
-    /** @type {!HTMLElement} */
-    const button = queryRequiredElement('button', this.rootElement_);
-    /** @type {!HTMLElement} */
-    this.indexInput_ = queryRequiredElement('#index-input', this.rootElement_);
-    /** @type {!HTMLElement} */
-    const languageCodeInput =
-        queryRequiredElement('#language-code-input', this.rootElement_);
+    const button = this.rootElement_.querySelector('button');
+    assert(button);
+    const indexInput =
+        this.rootElement_.querySelector<HTMLInputElement>('#index-input');
+    this.indexInput_ = indexInput;
+    const languageCodeInput = this.rootElement_.querySelector<HTMLInputElement>(
+        '#language-code-input');
+    assert(languageCodeInput);
 
     button.addEventListener('click', async () => {
       this.clearView();
+      assert(this.indexInput_);
       const index = Number.parseInt(this.indexInput_.value, 10);
       if (this.checkParamValid_(index, 'Index', 1, 255)) {
         if (languageCodeInput.value === 'All') {
@@ -1101,14 +1022,13 @@ export class DescriptorPanel {
       }
     });
 
-    /** @type {!Set<number>} */
-    this.stringDescriptorIndexes = new Set();
-    /** @type {!HTMLElement} */
+    this.stringDescriptorIndexes = new Set<number>();
     this.indexesListElement =
-        queryRequiredElement(`#indexes-${tabId}`, this.rootElement_);
-    /** @type {!HTMLElement} */
+        this.rootElement_.querySelector<HTMLElement>(`#indexes-${tabId}`);
+    assert(this.indexesListElement);
     this.languageCodesListElement_ =
-        queryRequiredElement(`#languages-${tabId}`, this.rootElement_);
+        this.rootElement_.querySelector<HTMLElement>(`#languages-${tabId}`);
+    assert(this.languageCodesListElement_);
   }
 
   /**
@@ -1117,8 +1037,7 @@ export class DescriptorPanel {
    * descriptor, and display it.
    */
   async getBosDescriptor() {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+    const usbControlTransferParams: UsbControlTransferParams = {
       type: UsbControlTransferType.STANDARD,
       recipient: UsbControlTransferRecipient.DEVICE,
       request: GET_DESCRIPTOR_REQUEST,
@@ -1149,7 +1068,7 @@ export class DescriptorPanel {
       await this.renderStandardDescriptor_(
           new Uint8Array(response.data.buffer));
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
     } finally {
       await this.usbDeviceProxy_.close();
     }
@@ -1158,13 +1077,11 @@ export class DescriptorPanel {
   /**
    * Renders a view to display Binary device Object Store (BOS) descriptor hex
    * data in both tree view and raw form.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the BOS descriptor.
-   * @private
+   * @param offset The start offset of the BOS descriptor.
    */
-  renderBosDescriptor_(rawDataTreeRoot, rawDataByteElement, rawData, offset) {
+  private renderBosDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number) {
     const fields = [
       {
         'label': 'Length (should be 5): ',
@@ -1196,16 +1113,11 @@ export class DescriptorPanel {
   /**
    * Renders a view to display device capability descriptor hex data in both
    * tree view and raw form.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the BOS descriptor.
-   * @param {number} indexDevCapability
-   * @private
+   * @param offset The start offset of the BOS descriptor.
    */
-  async renderDeviceCapabilityDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset,
-      indexDevCapability) {
+  private async renderDeviceCapabilityDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number, indexDevCapability: number) {
     switch (rawData[offset + BOS_DESCRIPTOR_DEVICE_CAPABILITY_TYPE_OFFSET]) {
       case DEVICE_CAPABILITY_DESCRIPTOR_TYPE_PLATFORM_TYPE:
         if (isSameUuid(rawData, offset, WEB_USB_CAPABILITY_UUID)) {
@@ -1216,6 +1128,11 @@ export class DescriptorPanel {
         } else if (isSameUuid(
                        rawData, offset, MS_OS_20_PLATFORM_CAPABILITY_UUID)) {
           this.renderMsOs20PlatformDescriptor_(
+              rawDataTreeRoot, rawDataByteElement, rawData, offset,
+              indexDevCapability);
+          break;
+        } else {
+          this.renderUnknownBosDescriptor_(
               rawDataTreeRoot, rawDataByteElement, rawData, offset,
               indexDevCapability);
           break;
@@ -1230,16 +1147,12 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display WebUSB platform capability descriptor at
    * index indexWebUsb.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the WebUSB platform
+   * @param offset The start offset of the WebUSB platform
    *     capability descriptor.
-   * @param {number} indexWebUsb
-   * @private
    */
-  renderWebUsbPlatformDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset, indexWebUsb) {
+  private renderWebUsbPlatformDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number, indexWebUsb: number) {
     const parentClassName = `descriptor-webusb-${indexWebUsb}`;
     const webUsbItem = customTreeItem('WebUSB Descriptor', parentClassName);
     rawDataTreeRoot.add(webUsbItem);
@@ -1295,16 +1208,12 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 platform capability
    * descriptor at index indexMsOs20.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the Microsoft OS 2.0 platform
+   * @param offset The start offset of the Microsoft OS 2.0 platform
    *     capability descriptor.
-   * @param {number} indexMsOs20
-   * @private
    */
-  renderMsOs20PlatformDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset, indexMsOs20) {
+  private renderMsOs20PlatformDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number, indexMsOs20: number) {
     const parentClassName = `descriptor-ms-os-20-${indexMsOs20}`;
     const msOs20Item =
         customTreeItem(`Microsoft OS 2.0 Descriptor`, parentClassName);
@@ -1358,19 +1267,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 descriptor set
    * information at index indexMsOs20DescriptorSetInfo.
-   * @param {!CrTreeElement|!CrTreeItemElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The start offset of the Microsoft OS 2.0
+   * @param offset The start offset of the Microsoft OS 2.0
    *     set information structure.
-   * @param {number} indexMsOs20DescriptorSetInfo
-   * @param {number} indexMsOs20
-   * @return {number}
-   * @private
    */
-  renderMsOs20DescriptorSetInfo_(
-      rawDataTreeRoot, rawDataByteElement, rawData, offset,
-      indexMsOs20DescriptorSetInfo, indexMsOs20) {
+  private renderMsOs20DescriptorSetInfo_(
+      rawDataTreeRoot: CrTreeItemElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, offset: number, indexMsOs20DescriptorSetInfo: number,
+      indexMsOs20: number): number {
     const parentClassName =
         `descriptor-ms-os-20-set-info-${indexMsOs20DescriptorSetInfo}`;
     const msOs20SetInfoItem = customTreeItem(
@@ -1392,19 +1295,21 @@ export class DescriptorPanel {
         label: 'Vendor Code: ',
         size: 1,
         formatter: formatByte,
-        extraTreeItemFormatter: (rawData, offset, item, fieldLabel) =>
-            this.renderMsOs20DescriptorVendorSpecific_(
-                rawData, offset - MS_OS_20_VENDOR_CODE_ITEM_OFFSET, item,
-                fieldLabel),
+        extraTreeItemFormatter:
+            (rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+             _fieldLabel: string) =>
+                this.renderMsOs20DescriptorVendorSpecific_(
+                    rawData, offset - MS_OS_20_VENDOR_CODE_ITEM_OFFSET, item),
       },
       {
         label: 'Alternate Enumeration Code: ',
         size: 1,
         formatter: formatByte,
-        extraTreeItemFormatter: (rawData, offset, item, fieldLabel) =>
-            this.renderMsOs20DescriptorSetAltEnum_(
-                rawData, offset - MS_OS_20_ALT_ENUM_CODE_ITEM_OFFSET, item,
-                fieldLabel),
+        extraTreeItemFormatter:
+            (rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+             _fieldLabel: string) =>
+                this.renderMsOs20DescriptorSetAltEnum_(
+                    rawData, offset - MS_OS_20_ALT_ENUM_CODE_ITEM_OFFSET, item),
       },
     ];
 
@@ -1417,18 +1322,14 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display unknown device capability descriptor at
    * indexUnknownDevCapability
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the unknown device
+   * @param originalOffset The start offset of the unknown device
    *     capability descriptor.
-   * @param {number} indexUnknownDevCapability
-   * @private
    */
-  renderUnknownBosDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexUnknownDevCapability) {
-    const length = rawData[originalOffset + STANDARD_DESCRIPTOR_LENGTH_OFFSET];
+  private renderUnknownBosDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexUnknownDevCapability: number) {
+    const length = rawData[originalOffset + STANDARD_DESCRIPTOR_LENGTH_OFFSET]!;
 
     const parentClassName =
         `descriptor-unknownbos-${indexUnknownDevCapability}`;
@@ -1461,28 +1362,26 @@ export class DescriptorPanel {
     const rawDataByteElements = rawDataByteElement.querySelectorAll('span');
 
     for (; offset < originalOffset + length; offset++) {
-      rawDataByteElements[offset].classList.add(`field-offset-${offset}`);
-      rawDataByteElements[offset].classList.add(parentClassName);
+      rawDataByteElements[offset]!.classList.add(`field-offset-${offset}`);
+      rawDataByteElements[offset]!.classList.add(parentClassName);
     }
   }
 
   /**
    * Gets the URL Descriptor, renders a URL descriptor item and adds it to
    * the URL descriptor index item.
-   * @param {!Uint8Array} rawData
-   * @param {number} offset The offset of the WebUSB descriptor.
-   * @param {!CrTreeItemElement} item The URL descriptor index item.
-   * @private
+   * @param offset The offset of the WebUSB descriptor.
+   * @param item The URL descriptor index item.
    */
-  async getUrlDescriptor_(rawData, offset, item) {
+  private async getUrlDescriptor_(
+      rawData: Uint8Array, offset: number, item: CrTreeItemElement) {
     // The second to last byte is the vendor code used to query URL
     // descriptor. Last byte is index of url descriptor. These are defined by
     // the WebUSB specification: http://wicg.github.io/webusb/
-    const vendorCode = rawData[offset + WEB_USB_VENDOR_CODE_OFFSET];
-    const urlIndex = rawData[offset + WEB_USB_URL_DESCRIPTOR_INDEX_OFFSET];
+    const vendorCode = rawData[offset + WEB_USB_VENDOR_CODE_OFFSET]!;
+    const urlIndex = rawData[offset + WEB_USB_URL_DESCRIPTOR_INDEX_OFFSET]!;
 
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+    const usbControlTransferParams: UsbControlTransferParams = {
       recipient: UsbControlTransferRecipient.DEVICE,
       // These constants are defined by the WebUSB specification:
       // http://wicg.github.io/webusb/
@@ -1503,7 +1402,7 @@ export class DescriptorPanel {
           urlResponse.status, 'Failed to read the device URL descriptor.',
           this.rootElement_);
 
-      let url;
+      let url: string = '';
       // URL Prefixes are defined by Chapter 4.3.1 of the WebUSB
       // specification: http://wicg.github.io/webusb/
       switch (urlResponse.data.buffer[2]) {
@@ -1527,10 +1426,9 @@ export class DescriptorPanel {
       item.add(landingPageItem);
       item.expanded = true;
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
       // Stops parsing to string format URL if failed to read the URL
       // descriptor.
-      return '';
     } finally {
       await this.usbDeviceProxy_.close();
     }
@@ -1538,13 +1436,11 @@ export class DescriptorPanel {
 
   /**
    * Gets the Microsoft OS 2.0 Descriptor vendor-specific descriptor.
-   * @param {number} vendorCode
-   * @return {!Promise<!Uint8Array>}
-   * @private
    */
-  async getMsOs20DescriptorSet_(vendorCode, msOs20DescriptorSetLength) {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+  private async getMsOs20DescriptorSet_(
+      vendorCode: number,
+      msOs20DescriptorSetLength: number): Promise<Uint8Array> {
+    const usbControlTransferParams: UsbControlTransferParams = {
       recipient: UsbControlTransferRecipient.DEVICE,
       // These constants are defined by Microsoft OS 2.0 Descriptors
       // Specification (July, 2018).
@@ -1567,7 +1463,7 @@ export class DescriptorPanel {
           'Failed to read the Microsoft OS 2.0 descriptor set.',
           this.rootElement_);
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
       // Returns an empty array if failed to read the Microsoft OS 2.0
       // descriptor set.
       return new Uint8Array(0);
@@ -1580,13 +1476,10 @@ export class DescriptorPanel {
 
   /**
    * Sends the Microsoft OS 2.0 Descriptor set alternate enumeration command.
-   * @param {number} vendorCode
-   * @param {number} altEnumCode
-   * @private
    */
-  async sendMsOs20DescriptorSetAltEnumCommand_(vendorCode, altEnumCode) {
-    /** @type {!UsbControlTransferParams} */
-    const usbControlTransferParams = {
+  private async sendMsOs20DescriptorSetAltEnumCommand_(
+      vendorCode: number, altEnumCode: number) {
+    const usbControlTransferParams: UsbControlTransferParams = {
       recipient: UsbControlTransferRecipient.DEVICE,
       // These constants are defined by Microsoft OS 2.0 Descriptors
       // Specification (July, 2018).
@@ -1610,7 +1503,7 @@ export class DescriptorPanel {
               'alternate enumeration set.',
           this.rootElement_);
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
     } finally {
       await this.usbDeviceProxy_.close();
     }
@@ -1619,15 +1512,11 @@ export class DescriptorPanel {
   /**
    * Renders a view to display Microsoft OS 2.0 Descriptor Set hex data in
    * both tree view and raw form.
-   * @param {!Uint8Array} msOs20RawData
-   * @private
    */
-  renderMsOs20DescriptorSet_(msOs20RawData) {
+  private renderMsOs20DescriptorSet_(msOs20RawData: Uint8Array) {
     const displayElement = addNewDescriptorDisplayElement(
         this.rootElement_, 'Microsoft OS 2.0 Descriptor Set');
-    /** @type {!CrTreeElement} */
     const rawDataTreeRoot = displayElement.rawDataTreeRoot;
-    /** @type {!HTMLElement} */
     const rawDataByteElement = displayElement.rawDataByteElement;
     renderRawDataBytes(rawDataByteElement, msOs20RawData);
 
@@ -1708,16 +1597,12 @@ export class DescriptorPanel {
 
   /**
    * Renders a tree item to display Microsoft OS 2.0 descriptor set header.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     descriptor set header.
-   * @return {number}
-   * @private
    */
-  renderMsOs20SetHeader_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset) {
+  private renderMsOs20SetHeader_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number): number {
     const data = new DataView(rawData.buffer);
     const length = data.getUint16(
         originalOffset + MS_OS_20_DESCRIPTOR_LENGTH_OFFSET, true);
@@ -1762,18 +1647,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 configuration subset
    * header.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     configuration subset header.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20ConfigurationSubsetHeader_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20ConfigurationSubsetHeader_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -1828,18 +1708,13 @@ export class DescriptorPanel {
 
   /**
    * Renders a tree item to display Microsoft OS 2.0 function subset header.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     function subset header.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FunctionSubsetHeader_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FunctionSubsetHeader_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -1893,18 +1768,13 @@ export class DescriptorPanel {
 
   /**
    * Renders a tree item to display Microsoft OS 2.0 compatible ID Descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     compatible ID descriptor.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FeatureCompatibleId_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FeatureCompatibleId_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -1954,18 +1824,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 registry property
    * descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     registry property descriptor.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FeatureRegistryProperty_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FeatureRegistryProperty_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -2007,10 +1872,12 @@ export class DescriptorPanel {
         label: 'Property Name: ',
         size: propertyNameLength,
         formatter: formatUnknown,
-        extraTreeItemFormatter: (rawData, offset, item, fieldLabel) =>
-            this.renderFeatureRegistryPropertyDataItem_(
-                rawData, offset, item, fieldLabel,
-                featureRegistryPropertyDataType, propertyNameLength),
+        extraTreeItemFormatter:
+            (rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+             fieldLabel: string) =>
+                this.renderFeatureRegistryPropertyDataItem_(
+                    rawData, offset, item, fieldLabel,
+                    featureRegistryPropertyDataType, propertyNameLength),
       },
     ];
 
@@ -2030,10 +1897,12 @@ export class DescriptorPanel {
           label: 'Property Data: ',
           size: propertyDataLength,
           formatter: formatUnknown,
-          extraTreeItemFormatter: (rawData, offset, item, fieldLabel) =>
-              this.renderFeatureRegistryPropertyDataItem_(
-                  rawData, offset, item, fieldLabel,
-                  featureRegistryPropertyDataType, propertyDataLength),
+          extraTreeItemFormatter:
+              (rawData: Uint8Array, offset: number, item: CrTreeItemElement,
+               fieldLabel: string) =>
+                  this.renderFeatureRegistryPropertyDataItem_(
+                      rawData, offset, item, fieldLabel,
+                      featureRegistryPropertyDataType, propertyDataLength),
         },
       ];
       offset = renderRawDataTree(
@@ -2054,18 +1923,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 minimum USB resume time
    * descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     minimum USB resume time descriptor.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FeatureMinResumeTime_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FeatureMinResumeTime_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -2114,18 +1978,13 @@ export class DescriptorPanel {
 
   /**
    * Renders a tree item to display Microsoft OS 2.0 model ID descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     model ID descriptor.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FeatureModelId_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FeatureModelId_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item =
@@ -2170,18 +2029,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 Common Class Generic
    * Parent (CCGP) device descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     CCGP device descriptor.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FeatureCcgpDevice_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FeatureCcgpDevice_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -2223,18 +2077,13 @@ export class DescriptorPanel {
   /**
    * Renders a tree item to display Microsoft OS 2.0 vendor revision
    * descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the Microsoft OS 2.0
+   * @param originalOffset The start offset of the Microsoft OS 2.0
    *     vendor revision descriptor.
-   * @param {number} indexMsOs20Descriptor
-   * @return {number}
-   * @private
    */
-  renderMsOs20FeatureVendorRevision_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexMsOs20Descriptor) {
+  private renderMsOs20FeatureVendorRevision_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexMsOs20Descriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexMsOs20Descriptor}`;
     const item = customTreeItem(
@@ -2278,18 +2127,13 @@ export class DescriptorPanel {
 
   /**
    * Renders a tree item to display an unknown Microsoft OS 2.0 descriptor.
-   * @param {!CrTreeElement} rawDataTreeRoot
-   * @param {!HTMLElement} rawDataByteElement
-   * @param {!Uint8Array} rawData
-   * @param {number} originalOffset The start offset of the unknown Microsoft
+   * @param originalOffset The start offset of the unknown Microsoft
    *     OS 2.0 descriptor.
-   * @param {number} indexDescriptor
-   * @return {number}
-   * @private
    */
-  renderUnknownMsOs20DescriptorDescriptor_(
-      rawDataTreeRoot, rawDataByteElement, rawData, originalOffset,
-      indexDescriptor) {
+  private renderUnknownMsOs20DescriptorDescriptor_(
+      rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement,
+      rawData: Uint8Array, originalOffset: number,
+      indexDescriptor: number): number {
     const parentClassName =
         `descriptor-ms-os-20-subdescriptor-${indexDescriptor}`;
     const item = customTreeItem(
@@ -2319,7 +2163,7 @@ export class DescriptorPanel {
     const rawDataByteElements = rawDataByteElement.querySelectorAll('span');
 
     for (; offset < originalOffset + length; offset++) {
-      rawDataByteElements[offset].classList.add(
+      rawDataByteElements[offset]!.classList.add(
           `field-offset-${offset}`, parentClassName);
     }
 
@@ -2335,12 +2179,10 @@ export class DescriptorPanel {
 
   /**
    * Gets response of the given request.
-   * @param {!UsbControlTransferParams} usbControlTransferParams
-   * @param {number} length
-   * @param {string} direction
-   * @private
    */
-  async sendTestingRequest_(usbControlTransferParams, length, direction) {
+  private async sendTestingRequest_(
+      usbControlTransferParams: UsbControlTransferParams, length: number,
+      direction: string) {
     try {
       await this.usbDeviceProxy_.open();
 
@@ -2351,7 +2193,9 @@ export class DescriptorPanel {
             response.status, 'Failed to send request.', this.rootElement_);
         this.renderTestingData_(new Uint8Array(response.data.buffer));
       } else if (direction === 'Host-to-Device') {
-        const dataString = this.rootElement_.querySelector('textarea').value;
+        const textarea = this.rootElement_.querySelector('textarea');
+        assert(textarea);
+        const dataString = textarea.value;
 
         const data = [];
         for (let i = 0; i < dataString.length; i += 2) {
@@ -2365,7 +2209,7 @@ export class DescriptorPanel {
             response.status, 'Failed to send request.', this.rootElement_);
       }
     } catch (e) {
-      showError(e.message, this.rootElement_);
+      showError((e as Error).message, this.rootElement_);
       return;
     } finally {
       await this.usbDeviceProxy_.close();
@@ -2374,14 +2218,11 @@ export class DescriptorPanel {
 
   /**
    * Renders a view to display response data in hex format.
-   * @param {!Uint8Array} rawData
-   * @private
    */
-  async renderTestingData_(rawData) {
+  private async renderTestingData_(rawData: Uint8Array) {
     const displayElement = addNewDescriptorDisplayElement(this.rootElement_);
     const rawDataTreeRoot = displayElement.rawDataTreeRoot;
-    /** @type {!HTMLElement} */ (rawDataTreeRoot).style.display = 'none';
-    /** @type {!HTMLElement} */
+    rawDataTreeRoot.style.display = 'none';
     const rawDataByteElement = displayElement.rawDataByteElement;
     renderRawDataBytes(rawDataByteElement, rawData);
   }
@@ -2394,11 +2235,12 @@ export class DescriptorPanel {
         'Warning: This tool can send arbitrary commands to the device. ' +
             'Invalid commands may cause unexpected results.',
         this.rootElement_);
-    const inputTableRows =
-        this.rootElement_.querySelector('tbody').querySelectorAll('tr');
-    const buttons =
-        this.rootElement_.querySelector('tbody').querySelectorAll('button');
+    const tbody = this.rootElement_.querySelector('tbody');
+    assert(tbody);
+    const inputTableRows = tbody.querySelectorAll('tr');
+    const buttons = tbody.querySelectorAll('button');
     const dataInputArea = this.rootElement_.querySelector('textarea');
+    assert(dataInputArea);
     dataInputArea.addEventListener('keypress', () => {
       const index = dataInputArea.selectionStart;
       dataInputArea.value = dataInputArea.value.substring(0, index) +
@@ -2407,26 +2249,30 @@ export class DescriptorPanel {
     });
 
     const testingToolPanelInputTypeSelector =
-        this.rootElement_.querySelector('#input-type');
+        this.rootElement_.querySelector<HTMLSelectElement>('#input-type');
+    assert(testingToolPanelInputTypeSelector);
     testingToolPanelInputTypeSelector.addEventListener('change', () => {
       this.clearView();
       const index = testingToolPanelInputTypeSelector.selectedIndex;
       inputTableRows.forEach(row => row.hidden = true);
-      const rowAtIndex = assertInstanceof(inputTableRows[index], HTMLElement);
+      const rowAtIndex = inputTableRows[index];
+      assert(rowAtIndex);
       rowAtIndex.hidden = false;
 
       const direction = getRequestTypeDirection(rowAtIndex, index);
       const length = getRequestLength(rowAtIndex, index);
-      this.rootElement_.querySelector('#data-input-area').hidden =
-          (direction !== 'Host-to-Device');
+      const area =
+          this.rootElement_.querySelector<HTMLElement>('#data-input-area');
+      assert(area);
+      area.hidden = (direction !== 'Host-to-Device');
       dataInputArea.value = '00'.repeat(length);
       dataInputArea.maxLength = length * 2;
     });
 
 
     inputTableRows.forEach((el, i) => {
-      const inputTableRow = assertInstanceof(el, HTMLElement);
-      let directionInputElement;
+      const inputTableRow = el;
+      let directionInputElement: HTMLElement|null = null;
       switch (i) {
         case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
           directionInputElement =
@@ -2437,13 +2283,17 @@ export class DescriptorPanel {
               inputTableRow.querySelector('#query-request-type');
           break;
       }
+      assert(directionInputElement);
       directionInputElement.addEventListener('change', () => {
-        this.rootElement_.querySelector('#data-input-area').hidden =
+        const area =
+            this.rootElement_.querySelector<HTMLElement>('#data-input-area');
+        assert(area);
+        area.hidden =
             (getRequestTypeDirection(inputTableRow, i) !== 'Host-to-Device');
       });
 
-      inputTableRow.querySelector('#query-length')
-          .addEventListener('blur', () => {
+      inputTableRow.querySelector('#query-length')!.addEventListener(
+          'blur', () => {
             const length = getRequestLength(inputTableRow, i);
             dataInputArea.value = '00'.repeat(length);
             dataInputArea.maxLength = length * 2;
@@ -2454,7 +2304,8 @@ export class DescriptorPanel {
       button.addEventListener('click', () => {
         this.clearView();
 
-        const row = assertInstanceof(inputTableRows[i], HTMLElement);
+        const row = inputTableRows[i];
+        assert(row);
         const direction = getRequestTypeDirection(row, i);
         const type = getRequestType(row, i);
         const recipient = getRequestTypeRecipient(row, i);
@@ -2471,10 +2322,11 @@ export class DescriptorPanel {
             this.checkParamValid_(value, 'wValue', 0, 65535) &&
             this.checkParamValid_(index, 'wIndex', 0, 65535) &&
             this.checkParamValid_(dataLength, 'Length', 0, 65535)) {
-          /** @type {!UsbControlTransferParams} */
-          const usbControlTransferParams = {
-            type: UsbControlTransferType[type],
-            recipient: UsbControlTransferRecipient[recipient],
+          const usbControlTransferParams: UsbControlTransferParams = {
+            type: (UsbControlTransferType as {[key: string]: number})[type]!,
+            recipient:
+                (UsbControlTransferRecipient as
+                 {[key: string]: number})[recipient]!,
             request,
             value,
             index,
@@ -2488,14 +2340,10 @@ export class DescriptorPanel {
 
   /**
    * Checks if the user input is a valid number.
-   * @param {number} paramValue
-   * @param {string} paramName
-   * @param {number} min
-   * @param {number} max
-   * @return {boolean}
-   * @private
    */
-  checkParamValid_(paramValue, paramName, min, max) {
+  private checkParamValid_(
+      paramValue: number, paramName: string, min: number,
+      max: number): boolean {
     if (Number.isNaN(paramValue) || paramValue < min || paramValue > max) {
       showError(`Invalid ${paramName}.`, this.rootElement_);
       return false;
@@ -2505,13 +2353,10 @@ export class DescriptorPanel {
 
   /**
    * Checks if the user input for a enum field is valid.
-   * @param {string} enumString
-   * @param {string} paramName
-   * @param {!Object} enumObject
-   * @return {boolean}
-   * @private
    */
-  checkEnumParamValid_(enumString, paramName, enumObject) {
+  private checkEnumParamValid_(
+      enumString: string|number, paramName: string,
+      enumObject: {[key: string]: number|string}): boolean {
     if (enumObject[enumString] !== undefined) {
       return true;
     }
@@ -2522,17 +2367,19 @@ export class DescriptorPanel {
 
 /**
  * Get the USB control transfer type.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {string}
  */
-function getRequestType(inputRow, inputType) {
+function getRequestType(inputRow: HTMLElement, inputType: number): string {
   switch (inputType) {
     case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return queryRequiredElement('#transfer-type', inputRow).value;
+      const select =
+          inputRow.querySelector<HTMLSelectElement>('#transfer-type');
+      assert(select);
+      return select.value;
     case INPUT_TYPE_HEX_BYTE:
-      const value = Number.parseInt(
-          queryRequiredElement('#query-request-type', inputRow).value, 16);
+      const input =
+          inputRow.querySelector<HTMLInputElement>('#query-request-type');
+      assert(input);
+      const value = Number.parseInt(input.value, 16);
       switch (value >> 5 & 0x03) {
         case 0:
           return 'STANDARD';
@@ -2541,6 +2388,7 @@ function getRequestType(inputRow, inputType) {
         case 2:
           return 'VENDOR';
       }
+      return '';
     default:
       return '';
   }
@@ -2548,17 +2396,20 @@ function getRequestType(inputRow, inputType) {
 
 /**
  * Get the USB control transfer recipient.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {string}
  */
-function getRequestTypeRecipient(inputRow, inputType) {
+function getRequestTypeRecipient(
+    inputRow: HTMLElement, inputType: number): string {
   switch (inputType) {
     case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return queryRequiredElement('#transfer-recipient', inputRow).value;
+      const select =
+          inputRow.querySelector<HTMLSelectElement>('#transfer-recipient');
+      assert(select);
+      return select.value;
     case INPUT_TYPE_HEX_BYTE:
-      const value = Number.parseInt(
-          queryRequiredElement('#query-request-type', inputRow).value, 16);
+      const input =
+          inputRow.querySelector<HTMLInputElement>('#query-request-type');
+      assert(input);
+      const value = Number.parseInt(input.value, 16);
       switch (value & 0x1F) {
         case 0:
           return 'DEVICE';
@@ -2569,6 +2420,7 @@ function getRequestTypeRecipient(inputRow, inputType) {
         case 3:
           return 'OTHER';
       }
+      return '';
     default:
       return '';
   }
@@ -2577,135 +2429,107 @@ function getRequestTypeRecipient(inputRow, inputType) {
 /**
  * Get the USB control transfer direction. 0 for device-to-host, 1 for
  * host-to-device.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {string}
  */
-function getRequestTypeDirection(inputRow, inputType) {
+function getRequestTypeDirection(
+    inputRow: HTMLElement, inputType: number): string {
   switch (inputType) {
     case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return queryRequiredElement('#transfer-direction', inputRow).value;
+      const select =
+          inputRow.querySelector<HTMLSelectElement>('#transfer-direction');
+      assert(select);
+      return select.value;
     case INPUT_TYPE_HEX_BYTE:
-      const value = Number.parseInt(
-          queryRequiredElement('#query-request-type', inputRow).value, 16);
+      const input =
+          inputRow.querySelector<HTMLInputElement>('#query-request-type');
+      assert(input);
+      const value = Number.parseInt(input.value, 16);
       switch (value >> 7) {
         case CONTROL_TRANSFER_DIRECTION_HOST_TO_DEVICE:
           return 'Host-to-Device';
         case CONTROL_TRANSFER_DIRECTION_DEVICE_TO_HOST:
           return 'Device-to-Host';
       }
+      return 'Device-to-Host';
     default:
       return 'Device-to-Host';
   }
 }
 
-/**
- * Get the USB control transfer request code.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {number}
- */
-function getRequestCode(inputRow, inputType) {
+function getDecimalOrHex(
+    inputRow: HTMLElement, inputType: number, selector: string): number {
+  const input = inputRow.querySelector<HTMLInputElement>(selector);
   switch (inputType) {
     case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return Number.parseInt(
-          queryRequiredElement('#query-request', inputRow).value, 10);
+      assert(input);
+      return Number.parseInt(input.value, 10);
     case INPUT_TYPE_HEX_BYTE:
-      return Number.parseInt(
-          queryRequiredElement('#query-request', inputRow).value, 16);
+      assert(input);
+      return Number.parseInt(input.value, 16);
     default:
       return Number.NaN;
   }
+}
+
+/**
+ * Get the USB control transfer request code.
+ */
+function getRequestCode(inputRow: HTMLElement, inputType: number): number {
+  return getDecimalOrHex(inputRow, inputType, '#query-request');
 }
 
 /**
  * Get the value of USB control transfer request wValue field.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {number}
  */
-function getRequestValue(inputRow, inputType) {
-  switch (inputType) {
-    case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return Number.parseInt(
-          queryRequiredElement('#query-value', inputRow).value, 10);
-    case INPUT_TYPE_HEX_BYTE:
-      return Number.parseInt(
-          queryRequiredElement('#query-value', inputRow).value, 16);
-    default:
-      return Number.NaN;
-  }
+function getRequestValue(inputRow: HTMLElement, inputType: number): number {
+  return getDecimalOrHex(inputRow, inputType, '#query-value');
 }
 
 /**
  * Get the value of USB control transfer request wIndex field.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {number}
  */
-function getRequestIndex(inputRow, inputType) {
-  switch (inputType) {
-    case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return Number.parseInt(
-          queryRequiredElement('#query-index', inputRow).value, 10);
-    case INPUT_TYPE_HEX_BYTE:
-      return Number.parseInt(
-          queryRequiredElement('#query-index', inputRow).value, 16);
-    default:
-      return Number.NaN;
-  }
+function getRequestIndex(inputRow: HTMLElement, inputType: number): number {
+  return getDecimalOrHex(inputRow, inputType, '#query-index');
 }
 
 /**
  * Get the length of the data transferred during USB control transfer.
- * @param {!HTMLElement} inputRow
- * @param {number} inputType
- * @return {number}
  */
-function getRequestLength(inputRow, inputType) {
-  switch (inputType) {
-    case INPUT_TYPE_DECIMAL_WITH_DROPDOWN:
-      return Number.parseInt(
-          queryRequiredElement('#query-length', inputRow).value, 10);
-    case INPUT_TYPE_HEX_BYTE:
-      return Number.parseInt(
-          queryRequiredElement('#query-length', inputRow).value, 16);
-    default:
-      return Number.NaN;
-  }
+function getRequestLength(inputRow: HTMLElement, inputType: number): number {
+  return getDecimalOrHex(inputRow, inputType, '#query-length');
 }
 
 /**
  * Adds a display area which contains a tree view and a byte view.
- * @param {!HTMLElement} rootElement
- * @param {string=} descriptorPanelTitle
- * @return {{rawDataTreeRoot:!CrTreeElement,rawDataByteElement:!HTMLElement}}
  */
 function addNewDescriptorDisplayElement(
-    rootElement, descriptorPanelTitle = undefined) {
-  const descriptorPanelTemplate = queryRequiredElement(
-      '#descriptor-panel-template',
-      /** @type {!DocumentFragment} */ (rootElement.getRootNode()));
+    rootElement: HTMLElement, descriptorPanelTitle?: string):
+    {rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement} {
+  const descriptorPanelTemplate =
+      (rootElement.getRootNode() as DocumentFragment | HTMLElement)
+          .querySelector<HTMLTemplateElement>('#descriptor-panel-template');
+  assert(descriptorPanelTemplate);
 
-  const descriptorPanelClone = /** @type {!HTMLElement} */
-      (document.importNode(descriptorPanelTemplate.content, true));
+  const descriptorPanelClone =
+      document.importNode(descriptorPanelTemplate.content, true);
 
   const rawDataTreeRoot =
-      /** @type {!CrTreeElement} */ (
-          queryRequiredElement('.raw-data-tree-view', descriptorPanelClone));
-  /** @type {!HTMLElement} */
+      descriptorPanelClone.querySelector<CrTreeElement>('.raw-data-tree-view');
+  assert(rawDataTreeRoot);
   const rawDataByteElement =
-      queryRequiredElement('.raw-data-byte-view', descriptorPanelClone);
+      descriptorPanelClone.querySelector<HTMLElement>('.raw-data-byte-view');
+  assert(rawDataByteElement);
 
   rawDataTreeRoot.detail = {payload: {}, children: {}};
 
   if (descriptorPanelTitle) {
-    const descriptorPanelTitleTemplate = queryRequiredElement(
-        '#descriptor-panel-title',
-        /** @type {!DocumentFragment} */ (rootElement.getRootNode()));
+    const descriptorPanelTitleTemplate =
+        (rootElement.getRootNode() as DocumentFragment | HTMLElement)
+            .querySelector<HTMLTemplateElement>('#descriptor-panel-title');
+    assert(descriptorPanelTitleTemplate);
     const clone =
         document.importNode(descriptorPanelTitleTemplate.content, true)
             .querySelector('descriptorpaneltitle');
+    assert(clone);
     clone.textContent = descriptorPanelTitle;
     rootElement.appendChild(clone);
   }
@@ -2715,10 +2539,8 @@ function addNewDescriptorDisplayElement(
 
 /**
  * Shows an error message.
- * @param {string} message
- * @param {!HTMLElement} rootElement
  */
-function showError(message, rootElement) {
+function showError(message: string, rootElement: HTMLElement) {
   const errorElement = document.createElement('error');
   errorElement.textContent = message;
   rootElement.prepend(errorElement);
@@ -2726,10 +2548,8 @@ function showError(message, rootElement) {
 
 /**
  * Shows a warning message.
- * @param {string} message
- * @param {!HTMLElement} rootElement
  */
-function showWarn(message, rootElement) {
+function showWarn(message: string, rootElement: HTMLElement) {
   const warnElement = document.createElement('warn');
   warnElement.textContent = message;
   rootElement.prepend(warnElement);
@@ -2737,13 +2557,10 @@ function showWarn(message, rootElement) {
 
 /**
  * Renders a customized TreeItem with the given content and class name.
- * @param {string} itemLabel
- * @param {string=} className
- * @return {!CrTreeItemElement}
  */
-function customTreeItem(itemLabel, className = undefined) {
-  const item =
-      /** @type {CrTreeItemElement} */ (document.createElement('cr-tree-item'));
+function customTreeItem(
+    itemLabel: string, className?: string): CrTreeItemElement {
+  const item = document.createElement('cr-tree-item');
   item.label = itemLabel;
   if (className) {
     item.classList.add(className);
@@ -2753,24 +2570,21 @@ function customTreeItem(itemLabel, className = undefined) {
 
 /**
  * Adds function for mapping between two views.
- * @param {!CrTreeElement} rawDataTreeRoot
- * @param {!HTMLElement} rawDataByteElement
  */
-function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
+function addMappingAction(
+    rawDataTreeRoot: CrTreeElement, rawDataByteElement: HTMLElement) {
   // Highlights the byte(s) that hovered in the tree.
-  const items = rawDataTreeRoot.items;
-
-  function mapElement(el) {
+  function mapElement(el: CrTreeItemElement) {
     const classList = el.classList;
     // classList[0] is 'tree-row'. classList[1] of tree item for fields
     // starts with 'field-offset-', and classList[1] of tree item for
     // descriptors (ie. endpoint descriptor) is descriptor type and index.
-    const fieldOffsetOrDescriptorClass = classList[0];
+    const fieldOffsetOrDescriptorClass = classList[0]!;
     assert(
         fieldOffsetOrDescriptorClass.startsWith('field-offset-') ||
         fieldOffsetOrDescriptorClass.startsWith('descriptor-'));
 
-    el.rowElement.addEventListener('pointerenter', (event) => {
+    el.rowElement.addEventListener('pointerenter', (event: MouseEvent) => {
       rawDataByteElement.querySelectorAll(`.${fieldOffsetOrDescriptorClass}`)
           .forEach((el) => el.classList.add('hovered-field'));
       event.stopPropagation();
@@ -2781,8 +2595,8 @@ function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
           .forEach((el) => el.classList.remove('hovered-field'));
     });
 
-    el.rowElement.addEventListener('click', (event) => {
-      if (event.target.className !== 'expand-icon') {
+    el.rowElement.addEventListener('click', (event: MouseEvent) => {
+      if ((event.target as HTMLElement).className !== 'expand-icon') {
         // Clears all the selected elements before select another.
         rawDataByteElement.querySelectorAll('.raw-data-byte-view span')
             .forEach((el) => el.classList.remove('selected-field'));
@@ -2792,10 +2606,10 @@ function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
       }
     });
 
-    el.items.forEach(item => mapElement(item));
+    el.items.forEach(item => mapElement(item as CrTreeItemElement));
   }
 
-  rawDataTreeRoot.items.forEach(item => mapElement(item));
+  rawDataTreeRoot.items.forEach(item => mapElement(item as CrTreeItemElement));
 
   // Selects the tree item that displays the byte hovered in the raw view.
   const rawDataByteElements = rawDataByteElement.querySelectorAll('span');
@@ -2809,14 +2623,17 @@ function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
     const fieldOffsetClass = classList[0];
     assert(fieldOffsetClass.startsWith('field-offset-'));
 
-    function configureMatchingItem(className, callback, root) {
+    function configureMatchingItem(
+        className: string, callback: (e: CrTreeItemElement) => void,
+        root: CrTreeElement|CrTreeItemElement) {
       if (root.tagName === 'CR-TREE-ITEM' &&
           root.classList.contains(className)) {
-        callback(root);
+        callback(root as CrTreeItemElement);
         return true;
       }
       for (const item of root.items) {
-        if (configureMatchingItem(className, callback, item)) {
+        if (configureMatchingItem(
+                className, callback, item as CrTreeItemElement)) {
           return true;
         }
       }
@@ -2844,22 +2661,25 @@ function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
   });
 }
 
+type Field = {
+  size: number,
+  label: string,
+  formatter: (data: Uint8Array, offset: number) => string,
+  extraTreeItemFormatter?: (data: Uint8Array, offset: number,
+                            item: CrTreeItemElement, label: string) => void,
+};
+
 /**
  * Renders a tree view to display the raw data in readable text.
- * @param {!CrTreeElement|!CrTreeItemElement} root
- * @param {!HTMLElement} rawDataByteElement
- * @param {!Array<Object>} fields
- * @param {!Uint8Array} rawData
- * @param {number} offset The start offset of the descriptor structure that
+ * @param offset The start offset of the descriptor structure that
  *     want to be rendered.
- * @param {!HTMLElement} rootElement
- * @param {...string} parentClassNames
- * @return {number} The end offset of descriptor structure that want to be
+ * @return The end offset of descriptor structure that want to be
  *     rendered.
  */
 function renderRawDataTree(
-    root, rawDataByteElement, fields, rawData, offset, rootElement,
-    ...parentClassNames) {
+    root: CrTreeElement|CrTreeItemElement, rawDataByteElement: HTMLElement,
+    fields: Field[], rawData: Uint8Array, offset: number,
+    rootElement: HTMLElement, ...parentClassNames: string[]): number {
   const rawDataByteElements = rawDataByteElement.querySelectorAll('span');
 
   for (const field of fields) {
@@ -2870,9 +2690,9 @@ function renderRawDataTree(
           `${field.label}${field.formatter(rawData, offset)}`, className);
 
       for (let i = 0; i < field.size; i++) {
-        rawDataByteElements[offset + i].classList.add(className);
+        rawDataByteElements[offset + i]!.classList.add(className);
         for (const parentClassName of parentClassNames) {
-          rawDataByteElements[offset + i].classList.add(parentClassName);
+          rawDataByteElements[offset + i]!.classList.add(parentClassName);
         }
       }
     } catch (e) {
@@ -2887,8 +2707,9 @@ function renderRawDataTree(
         field.extraTreeItemFormatter(rawData, offset, item, field.label);
       }
     } catch (e) {
+      const message = (e as Error).message;
       showError(
-          `Error at rendering field at index ${offset}: ${e.message}`,
+          `Error at rendering field at index ${offset}: ${message}`,
           rootElement);
     }
     offset += field.size;
@@ -2898,38 +2719,40 @@ function renderRawDataTree(
 
 /**
  * Renders an element to display the raw data in hex, byte by byte.
- * @param {!HTMLElement} rawDataByteElement
- * @param {!Uint8Array} rawData
  */
-function renderRawDataBytes(rawDataByteElement, rawData) {
-  const rawDataByteContainerTemplate = queryRequiredElement(
-      '#raw-data-byte-container-template',
-      /** @type {!DocumentFragment} */ (rawDataByteElement.getRootNode()));
-  const rawDataByteContainerClone =
+function renderRawDataBytes(
+    rawDataByteElement: HTMLElement, rawData: Uint8Array) {
+  const rawDataByteContainerTemplate =
+      (rawDataByteElement.getRootNode() as HTMLElement)
+          .querySelector<HTMLTemplateElement>(
+              '#raw-data-byte-container-template');
+  assert(rawDataByteContainerTemplate);
+  const rawDataByteContainerClone: DocumentFragment =
       document.importNode(rawDataByteContainerTemplate.content, true);
   const rawDataByteContainerElement =
       rawDataByteContainerClone.querySelector('div');
+  assert(rawDataByteContainerElement);
 
-  const rawDataByteTemplate = queryRequiredElement(
-      '#raw-data-byte-template',
-      /** @type {!DocumentFragment} */ (rawDataByteElement.getRootNode()));
+  const rawDataByteTemplate =
+      (rawDataByteElement.getRootNode() as HTMLElement)
+          .querySelector<HTMLTemplateElement>('#raw-data-byte-template');
+  assert(rawDataByteTemplate);
   for (const value of rawData) {
-    const rawDataByteClone =
+    const rawDataByteClone: DocumentFragment =
         document.importNode(rawDataByteTemplate.content, true);
-    const rawDataByteElement = rawDataByteClone.querySelector('span');
-    rawDataByteElement.textContent = toHex(value, 2);
-    rawDataByteContainerElement.appendChild(rawDataByteElement);
+    const rawDataByteSpan = rawDataByteClone.querySelector('span');
+    assert(rawDataByteSpan);
+    rawDataByteSpan.textContent = toHex(value, 2);
+    rawDataByteContainerElement.appendChild(rawDataByteSpan);
   }
   rawDataByteElement.appendChild(rawDataByteContainerElement);
 }
 
 /**
  * Checks if the status of a control transfer indicates success.
- * @param {number} status
- * @param {string} defaultMessage
- * @param {!HTMLElement} rootElement
  */
-function checkTransferSuccess(status, defaultMessage, rootElement) {
+function checkTransferSuccess(
+    status: number, defaultMessage: string, rootElement: HTMLElement) {
   let failReason = '';
   switch (status) {
     case UsbTransferStatus.COMPLETED:
@@ -2967,21 +2790,16 @@ function checkTransferSuccess(status, defaultMessage, rootElement) {
 /**
  * Converts a number to a hexadecimal string padded with zeros to the given
  * number of digits.
- * @param {number} number
- * @param {number} numOfDigits
- * @return {string}
  */
-function toHex(number, numOfDigits) {
+function toHex(number: number, numOfDigits: number): string {
   return number.toString(16).padStart(numOfDigits, '0').toUpperCase();
 }
 
 /**
  * Parses UTF-16 array to string.
- * @param {!Uint8Array} arr
- * @param {boolean=} isLittleEndian
- * @return {string}
  */
-function decodeUtf16Array(arr, isLittleEndian = false) {
+function decodeUtf16Array(
+    arr: Uint8Array, isLittleEndian: boolean = false): string {
   let str = '';
   const data = new DataView(arr.buffer);
   for (let i = 0; i < arr.length; i += 2) {
@@ -2992,104 +2810,76 @@ function decodeUtf16Array(arr, isLittleEndian = false) {
 
 /**
  * Parses UTF-8 array to string.
- * @param {!Uint8Array} arr
- * @return {string}
  */
-function decodeUtf8Array(arr) {
+function decodeUtf8Array(arr: Uint8Array): string {
   return String.fromCodePoint(...arr);
 }
 
 /**
  * Parses one byte to decimal number string.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatByte(rawData, offset) {
-  return rawData[offset].toString();
+function formatByte(rawData: Uint8Array, offset: number): string {
+  return rawData[offset]!.toString();
 }
 
 /**
  * Parses two bytes to decimal number.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {number}
  */
-function parseShort(rawData, offset) {
+function parseShort(rawData: Uint8Array, offset: number): number {
   const data = new DataView(rawData.buffer);
   return data.getUint16(offset, true);
 }
 
 /**
  * Parses two bytes to decimal number string.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
+ :
  */
-function formatShort(rawData, offset) {
+function formatShort(rawData: Uint8Array, offset: number): string {
   return parseShort(rawData, offset).toString();
 }
 
 /**
  * Parses two bytes to decimal number string.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatLetter(rawData, offset) {
+function formatLetter(rawData: Uint8Array, offset: number): string {
   const num = parseShort(rawData, offset);
   return String.fromCodePoint(num);
 }
 
 /**
  * Parses two bytes to a hex string.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatTwoBytesToHex(rawData, offset) {
+function formatTwoBytesToHex(rawData: Uint8Array, offset: number): string {
   const num = parseShort(rawData, offset);
   return `0x${toHex(num, 4)}`;
 }
 
 /**
  * Parses two bytes to USB version format.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatUsbVersion(rawData, offset) {
-  return `${rawData[offset + 1]}.${rawData[offset] >> 4}.${
-      rawData[offset] & 0x0F}`;
+function formatUsbVersion(rawData: Uint8Array, offset: number): string {
+  return `${rawData[offset + 1]}.${rawData[offset]! >> 4}.${
+      rawData[offset]! & 0x0F}`;
 }
 
 /**
  * Parses one byte to a bitmap.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatBitmap(rawData, offset) {
-  return rawData[offset].toString(2).padStart(8, '0');
+function formatBitmap(rawData: Uint8Array, offset: number): string {
+  return rawData[offset]!.toString(2).padStart(8, '0');
 }
 
 /**
  * Parses descriptor type to a hex string.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatDescriptorType(rawData, offset) {
-  return `0x${toHex(rawData[offset], 2)}`;
+function formatDescriptorType(rawData: Uint8Array, offset: number): string {
+  return `0x${toHex(rawData[offset]!, 2)}`;
 }
 
 /**
  * Parses UUID field.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatUuid(rawData, offset) {
+function formatUuid(rawData: Uint8Array, offset: number): string {
   // UUID is 16 bytes (Section 9.6.2.4 of Universal Serial Bus 3.1
   // Specification).
   // Additional reference: IETF RFC 4122. https://tools.ietf.org/html/rfc4122
@@ -3117,11 +2907,8 @@ function formatUuid(rawData, offset) {
 
 /**
  * Parses Compatible ID String field.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatCompatibleIdString(rawData, offset) {
+function formatCompatibleIdString(rawData: Uint8Array, offset: number): string {
   // Compatible ID String is 8 bytes, which is defined by Microsoft OS 2.0
   // Descriptors Specification (July, 2018).
   return decodeUtf8Array(rawData.slice(offset, offset + 8));
@@ -3129,11 +2916,8 @@ function formatCompatibleIdString(rawData, offset) {
 
 /**
  * Parses Windows Version field.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatWindowsVersion(rawData, offset) {
+function formatWindowsVersion(rawData: Uint8Array, offset: number): string {
   const data = new DataView(rawData.buffer);
   const windowsVersion = data.getUint32(offset, true);
   switch (windowsVersion) {
@@ -3146,11 +2930,9 @@ function formatWindowsVersion(rawData, offset) {
 
 /**
  * Parses Feature Registry Property Data Type.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatFeatureRegistryPropertyDataType(rawData, offset) {
+function formatFeatureRegistryPropertyDataType(
+    rawData: Uint8Array, offset: number): string {
   const data = new DataView(rawData.buffer);
   const propertyDataType = data.getUint16(offset, true);
   switch (propertyDataType) {
@@ -3177,30 +2959,22 @@ function formatFeatureRegistryPropertyDataType(rawData, offset) {
 
 /**
  * Returns empty string for a field that can't or doesn't need to be parsed.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatUnknown(rawData, offset) {
+function formatUnknown(_rawData: Uint8Array, _offset: number): string {
   return '';
 }
 
 /**
  * Returns a class code string with a description.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @return {string}
  */
-function formatClassCode(rawData, offset) {
-  return renderClassCodeWithDescription(rawData[offset]);
+function formatClassCode(rawData: Uint8Array, offset: number): string {
+  return renderClassCodeWithDescription(rawData[offset]!);
 }
 
 /**
  * Returns a class code string with a description.
- * @param {number} classCode
- * @return {string}
  */
-export function renderClassCodeWithDescription(classCode) {
+export function renderClassCodeWithDescription(classCode: number): string {
   const blockedByWebUsb = '(blocked by WebUSB)';
   // USB Class Codes are defined by the USB-IF:
   // https://www.usb.org/defined-class-codes
@@ -3255,10 +3029,8 @@ export function renderClassCodeWithDescription(classCode) {
 
 /**
  * Parses language code to readable language name.
- * @param {number} languageCode
- * @return {string}
  */
-function parseLanguageCode(languageCode) {
+function parseLanguageCode(languageCode: number): string {
   switch (languageCode) {
     case LANGUAGE_CODE_EN_US:
       return 'en-US';
@@ -3269,11 +3041,9 @@ function parseLanguageCode(languageCode) {
 
 /**
  * Checks if two UUIDs are same.
- * @param {!Uint8Array} rawData
- * @param {number} offset The offset of current field.
- * @param {!Array<number>} uuidArr
  */
-function isSameUuid(rawData, offset, uuidArr) {
+function isSameUuid(
+    rawData: Uint8Array, offset: number, uuidArr: number[]): boolean {
   // Validate the Platform Capability Descriptor
   if (offset + 20 > rawData.length) {
     return false;
@@ -3287,6 +3057,3 @@ function isSameUuid(rawData, offset, uuidArr) {
   }
   return true;
 }
-
-window.deviceDescriptorCompleteFn =
-    window.deviceDescriptorCompleteFn || function() {};
