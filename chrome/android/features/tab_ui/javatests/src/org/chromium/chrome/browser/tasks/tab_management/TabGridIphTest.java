@@ -353,7 +353,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1209286")
     public void testNotShowIPHInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
