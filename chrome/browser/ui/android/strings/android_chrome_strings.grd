@@ -992,8 +992,14 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest for the Topics API of the Privacy Sandbox.">
         Add <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_ADD_SITE_BUTTON_DESCRIPTION" desc="Content description for button that adds an ad interest for the FLEDGE API of the Privacy Sandbox.">
+        Add <ph name="SITE">%1$s<ex>example.com</ex></ph>
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_ADD_INTEREST_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added to the Topics API of the Privacy Sandbox.">
         Interest added
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_ADD_SITE_SNACKBAR" desc="Text on a snackbar after an ad personalization interest was added to the FLEDGE API of the Privacy Sandbox.">
+        Site added
       </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVE_INTEREST_BUTTON_DESCRIPTION" desc="Content description for button that removes an ad interest for the Topics API of the Privacy Sandbox.">
         Remove <ph name="INTEREST">%1$s<ex>Acting and Theater</ex></ph>
@@ -1030,6 +1036,9 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
       </message>
       <message name="IDS_PRIVACY_SANDBOX_REMOVED_TOPICS_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the Topics API of the Privacy Sandbox.">
         Interests you removed will appear here
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_REMOVED_SITES_EMPTY_STATE" desc="Summary shown when no interests for ad personlization were removed from the FLEDGE API of the Privacy Sandbox.">
+        Sites you removed will appear here
       </message>
       <message name="IDS_PRIVACY_SANDBOX_FLEDGE_SUBTITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
         Sites you visit that define your interests

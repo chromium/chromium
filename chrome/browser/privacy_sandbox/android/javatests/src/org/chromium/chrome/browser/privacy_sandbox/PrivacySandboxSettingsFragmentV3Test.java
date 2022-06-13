@@ -277,7 +277,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     }
 
     @Nullable
-    private List<String> getFledgeJoiningEtlds() {
+    private List<String> getFledgeSites() {
         PayloadCallbackHelper<List<String>> callbackHelper = new PayloadCallbackHelper<>();
         PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(callbackHelper::notifyCalled);
         return callbackHelper.getOnlyPayloadBlocking();
@@ -292,7 +292,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
         scrollToSetting(withText("example2.com"));
         clickImageButtonNextToText("example.com");
-        assertThat(getFledgeJoiningEtlds(), not(hasItem("example.com")));
+        assertThat(getFledgeSites(), not(hasItem("example.com")));
         assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
                 hasItem("example.com"));
         onView(withText(R.string.privacy_sandbox_remove_site_snackbar))
@@ -375,7 +375,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
     @Test
     @SmallTest
-    public void testRemovedInterestsView() throws IOException {
+    public void testRemovedInterestsViewForTopics() throws IOException {
         openPrivacySandboxSettings();
         mUserActionTester = new UserActionTester();
         onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
@@ -393,6 +393,30 @@ public final class PrivacySandboxSettingsFragmentV3Test {
 
         clickImageButtonNextToText("BlockedBar");
         onView(withText(R.string.privacy_sandbox_removed_topics_empty_state))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testRemovedInterestsViewForFledge() throws IOException {
+        openPrivacySandboxSettings();
+        mUserActionTester = new UserActionTester();
+        onView(withText(R.string.privacy_sandbox_ad_personalization_title)).perform(click());
+        onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
+
+        scrollToSetting(withText("blocked2.com"));
+        clickImageButtonNextToText("blocked.com");
+        assertThat(getFledgeSites(), hasItem("blocked.com"));
+        assertThat(PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay(),
+                not(hasItem("blocked.com")));
+        onView(withText(R.string.privacy_sandbox_add_site_snackbar)).check(matches(isDisplayed()));
+        assertThat(mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.RemovedInterests.Opened",
+                        "Settings.PrivacySandbox.RemovedInterests.SiteAdded"));
+        onView(withText(R.string.privacy_sandbox_removed_sites_empty_state)).check(doesNotExist());
+
+        clickImageButtonNextToText("blocked2.com");
+        onView(withText(R.string.privacy_sandbox_removed_sites_empty_state))
                 .check(matches(isDisplayed()));
     }
 

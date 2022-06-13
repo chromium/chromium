@@ -21,4 +21,14 @@
         app:allowDividerBelow="false"
         android:selectable="false"/>
 
+    <PreferenceCategory
+        android:key="fledge_interests"
+        android:title="@string/privacy_sandbox_fledge_subtitle" />
+
+    <Preference
+        android:key="empty_fledge"
+        android:summary="@string/privacy_sandbox_removed_sites_empty_state"
+        app:allowDividerBelow="false"
+        android:selectable="false"/>
+
 </PreferenceScreen>

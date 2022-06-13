@@ -111,6 +111,7 @@ public class AdPersonalizationFragment
         updateDescription(hasAnyInterests);
         populateTopics(currentTopics, blockedTopics);
         populateFledge(currentFledgeSites, blockedFledgeSites);
+        updateEmptyState();
     }
 
     private void updateDescription(boolean hasAnyInterests) {
@@ -135,9 +136,8 @@ public class AdPersonalizationFragment
             preference.setOnPreferenceClickListener(this);
             mTopicsCategory.addPreference(preference);
         }
-        updateEmptyTopicsState();
         mRemovedTopicsPreference.setVisible(!(currentTopics.isEmpty() && blockedTopics.isEmpty()));
-        // If this is the last preference, it shouldn't have a divider.
+        // If this is the last preference, it shouldn't have a divider below.
         mEmptyTopicsPreference.setDividerAllowedBelow(mRemovedTopicsPreference.isVisible());
     }
 
@@ -153,16 +153,16 @@ public class AdPersonalizationFragment
             preference.setOnPreferenceClickListener(this);
             mFledgeCategory.addPreference(preference);
         }
-        updateEmptyFledgeState();
         mRemovedSitesPreference.setVisible(
                 !(currentFledgeSites.isEmpty() && blockedFledgeSites.isEmpty()));
-        // If this is the last preference, it shouldn't have a divider.
+        // If this is the last preference, it shouldn't have a divider below.
         mEmptyFledgePreference.setDividerAllowedBelow(mRemovedSitesPreference.isVisible());
     }
 
     private void blockTopic(Topic topic) {
         PrivacySandboxBridge.setTopicAllowed(topic, false);
     }
+
     private void blockFledge(String site) {
         PrivacySandboxBridge.setFledgeJoiningAllowed(site, false);
     }
@@ -172,7 +172,6 @@ public class AdPersonalizationFragment
         if (preference instanceof TopicPreference) {
             blockTopic(((TopicPreference) preference).getTopic());
             mTopicsCategory.removePreference(preference);
-            updateEmptyTopicsState();
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_remove_interest_snackbar),
                     null, Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
@@ -180,7 +179,6 @@ public class AdPersonalizationFragment
         } else if (preference instanceof FledgePreference) {
             blockFledge(((FledgePreference) preference).getSite());
             mFledgeCategory.removePreference(preference);
-            updateEmptyFledgeState();
             mSnackbarManager.showSnackbar(Snackbar.make(
                     getResources().getString(R.string.privacy_sandbox_remove_site_snackbar), null,
                     Snackbar.TYPE_ACTION, Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_INTEREST));
@@ -188,14 +186,12 @@ public class AdPersonalizationFragment
         } else {
             assert false; // NOTREACHED.
         }
+        updateEmptyState();
         return true;
     }
 
-    private void updateEmptyTopicsState() {
+    private void updateEmptyState() {
         mEmptyTopicsPreference.setVisible(mTopicsCategory.getPreferenceCount() == 0);
-    }
-
-    private void updateEmptyFledgeState() {
         mEmptyFledgePreference.setVisible(mFledgeCategory.getPreferenceCount() == 0);
     }
 }
