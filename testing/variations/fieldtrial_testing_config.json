@@ -3930,22 +3930,6 @@
             ]
         }
     ],
-    "FilesSWA": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220107",
-                    "enable_features": [
-                        "FilesSWA"
-                    ]
-                }
-            ]
-        }
-    ],
     "FillingAcrossAffiliatedWebsites": [
         {
             "platforms": [
