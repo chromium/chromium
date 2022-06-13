@@ -58,7 +58,7 @@ const char kTraceStartupFile[] = "trace-startup-file";
 const char kEnableTracingOutput[] = "enable-tracing-output";
 
 // Sets the output format for the trace, valid values are "json" and "proto".
-// If not set, the current default is "json".
+// If not set, the current default is "proto".
 // "proto", unlike json, supports writing the trace into the output file
 // incrementally and is more likely to retain more data if the browser process
 // unexpectedly terminates.
