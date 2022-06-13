@@ -48,7 +48,6 @@
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/web/web_document_loader.h"
@@ -354,9 +353,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                     WebFrameLoadType,
                                     HistoryNavigationType,
                                     CommitReason commit_reason);
-
-  mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-  TakePendingWorkerTimingReceiver(int request_id);
 
   const KURL& WebBundlePhysicalUrl() const { return web_bundle_physical_url_; }
 

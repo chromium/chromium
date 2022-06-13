@@ -1941,9 +1941,6 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
           resource_timing_info_map_.Take(resource)) {
     if (resource->GetResponse().ShouldPopulateResourceTiming()) {
       PopulateAndAddResourceTimingInfo(resource, info, response_end);
-      auto receiver = Context().TakePendingWorkerTimingReceiver(
-          resource->GetResponse().RequestId());
-      info->SetWorkerTimingReceiver(std::move(receiver));
       Context().AddResourceTiming(*info);
     }
   }

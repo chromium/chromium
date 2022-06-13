@@ -42,7 +42,6 @@ class PerformanceResourceTimingTest : public testing::Test {
             .GetExecutionContext()
             ->CrossOriginIsolatedCapability(),
         /*initiator_type=*/"",
-        mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>(),
         dummy_page_holder->GetDocument().GetExecutionContext());
   }
 };

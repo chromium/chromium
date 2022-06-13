@@ -58,9 +58,4 @@ void FetchContext::PopulateResourceRequest(
     ResourceRequest&,
     const ResourceLoaderOptions&) {}
 
-mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-FetchContext::TakePendingWorkerTimingReceiver(int request_id) {
-  return mojo::NullReceiver();
-}
-
 }  // namespace blink

@@ -428,11 +428,8 @@ void RemoteFrame::AddResourceTimingFromChild(
   HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(Owner());
   DCHECK(owner_element);
 
-  // TODO(https://crbug.com/900700): Take a Mojo pending receiver for
-  // WorkerTimingContainer for navigation from the calling function.
   DOMWindowPerformance::performance(*owner_element->GetDocument().domWindow())
       ->AddResourceTiming(std::move(timing), owner_element->localName(),
-                          /*worker_timing_receiver=*/mojo::NullReceiver(),
                           owner_element->GetDocument().GetExecutionContext());
 }
 

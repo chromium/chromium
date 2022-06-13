@@ -211,12 +211,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebString& client_id,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<base::SequencedTaskRunner>
-          worker_timing_callback_task_runner,
-      base::RepeatingCallback<
-          void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-          worker_timing_callback) override;
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
   std::string GetNameForHistogram(const char* name) override;
   std::unique_ptr<blink::WebURLLoaderFactory> WrapURLLoaderFactory(
       blink::CrossVariantMojoRemote<

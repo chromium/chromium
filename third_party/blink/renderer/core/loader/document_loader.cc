@@ -978,14 +978,6 @@ void DocumentLoader::SetHistoryItemStateForCommit(
   }
 }
 
-mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-DocumentLoader::TakePendingWorkerTimingReceiver(int request_id) {
-  if (!GetServiceWorkerNetworkProvider())
-    return mojo::NullReceiver();
-  return GetServiceWorkerNetworkProvider()->TakePendingWorkerTimingReceiver(
-      request_id);
-}
-
 void DocumentLoader::BodyCodeCacheReceived(mojo_base::BigBuffer data) {
   if (cached_metadata_handler_) {
     cached_metadata_handler_->SetSerializedCachedMetadata(std::move(data));
@@ -1057,8 +1049,6 @@ void DocumentLoader::BodyLoadingFinished(
           // Main resource timing information is reported through the owner
           // to be passed to the parent frame, if appropriate.
 
-          // TODO(https://crbug.com/900700): Set a Mojo pending receiver for
-          // WorkerTimingContainer in |navigation_timing_info|.
           frame_->Owner()->AddResourceTiming(*navigation_timing_info_);
         }
         frame_->SetShouldSendResourceTimingInfoToParent(false);

@@ -85,8 +85,6 @@ class WorkerFetchContext final : public BaseFetchContext {
                                const FetchParameters::ResourceWidth&,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
-  mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-  TakePendingWorkerTimingReceiver(int request_id) override;
 
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;

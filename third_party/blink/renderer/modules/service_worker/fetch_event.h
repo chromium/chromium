@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -59,8 +58,6 @@ class MODULES_EXPORT FetchEvent final
              const FetchEventInit*,
              FetchRespondWithObserver*,
              WaitUntilObserver*,
-             mojo::PendingRemote<mojom::blink::WorkerTimingContainer>
-                 worker_timing_remote,
              bool navigation_preload_sent);
   ~FetchEvent() override;
 
@@ -105,9 +102,6 @@ class MODULES_EXPORT FetchEvent final
   Member<DataPipeBytesConsumer::CompletionNotifier> body_completion_notifier_;
   Member<ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>>
       handled_property_;
-  // This is currently null for navigation while https://crbug.com/900700 is
-  // being implemented.
-  HeapMojoRemote<mojom::blink::WorkerTimingContainer> worker_timing_remote_;
   String client_id_;
   String resulting_client_id_;
   bool is_reload_;

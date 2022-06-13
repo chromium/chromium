@@ -2165,10 +2165,6 @@
       status: "experimental",
     },
     {
-      name: "ServiceWorkerFetchEventWorkerTiming",
-      status: "experimental",
-    },
-    {
       name: "SharedArrayBuffer",
     },
     {

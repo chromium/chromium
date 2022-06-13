@@ -49,7 +49,6 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-forward.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
@@ -725,12 +724,7 @@ class BLINK_PLATFORM_EXPORT Platform {
       const WebString& client_id,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<base::SequencedTaskRunner>
-          worker_timing_callback_task_runner,
-      base::RepeatingCallback<
-          void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-          worker_timing_callback);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // WebCrypto ----------------------------------------------------------
 

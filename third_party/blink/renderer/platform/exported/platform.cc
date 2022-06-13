@@ -314,11 +314,7 @@ void Platform::CreateServiceWorkerSubresourceLoaderFactory(
     const WebString& client_id,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> worker_timing_callback_task_runner,
-    base::RepeatingCallback<
-        void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-        worker_timing_callback) {}
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {}
 
 ThreadSafeBrowserInterfaceBrokerProxy* Platform::GetBrowserInterfaceBroker() {
   DEFINE_STATIC_LOCAL(DefaultBrowserInterfaceBrokerProxy, proxy, ());

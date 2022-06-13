@@ -54,8 +54,6 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
     const AtomicString& initiator_type,
-    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-        worker_timing_receiver,
     ExecutionContext* context)
     : PerformanceEntry(AtomicString(info.name),
                        Performance::MonotonicTimeToDOMHighResTimeStamp(
@@ -91,18 +89,11 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       allow_negative_value_(info.allow_negative_values),
       is_secure_transport_(info.is_secure_transport),
       server_timing_(
-          PerformanceServerTiming::FromParsedServerTiming(info.server_timing)),
-      worker_timing_receiver_(this, context) {
+          PerformanceServerTiming::FromParsedServerTiming(info.server_timing)) {
   DCHECK(context);
-  worker_timing_receiver_.Bind(
-      std::move(worker_timing_receiver),
-      context->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 // This constructor is for PerformanceNavigationTiming.
-// TODO(https://crbug.com/900700): Set a Mojo pending receiver for
-// WorkerTimingContainer in |worker_timing_receiver_| when a service worker
-// controls a page.
 // The navigation_id for navigation timing is always 1.
 PerformanceResourceTiming::PerformanceResourceTiming(
     const AtomicString& name,
@@ -117,11 +108,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       context_type_(mojom::blink::RequestContextType::HYPERLINK),
       request_destination_(network::mojom::RequestDestination::kDocument),
       is_secure_transport_(is_secure_transport),
-      server_timing_(std::move(server_timing)),
-      worker_timing_receiver_(this, context) {
+      server_timing_(std::move(server_timing)) {
   DCHECK(context);
-  worker_timing_receiver_.Bind(
-      mojo::NullReceiver(), context->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 PerformanceResourceTiming::~PerformanceResourceTiming() = default;
@@ -445,11 +433,6 @@ PerformanceResourceTiming::serverTiming() const {
   return server_timing_;
 }
 
-const HeapVector<Member<PerformanceEntry>>&
-PerformanceResourceTiming::workerTiming() const {
-  return worker_timing_;
-}
-
 void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("initiatorType", initiatorType());
@@ -473,54 +456,10 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   ScriptState* script_state = builder.GetScriptState();
   builder.Add("serverTiming", FreezeV8Object(ToV8(serverTiming(), script_state),
                                              script_state->GetIsolate()));
-  builder.Add("workerTiming", FreezeV8Object(ToV8(workerTiming(), script_state),
-                                             script_state->GetIsolate()));
-}
-
-void PerformanceResourceTiming::AddPerformanceEntry(
-    mojom::blink::PerformanceMarkOrMeasurePtr
-        mojo_performance_mark_or_measure) {
-  // TODO(https://crbug.com/900700): Wait until the end of fetch event to stop
-  // appearing incomplete PerformanceResourceTiming. Incomplete |workerTiming|
-  // will be exposed in the case that FetchEvent#addPerformanceEntry is called
-  // after PerformanceResourceTiming is constructed. This may cause different
-  // results of |workerTiming| in accessing it at the different time.
-
-  NonThrowableExceptionState exception_state;
-  WTF::AtomicString name(mojo_performance_mark_or_measure->name);
-
-  scoped_refptr<SerializedScriptValue> serialized_detail =
-      SerializedScriptValue::NullValue();
-  if (mojo_performance_mark_or_measure->detail) {
-    serialized_detail = SerializedScriptValue::Create(
-        reinterpret_cast<const char*>(
-            mojo_performance_mark_or_measure->detail->data()),
-        mojo_performance_mark_or_measure->detail->size());
-  }
-
-  switch (mojo_performance_mark_or_measure->entry_type) {
-    // TODO(yoav): Pipe in unsafe timers for traces, in case this is an
-    // important use case.
-    case mojom::blink::PerformanceMarkOrMeasure::EntryType::kMark:
-      worker_timing_.emplace_back(MakeGarbageCollected<PerformanceMark>(
-          name, mojo_performance_mark_or_measure->start_time, base::TimeTicks(),
-          serialized_detail, exception_state));
-      break;
-    case mojom::blink::PerformanceMarkOrMeasure::EntryType::kMeasure:
-      ScriptState* script_state;
-      worker_timing_.emplace_back(MakeGarbageCollected<PerformanceMeasure>(
-          script_state, name, mojo_performance_mark_or_measure->start_time,
-          mojo_performance_mark_or_measure->start_time +
-              mojo_performance_mark_or_measure->duration,
-          serialized_detail, exception_state));
-      break;
-  }
 }
 
 void PerformanceResourceTiming::Trace(Visitor* visitor) const {
   visitor->Trace(server_timing_);
-  visitor->Trace(worker_timing_);
-  visitor->Trace(worker_timing_receiver_);
   PerformanceEntry::Trace(visitor);
 }
 

@@ -6503,7 +6503,6 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter serverTiming
     getter transferSize
     getter workerStart
-    getter workerTiming
     method constructor
     method toJSON
 interface PerformanceServerTiming

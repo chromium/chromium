@@ -1229,7 +1229,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter serverTiming
 [Worker]     getter transferSize
 [Worker]     getter workerStart
-[Worker]     getter workerTiming
 [Worker]     method constructor
 [Worker]     method toJSON
 [Worker] interface PerformanceServerTiming

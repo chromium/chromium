@@ -16,7 +16,6 @@
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom.h"
 #include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -47,16 +46,10 @@ void CreateServiceWorkerSubresourceLoaderFactory(
     const WebString& client_id,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> worker_timing_callback_task_runner,
-    base::RepeatingCallback<
-        void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-        worker_timing_callback) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   Platform::Current()->CreateServiceWorkerSubresourceLoaderFactory(
       std::move(service_worker_container_host), client_id,
-      std::move(fallback_factory), std::move(receiver), std::move(task_runner),
-      std::move(worker_timing_callback_task_runner),
-      std::move(worker_timing_callback));
+      std::move(fallback_factory), std::move(receiver), std::move(task_runner));
 }
 
 }  // namespace
@@ -471,18 +464,6 @@ DedicatedOrSharedWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
       ancestor_frame_id_, std::move(task_runner));
 }
 
-CrossVariantMojoReceiver<mojom::WorkerTimingContainerInterfaceBase>
-DedicatedOrSharedWorkerFetchContextImpl::TakePendingWorkerTimingReceiver(
-    int request_id) {
-  auto iter = worker_timing_container_receivers_.find(request_id);
-  if (iter == worker_timing_container_receivers_.end()) {
-    return {};
-  }
-  auto receiver = std::move(iter->second);
-  worker_timing_container_receivers_.erase(iter);
-  return std::move(receiver);
-}
-
 void DedicatedOrSharedWorkerFetchContextImpl::SetIsOfflineMode(
     bool is_offline_mode) {
   // Worker doesn't support offline mode. There should be no callers.
@@ -509,15 +490,6 @@ void DedicatedOrSharedWorkerFetchContextImpl::set_client_id(
 
 WebString DedicatedOrSharedWorkerFetchContextImpl::GetAcceptLanguages() const {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
-}
-
-void DedicatedOrSharedWorkerFetchContextImpl::AddPendingWorkerTimingReceiver(
-    int request_id,
-    mojo::PendingReceiver<mojom::WorkerTimingContainer> receiver) {
-  // TODO(https://crbug.com/900700): Handle redirects properly. Currently on
-  // redirect, the receiver is replaced with a new one, discarding the timings
-  // before the redirect.
-  worker_timing_container_receivers_[request_id] = std::move(receiver);
 }
 
 std::unique_ptr<ResourceLoadInfoNotifierWrapper>
@@ -623,10 +595,7 @@ void DedicatedOrSharedWorkerFetchContextImpl::
           std::move(cloned_service_worker_container_host),
           client_id_.IsolatedCopy(), fallback_factory_->Clone(),
           service_worker_url_loader_factory.InitWithNewPipeAndPassReceiver(),
-          task_runner, base::SequencedTaskRunnerHandle::Get(),
-          base::BindRepeating(&DedicatedOrSharedWorkerFetchContextImpl::
-                                  AddPendingWorkerTimingReceiver,
-                              weak_factory_.GetWeakPtr())));
+          task_runner));
   web_loader_factory_->SetServiceWorkerURLLoaderFactory(
       std::move(service_worker_url_loader_factory));
 }

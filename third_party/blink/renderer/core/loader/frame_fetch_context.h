@@ -128,9 +128,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info) override;
 
-  mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-  TakePendingWorkerTimingReceiver(int request_id) override;
-
   // LoadingBehaviorObserver overrides:
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
 

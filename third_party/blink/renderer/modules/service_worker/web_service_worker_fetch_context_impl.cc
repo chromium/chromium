@@ -215,14 +215,6 @@ WebString WebServiceWorkerFetchContextImpl::GetAcceptLanguages() const {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
 }
 
-CrossVariantMojoReceiver<mojom::WorkerTimingContainerInterfaceBase>
-WebServiceWorkerFetchContextImpl::TakePendingWorkerTimingReceiver(
-    int request_id) {
-  // No receiver exists because requests from service workers are never handled
-  // by a service worker.
-  return {};
-}
-
 void WebServiceWorkerFetchContextImpl::SetIsOfflineMode(bool is_offline_mode) {
   is_offline_mode_ = is_offline_mode;
 }

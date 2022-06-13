@@ -74,8 +74,6 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
   std::unique_ptr<WebSocketHandshakeThrottle> CreateWebSocketHandshakeThrottle(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   WebString GetAcceptLanguages() const override;
-  CrossVariantMojoReceiver<mojom::WorkerTimingContainerInterfaceBase>
-  TakePendingWorkerTimingReceiver(int request_id) override;
   void SetIsOfflineMode(bool) override;
 
   // mojom::blink::SubresourceLoaderUpdater implementation:

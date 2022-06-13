@@ -16,10 +16,4 @@
     [CallWith=ScriptState, RaisesException] void respondWith(Promise<Response> r);
     [CallWith=ScriptState] readonly attribute Promise<any> preloadResponse;
     [CallWith=ScriptState] readonly attribute Promise<void> handled;
-    // FetchEvent#addPerformanceEntry
-    // https://github.com/wanderview/fetchevent-worker-timing/blob/master/explainer.md
-    [RuntimeEnabled=ServiceWorkerFetchEventWorkerTiming]
-        void addPerformanceEntry(PerformanceMark entry);
-    [RuntimeEnabled=ServiceWorkerFetchEventWorkerTiming]
-        void addPerformanceEntry(PerformanceMeasure entry);
 };

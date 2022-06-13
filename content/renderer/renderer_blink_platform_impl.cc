@@ -960,19 +960,13 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     const blink::WebString& client_id,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> worker_timing_callback_task_runner,
-    base::RepeatingCallback<
-        void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
-        worker_timing_callback) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   ServiceWorkerSubresourceLoaderFactory::Create(
       base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(service_worker_container_host),
           /*remote_controller=*/mojo::NullRemote(), client_id.Utf8()),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
-      std::move(receiver), std::move(task_runner),
-      std::move(worker_timing_callback_task_runner),
-      std::move(worker_timing_callback));
+      std::move(receiver), std::move(task_runner));
 }
 
 //------------------------------------------------------------------------------

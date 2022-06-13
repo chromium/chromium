@@ -780,12 +780,6 @@ bool FrameFetchContext::CalculateIfAdSubresource(
       document_->domWindow(), url, type, initiator_info, known_ad);
 }
 
-mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-FrameFetchContext::TakePendingWorkerTimingReceiver(int request_id) {
-  DCHECK(!GetResourceFetcherProperties().IsDetached());
-  return document_loader_->TakePendingWorkerTimingReceiver(request_id);
-}
-
 void FrameFetchContext::DidObserveLoadingBehavior(
     LoadingBehaviorFlag behavior) {
   if (GetResourceFetcherProperties().IsDetached())
