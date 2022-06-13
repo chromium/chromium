@@ -4958,6 +4958,18 @@ void aom_quantize_b_avx(const tran_low_t* coeff_ptr,
                         uint16_t* eob_ptr,
                         const int16_t* scan,
                         const int16_t* iscan);
+void aom_quantize_b_avx2(const tran_low_t* coeff_ptr,
+                         intptr_t n_coeffs,
+                         const int16_t* zbin_ptr,
+                         const int16_t* round_ptr,
+                         const int16_t* quant_ptr,
+                         const int16_t* quant_shift_ptr,
+                         tran_low_t* qcoeff_ptr,
+                         tran_low_t* dqcoeff_ptr,
+                         const int16_t* dequant_ptr,
+                         uint16_t* eob_ptr,
+                         const int16_t* scan,
+                         const int16_t* iscan);
 RTCD_EXTERN void (*aom_quantize_b)(const tran_low_t* coeff_ptr,
                                    intptr_t n_coeffs,
                                    const int16_t* zbin_ptr,
@@ -9753,6 +9765,8 @@ static void setup_rtcd_internal(void) {
   aom_quantize_b = aom_quantize_b_sse2;
   if (flags & HAS_AVX)
     aom_quantize_b = aom_quantize_b_avx;
+  if (flags & HAS_AVX2)
+    aom_quantize_b = aom_quantize_b_avx2;
   aom_quantize_b_32x32 = aom_quantize_b_32x32_c;
   if (flags & HAS_AVX)
     aom_quantize_b_32x32 = aom_quantize_b_32x32_avx;

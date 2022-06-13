@@ -244,6 +244,7 @@ aom_av1_encoder_intrin_ssse3 = [
 
 aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/av1_cx_iface.c",
+  "//third_party/libaom/source/libaom/av1/av1_cx_iface.h",
   "//third_party/libaom/source/libaom/av1/encoder/allintra_vis.c",
   "//third_party/libaom/source/libaom/av1/encoder/allintra_vis.h",
   "//third_party/libaom/source/libaom/av1/encoder/aq_complexity.c",
@@ -319,6 +320,7 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/lookahead.h",
   "//third_party/libaom/source/libaom/av1/encoder/mcomp.c",
   "//third_party/libaom/source/libaom/av1/encoder/mcomp.h",
+  "//third_party/libaom/source/libaom/av1/encoder/mcomp_structs.h",
   "//third_party/libaom/source/libaom/av1/encoder/ml.c",
   "//third_party/libaom/source/libaom/av1/encoder/ml.h",
   "//third_party/libaom/source/libaom/av1/encoder/model_rd.h",
@@ -549,6 +551,7 @@ aom_dsp_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_quantize_intrin_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/adaptive_quantize_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_adaptive_quantize_avx2.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/quantize_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sad4d_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sad_avx2.c",
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_sad_avx2.c",
@@ -723,6 +726,11 @@ aom_webm_encoder_sources = [
 ]
 
 av1_rc_qmode_sources = [
+  "//third_party/libaom/source/libaom/common/tools_common.c",
+  "//third_party/libaom/source/libaom/common/tools_common.h",
+  "//third_party/libaom/source/libaom/common/y4minput.c",
+  "//third_party/libaom/source/libaom/common/y4minput.h",
+  "//third_party/libaom/source/libaom/test/ducky_encode_test.cc",
   "//third_party/libaom/source/libaom/test/mock_ratectrl_qmode.h",
   "//third_party/libaom/source/libaom/test/ratectrl_qmode_test.cc",
 ]
@@ -742,3 +750,6 @@ aom_sources_gen = [
 
 aom_version_sources_gen =
     [ "//third_party/libaom/source/libaom/config/aom_version.h" ]
+
+av1_rc_qmode_sources_gen =
+    [ "//third_party/libaom/source/libaom/gen_src/usage_exit.c" ]
