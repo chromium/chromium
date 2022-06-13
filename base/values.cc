@@ -789,12 +789,14 @@ std::string Value::Dict::DebugString() const {
   return DebugStringImpl(*this);
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
 void Value::Dict::WriteIntoTrace(perfetto::TracedValue context) const {
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
   for (auto kv : *this) {
     dict.Add(perfetto::DynamicString(kv.first), kv.second);
   }
 }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 Value::Dict::Dict(
     const flat_map<std::string, std::unique_ptr<Value>>& storage) {
@@ -999,12 +1001,14 @@ std::string Value::List::DebugString() const {
   return DebugStringImpl(*this);
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
 void Value::List::WriteIntoTrace(perfetto::TracedValue context) const {
   perfetto::TracedArray array = std::move(context).WriteArray();
   for (const auto& item : *this) {
     array.Append(item);
   }
 }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 Value::List::List(const std::vector<Value>& storage) {
   storage_.reserve(storage.size());
