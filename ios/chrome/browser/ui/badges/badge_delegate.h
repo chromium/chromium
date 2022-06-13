@@ -35,7 +35,7 @@
 // Action when the overflow badge is tapped.
 - (void)overflowBadgeButtonTapped:(id)sender;
 
-// Show the infobar modal for the respective |badgeType| when the new overflow
+// Show the infobar modal for the respective `badgeType` when the new overflow
 // menu is tapped.
 - (void)showModalForBadgeType:(BadgeType)badgeType;
 

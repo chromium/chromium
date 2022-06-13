@@ -8,11 +8,11 @@
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 
-// Returns the corresponding BadgeType for |infobar_type|, or kBadgeTypeNone
+// Returns the corresponding BadgeType for `infobar_type`, or kBadgeTypeNone
 // if that InfobarType does not support badges.
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type);
 
-// Returns the corresponding InfobarType for |badge_type|. |badge_type| must
+// Returns the corresponding InfobarType for `badge_type`. `badge_type` must
 // not be kBadgeTypeNone.
 InfobarType InfobarTypeForBadgeType(BadgeType badge_type);
 

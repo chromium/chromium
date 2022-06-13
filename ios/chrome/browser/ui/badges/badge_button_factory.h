@@ -20,7 +20,7 @@
 // Action handler delegate for the buttons.
 @property(nonatomic, weak) id<BadgeDelegate> delegate;
 
-// Returns a properly configured BadgButton associated with |badgeType|.
+// Returns a properly configured BadgButton associated with `badgeType`.
 - (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType;
 
 @end

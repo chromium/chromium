@@ -25,11 +25,11 @@ namespace {
 // off mode for the badge view.
 const CGFloat kFullScreenProgressThreshold = 0.85;
 
-// Spacing between the top and trailing anchors of |unreadIndicatorView| and
-// |displayedBadge|.
+// Spacing between the top and trailing anchors of `unreadIndicatorView` and
+// `displayedBadge`.
 const CGFloat kUnreadIndicatorViewSpacing = 10.0;
 
-// Height of |unreadIndicatorView|.
+// Height of `unreadIndicatorView`.
 const CGFloat kUnreadIndicatorViewHeight = 6.0;
 
 // Damping ratio of animating a change to the displayed badge.

@@ -12,7 +12,7 @@
 // Coordinator for the badge overflow popup menu.
 @interface BadgePopupMenuCoordinator : ChromeCoordinator
 
-// Updates the popup menu with |badgesItems|.
+// Updates the popup menu with `badgesItems`.
 - (void)setBadgeItemsToShow:(NSArray<id<BadgeItem>>*)badgeItems;
 
 @end

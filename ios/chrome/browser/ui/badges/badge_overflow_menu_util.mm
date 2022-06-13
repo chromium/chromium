@@ -23,7 +23,7 @@
 #endif
 
 namespace {
-// The menu element for |badgeType| shown in the overflow menu when the overflow
+// The menu element for `badgeType` shown in the overflow menu when the overflow
 // badge is tapped.
 UIAction* GetOverflowMenuElementForBadgeType(
     BadgeType badge_type,
