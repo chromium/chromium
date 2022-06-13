@@ -150,8 +150,8 @@ v8::Local<v8::Value> AppHooksDelegate::GetDetails(
   if (!extension)
     return v8::Null(isolate);
 
-  std::unique_ptr<base::DictionaryValue> manifest_copy =
-      extension->manifest()->value()->CreateDeepCopy();
+  auto manifest_copy = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(extension->manifest()->value()->Clone()));
   manifest_copy->SetStringKey("id", extension->id());
   return content::V8ValueConverter::Create()->ToV8Value(
       manifest_copy.get(), script_context->v8_context());
