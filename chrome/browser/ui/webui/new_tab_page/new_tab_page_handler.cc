@@ -273,7 +273,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
                       OmniboxPartState::HOVERED);
   search_box->border_color =
       webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
-          ? theme_provider->GetColor(ThemeProperties::COLOR_LOCATION_BAR_BORDER)
+          ? color_provider.GetColor(kColorLocationBarBorder)
           : SkColorSetRGB(218, 220, 224);  // google-grey-300
   search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
   search_box->icon_selected = GetOmniboxColor(

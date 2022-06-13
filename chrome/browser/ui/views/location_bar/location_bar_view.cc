@@ -114,8 +114,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
@@ -994,8 +994,7 @@ void LocationBarView::RefreshBackground() {
         OmniboxPartState::HOVERED);
     const double opacity = hover_animation_.GetCurrentValue();
     background_color = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
-    border_color = GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_LOCATION_BAR_BORDER);
+    border_color = GetColorProvider()->GetColor(kColorLocationBarBorder);
   }
 
   if (is_popup_mode_) {
@@ -1201,8 +1200,8 @@ void LocationBarView::OnPaintBorder(gfx::Canvas* canvas) {
     return;  // The border is painted by our Background.
 
   gfx::Rect bounds(GetContentsBounds());
-  const SkColor border_color = GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_LOCATION_BAR_BORDER_OPAQUE);
+  const SkColor border_color =
+      GetColorProvider()->GetColor(kColorLocationBarBorderOpaque);
   canvas->DrawLine(gfx::PointF(bounds.x(), bounds.y()),
                    gfx::PointF(bounds.right(), bounds.y()), border_color);
   canvas->DrawLine(gfx::PointF(bounds.x(), bounds.bottom() - 1),
