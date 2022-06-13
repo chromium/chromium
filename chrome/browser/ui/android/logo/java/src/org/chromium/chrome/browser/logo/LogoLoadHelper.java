@@ -51,13 +51,13 @@ public class LogoLoadHelper {
     public void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             if (mProfileSupplier.hasValue()) {
-                loadSearchProviderLogo();
+                loadSearchProviderLogo(/*animationEnabled=*/false);
                 return;
             }
             assert mCallbackController != null;
             new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
                 assert profile != null : "Unexpectedly null profile from TabModel.";
-                loadSearchProviderLogo();
+                loadSearchProviderLogo(/*animationEnabled=*/false);
             }));
         } else if ((startSurfaceState == StartSurfaceState.NOT_SHOWN
                            || startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
@@ -75,7 +75,7 @@ public class LogoLoadHelper {
      */
     public void onDefaultSearchEngineChanged() {
         mHasLogoLoadedForCurrentSearchEngine = false;
-        loadSearchProviderLogo();
+        loadSearchProviderLogo(/*animationEnabled=*/true);
     }
 
     /**
@@ -94,8 +94,10 @@ public class LogoLoadHelper {
 
     /**
      * Load the search provider logo on Start surface.
+     *
+     * @param animationEnabled Whether to enable the fade in animation.
      */
-    private void loadSearchProviderLogo() {
+    private void loadSearchProviderLogo(boolean animationEnabled) {
         // If logo is already updated for the current search provider, or profile is null or off the
         // record, don't bother loading the logo image.
         if (mHasLogoLoadedForCurrentSearchEngine || !mProfileSupplier.hasValue()
@@ -110,6 +112,7 @@ public class LogoLoadHelper {
         }
 
         mHasLogoLoadedForCurrentSearchEngine = true;
+        mLogoView.setAnimationEnabled(animationEnabled);
         mLogoView.showSearchProviderInitialView();
 
         // If default search engine is google and doodle is not supported, doesn't bother to fetch

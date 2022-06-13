@@ -63,6 +63,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private Matrix mAnimatedLogoMatrix;
     private boolean mLogoIsDefault;
     private boolean mNewLogoIsDefault;
+    private boolean mAnimationEnabled = true;
 
     private LoadingView mLoadingView;
 
@@ -219,6 +220,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 logo.image, contentDescription, /* isDefaultLogo = */ false, isLogoClickable(logo));
     }
 
+    public void setAnimationEnabled(boolean animationEnabled) {
+        mAnimationEnabled = animationEnabled;
+    }
+
     private static boolean isLogoClickable(Logo logo) {
         return !TextUtils.isEmpty(logo.animatedLogoUrl) || !TextUtils.isEmpty(logo.onClickUrl);
     }
@@ -240,7 +245,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         setMatrix(mNewLogo.getWidth(), mNewLogo.getHeight(), mNewLogoMatrix, mNewLogoIsDefault);
 
         mFadeAnimation = ObjectAnimator.ofFloat(this, mTransitionProperty, 0f, 1f);
-        mFadeAnimation.setDuration(LOGO_TRANSITION_TIME_MS);
+        mFadeAnimation.setDuration(mAnimationEnabled ? LOGO_TRANSITION_TIME_MS : 0);
         mFadeAnimation.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {}
