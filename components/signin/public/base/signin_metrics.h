@@ -557,8 +557,7 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
 // -----------------------------------------------------------------------------
 
 // Records corresponding sign in user action for an access point.
-void RecordSigninUserActionForAccessPoint(AccessPoint access_point,
-                                          PromoAction promo_action);
+void RecordSigninUserActionForAccessPoint(AccessPoint access_point);
 
 // Records |Signin_Impression_From*| user action.
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);

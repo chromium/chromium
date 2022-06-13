@@ -287,8 +287,7 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
   const signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
-  signin_metrics::RecordSigninUserActionForAccessPoint(access_point,
-                                                       promo_action);
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(browser_->profile(), access_point, promo_action,

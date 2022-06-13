@@ -109,9 +109,6 @@ public class SigninPromoController {
     private @Nullable ImpressionTracker mImpressionTracker;
     private final @AccessPoint int mAccessPoint;
     private final String mImpressionUserActionName;
-    private final String mSigninWithDefaultUserActionName;
-    private final String mSigninNotDefaultUserActionName;
-    private final String mSigninNewAccountUserActionName;
     private final @Nullable String mSyncPromoDismissedPreferenceTracker;
     private final @StringRes int mTitleStringId;
     private final @StringRes int mDescriptionStringId;
@@ -273,12 +270,6 @@ public class SigninPromoController {
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 mImpressionUserActionName = "Signin_Impression_FromBookmarkManager";
-                mSigninWithDefaultUserActionName = "Signin_SigninWithDefault_FromBookmarkManager";
-                mSigninNotDefaultUserActionName = "Signin_SigninNotDefault_FromBookmarkManager";
-                // On Android, the promo does not have a button to add and account when there is
-                // already an account on the device. Always use the NoExistingAccount variant.
-                mSigninNewAccountUserActionName =
-                        "Signin_SigninNewAccountNoExistingAccount_FromBookmarkManager";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED;
                 mTitleStringId = R.string.sync_promo_title_bookmarks;
@@ -295,14 +286,6 @@ public class SigninPromoController {
                 break;
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 mImpressionUserActionName = "Signin_Impression_FromNTPContentSuggestions";
-                mSigninWithDefaultUserActionName =
-                        "Signin_SigninWithDefault_FromNTPContentSuggestions";
-                mSigninNotDefaultUserActionName =
-                        "Signin_SigninNotDefault_FromNTPContentSuggestions";
-                // On Android, the promo does not have a button to add and account when there is
-                // already an account on the device. Always use the NoExistingAccount variant.
-                mSigninNewAccountUserActionName =
-                        "Signin_SigninNewAccountNoExistingAccount_FromNTPContentSuggestions";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 if (ChromeFeatureList.isEnabled(
@@ -324,12 +307,6 @@ public class SigninPromoController {
                 break;
             case SigninAccessPoint.RECENT_TABS:
                 mImpressionUserActionName = "Signin_Impression_FromRecentTabs";
-                mSigninWithDefaultUserActionName = "Signin_SigninWithDefault_FromRecentTabs";
-                mSigninNotDefaultUserActionName = "Signin_SigninNotDefault_FromRecentTabs";
-                // On Android, the promo does not have a button to add and account when there is
-                // already an account on the device. Always use the NoExistingAccount variant.
-                mSigninNewAccountUserActionName =
-                        "Signin_SigninNewAccountNoExistingAccount_FromRecentTabs";
                 mSyncPromoDismissedPreferenceTracker = null;
                 if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ALTERNATIVE_TITLE)) {
@@ -348,12 +325,6 @@ public class SigninPromoController {
                 break;
             case SigninAccessPoint.SETTINGS:
                 mImpressionUserActionName = "Signin_Impression_FromSettings";
-                mSigninWithDefaultUserActionName = "Signin_SigninWithDefault_FromSettings";
-                mSigninNotDefaultUserActionName = "Signin_SigninNotDefault_FromSettings";
-                // On Android, the promo does not have a button to add and account when there is
-                // already an account on the device. Always use the NoExistingAccount variant.
-                mSigninNewAccountUserActionName =
-                        "Signin_SigninNewAccountNoExistingAccount_FromSettings";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 if (ChromeFeatureList.isEnabled(
@@ -542,20 +513,17 @@ public class SigninPromoController {
 
     private void signinWithNewAccount(Context context) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        RecordUserAction.record(mSigninNewAccountUserActionName);
         mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(context, mAccessPoint);
     }
 
     private void signinWithDefaultAccount(Context context) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        RecordUserAction.record(mSigninWithDefaultUserActionName);
         mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
                 context, mAccessPoint, mProfileData.getAccountEmail());
     }
 
     private void signinWithNotDefaultAccount(Context context) {
         recordShowCountHistogram(UserAction.CONTINUED);
-        RecordUserAction.record(mSigninNotDefaultUserActionName);
         mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
                 context, mAccessPoint, mProfileData.getAccountEmail());
     }

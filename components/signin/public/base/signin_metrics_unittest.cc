@@ -164,70 +164,9 @@ class SigninMetricsTest : public ::testing::Test {
 TEST_F(SigninMetricsTest, RecordSigninUserActionForAccessPoint) {
   for (const AccessPoint& ap : kAccessPointsThatSupportUserAction) {
     base::UserActionTester user_action_tester;
-    RecordSigninUserActionForAccessPoint(
-        ap, signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+    RecordSigninUserActionForAccessPoint(ap);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Signin_Signin_From" + GetAccessPointDescription(ap)));
-  }
-}
-
-TEST_F(SigninMetricsTest, RecordSigninUserActionWithPromoAction) {
-  for (const AccessPoint& ap : kAccessPointsThatSupportPersonalizedPromos) {
-    {
-      // PROMO_ACTION_WITH_DEFAULT promo action
-      base::UserActionTester user_action_tester;
-      RecordSigninUserActionForAccessPoint(
-          ap, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
-      EXPECT_EQ(
-          1, user_action_tester.GetActionCount("Signin_SigninWithDefault_From" +
-                                               GetAccessPointDescription(ap)));
-    }
-    {
-      // PROMO_ACTION_NOT_DEFAULT promo action
-      base::UserActionTester user_action_tester;
-      RecordSigninUserActionForAccessPoint(
-          ap, signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT);
-      EXPECT_EQ(
-          1, user_action_tester.GetActionCount("Signin_SigninNotDefault_From" +
-                                               GetAccessPointDescription(ap)));
-    }
-  }
-}
-
-TEST_F(SigninMetricsTest, RecordSigninUserActionWithNewNoExistingPromoAction) {
-  for (const AccessPoint& ap : kAccessPointsThatSupportUserAction) {
-    base::UserActionTester user_action_tester;
-    RecordSigninUserActionForAccessPoint(
-        ap, signin_metrics::PromoAction::
-                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
-    if (AccessPointSupportsPersonalizedPromo(ap)) {
-      EXPECT_EQ(1, user_action_tester.GetActionCount(
-                       "Signin_SigninNewAccountNoExistingAccount_From" +
-                       GetAccessPointDescription(ap)));
-    } else {
-      EXPECT_EQ(0, user_action_tester.GetActionCount(
-                       "Signin_SigninNewAccountNoExistingAccount_From" +
-                       GetAccessPointDescription(ap)));
-    }
-  }
-}
-
-TEST_F(SigninMetricsTest,
-       RecordSigninUserActionWithNewWithExistingPromoAction) {
-  for (const AccessPoint& ap : kAccessPointsThatSupportUserAction) {
-    base::UserActionTester user_action_tester;
-    RecordSigninUserActionForAccessPoint(
-        ap,
-        signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT);
-    if (AccessPointSupportsPersonalizedPromo(ap)) {
-      EXPECT_EQ(1, user_action_tester.GetActionCount(
-                       "Signin_SigninNewAccountExistingAccount_From" +
-                       GetAccessPointDescription(ap)));
-    } else {
-      EXPECT_EQ(0, user_action_tester.GetActionCount(
-                       "Signin_SigninNewAccountExistingAccount_From" +
-                       GetAccessPointDescription(ap)));
-    }
   }
 }
 

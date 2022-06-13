@@ -131,8 +131,7 @@ ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
 
 bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+      signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationReauthenticate
             accessPoint:signin_metrics::AccessPoint::

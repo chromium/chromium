@@ -715,8 +715,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // promo instead. Always use the NO_EXISTING_ACCOUNT variant.
   signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint,
-                                                       promo_action);
+  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   [self showSigninWithIdentity:nil promoAction:promo_action];
 }
 
@@ -726,11 +725,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
   DCHECK(self.signinPromoViewVisible);
   DCHECK(!self.invalidClosedOrNeverVisible);
   [self sendImpressionsTillSigninButtonsHistogram];
-  signin_metrics::PromoAction promo_action =
-      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint,
-                                                       promo_action);
-  [self showSigninWithIdentity:self.identity promoAction:promo_action];
+  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
+  [self showSigninWithIdentity:self.identity
+                   promoAction:signin_metrics::PromoAction::
+                                   PROMO_ACTION_WITH_DEFAULT];
 }
 
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
@@ -739,11 +737,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
   DCHECK(self.signinPromoViewVisible);
   DCHECK(!self.invalidClosedOrNeverVisible);
   [self sendImpressionsTillSigninButtonsHistogram];
-  signin_metrics::PromoAction promo_action =
-      signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint,
-                                                       promo_action);
-  [self showSigninWithIdentity:nil promoAction:promo_action];
+  signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
+  [self showSigninWithIdentity:nil
+                   promoAction:signin_metrics::PromoAction::
+                                   PROMO_ACTION_NOT_DEFAULT];
 }
 
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view {

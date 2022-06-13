@@ -259,8 +259,7 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
   // by the instance of DiceTurnSyncOnHelper constructed later on in
   // ProfilePickerSignedInFlowController).
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
   signin_metrics::LogSigninAccessPointStarted(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
