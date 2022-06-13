@@ -159,27 +159,27 @@ gfx::Size OverflowView::GetMinimumSize() const {
       GetSizeFromFlexRule(indicator_view_, views::SizeBounds(0, 0))
           .value_or(indicator_view_->GetMinimumSize());
 
-  // Minimum size on the main axis is the indicator's minimum size. Minimum size
-  // on the cross axis is the larger of the two minimum sizes.
+  // Minimum width on the main axis and the Minimum height on the cross axis
+  // is the minimum of the indicator's minimum size and primary's minimum size.
+  // When the primary view's minimum size is less than the indicator's minimum
+  // size, the overflow minimum size can be shrinked down to the primary.
   switch (orientation_) {
     case views::LayoutOrientation::kHorizontal:
       return gfx::Size(
-          indicator_minimum.width(),
+          std::min(indicator_minimum.width(), primary_minimum.width()),
           std::max(indicator_minimum.height(), primary_minimum.height()));
     case views::LayoutOrientation::kVertical:
       return gfx::Size(
           std::max(indicator_minimum.width(), primary_minimum.width()),
-          indicator_minimum.height());
+          std::min(indicator_minimum.height(), primary_minimum.height()));
   }
 }
 
 gfx::Size OverflowView::CalculatePreferredSize() const {
-  // Preferred size is the max of the preferred sizes of the primary and
-  // indicator views.
+  // Preferred size is the preferred size of the primary as the overflow
+  // view wants to show the primary by itself if it can.
   gfx::Size result = GetSizeFromFlexRule(primary_view_, views::SizeBounds())
                          .value_or(primary_view_->GetPreferredSize());
-  result.SetToMax(GetSizeFromFlexRule(indicator_view_, views::SizeBounds())
-                      .value_or(indicator_view_->GetPreferredSize()));
   return result;
 }
 
