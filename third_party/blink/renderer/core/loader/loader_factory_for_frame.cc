@@ -133,8 +133,6 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
       request, frame->GetLocalFrameHostRemote(),
       pending_remote.InitWithNewPipeAndPassReceiver());
   WebURLLoaderFactory* factory = frame->GetURLLoaderFactory();
-  // TODO(crbug.com/1252983): Remove this after debugging.
-  CHECK(factory);
   return factory->CreateURLLoader(
       webreq, CreateTaskRunnerHandle(freezable_task_runner),
       CreateTaskRunnerHandle(unfreezable_task_runner),
