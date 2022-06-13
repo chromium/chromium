@@ -65,7 +65,6 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     ResourceFetcher::IsImageSet is_image_set,
     const ExclusionInfo* exclusion_info,
     const FetchParameters::ResourceWidth& resource_width,
-    const ClientHintsPreferences& client_hints_preferences,
     RequestType request_type) {
   // Never preload data URLs. We also disallow relative ref URLs which become
   // data URLs if the document's URL is a data URL. We don't want to create
@@ -81,8 +80,7 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
 
   return base::WrapUnique(new PreloadRequest(
       initiator_name, initiator_position, resource_url, base_url, resource_type,
-      resource_width, client_hints_preferences, request_type, referrer_policy,
-      is_image_set));
+      resource_width, request_type, referrer_policy, is_image_set));
 }
 
 Resource* PreloadRequest::Start(Document* document) {
@@ -122,7 +120,6 @@ Resource* PreloadRequest::Start(Document* document) {
 
   params.SetDefer(defer_);
   params.SetResourceWidth(resource_width_);
-  params.GetClientHintsPreferences().UpdateFrom(client_hints_preferences_);
   params.SetIntegrityMetadata(integrity_metadata_);
   params.SetContentSecurityPolicyNonce(nonce_);
   params.SetParserDisposition(kParserInserted);

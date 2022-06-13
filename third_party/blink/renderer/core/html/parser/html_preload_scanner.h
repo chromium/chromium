@@ -34,7 +34,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/parser/css_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
@@ -49,6 +48,16 @@ namespace blink {
 class HTMLParserOptions;
 class HTMLTokenizer;
 class SegmentedString;
+
+// Encapsulates values from the <meta http-equiv="accept-ch"> or <meta
+// name="accept-ch"> tags. These are collected by the preload scanner to be
+// later handled on the main thread.
+struct AcceptCHValue {
+  AtomicString value;
+  bool is_http_equiv = false;
+  bool is_preload_or_sync_parser = false;
+};
+using AcceptCHValues = Vector<AcceptCHValue>;
 
 bool Match(const StringImpl* impl, const QualifiedName& q_name);
 const StringImpl* TagImplFor(const HTMLToken::DataVector& data);
@@ -68,7 +77,6 @@ struct CORE_EXPORT CachedDocumentParameters {
   SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
   HashSet<String> disabled_image_types;
-  WeakPersistent<LocalDOMWindow> local_dom_window;
 };
 
 class TokenPreloadScanner {
@@ -89,6 +97,7 @@ class TokenPreloadScanner {
   void Scan(const HTMLToken&,
             const SegmentedString&,
             PreloadRequestStream& requests,
+            AcceptCHValues& accept_ch_values,
             absl::optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
 
@@ -100,11 +109,13 @@ class TokenPreloadScanner {
   class StartTagScanner;
 
   void HandleMetaNameAttribute(const HTMLToken& token,
+                               AcceptCHValues& accept_ch_values,
                                absl::optional<ViewportDescription>* viewport);
 
   inline void ScanCommon(const HTMLToken&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,
+                         AcceptCHValues& accept_ch_values,
                          absl::optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 
@@ -132,7 +143,6 @@ class TokenPreloadScanner {
   size_t template_count_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;
   Persistent<MediaValuesCached> media_values_;
-  ClientHintsPreferences client_hints_preferences_;
   ScannerType scanner_type_;
   // TODO(domfarolino): Remove this once Priority Hints is no longer in Origin
   // Trial (see https://crbug.com/821464). This member exists because
@@ -157,6 +167,7 @@ class CORE_EXPORT HTMLPreloadScanner {
 
   void AppendToEnd(const SegmentedString&);
   PreloadRequestStream Scan(const KURL& document_base_element_url,
+                            AcceptCHValues& accept_ch_values,
                             absl::optional<ViewportDescription>*,
                             bool& has_csp_meta_tag);
 

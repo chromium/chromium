@@ -95,6 +95,9 @@ struct LazyLoadImageTestCase {
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
  public:
+  explicit HTMLMockHTMLResourcePreloader(const KURL& document_url)
+      : document_url_(document_url) {}
+
   void PreloadRequestVerification(ResourceType type,
                                   const char* url,
                                   const char* base_url,
@@ -111,31 +114,38 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
       EXPECT_EQ(url, preload_request_->ResourceURL());
       EXPECT_EQ(base_url, preload_request_->BaseURL().GetString());
       EXPECT_EQ(width, preload_request_->ResourceWidth());
+
+      ClientHintsPreferences preload_preferences;
+      for (const auto& value : accept_ch_values_) {
+        preload_preferences.UpdateFromMetaTagAcceptCH(
+            value.value, document_url_, nullptr, value.is_http_equiv,
+            value.is_preload_or_sync_parser);
+      }
       EXPECT_EQ(preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kDpr_DEPRECATED),
-                preload_request_->Preferences().ShouldSend(
+                preload_preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kDpr_DEPRECATED));
       EXPECT_EQ(
           preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr),
-          preload_request_->Preferences().ShouldSend(
+          preload_preferences.ShouldSend(
               network::mojom::WebClientHintsType::kDpr));
       EXPECT_EQ(
           preferences.ShouldSend(
               network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-          preload_request_->Preferences().ShouldSend(
+          preload_preferences.ShouldSend(
               network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
       EXPECT_EQ(preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kResourceWidth),
-                preload_request_->Preferences().ShouldSend(
+                preload_preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kResourceWidth));
       EXPECT_EQ(
           preferences.ShouldSend(
               network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED),
-          preload_request_->Preferences().ShouldSend(
+          preload_preferences.ShouldSend(
               network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
       EXPECT_EQ(preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kViewportWidth),
-                preload_request_->Preferences().ShouldSend(
+                preload_preferences.ShouldSend(
                     network::mojom::WebClientHintsType::kViewportWidth));
     }
   }
@@ -216,6 +226,8 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     }
   }
 
+  AcceptCHValues& accept_ch_values() { return accept_ch_values_; }
+
  protected:
   void Preload(std::unique_ptr<PreloadRequest> preload_request) override {
     preload_request_ = std::move(preload_request);
@@ -223,6 +235,8 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
 
  private:
   std::unique_ptr<PreloadRequest> preload_request_;
+  AcceptCHValues accept_ch_values_;
+  KURL document_url_;
 };
 
 class HTMLPreloadScannerTest : public PageTestBase {
@@ -285,11 +299,11 @@ class HTMLPreloadScannerTest : public PageTestBase {
 
   void Test(PreloadScannerTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
 
     preloader.PreloadRequestVerification(
@@ -298,22 +312,22 @@ class HTMLPreloadScannerTest : public PageTestBase {
   }
 
   void Test(HTMLPreconnectTestCase test_case) {
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
     preloader.PreconnectRequestVerification(test_case.preconnected_host,
                                             test_case.cross_origin);
   }
 
   void Test(ReferrerPolicyTestCase test_case) {
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
 
     if (test_case.expected_referrer) {
@@ -329,41 +343,42 @@ class HTMLPreloadScannerTest : public PageTestBase {
   }
 
   void Test(CorsTestCase test_case) {
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
     preloader.CorsRequestVerification(&GetDocument(), test_case.request_mode,
                                       test_case.credentials_mode);
   }
 
   void Test(CSPTestCase test_case) {
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     seen_csp_meta_tag_ = false;
     scanner_->AppendToEnd(String(test_case.input_html));
-    scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    scanner_->Scan(base_url, preloader.accept_ch_values(), nullptr,
+                   seen_csp_meta_tag_);
     EXPECT_EQ(test_case.should_see_csp_tag, seen_csp_meta_tag_);
   }
 
   void Test(NonceTestCase test_case) {
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
     preloader.NonceRequestVerification(test_case.nonce);
   }
 
   void Test(ContextTestCase test_case) {
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
 
     preloader.ContextVerification(test_case.is_image_set);
@@ -371,11 +386,11 @@ class HTMLPreloadScannerTest : public PageTestBase {
 
   void Test(IntegrityTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url("http://example.test/");
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
 
     preloader.CheckNumberOfIntegrityConstraints(
@@ -384,11 +399,11 @@ class HTMLPreloadScannerTest : public PageTestBase {
 
   void Test(LazyLoadImageTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
-    HTMLMockHTMLResourcePreloader preloader;
+    HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url("http://example.test/");
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests =
-        scanner_->Scan(base_url, nullptr, seen_csp_meta_tag_);
+    PreloadRequestStream requests = scanner_->Scan(
+        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
     preloader.TakeAndPreload(requests);
     preloader.LazyLoadImageEnabledVerification(
         test_case.lazy_load_image_enabled);

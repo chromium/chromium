@@ -75,8 +75,9 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   String decoded_bytes = decoder.Decode(bytes.data(), bytes.length());
   scanner->AppendToEnd(decoded_bytes);
   bool has_csp_meta_tag_unused = false;
-  PreloadRequestStream requests =
-      scanner->Scan(document_url, nullptr, has_csp_meta_tag_unused);
+  AcceptCHValues accept_ch_values;
+  PreloadRequestStream requests = scanner->Scan(
+      document_url, accept_ch_values, nullptr, has_csp_meta_tag_unused);
   preloader.TakeAndPreload(requests);
   return 0;
 }

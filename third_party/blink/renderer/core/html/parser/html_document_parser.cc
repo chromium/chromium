@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
@@ -1264,9 +1265,16 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
   base::ElapsedTimer timer;
   bool seen_csp_meta_tag = false;
   absl::optional<ViewportDescription> viewport_description;
+  AcceptCHValues accept_ch_values;
   PreloadRequestStream requests =
-      scanner->Scan(GetDocument()->ValidBaseElementURL(), &viewport_description,
-                    seen_csp_meta_tag);
+      scanner->Scan(GetDocument()->ValidBaseElementURL(), accept_ch_values,
+                    &viewport_description, seen_csp_meta_tag);
+
+  for (const auto& value : accept_ch_values) {
+    HTMLMetaElement::ProcessMetaAcceptCH(*GetDocument(), value.value,
+                                         value.is_http_equiv,
+                                         value.is_preload_or_sync_parser);
+  }
   // Make sure that the viewport is up-to-date, so that the correct viewport
   // dimensions will be fed to the preload scanner.
   if (GetDocument()->Loader() &&

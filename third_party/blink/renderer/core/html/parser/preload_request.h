@@ -12,7 +12,6 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/script.h"
-#include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -73,8 +72,6 @@ class CORE_EXPORT PreloadRequest {
       const ExclusionInfo* exclusion_info,
       const FetchParameters::ResourceWidth& resource_width =
           FetchParameters::ResourceWidth(),
-      const ClientHintsPreferences& client_hints_preferences =
-          ClientHintsPreferences(),
       RequestType request_type = kRequestTypePreload);
 
   Resource* Start(Document*);
@@ -107,9 +104,6 @@ class CORE_EXPORT PreloadRequest {
   }
   const KURL& BaseURL() const { return base_url_; }
   bool IsPreconnect() const { return request_type_ == kRequestTypePreconnect; }
-  const ClientHintsPreferences& Preferences() const {
-    return client_hints_preferences_;
-  }
   network::mojom::ReferrerPolicy GetReferrerPolicy() const {
     return referrer_policy_;
   }
@@ -148,7 +142,6 @@ class CORE_EXPORT PreloadRequest {
                  const KURL& base_url,
                  ResourceType resource_type,
                  const FetchParameters::ResourceWidth& resource_width,
-                 const ClientHintsPreferences& client_hints_preferences,
                  RequestType request_type,
                  const network::mojom::ReferrerPolicy referrer_policy,
                  ResourceFetcher::IsImageSet is_image_set)
@@ -158,7 +151,6 @@ class CORE_EXPORT PreloadRequest {
         base_url_(base_url),
         resource_type_(resource_type),
         resource_width_(resource_width),
-        client_hints_preferences_(client_hints_preferences),
         request_type_(request_type),
         referrer_policy_(referrer_policy),
         is_image_set_(is_image_set) {}
@@ -178,7 +170,6 @@ class CORE_EXPORT PreloadRequest {
   String nonce_;
   FetchParameters::DeferOption defer_ = FetchParameters::kNoDefer;
   const FetchParameters::ResourceWidth resource_width_;
-  const ClientHintsPreferences client_hints_preferences_;
   const RequestType request_type_;
   const network::mojom::ReferrerPolicy referrer_policy_;
   IntegrityMetadataSet integrity_metadata_;
