@@ -41,7 +41,7 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
 
   waitForEditableEvent() {
     return new Promise(resolve => {
-      DesktopAutomationInterface.instance.textEditHandler_.onEvent = (e) =>
+      DesktopAutomationInterface.instance.textEditHandler_.onEvent = e =>
           resolve(e);
     });
   }
@@ -2055,17 +2055,13 @@ TEST_F(
       // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
       // contracted braille).
       localStorage['brailleTable'] = 'en-ueb-g2';
-      BrailleBackground.instance.getTranslatorManager().refresh(
-          localStorage['brailleTable']);
-      // Wait for it to be fully refreshed (liblouis loads the new tables, our
-      // translators are re-created).
-      await new Promise(r => {
-        BrailleBackground.instance.getTranslatorManager().addChangeListener(r);
-      });
+      await new Promise(
+          r => BrailleBackground.instance.getTranslatorManager().refresh(
+              localStorage['brailleTable'], undefined, r));
 
       async function waitForBrailleDots(expectedDots) {
         return new Promise(r => {
-          chrome.brailleDisplayPrivate.writeDots = (dotsBuffer) => {
+          chrome.brailleDisplayPrivate.writeDots = dotsBuffer => {
             const view = new Uint8Array(dotsBuffer);
             const dots = new Array(view.length);
             view.forEach((item, index) => dots[index] = item.toString(2));
