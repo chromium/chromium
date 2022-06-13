@@ -27,6 +27,7 @@ import '../site_favicon.js';
 import './password_list_item.js';
 import './passwords_list_handler.js';
 import './passwords_export_dialog.js';
+import './passwords_import_dialog.js';
 import './passwords_shared.css.js';
 import './avatar_icon.js';
 
@@ -287,6 +288,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       // </if>
 
       showPasswordsExportDialog_: Boolean,
+      showPasswordsImportDialog_: Boolean,
 
       showAddPasswordDialog_: Boolean,
 
@@ -332,6 +334,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
 
   private showPasswordsExportDialog_: boolean;
+  private showPasswordsImportDialog_: boolean;
   private showAddPasswordDialog_: boolean;
   private showAddPasswordButton_: boolean;
 
@@ -649,8 +652,15 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
    * Fires an event that should trigger the password import process.
    */
   private onImportTap_() {
-    this.passwordManager_.importPasswords();
+    this.showPasswordsImportDialog_ = true;
     this.$.exportImportMenu.close();
+  }
+
+  private onPasswordsImportDialogClosed_() {
+    this.showPasswordsImportDialog_ = false;
+    const toFocus = this.activeDialogAnchorStack_.pop();
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   /**

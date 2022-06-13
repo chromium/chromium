@@ -5,7 +5,7 @@
 // clang-format off
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManagerProxy, PasswordEditDialogElement, PasswordListItemElement, PasswordMoveMultiplePasswordsToAccountDialogElement, PasswordsExportDialogElement, PasswordsSectionElement, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
+import {AutofillManagerProxy, PasswordEditDialogElement, PasswordListItemElement, PasswordMoveMultiplePasswordsToAccountDialogElement, PasswordsExportDialogElement, PasswordsImportDialogElement, PasswordsSectionElement, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
 import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerProxy} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -424,6 +424,16 @@ export class PasswordSectionElementFactory {
     this.document.body.appendChild(dialog);
     flush();
 
+    return dialog;
+  }
+
+  /**
+   * Helper method used to create a passwords import dialog.
+   */
+  createPasswordsImportDialog(): PasswordsImportDialogElement {
+    const dialog = this.document.createElement('passwords-import-dialog');
+    this.document.body.appendChild(dialog);
+    flush();
     return dialog;
   }
 }

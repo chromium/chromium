@@ -745,6 +745,7 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
  ['HelpPage', 'help_page_test.js'],
  ['Menu', 'settings_menu_test.js'],
  ['PasswordView', 'password_view_test.js'],
+ ['PasswordsImportDialog', 'passwords_import_dialog_test.js'],
  ['PaymentsSection', 'payments_section_test.js'],
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],

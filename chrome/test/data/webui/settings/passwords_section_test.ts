@@ -1222,6 +1222,39 @@ suite('PasswordsSection', function() {
     assertTrue(passwordsSection.$.menuExportPassword.hidden);
   });
 
+  test(
+      'importPasswordsButtonShownOnlyWhenPasswordsImportFeatureEnabled',
+      function() {
+        loadTimeData.overrideValues({showImportPasswords: false});
+        const passwordsSectionImportPasswordsDisabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertTrue(
+            passwordsSectionImportPasswordsDisabled.shadowRoot!
+                .querySelector<HTMLElement>('#menuImportPassword')!.hidden);
+        loadTimeData.overrideValues({showImportPasswords: true});
+        const passwordsSectionImportPasswordsEnabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertFalse(
+            passwordsSectionImportPasswordsEnabled.shadowRoot!
+                .querySelector<HTMLElement>('#menuImportPassword')!.hidden);
+      });
+
+  test('importButtonOpensPasswordsImportDialog', function() {
+    loadTimeData.overrideValues({showImportPasswords: true});
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    assertFalse(!!passwordsSection.shadowRoot!.querySelector<HTMLElement>(
+        '#importPasswordsDialog'));
+
+    passwordsSection.shadowRoot!
+        .querySelector<HTMLElement>('#menuImportPassword')!.click();
+    flush();
+    const importDialog =
+        passwordsSection.shadowRoot!.querySelector<HTMLElement>(
+            '#importPasswordsDialog');
+    assertTrue(!!importDialog);
+  });
+
   // Test that clicking the Export Passwords menu item opens the export
   // dialog.
   test('exportOpen', function(done) {

@@ -88,30 +88,31 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'addPassword',
+      'changeInsecureCredential',
+      'changeSavedPassword',
+      'getCompromisedCredentials',
+      'getPasswordCheckStatus',
+      'getPlaintextInsecurePassword',
+      'getUrlCollection',
+      'getWeakCredentials',
+      'importPasswords',
+      'isAccountStoreDefault',
+      'isOptedInForAccountStorage',
+      'movePasswordsToAccount',
+      'muteInsecureCredential',
+      'recordChangePasswordFlowStarted',
+      'recordPasswordCheckInteraction',
+      'recordPasswordCheckReferrer',
+      'removeException',
+      'removeExceptions',
+      'removeInsecureCredential',
+      'removeSavedPassword',
+      'removeSavedPasswords',
       'requestPlaintextPassword',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
-      'getCompromisedCredentials',
-      'getWeakCredentials',
-      'getPasswordCheckStatus',
-      'getPlaintextInsecurePassword',
-      'changeInsecureCredential',
-      'removeInsecureCredential',
-      'recordPasswordCheckInteraction',
-      'recordPasswordCheckReferrer',
-      'isOptedInForAccountStorage',
-      'removeSavedPassword',
-      'removeSavedPasswords',
-      'movePasswordsToAccount',
-      'removeException',
-      'removeExceptions',
-      'changeSavedPassword',
-      'isAccountStoreDefault',
-      'getUrlCollection',
-      'addPassword',
-      'muteInsecureCredential',
-      'unmuteInsecureCredential',
-      'recordChangePasswordFlowStarted',
+      'unmuteInsecureCredential'
     ]);
 
     /** @private {!PasswordManagerExpectations} */
@@ -406,7 +407,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   exportPasswords(_callback: () => void) {}
 
-  importPasswords() {}
+  importPasswords() {
+    this.methodCalled('importPasswords');
+  }
 
   optInForAccountStorage(_optIn: boolean) {}
 
