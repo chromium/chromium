@@ -58638,6 +58638,7 @@ from previous Chrome versions.
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
+  <int value="386946105" label="NtpMiddleSlotPromoDismissal:disabled"/>
   <int value="387178525" label="VideoFullscreenOrientationLock:enabled"/>
   <int value="387233614" label="HomePageButtonForceEnabled:disabled"/>
   <int value="387678734" label="ShortcutCustomizationApp:disabled"/>
@@ -60012,6 +60013,7 @@ from previous Chrome versions.
   <int value="1285169797" label="ClipboardHistoryNudgeSessionReset:disabled"/>
   <int value="1285905715" label="WebXRHitTest:enabled"/>
   <int value="1286564383" label="UsbNotificationController:enabled"/>
+  <int value="1286692760" label="NtpMiddleSlotPromoDismissal:enabled"/>
   <int value="1287625114" label="EnableIncognitoShortcutOnDesktop:disabled"/>
   <int value="1287947083" label="WebAssemblyCodeProtectionPku:enabled"/>
   <int value="1288612648" label="PluginVmFullscreen:enabled"/>

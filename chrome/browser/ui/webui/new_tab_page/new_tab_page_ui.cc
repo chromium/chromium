@@ -188,6 +188,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
           profile->GetPrefs()->GetBoolean(prefs::kNtpPromoVisible));
   source->AddBoolean(
+      "middleSlotPromoDismissalEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromoDismissal));
+  source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));
   source->AddBoolean("modulesFirstRunExperienceEnabled",

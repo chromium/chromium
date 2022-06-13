@@ -4377,6 +4377,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "ntp-middle-slot-promo-dismissal",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "ntp-modules",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 105

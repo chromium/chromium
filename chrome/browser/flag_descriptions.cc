@@ -3807,19 +3807,13 @@ const char kNtpCacheOneGoogleBarDescription[] =
     "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "
     "when available.";
 
-const char kNtpModulesName[] = "NTP Modules";
-const char kNtpModulesDescription[] = "Shows modules on the New Tab Page.";
+const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
+const char kNtpChromeCartModuleDescription[] =
+    "Shows the chrome cart module on the New Tab Page.";
 
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
-
-const char kWebAuthenticationPermitEnterpriseAttestationName[] =
-    "Web Authentication Enterprise Attestation";
-const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
-    "Permit a set of origins to request a uniquely identifying enterprise "
-    "attestation statement from a security key when creating a Web "
-    "Authentication credential.";
 
 #if !defined(OFFICIAL_BUILD)
 const char kNtpDummyModulesName[] = "NTP Dummy Modules";
@@ -3828,34 +3822,11 @@ const char kNtpDummyModulesDescription[] =
     "enabled.";
 #endif
 
-const char kNtpPhotosModuleName[] = "NTP Photos Module";
-const char kNtpPhotosModuleDescription[] =
-    "Shows the Google Photos module on the New Tab Page";
-
-const char kNtpPhotosModuleOptInTitleName[] = "NTP Photos Module Opt In Title";
-const char kNtpPhotosModuleOptInTitleDescription[] =
-    "Determines the title of the NTP Photos Opt-In card";
-
-const char kNtpPhotosModuleOptInArtWorkName[] =
-    "NTP Photos Module Opt In ArtWork";
-const char kNtpPhotosModuleOptInArtWorkDescription[] =
-    "Determines the art work in the NTP Photos Opt-In card";
-
-const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
-const char kNtpPhotosModuleSoftOptOutDescription[] =
-    "Enables soft opt-out option in Photos opt-in card";
-
-const char kNtpRecipeTasksModuleName[] = "NTP Recipe Tasks Module";
-const char kNtpRecipeTasksModuleDescription[] =
-    "Shows the recipe tasks module on the New Tab Page.";
-
-const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
-const char kNtpChromeCartModuleDescription[] =
-    "Shows the chrome cart module on the New Tab Page.";
-
-const char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
-const char kNtpSafeBrowsingModuleDescription[] =
-    "Shows the safe browsing module on the New Tab Page.";
+const char kNtpMiddleSlotPromoDismissalName[] =
+    "NTP Middle Slot Promo Dismissal";
+const char kNtpMiddleSlotPromoDismissalDescription[] =
+    "Allows middle slot promo to be dismissed from New Tab Page until "
+    "new promo message is populated.";
 
 const char kNtpModulesDragAndDropName[] = "NTP Modules Drag and Drop";
 const char kNtpModulesDragAndDropDescription[] =
@@ -3867,13 +3838,33 @@ const char kNtpModulesFirstRunExperienceName[] =
 const char kNtpModulesFirstRunExperienceDescription[] =
     "Shows first run experience for Modular NTP Desktop v1.";
 
-const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
-const char kNtpModulesRedesignedDescription[] =
-    "Shows the redesigned modules on the New Tab Page.";
+const char kNtpModulesName[] = "NTP Modules";
+const char kNtpModulesDescription[] = "Shows modules on the New Tab Page.";
 
 const char kNtpModulesRedesignedLayoutName[] = "Ntp Modules Redesigned Layout";
 const char kNtpModulesRedesignedLayoutDescription[] =
     "Changes the layout of modules on New Tab Page";
+
+const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
+const char kNtpModulesRedesignedDescription[] =
+    "Shows the redesigned modules on the New Tab Page.";
+
+const char kNtpPhotosModuleName[] = "NTP Photos Module";
+const char kNtpPhotosModuleDescription[] =
+    "Shows the Google Photos module on the New Tab Page";
+
+const char kNtpPhotosModuleOptInArtWorkName[] =
+    "NTP Photos Module Opt In ArtWork";
+const char kNtpPhotosModuleOptInArtWorkDescription[] =
+    "Determines the art work in the NTP Photos Opt-In card";
+
+const char kNtpPhotosModuleOptInTitleName[] = "NTP Photos Module Opt In Title";
+const char kNtpPhotosModuleOptInTitleDescription[] =
+    "Determines the title of the NTP Photos Opt-In card";
+
+const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
+const char kNtpPhotosModuleSoftOptOutDescription[] =
+    "Enables soft opt-out option in Photos opt-in card";
 
 const char kNtpRealboxMatchOmniboxThemeName[] =
     "NTP Realbox Matches Omnibox Theme";
@@ -3903,6 +3894,14 @@ const char kNtpRealboxUseGoogleGIconName[] = "NTP Realbox Google G Icon";
 const char kNtpRealboxUseGoogleGIconDescription[] =
     "Shows Google G icon "
     "instead of Search Loupe in realbox when enabled";
+
+const char kNtpRecipeTasksModuleName[] = "NTP Recipe Tasks Module";
+const char kNtpRecipeTasksModuleDescription[] =
+    "Shows the recipe tasks module on the New Tab Page.";
+
+const char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
+const char kNtpSafeBrowsingModuleDescription[] =
+    "Shows the safe browsing module on the New Tab Page.";
 
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
@@ -3951,6 +3950,13 @@ const char kSharingDesktopSharePreviewName[] = "Desktop share hub preview";
 const char kSharingDesktopSharePreviewDescription[] =
     "Adds a preview section to the desktop sharing hub to make it clearer what "
     "is about to be shared.";
+
+const char kWebAuthenticationPermitEnterpriseAttestationName[] =
+    "Web Authentication Enterprise Attestation";
+const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
+    "Permit a set of origins to request a uniquely identifying enterprise "
+    "attestation statement from a security key when creating a Web "
+    "Authentication credential.";
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

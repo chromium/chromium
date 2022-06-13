@@ -5493,13 +5493,19 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enable-retail-coupons", flag_descriptions::kRetailCouponsName,
+     flag_descriptions::kRetailCouponsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kRetailCoupons)},
+
     {"ntp-cache-one-google-bar", flag_descriptions::kNtpCacheOneGoogleBarName,
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
 
-    {"ntp-modules", flag_descriptions::kNtpModulesName,
-     flag_descriptions::kNtpModulesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kModules)},
+    {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
+     flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
+                                    kNtpChromeCartModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
@@ -5512,6 +5518,33 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpDummyModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
+
+    {"ntp-middle-slot-promo-dismissal",
+     flag_descriptions::kNtpMiddleSlotPromoDismissalName,
+     flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpMiddleSlotPromoDismissal)},
+
+    {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
+     flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesDragAndDrop)},
+
+    {"ntp-modules-first-run-experience",
+     flag_descriptions::kNtpModulesFirstRunExperienceName,
+     flag_descriptions::kNtpModulesFirstRunExperienceDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesFirstRunExperience)},
+
+    {"ntp-modules-redesigned", flag_descriptions::kNtpModulesRedesignedName,
+     flag_descriptions::kNtpModulesRedesignedDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesigned)},
+
+    {"ntp-modules-redesigned-layout",
+     flag_descriptions::kNtpModulesRedesignedLayoutName,
+     flag_descriptions::kNtpModulesRedesignedLayoutDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesignedLayout)},
+
+    {"ntp-modules", flag_descriptions::kNtpModulesName,
+     flag_descriptions::kNtpModulesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kModules)},
 
     {"ntp-photos-module", flag_descriptions::kNtpPhotosModuleName,
      flag_descriptions::kNtpPhotosModuleDescription, kOsDesktop,
@@ -5546,40 +5579,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRecipeTasksModuleVariations,
                                     "DesktopNtpModules")},
 
-    {"ntp-chrome-cart-module", flag_descriptions::kNtpChromeCartModuleName,
-     flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
-                                    kNtpChromeCartModuleVariations,
-                                    "DesktopNtpModules")},
-
-    {"enable-retail-coupons", flag_descriptions::kRetailCouponsName,
-     flag_descriptions::kRetailCouponsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kRetailCoupons)},
-
-    {"ntp-safe-browsing-module", flag_descriptions::kNtpSafeBrowsingModuleName,
-     flag_descriptions::kNtpSafeBrowsingModuleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,
-                                    kNtpSafeBrowsingModuleVariations,
-                                    "DesktopNtpModules")},
-
-    {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
-     flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesDragAndDrop)},
-
-    {"ntp-modules-first-run-experience",
-     flag_descriptions::kNtpModulesFirstRunExperienceName,
-     flag_descriptions::kNtpModulesFirstRunExperienceDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesFirstRunExperience)},
-
-    {"ntp-modules-redesigned", flag_descriptions::kNtpModulesRedesignedName,
-     flag_descriptions::kNtpModulesRedesignedDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesigned)},
-
-    {"ntp-modules-redesigned-layout",
-     flag_descriptions::kNtpModulesRedesignedLayoutName,
-     flag_descriptions::kNtpModulesRedesignedLayoutDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesignedLayout)},
-
     {"ntp-realbox-match-omnibox-theme",
      flag_descriptions::kNtpRealboxMatchOmniboxThemeName,
      flag_descriptions::kNtpRealboxMatchOmniboxThemeDescription, kOsDesktop,
@@ -5611,6 +5610,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxUseGoogleGIconName,
      flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxUseGoogleGIcon)},
+
+    {"ntp-safe-browsing-module", flag_descriptions::kNtpSafeBrowsingModuleName,
+     flag_descriptions::kNtpSafeBrowsingModuleDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,
+                                    kNtpSafeBrowsingModuleVariations,
+                                    "DesktopNtpModules")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

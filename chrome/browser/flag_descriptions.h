@@ -2173,40 +2173,19 @@ extern const char kMuteNotificationSnoozeActionDescription[];
 extern const char kNtpCacheOneGoogleBarName[];
 extern const char kNtpCacheOneGoogleBarDescription[];
 
-extern const char kNtpModulesName[];
-extern const char kNtpModulesDescription[];
+extern const char kNtpChromeCartModuleName[];
+extern const char kNtpChromeCartModuleDescription[];
 
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
-
-extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
-extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 
 #if !defined(OFFICIAL_BUILD)
 extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];
 #endif
 
-extern const char kNtpPhotosModuleName[];
-extern const char kNtpPhotosModuleDescription[];
-
-extern const char kNtpPhotosModuleOptInTitleName[];
-extern const char kNtpPhotosModuleOptInTitleDescription[];
-
-extern const char kNtpPhotosModuleOptInArtWorkName[];
-extern const char kNtpPhotosModuleOptInArtWorkDescription[];
-
-extern const char kNtpPhotosModuleSoftOptOutName[];
-extern const char kNtpPhotosModuleSoftOptOutDescription[];
-
-extern const char kNtpRecipeTasksModuleName[];
-extern const char kNtpRecipeTasksModuleDescription[];
-
-extern const char kNtpChromeCartModuleName[];
-extern const char kNtpChromeCartModuleDescription[];
-
-extern const char kNtpSafeBrowsingModuleName[];
-extern const char kNtpSafeBrowsingModuleDescription[];
+extern const char kNtpMiddleSlotPromoDismissalName[];
+extern const char kNtpMiddleSlotPromoDismissalDescription[];
 
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
@@ -2214,11 +2193,26 @@ extern const char kNtpModulesDragAndDropDescription[];
 extern const char kNtpModulesFirstRunExperienceName[];
 extern const char kNtpModulesFirstRunExperienceDescription[];
 
+extern const char kNtpModulesName[];
+extern const char kNtpModulesDescription[];
+
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 
 extern const char kNtpModulesRedesignedLayoutName[];
 extern const char kNtpModulesRedesignedLayoutDescription[];
+
+extern const char kNtpPhotosModuleOptInTitleName[];
+extern const char kNtpPhotosModuleOptInTitleDescription[];
+
+extern const char kNtpPhotosModuleOptInArtWorkName[];
+extern const char kNtpPhotosModuleOptInArtWorkDescription[];
+
+extern const char kNtpPhotosModuleName[];
+extern const char kNtpPhotosModuleDescription[];
+
+extern const char kNtpPhotosModuleSoftOptOutName[];
+extern const char kNtpPhotosModuleSoftOptOutDescription[];
 
 extern const char kNtpRealboxMatchOmniboxThemeName[];
 extern const char kNtpRealboxMatchOmniboxThemeDescription[];
@@ -2237,6 +2231,12 @@ extern const char kNtpRealboxTailSuggestDescription[];
 
 extern const char kNtpRealboxUseGoogleGIconName[];
 extern const char kNtpRealboxUseGoogleGIconDescription[];
+
+extern const char kNtpRecipeTasksModuleName[];
+extern const char kNtpRecipeTasksModuleDescription[];
+
+extern const char kNtpSafeBrowsingModuleName[];
+extern const char kNtpSafeBrowsingModuleDescription[];
 
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
@@ -2258,6 +2258,9 @@ extern const char kSCTAuditingDescription[];
 
 extern const char kSharingDesktopSharePreviewName[];
 extern const char kSharingDesktopSharePreviewDescription[];
+
+extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
+extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
