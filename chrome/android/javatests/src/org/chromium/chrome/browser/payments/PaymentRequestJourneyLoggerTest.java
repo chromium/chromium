@@ -471,41 +471,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_UnsupportedCard()
-            throws TimeoutException {
-        // Add an unsupported card (mastercard) and an complete address.
-        AutofillTestHelper mHelper = new AutofillTestHelper();
-        String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
-        mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
-                "5187654321098765", "8765", "10", "2021", "mastercard", R.drawable.visa_card,
-                mBillingAddressId, "" /* serverId */));
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "ccBuy", mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.REQUEST_SHIPPING
-                | Event.REQUEST_METHOD_BASIC_CARD | Event.NEEDS_COMPLETION_PAYMENT;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Expect that the metric that records whether the user had complete suggestions for the
-     * requested information is logged correctly.
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
     public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_OnlyPaymentApp()
             throws TimeoutException {
         // Add a complete address and a working payment app.
@@ -676,44 +641,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
 
     /**
      * Expect that the UserHadCompleteSuggestions histogram gets logged properly when the user has
-     * at least one credit card on file.
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    public void testUserHadCompleteSuggestions_AcceptsCardsAndApps_UserHasOnlyCard()
-            throws TimeoutException {
-        // Add an address and a credit card on file.
-        AutofillTestHelper mHelper = new AutofillTestHelper();
-        String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
-        mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                mBillingAddressId, "" /* serverId */));
-
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "cardsAndBobPayBuy", mPaymentRequestTestRule.getReadyToPay());
-
-        // The user cancels the Payment Request (trigger the logs).
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_SHIPPING
-                | Event.REQUEST_METHOD_BASIC_CARD | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_BASIC_CARD;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Expect that the UserHadCompleteSuggestions histogram gets logged properly when the user has
      * at least one payment app on file.
      */
     @Test
@@ -744,46 +671,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_SHIPPING
                 | Event.REQUEST_METHOD_BASIC_CARD | Event.REQUEST_METHOD_OTHER
                 | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Expect that the UserHadCompleteSuggestions histogram gets logged properly when the user has
-     * at both a card and a payment app on file.
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    public void testUserHadCompleteSuggestions_AcceptsCardsAndApps_UserHasCardAndPaymentApp()
-            throws TimeoutException {
-        // Add an address, a credit card and a payment app on file.
-        AutofillTestHelper mHelper = new AutofillTestHelper();
-        String mBillingAddressId = mHelper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
-                "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
-        mHelper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                mBillingAddressId, "" /* serverId */));
-        mPaymentRequestTestRule.addPaymentAppFactory(
-                AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "cardsAndBobPayBuy", mPaymentRequestTestRule.getReadyToPay());
-
-        // The user cancels the Payment Request (trigger the logs).
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_SHIPPING
-                | Event.REQUEST_METHOD_BASIC_CARD | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_BASIC_CARD | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));

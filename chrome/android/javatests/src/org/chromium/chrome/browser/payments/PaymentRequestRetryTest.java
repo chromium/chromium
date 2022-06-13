@@ -116,36 +116,6 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     }
 
     /**
-     * Tests that adding new cards is disabled during retry().
-     */
-    @Test
-    @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
-    @Feature({"Payments"})
-    public void testDoNotAllowAddingCards() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-
-        // Confirm that "Add Card" option is available.
-        Assert.assertNotNull(mPaymentRequestTestRule.getPaymentRequestUI()
-                                     .getPaymentMethodSectionForTest()
-                                     .findViewById(R.id.payments_add_option_button));
-
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE,
-                mPaymentRequestTestRule.getPaymentResponseReady());
-
-        // Confirm that "Add Card" option does not exist during retry.
-        mPaymentRequestTestRule.retryPaymentRequest("{}", mPaymentRequestTestRule.getReadyToPay());
-        Assert.assertNull(mPaymentRequestTestRule.getPaymentRequestUI()
-                                  .getPaymentMethodSectionForTest()
-                                  .findViewById(R.id.payments_add_option_button));
-    }
-
-    /**
      * Test for retry() with default error message
      */
     @Test
