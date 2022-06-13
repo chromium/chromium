@@ -17,8 +17,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
@@ -432,38 +430,6 @@ bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {
 
   // Return true for unhandled clicks so the plugin takes focus.
   return event_to_handle.GetType() == blink::WebInputEvent::Type::kMouseDown;
-}
-
-void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
-  using MessageHandler = void (PdfViewPluginBase::*)(const base::Value::Dict&);
-  static constexpr auto kMessageHandlers =
-      base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
-          {"displayAnnotations",
-           &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
-          {"getNamedDestination",
-           &PdfViewPluginBase::HandleGetNamedDestinationMessage},
-          {"getPasswordComplete",
-           &PdfViewPluginBase::HandleGetPasswordCompleteMessage},
-          {"getSelectedText", &PdfViewPluginBase::HandleGetSelectedTextMessage},
-          {"getThumbnail", &PdfViewPluginBase::HandleGetThumbnailMessage},
-          {"print", &PdfViewPluginBase::HandlePrintMessage},
-          {"loadPreviewPage", &PdfViewPluginBase::HandleLoadPreviewPageMessage},
-          {"resetPrintPreviewMode",
-           &PdfViewPluginBase::HandleResetPrintPreviewModeMessage},
-          {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
-          {"rotateCounterclockwise",
-           &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
-          {"saveAttachment", &PdfViewPluginBase::HandleSaveAttachmentMessage},
-          {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
-          {"setPresentationMode",
-           &PdfViewPluginBase::HandleSetPresentationModeMessage},
-          {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
-          {"stopScrolling", &PdfViewPluginBase::HandleStopScrollingMessage},
-          {"viewport", &PdfViewPluginBase::HandleViewportMessage},
-      });
-
-  MessageHandler handler = kMessageHandlers.at(*message.FindString("type"));
-  (this->*handler)(message);
 }
 
 void PdfViewPluginBase::SendLoadingProgress(double percentage) {

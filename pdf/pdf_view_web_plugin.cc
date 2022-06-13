@@ -834,19 +834,35 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+          {"displayAnnotations",
+           &PdfViewWebPlugin::HandleDisplayAnnotationsMessage},
+          {"getNamedDestination",
+           &PdfViewWebPlugin::HandleGetNamedDestinationMessage},
+          {"getPasswordComplete",
+           &PdfViewWebPlugin::HandleGetPasswordCompleteMessage},
+          {"getSelectedText", &PdfViewWebPlugin::HandleGetSelectedTextMessage},
+          {"getThumbnail", &PdfViewWebPlugin::HandleGetThumbnailMessage},
+          {"print", &PdfViewWebPlugin::HandlePrintMessage},
+          {"loadPreviewPage", &PdfViewWebPlugin::HandleLoadPreviewPageMessage},
+          {"resetPrintPreviewMode",
+           &PdfViewWebPlugin::HandleResetPrintPreviewModeMessage},
+          {"rotateClockwise", &PdfViewWebPlugin::HandleRotateClockwiseMessage},
+          {"rotateCounterclockwise",
+           &PdfViewWebPlugin::HandleRotateCounterclockwiseMessage},
           {"save", &PdfViewWebPlugin::HandleSaveMessage},
+          {"saveAttachment", &PdfViewWebPlugin::HandleSaveAttachmentMessage},
+          {"selectAll", &PdfViewWebPlugin::HandleSelectAllMessage},
           {"setBackgroundColor",
            &PdfViewWebPlugin::HandleSetBackgroundColorMessage},
+          {"setPresentationMode",
+           &PdfViewWebPlugin::HandleSetPresentationModeMessage},
+          {"setTwoUpView", &PdfViewWebPlugin::HandleSetTwoUpViewMessage},
+          {"stopScrolling", &PdfViewWebPlugin::HandleStopScrollingMessage},
+          {"viewport", &PdfViewWebPlugin::HandleViewportMessage},
       });
 
-  // Note that `base::fixed_flat_map` uses raw pointers as iterators.
-  const auto* it = kMessageHandlers.find(*message.FindString("type"));
-  if (it != kMessageHandlers.end()) {
-    (this->*(it->second))(message);
-    return;
-  }
-
-  PdfViewPluginBase::HandleMessage(message);
+  MessageHandler handler = kMessageHandlers.at(*message.FindString("type"));
+  (this->*handler)(message);
 }
 
 void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {

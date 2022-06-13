@@ -188,9 +188,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
-  // Handles `postMessage()` calls from the embedder.
-  void HandleMessage(const base::Value::Dict& message);
-
   // Enqueues a "message" event carrying `message` to the embedder. Messages are
   // guaranteed to be received in the order that they are sent. This method is
   // non-blocking.
@@ -343,7 +340,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `LoadUrl()` result.
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
 
- private:
   // Converts a scroll offset (which is relative to a UI direction-dependent
   // scroll origin) to a scroll position (which is always relative to the
   // top-left corner).
@@ -412,6 +408,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Converts `frame_coordinates` to PDF coordinates.
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
+
+ private:
+  // TODO(crbug.com/1302059): `PdfViewPluginBase` is being merged into
+  // `PdfViewWebPlugin`, so all methods should be protected or public.
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
