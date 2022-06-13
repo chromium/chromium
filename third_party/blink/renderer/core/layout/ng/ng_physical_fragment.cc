@@ -834,11 +834,10 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
           AddOutlineRectsForDescendant(
               {child_box, item.OffsetInContainerFragment()}, outline_rects,
               additional_offset, outline_type, containing_block);
-          if (child_box->IsInlineBox()) {
-            // Inline boxes have their children in the flat list. Skip them.
-            cursor->MoveToNextSkippingChildren();
-            continue;
-          }
+          // Skip descendants as they were already added.
+          DCHECK(item.IsInlineBox() || item.DescendantsCount() == 1);
+          cursor->MoveToNextSkippingChildren();
+          continue;
         }
         break;
       }
