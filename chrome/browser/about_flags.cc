@@ -1856,17 +1856,6 @@ const FeatureEntry::FeatureVariation kExploreSitesVariations[] = {
     {"Dense Title Right", kExploreSitesDenseTitleRight,
      std::size(kExploreSitesDenseTitleRight), nullptr}};
 
-const FeatureEntry::FeatureParam kContextualSearchPromoCardShow3Times = {
-    "promo_card_max_shown", "3"};
-const FeatureEntry::FeatureParam kContextualSearchPromoCardShow100Times = {
-    "promo_card_max_shown", "100"};
-const FeatureEntry::FeatureVariation ContextualSearchNewSettingsVariations[] = {
-    {"with promo show 3 times", &kContextualSearchPromoCardShow3Times, 1,
-     nullptr},
-    {"with promo show 100 times", &kContextualSearchPromoCardShow100Times, 1,
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
 const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
 const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
@@ -3317,13 +3306,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualSearchForceCaptionName,
      flag_descriptions::kContextualSearchForceCaptionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextualSearchForceCaption)},
-    {"contextual-search-new-settings",
-     flag_descriptions::KContextualSearchNewSettingsName,
-     flag_descriptions::KContextualSearchNewSettingsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::KContextualSearchNewSettings,
-         ContextualSearchNewSettingsVariations,
-         "ContextualSearchNewSettings")},
     {"contextual-search-translations",
      flag_descriptions::kContextualSearchTranslationsName,
      flag_descriptions::kContextualSearchTranslationsDescription, kOsAndroid,

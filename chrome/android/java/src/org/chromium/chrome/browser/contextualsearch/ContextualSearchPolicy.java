@@ -43,6 +43,7 @@ class ContextualSearchPolicy {
     private static final String PATH_AMP = "/amp/";
     private static final int REMAINING_NOT_APPLICABLE = -1;
     private static final int TAP_TRIGGERED_PROMO_LIMIT = 50;
+    private static final int PROMO_DEFAULT_LIMIT = 3;
 
     // Constants related to the Contextual Search preference.
     private static final String CONTEXTUAL_SEARCH_DISABLED = "false";
@@ -180,13 +181,8 @@ class ContextualSearchPolicy {
      * @return Whether the Opt-out promo is available to be shown in any panel.
      */
     boolean isPromoAvailable() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            // Only show promo card a limited number of times.
-            return isUserUndecided()
-                    && getContextualSearchPromoCardShownCount()
-                    < ContextualSearchFieldTrial.getDefaultPromoCardShownTimes();
-        }
-        return isUserUndecided();
+        // Only show promo card a limited number of times.
+        return isUserUndecided() && getContextualSearchPromoCardShownCount() < PROMO_DEFAULT_LIMIT;
     }
 
     /**
@@ -402,34 +398,15 @@ class ContextualSearchPolicy {
     }
 
     /**
-     * Sets the contextual search states based on the user's selection in the promo card.
-     * If the the feature CONTEXTUAL_SEARCH_NEW_SETTINGS enabled,
-     * @See {@link #setContextualSearchFullyOptedIn(boolean)}.
-     * If the the feature CONTEXTUAL_SEARCH_NEW_SETTINGS is not enabled,
-     * @See {@link #setContextualSearchState(boolean)}.
-     * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
-     */
-    static void setContextualSearchPromoCardSelection(boolean enabled) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            setContextualSearchFullyOptedIn(enabled);
-        } else {
-            setContextualSearchState(enabled);
-        }
-    }
-
-    /**
-     * Explicitly sets whether Contextual Search states.
-     * 'enabled' is true - fully opt in.
-     * 'enabled' is false - the feature is disabled.
+     * Explicitly set whether Contextual Search is enabled or not, with the enabled state being
+     * either fully or default-enabled based on previous state. 'enabled' is true - fully opt in or
+     * default-enabled based on previous state. 'enabled' is false - the feature is disabled.
      * @param enabled Whether Contextual Search should be enabled.
      */
     static void setContextualSearchState(boolean enabled) {
         @ContextualSearchPreference
-        int onState = ContextualSearchPreference.ENABLED;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            onState = isContextualSearchOptInEnabled() ? ContextualSearchPreference.ENABLED
+        int onState = isContextualSearchOptInEnabled() ? ContextualSearchPreference.ENABLED
                                                        : ContextualSearchPreference.UNINITIALIZED;
-        }
         setContextualSearchStateInternal(enabled ? onState : ContextualSearchPreference.DISABLED);
     }
 
@@ -438,11 +415,8 @@ class ContextualSearchPolicy {
      *         itself.
      */
     static boolean isContextualSearchPrefFullyOptedIn() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
-                && !isContextualSearchOptInUninitialized()) {
-            return isContextualSearchOptInEnabled();
-        }
-        return isContextualSearchEnabled();
+        return isContextualSearchOptInUninitialized() ? isContextualSearchEnabled()
+                                                      : isContextualSearchOptInEnabled();
     }
 
     /**
@@ -459,19 +433,10 @@ class ContextualSearchPolicy {
 
     /** Notifies that a promo card has been shown. */
     static void onPromoShown() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            int count = getContextualSearchPromoCardShownCount();
-            count++;
-            setContextualSearchPromoCardShownCount(count);
-            ContextualSearchUma.logRevisedPromoOpenCount(count);
-        }
-    }
-
-    /**
-     * @return Whether the Contextual Search Multilevel settings UI should be shown.
-     */
-    static boolean shouldShowMultilevelSettingsUI() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS);
+        int count = getContextualSearchPromoCardShownCount();
+        count++;
+        setContextualSearchPromoCardShownCount(count);
+        ContextualSearchUma.logRevisedPromoOpenCount(count);
     }
 
     /**
@@ -555,11 +520,7 @@ class ContextualSearchPolicy {
     boolean isUserUndecided() {
         if (mDidOverrideFullyEnabledForTesting) return !mFullyEnabledForTesting;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-            return isContextualSearchUninitialized() && isContextualSearchOptInUninitialized();
-        }
-
-        return isContextualSearchUninitialized();
+        return isContextualSearchUninitialized() && isContextualSearchOptInUninitialized();
     }
 
     /**

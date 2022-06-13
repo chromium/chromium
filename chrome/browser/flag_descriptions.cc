@@ -3175,12 +3175,6 @@ const char kContextualSearchForceCaptionName[] =
 const char kContextualSearchForceCaptionDescription[] =
     "Forces a caption to always be shown in the Touch to Search Bar.";
 
-const char KContextualSearchNewSettingsName[] =
-    "Contextual Search new settings";
-const char KContextualSearchNewSettingsDescription[] =
-    "Adds a toggle to Settings page to specifically control Contextual Search "
-    "opt-in state, and update Opt-in messages.";
-
 const char kContextualSearchTranslationsName[] =
     "Contextual Search translations";
 const char kContextualSearchTranslationsDescription[] =

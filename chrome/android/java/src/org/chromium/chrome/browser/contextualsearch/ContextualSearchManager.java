@@ -1846,7 +1846,7 @@ public class ContextualSearchManager
      * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
      */
     public static void setContextualSearchPromoCardSelection(boolean enabled) {
-        ContextualSearchPolicy.setContextualSearchPromoCardSelection(enabled);
+        ContextualSearchPolicy.setContextualSearchFullyOptedIn(enabled);
     }
 
     /** Notifies that a promo card has been shown. */

@@ -1044,12 +1044,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 public void onPromoOptIn() {}
 
                 @Override
-                public void onPromoOptOut() {
-                    if (!ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
-                        closePanel(OverlayPanel.StateChangeReason.OPTOUT, true);
-                    }
-                }
+                public void onPromoOptOut() {}
             };
         }
 
