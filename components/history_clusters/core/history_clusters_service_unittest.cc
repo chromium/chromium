@@ -615,17 +615,30 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
     test_clustering_backend_->WaitForGetClustersCall();
 
     std::vector<history::Cluster> clusters;
-    clusters.push_back(
-        history::Cluster(0,
-                         {
-                             test_clustering_backend_->GetVisitById(5),
-                             test_clustering_backend_->GetVisitById(2),
-                         },
-                         {{u"apples", history::ClusterKeywordData()},
-                          {u"oranges", history::ClusterKeywordData()},
-                          {u"z", history::ClusterKeywordData()},
-                          {u"apples bananas", history::ClusterKeywordData()}},
-                         /*should_show_on_prominent_ui_surfaces=*/true));
+    clusters.push_back(history::Cluster(
+        0,
+        {
+            test_clustering_backend_->GetVisitById(5),
+            test_clustering_backend_->GetVisitById(2),
+        },
+        {{u"apples", history::ClusterKeywordData(
+                         history::ClusterKeywordData::kEntity, 5.0f, {})},
+         {u"oranges", history::ClusterKeywordData()},
+         {u"z", history::ClusterKeywordData()},
+         {u"apples bananas", history::ClusterKeywordData()}},
+        /*should_show_on_prominent_ui_surfaces=*/true));
+    clusters.push_back(history::Cluster(
+        0,
+        {
+            test_clustering_backend_->GetVisitById(5),
+            test_clustering_backend_->GetVisitById(2),
+        },
+        {
+            {u"apples",
+             history::ClusterKeywordData(
+                 history::ClusterKeywordData::kSearchTerms, 100.0f, {})},
+        },
+        /*should_show_on_prominent_ui_surfaces=*/true));
     clusters.push_back(
         history::Cluster(0,
                          {
@@ -661,7 +674,13 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   flush_keyword_requests(3);
 
   // Now the exact query should match the populated cache.
-  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
+  const auto keyword_data =
+      history_clusters_service_->DoesQueryMatchAnyCluster("apples");
+  EXPECT_TRUE(keyword_data);
+  // Its keyword data type is kSearchTerms as it has a higher score.
+  EXPECT_EQ(keyword_data,
+            history::ClusterKeywordData(
+                history::ClusterKeywordData::kSearchTerms, 100.0f, {}));
 
   // Check that clusters that shouldn't be shown on prominent UI surfaces don't
   // have their keywords inserted into the keyword bag.

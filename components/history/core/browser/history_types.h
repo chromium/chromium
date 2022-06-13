@@ -884,13 +884,20 @@ struct ClusterVisit {
 
 // Additional data for a cluster keyword.
 struct ClusterKeywordData {
+  // Corresponds to `HistoryClusterKeywordType` in
+  // tools/metrics/histograms/enums.xml.
+  //
   // Types are ordered according to preferences.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ClusterKeywordType {
     kUnknown = 0,
     kEntityCategory = 1,
     kEntityAlias = 2,
     kEntity = 3,
-    kSearchTerms = 4
+    kSearchTerms = 4,
+    kMaxValue = kSearchTerms
   };
 
   ClusterKeywordData();
@@ -909,6 +916,13 @@ struct ClusterKeywordData {
   // Updates cluster keyword type if a new type is preferred over the existing
   // type.
   void MaybeUpdateKeywordType(ClusterKeywordType other_type);
+
+  // Returns a keyword type label.
+  // Only used for logging the UMA metric:
+  //   Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.*.CTR.
+  //
+  // crbug.com/1335975: Remove this method when we remove the histograms.
+  std::string GetKeywordTypeLabel() const;
 
   ClusterKeywordType type;
 

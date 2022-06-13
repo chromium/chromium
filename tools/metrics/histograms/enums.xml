@@ -47274,6 +47274,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Bulk"/>
 </enum>
 
+<enum name="HistoryClusterKeywordType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="EntityCategory"/>
+  <int value="2" label="EntityAlias"/>
+  <int value="3" label="Entity"/>
+  <int value="4" label="SearchTerms"/>
+</enum>
+
 <enum name="HistoryClustersFinalState">
   <obsolete>
     Removed as of 05/2022.

@@ -301,12 +301,18 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     }
     // Lowercase the keywords for case insensitive matching while adding to the
     // accumulator.
+    // Keep the keyword data with the highest score if found in multiple
+    // clusters.
     if (keyword_accumulator->size() < max_keyword_phrases) {
       for (const auto& keyword_data_p : cluster.keyword_to_data_map) {
         auto keyword = base::i18n::ToLower(keyword_data_p.first);
-        if (keyword_accumulator->find(keyword) == keyword_accumulator->end()) {
+        auto it = keyword_accumulator->find(keyword);
+        if (it == keyword_accumulator->end()) {
           keyword_accumulator->insert(
               std::make_pair(keyword, keyword_data_p.second));
+        } else if (it->second.score < keyword_data_p.second.score) {
+          // Update keyword data to the one with a higher score.
+          it->second = keyword_data_p.second;
         }
       }
     }

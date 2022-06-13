@@ -456,6 +456,21 @@ void ClusterKeywordData::MaybeUpdateKeywordType(
   }
 }
 
+std::string ClusterKeywordData::GetKeywordTypeLabel() const {
+  switch (type) {
+    case kUnknown:
+      return "Unknown";
+    case kEntityCategory:
+      return "EntityCategory";
+    case kEntityAlias:
+      return "EntityAlias";
+    case kEntity:
+      return "Entity";
+    case kSearchTerms:
+      return "SearchTerms";
+  }
+}
+
 Cluster::Cluster() = default;
 Cluster::Cluster(int64_t cluster_id,
                  const std::vector<ClusterVisit>& visits,
