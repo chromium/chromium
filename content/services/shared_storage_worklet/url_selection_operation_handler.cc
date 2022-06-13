@@ -8,6 +8,7 @@
 #include "gin/arguments.h"
 #include "gin/function_template.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-promise.h"
@@ -22,6 +23,24 @@ const char kErrorMessageReturnValueNotUint32[] =
 
 const char kErrorMessageReturnValueOutOfRange[] =
     "Promise resolved to a number outside the length of the input urls.";
+
+// Convert ECMAScript value to IDL unsigned long (i.e. uint32):
+// https://webidl.spec.whatwg.org/#es-unsigned-long
+bool ToIDLUnsignedLong(v8::Isolate* isolate,
+                       v8::Local<v8::Value> val,
+                       uint32_t& out) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  WorkletV8Helper::HandleScope scope(isolate);
+  v8::TryCatch try_catch(isolate);
+
+  v8::Local<v8::Uint32> uint32_val;
+  if (!val->ToUint32(context).ToLocal(&uint32_val))
+    return false;
+
+  out = uint32_val->Value();
+  return true;
+}
 
 }  // namespace
 
@@ -118,13 +137,14 @@ void UrlSelectionOperationHandler::RunOperation(
   // directly.
   if (result_promise->State() == v8::Promise::PromiseState::kFulfilled) {
     v8::Local<v8::Value> result_value = result_promise->Result();
-    if (!result_value->IsUint32()) {
+
+    uint32_t result_index = 0;
+    if (!ToIDLUnsignedLong(isolate, result_value, result_index)) {
       std::move(callback).Run(/*success=*/false,
                               kErrorMessageReturnValueNotUint32,
                               /*index=*/0);
       return;
     }
-    uint32_t result_index = result_value->Uint32Value(context).FromJust();
 
     if (result_index >= urls.size()) {
       std::move(callback).Run(
@@ -177,8 +197,14 @@ void UrlSelectionOperationHandler::RunOperation(
 
 void UrlSelectionOperationHandler::OnPromiseFulfilled(PendingRequest* request,
                                                       gin::Arguments* args) {
+  std::vector<v8::Local<v8::Value>> v8_args = args->GetAll();
+
   uint32_t result_index = 0;
-  if (!args->GetNext(&result_index)) {
+
+  // We are guaranteed to have a single argument here.
+  CHECK_EQ(v8_args.size(), 1u);
+
+  if (!ToIDLUnsignedLong(args->isolate(), v8_args[0], result_index)) {
     std::move(request->callback)
         .Run(/*success=*/false, kErrorMessageReturnValueNotUint32,
              /*index=*/0);
