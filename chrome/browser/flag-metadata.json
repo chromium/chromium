@@ -5418,7 +5418,7 @@
   {
     "name": "send-tab-to-self-signin-promo",
     "owners": ["victorvianna@google.com", "harrisonsean@google.com"],
-    "expiry_milestone": 104
+    "expiry_milestone": 107
   },
   {
     "name": "send-tab-to-self-v2",
