@@ -5074,6 +5074,17 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
+      'mac12-arm64-rel-tests': {
+        'mixins': [
+            # Only run selected test suites on CQ. https://crbug.com/1234525.
+            'ci_only',
+            'mac_12_beta_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+        },
+      },
     },
   },
   {

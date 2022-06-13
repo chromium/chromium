@@ -30,35 +30,6 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac11-arm64-rel-tests",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.mac",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_arch": "arm",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "mac-arm64-rel",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "mac12-arm64-rel-tests",
               "project": "chromium"
             },
@@ -97,28 +68,17 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "mac11-arm64-rel-tests",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "mac12-arm64-rel-tests",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "mac11-arm64-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac12-arm64-rel",
-          "group": "tryserver.chromium.mac"
         }
       ]
     }
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true
+  },
   "$build/goma": {
+    "jobs": 150,
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
@@ -130,9 +90,10 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.mac",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.mac",
+  "orchestrator": {
+    "builder_group": "tryserver.chromium.mac",
+    "builder_name": "mac12-arm64-rel"
+  },
+  "recipe": "chromium/compilator"
 }
