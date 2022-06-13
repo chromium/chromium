@@ -365,8 +365,20 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     SetShowIcon(true);
   }
 
-  if (model_->is_alert_dialog(GetPassKey()))
+  if (model_->is_alert_dialog(GetPassKey())) {
+#if BUILDFLAG(IS_WIN)
+    // This is taken from LocationBarBubbleDelegateView. See
+    // GetAccessibleRoleForReason(). crbug.com/1125118: Windows ATs only
+    // announce these bubbles if the alert role is used, despite it not being
+    // the most appropriate choice.
+    // TODO(accessibility): review the role mappings for alerts and dialogs,
+    // making sure they are translated to the best candidate in each flatform
+    // without resorting to hacks like this.
+    SetAccessibleRole(ax::mojom::Role::kAlert);
+#else
     SetAccessibleRole(ax::mojom::Role::kAlertDialog);
+#endif
+  }
 
   set_internal_name(model_->internal_name(GetPassKey()));
 

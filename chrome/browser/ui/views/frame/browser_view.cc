@@ -2163,6 +2163,19 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
 
       if (focusable) {
         focusable->RequestFocus();
+#if BUILDFLAG(IS_MAC)
+        // TODO(crbug.com/650859): When a view requests focus on other
+        // platforms, its widget is activated. When doing so in FocusManager on
+        // MacOS a lot of interactive tests fail when the widget is destroyed.
+        // Activating the widget here should be safe as this happens only
+        // after explicit user action (focusing inactive dialog or rotating
+        // panes).
+        views::Widget* const widget = bubble->GetWidget();
+        if (widget && widget->IsVisible() && !widget->IsActive()) {
+          DCHECK(browser_->window()->IsActive());
+          widget->Activate();
+        }
+#endif
         return true;
       }
     }

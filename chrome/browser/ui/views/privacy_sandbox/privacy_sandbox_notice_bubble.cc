@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 using PromptAction = PrivacySandboxService::PromptAction;
@@ -93,6 +94,7 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_TITLE))
           .SetInternalName(kPrivacySandboxNoticeBubbleName)
+          .SetIsAlertDialog()
           .SetIcon(ui::ImageModel::FromImageSkia(*bundle.GetImageSkiaNamed(
                        IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER)),
                    ui::ImageModel::FromImageSkia(*bundle.GetImageSkiaNamed(
@@ -134,10 +136,14 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), configuration.anchor_view,
       configuration.bubble_arrow);
+  views::Widget* const widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   // The bubble isn't opened as a result of a user action. It shouldn't take the
-  // focus away from the current tasks. Open the bubble starting as inactive
+  // focus away from the current task. Open the bubble starting as inactive
   // also avoids unintentionally closing it due to focus loss until the user has
   // interacted with it. After a user interaction, it may be closed on focus
   // loss.
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->ShowInactive();
+  widget->ShowInactive();
+  widget->GetRootView()->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
 }
