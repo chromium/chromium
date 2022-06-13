@@ -155,11 +155,6 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kMuteCompromisedPasswordsName[] =
-    "Mute & Unmute compromised passwords in bulk leak check";
-const char kMuteCompromisedPasswordsDescription[] =
-    "Enables muting/unmuting compromised passwords in bulk leak check.";
-
 const char kPasswordNotesName[] = "Password notes in settings";
 const char kPasswordNotesDescription[] =
     "Enables a note section for each password in the settings page.";

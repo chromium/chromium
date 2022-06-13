@@ -389,11 +389,6 @@ extern const char kMetrickitCrashReportDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
-// Title and description for the flag to enable muting/unmuting compromised
-// passwords in bulk leak check.
-extern const char kMuteCompromisedPasswordsName[];
-extern const char kMuteCompromisedPasswordsDescription[];
-
 // Title and description for the flag to use the new MICe FRE.
 extern const char kNewMobileIdentityConsistencyFREName[];
 extern const char kNewMobileIdentityConsistencyFREDescription[];

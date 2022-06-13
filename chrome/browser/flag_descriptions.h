@@ -115,9 +115,6 @@ extern const char kLeakDetectionUnauthenticatedDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-extern const char kMuteCompromisedPasswordsName[];
-extern const char kMuteCompromisedPasswordsDescription[];
-
 extern const char kPasswordNotesName[];
 extern const char kPasswordNotesDescription[];
 

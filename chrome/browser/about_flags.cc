@@ -7298,11 +7298,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kSupportForAddPasswordsInSettings)},
 
-    {"mute-compromised-passwords",
-     flag_descriptions::kMuteCompromisedPasswordsName,
-     flag_descriptions::kMuteCompromisedPasswordsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
-
     {"password-notes", flag_descriptions::kPasswordNotesName,
      flag_descriptions::kPasswordNotesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordNotes)},

@@ -4247,14 +4247,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "mute-compromised-passwords",
-    "owners": [
-      "eliaskh",
-      "derinel@google.com"
-    ],
-    "expiry_milestone": 101
-  },
-  {
     "name": "mute-notification-snooze-action",
     "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
     "expiry_milestone": 96

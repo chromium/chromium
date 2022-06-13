@@ -427,11 +427,6 @@ const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
 
-const char kMuteCompromisedPasswordsName[] =
-    "Mute & Unmute compromised passwords in bulk leak check";
-const char kMuteCompromisedPasswordsDescription[] =
-    "Enables muting/unmuting compromised passwords in bulk leak check.";
-
 const char kNewMobileIdentityConsistencyFREName[] = "New MICE FRE";
 const char kNewMobileIdentityConsistencyFREDescription[] =
     "New Mobile Identity Consistency FRE";
