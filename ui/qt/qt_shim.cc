@@ -11,7 +11,10 @@
 #include <QIcon>
 #include <QMimeDatabase>
 #include <QMimeType>
+#include <QPainter>
 #include <QPalette>
+#include <QStyle>
+#include <QStyleOptionTitleBar>
 
 namespace qt {
 
@@ -257,6 +260,35 @@ void QtShim::FontChanged(const QFont& font) {
 
 void QtShim::PaletteChanged(const QPalette& palette) {
   delegate_->ThemeChanged();
+}
+
+Image QtShim::DrawHeader(int width,
+                         int height,
+                         SkColor default_color,
+                         bool is_active,
+                         bool use_custom_frame) const {
+  QImage image(width, height, QImage::Format_ARGB32_Premultiplied);
+  image.fill(default_color);
+  QPainter painter(&image);
+  if (use_custom_frame) {
+    // Chrome renders it's own window border, so clip the border out by
+    // rendering the titlebar larger than the image.
+    constexpr int kBorderWidth = 5;
+
+    QStyleOptionTitleBar opt;
+    opt.rect = QRect(-kBorderWidth, -kBorderWidth, width + 2 * kBorderWidth,
+                     height + 2 * kBorderWidth);
+    if (is_active)
+      opt.titleBarState = QStyle::State_Active;
+    app_.style()->drawComplexControl(QStyle::CC_TitleBar, &opt, &painter,
+                                     nullptr);
+  } else {
+    painter.fillRect(
+        0, 0, width, height,
+        app_.palette().brush(is_active ? QPalette::Normal : QPalette::Active,
+                             QPalette::Window));
+  }
+  return {width, height, 1.0f, Buffer(image.bits(), image.sizeInBytes())};
 }
 
 }  // namespace qt
