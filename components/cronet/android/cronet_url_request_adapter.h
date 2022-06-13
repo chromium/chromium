@@ -50,7 +50,6 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
                           net::RequestPriority priority,
                           jboolean jdisable_cache,
                           jboolean jdisable_connection_migration,
-                          jboolean jenable_metrics,
                           jboolean jtraffic_stats_tag_set,
                           jint jtraffic_stats_tag,
                           jboolean jtraffic_stats_uid_set,

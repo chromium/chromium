@@ -225,8 +225,6 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 mUrlRequestAdapter = CronetUrlRequestJni.get().createRequestAdapter(
                         CronetUrlRequest.this, mRequestContext.getUrlRequestContextAdapter(),
                         mInitialUrl, mPriority, mDisableCache, mDisableConnectionMigration,
-                        mRequestContext.hasRequestFinishedListener()
-                                || mRequestFinishedListener != null,
                         mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
                         mTrafficStatsUid, mIdempotency, mNetworkHandle);
                 mRequestContext.onRequestStarted();
@@ -859,9 +857,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
     interface Natives {
         long createRequestAdapter(CronetUrlRequest caller, long urlRequestContextAdapter,
                 String url, int priority, boolean disableCache, boolean disableConnectionMigration,
-                boolean enableMetrics, boolean trafficStatsTagSet, int trafficStatsTag,
-                boolean trafficStatsUidSet, int trafficStatsUid, int idempotency,
-                long networkHandle);
+                boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
+                int trafficStatsUid, int idempotency, long networkHandle);
 
         @NativeClassQualifiedName("CronetURLRequestAdapter")
         boolean setHttpMethod(long nativePtr, CronetUrlRequest caller, String method);
