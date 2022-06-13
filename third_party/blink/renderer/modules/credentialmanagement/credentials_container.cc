@@ -1020,13 +1020,11 @@ ScriptPromise CredentialsContainer::get(
         !mojo::ConvertTo<
             absl::optional<mojom::blink::UserVerificationRequirement>>(
             options->publicKey()->userVerification())) {
-      // The specification prescribes ignoring unknown values, but other
-      // browsers throw a TypeError. Reconsider removing this code after
-      // https://github.com/w3c/webauthn/issues/1738 is addressed.
-      v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-      resolver->Reject(V8ThrowException::CreateTypeError(
-          isolate, "Unknown publicKey.userVerification value."));
-      return promise;
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Ignoring unknown publicKey.userVerification value"));
     }
 
     if (options->hasSignal()) {
@@ -1424,14 +1422,12 @@ ScriptPromise CredentialsContainer::create(
       !mojo::ConvertTo<
           absl::optional<mojom::blink::UserVerificationRequirement>>(
           options->publicKey()->authenticatorSelection()->userVerification())) {
-    // The specification prescribes ignoring unknown values, but other
-    // browsers throw a TypeError. Reconsider removing this code after
-    // https://github.com/w3c/webauthn/issues/1738 is addressed.
-    v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        isolate,
-        "Unknown publicKey.authenticatorSelection.userVerification value."));
-    return promise;
+    resolver->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Ignoring unknown "
+            "publicKey.authenticatorSelection.userVerification value"));
   }
 
   if (options->publicKey()->hasAuthenticatorSelection() &&
