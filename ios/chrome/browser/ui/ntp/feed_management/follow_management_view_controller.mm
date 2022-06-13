@@ -289,6 +289,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(
           [self.tableView cellForRowAtIndexPath:indexPath]);
   [followedWebChannelCell startAnimatingActivityIndicator];
+
+  // TODO(crbug.com/1264872): replace the unfollowRequestBlock with one that
+  // doesn't take a parameter.
+  followedWebChannelCell.followedWebChannel.unfollowRequestBlock(nil);
 }
 
 - (void)showOrHideEmptyTableViewBackground {
