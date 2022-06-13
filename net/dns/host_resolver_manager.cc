@@ -1409,7 +1409,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         types.Remove(DnsQueryType::HTTPS);
       } else {
         DCHECK(!httpssvc_metrics_);
-        httpssvc_metrics_.emplace(/*expect_intact=*/false);
+        httpssvc_metrics_.emplace(secure_, /*expect_intact=*/false);
       }
     }
 
@@ -1423,6 +1423,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         DCHECK(!httpssvc_metrics_)
             << "Caller requested multiple experimental types";
         httpssvc_metrics_.emplace(
+            secure_,
             /*expect_intact=*/httpssvc_domain_cache_.IsExperimental(
                 GetHostname(host_)));
       }
@@ -1511,13 +1512,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       switch (transaction.type) {
         case DnsQueryType::INTEGRITY:
           DCHECK(httpssvc_metrics_);
-          // Don't record provider ID for timeouts. It is not precisely known
-          // at this level which provider is actually to blame for the
-          // timeout, and breaking metrics out by provider is no longer
-          // important for current experimentation goals.
-          httpssvc_metrics_->SaveForIntegrity(
-              /*doh_provider_id=*/absl::nullopt, HttpssvcDnsRcode::kTimedOut,
-              {}, elapsed_time);
+          httpssvc_metrics_->SaveForIntegrity(HttpssvcDnsRcode::kTimedOut,
+                                              /*condensed_records=*/{},
+                                              elapsed_time);
           break;
         case DnsQueryType::HTTPS:
           DCHECK(!secure_ ||
@@ -1529,9 +1526,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
             // at this level which provider is actually to blame for the
             // timeout, and breaking metrics out by provider is no longer
             // important for current experimentation goals.
-            httpssvc_metrics_->SaveForHttps(
-                /*doh_provider_id=*/absl::nullopt, HttpssvcDnsRcode::kTimedOut,
-                /*condensed_records=*/{}, elapsed_time);
+            httpssvc_metrics_->SaveForHttps(HttpssvcDnsRcode::kTimedOut,
+                                            /*condensed_records=*/{},
+                                            elapsed_time);
           }
           break;
         default:
@@ -1555,8 +1552,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       std::set<TransactionInfo>::iterator transaction_info_it,
       uint16_t request_port,
       int net_error,
-      const DnsResponse* response,
-      absl::optional<std::string> doh_provider_id) {
+      const DnsResponse* response) {
     DCHECK(transaction_info_it != transactions_in_progress_.end());
     DCHECK(transactions_in_progress_.find(*transaction_info_it) !=
            transactions_in_progress_.end());
@@ -1653,18 +1649,17 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         CHECK(experimental_results);
         // INTEGRITY queries can time out the normal way (here), or when the
         // experimental query timer runs out (OnExperimentalQueryTimeout).
-        httpssvc_metrics_->SaveForIntegrity(doh_provider_id, rcode_for_httpssvc,
-                                            *experimental_results,
-                                            elapsed_time);
+        httpssvc_metrics_->SaveForIntegrity(
+            rcode_for_httpssvc, *experimental_results, elapsed_time);
       } else if (transaction_info.type == DnsQueryType::HTTPS ||
                  transaction_info.type == DnsQueryType::HTTPS_EXPERIMENTAL) {
         const std::vector<bool>* record_compatibility =
             results.https_record_compatibility();
         CHECK(record_compatibility);
-        httpssvc_metrics_->SaveForHttps(doh_provider_id, rcode_for_httpssvc,
+        httpssvc_metrics_->SaveForHttps(rcode_for_httpssvc,
                                         *record_compatibility, elapsed_time);
       } else {
-        httpssvc_metrics_->SaveForAddressQuery(doh_provider_id, elapsed_time,
+        httpssvc_metrics_->SaveForAddressQuery(elapsed_time,
                                                rcode_for_httpssvc);
       }
     }

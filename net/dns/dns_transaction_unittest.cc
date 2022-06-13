@@ -362,9 +362,7 @@ class TransactionHelper {
     transaction_.reset(nullptr);
   }
 
-  void OnTransactionComplete(int rv,
-                             const DnsResponse* response,
-                             absl::optional<std::string> doh_provider_id) {
+  void OnTransactionComplete(int rv, const DnsResponse* response) {
     EXPECT_FALSE(completed_);
 
     completed_ = true;

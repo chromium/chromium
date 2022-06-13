@@ -42,14 +42,8 @@ class NET_EXPORT_PRIVATE DnsTransaction {
   // Note that the `GetDottedName()` of the response may be different than the
   // original `hostname` (passed to `DnsTransactionFactory::CreateTransaction()`
   // as a result of suffix search.
-  //
-  // The `doh_provider_id` contains the provider ID for histograms of the last
-  // DoH server attempted. If the name is unavailable, or this is not a DoH
-  // transaction, `doh_provider_id` is nullopt.
   using ResponseCallback =
-      base::OnceCallback<void(int neterror,
-                              const DnsResponse* response,
-                              absl::optional<std::string> doh_provider_id)>;
+      base::OnceCallback<void(int neterror, const DnsResponse* response)>;
 
   virtual ~DnsTransaction() = default;
 

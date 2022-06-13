@@ -2457,46 +2457,6 @@ chromium-metrics-reviews@google.com.
       name="Net.DNS.DnsTransaction.SecureValidated.FailureTime"/>
   <affected-histogram
       name="Net.DNS.DnsTransaction.SecureValidated.SuccessTime"/>
-<!-- Histograms for HTTPSSVC experiment -->
-
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.ResolveTimeHttpsRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.ResolveTimeRatio"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.ResolveTimeHttpsRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.ResolveTimeRatio"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.Integrity"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.RecordWithError"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.ResolveTimeIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.ResolveTimeNonIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.ResolveTimeRatio"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.RecordReceived"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.ResolveTimeIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.ResolveTimeNonIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.ResolveTimeRatio"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DomainGoogle" separator="">
@@ -3363,30 +3323,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="NetConnectivity.Pipeline.CanarySuccess"/>
   <affected-histogram name="NetConnectivity.Pipeline.Depth"/>
   <affected-histogram name="NetConnectivity.Pipeline.Success"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="HttpssvcIntegrityExpectation" separator="."
-    ordering="prefix,4">
-  <suffix name="ExpectIntact"
-      label="Querying the experiment domain. INTEGRITY record should be
-             intact."/>
-  <suffix name="ExpectNoerror"
-      label="Querying non-experiment domain. Should get NOERROR on INTEGRITY
-             queries."/>
-<!-- Inserts the suffix name after "RecordIntegrity" in the histograms
-         below. These are the metrics common to both the ExpectIntact and
-         ExpectNoerror branches of the HTTPSSVC metrics tree. -->
-
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordHttps.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeHttpsRecord"/>
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeRatio"/>
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeIntegrityRecord"/>
-  <affected-histogram
-      name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeNonIntegrityRecord"/>
-  <affected-histogram name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeRatio"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="IdleSktToImpact" separator="_">
