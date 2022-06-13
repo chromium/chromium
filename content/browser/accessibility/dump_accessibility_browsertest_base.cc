@@ -185,7 +185,7 @@ void DumpAccessibilityTestBase::WaitForEndOfTest() const {
   AccessibilityNotificationWaiter waiter(GetWebContents(), ui::kAXModeComplete,
                                          ax::mojom::Event::kEndOfTest);
   GetManager()->SignalEndOfTest();
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions() {
@@ -223,7 +223,7 @@ void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions() {
     action_data.action = ax::mojom::Action::kDoDefault;
     action_element->AccessibilityPerformAction(action_data);
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 }
 
@@ -253,7 +253,7 @@ void DumpAccessibilityTestBase::WaitForExpectedText() {
     VLOG(1) << "Waiting until the next accessibility event";
     AccessibilityNotificationWaiter accessibility_waiter(
         GetWebContents(), ui::kAXModeComplete, ax::mojom::Event::kNone);
-    accessibility_waiter.WaitForNotification();
+    ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 }
 
@@ -338,14 +338,16 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     EXPECT_TRUE(NavigateToURL(shell(), url));
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, ui::kAXModeComplete, ax::mojom::Event::kNone);
-    accessibility_waiter.WaitForNotification();
+    ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   } else {
     // Enable accessibility, then load the test html and wait for the
     // "load complete" AX event.
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    accessibility_waiter.WaitForNotification();
+    // TODO(https://crbug.com/1332468): Investigate why this does not return
+    // true.
+    std::ignore = accessibility_waiter.WaitForNotification();
   }
 
   WaitForAllFramesLoaded();
@@ -380,7 +382,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       // after code execution are captured.
       AccessibilityNotificationWaiter accessibility_waiter(
           web_contents, ui::AXMode(), ax::mojom::Event::kNone);
-      accessibility_waiter.WaitForNotification();
+      ASSERT_TRUE(accessibility_waiter.WaitForNotification());
     }
   }
 
@@ -483,7 +485,7 @@ void DumpAccessibilityTestBase::WaitForAllFramesLoaded() {
     VLOG(1) << "Waiting until the next accessibility event";
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, ui::kAXModeComplete, ax::mojom::Event::kNone);
-    accessibility_waiter.WaitForNotification();
+    ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 }
 
@@ -547,7 +549,9 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // Wait for at least one event. This may unblock either when |waiter|
   // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or
   // when |event_recorder| records a platform event.
-  waiter.WaitForNotification();
+  // TODO(https://crbug.com/1332468): Investigate why this does not return
+  // true.
+  std::ignore = waiter.WaitForNotification();
 
   // More than one accessibility event could have been generated.
   // To make sure we've received all accessibility events, add a

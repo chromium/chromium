@@ -77,7 +77,7 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
 
   std::string url_with_prefix = std::string("data:text/html,") + url;
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url_with_prefix.c_str())));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AXInspectFactory::CreatePlatformFormatter();
@@ -118,7 +118,7 @@ void AXTreeFormatterMacBrowserTest::TestScript(
   std::string url_with_prefix = std::string("data:text/html,") + url;
 
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url_with_prefix.c_str())));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AXInspectFactory::CreatePlatformFormatter();

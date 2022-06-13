@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ASSERT_EQ(S_OK, root_iaccessible2->scrollToPoint(
                       IA2_COORDTYPE_SCREEN_RELATIVE, iframe_screen_bounds.x(),
                       iframe_screen_bounds.y()));
-  location_changed_waiter.WaitForNotification();
+  ASSERT_TRUE(location_changed_waiter.WaitForNotification());
 
   gfx::Rect bounds = browser_accessibility->GetBoundsRect(
       ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kUnclipped);
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest, UIAScrollIntoView) {
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLocationChanged);
   EXPECT_HRESULT_SUCCEEDED(platform_node->ScrollIntoView());
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
       "</body></html>";
   GURL url(url_str);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());

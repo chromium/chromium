@@ -320,7 +320,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
         GetWebContentsAndAssertNonNull(), ui::kAXModeComplete,
         ax::mojom::Event::kLocationChanged);
     ASSERT_HRESULT_SUCCEEDED(text_range_provider->ScrollIntoView(align_to_top));
-    location_changed_waiter.WaitForNotification();
+    ASSERT_TRUE(location_changed_waiter.WaitForNotification());
 
     gfx::Rect root_page_bounds = root_browser_accessibility->GetBoundsRect(
         ui::AXCoordinateSystem::kFrame, ui::AXClippingBehavior::kUnclipped);
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   edit_data.action = ax::mojom::Action::kSetValue;
   edit_data.value = "test";
   input_text_node->AccessibilityPerformAction(edit_data);
-  edit_waiter.WaitForNotification();
+  ASSERT_TRUE(edit_waiter.WaitForNotification());
 
   AccessibilityNotificationWaiter focus_waiter(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   focus_data.target_node_id = input_text_node->GetId();
   focus_data.action = ax::mojom::Action::kFocus;
   input_text_node->AccessibilityPerformAction(focus_data);
-  focus_waiter.WaitForNotification();
+  ASSERT_TRUE(focus_waiter.WaitForNotification());
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*input_text_node, &text_range_provider);
@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   edit_data.action = ax::mojom::Action::kSetValue;
   edit_data.value = "test";
   input_text_node->AccessibilityPerformAction(edit_data);
-  edit_waiter.WaitForNotification();
+  ASSERT_TRUE(edit_waiter.WaitForNotification());
 
   AccessibilityNotificationWaiter focus_waiter(
       shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   focus_data.target_node_id = input_text_node->GetId();
   focus_data.action = ax::mojom::Action::kFocus;
   input_text_node->AccessibilityPerformAction(focus_data);
-  focus_waiter.WaitForNotification();
+  ASSERT_TRUE(focus_waiter.WaitForNotification());
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(*input_text_node, &text_range_provider);
@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                "document.getElementById('wrapper').removeChild(document."
                "getElementById('node_1'));"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
         text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
         /*count*/ -1,
@@ -1111,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        "  document.body.removeChild(document.body.firstChild);"
                        "}"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
 
     EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
         text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
@@ -2650,7 +2650,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, iframe_url));
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   SynchronizeThreads();
@@ -3237,7 +3237,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       ax::mojom::Event::kDocumentSelectionChanged);
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->Select());
 
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   ui::AXTree::Selection selection = node->GetUnignoredSelection();
   EXPECT_EQ(selection.anchor_object_id, node->GetId());
   EXPECT_EQ(selection.anchor_offset, 0);
@@ -3289,7 +3289,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         web_contents,
         "document.getElementById('s1').style.outline = '1px solid black';"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame");
   }
 
@@ -3318,7 +3318,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         "document.getElementsByTagName('iframe')[0].contentWindow.document."
         "getElementById('s1').style.outline = '1px solid black';"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Before frame\nText ");
   }
 
@@ -3349,7 +3349,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         web_contents,
         "document.getElementById('s2').style.outline = '1px solid black';"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"iframe\nAfter frame");
   }
 }
@@ -3387,7 +3387,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         web_contents,
         "document.getElementById('s1').style.outline = '1px solid black';"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     ASSERT_NE(old_tree_id, GetManager()->GetTreeID());
 
     // |text_range_provider| should now be invalid since it is using nodes
@@ -3424,7 +3424,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
         web_contents,
         "document.getElementById('s2').style.outline = '1px solid black';"));
 
-    waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
 
     // If the previous observer was not removed correctly, this will cause a
     // crash. If it was removed correctly and this EXPECT fails, it's likely

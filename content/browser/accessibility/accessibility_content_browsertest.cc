@@ -25,7 +25,7 @@ void AccessibilityContentBrowserTest::LoadInitialAccessibilityTreeFromUrl(
                                          accessibility_mode,
                                          ax::mojom::Event::kLoadComplete);
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 }
 
 void AccessibilityContentBrowserTest::

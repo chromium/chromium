@@ -47,7 +47,9 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    waiter.WaitForNotification();
+    // TODO(https://crbug.com/1332468): Investigate why this does not return
+    // true.
+    std::ignore = waiter.WaitForNotification();
   }
 
   void SendTouchExplorationEvent(int x, int y) {
@@ -111,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
       // Tolerate additional events, keep looping until we get the expected one.
       std::string cell_text;
       do {
-        waiter.WaitForNotification();
+        ASSERT_TRUE(waiter.WaitForNotification());
         int target_id = waiter.event_target_id();
         BrowserAccessibility* hit = manager->GetFromID(target_id);
         BrowserAccessibility* child = hit->PlatformGetChild(0);
@@ -147,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
                                          ax::mojom::Event::kHover);
   SendTouchExplorationEvent(50, 350);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   int target_id = waiter.event_target_id();
   BrowserAccessibility* hit = child_manager->GetFromID(target_id);
   EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
@@ -184,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
                                          ax::mojom::Event::kHover);
   SendTouchExplorationEvent(50, 350);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   int target_id = waiter.event_target_id();
   BrowserAccessibility* hit = child_manager->GetFromID(target_id);
   EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
