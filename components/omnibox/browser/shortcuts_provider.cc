@@ -448,15 +448,27 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
             !input.prevent_inline_autocomplete() ||
             match.inline_autocompletion.empty();
       }
-    } else if (!match.TryRichAutocompletion(match.contents, match.description,
-                                            input, shortcut.text)) {
-      const size_t inline_autocomplete_offset =
-          URLPrefix::GetInlineAutocompleteOffset(
-              input.text(), fixed_up_input_text, true, match.fill_into_edit);
-      if (inline_autocomplete_offset != std::u16string::npos) {
-        match.inline_autocompletion =
-            match.fill_into_edit.substr(inline_autocomplete_offset);
-        match.SetAllowedToBeDefault(input);
+    } else {
+      // Try rich autocompletion first. For document suggestions,
+      // `match.contents` is the title, while `description` is something like
+      // 'Google Docs' and shouldn't be autocompleted. For all other nav
+      // suggestions, `contents` is the URL and `description` is the title.
+      bool autocompleted =
+          match.type == AutocompleteMatch::Type::DOCUMENT_SUGGESTION
+              ? match.TryRichAutocompletion(u"", match.contents, input,
+                                            shortcut.text)
+              : match.TryRichAutocompletion(match.contents, match.description,
+                                            input, shortcut.text);
+
+      if (!autocompleted) {
+        const size_t inline_autocomplete_offset =
+            URLPrefix::GetInlineAutocompleteOffset(
+                input.text(), fixed_up_input_text, true, match.fill_into_edit);
+        if (inline_autocomplete_offset != std::u16string::npos) {
+          match.inline_autocompletion =
+              match.fill_into_edit.substr(inline_autocomplete_offset);
+          match.SetAllowedToBeDefault(input);
+        }
       }
     }
   }
