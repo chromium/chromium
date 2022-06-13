@@ -3432,19 +3432,25 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   }
 }
 
-void Element::ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>) {
+void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {
   DCHECK(NeedsReattachLayoutTree());
   DCHECK(ChildNeedsReattachLayoutTree());
-  DCHECK(!GetShadowRoot());
   DCHECK(GetLayoutObject());
-  DCHECK(GetLayoutObject()->StyleRef().CanMatchSizeContainerQueries(*this));
 
   constexpr bool performing_reattach = true;
 
   DetachPrecedingPseudoElements(performing_reattach);
 
-  for (Node* child = firstChild(); child; child = child->nextSibling())
-    child->DetachLayoutTree(performing_reattach);
+  ShadowRoot* shadow_root = GetShadowRoot();
+
+  if (shadow_root) {
+    shadow_root->DetachLayoutTree(performing_reattach);
+  } else {
+    // Can not use ContainerNode::DetachLayoutTree() because that would also
+    // call Node::DetachLayoutTree for this element.
+    for (Node* child = firstChild(); child; child = child->nextSibling())
+      child->DetachLayoutTree(performing_reattach);
+  }
 
   DetachSucceedingPseudoElements(performing_reattach);
 
@@ -3457,8 +3463,14 @@ void Element::ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>) {
 
   AttachPrecedingPseudoElements(context);
 
-  for (Node* child = firstChild(); child; child = child->nextSibling())
-    child->AttachLayoutTree(context);
+  if (shadow_root) {
+    shadow_root->AttachLayoutTree(context);
+  } else {
+    // Can not use ContainerNode::DetachLayoutTree() because that would also
+    // call Node::AttachLayoutTree for this element.
+    for (Node* child = firstChild(); child; child = child->nextSibling())
+      child->AttachLayoutTree(context);
+  }
 
   AttachSucceedingPseudoElements(context);
 
@@ -5677,16 +5689,16 @@ bool Element::ForceLegacyLayoutInFormattingContext(
     if (style->Display() == EDisplay::kNone)
       break;
 
-    // CSSContainerQueries rely on LayoutNG being fully shipped before shipping.
-    // In the meantime, make sure we do not mark containers for re-attachment
-    // since we might be in the process of laying out the container.
-    if (container_recalc_root == ancestor)
-      break;
-
     found_fc = DefinitelyNewFormattingContext(*ancestor, *style);
     ancestor->SetShouldForceLegacyLayoutForChild(true);
     ancestor->SetNeedsReattachLayoutTree();
     needs_reattach = true;
+
+    if (container_recalc_root == ancestor) {
+      DCHECK(found_fc)
+          << "A size query container is always a formatting context";
+      break;
+    }
   }
   return needs_reattach;
 }

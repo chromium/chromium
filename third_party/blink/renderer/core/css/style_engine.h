@@ -82,7 +82,6 @@ class DocumentStyleSheetCollection;
 class ElementRuleCollector;
 class FontSelector;
 class HTMLBodyElement;
-class HTMLFieldSetElement;
 class HTMLSelectElement;
 class MediaQueryEvaluator;
 class Node;
@@ -720,9 +719,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void RebuildLayoutTreeForTraversalRootAncestors(Element* parent);
 
-  // Separate path for layout tree rebuild for html fieldset as a size query
-  // container.
-  void RebuildFieldSetContainer(HTMLFieldSetElement& fieldset);
+  // Separate path for layout tree rebuild for re-attaching children of a
+  // fieldset size query container, or a size query container which must use
+  // legacy layout fallback, during layout.
+  void ReattachContainerSubtree(Element& container);
 
   // Invalidate ancestors or siblings affected by :has() state change
   inline void InvalidateElementAffectedByHas(Element&, bool for_pseudo_change);

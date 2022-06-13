@@ -88,7 +88,6 @@ class ElementRareData;
 class ExceptionState;
 class FocusOptions;
 class GetInnerHTMLOptions;
-class HTMLFieldSetElement;
 class HTMLSelectMenuElement;
 class HTMLTemplateElement;
 class Image;
@@ -108,6 +107,7 @@ class ScrollToOptions;
 class ShadowRoot;
 class ShadowRootInit;
 class SpaceSplitString;
+class StyleEngine;
 class StylePropertyMap;
 class StylePropertyMapReadOnly;
 class StyleRecalcContext;
@@ -630,6 +630,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
            NeedsLayoutSubtreeUpdate();
   }
   void RebuildLayoutTree(WhitespaceAttacher&);
+
+  // Reattach layout tree for all children but not the element itself. This is
+  // only used for UpdateStyleAndLayoutTreeForContainer when:
+  // 1. Re-attaching fieldset when the fieldset layout tree changes and the size
+  //    query container is a fieldset.
+  // 2. Re-attaching for legacy box tree when table-* boxes have columns.
+  //
+  // Case 2 is only necessary until table fragmentation is shipped for LayoutNG.
+  //
+  void ReattachLayoutTreeChildren(base::PassKey<StyleEngine>);
+
   void HandleSubtreeModifications();
   void PseudoStateChanged(CSSSelector::PseudoType);
   void PseudoStateChangedForTesting(CSSSelector::PseudoType);
@@ -1242,11 +1253,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // be modified if required by this element.
   void AdjustForceLegacyLayout(const ComputedStyle*,
                                bool* should_force_legacy_layout);
-
-  // Reattach layout tree for all children but not the element itself. This is
-  // only used for reattaching fieldset children when the fieldset is a query
-  // container for size container queries.
-  void ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>);
 
  private:
   friend class AXObject;
