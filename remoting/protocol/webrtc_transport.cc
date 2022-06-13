@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -144,7 +145,8 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
 // Initializes default parameters for a sender that may be different from
 // WebRTC's defaults.
 void SetDefaultSenderParameters(
-    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) {
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+    int video_frame_rate) {
   if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
     webrtc::RtpParameters parameters = sender->GetParameters();
     if (parameters.encodings.empty()) {
@@ -153,7 +155,7 @@ void SetDefaultSenderParameters(
     }
 
     for (auto& encoding : parameters.encodings) {
-      encoding.max_framerate = kTargetFrameRate;
+      encoding.max_framerate = video_frame_rate;
     }
 
     webrtc::RTCError result = sender->SetParameters(parameters);
@@ -745,6 +747,16 @@ void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   if (video_codec) {
     preferred_video_codec_ = *video_codec;
   }
+  absl::optional<std::string> video_frame_rate =
+      session_options().Get("Video-Frame-Rate");
+  if (video_frame_rate) {
+    int frame_rate;
+    if (base::StringToInt(*video_frame_rate, &frame_rate)) {
+      // Clamp the range to prevent a bad experience in case of a client bug.
+      frame_rate = base::clamp<int>(frame_rate, kTargetFrameRate, 1000);
+      desired_video_frame_rate_ = frame_rate;
+    }
+  }
 }
 
 void WebrtcTransport::OnAudioTransceiverCreated(
@@ -757,7 +769,7 @@ void WebrtcTransport::OnVideoTransceiverCreated(
   auto sender = transceiver->sender();
   auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
   SetSenderBitrates(sender, min_bitrate_bps, max_bitrate_bps);
-  SetDefaultSenderParameters(sender);
+  SetDefaultSenderParameters(sender, desired_video_frame_rate_);
 }
 
 void WebrtcTransport::OnLocalSessionDescriptionCreated(
@@ -845,7 +857,7 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
   // maximum framerate.
   auto senders = peer_connection()->GetSenders();
   for (const auto& sender : senders) {
-    SetDefaultSenderParameters(sender);
+    SetDefaultSenderParameters(sender, desired_video_frame_rate_);
   }
 }
 

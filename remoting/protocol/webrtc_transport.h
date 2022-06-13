@@ -17,6 +17,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "crypto/hmac.h"
+#include "remoting/base/constants.h"
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session_options_provider.h"
@@ -253,6 +254,7 @@ class WebrtcTransport : public Transport,
       pending_incoming_candidates_;
 
   std::string preferred_video_codec_;
+  int desired_video_frame_rate_ = kTargetFrameRate;
 
   SessionOptions session_options_;
 
