@@ -28,6 +28,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -851,16 +852,26 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationEnabled) {
 class ChromeContentBrowserClientSwitchTest : public testing::Test {
  public:
   ChromeContentBrowserClientSwitchTest()
-      : command_line_(base::CommandLine::NO_PROGRAM),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
-  void SetUp() override {
-    command_line_.AppendSwitchASCII(switches::kProcessType,
-                                    switches::kRendererProcess);
+  void SetBooleanSwitchToLocalState(const std::string& path, bool value) {
+    testing_local_state_.Get()->SetBoolean(path, value);
   }
 
- protected:
-  base::CommandLine command_line_;
+  void AppendSwitchInCurrentProcess(const base::StringPiece& switch_string) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switch_string);
+  }
+
+  base::CommandLine FetchCommandLineSwitchesForRendererProcess() {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kProcessType,
+                                   switches::kRendererProcess);
+
+    client_.AppendExtraCommandLineSwitches(&command_line, kFakeChildProcessId);
+    return command_line;
+  }
+
+ private:
   ScopedTestingLocalState testing_local_state_;
   ChromeContentBrowserClient client_;
   content::BrowserTaskEnvironment task_environment_;
@@ -868,23 +879,38 @@ class ChromeContentBrowserClientSwitchTest : public testing::Test {
 };
 
 TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDefault) {
-  client_.AppendExtraCommandLineSwitches(&command_line_, kFakeChildProcessId);
-  EXPECT_FALSE(command_line_.HasSwitch(blink::switches::kWebSQLAccess));
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(blink::switches::kWebSQLAccess));
 }
 
 TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessDisabled) {
-  testing_local_state_.Get()->SetBoolean(policy::policy_prefs::kWebSQLAccess,
-                                         false);
-  client_.AppendExtraCommandLineSwitches(&command_line_, kFakeChildProcessId);
-  EXPECT_FALSE(command_line_.HasSwitch(blink::switches::kWebSQLAccess));
+  SetBooleanSwitchToLocalState(policy::policy_prefs::kWebSQLAccess, false);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(blink::switches::kWebSQLAccess));
 }
 
 TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessEnabled) {
-  testing_local_state_.Get()->SetBoolean(policy::policy_prefs::kWebSQLAccess,
-                                         true);
-  client_.AppendExtraCommandLineSwitches(&command_line_, kFakeChildProcessId);
-  EXPECT_TRUE(command_line_.HasSwitch(blink::switches::kWebSQLAccess));
+  SetBooleanSwitchToLocalState(policy::policy_prefs::kWebSQLAccess, true);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(result.HasSwitch(blink::switches::kWebSQLAccess));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       ShouldSetForceAppModeSwitchInRendererProcessIfItIsSetInCurrentProcess) {
+  AppendSwitchInCurrentProcess(switches::kForceAppMode);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(result.HasSwitch(switches::kForceAppMode));
+}
+
+TEST_F(
+    ChromeContentBrowserClientSwitchTest,
+    ShouldNotSetForceAppModeSwitchInRendererProcessIfItIsUnsetInCurrentProcess) {
+  // We don't set the `kForceAppMode` flag in the current process.
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(switches::kForceAppMode));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromeContentBrowserGetFirstPartySetsOverridesTest
     : public testing::Test {
