@@ -6895,8 +6895,9 @@ crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/scri
 crbug.com/1317007 external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
 
 # Sheriff 2022-04-18
-# TODO(crbug.com/1316144): Re-enable this test
-crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash Pass ]
+# TODO(crbug.com/1316144): [Crash] Re-enable this test
+# TODO(crbug.com/1334265): [Failure] Bug fix temporarily reverted while compat issues are worked out
+crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash Failure Pass ]
 
 crbug.com/1296449 [ Linux Release ] external/wpt/workers/SharedWorker-MessageEvent-source.any.sharedworker.html [ Skip ]
 

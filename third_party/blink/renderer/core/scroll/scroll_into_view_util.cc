@@ -167,9 +167,7 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
     VisualViewport& visual_viewport =
         current_box->GetFrame()->GetPage()->GetVisualViewport();
-    if (is_fixed_to_frame && current_box->GetFrame()->IsMainFrame() &&
-        visual_viewport.IsActiveViewport() &&
-        params->make_visible_in_visual_viewport) {
+    if (is_fixed_to_frame && params->make_visible_in_visual_viewport) {
       // If we're in a position:fixed element, scrolling the layout viewport
       // won't have any effect and would be wrong so we want to bubble up to
       // the layout viewport's parent. For subframes that's the frame's owner.
@@ -178,11 +176,20 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
       // Note: In non-fixed cases, the visual viewport will have been scrolled
       // by the frame scroll via the RootFrameViewport
       // (GetFrameView()->GetScrollableArea() above).
-      absolute_rect_to_scroll =
-          current_box->GetFrame()
-              ->GetPage()
-              ->GetVisualViewport()
-              .ScrollIntoView(absolute_rect_to_scroll, params);
+      if (current_box->GetFrame()->IsMainFrame() &&
+          visual_viewport.IsActiveViewport()) {
+        absolute_rect_to_scroll =
+            current_box->GetFrame()
+                ->GetPage()
+                ->GetVisualViewport()
+                .ScrollIntoView(absolute_rect_to_scroll, params);
+      }
+
+      // TODO(bokan): To be correct we should continue to bubble the scroll
+      // from a subframe since ancestor frames can still scroll the element
+      // into view. However, making that change had some compat-impact so we
+      // intentionally keep this behavior for now while
+      // https://crbug.com/1334265 is resolved.
       break;
     }
 
