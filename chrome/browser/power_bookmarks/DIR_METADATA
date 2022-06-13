@@ -1,4 +1,0 @@
-monorail {
-  component: "UI>Browser>Shopping"
-}
-team_email: "chrome-shopping@google.com"

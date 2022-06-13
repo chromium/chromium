@@ -270,14 +270,9 @@ public class BookmarkUtils {
         if (url.getSpec().equals(UrlConstants.NTP_URL)) {
             title = context.getResources().getString(R.string.new_tab_title);
         }
-        // The shopping list experiment saves extra metadata along with the bookmark.
-        if (ShoppingFeatures.isShoppingListEnabled()) {
-            bookmarkId = bookmarkModel.addPowerBookmark(
-                    webContents, parent, bookmarkModel.getChildCount(parent), title, url);
-        } else {
-            bookmarkId = bookmarkModel.addBookmark(
-                    parent, bookmarkModel.getChildCount(parent), title, url);
-        }
+
+        bookmarkId = bookmarkModel.addBookmark(
+                null, parent, bookmarkModel.getChildCount(parent), title, url);
         // TODO(lazzzis): remove log after bookmark sync is fixed, crbug.com/986978
         if (bookmarkId == null) {
             Log.e(TAG,

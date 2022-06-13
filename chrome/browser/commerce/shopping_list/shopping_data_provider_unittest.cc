@@ -5,8 +5,8 @@
 #include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace shopping_list {

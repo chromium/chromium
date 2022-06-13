@@ -2,32 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POWER_BOOKMARKS_POWER_BOOKMARK_UTILS_H_
-#define CHROME_BROWSER_POWER_BOOKMARKS_POWER_BOOKMARK_UTILS_H_
+#ifndef COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_UTILS_H_
+#define COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_UTILS_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-class GURL;
-
-namespace base {
-class GUID;
-class Time;
-}  // namespace base
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
-
-namespace content {
-class WebContents;
-}
 
 namespace power_bookmarks {
 
@@ -51,20 +40,6 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
 // This is the key for the storage of PowerBookmarkMeta in bookmarks' meta_info
 // map.
 extern const char kPowerBookmarkMetaKey[];
-
-// Add a bookmark to the provided model. This version is similar to the method
-// on BookmarkModel with the addition of polling extra metadata providers and
-// attaching it to the node prior to returning it to the client.
-const bookmarks::BookmarkNode* AddURL(
-    content::WebContents* web_contents,
-    bookmarks::BookmarkModel* model,
-    const bookmarks::BookmarkNode* parent,
-    size_t index,
-    const std::u16string& title,
-    const GURL& url,
-    bookmarks::BookmarkNode::MetaInfoMap* meta_info = nullptr,
-    absl::optional<base::Time> creation_time = absl::nullopt,
-    absl::optional<base::GUID> guid = absl::nullopt);
 
 // Get the PowerBookmarkMeta for a node. The ownership of the returned object
 // is transferred to the caller and a new instance is created each time this is
@@ -106,4 +81,4 @@ bool DecodeMetaFromStorage(const std::string& data, PowerBookmarkMeta* out);
 
 }  // namespace power_bookmarks
 
-#endif  // CHROME_BROWSER_POWER_BOOKMARKS_POWER_BOOKMARK_UTILS_H_
+#endif  // COMPONENTS_POWER_BOOKMARKS_CORE_POWER_BOOKMARK_UTILS_H_

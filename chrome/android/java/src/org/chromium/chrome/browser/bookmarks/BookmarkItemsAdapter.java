@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
@@ -47,6 +45,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
 import java.util.ArrayList;
 import java.util.List;

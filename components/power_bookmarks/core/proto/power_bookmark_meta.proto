@@ -5,13 +5,13 @@
 syntax = "proto2";
 
 option java_multiple_files = true;
-option java_package = "org.chromium.chrome.browser.power_bookmarks";
+option java_package = "org.chromium.components.power_bookmarks";
 
 option optimize_for = LITE_RUNTIME;
 
 package power_bookmarks;
 
-import "chrome/browser/power_bookmarks/proto/shopping_specifics.proto";
+import "components/power_bookmarks/core/proto/shopping_specifics.proto";
 
 enum PowerBookmarkType {
   UNSPECIFIED = 0;
@@ -35,7 +35,9 @@ message PowerBookmarkMeta {
   optional PowerBookmarkType type = 4;
 
   // Extra information corresponding to the |type|.
-  oneof type_specifics { ShoppingSpecifics shopping_specifics = 5; }
+  oneof type_specifics {
+    ShoppingSpecifics shopping_specifics = 5;
+  }
 
   message Tag {
     // The name of the tag as displayed to the user.

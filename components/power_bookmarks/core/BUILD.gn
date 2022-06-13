@@ -8,7 +8,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("power_bookmarks") {
+static_library("core") {
   sources = [
     "power_bookmark_utils.cc",
     "power_bookmark_utils.h",
@@ -19,10 +19,8 @@ static_library("power_bookmarks") {
   deps = [
     "//base",
     "//base:i18n",
-    "//chrome/browser/commerce/shopping_list",
     "//components/bookmarks/browser",
     "//components/commerce/core:proto",
-    "//content/public/browser",
     "//ui/base",
     "//url",
   ]
@@ -48,17 +46,16 @@ if (is_android) {
   }
 }
 
-static_library("unit_tests") {
+source_set("unit_tests") {
   testonly = true
 
   sources = [ "power_bookmark_utils_unittest.cc" ]
 
   deps = [
-    ":power_bookmarks",
+    ":core",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
-    "//content/public/browser",
     "//testing/gtest",
   ]
 }

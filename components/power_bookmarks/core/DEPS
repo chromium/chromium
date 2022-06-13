@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/bookmarks",
+  "+ui/base",
+]
