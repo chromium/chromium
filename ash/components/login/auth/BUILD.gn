@@ -150,6 +150,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/userdataauth",
     "//chromeos/dbus/userdataauth:test_support",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//components/prefs",
     "//components/prefs:test_support",
     "//net",

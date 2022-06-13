@@ -160,7 +160,7 @@ void AuthPerformer::AuthenticateWithPassword(
 
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &AuthPerformer::HashPasswordAndAuthenticate, weak_factory_.GetWeakPtr(),
-      password, key_label, std::move(context), std::move(callback)));
+      key_label, password, std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::HashPasswordAndAuthenticate(
