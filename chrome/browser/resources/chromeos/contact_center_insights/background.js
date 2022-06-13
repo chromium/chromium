@@ -87,10 +87,15 @@ function reportTelemetryData(telemetryData) {
   const metricData = new proto.reporting.MetricData();
   metricData.setTelemetryData(telemetryData);
 
+  // Also set metric timestamp (in ms) because the server also checks for these
+  // in addition to the ones set with the record (in microseconds) today.
+  const timestampMs = Date.now();
+  metricData.setTimestampMs(timestampMs);
+
   const record = new proto.reporting.Record();
   record.setDestination(proto.reporting.Destination.TELEMETRY_METRIC);
   record.setData(metricData.serializeBinary());
-  record.setTimestampUs(Date.now() * 1000);
+  record.setTimestampUs(timestampMs * 1000);
 
   // Prepare enqueue record request
   const request = {
