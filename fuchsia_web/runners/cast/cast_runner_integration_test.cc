@@ -548,14 +548,18 @@ class CastRunnerIntegrationTest : public testing::Test {
     cast_runner_.Unbind();
   }
 
+  const sys::ServiceDirectory& cast_runner_services() {
+    return *cast_runner_services_;
+  }
+
  protected:
   explicit CastRunnerIntegrationTest(CastRunnerFeatures runner_features) {
     // Start CastRunner.
-    sys::ServiceDirectory cast_runner_services = StartCastRunner(
+    cast_runner_services_ = StartCastRunner(
         runner_features, cast_runner_controller_.ptr().NewRequest());
 
     // Connect to the CastRunner's fuchsia.sys.Runner interface.
-    cast_runner_ = cast_runner_services.Connect<fuchsia::sys::Runner>();
+    cast_runner_ = cast_runner_services().Connect<fuchsia::sys::Runner>();
     cast_runner_.set_error_handler([](zx_status_t status) {
       ZX_LOG(ERROR, status) << "CastRunner closed channel.";
       ADD_FAILURE();
@@ -566,7 +570,7 @@ class CastRunnerIntegrationTest : public testing::Test {
     EXPECT_TRUE(test_server_.Start());
   }
 
-  sys::ServiceDirectory StartCastRunner(
+  std::unique_ptr<sys::ServiceDirectory> StartCastRunner(
       CastRunnerFeatures runner_features,
       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
           component_controller_request) {
@@ -627,7 +631,8 @@ class CastRunnerIntegrationTest : public testing::Test {
     base::ComponentContextForProcess()->svc()->Connect(launcher.NewRequest());
     launcher->CreateComponent(std::move(launch_info),
                               std::move(component_controller_request));
-    return sys::ServiceDirectory(std::move(cast_runner_services_dir));
+    return std::make_unique<sys::ServiceDirectory>(
+        std::move(cast_runner_services_dir));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -652,6 +657,8 @@ class CastRunnerIntegrationTest : public testing::Test {
       fake_audio_device_enumerator_;
 
   fuchsia::sys::RunnerPtr cast_runner_;
+
+  std::unique_ptr<sys::ServiceDirectory> cast_runner_services_;
 };
 
 // A basic integration test ensuring a basic cast request launches the right
@@ -1302,10 +1309,38 @@ TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
 }
 
 // Verifies that CastRunner offers a chromium.cast.DataReset service.
+// Verifies that after the DeletePersistentData() API is invoked, no further
+// component-start requests are honoured.
 // TODO(crbug.com/1146474): Expand the test to verify that the persisted data is
 // correctly cleared (e.g. using a custom test HTML app that uses persisted
 // data).
-TEST_F(CastRunnerIntegrationTest, DataReset) {
+TEST_F(CastRunnerIntegrationTest, DataReset_Service) {
+  base::RunLoop loop;
+  auto data_reset = cast_runner_services().Connect<chromium::cast::DataReset>();
+  data_reset.set_error_handler([quit_loop = loop.QuitClosure()](zx_status_t) {
+    quit_loop.Run();
+    ADD_FAILURE();
+  });
+  bool succeeded = false;
+  data_reset->DeletePersistentData([&succeeded, &loop](bool result) {
+    succeeded = result;
+    loop.Quit();
+  });
+  loop.Run();
+
+  EXPECT_TRUE(succeeded);
+
+  // Verify that it is no longer possible to launch a component.
+  TestCastComponent component(cast_runner_.get());
+  GURL app_url = test_server_.GetURL(kBlankAppUrl);
+  component.app_config_manager()->AddApp(kTestAppId, app_url);
+  component.StartCastComponent(base::StrCat({"cast:", kTestAppId}));
+  component.ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
+}
+
+// Verifies that CastRunner offers a chromium.cast.DataReset component, that
+// provides the DataReset service.
+TEST_F(CastRunnerIntegrationTest, DataReset_component) {
   TestCastComponent component(cast_runner_.get());
   constexpr char kDataResetComponentName[] = "cast:chromium.cast.DataReset";
   component.StartCastComponent(kDataResetComponentName);

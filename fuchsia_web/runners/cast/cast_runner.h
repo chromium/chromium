@@ -34,6 +34,7 @@ class WebInstanceHost;
 
 // sys::Runner which instantiates Cast activities specified via cast/casts URIs.
 class CastRunner final : public fuchsia::sys::Runner,
+                         public chromium::cast::DataReset,
                          public PendingCastComponent::Delegate {
  public:
   static constexpr uint16_t kRemoteDebuggingPort = 9222;
@@ -54,6 +55,9 @@ class CastRunner final : public fuchsia::sys::Runner,
                       fuchsia::sys::StartupInfo startup_info,
                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                           controller_request) override;
+
+  // chromium::cast::DataReset implementation.
+  void DeletePersistentData(DeletePersistentDataCallback callback) override;
 
   // Enables the special component that provides the fuchsia.web.FrameHost API,
   // hosted using the same WebEngine instance as the main web.Context.
@@ -117,11 +121,10 @@ class CastRunner final : public fuchsia::sys::Runner,
           controller_request);
 
   // Moves all data persisted by the main Context to a staging directory,
-  // which will be deleted the next time the Runner starts up.
-  // Requests to launch new components in the main Context will be rejected
-  // until this Runner instance is shutdown.
-  // Returns true on success and false in case of I/O error.
-  bool DeletePersistentData();
+  // which will be deleted the next time the Runner starts up, and configures
+  // the Runner to reject new component-launch requests until it is shutdown.
+  // Returns false if tha data directory cannot be cleaned-up.
+  bool DeletePersistentDataInternal();
 
   // TODO(crbug.com/1188780): Used to detect when the persisted cache directory
   // was erased. The sentinel file is created at the top-level of the cache

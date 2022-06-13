@@ -127,8 +127,12 @@ int main(int argc, char** argv) {
       command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
       GetConfigBool(kHeadlessConfigKey);
   CastRunner runner(&web_instance_host, enable_headless);
-  base::ScopedServiceBinding<fuchsia::sys::Runner> binding(outgoing_directory,
-                                                           &runner);
+  const base::ScopedServiceBinding<fuchsia::sys::Runner> runner_binding(
+      outgoing_directory, &runner);
+
+  // Publish the associated DataReset service for the instance.
+  const base::ScopedServiceBinding<chromium::cast::DataReset>
+      data_reset_binding(outgoing_directory, &runner);
 
   if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST
