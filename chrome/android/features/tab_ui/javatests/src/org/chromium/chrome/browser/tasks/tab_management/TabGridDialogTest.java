@@ -342,7 +342,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1231024 and https://crbug.com/1121363")
     public void testUndoClosureInDialog_DialogUndoBar() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
