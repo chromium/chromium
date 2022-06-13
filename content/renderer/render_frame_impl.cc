@@ -6016,8 +6016,8 @@ RenderFrameImpl::CreateURLLoaderFactory() {
             ->Clone();
       }
     }
-    // At this point we can't create anything.
-    NOTREACHED();
+    // At this point we can't create anything. We use CHECK(false) instead of
+    // NOTREACHED() here to catch errors on clusterfuzz and production.
     CHECK(false);
     return nullptr;
   }

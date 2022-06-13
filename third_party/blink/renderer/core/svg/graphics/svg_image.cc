@@ -91,11 +91,9 @@ using TaskRunnerHandle = scheduler::WebResourceLoadingTaskRunnerHandle;
 class FailingLoader final : public WebURLLoader {
  public:
   explicit FailingLoader(
-      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
-      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
-      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
-        unfreezable_task_runner_handle_(
-            std::move(unfreezable_task_runner_handle)) {}
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle)
+      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)) {
+  }
   ~FailingLoader() override = default;
 
   // WebURLLoader implementation:
@@ -134,7 +132,6 @@ class FailingLoader final : public WebURLLoader {
 
  private:
   const std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle_;
-  const std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle_;
 };
 
 class FailingLoaderFactory final : public WebURLLoaderFactory {
@@ -149,8 +146,7 @@ class FailingLoaderFactory final : public WebURLLoaderFactory {
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     return std::make_unique<FailingLoader>(
-        std::move(freezable_task_runner_handle),
-        std::move(unfreezable_task_runner_handle));
+        std::move(freezable_task_runner_handle));
   }
 };
 

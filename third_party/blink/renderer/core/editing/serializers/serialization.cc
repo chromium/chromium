@@ -29,7 +29,10 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
+#include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -81,6 +84,8 @@
 
 namespace blink {
 
+using TaskRunnerHandle = scheduler::WebResourceLoadingTaskRunnerHandle;
+
 class AttributeChange {
   DISALLOW_NEW();
 
@@ -107,6 +112,117 @@ class AttributeChange {
 WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::AttributeChange)
 
 namespace blink {
+
+namespace {
+
+class FailingLoader final : public WebURLLoader {
+ public:
+  explicit FailingLoader(
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle)
+      : freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
+        unfreezable_task_runner_handle_(
+            std::move(unfreezable_task_runner_handle)) {}
+  ~FailingLoader() override = default;
+
+  // WebURLLoader implementation:
+  void LoadSynchronously(
+      std::unique_ptr<network::ResourceRequest> request,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      bool pass_response_pipe_to_client,
+      bool no_mime_sniffing,
+      base::TimeDelta timeout_interval,
+      WebURLLoaderClient*,
+      WebURLResponse&,
+      absl::optional<WebURLError>& error,
+      WebData&,
+      int64_t& encoded_data_length,
+      int64_t& encoded_body_length,
+      WebBlobInfo& downloaded_blob,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper) override {
+    error.emplace(ResourceError::Failure(KURL(request->url)));
+  }
+  void LoadAsynchronously(
+      std::unique_ptr<network::ResourceRequest> request,
+      scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
+      bool no_mime_sniffing,
+      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+          resource_load_info_notifier_wrapper,
+      WebURLLoaderClient* client) override {
+    url_ = KURL(request->url);
+    client_ = client;
+    freezable_task_runner_handle_->GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::Bind(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
+  }
+  void Freeze(LoaderFreezeMode mode) override {
+    mode_ = mode;
+    if (mode_ != LoaderFreezeMode::kNone || !client_) {
+      return;
+    }
+    freezable_task_runner_handle_->GetTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::Bind(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
+  }
+  void DidChangePriority(WebURLRequest::Priority, int) override {}
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
+      override {
+    return freezable_task_runner_handle_->GetTaskRunner();
+  }
+
+ private:
+  void Fail() {
+    if (mode_ != LoaderFreezeMode::kNone || !client_) {
+      return;
+    }
+
+    auto* client = client_;
+    client_ = nullptr;
+    client->DidFail(static_cast<WebURLError>(ResourceError::Failure(url_)),
+                    /*finish_time=*/base::TimeTicks::Now(),
+                    /*total_encoded_data_length=*/0,
+                    /*total_encoded_body_length=*/0,
+                    /*total_decoded_body_length=*/0);
+  }
+
+  KURL url_;
+  WebURLLoaderClient* client_ = nullptr;
+  LoaderFreezeMode mode_ = LoaderFreezeMode::kNone;
+
+  const std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle_;
+  const std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle_;
+
+  // This must be the last member.
+  base::WeakPtrFactory<FailingLoader> weak_ptr_factory_{this};
+};
+
+class FailingLoaderFactory final : public WebURLLoaderFactory {
+ public:
+  // WebURLLoaderFactory implementation:
+  std::unique_ptr<WebURLLoader> CreateURLLoader(
+      const WebURLRequest&,
+      std::unique_ptr<TaskRunnerHandle> freezable_task_runner_handle,
+      std::unique_ptr<TaskRunnerHandle> unfreezable_task_runner_handle,
+      CrossVariantMojoRemote<mojom::KeepAliveHandleInterfaceBase>
+          keep_alive_handle,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+      override {
+    return std::make_unique<FailingLoader>(
+        std::move(freezable_task_runner_handle),
+        std::move(unfreezable_task_runner_handle));
+  }
+};
+
+class EmptyLocalFrameClientWithFailingLoaderFactory final
+    : public EmptyLocalFrameClient {
+ public:
+  std::unique_ptr<WebURLLoaderFactory> CreateURLLoaderFactory() override {
+    return std::make_unique<FailingLoaderFactory>();
+  }
+};
+
+}  // namespace
 
 static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
   HeapVector<AttributeChange> changes;
@@ -784,8 +900,10 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   page->GetSettings().SetParserScriptingFlagPolicy(
       ParserScriptingFlagPolicy::kEnabled);
 
+  auto* client =
+      MakeGarbageCollected<EmptyLocalFrameClientWithFailingLoaderFactory>();
   LocalFrame* frame = MakeGarbageCollected<LocalFrame>(
-      MakeGarbageCollected<EmptyLocalFrameClient>(), *page,
+      client, *page,
       nullptr,  // FrameOwner*
       nullptr,  // Frame* parent
       nullptr,  // Frame* previous_sibling
