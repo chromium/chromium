@@ -472,9 +472,8 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   if (browser_view)
     SetBackground(std::make_unique<TopContainerBackground>(browser_view));
 
-  views::SetCascadingThemeProviderColor(
-      this, views::kCascadingBackgroundColor,
-      ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND);
+  views::SetCascadingColorProviderColor(this, views::kCascadingBackgroundColor,
+                                        kColorBookmarkBarBackground);
 
   Init();
 }
@@ -1415,7 +1414,7 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
 }
 
 void BookmarkBarView::Init() {
-  // Note that at this point we're not in a hierarchy so GetThemeProvider() will
+  // Note that at this point we're not in a hierarchy so GetColorProvider() will
   // return nullptr.  When we're inserted into a hierarchy, we'll call
   // UpdateAppearanceForTheme(), which will set the appropriate colors for all
   // the objects added in this function.
