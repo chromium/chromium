@@ -89,6 +89,12 @@ void BadgeManager::BindFrameReceiver(
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // The Badging API is not allowed for the fenced frames.
+  if (frame->IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage("The Badging API is not allowed in a fenced frame");
+    return;
+  }
+
   auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
 
   auto* badge_manager =
@@ -107,6 +113,9 @@ void BadgeManager::BindServiceWorkerReceiver(
     const GURL& service_worker_scope,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO(crbug.com/1276419): decline the request if the service worker
+  // is created by a fenced frame.
 
   auto* profile = Profile::FromBrowserContext(
       service_worker_process_host->GetBrowserContext());

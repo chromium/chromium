@@ -43,6 +43,8 @@ class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
       ScriptState* script_state,
       mojom::blink::BadgeValuePtr badge_value);
   static ScriptPromise ClearAppBadgeHelper(ScriptState* script_state);
+  // Returns true if using the Badging API is allowed in this context.
+  static bool IsAllowed(ScriptState* script_state);
 
   mojo::Remote<mojom::blink::BadgeService> badge_service();
 };
