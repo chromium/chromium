@@ -141,7 +141,7 @@ public class ChromeApplicationTestUtils {
             Coordinates coord = Coordinates.createFor(tab.getWebContents());
             float scale = coord.getPageScaleFactor();
             Criteria.checkThat(
-                    (double) expectedScale, Matchers.is(Matchers.closeTo(scale, FLOAT_EPSILON)));
+                    (double) scale, Matchers.is(Matchers.closeTo(expectedScale, FLOAT_EPSILON)));
         });
     }
 }
