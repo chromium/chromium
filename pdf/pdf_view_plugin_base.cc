@@ -146,24 +146,6 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
-void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
-  base::Value::Dict message;
-  message.Set("type", "documentDimensions");
-  message.Set("width", layout.size().width());
-  message.Set("height", layout.size().height());
-  message.Set("layoutOptions", layout.options().ToValue());
-  base::Value::List page_dimensions;
-  for (size_t i = 0; i < layout.page_count(); ++i)
-    page_dimensions.Append(DictFromRect(layout.page_rect(i)));
-  message.Set("pageDimensions", std::move(page_dimensions));
-  SendMessage(std::move(message));
-
-  // Reload the accessibility tree on layout changes because the relative page
-  // bounds are no longer valid.
-  if (layout.dirty() && accessibility_state_ == AccessibilityState::kLoaded)
-    LoadAccessibility();
-}
-
 void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
   if (in_paint_) {
     deferred_invalidates_.push_back(rect);
@@ -800,16 +782,6 @@ void PdfViewPluginBase::SetZoom(double scale) {
   OnGeometryChanged(old_zoom, device_scale_);
   if (!document_size_.IsEmpty())
     paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
-}
-
-// static
-base::Value::Dict PdfViewPluginBase::DictFromRect(const gfx::Rect& rect) {
-  base::Value::Dict dict;
-  dict.Set("x", rect.x());
-  dict.Set("y", rect.y());
-  dict.Set("width", rect.width());
-  dict.Set("height", rect.height());
-  return dict;
 }
 
 void PdfViewPluginBase::HandleDisplayAnnotationsMessage(

@@ -85,7 +85,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
   // PDFEngine::Client:
-  void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_screen_coords) override;
@@ -331,11 +330,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_last_progress_sent(int progress) { last_progress_sent_ = progress; }
 
+  AccessibilityState accessibility_state() const {
+    return accessibility_state_;
+  }
+
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
   }
-
-  static base::Value::Dict DictFromRect(const gfx::Rect& rect);
 
   // Handles `LoadUrl()` result.
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);

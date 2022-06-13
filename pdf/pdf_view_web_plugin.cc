@@ -40,6 +40,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
+#include "pdf/document_layout.h"
 #include "pdf/metrics_handler.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/parsed_params.h"
@@ -148,6 +149,15 @@ class PerProcessInitializer final {
   // must use one thread exclusively.
   THREAD_CHECKER(thread_checker_);
 };
+
+base::Value::Dict DictFromRect(const gfx::Rect& rect) {
+  base::Value::Dict dict;
+  dict.Set("x", rect.x());
+  dict.Set("y", rect.y());
+  dict.Set("width", rect.width());
+  dict.Set("height", rect.height());
+  return dict;
+}
 
 }  // namespace
 
@@ -603,6 +613,24 @@ void PdfViewWebPlugin::ImeCommitTextForPlugin(
 void PdfViewWebPlugin::ImeFinishComposingTextForPlugin(
     bool /*keep_selection*/) {
   HandleImeCommit(composition_text_);
+}
+
+void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {
+  base::Value::Dict message;
+  message.Set("type", "documentDimensions");
+  message.Set("width", layout.size().width());
+  message.Set("height", layout.size().height());
+  message.Set("layoutOptions", layout.options().ToValue());
+  base::Value::List page_dimensions;
+  for (size_t i = 0; i < layout.page_count(); ++i)
+    page_dimensions.Append(DictFromRect(layout.page_rect(i)));
+  message.Set("pageDimensions", std::move(page_dimensions));
+  SendMessage(std::move(message));
+
+  // Reload the accessibility tree on layout changes because the relative page
+  // bounds are no longer valid.
+  if (layout.dirty() && accessibility_state() == AccessibilityState::kLoaded)
+    LoadAccessibility();
 }
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
