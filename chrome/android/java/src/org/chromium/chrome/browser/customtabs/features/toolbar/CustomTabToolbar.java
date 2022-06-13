@@ -45,6 +45,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
@@ -646,6 +647,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private boolean mCurrentlyShowingBranding;
         private List<Runnable> mAfterBrandingRunnables;
+        private CallbackController mCallbackController = new CallbackController();
 
         public View getLayout() {
             return mLocationBarFrameLayout;
@@ -673,7 +675,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             setUrlBarHidden(true);
             showBrandingIconAndText();
 
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+            Runnable hideBranding = mCallbackController.makeCancelable(() -> {
                 mCurrentlyShowingBranding = false;
                 setUrlBarHidden(!showUrlBar);
                 setShowTitle(showTitle);
@@ -681,7 +683,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     runnable.run();
                 }
                 mAfterBrandingRunnables.clear();
-            }, BRANDING_DELAY_MS);
+            });
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, hideBranding, BRANDING_DELAY_MS);
         }
 
         public void onFinishInflate(View container) {
@@ -1005,6 +1008,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public void destroy() {
+            if (mCallbackController != null) {
+                mCallbackController.destroy();
+                mCallbackController = null;
+            }
             if (mLocationBarDataProvider != null) {
                 mLocationBarDataProvider.removeObserver(this);
                 mLocationBarDataProvider = null;
