@@ -78,6 +78,14 @@ void CdmFactoryDaemonProxyLacros::GetScreenResolutions(
   }
 }
 
+void CdmFactoryDaemonProxyLacros::GetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  // This should only go through ash-chrome.
+  NOTREACHED();
+}
+
 void CdmFactoryDaemonProxyLacros::EstablishAshConnection(
     base::OnceClosure callback) {
   // This may have happened already.

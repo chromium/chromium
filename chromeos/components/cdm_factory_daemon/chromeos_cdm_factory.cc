@@ -59,6 +59,7 @@ void GetOutputProtectionOnTaskRunner(
       std::move(output_protection));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SingletonCdmContextRef : public media::CdmContextRef {
  public:
   explicit SingletonCdmContextRef(media::CdmContext* cdm_context)
@@ -75,18 +76,33 @@ class SingletonCdmContextRef : public media::CdmContextRef {
   media::CdmContext* cdm_context_;
 };
 
+void GetHwKeyDataProxy(const std::string& key_id,
+                       const std::vector<uint8_t>& hw_identifier,
+                       ChromeOsCdmContext::GetHwKeyDataCB callback) {
+  if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&GetHwKeyDataProxy, key_id, hw_identifier,
+                                  std::move(callback)));
+    return;
+  }
+  GetBrowserCdmFactoryRemote()->GetAndroidHwKeyData(
+      std::vector<uint8_t>(key_id.begin(), key_id.end()), hw_identifier,
+      std::move(callback));
+}
+
 class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
  public:
   ArcCdmContext() = default;
+  ArcCdmContext(const ArcCdmContext&) = delete;
+  ArcCdmContext& operator=(const ArcCdmContext&) = delete;
   ~ArcCdmContext() override = default;
 
   // ChromeOsCdmContext implementation.
   void GetHwKeyData(const media::DecryptConfig* decrypt_config,
                     const std::vector<uint8_t>& hw_identifier,
                     GetHwKeyDataCB callback) override {
-    // TODO(jkardatzke): We will need to implement this for Intel, but it is not
-    // used by AMD.
-    NOTREACHED();
+    GetHwKeyDataProxy(decrypt_config->key_id(), hw_identifier,
+                      std::move(callback));
   }
   std::unique_ptr<media::CdmContextRef> GetCdmContextRef() override {
     return std::make_unique<SingletonCdmContextRef>(this);
@@ -96,6 +112,7 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
   // media::CdmContext implementation.
   ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }
 };
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -108,6 +125,7 @@ ChromeOsCdmFactory::ChromeOsCdmFactory(
 
 ChromeOsCdmFactory::~ChromeOsCdmFactory() = default;
 
+// static
 mojo::PendingReceiver<cdm::mojom::BrowserCdmFactory>
 ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver() {
   mojo::PendingRemote<chromeos::cdm::mojom::BrowserCdmFactory> browser_proxy;
@@ -164,11 +182,13 @@ void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
   GetBrowserCdmFactoryRemote()->GetScreenResolutions(std::move(callback));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 media::CdmContext* ChromeOsCdmFactory::GetArcCdmContext() {
   static base::NoDestructor<ArcCdmContext> arc_cdm_context;
   return arc_cdm_context.get();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     const media::CdmConfig& cdm_config,

@@ -159,6 +159,24 @@ void CdmFactoryDaemonProxyAsh::GetScreenResolutions(
   std::move(callback).Run(std::move(resolutions));
 }
 
+void CdmFactoryDaemonProxyAsh::GetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  DCHECK(mojo_task_runner_->RunsTasksInCurrentSequence());
+  DVLOG(1) << "CdmFactoryDaemonProxyAsh::GetAndroidHwKeyData called";
+  if (daemon_remote_.is_bound()) {
+    DVLOG(1) << "CdmFactoryDaemon mojo connection already exists, re-use it";
+    ProxyGetAndroidHwKeyData(key_id, hw_identifier, std::move(callback));
+    return;
+  }
+
+  // base::Unretained is safe below because this class is a singleton.
+  EstablishDaemonConnection(base::BindOnce(
+      &CdmFactoryDaemonProxyAsh::ProxyGetAndroidHwKeyData,
+      base::Unretained(this), key_id, hw_identifier, std::move(callback)));
+}
+
 void CdmFactoryDaemonProxyAsh::EstablishDaemonConnection(
     base::OnceClosure callback) {
   // This may have happened already.
@@ -216,6 +234,19 @@ void CdmFactoryDaemonProxyAsh::ProxyGetHwConfigData(
     return;
   }
   daemon_remote_->GetHwConfigData(std::move(callback));
+}
+
+void CdmFactoryDaemonProxyAsh::ProxyGetAndroidHwKeyData(
+    const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& hw_identifier,
+    GetAndroidHwKeyDataCallback callback) {
+  if (!daemon_remote_) {
+    LOG(ERROR) << "daemon_remote_ interface is not connected";
+    std::move(callback).Run(media::Decryptor::Status::kError, {});
+    return;
+  }
+  daemon_remote_->GetAndroidHwKeyData(key_id, hw_identifier,
+                                      std::move(callback));
 }
 
 void CdmFactoryDaemonProxyAsh::SendDBusRequest(base::ScopedFD fd,

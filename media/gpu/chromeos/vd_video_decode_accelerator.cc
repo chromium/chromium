@@ -113,7 +113,8 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
   if (available_size <= cdm_oemcrypto::kSecureBufferHeaderSize ||
       memcmp(data, cdm_oemcrypto::kSecureBufferTag,
              cdm_oemcrypto::kSecureBufferTagLen)) {
-    return nullptr;
+    // This occurs in Intel implementations when we are in a clear portion.
+    return bitstream_buffer.ToDecoderBuffer();
   }
   VLOG(2) << "Detected secure buffer format in VDVDA";
   // Read the protobuf size.
@@ -267,7 +268,7 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
   auto output_cb =
       base::BindRepeating(&VdVideoDecodeAccelerator::OnFrameReady, weak_this_);
   vd_->Initialize(std::move(vd_config), false /* low_delay */, cdm_context,
-                  std::move(init_cb), std::move(output_cb), WaitingCB());
+                  std::move(init_cb), std::move(output_cb), base::DoNothing());
   return true;
 }
 

@@ -97,19 +97,11 @@ bool VaapiVideoDecoderDelegate::HasInitiatedProtectedRecovery() {
 bool VaapiVideoDecoderDelegate::SetDecryptConfig(
     std::unique_ptr<DecryptConfig> decrypt_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // It is possible to switch between clear and encrypted (and vice versa), but
-  // we should not be changing encryption schemes across encrypted portions.
+  // It is possible to switch between clear and encrypted (and vice versa).
   if (!decrypt_config)
     return true;
-  // TODO(jkardatzke): Handle changing encryption modes midstream, the latest
-  // OEMCrypto spec allows this, although we won't hit it in reality for now.
-  // Check to make sure they are compatible.
-  if (!transcryption_ &&
-      decrypt_config->encryption_scheme() != encryption_scheme_) {
-    LOG(ERROR) << "Cannot change encryption modes midstream";
-    return false;
-  }
   decrypt_config_ = std::move(decrypt_config);
+  encryption_scheme_ = decrypt_config_->encryption_scheme();
   return true;
 }
 
@@ -180,6 +172,18 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     return protected_session_state_;
   }
 
+  // On Intel if we change encryption modes after we have started decrypting
+  // then we need to rebuild the protected session.
+  if (!IsTranscrypted() &&
+      last_used_encryption_scheme_ != EncryptionScheme::kUnencrypted &&
+      last_used_encryption_scheme_ != encryption_scheme_) {
+    LOG(WARNING) << "Forcing rebuild since encryption mode changed midstream";
+    RecoverProtectedSession();
+    last_used_encryption_scheme_ = EncryptionScheme::kUnencrypted;
+    return protected_session_state_;
+  }
+
+  last_used_encryption_scheme_ = encryption_scheme_;
   DCHECK(decrypt_config_);
   // We also need to make sure we have the key data for the active
   // DecryptConfig now that the protected session exists.
@@ -267,11 +271,7 @@ bool VaapiVideoDecoderDelegate::NeedsProtectedSessionRecovery() {
     return false;
   }
 
-  LOG(WARNING) << "Protected session loss detected, initiating recovery";
-  protected_session_state_ = ProtectedSessionState::kNeedsRecovery;
-  hw_key_data_map_.clear();
-  hw_identifier_.clear();
-  vaapi_wrapper_->DestroyProtectedSession();
+  RecoverProtectedSession();
   return true;
 }
 
@@ -345,6 +345,24 @@ void VaapiVideoDecoderDelegate::OnGetHwKeyData(
   }
   hw_key_data_map_[key_id] = key_data;
   on_protected_session_update_cb_.Run(true);
+}
+
+void VaapiVideoDecoderDelegate::RecoverProtectedSession() {
+  LOG(WARNING) << "Protected session loss detected, initiating recovery";
+  protected_session_state_ = ProtectedSessionState::kNeedsRecovery;
+  hw_key_data_map_.clear();
+  hw_identifier_.clear();
+  vaapi_wrapper_->DestroyProtectedSession();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos_cdm_context_ && chromeos_cdm_context_->UsingArcCdm()) {
+    // The ARC decoder doesn't handle the WaitingCB that'll get invoked so we
+    // need to trigger a protected update ourselves in order to get decoding
+    // running again.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindRepeating(on_protected_session_update_cb_, true));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace media

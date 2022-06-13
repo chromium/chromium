@@ -142,13 +142,15 @@ class VaapiVideoDecoderDelegate {
   void OnGetHwKeyData(const std::string& key_id,
                       Decryptor::Status status,
                       const std::vector<uint8_t>& key_data);
+  void RecoverProtectedSession();
 
   // All members below pertain to protected content playback.
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
+  EncryptionScheme encryption_scheme_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
+  EncryptionScheme last_used_encryption_scheme_{EncryptionScheme::kUnencrypted};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   std::vector<uint8_t> hw_identifier_;

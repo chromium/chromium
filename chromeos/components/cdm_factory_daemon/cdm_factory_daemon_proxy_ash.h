@@ -55,12 +55,18 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxyAsh
   void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
                                output_protection) override;
   void GetScreenResolutions(GetScreenResolutionsCallback callback) override;
+  void GetAndroidHwKeyData(const std::vector<uint8_t>& key_id,
+                           const std::vector<uint8_t>& hw_identifier,
+                           GetAndroidHwKeyDataCallback callback) override;
 
  private:
   void EstablishDaemonConnection(base::OnceClosure callback);
   void GetFactoryInterface(const std::string& key_system,
                            CreateFactoryCallback callback);
   void ProxyGetHwConfigData(GetHwConfigDataCallback callback);
+  void ProxyGetAndroidHwKeyData(const std::vector<uint8_t>& key_id,
+                                const std::vector<uint8_t>& hw_identifier,
+                                GetAndroidHwKeyDataCallback callback);
   void SendDBusRequest(base::ScopedFD fd, base::OnceClosure callback);
   void OnBootstrapMojoConnection(base::OnceClosure callback, bool result);
   void CompleteOemCryptoConnection(
