@@ -248,17 +248,16 @@ TypeConverter<AttestationConveyancePreference, String>::Convert(
 }
 
 // static
-AuthenticatorAttachment
-TypeConverter<AuthenticatorAttachment, absl::optional<String>>::Convert(
-    const absl::optional<String>& attachment) {
+absl::optional<AuthenticatorAttachment> TypeConverter<
+    absl::optional<AuthenticatorAttachment>,
+    absl::optional<String>>::Convert(const absl::optional<String>& attachment) {
   if (!attachment.has_value())
     return AuthenticatorAttachment::NO_PREFERENCE;
   if (attachment.value() == "platform")
     return AuthenticatorAttachment::PLATFORM;
   if (attachment.value() == "cross-platform")
     return AuthenticatorAttachment::CROSS_PLATFORM;
-  NOTREACHED();
-  return AuthenticatorAttachment::NO_PREFERENCE;
+  return absl::nullopt;
 }
 
 // static
@@ -283,11 +282,18 @@ TypeConverter<AuthenticatorSelectionCriteriaPtr,
     Convert(const blink::AuthenticatorSelectionCriteria& criteria) {
   auto mojo_criteria =
       blink::mojom::blink::AuthenticatorSelectionCriteria::New();
-  absl::optional<String> attachment;
-  if (criteria.hasAuthenticatorAttachment())
-    attachment = criteria.authenticatorAttachment();
+
   mojo_criteria->authenticator_attachment =
-      ConvertTo<AuthenticatorAttachment>(attachment);
+      AuthenticatorAttachment::NO_PREFERENCE;
+  if (criteria.hasAuthenticatorAttachment()) {
+    absl::optional<String> attachment = criteria.authenticatorAttachment();
+    auto maybe_attachment =
+        ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment);
+    if (maybe_attachment) {
+      mojo_criteria->authenticator_attachment = *maybe_attachment;
+    }
+  }
+
   absl::optional<ResidentKeyRequirement> resident_key;
   if (criteria.hasResidentKey()) {
     resident_key = ConvertTo<absl::optional<ResidentKeyRequirement>>(

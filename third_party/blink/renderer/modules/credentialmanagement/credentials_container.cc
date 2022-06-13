@@ -85,6 +85,7 @@ namespace blink {
 
 namespace {
 
+using mojom::blink::AuthenticatorAttachment;
 using mojom::blink::AuthenticatorStatus;
 using mojom::blink::CredentialInfo;
 using mojom::blink::CredentialInfoPtr;
@@ -1399,6 +1400,23 @@ ScriptPromise CredentialsContainer::create(
     }
     options->signal()->AddAlgorithm(
         WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
+  }
+
+  if (options->publicKey()->hasAuthenticatorSelection() &&
+      options->publicKey()
+          ->authenticatorSelection()
+          ->hasAuthenticatorAttachment()) {
+    absl::optional<String> attachment = options->publicKey()
+                                            ->authenticatorSelection()
+                                            ->authenticatorAttachment();
+    if (!mojo::ConvertTo<absl::optional<AuthenticatorAttachment>>(attachment)) {
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Ignoring unknown "
+              "publicKey.authenticatorSelection.authnticatorAttachment value"));
+    }
   }
 
   if (options->publicKey()->hasAuthenticatorSelection() &&

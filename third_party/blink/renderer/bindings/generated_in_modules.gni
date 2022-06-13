@@ -1058,8 +1058,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_context_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_playback_destination.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_playback_destination.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authenticator_attachment.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_authenticator_attachment.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_avc_bitstream_format.cc",
