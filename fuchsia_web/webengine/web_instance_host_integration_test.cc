@@ -9,8 +9,6 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/command_line.h"
-#include "base/files/file_enumerator.h"
-#include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/strings/string_piece_forward.h"
@@ -29,18 +27,7 @@
 class WebInstanceHostIntegrationTest : public testing::Test {
  public:
   WebInstanceHostIntegrationTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        filtered_service_directory_(base::ComponentContextForProcess()->svc()) {
-    // Push all services from /svc to the filtered service directory.
-    base::FileEnumerator file_enum(base::FilePath("/svc"), false,
-                                   base::FileEnumerator::FILES);
-    for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
-      zx_status_t status = filtered_service_directory_.AddService(
-          file_enum.GetInfo().GetName().value().c_str());
-      ZX_CHECK(status == ZX_OK, status)
-          << "FilteredServiceDirectory::AddService";
-    }
-  }
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   ~WebInstanceHostIntegrationTest() override = default;
   WebInstanceHostIntegrationTest(const WebInstanceHostIntegrationTest&) =
@@ -63,10 +50,10 @@ class WebInstanceHostIntegrationTest : public testing::Test {
   fuchsia::web::CreateContextParams TestContextParams() {
     fuchsia::web::CreateContextParams create_params;
     create_params.set_features(fuchsia::web::ContextFeatureFlags::NETWORK);
-    zx_status_t status = filtered_service_directory_.ConnectClient(
-        create_params.mutable_service_directory()->NewRequest());
-    ZX_CHECK(status == ZX_OK, status)
-        << "FilteredServiceDirectory::ConnectClient";
+    zx_status_t status =
+        base::ComponentContextForProcess()->svc()->CloneChannel(
+            create_params.mutable_service_directory()->NewRequest());
+    ZX_CHECK(status == ZX_OK, status) << "ServiceDirectory::CloneChannel";
     return create_params;
   }
 
@@ -103,8 +90,6 @@ class WebInstanceHostIntegrationTest : public testing::Test {
   fuchsia::web::FrameHostPtr frame_host_;
 
   net::EmbeddedTestServer embedded_test_server_;
-
-  base::FilteredServiceDirectory filtered_service_directory_;
 };
 
 // Check that connecting and disconnecting to the FrameHost service does not

@@ -19,8 +19,7 @@ FilteredServiceDirectory::FilteredServiceDirectory(
 
 FilteredServiceDirectory::~FilteredServiceDirectory() = default;
 
-zx_status_t FilteredServiceDirectory::AddService(
-    base::StringPiece service_name) {
+zx_status_t FilteredServiceDirectory::AddService(StringPiece service_name) {
   return outgoing_directory_.AddPublicService(
       std::make_unique<vfs::Service>(
           [this, service_name = std::string(service_name)](
