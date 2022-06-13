@@ -248012,6 +248012,14 @@
      []
     ],
     "derive_bits_keys": {
+     "cfrg_curves_bits.js": [
+      "f467bc858cbba9959225c64bad3c2d51373bf8e8",
+      []
+     ],
+     "cfrg_curves_keys.js": [
+      "7819ae0bf83b64e46db8af66d50e7b3115ed5c9d",
+      []
+     ],
      "ecdh_bits.js": [
       "5cc7193aebd7942d2636d369328917b7acc3e16a",
       []
@@ -248080,6 +248088,14 @@
      ],
      "ecdsa_vectors.js": [
       "e605821aebf92134aec1d756f4037d27fd6e98f3",
+      []
+     ],
+     "eddsa.js": [
+      "0a2e638114ad198ba8b08a80cff2ea514826b143",
+      []
+     ],
+     "eddsa_vectors.js": [
+      "96ec2b01af96f2fdd027c983e9d1bba53b5bc95c",
       []
      ],
      "hmac.js": [
@@ -343524,6 +343540,72 @@
      ]
     ],
     "derive_bits_keys": {
+     "cfrg_curves_bits.https.any.js": [
+      "afa7db845faaeeb03108d0e69fb45fc3cb33872a",
+      [
+       "WebCryptoAPI/derive_bits_keys/cfrg_curves_bits.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveBits() Using ECDH with CFRG Elliptic Curves"
+         ],
+         [
+          "script",
+          "cfrg_curves_bits.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "WebCryptoAPI/derive_bits_keys/cfrg_curves_bits.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveBits() Using ECDH with CFRG Elliptic Curves"
+         ],
+         [
+          "script",
+          "cfrg_curves_bits.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "cfrg_curves_keys.https.any.js": [
+      "71fe87d9a874b7d2235e390f4b692c4b29490c62",
+      [
+       "WebCryptoAPI/derive_bits_keys/cfrg_curves_keys.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveKey() Using ECDH with CFRG Elliptic Curves"
+         ],
+         [
+          "script",
+          "cfrg_curves_keys.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "WebCryptoAPI/derive_bits_keys/cfrg_curves_keys.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: deriveKey() Using ECDH with CFRG Elliptic Curves"
+         ],
+         [
+          "script",
+          "cfrg_curves_keys.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "ecdh_bits.https.any.js": [
       "37e3eb4324200c85cb65ee9f077ea7433bff7783",
       [
@@ -350145,6 +350227,57 @@
          [
           "script",
           "ecdsa.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "eddsa.https.any.js": [
+      "85993a48b91a8cb9ecf55f1db24b4ff39937d7b9",
+      [
+       "WebCryptoAPI/sign_verify/eddsa.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: sign() and verify() Using EdDSA"
+         ],
+         [
+          "script",
+          "eddsa_vectors.js"
+         ],
+         [
+          "script",
+          "eddsa.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "WebCryptoAPI/sign_verify/eddsa.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "WebCryptoAPI: sign() and verify() Using EdDSA"
+         ],
+         [
+          "script",
+          "eddsa_vectors.js"
+         ],
+         [
+          "script",
+          "eddsa.js"
          ],
          [
           "timeout",
@@ -370351,34 +370484,6 @@
         {}
        ]
       ],
-      "animation-timing-function-computed.html": [
-       "99bc12ccaa8f24ae5db06cfd0d78d3bd0c015bef",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-timing-function-invalid.html": [
-       "621145b0e004c583d4a0131eb10d4875fe17da3b",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-timing-function-linear.tentative.html": [
-       "007d7a10aeae233b072ad04ee2725a2b2004088a",
-       [
-        null,
-        {}
-       ]
-      ],
-      "animation-timing-function-valid.html": [
-       "7ab823ea1da1535606ac4aad30fb21f423ba6703",
-       [
-        null,
-        {}
-       ]
-      ],
       "animation-valid.html": [
        "65de3c6fcfed3f69fa798fa19425bdc054e0700b",
        [
@@ -373590,6 +373695,13 @@
        {}
       ]
      ],
+     "linear-timing-functions-syntax.tentative.html": [
+      "25714f20a8199e2e66c061e2e45f674316357112",
+      [
+       null,
+       {}
+      ]
+     ],
      "step-timing-functions-output.html": [
       "978ac25df696dff029614733920a5155d8d96ecf",
       [
@@ -373599,6 +373711,27 @@
      ],
      "step-timing-functions-syntax.html": [
       "4e8b21e4413f8000ae584396355ed7df1c44a447",
+      [
+       null,
+       {}
+      ]
+     ],
+     "timing-functions-syntax-computed.html": [
+      "ad37d2769e702fe2672d09aa05cb6ff48278d976",
+      [
+       null,
+       {}
+      ]
+     ],
+     "timing-functions-syntax-invalid.html": [
+      "b279369b3bd2a2e1fbfa0d4cd76d15f4bbe121b4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "timing-functions-syntax-valid.html": [
+      "fbeffea73f5f78e91d8f9a8387a2b06d0c642e1e",
       [
        null,
        {}
@@ -499551,7 +499684,7 @@
      ]
     ],
     "mouse-pointer-boundary-events-for-shadowdom.html": [
-     "9cd6c6b22fd68166fad58bfc87132515374cadac",
+     "ea200d6c966560e8fd99b5d7cbfbf19eb942ca2f",
      [
       null,
       {
