@@ -13,4 +13,11 @@
         app:singleLineTitle="false"
         app:allowDividerBelow="false" />
 
+    <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
+        android:key="fledge_description"
+        android:title="@string/privacy_sandbox_fledge_interests_subtitle"
+        android:selectable="false"
+        app:singleLineTitle="false"
+        app:allowDividerBelow="false" />
+
 </PreferenceScreen>

@@ -22,6 +22,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  */
 public class LearnMoreFragment extends PreferenceFragmentCompat {
     private static final String TOPICS_DESCRIPTION_PREFERENCE = "topics_description";
+    private static final String FLEDGE_DESCRIPTION_PREFERENCE = "fledge_description";
     /**
      * Initializes all the objects related to the preferences page.
      */
@@ -36,9 +37,24 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
         // when talkback is enabled.
         topicDescription.setSummaryMovementMethod(null);
         topicDescription.setSummary(TextUtils.concat(
-                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_1), "\n\n",
-                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_2), "\n\n",
-                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_3)));
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_topics_1),
+                "\n\n",
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_topics_2),
+                "\n\n",
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_topics_3)));
+
+        LongSummaryTextMessagePreference fledgeDescription =
+                findPreference(FLEDGE_DESCRIPTION_PREFERENCE);
+        assert fledgeDescription != null;
+        // The summary does not contain links, so we don't want it to be individually focussable
+        // when talkback is enabled.
+        fledgeDescription.setSummaryMovementMethod(null);
+        fledgeDescription.setSummary(TextUtils.concat(
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_fledge_1),
+                "\n\n",
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_fledge_2),
+                "\n\n",
+                formatLearnMoreBullet(R.string.privacy_sandbox_learn_more_description_fledge_3)));
     }
 
     private SpannableString formatLearnMoreBullet(@StringRes int stringId) {

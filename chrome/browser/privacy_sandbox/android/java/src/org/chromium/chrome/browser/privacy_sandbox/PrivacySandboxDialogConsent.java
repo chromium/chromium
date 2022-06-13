@@ -86,13 +86,25 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
                 dropdownContainer.setVisibility(View.VISIBLE);
                 mLayoutInflater.inflate(
                         R.layout.privacy_sandbox_consent_dropdown, dropdownContainer);
-                setDropdownDescription(dropdownContainer, R.id.privacy_sandbox_consent_dropdown_one,
-                        R.string.privacy_sandbox_learn_more_description_1);
-                setDropdownDescription(dropdownContainer, R.id.privacy_sandbox_consent_dropdown_two,
-                        R.string.privacy_sandbox_learn_more_description_2);
                 setDropdownDescription(dropdownContainer,
-                        R.id.privacy_sandbox_consent_dropdown_three,
-                        R.string.privacy_sandbox_learn_more_description_3);
+                        R.id.privacy_sandbox_consent_dropdown_topics_one,
+                        R.string.privacy_sandbox_learn_more_description_topics_1);
+                setDropdownDescription(dropdownContainer,
+                        R.id.privacy_sandbox_consent_dropdown_topics_two,
+                        R.string.privacy_sandbox_learn_more_description_topics_2);
+                setDropdownDescription(dropdownContainer,
+                        R.id.privacy_sandbox_consent_dropdown_topics_three,
+                        R.string.privacy_sandbox_learn_more_description_topics_3);
+
+                setDropdownDescription(dropdownContainer,
+                        R.id.privacy_sandbox_consent_dropdown_fledge_one,
+                        R.string.privacy_sandbox_learn_more_description_fledge_1);
+                setDropdownDescription(dropdownContainer,
+                        R.id.privacy_sandbox_consent_dropdown_fledge_two,
+                        R.string.privacy_sandbox_learn_more_description_fledge_2);
+                setDropdownDescription(dropdownContainer,
+                        R.id.privacy_sandbox_consent_dropdown_fledge_three,
+                        R.string.privacy_sandbox_learn_more_description_fledge_3);
             }
             mDropdownExpanded = !mDropdownExpanded;
             mExpandArrowView.setChecked(mDropdownExpanded);
