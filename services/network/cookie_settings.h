@@ -162,6 +162,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   struct CookieSettingWithMetadata {
     ContentSetting cookie_setting;
+    // Only relevant if access to the cookie is blocked for some reason (i.e. if
+    // `IsAllow(cookie_setting)` is false).
     ThirdPartyCookieBlockingSetting blocked_by_third_party_setting;
   };
 
@@ -187,6 +189,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsCookieAllowed(
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       const net::CookieWithAccessResult& cookie) const;
+
+  // Returns true iff a cookie with the given `is_same_party` property should be
+  // accessible in a context with the given
+  // `third_party_cookie_blocking_setting`. Records metrics iff `record_metrics`
+  // is true.
+  bool IsAllowedSamePartyCookie(
+      bool is_same_party,
+      ThirdPartyCookieBlockingSetting third_party_cookie_blocking_setting,
+      bool record_metrics) const;
+
+  // Returns true iff a cookie with the given `is_partitioned` property should
+  // be accessible in a context with the given
+  // `third_party_cookie_blocking_setting`.
+  static bool IsAllowedPartitionedCookie(
+      bool is_partitioned,
+      ThirdPartyCookieBlockingSetting third_party_cookie_blocking_setting);
 
   // Returns whether *some* cookie would be allowed to be sent in this context,
   // according to the user's settings. Note that cookies may still be "excluded"
