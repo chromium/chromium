@@ -49,10 +49,6 @@ constexpr float kHaloInset = -6;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 4;
 
-// UI strings.
-// TODO(cuicuiruan): remove this string.
-constexpr base::StringPiece kEditErrorSameKey("Same key");
-
 // Arrow symbols for arrow keys.
 constexpr char kLeftArrow[] = "←";
 constexpr char kUpArrow[] = "↑";
@@ -247,7 +243,7 @@ bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
   auto code = event.code();
   auto* parent_view = static_cast<ActionView*>(parent());
   if (base::UTF8ToUTF16(GetDisplayText(code)) == GetText()) {
-    parent_view->ShowErrorMsg(kEditErrorSameKey, this);
+    SetDisplayMode(DisplayMode::kEditedError);
   } else {
     parent_view->OnKeyBindingChange(this, code);
   }
