@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link SnackbarManager}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@Batch(Batch.UNIT_TESTS)
 public class SnackbarTest {
     private SnackbarManager mManager;
     private SnackbarController mDefaultController = new SnackbarController() {
@@ -77,6 +78,16 @@ public class SnackbarTest {
             sMainParent = sActivity.findViewById(android.R.id.content);
             sAlternateParent = sActivity.findViewById(R.id.alternate_parent);
             SnackbarManager.setDurationForTesting(1000);
+        });
+    }
+
+    @AfterClass
+    public static void teardownSuite() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SnackbarManager.restDurationForTesting();
+            sActivity = null;
+            sMainParent = null;
+            sAlternateParent = null;
         });
     }
 

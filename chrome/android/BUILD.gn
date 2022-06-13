@@ -3140,6 +3140,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     ":chrome_unit_test_java",
     "//chrome/browser/back_press/android:javatests",
     "//chrome/browser/partnercustomizations:javatests",
+    "//chrome/browser/ui/messages/android:unit_device_javatests",
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
   ]
@@ -3171,7 +3172,6 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/browser/ui/android/appmenu/internal:javatests",
     "//chrome/browser/ui/android/omnibox:javatests",
     "//chrome/browser/ui/android/webid/internal:javatests",
-    "//chrome/browser/ui/messages/android:javatests",
   ]
 
   data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]

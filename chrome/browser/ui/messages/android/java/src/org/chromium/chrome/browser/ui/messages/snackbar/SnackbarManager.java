@@ -324,6 +324,15 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
         sAccessibilitySnackbarDurationMs = durationMs;
     }
 
+    /**
+     * Clears any overrides set for testing.
+     */
+    @VisibleForTesting
+    public static void restDurationForTesting() {
+        sSnackbarDurationMs = DEFAULT_SNACKBAR_DURATION_MS;
+        sAccessibilitySnackbarDurationMs = ACCESSIBILITY_MODE_SNACKBAR_DURATION_MS;
+    }
+
     @VisibleForTesting
     static int getDefaultDurationForTesting() {
         return sSnackbarDurationMs;
