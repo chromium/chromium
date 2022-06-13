@@ -12,21 +12,37 @@
 #include "ash/webui/telemetry_extension_ui/services/probe_service.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 
 namespace chromeos {
 
 namespace {
 
-// Callback from SysInfo::GetHardwareInfo().
-std::string OnGetHardwareInfo(base::SysInfo::HardwareInfo hardware_info) {
+// Returns manufacturer read from sys_vendor file. Runs in the separate thread
+// pool which supports blocking sys calls.
+// Returns an empty string on error.
+std::string GetManufacturerFromSysfsSync() {
+  static const size_t kMaxStringSize = 100u;
   std::string manufacturer;
-  base::TrimWhitespaceASCII(hardware_info.manufacturer,
-                            base::TrimPositions::TRIM_ALL, &manufacturer);
-
+  if (base::ReadFileToStringWithMaxSize(
+          base::FilePath("/sys/devices/virtual/dmi/id/sys_vendor"),
+          &manufacturer, kMaxStringSize)) {
+    DCHECK(base::IsStringUTF8(manufacturer));
+    base::TrimWhitespaceASCII(manufacturer, base::TrimPositions::TRIM_ALL,
+                              &manufacturer);
+  }
   return manufacturer;
+}
+
+void GetManufacturerFromSysfs(base::OnceCallback<void(std::string)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&GetManufacturerFromSysfsSync), std::move(callback));
 }
 
 // Callback from ProbeTelemetryService::ProbeTelemetryInfo().
@@ -92,8 +108,7 @@ void HardwareInfoDelegate::FallbackHandler(ManufacturerCallback done_cb,
     return;
   }
 
-  base::SysInfo::GetHardwareInfo(
-      base::BindOnce(&OnGetHardwareInfo).Then(std::move(done_cb)));
+  GetManufacturerFromSysfs(std::move(done_cb));
 }
 
 }  // namespace chromeos
