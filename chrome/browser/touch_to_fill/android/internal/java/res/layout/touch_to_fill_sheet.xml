@@ -3,57 +3,65 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:layout_marginBottom="16dp"
     android:orientation="vertical">
 
-    <!-- Please update R.dimens.touch_to_fill_sheet_height_single_credential
-         when modifying the margins. -->
     <ImageView
         android:id="@+id/drag_handlebar"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin"
-        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin"
+        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
-    <!-- Please update R.dimens.touch_to_fill_sheet_height_second_credential
-         when modifying paddingBottom. -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sheet_item_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin"
-        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        android:divider="@null"
-        tools:listitem="@layout/touch_to_fill_credential_item"/>
-
-    <View style="@style/HorizontalDivider"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginBottom="8dp"
-        android:layout_width="match_parent"/>
-
-    <TextView
-        android:id="@+id/touch_to_fill_sheet_manage_passwords"
-        android:text="@string/manage_passwords"
+        android:layout_above="@id/touch_to_fill_footer"
+        android:layout_below="@id/drag_handlebar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:paddingStart="@dimen/touch_to_fill_sheet_margin"
-        android:paddingEnd="@dimen/touch_to_fill_sheet_margin"
-        android:minHeight="48dp"
-        android:gravity="center_vertical|start"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:background="?android:attr/selectableItemBackground"/>
-</LinearLayout>
+        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/touch_to_fill_sheet_bottom_padding_button_modern"
+        android:divider="@null"
+        tools:listitem="@layout/touch_to_fill_credential_item_modern"/>
+
+    <LinearLayout
+        android:id="@+id/touch_to_fill_footer"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+      <View style="@style/HorizontalDivider"
+          android:layout_height="@dimen/divider_height"
+          android:layout_marginBottom="8dp"
+          android:layout_width="match_parent"/>
+
+      <TextView
+          android:id="@+id/touch_to_fill_sheet_manage_passwords"
+          android:text="@string/manage_passwords"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:paddingStart="@dimen/touch_to_fill_sheet_margin_modern"
+          android:paddingEnd="@dimen/touch_to_fill_sheet_margin_modern"
+          android:minHeight="48dp"
+          android:gravity="center_vertical|start"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          android:background="?android:attr/selectableItemBackground"/>
+
+    </LinearLayout>
+</RelativeLayout>

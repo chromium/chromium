@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.touch_to_fill;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.View.MeasureSpec;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -33,10 +35,11 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  * Android Views.
  */
 class TouchToFillView implements BottomSheetContent {
-    private final Context mContext;
+    private static final int MAX_FULLY_VISIBLE_CREDENTIAL_COUNT = 2;
+
     private final BottomSheetController mBottomSheetController;
     private final RecyclerView mSheetItemListView;
-    private final LinearLayout mContentView;
+    private final RelativeLayout mContentView;
     private Callback<Integer> mDismissHandler;
 
     private static class HorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -62,6 +65,7 @@ class TouchToFillView implements BottomSheetContent {
         /**
          * Returns the proper background for each of the credential items depending on their
          * position.
+         *
          * @param position Position of the credential inside the list, including the header and the
          *         button.
          * @param containsFillButton Indicates if the fill button is in the list.
@@ -139,29 +143,33 @@ class TouchToFillView implements BottomSheetContent {
 
     /**
      * Constructs a TouchToFillView which creates, modifies, and shows the bottom sheet.
+     *
      * @param context A {@link Context} used to load resources and inflate the sheet.
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      */
     TouchToFillView(Context context, BottomSheetController bottomSheetController) {
-        mContext = context;
         mBottomSheetController = bottomSheetController;
-        mContentView = (LinearLayout) LayoutInflater.from(mContext).inflate(
-                usesUnifiedPasswordManagerUI() ? R.layout.touch_to_fill_sheet_modern
-                                               : R.layout.touch_to_fill_sheet,
-                null);
+        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
+                R.layout.touch_to_fill_sheet, null);
         mSheetItemListView = mContentView.findViewById(R.id.sheet_item_list);
         mSheetItemListView.setLayoutManager(new LinearLayoutManager(
-                mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
+                mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false) {
+            @Override
+            public boolean isAutoMeasureEnabled() {
+                return true;
+            }
+        });
         if (usesUnifiedPasswordManagerUI()) {
             mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(
                     mContentView.getResources().getDimensionPixelSize(
                             R.dimen.touch_to_fill_sheet_items_spacing),
-                    mContext));
+                    context));
         }
     }
 
     /**
      * Sets a new listener that reacts to events like item selection or dismissal.
+     *
      * @param dismissHandler A {@link Callback<Integer>}.
      */
     void setDismissHandler(Callback<Integer> dismissHandler) {
@@ -170,11 +178,13 @@ class TouchToFillView implements BottomSheetContent {
 
     /**
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     *
      * @param isVisible A boolean describing whether to show or hide the sheet.
      * @return True if the request was successful, false otherwise.
      */
     boolean setVisible(boolean isVisible) {
         if (isVisible) {
+            remeasure(false);
             mBottomSheetController.addObserver(mBottomSheetObserver);
             if (!mBottomSheetController.requestShowContent(this, true)) {
                 mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -193,10 +203,6 @@ class TouchToFillView implements BottomSheetContent {
     void setOnManagePasswordClick(Runnable runnable) {
         mContentView.findViewById(R.id.touch_to_fill_sheet_manage_passwords)
                 .setOnClickListener((v) -> runnable.run());
-    }
-
-    Context getContext() {
-        return mContext;
     }
 
     @Override
@@ -246,6 +252,13 @@ class TouchToFillView implements BottomSheetContent {
     }
 
     @Override
+    public float getFullHeightRatio() {
+        // WRAP_CONTENT would be the right fit but this disables the HALF state.
+        return Math.min(getMaximumSheetHeight(), mBottomSheetController.getContainerHeight())
+                / (float) mBottomSheetController.getContainerHeight();
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         return Math.min(getDesiredSheetHeight(), mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
@@ -276,58 +289,123 @@ class TouchToFillView implements BottomSheetContent {
         return R.string.touch_to_fill_sheet_closed;
     }
 
-    // TODO(crbug.com/1009331): This should add up the height of all items up to the 2nd credential.
+    /**
+     * Returns the height of the half state. Does not show Manage passwords. For 1 suggestion  (plus
+     * fill button) or 2 suggestions, it shows all items fully. For 3+ suggestions, it shows the
+     * first 2.5 suggestion to encourage scrolling.
+     *
+     * @return the half state height in pixels. Never 0. Can theoretically exceed the screen height.
+     */
     private @Px int getDesiredSheetHeight() {
-        Resources resources = mContext.getResources();
-        @Px
-        int totalHeight = resources.getDimensionPixelSize(usesUnifiedPasswordManagerUI()
-                        ? R.dimen.touch_to_fill_sheet_height_single_credential_modern
-                        : R.dimen.touch_to_fill_sheet_height_single_credential);
-
-        final boolean hasMultipleCredentials = mSheetItemListView.getAdapter() != null
-                && mSheetItemListView.getAdapter().getItemCount() > 2
-                && mSheetItemListView.getAdapter().getItemViewType(2)
-                        == TouchToFillProperties.ItemType.CREDENTIAL;
-        if (hasMultipleCredentials) {
-            totalHeight += getSecondCredentialAndSpacingHeight(resources);
-        } else {
-            totalHeight += getButtonAndSpacingHeight(resources);
+        if (mSheetItemListView.getAdapter() == null) {
+            // TODO(crbug.com/1330933): Assert this condition in setVisible. Should never happen.
+            return HeightMode.DEFAULT;
         }
+        return getHeightWithMargins(mContentView.findViewById(R.id.drag_handlebar), false)
+                + getSheetItemListHeightWithMargins(true);
+    }
 
+    /**
+     * Returns the height of the full state. Must show Manage passwords permanently. For up to three
+     * suggestions, the sheet usually cannot fill the screen.
+     *
+     * @return the full state height in pixels. Never 0. Can theoretically exceed the screen height.
+     */
+    private @Px int getMaximumSheetHeight() {
+        if (mSheetItemListView.getAdapter() == null) {
+            // TODO(crbug.com/1330933): Assert this condition in setVisible. Should never happen.
+            return HeightMode.DEFAULT;
+        }
+        @Px
+        int requiredMaxHeight = getHeightWhenFullyExtended();
+        if (requiredMaxHeight <= mBottomSheetController.getContainerHeight()) {
+            return requiredMaxHeight;
+        }
+        // If the footer would move off-screen, make it sticky and update the layout.
+        remeasure(true);
+        mContentView.requestLayout();
+        return getHeightWhenFullyExtended();
+    }
+
+    private @Px int getHeightWhenFullyExtended() {
+        assert mContentView.getMeasuredHeight() > 0 : "ContentView hasn't been measured.";
+        return getHeightWithMargins(mContentView.findViewById(R.id.drag_handlebar), false)
+                + getSheetItemListHeightWithMargins(false)
+                + getHeightWithMargins(mContentView.findViewById(R.id.touch_to_fill_footer), false);
+    }
+
+    private @Px int getSheetItemListHeightWithMargins(boolean showOnlyInitialItems) {
+        assert mSheetItemListView.getMeasuredHeight() > 0 : "Sheet item list hasn't been measured.";
+        @Px
+        int totalHeight = 0;
+        int visibleItems = 0;
+        for (int posInSheet = 0; posInSheet < mSheetItemListView.getChildCount(); posInSheet++) {
+            View child = mSheetItemListView.getChildAt(posInSheet);
+            if (isCredential(child)) visibleItems++;
+            if (showOnlyInitialItems && visibleItems > MAX_FULLY_VISIBLE_CREDENTIAL_COUNT) {
+                // If the current item is the last to be shown, skip remaining elements and margins.
+                totalHeight += getHeightWithMargins(child, true);
+                return totalHeight;
+            }
+            totalHeight += getHeightWithMargins(child, false);
+        }
+        // Since the last element is fully visible, add the conclusive margin.
+        totalHeight +=
+                getContentView().getResources().getDimensionPixelSize(usesUnifiedPasswordManagerUI()
+                                ? R.dimen.touch_to_fill_sheet_bottom_padding_button_modern
+                                : R.dimen.touch_to_fill_sheet_bottom_padding_button);
         return totalHeight;
     }
 
-    /**
-     * Calculates the height of the button together with the padding.
-     */
-    private @Px int getSecondCredentialAndSpacingHeight(Resources resources) {
-        int secondCredentialHeight;
-        int secondCredentialPadding;
-        if (usesUnifiedPasswordManagerUI()) {
-            secondCredentialHeight = R.dimen.touch_to_fill_sheet_height_second_credential_modern;
-            secondCredentialPadding = R.dimen.touch_to_fill_sheet_bottom_padding_credentials_modern;
-        } else {
-            secondCredentialHeight = R.dimen.touch_to_fill_sheet_height_second_credential;
-            secondCredentialPadding = R.dimen.touch_to_fill_sheet_bottom_padding_credentials;
-        }
-        return resources.getDimensionPixelSize(secondCredentialHeight)
-                + resources.getDimensionPixelSize(secondCredentialPadding);
+    private boolean isCredential(View childInSheetView) {
+        int posInAdapter = mSheetItemListView.getChildAdapterPosition(childInSheetView);
+        return mSheetItemListView.getAdapter().getItemViewType(posInAdapter)
+                == TouchToFillProperties.ItemType.CREDENTIAL;
     }
 
-    /**
-     * Calculates the height of the second credential together with the padding.
-     */
-    private @Px int getButtonAndSpacingHeight(Resources resources) {
-        int buttonHeight;
-        int buttonPadding;
-        if (usesUnifiedPasswordManagerUI()) {
-            buttonHeight = R.dimen.touch_to_fill_sheet_height_button_modern;
-            buttonPadding = R.dimen.touch_to_fill_sheet_bottom_padding_button_modern;
-        } else {
-            buttonHeight = R.dimen.touch_to_fill_sheet_height_button;
-            buttonPadding = R.dimen.touch_to_fill_sheet_bottom_padding_button;
+    private static @Px int getHeightWithMargins(View view, boolean shouldPeek) {
+        assert view.getMeasuredHeight() > 0 : "View hasn't been measured.";
+        return getMargins(view, /*excludeBottomMargin=*/shouldPeek)
+                + (shouldPeek ? view.getMeasuredHeight() / 2 : view.getMeasuredHeight());
+    }
+
+    private static @Px int getMargins(View view, boolean excludeBottomMargin) {
+        LayoutParams params = view.getLayoutParams();
+        if (params instanceof MarginLayoutParams) {
+            MarginLayoutParams marginParams = (MarginLayoutParams) params;
+            return marginParams.topMargin + (excludeBottomMargin ? 0 : marginParams.bottomMargin);
         }
-        return resources.getDimensionPixelSize(buttonHeight)
-                + resources.getDimensionPixelSize(buttonPadding);
+        return 0;
+    }
+
+    private void remeasure(boolean useStickyFooter) {
+        RelativeLayout.LayoutParams footerLayoutParams =
+                (RelativeLayout.LayoutParams) mContentView.findViewById(R.id.touch_to_fill_footer)
+                        .getLayoutParams();
+        RelativeLayout.LayoutParams sheetItemListLayoutParams =
+                (RelativeLayout.LayoutParams) mSheetItemListView.getLayoutParams();
+        if (useStickyFooter) {
+            sheetItemListLayoutParams.addRule(RelativeLayout.ABOVE, R.id.touch_to_fill_footer);
+            footerLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            footerLayoutParams.removeRule(RelativeLayout.BELOW);
+        } else {
+            sheetItemListLayoutParams.removeRule(RelativeLayout.ABOVE);
+            footerLayoutParams.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            footerLayoutParams.addRule(RelativeLayout.BELOW, R.id.sheet_item_list);
+        }
+        mContentView.measure(
+                View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidth(), MeasureSpec.AT_MOST),
+                MeasureSpec.UNSPECIFIED);
+        mSheetItemListView.measure(
+                View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidth(), MeasureSpec.AT_MOST),
+                MeasureSpec.UNSPECIFIED);
+    }
+
+    private @Px int getInsetDisplayWidth() {
+        return mContentView.getContext().getResources().getDisplayMetrics().widthPixels
+                - 2
+                * mContentView.getResources().getDimensionPixelSize(usesUnifiedPasswordManagerUI()
+                                ? R.dimen.touch_to_fill_sheet_margin_modern
+                                : R.dimen.touch_to_fill_sheet_margin);
     }
 }
