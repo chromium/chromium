@@ -14,7 +14,6 @@
 #include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/scoped_vpx_codec.h"
 #include "remoting/codec/webrtc_video_encoder.h"
-#include "remoting/codec/webrtc_video_encoder_selector.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 
 typedef struct vpx_image vpx_image_t;
@@ -34,12 +33,6 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // Creates encoder for the specified protocol.
   static std::unique_ptr<WebrtcVideoEncoder> CreateForVP8();
   static std::unique_ptr<WebrtcVideoEncoder> CreateForVP9();
-
-  // Checks the support for the specified protocol.
-  static bool IsSupportedByVP8(
-      const WebrtcVideoEncoderSelector::Profile& profile);
-  static bool IsSupportedByVP9(
-      const WebrtcVideoEncoderSelector::Profile& profile);
 
   WebrtcVideoEncoderVpx(const WebrtcVideoEncoderVpx&) = delete;
   WebrtcVideoEncoderVpx& operator=(const WebrtcVideoEncoderVpx&) = delete;

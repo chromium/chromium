@@ -22,8 +22,6 @@ source_set("encoder") {
     "webrtc_video_encoder_av1.h",
     "webrtc_video_encoder_proxy.cc",
     "webrtc_video_encoder_proxy.h",
-    "webrtc_video_encoder_selector.cc",
-    "webrtc_video_encoder_selector.h",
     "webrtc_video_encoder_vpx.cc",
     "webrtc_video_encoder_vpx.h",
   ]
@@ -136,7 +134,6 @@ source_set("unit_tests") {
     "video_encoder_helper_unittest.cc",
     "video_encoder_verbatim_unittest.cc",
     "video_encoder_vpx_unittest.cc",
-    "webrtc_video_encoder_selector_unittest.cc",
   ]
 
   deps = [

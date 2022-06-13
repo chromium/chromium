@@ -403,8 +403,7 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderGpu::CreateForH264() {
 }
 
 // static
-bool WebrtcVideoEncoderGpu::IsSupportedByH264(
-    const WebrtcVideoEncoderSelector::Profile& profile) {
+bool WebrtcVideoEncoderGpu::IsSupportedByH264(const Profile& profile) {
 #if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
