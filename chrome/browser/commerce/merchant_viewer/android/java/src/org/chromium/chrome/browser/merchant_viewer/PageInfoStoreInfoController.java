@@ -13,8 +13,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUI;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
@@ -32,7 +33,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     /** Handles the actions needed by the "store info" row. */
     public interface StoreInfoActionHandler {
         /** Called when the "store info" row is clicked. */
-        void onStoreInfoClicked(MerchantTrustSignalsV2 trustSignals);
+        void onStoreInfoClicked(MerchantInfo merchantInfo);
     }
 
     private final Supplier<StoreInfoActionHandler> mActionHandlerSupplier;
@@ -48,7 +49,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     public PageInfoStoreInfoController(PageInfoMainController mainController,
             PageInfoRowView rowView,
             @Nullable Supplier<StoreInfoActionHandler> actionHandlerSupplier,
-            boolean pageInfoOpenedFromStoreIcon, WebContents webContents) {
+            boolean pageInfoOpenedFromStoreIcon, WebContents webContents, Profile profile) {
         mMainController = mainController;
         mRowView = rowView;
         mContext = mRowView.getContext();
@@ -60,22 +61,22 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         // the feature flag first.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)) {
             new MerchantTrustSignalsDataProvider().getDataForUrl(
-                    mMainController.getURL(), this::setupStoreInfoRow);
+                    profile, mMainController.getURL(), this::setupStoreInfoRow);
         } else {
             setupStoreInfoRow(null);
         }
     }
 
-    private void setupStoreInfoRow(@Nullable MerchantTrustSignalsV2 trustSignals) {
+    private void setupStoreInfoRow(@Nullable MerchantInfo merchantInfo) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         if (mActionHandlerSupplier == null || mActionHandlerSupplier.get() == null
-                || trustSignals == null) {
+                || merchantInfo == null) {
             rowParams.visible = false;
         } else {
             rowParams.visible = true;
             rowParams.title =
                     mContext.getResources().getString(R.string.page_info_store_info_title);
-            rowParams.subtitle = getRowSubtitle(trustSignals);
+            rowParams.subtitle = getRowSubtitle(merchantInfo);
             // The icons in PageInfo are tinted automatically.
             rowParams.iconResId = R.drawable.ic_storefront_blue;
             // If user enters page info via the store icon in omnibox, highlight the "Store info"
@@ -91,7 +92,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
                 mMainController.recordAction(PageInfoAction.PAGE_INFO_STORE_INFO_CLICKED);
                 mMainController.dismiss();
                 mMetrics.recordUkmOnRowClicked(mWebContents);
-                mActionHandlerSupplier.get().onStoreInfoClicked(trustSignals);
+                mActionHandlerSupplier.get().onStoreInfoClicked(merchantInfo);
             };
             mMetrics.recordUkmOnRowSeen(mWebContents);
         }
@@ -99,12 +100,12 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         mRowView.setParams(rowParams);
     }
 
-    private CharSequence getRowSubtitle(MerchantTrustSignalsV2 trustSignals) {
-        if (trustSignals.getMerchantStarRating() > 0) {
+    private CharSequence getRowSubtitle(MerchantInfo merchantInfo) {
+        if (merchantInfo.starRating > 0) {
             CharSequence subTitle = MerchantTrustMessageViewModel.getMessageDescription(
-                    mContext, trustSignals, MessageDescriptionUI.RATING_AND_REVIEWS);
+                    mContext, merchantInfo, MessageDescriptionUI.RATING_AND_REVIEWS);
             if (subTitle != null) return subTitle;
-        } else if (trustSignals.getHasReturnPolicy()) {
+        } else if (merchantInfo.hasReturnPolicy) {
             return mContext.getResources().getString(
                     R.string.page_info_store_info_description_with_no_rating);
         }

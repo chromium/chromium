@@ -49,7 +49,8 @@ ShoppingService::ShoppingService(
           optimization_guide::proto::OptimizationType::PRICE_TRACKING);
     }
     if (IsMerchantInfoApiEnabled()) {
-      types.push_back(optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2);
+      types.push_back(optimization_guide::proto::OptimizationType::
+                          MERCHANT_TRUST_SIGNALS_V2);
     }
 
     opt_guide_->RegisterOptimizationTypes(types);
@@ -310,8 +311,10 @@ void ShoppingService::HandleOptGuideMerchantInfoResponse(
       }
 
       if (merchant_data.has_merchant_details_page_url()) {
-        info->details_page_url =
-            GURL(merchant_data.merchant_details_page_url());
+        GURL details_page_url = GURL(merchant_data.merchant_details_page_url());
+        if (details_page_url.is_valid()) {
+          info->details_page_url = details_page_url;
+        }
       }
 
       if (merchant_data.has_has_return_policy()) {

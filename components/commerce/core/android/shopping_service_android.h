@@ -34,6 +34,11 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data {
                             const JavaParamRef<jobject>& j_gurl,
                             const JavaParamRef<jobject>& j_callback);
 
+  void GetMerchantInfoForUrl(JNIEnv* env,
+                             const JavaParamRef<jobject>& obj,
+                             const JavaParamRef<jobject>& j_gurl,
+                             const JavaParamRef<jobject>& j_callback);
+
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:
@@ -41,6 +46,11 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data {
                                  const ScopedJavaGlobalRef<jobject>& callback,
                                  const GURL& url,
                                  const absl::optional<ProductInfo>& info);
+
+  void HandleMerchantInfoCallback(JNIEnv* env,
+                                  const ScopedJavaGlobalRef<jobject>& callback,
+                                  const GURL& url,
+                                  absl::optional<MerchantInfo> info);
 
   // A handle to the backing shopping service. This is held as a raw pointer
   // since this object's lifecycle is tied to the service itself. This object

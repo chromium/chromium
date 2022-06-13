@@ -6,11 +6,6 @@ import("//build/config/android/rules.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_java_library("optimization_guide_protos_java") {
-  proto_path = "proto"
-  sources = [ "$proto_path/merchant_trust_signals.proto" ]
-}
-
 source_set("merchant_signal_db") {
   sources = [
     "merchant_signal_db.cc",
