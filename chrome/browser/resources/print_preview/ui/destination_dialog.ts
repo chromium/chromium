@@ -174,8 +174,13 @@ export class PrintPreviewDestinationDialogElement extends
       this.metrics_ = MetricsContext.destinationSearch();
     }
     this.$.dialog.showModal();
-    this.loadingDestinations_ = this.destinationStore === undefined ||
+    const loading = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
+    if (!loading) {
+      // All destinations have already loaded.
+      this.updateDestinations_();
+    }
+    this.loadingDestinations_ = loading;
     this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
   }
 
