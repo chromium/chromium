@@ -23,6 +23,7 @@
 #include "components/security_interstitials/content/cert_logger.pb.h"
 #include "components/version_info/version_info.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -347,6 +348,10 @@ TEST(ErrorReportTest, AndroidAIAFetchingFeatureEnabled) {
 #endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+const int64_t kTestChromeRootVersion = 24601;
+#endif
+
 TEST(ErrorReportTest, TrialDebugInfo) {
   scoped_refptr<net::X509Certificate> unverified_cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
@@ -398,6 +403,13 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->win_platform_debug_info->authroot_sequence_number = {
       'J', 'E', 'N', 'N', 'Y'};
 #endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  debug_info->chrome_root_store_debug_info =
+      cert_verifier::mojom::ChromeRootStoreDebugInfo::New();
+  debug_info->chrome_root_store_debug_info->chrome_root_store_version =
+      kTestChromeRootVersion;
+#endif
+
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
   debug_info->trial_der_verification_time = "it's just a string";
@@ -476,6 +488,15 @@ TEST(ErrorReportTest, TrialDebugInfo) {
             trial_info.win_platform_debug_info().authroot_sequence_number());
 #else
   EXPECT_FALSE(trial_info.has_win_platform_debug_info());
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  ASSERT_TRUE(trial_info.has_chrome_root_store_debug_info());
+  EXPECT_EQ(
+      kTestChromeRootVersion,
+      trial_info.chrome_root_store_debug_info().chrome_root_store_version());
+#else
+  EXPECT_FALSE(trial_info.has_chrome_root_store_debug_info());
 #endif
 
   ASSERT_TRUE(trial_info.has_trial_verification_time_usec());

@@ -11,6 +11,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
+#include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,6 +142,10 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   net::CertVerifyProcWin::ResultDebugData::Create(time, authroot_sequence,
                                                   &primary_result);
 #endif
+  absl::optional<int64_t> chrome_root_store_version = absl::nullopt;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  chrome_root_store_version = 42;
+#endif
 
   net::der::GeneralizedTime der_time;
   der_time.year = 2019;
@@ -149,8 +154,8 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   der_time.hours = 22;
   der_time.minutes = 11;
   der_time.seconds = 8;
-  net::CertVerifyProcBuiltinResultDebugData::Create(&trial_result, time,
-                                                    der_time);
+  net::CertVerifyProcBuiltinResultDebugData::Create(
+      &trial_result, time, der_time, chrome_root_store_version);
 
   mojo::PendingRemote<
       cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
@@ -211,6 +216,12 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   EXPECT_EQ(
       authroot_sequence,
       report.debug_info->win_platform_debug_info->authroot_sequence_number);
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  ASSERT_TRUE(report.debug_info->chrome_root_store_debug_info);
+  EXPECT_EQ(chrome_root_store_version.value(),
+            report.debug_info->chrome_root_store_debug_info
+                ->chrome_root_store_version);
 #endif
 
   EXPECT_EQ(time, report.debug_info->trial_verification_time);

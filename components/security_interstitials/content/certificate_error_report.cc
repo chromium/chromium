@@ -187,6 +187,21 @@ void AddWinPlatformDebugInfoToReport(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void AddChromeRootStoreDebugInfoToReport(
+    const cert_verifier::mojom::ChromeRootStoreDebugInfoPtr&
+        chrome_root_store_debug_info,
+    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
+  if (!chrome_root_store_debug_info) {
+    return;
+  }
+
+  chrome_browser_ssl::ChromeRootStoreDebugInfo* report_info =
+      trial_report->mutable_chrome_root_store_debug_info();
+  report_info->set_chrome_root_store_version(
+      chrome_root_store_debug_info->chrome_root_store_version);
+}
+#endif
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
 bool CertificateChainToString(const net::X509Certificate& cert,
@@ -268,6 +283,10 @@ CertificateErrorReport::CertificateErrorReport(
 #if BUILDFLAG(IS_WIN)
   AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
                                   trial_report);
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  AddChromeRootStoreDebugInfoToReport(debug_info->chrome_root_store_debug_info,
+                                      trial_report);
 #endif
   if (!debug_info->trial_verification_time.is_null()) {
     trial_report->set_trial_verification_time_usec(
