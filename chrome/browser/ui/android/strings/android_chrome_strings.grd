@@ -5646,6 +5646,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PASSWORD_EDIT_DIALOG_UNSYNCED_FOOTER" desc="Footer for a dialog which allows users to see and edit passwords while saving/updating a new credential. Displayed for users who are not syncing passwords.">
         Passwords are saved to Password Manager on this device
       </message>
+
+      <!-- Price tracking strings -->
+      <message name="IDS_PRICE_DROP_SPOTTED_IPH" desc="This text appears in the IPH when a user opens a new tab page and an item in any of their open tabs has a price drop.">
+        Price drop spotted
+      </message>
     </messages>
   </release>
 </grit>
