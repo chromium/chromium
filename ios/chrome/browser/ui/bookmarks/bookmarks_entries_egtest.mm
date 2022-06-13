@@ -389,7 +389,8 @@ id<GREYMatcher> AddBookmarkButton() {
                                                      newFolderEnabled:YES];
 }
 
-- (void)testContextMenuForMultipleURLSelection {
+// TODO(crbug.com/1335808): Failing on full-configs builder.
+- (void)DISABLED_testContextMenuForMultipleURLSelection {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -435,7 +436,8 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All functionality on multiple url selection.
-- (void)testContextMenuForMultipleURLOpenAll {
+// TODO(crbug.com/1335808): Failing on full-configs builder.
+- (void)DISABLED_testContextMenuForMultipleURLOpenAll {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -477,7 +479,8 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All in Incognito functionality on multiple url selection.
-- (void)testContextMenuForMultipleURLOpenAllInIncognito {
+// TODO(crbug.com/1335808): Failing on full-configs builder.
+- (void)DISABLED_testContextMenuForMultipleURLOpenAllInIncognito {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -517,7 +520,8 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open and Open in Incognito functionality on single url.
-- (void)testOpenSingleBookmarkInNormalAndIncognitoTab {
+// TODO(crbug.com/1335808): Failing on full-configs builder.
+- (void)DISABLED_testOpenSingleBookmarkInNormalAndIncognitoTab {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
