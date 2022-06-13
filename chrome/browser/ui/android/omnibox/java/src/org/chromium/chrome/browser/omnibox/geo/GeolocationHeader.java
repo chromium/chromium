@@ -241,6 +241,8 @@ public class GeolocationHeader {
      */
     public static void primeLocationForGeoHeaderIfEnabled(
             Profile profile, TemplateUrlService templateService) {
+        if (profile == null) return;
+
         if (!hasGeolocationPermission()) return;
 
         if (!isGeoHeaderEnabledForDSE(profile, templateService)) return;
