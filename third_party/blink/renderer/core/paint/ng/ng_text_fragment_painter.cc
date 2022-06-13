@@ -62,10 +62,18 @@ inline PhysicalRect BoxInPhysicalSpace(
     const PhysicalOffset& parent_offset,
     const LayoutNGTextCombine* text_combine) {
   PhysicalRect box_rect;
-  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData())
+  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
-  else
+    const float scale = svg_data->length_adjust_scale;
+    if (scale != 1.0f) {
+      if (cursor.CurrentItem()->IsHorizontal())
+        box_rect.SetWidth(LayoutUnit(svg_data->rect.width() / scale));
+      else
+        box_rect.SetHeight(LayoutUnit(svg_data->rect.height() / scale));
+    }
+  } else {
     box_rect = cursor.CurrentItem()->RectInContainerFragment();
+  }
   box_rect.offset.left += paint_offset.left;
   // We round the y-axis to ensure consistent line heights.
   box_rect.offset.top =
