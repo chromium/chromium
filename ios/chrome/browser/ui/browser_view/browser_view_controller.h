@@ -165,9 +165,6 @@ typedef struct {
 // Shows the voice search UI.
 - (void)startVoiceSearch;
 
-// Returns the number of tabs with the NTP open.
-- (int)liveNTPCount;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_BROWSER_VIEW_CONTROLLER_H_

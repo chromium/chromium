@@ -227,7 +227,6 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/u2f",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/default_promo:utils",

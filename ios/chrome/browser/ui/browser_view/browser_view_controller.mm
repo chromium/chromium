@@ -345,10 +345,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // from BVC Coordinator for the Download Manager UI.
   DownloadManagerCoordinator* _downloadManagerCoordinator;
 
-  // A map associating webStates with their NTP coordinators.
-  // TODO(crbug.com/1300911): Factor NTPCoordinator ownership out of the BVC
-  std::map<web::WebState*, NewTabPageCoordinator*> _ntpCoordinatorsForWebStates;
-
   // Fake status bar view used to blend the toolbar into the status bar.
   UIView* _fakeStatusBarView;
 
@@ -968,22 +964,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       startRecognitionOnViewController:self
                               webState:self.currentWebState];
   [self.omniboxHandler cancelOmniboxEdit];
-}
-
-// TODO(crbug.com/1329099): Get rid of this (move it to MetricsMediator). Looks
-// like its busted for kSingleNTP in any case?
-- (int)liveNTPCount {
-  NSUInteger count = 0;
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    web::WebState* webState = webStateList->GetWebStateAt(i);
-    auto found = _ntpCoordinatorsForWebStates.find(webState);
-    if (found != _ntpCoordinatorsForWebStates.end() &&
-        [found->second isStarted]) {
-      count++;
-    }
-  }
-  return count;
 }
 
 #pragma mark - browser_view_controller+private.h
