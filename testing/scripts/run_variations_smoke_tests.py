@@ -224,7 +224,7 @@ def _run_tests(work_dir, skia_util, *args):
       if 'skia_gold_image' in t:
         image_name = t['skia_gold_image']
         sc_file = os.path.join(work_dir, image_name + '.png')
-        driver.save_screenshot(sc_file)
+        driver.find_element_by_id('body').screenshot(sc_file)
         force_dryrun = False
         if skia_util.IsTryjobRun and skia_util.IsRetryWithoutPatch:
           force_dryrun = True
