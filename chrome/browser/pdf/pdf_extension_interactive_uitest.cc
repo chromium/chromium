@@ -260,7 +260,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
            IDC_CONTENT_CONTEXT_ROTATECCW, IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, TouchSelectionBounds) {
+// TODO(crbug.com/1335822): Deflake this test.
+IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+                       DISABLED_TouchSelectionBounds) {
   // Use test.pdf here because it has embedded font metrics. With a fixed zoom,
   // coordinates should be consistent across platforms.
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf#zoom=100");
