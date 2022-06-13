@@ -312,9 +312,17 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Callback for snoozed features.
   void OnHelpBubbleSnoozed(const base::Feature* feature);
 
+  // Callback for snoozed tutorial features. .
+  void OnTutorialHelpBubbleSnoozed(const base::Feature* iph_feature,
+                                   TutorialIdentifier tutorial_id);
+
   // Callback when a feature's help bubble is dismissed by any means other than
   // snoozing (including "OK" or "Got it!" buttons).
   void OnHelpBubbleDismissed(const base::Feature* feature);
+
+  // Callback when the dismiss button for IPH for tutorials is clicked.
+  void OnTutorialHelpBubbleDismissed(const base::Feature* iph_feature,
+                                     TutorialIdentifier tutorial_id);
 
   // Callback when a tutorial triggered from a promo is actually started.
   void OnTutorialStarted(const base::Feature* iph_feature,
