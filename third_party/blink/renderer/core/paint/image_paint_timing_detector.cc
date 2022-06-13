@@ -215,7 +215,7 @@ void ImagePaintTimingDetector::StopRecordEntries() {
   // Clear the records queued for presentation callback to ensure no new updates
   // occur.
   records_manager_.ClearImagesQueuedForPaintTime();
-  if (frame_view_->GetFrame().IsMainFrame()) {
+  if (frame_view_->GetFrame().IsOutermostMainFrame()) {
     DCHECK(frame_view_->GetFrame().GetDocument());
     ukm::builders::Blink_PaintTiming(
         frame_view_->GetFrame().GetDocument()->UkmSourceID())
