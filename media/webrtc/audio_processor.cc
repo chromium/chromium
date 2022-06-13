@@ -249,6 +249,13 @@ AudioProcessor::AudioProcessor(
     DCHECK_EQ(output_format_.sample_rate() / 100,
               output_format_.frames_per_buffer());
   }
+  if (input_format_.sample_rate() % 100 != 0 ||
+      output_format_.sample_rate() % 100 != 0) {
+    SendLogMessage(base::StringPrintf(
+        "%s: WARNING: Sample rate not divisible by 100, processing is provided "
+        "on a best-effort basis. input rate=[%d], output rate=[%d]",
+        __func__, input_format_.sample_rate(), output_format_.sample_rate()));
+  }
   SendLogMessage(base::StringPrintf(
       "%s({input_format_=[%s], output_format_=[%s]})", __func__,
       input_format_.AsHumanReadableString().c_str(),
@@ -545,11 +552,6 @@ absl::optional<AudioParameters> AudioProcessor::ComputeInputFormat(
   if (channel_layout != CHANNEL_LAYOUT_MONO &&
       channel_layout != CHANNEL_LAYOUT_STEREO &&
       channel_layout != CHANNEL_LAYOUT_DISCRETE) {
-    return absl::nullopt;
-  }
-
-  // The audio processor code assumes that sample rates are divisible by 100.
-  if (device_format.sample_rate() % 100 != 0) {
     return absl::nullopt;
   }
 

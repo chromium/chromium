@@ -594,8 +594,8 @@ class MediaStreamConstraintsRemoteAPMTest
         break;
     }
     return testing::Message()
-           << "GetMediaStreamSource()=" << GetMediaStreamSource()
-           << ", GetChromeWideAecExperiment()=" << experiment_string;
+           << "GetMediaStreamSource()=\"" << GetMediaStreamSource()
+           << "\", GetChromeWideAecExperiment()=" << experiment_string;
   }
 
   // Indicates where and how audio processing is applied.
@@ -2120,6 +2120,30 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
     EXPECT_FALSE(result.HasValue());
   else
     EXPECT_TRUE(result.HasValue());
+}
+
+// TODO(https://crbug.com/1332484): Support sample rates not divisible by 100 in
+// the audio service.
+TEST_P(MediaStreamConstraintsRemoteAPMTest,
+       NonDivisibleSampleRatesAreNotSupportedInAudioService) {
+  SCOPED_TRACE(GetMessageForScopedTrace());
+
+  const std::string k22050HzDeviceId = "22050hz_device";
+  capabilities_.emplace_back(
+      k22050HzDeviceId.c_str(), "22050hz_fake_group",
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::CHANNEL_LAYOUT_STEREO, 22050, 1000));
+
+  ResetFactory();
+  constraint_factory_.basic().device_id.SetExact(k22050HzDeviceId.c_str());
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  AudioCaptureSettings result = SelectSettings();
+
+  // Audio processing is only supported when APM runs in the renderer.
+  if (GetApmLocation() == ApmLocation::kProcessedLocalAudioSource)
+    EXPECT_TRUE(result.HasValue());
+  else
+    EXPECT_FALSE(result.HasValue());
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
