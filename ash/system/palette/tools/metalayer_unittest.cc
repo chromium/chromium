@@ -17,7 +17,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/controls/label.h"

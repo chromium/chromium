@@ -12,7 +12,7 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/mocked_assistant_interaction.h"
 #include "ash/test/ash_test_base.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 
 namespace aura {
 class Window;

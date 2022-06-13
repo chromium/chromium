@@ -31,7 +31,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"

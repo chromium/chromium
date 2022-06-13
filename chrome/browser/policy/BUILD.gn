@@ -347,9 +347,9 @@ source_set("browser_tests") {
       "//ash/components/audio:audio",
       "//ash/components/cryptohome",
       "//chrome/browser/ash",
+      "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/dbus/constants",
       "//chromeos/dbus/userdataauth",
-      "//chromeos/services/assistant/public/cpp",
       "//components/account_id",
     ]
   }

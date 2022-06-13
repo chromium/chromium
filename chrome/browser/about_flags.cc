@@ -241,7 +241,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/app_restore/features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"

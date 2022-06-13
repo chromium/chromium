@@ -11,8 +11,8 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefChangeRegistrar;

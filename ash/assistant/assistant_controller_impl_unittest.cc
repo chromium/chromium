@@ -20,8 +20,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

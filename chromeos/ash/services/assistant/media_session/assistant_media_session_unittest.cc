@@ -8,9 +8,9 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/assistant/media_host.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/test_support/libassistant_media_controller_mock.h"
 #include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
-#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

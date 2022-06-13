@@ -11,7 +11,7 @@
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 

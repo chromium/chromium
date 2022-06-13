@@ -19,7 +19,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_styles.h"

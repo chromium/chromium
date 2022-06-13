@@ -6,8 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
 
 #include "chromeos/ash/components/assistant/buildflags.h"
-#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

@@ -7,7 +7,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/audio/audio_input_impl.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/test_support/fake_platform_delegate.h"

@@ -22,7 +22,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class PrefRegistrySimple;

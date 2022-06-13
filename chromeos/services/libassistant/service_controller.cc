@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"

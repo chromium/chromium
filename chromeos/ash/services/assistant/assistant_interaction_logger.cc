@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace chromeos {
 namespace assistant {
