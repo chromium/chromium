@@ -563,6 +563,7 @@ crbug.com/658724 [ mac intel ] deqp/functional/gles3/framebufferblit/rect_04.htm
 crbug.com/782317 [ mac intel ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 crbug.com/1144207 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 crbug.com/1191450 [ mac intel-0x3e9b angle-disabled ] conformance2/rendering/instanced-arrays.html [ Failure ]
+crbug.com/1334684 [ monterey intel angle-metal ] deqp/functional/gles3/shaderbuiltinvar.html [ Failure ]
 
 # Mac Passthrough
 crbug.com/angleproject/5223 [ mac passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
