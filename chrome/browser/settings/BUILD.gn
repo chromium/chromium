@@ -5,13 +5,20 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/settings/ChromeManagedPreferenceDelegate.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/settings/ChromeManagedPreferenceDelegate.java",
+    "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
+  ]
   deps = [
+    "//base:base_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
+    "//url:gurl_java",
   ]
 }
 
