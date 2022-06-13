@@ -10,7 +10,6 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -24,7 +23,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -40,7 +38,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -58,7 +55,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -88,7 +84,6 @@
       "use_hashed_jni_names": true,
       "use_partition_alloc": false,
       "use_platform_icu_alternatives": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "use_thin_lto": false
     }
@@ -107,7 +102,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -125,7 +119,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -141,7 +134,6 @@
       "system_webview_package_name": "com.google.android.apps.chrome",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -159,7 +151,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -177,7 +168,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -196,7 +186,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -215,7 +204,6 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   }

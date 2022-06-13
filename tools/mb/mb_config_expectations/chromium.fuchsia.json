@@ -57,7 +57,6 @@
       "is_debug": true,
       "symbol_level": 0,
       "target_os": "fuchsia",
-      "use_rbe": true,
       "use_remoteexec": true
     }
   }

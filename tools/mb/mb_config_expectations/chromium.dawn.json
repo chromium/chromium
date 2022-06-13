@@ -8,7 +8,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -21,7 +20,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -58,7 +56,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -70,7 +67,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -82,7 +78,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -95,7 +90,6 @@
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -108,7 +102,6 @@
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_dawn": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   }

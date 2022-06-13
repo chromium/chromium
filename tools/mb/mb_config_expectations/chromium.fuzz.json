@@ -6,7 +6,6 @@
       "is_debug": true,
       "is_lsan": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -18,7 +17,6 @@
       "is_component_build": false,
       "is_debug": false,
       "is_lsan": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
@@ -32,7 +30,6 @@
       "is_debug": false,
       "is_lsan": true,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
@@ -45,7 +42,6 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true,
       "v8_target_cpu": "arm"
@@ -60,7 +56,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true,
       "v8_target_cpu": "arm"
@@ -77,7 +72,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_cpu": "x86",
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true,
       "v8_target_cpu": "arm"
@@ -96,7 +90,6 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_afl": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -109,7 +102,6 @@
       "is_debug": false,
       "is_lsan": true,
       "target_os": "chromeos",
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
@@ -128,7 +120,6 @@
       "proprietary_codecs": true,
       "target_os": "chromeos",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -145,7 +136,6 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -162,7 +152,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -180,7 +169,6 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -197,7 +185,6 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -215,7 +202,6 @@
       "proprietary_codecs": true,
       "target_cpu": "x64",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_target_cpu": "arm64"
     }
@@ -234,7 +220,6 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_target_cpu": "arm64"
     }
@@ -254,7 +239,6 @@
       "proprietary_codecs": true,
       "target_cpu": "x86",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -273,7 +257,6 @@
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -292,7 +275,6 @@
       "proprietary_codecs": true,
       "target_cpu": "x86",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_target_cpu": "arm"
     }
@@ -312,7 +294,6 @@
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_target_cpu": "arm"
     }
@@ -345,7 +326,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_libfuzzer": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -372,7 +352,6 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 2,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -383,7 +362,6 @@
       "is_debug": false,
       "is_msan": true,
       "msan_track_origins": 0,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -420,7 +398,6 @@
       "is_debug": true,
       "is_tsan": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -431,7 +408,6 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -441,7 +417,6 @@
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -452,7 +427,6 @@
       "is_debug": false,
       "is_ubsan_no_recover": true,
       "is_ubsan_vptr": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -464,7 +438,6 @@
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
@@ -479,7 +452,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }

@@ -6,7 +6,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -17,7 +16,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -27,7 +25,6 @@
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_rbe": true,
       "use_real_dbus_clients": false,
       "use_remoteexec": true
     }
@@ -38,7 +35,6 @@
       "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_rbe": true,
       "use_real_dbus_clients": false,
       "use_remoteexec": true
     }
@@ -51,7 +47,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
@@ -63,7 +58,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true,
       "use_remoteexec": true
     }
   },
