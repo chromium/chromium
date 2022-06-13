@@ -60,13 +60,14 @@ class ElementFinderResult {
     return object_id().empty() && node_frame_id().empty();
   }
 
-  // Deprecated. Use SetRenderFrameHostGlobalId instead.
-  void SetRenderFrameHost(content::RenderFrameHost* render_frame_host) {
+#if defined(UNIT_TEST)
+  void SetRenderFrameHostForTest(content::RenderFrameHost* render_frame_host) {
     if (!render_frame_host) {
       return;
     }
     render_frame_id_ = render_frame_host->GetGlobalId();
   }
+#endif  // defined(UNIT_TEST)
 
   void SetRenderFrameHostGlobalId(
       content::GlobalRenderFrameHostId render_frame_id) {

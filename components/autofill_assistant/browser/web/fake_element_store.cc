@@ -27,7 +27,8 @@ ClientStatus FakeElementStore::GetElement(
   out_element->SetNodeFrameId(it->second.object_data.node_frame_id);
   out_element->SetFrameStack(it->second.frame_stack);
   if (web_contents_ != nullptr) {
-    out_element->SetRenderFrameHost(web_contents_->GetPrimaryMainFrame());
+    out_element->SetRenderFrameHostForTest(
+        web_contents_->GetPrimaryMainFrame());
   }
   return OkClientStatus();
 }

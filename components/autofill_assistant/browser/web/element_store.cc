@@ -46,7 +46,9 @@ ClientStatus ElementStore::RestoreElement(
     VLOG(1) << __func__ << " failed to resolve frame.";
     return ClientStatus(CLIENT_ID_RESOLUTION_FAILED);
   }
-  out_element->SetRenderFrameHost(frame);
+  // TODO(b/235784033): This may cause unexpected behaviour (e.g. for native
+  // execution). The two frame ids are not equivalent!
+  out_element->SetRenderFrameHostGlobalId(frame->GetGlobalId());
   return OkClientStatus();
 }
 

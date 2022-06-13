@@ -51,11 +51,10 @@ class SemanticElementFinder : public BaseElementFinder {
   // Returns the given status and no element. This expects an error status.
   void GiveUpWithError(const ClientStatus& status);
 
-  // Builds a result from the |render_frame_host|, the |object_id| and the
-  // |backend_node_id| returns it withan ok status.
-  void ResultFound(content::RenderFrameHost* render_frame_host,
-                   const std::string& object_id,
-                   int backend_node_id);
+  // Builds a result from the |node_id| and the |object_id|, returns it with an
+  // ok status.
+  void ResultFound(const GlobalBackendNodeId& node_id,
+                   const std::string& object_id);
 
   // Call |callback_| with the |status| and |result|.
   void SendResult(const ClientStatus& status,
@@ -79,7 +78,7 @@ class SemanticElementFinder : public BaseElementFinder {
       const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
 
   void OnResolveNodeForAnnotateDom(
-      GlobalBackendNodeId node,
+      const GlobalBackendNodeId& node,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<dom::ResolveNodeResult> result);
 

@@ -2702,7 +2702,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   // This makes the devtools action fail.
   ElementFinderResult element;
   element.SetNodeFrameId("doesnotexist");
-  element.SetRenderFrameHost(web_contents()->GetPrimaryMainFrame());
+  element.SetRenderFrameHostForTest(web_contents()->GetPrimaryMainFrame());
 
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
             WaitUntilElementIsStable(element, 10, base::Milliseconds(100))
@@ -3154,7 +3154,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
 
   // Create fake element without object id and frame information only.
   ElementFinderResult fake_frame_element;
-  fake_frame_element.SetRenderFrameHost(frame_element.render_frame_host());
+  fake_frame_element.SetRenderFrameHostForTest(
+      frame_element.render_frame_host());
   fake_frame_element.SetNodeFrameId(
       frame_element.render_frame_host()->GetDevToolsFrameToken().ToString());
 
