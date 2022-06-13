@@ -1205,6 +1205,7 @@ static_library("extensions") {
     ]
     deps += [
       "//chromeos/lacros",
+      "//chromeos/startup",
       "//chromeos/ui/base",
       "//components/enterprise",
       "//components/enterprise/common/proto:connectors_proto",
