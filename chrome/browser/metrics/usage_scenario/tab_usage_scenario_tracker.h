@@ -44,6 +44,7 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void OnTabIsAudibleChanged(content::WebContents* web_contents) override;
   void OnMediaEffectivelyFullscreenChanged(content::WebContents* web_contents,
                                            bool is_fullscreen) override;
+  void OnMediaDestroyed(content::WebContents* web_contents) override;
   void OnPrimaryMainFrameNavigationCommitted(
       content::WebContents* web_contents) override;
   void OnVideoStartedPlaying(content::WebContents* web_contents) override;
@@ -56,10 +57,6 @@ class TabUsageScenarioTracker : public TabStatsObserver,
  private:
   using VisibleTabsMap = base::flat_map<content::WebContents*,
                                         std::pair<ukm::SourceId, url::Origin>>;
-
-  // Should be called every time |content_with_media_playing_fullscreen_| needs
-  // to be reset.
-  void OnContentStoppedPlayingMediaFullScreen();
 
   // Should be called when |visible_tab_iter| switch from being visible to non
   // visible. |visible_tab_iter| should be an iterator in |visible_contents_|.
@@ -86,9 +83,9 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   // frame navigation is ukm::kInvalidSourceID and the origin is empty.
   VisibleTabsMap visible_tabs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // WebContents currently playing video fullscreen, nullptr if there's none.
-  raw_ptr<content::WebContents> content_with_media_playing_fullscreen_ =
-      nullptr;
+  // WebContents currently playing video fullscreen.
+  base::flat_set<raw_ptr<content::WebContents>>
+      contents_playing_video_fullscreen_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

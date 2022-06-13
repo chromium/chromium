@@ -59,6 +59,11 @@ class TabStatsObserver : public base::CheckedObserver {
       content::WebContents* web_contents,
       bool is_fullscreen) {}
 
+  // Invoked when a media is destroyed. Note: When a fullscreen media is
+  // destroyed, this will be invoked but not necessarily
+  // OnMediaEffectivelyFullscreenChanged().
+  virtual void OnMediaDestroyed(content::WebContents* web_contents) {}
+
   // Called whenever a tab starts playing video. If this tab has multiple video
   // players this will only be called when the first one starts.
   virtual void OnVideoStartedPlaying(content::WebContents* web_contents) {}

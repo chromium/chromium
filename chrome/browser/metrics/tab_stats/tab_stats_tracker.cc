@@ -254,7 +254,7 @@ void TabStatsTracker::AddObserverAndSetInitialState(
         observer->OnVideoStartedPlaying(wc);
       if (wc->IsCurrentlyAudible())
         observer->OnTabIsAudibleChanged(wc);
-      if (wc->IsFullscreen() && wc->HasActiveEffectivelyFullscreenVideo())
+      if (wc->HasActiveEffectivelyFullscreenVideo())
         observer->OnMediaEffectivelyFullscreenChanged(wc, true);
     }
   }
@@ -393,6 +393,11 @@ class TabStatsTracker::WebContentsUsageObserver
     }
   }
 
+  void MediaDestroyed(const content::MediaPlayerId& id) override {
+    for (auto& tab_stats_observer : tab_stats_tracker_->tab_stats_observers_)
+      tab_stats_observer.OnMediaDestroyed(web_contents());
+  }
+
  private:
   raw_ptr<TabStatsTracker> tab_stats_tracker_;
   // The last navigation time associated with this tab.
@@ -400,7 +405,7 @@ class TabStatsTracker::WebContentsUsageObserver
   // Updated when a navigation is finished.
   ukm::SourceId ukm_source_id_ = 0;
   // The number of video currently playing in this tab.
-  size_t video_playing_count_ = 0;
+  int video_playing_count_ = 0;
 };
 
 void TabStatsTracker::OnBrowserAdded(Browser* browser) {

@@ -5,6 +5,7 @@
 // TODO(crbug.com/1181765): More tests should be added to cover all possible
 // scenarios. E.g. a test closing the visible tab in a window should be added.
 
+#include "base/test/bind.h"
 #include "chrome/browser/metrics/usage_scenario/tab_usage_scenario_tracker.h"
 
 #include <memory>
@@ -508,7 +509,6 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   auto expected_source_id =
       contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   content::CrashTab(contents);
-  tick_clock_.Advance(kInterval);
 
   auto interval_data = data_store_.ResetIntervalData();
   EXPECT_EQ(1U, interval_data.max_tab_count);

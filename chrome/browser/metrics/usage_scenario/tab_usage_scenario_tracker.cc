@@ -26,6 +26,12 @@ std::pair<ukm::SourceId, url::Origin> GetNavigationInfoForContents(
                         main_frame->GetLastCommittedOrigin());
 }
 
+int GetNumDisplays() {
+  auto* screen = display::Screen::GetScreen();
+  DCHECK(screen);
+  return screen->GetNumDisplays();
+}
+
 }  // namespace
 
 TabUsageScenarioTracker::TabUsageScenarioTracker(
@@ -69,7 +75,7 @@ void TabUsageScenarioTracker::OnTabReplaced(
   OnWebContentsRemoved(old_contents);
   DCHECK(!base::Contains(visible_tabs_, old_contents));
   DCHECK(!base::Contains(contents_playing_video_, old_contents));
-  DCHECK_NE(content_with_media_playing_fullscreen_, old_contents);
+  DCHECK(!base::Contains(contents_playing_video_fullscreen_, old_contents));
 
   // Start tracking |new_contents| if needed.
   if (new_contents->GetVisibility() == content::Visibility::VISIBLE)
@@ -83,10 +89,13 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto iter = visible_tabs_.find(web_contents);
+  const bool was_visible = iter != visible_tabs_.end();
+  const bool is_visible =
+      web_contents->GetVisibility() == content::Visibility::VISIBLE;
+
   // The first content::Visibility::VISIBLE notification is always sent, even
   // if the tab starts in the visible state.
-  if (iter == visible_tabs_.end() &&
-      web_contents->GetVisibility() == content::Visibility::VISIBLE) {
+  if (!was_visible && is_visible) {
     usage_scenario_data_store_->OnWindowVisible();
 
     // If this tab is playing video then record that it became visible.
@@ -95,8 +104,7 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
     }
 
     InsertContentsInMapOfVisibleTabs(web_contents);
-  } else if (iter != visible_tabs_.end() &&
-             web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+  } else if (was_visible && !is_visible) {
     // The tab was previously visible and it's now hidden or occluded.
     OnTabBecameHidden(&iter);
   }
@@ -122,17 +130,29 @@ void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
     content::WebContents* web_contents,
     bool is_fullscreen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* screen = display::Screen::GetScreen();
-  DCHECK(screen);
-  if (screen->GetNumDisplays() == 1) {
-    if (is_fullscreen) {
-      DCHECK(!content_with_media_playing_fullscreen_);
-      content_with_media_playing_fullscreen_ = web_contents;
+
+  if (is_fullscreen) {
+    auto [it, inserted] =
+        contents_playing_video_fullscreen_.insert(web_contents);
+    if (inserted && contents_playing_video_fullscreen_.size() == 1U &&
+        GetNumDisplays() == 1)
       usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
-    } else {
-      OnContentStoppedPlayingMediaFullScreen();
+  } else {
+    auto num_removed = contents_playing_video_fullscreen_.erase(web_contents);
+    if (num_removed == 1U && contents_playing_video_fullscreen_.empty() &&
+        GetNumDisplays() == 1) {
+      usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
     }
   }
+}
+
+void TabUsageScenarioTracker::OnMediaDestroyed(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Destroying a media may cause the WebContents to no longer have a fullscreen
+  // media.
+  OnMediaEffectivelyFullscreenChanged(
+      web_contents, web_contents->HasActiveEffectivelyFullscreenVideo());
 }
 
 void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
@@ -179,46 +199,30 @@ void TabUsageScenarioTracker::OnVideoStoppedPlaying(
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
 }
 
-void TabUsageScenarioTracker::OnDisplayAdded(const display::Display& unused) {
+void TabUsageScenarioTracker::OnDisplayAdded(const display::Display&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* screen = display::Screen::GetScreen();
-  if (screen->GetNumDisplays() == 1) {
-    if (content_with_media_playing_fullscreen_ != nullptr) {
-      DCHECK(usage_scenario_data_store_
-                 ->is_playing_full_screen_video_single_monitor_since()
-                 .is_null());
+
+  if (!contents_playing_video_fullscreen_.empty()) {
+    const size_t num_displays = GetNumDisplays();
+
+    if (num_displays == 1)
       usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
-    }
-    return;
-  }
-  // Stop the fullscreen video on single monitor event if there's more than one
-  // screen.
-  if (!usage_scenario_data_store_
-           ->is_playing_full_screen_video_single_monitor_since()
-           .is_null()) {
-    usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+    else if (num_displays == 2)
+      usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
   }
 }
 
-void TabUsageScenarioTracker::OnDisplayRemoved(const display::Display& unused) {
+void TabUsageScenarioTracker::OnDisplayRemoved(const display::Display&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* screen = display::Screen::GetScreen();
-  DCHECK(screen);
-  // Update the data store if there's only one display now running media
-  // fullscreen.
-  if (screen->GetNumDisplays() == 1 &&
-      content_with_media_playing_fullscreen_ != nullptr) {
-    DCHECK(usage_scenario_data_store_
-               ->is_playing_full_screen_video_single_monitor_since()
-               .is_null());
-    usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
-  }
-}
 
-void TabUsageScenarioTracker::OnContentStoppedPlayingMediaFullScreen() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
-  content_with_media_playing_fullscreen_ = nullptr;
+  if (!contents_playing_video_fullscreen_.empty()) {
+    const size_t num_displays = GetNumDisplays();
+
+    if (num_displays == 1)
+      usage_scenario_data_store_->OnFullScreenVideoStartsOnSingleMonitor();
+    else if (num_displays == 0)
+      usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+  }
 }
 
 void TabUsageScenarioTracker::OnTabBecameHidden(
@@ -226,14 +230,9 @@ void TabUsageScenarioTracker::OnTabBecameHidden(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If this tab is playing video then record that it became non visible.
-  if (base::Contains(contents_playing_video_, (*visible_tab_iter)->first)) {
+  content::WebContents* const web_contents = (*visible_tab_iter)->first;
+  if (base::Contains(contents_playing_video_, web_contents))
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
-  }
-
-  // |OnMediaEffectivelyFullscreenChanged| doesn't get called if a tab playing
-  // media fullscreen gets closed.
-  if ((*visible_tab_iter)->first == content_with_media_playing_fullscreen_)
-    OnContentStoppedPlayingMediaFullScreen();
 
   // Record that the ukm::SourceID associated with this tab isn't visible
   // anymore if necessary.
@@ -252,15 +251,28 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
   auto iter = visible_tabs_.find(web_contents);
   DCHECK_EQ(iter != visible_tabs_.end(),
             web_contents->GetVisibility() == content::Visibility::VISIBLE);
-  auto video_iter = contents_playing_video_.find(web_contents);
   // If |web_contents| is tracked in the list of visible WebContents then a
   // synthetic visibility change event should be emitted.
-  if (iter != visible_tabs_.end()) {
+  if (iter != visible_tabs_.end())
     OnTabBecameHidden(&iter);
+
+  // Remove |web_contents| from the list of contents playing video. If
+  // necessary, the data store was already informed that a video stopped playing
+  // in a visible tab in the OnTabBecameHidden() call above.
+  contents_playing_video_.erase(web_contents);
+
+  {
+    // Remove |web_contents| from the list of contents will fullscreen media and
+    // if necessary, inform the data store that there is no more fullscreen
+    // video playing on a single monitor.
+    size_t num_removed = contents_playing_video_fullscreen_.erase(web_contents);
+    if (num_removed == 1 && contents_playing_video_fullscreen_.empty() &&
+        GetNumDisplays() == 1) {
+      usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
+    }
   }
-  if (video_iter != contents_playing_video_.end()) {
-    contents_playing_video_.erase(video_iter);
-  }
+
+  // If necessary, inform the data store that audio stopped.
   if (web_contents->IsCurrentlyAudible())
     usage_scenario_data_store_->OnAudioStops();
 }

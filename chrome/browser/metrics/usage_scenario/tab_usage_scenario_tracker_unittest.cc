@@ -241,6 +241,47 @@ TEST_F(TabUsageScenarioTrackerTest, FullScreenVideoSingleMonitor) {
             kInterval);
 }
 
+// Regression test for crbug.com/1273251.
+TEST_F(TabUsageScenarioTrackerTest,
+       FullScreenVideoSingleMonitor_StopPlayingWithTwoMonitors) {
+  auto contents = CreateWebContents();
+  tab_usage_scenario_tracker_->OnTabAdded(contents.get());
+
+  // `contents` plays video in fullscreen.
+  tab_usage_scenario_tracker_->OnMediaEffectivelyFullscreenChanged(
+      contents.get(), true);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Add a second display, this should stop the fullscreen video on single
+  // monitor session.
+  int64_t kDisplayID = 42;
+  screen_.display_list().AddDisplay({kDisplayID, gfx::Rect(100, 100, 801, 802)},
+                                    display::DisplayList::Type::NOT_PRIMARY);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Stop playing video in fullscreen in `contents` while there are 2 displays.
+  tab_usage_scenario_tracker_->OnMediaEffectivelyFullscreenChanged(
+      contents.get(), false);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Remove the second display.
+  screen_.display_list().RemoveDisplay(kDisplayID);
+  task_environment()->FastForwardBy(kInterval);
+
+  // `contents2` starts playing video in fullscreen.
+  auto contents2 = CreateWebContents();
+  tab_usage_scenario_tracker_->OnTabAdded(contents2.get());
+
+  tab_usage_scenario_tracker_->OnMediaEffectivelyFullscreenChanged(
+      contents2.get(), true);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Expect 2 * kInterval of video playback (kInterval for each WebContents).
+  auto interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_full_screen_single_monitor,
+            2 * kInterval);
+}
+
 TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {
   // Create 2 tabs, one visible and one hidden.
   auto contents1 = CreateWebContents();
