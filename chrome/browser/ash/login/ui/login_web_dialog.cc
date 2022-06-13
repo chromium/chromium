@@ -58,7 +58,7 @@ LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
       url_(url) {
   if (!parent_window_ && LoginDisplayHost::default_host())
     parent_window_ = LoginDisplayHost::default_host()->GetNativeWindow();
-  LOG_IF(WARNING, !parent_window)
+  LOG_IF(WARNING, !parent_window_)
       << "No parent window. Dialog sizes could be wrong";
 }
 
