@@ -53,6 +53,12 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key);
 // Records the score computed for a given segment.
 void RecordModelScore(SegmentId segment_id, float score);
 
+// Records the time difference between when a new version of model from
+// optimization guide is available and when the model is initialized in the
+// client.
+void RecordModelUpdateTimeDifference(SegmentId segment_id,
+                                     int64_t model_update_time);
+
 // Records the result of segment selection whenever segment selection is
 // computed.
 void RecordSegmentSelectionComputed(

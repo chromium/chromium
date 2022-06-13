@@ -316,6 +316,19 @@ void RecordModelScore(SegmentId segment_id, float score) {
   }
 }
 
+void RecordModelUpdateTimeDifference(SegmentId segment_id,
+                                     int64_t model_update_time) {
+  // |model_update_time| might be empty for data persisted before M101.
+  if (model_update_time) {
+    base::Time model_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Seconds(model_update_time));
+    base::UmaHistogramCounts1000(
+        "SegmentationPlatform.Init.ModelUpdatedTimeDifferenceInDays." +
+            OptimizationTargetToHistogramVariant(segment_id),
+        (base::Time::Now() - model_updated_time).InDays());
+  }
+}
+
 void RecordSegmentSelectionComputed(
     const std::string& segmentation_key,
     SegmentId new_selection,

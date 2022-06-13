@@ -128,9 +128,15 @@ void SignalFilterProcessor::FilterSignals(
         std::move(extractor.history_based_segments));
   }
   for (const auto& segment_info : segment_infos) {
+    if (is_first_time_model_update_) {
+      stats::RecordModelUpdateTimeDifference(
+          segment_info->segment_info.segment_id(),
+          segment_info->segment_info.model_update_time_s());
+    }
     storage_service_->signal_storage_config()->OnSignalCollectionStarted(
         segment_info->segment_info.model_metadata());
   }
+  is_first_time_model_update_ = false;
 }
 
 void SignalFilterProcessor::EnableMetrics(bool enable_metrics) {
