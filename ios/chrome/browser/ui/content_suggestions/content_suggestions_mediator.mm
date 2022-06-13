@@ -573,12 +573,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.freshMostVisitedItems addObject:item];
   }
 
-  if (!IsSingleNtpEnabled() && [self.mostVisitedItems count] > 0) {
-    // If some content is already displayed to the user, do not update without a
-    // user action.
-    return;
-  }
-
   [self useFreshMostVisited];
 
   if (mostVisited.size() && !self.recordedPageImpression) {

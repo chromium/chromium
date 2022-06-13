@@ -166,9 +166,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)shutdown {
   _searchEngineObserver.reset();
   if (_webState && _webStateObserver) {
-    if (!IsSingleNtpEnabled()) {
-      [self saveContentOffsetForWebState:_webState];
-    }
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
   }
@@ -190,16 +187,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
-  if (!IsSingleNtpEnabled() &&
-      webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+  if (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+          kChromeUINewTabURL &&
+      webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
           kChromeUINewTabURL) {
-    return;
-  }
-  if (IsSingleNtpEnabled() &&
-      (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-           kChromeUINewTabURL &&
-       webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
-           kChromeUINewTabURL)) {
     // Do nothing if the current page is not the NTP.
     return;
   }
@@ -270,18 +261,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
     _webState->RemoveObserver(_webStateObserver.get());
-    if (IsSingleNtpEnabled()) {
-      [self saveContentOffsetForWebState:_webState];
-    }
+    [self saveContentOffsetForWebState:_webState];
   }
   _webState = webState;
-  if (IsSingleNtpEnabled()) {
-    [self.logoVendor setWebState:webState];
-  }
+  [self.logoVendor setWebState:webState];
   if (_webState && _webStateObserver) {
-    if (IsSingleNtpEnabled()) {
-      [self setContentOffsetForWebState:webState];
-    }
+    [self setContentOffsetForWebState:webState];
     _webState->AddObserver(_webStateObserver.get());
   }
 }
@@ -388,7 +373,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   CGFloat minimumOffset = -[self.ntpViewController heightAboveFeed];
   if (offsetFromSavedState > minimumOffset) {
     [self.ntpViewController setSavedContentOffset:offsetFromSavedState];
-  } else if (IsSingleNtpEnabled()) {
+  } else {
     // Remove this if NTPs are ever scoped back to the WebState.
     [self.ntpViewController setContentOffsetToTop];
     // Refresh NTP content if there is is no saved scrolled state or when a new

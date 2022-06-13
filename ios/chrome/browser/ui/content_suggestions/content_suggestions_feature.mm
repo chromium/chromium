@@ -40,10 +40,6 @@ bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
 }
 
-bool IsSingleNtpEnabled() {
-  return base::FeatureList::IsEnabled(kSingleNtp);
-}
-
 bool IsSingleCellContentSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kSingleCellContentSuggestions);
 }
