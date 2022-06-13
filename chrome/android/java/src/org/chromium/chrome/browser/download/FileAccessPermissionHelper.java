@@ -12,8 +12,12 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Consumer;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
 
@@ -61,10 +65,6 @@ public class FileAccessPermissionHelper {
         }
 
         final AndroidPermissionDelegate permissionDelegate = windowAndroid;
-        final PermissionCallback permissionCallback = (permissions, grantResults)
-                -> callback.onResult(Pair.create(grantResults.length > 0
-                                && grantResults[0] == PackageManager.PERMISSION_GRANTED,
-                        null));
 
         Context context = windowAndroid.getContext().get();
         if (context == null) {
@@ -72,9 +72,25 @@ public class FileAccessPermissionHelper {
             return;
         }
 
-        Runnable requestPermissions = ()
-                -> permissionDelegate.requestPermissions(
-                        new String[] {permission.WRITE_EXTERNAL_STORAGE}, permissionCallback);
+        Consumer<PropertyModel> requestPermissions = (model) -> {
+            final PermissionCallback permissionCallback = (permissions, grantResults) -> {
+                final ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+                // If the model is not null, it means that it has not been dismissed yet
+                // and we will be dismissing it after the permissions callback. For more
+                // context, crbug/1319659
+                if (modalDialogManager != null && model != null) {
+                    modalDialogManager.dismissDialog(
+                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                }
+                callback.onResult(Pair.create(grantResults.length > 0
+                                && grantResults[0] == PackageManager.PERMISSION_GRANTED,
+                        null));
+            };
+
+            permissionDelegate.requestPermissions(
+                    new String[] {permission.WRITE_EXTERNAL_STORAGE}, permissionCallback);
+        };
+
         if (windowAndroid.getModalDialogManager() != null) {
             AndroidPermissionRequester.showMissingPermissionDialog(windowAndroid,
                     context.getString(org.chromium.chrome.R.string
@@ -82,7 +98,7 @@ public class FileAccessPermissionHelper {
                     requestPermissions, callback.bind(Pair.create(false, null)));
         } else {
             // If there is no modal dialog manager, we will request permissions directly.
-            requestPermissions.run();
+            requestPermissions.accept(null);
         }
     }
 }
