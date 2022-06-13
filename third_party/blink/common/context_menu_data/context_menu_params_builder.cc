@@ -76,6 +76,9 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   if (data.impression)
     params.impression = data.impression;
 
+  if (data.field_renderer_id)
+    params.field_renderer_id = data.field_renderer_id;
+
   params.source_type = static_cast<ui::MenuSourceType>(data.source_type);
 
   return params;

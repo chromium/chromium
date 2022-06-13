@@ -76,6 +76,7 @@ void UntrustworthyContextMenuParams::Assign(
   selection_rect = other.selection_rect;
   selection_start_offset = other.selection_start_offset;
   opened_from_highlight = other.opened_from_highlight;
+  field_renderer_id = other.field_renderer_id;
 }
 
 UntrustworthyContextMenuParams::~UntrustworthyContextMenuParams() = default;
