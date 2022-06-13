@@ -20,6 +20,7 @@ class StorageKey;
 
 namespace storage {
 
+struct BucketLocator;
 class FileSystemContext;
 class QuotaManagerProxy;
 class QuotaReservation;
@@ -51,6 +52,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaUtil {
   virtual int64_t GetStorageKeyUsageOnFileTaskRunner(
       FileSystemContext* file_system_context,
       const blink::StorageKey& storage_key,
+      FileSystemType type) = 0;
+
+  // Returns the amount of data used for the `bucket_locator` for usage
+  // tracking.
+  virtual int64_t GetBucketUsageOnFileTaskRunner(
+      FileSystemContext* file_system_context,
+      const BucketLocator& bucket_locator,
       FileSystemType type) = 0;
 
   // Creates new reservation object for the `storage_key` and the `type`.

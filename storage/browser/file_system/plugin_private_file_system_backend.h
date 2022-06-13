@@ -143,6 +143,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
       FileSystemContext* context,
       const blink::StorageKey& storage_key,
       FileSystemType type) override;
+  int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,
+                                         const BucketLocator& bucket_locator,
+                                         FileSystemType type) override;
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
       const blink::StorageKey& storage_key,
       FileSystemType type) override;

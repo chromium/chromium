@@ -1808,15 +1808,10 @@ TEST_P(ObfuscatedFileUtilTest, TestRevokeUsageCache) {
   EXPECT_EQ(expected_quota, SizeByQuotaUtil());
 
   // This should reconstruct the cache.
-  // TODO(https://crbug.com/1330922): Once FileSystemQuotaUtil is refactored to
-  // support non-default buckets, this if-statement should be removed and the
-  // assertions inside should pass in all test modes.
-  if (!is_non_default_bucket()) {
-    GetUsageFromQuotaManager();
-    EXPECT_EQ(expected_quota, SizeInUsageFile());
-    EXPECT_EQ(expected_quota, SizeByQuotaUtil());
-    EXPECT_EQ(expected_quota, usage());
-  }
+  GetUsageFromQuotaManager();
+  EXPECT_EQ(expected_quota, SizeInUsageFile());
+  EXPECT_EQ(expected_quota, SizeByQuotaUtil());
+  EXPECT_EQ(expected_quota, usage());
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {

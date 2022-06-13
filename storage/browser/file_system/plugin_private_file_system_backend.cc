@@ -301,6 +301,14 @@ int64_t PluginPrivateFileSystemBackend::GetStorageKeyUsageOnFileTaskRunner(
   return total_size;
 }
 
+int64_t PluginPrivateFileSystemBackend::GetBucketUsageOnFileTaskRunner(
+    FileSystemContext* context,
+    const BucketLocator& bucket_locator,
+    FileSystemType type) {
+  return GetStorageKeyUsageOnFileTaskRunner(context, bucket_locator.storage_key,
+                                            type);
+}
+
 void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
     FileSystemContext* context,
     const url::Origin& origin,
