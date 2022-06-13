@@ -5208,8 +5208,9 @@ net::Error NavigationRequest::CheckCSPDirectives(
   if (parent_policies) {
     bool is_opaque_fenced_frame =
         blink::features::IsFencedFramesShadowDOMBased()
-            ? (frame_tree_node_->GetFencedFrameMode() ==
-               blink::mojom::FencedFrameMode::kOpaqueAds)
+            ? (frame_tree_node_->IsFencedFrameRoot() &&
+               frame_tree_node_->GetFencedFrameMode() ==
+                   blink::mojom::FencedFrameMode::kOpaqueAds)
             : is_fenced_frame_opaque_url_;
     if (!IsAllowedByCSPDirective(
             parent_policies->content_security_policies, &parent_context,

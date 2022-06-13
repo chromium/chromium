@@ -221,6 +221,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -1119,6 +1120,88 @@ CreateJavaScriptExecuteRequestForTestsCallback(
           std::move(callback).Run(base::Value());
       },
       std::move(callback));
+}
+
+bool ValidateUnfencedTopNavigation(
+    RenderFrameHostImpl* render_frame_host,
+    const GURL& url,
+    int initiator_process_id,
+    const scoped_refptr<network::ResourceRequestBody>& post_body,
+    bool user_gesture) {
+  // It should only be possible to send this IPC with this flag from an
+  // opaque-ads fenced frame. Opaque-ads fenced frames should always
+  // have the sandbox flag `allow-top-navigation-by-user-activation`.
+  if ((render_frame_host->frame_tree_node()->GetFencedFrameMode() !=
+       blink::mojom::FencedFrameMode::kOpaqueAds) ||
+      render_frame_host->IsSandboxed(
+          network::mojom::WebSandboxFlags::kTopNavigationByUserActivation)) {
+    // If we get the IPC elsewhere, assume the renderer is compromised.
+    bad_message::ReceivedBadMessage(
+        initiator_process_id,
+        bad_message::RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME);
+    return false;
+  }
+
+  // Perform checks that normally would be performed in
+  // `blink::CanNavigateHelper` but that we skipped because the target
+  // frame wasn't available in the renderer.
+  // TODO(crbug.com/1123606): Change these checks to send a BadMessage
+  // when the renderer-side refactor is complete.
+
+  // Javascript URLs are not allowed, because they can be used to
+  // communicate from the fenced frame to the embedder.
+  // TODO(crbug.com/1315802): It does not seem possible to reach this code
+  // with an uncompromised renderer, because javascript URLs don't reach
+  // the same IPC; instead they run inside the fenced frame as _self.
+  // It also seems that Javascript URLs would be caught earlier in this
+  // particular code path by VerifyOpenURLParams().
+  // In this code's final IPC resting place after the factor, make sure
+  // to check whether this code is redundant.
+  if (url.SchemeIs(url::kJavaScriptScheme)) {
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "The frame attempting navigation must be in the same fenced "
+        "frame tree as the target if navigating to a javascript: url");
+    return false;
+  }
+
+  // Blob URLs are not allowed, because you should not be able to exfiltrate
+  // arbitrary amounts of information from a fenced frame.
+  if (url.SchemeIs(url::kBlobScheme)) {
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "_unfencedTop may not be used with a blob: url");
+    return false;
+  }
+
+  // POST requests are not allowed, because they are asynchronous and more
+  // difficult to account for in privacy budgets.
+  if (post_body) {
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "_unfencedTop may not be used to send POST requests");
+    return false;
+  }
+
+  // User activation is required, because fenced frames use the sandbox
+  // flag `allow-top-navigation-by-user-activation`.
+  // It would be better to instead check
+  // `render_frame_host->frame_tree_node()->HasTransientUserActivation()`,
+  // but it has already been consumed at this point.
+  // TODO(crbug.com/848778): use the browser's source of truth for user
+  // activation here (and elsewhere in this file) rather than trust the
+  // renderer.
+  if (!user_gesture) {
+    render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "The frame attempting navigation of the top-level window is "
+        "sandboxed with the 'allow-top-navigation-by-user-activation' "
+        "flag, but has no user activation (aka gesture). See "
+        "https://www.chromestatus.com/feature/5629582019395584.");
+    return false;
+  }
+
+  return true;
 }
 
 // Records the identifiable surface metric associated with a document created
@@ -6841,6 +6924,71 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     return;
   }
 
+  // If the flag `is_unfenced_top_navigation` is set, this is a special code
+  // path for MPArch fenced frames. The target frame doesn't have a handle
+  // inside the MPArch renderer process, so we need to set it here.
+  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  if (params->is_unfenced_top_navigation) {
+    GURL validated_url = params->url;
+
+    // Check that the IPC parameters are valid and that the navigation
+    // is allowed.
+    // TODO(crbug.com/1315802): When this handling is refactored into a separate
+    // IPC, make sure that the checks from VerifyOpenURLParams above are not
+    // unintentionally weakened.
+    if (!ValidateUnfencedTopNavigation(this, validated_url,
+                                       GetProcess()->GetID(), params->post_body,
+                                       params->user_gesture)) {
+      return;
+    }
+
+    TRACE_EVENT1("navigation", "RenderFrameHostImpl::OpenURL(_unfencedTop)",
+                 "url", validated_url.possibly_invalid_spec());
+
+    // There are some relevant parameter changes to note:
+    // Change the navigation target to the outermost frame.
+    // This escapes Portals but not GuestViews.
+    // - We don't especially care about Portals, because the frame won't be
+    //   user activated until it's no longer in a portal
+    // - We don't want _unfencedTop navigations to escape a GuestView
+    //   (<webview>) and affect their embedder.
+    RenderFrameHostImpl* target_frame = GetOutermostMainFrame();
+
+    // Change `should_replace_current_entry` to false.
+    // Fenced frames are enforced to have a history of length 1. Because the
+    // renderer thinks this navigation is to the fenced frame root, it sets
+    // `should_replace_current_entry` to true, but we do not want this
+    // restriction for navigations outside the fenced frame.
+    // TODO(crbug.com/1315802): Make sure that the browser doesn't rely on
+    // whether the renderer says we should replace the current entry, i.e.
+    // make sure there are no situations where we should actually replace the
+    // current entry but don't, due to this line.
+    bool should_replace_current_entry = false;
+
+    // TODO(crbug.com/1315802): Null out the initiator origin, frame token, and
+    // site instance.
+    // We use an opaque `initiator_origin` in order to avoid leaking
+    // information from the fenced frame to its embedder. (The navigation will
+    // be treated as cross-origin unconditionally.) We don't need to provide a
+    // `source_site_instance`.
+    // url::Origin initiator_origin;
+
+    // TODO(crbug.com/1237552): Resolve the discussion of download policy.
+    blink::NavigationDownloadPolicy download_policy;
+
+    target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
+        target_frame, validated_url,
+        base::OptionalOrNullptr(params->initiator_frame_token),
+        GetProcess()->GetID(), params->initiator_origin, GetSiteInstance(),
+        content::Referrer(), ui::PAGE_TRANSITION_LINK,
+        should_replace_current_entry, download_policy, "GET",
+        /*post_body=*/nullptr, params->extra_headers,
+        /*blob_url_loader_factory=*/nullptr,
+        network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
+        params->impression, base::TimeTicks::Now());
+    return;
+  }
+
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OpenURL", "url",
                validated_url.possibly_invalid_spec());
 
@@ -6850,9 +6998,9 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       GetProcess()->GetID(), params->initiator_origin, params->post_body,
       params->extra_headers, params->referrer.To<content::Referrer>(),
       params->disposition, params->should_replace_current_entry,
-      params->user_gesture, params->is_unfenced_top_navigation,
-      params->triggering_event_info, params->href_translate,
-      std::move(blob_url_loader_factory), params->impression);
+      params->user_gesture, params->triggering_event_info,
+      params->href_translate, std::move(blob_url_loader_factory),
+      params->impression);
 }
 
 void RenderFrameHostImpl::DidStopLoading() {

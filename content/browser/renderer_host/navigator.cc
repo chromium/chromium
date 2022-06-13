@@ -253,72 +253,6 @@ bool HasEmbeddingControl(NavigationRequest* navigation_request) {
   return false;
 }
 
-bool ValidateUnfencedTopNavigation(RenderFrameHostImpl* render_frame_host,
-                                   const GURL& url,
-                                   int initiator_process_id,
-                                   bool user_gesture) {
-  // It should only be possible to send this IPC with this flag from an
-  // MPArch opaque-ads fenced frame. Opaque-ads fenced frames should always
-  // have the sandbox flag `allow-top-navigation-by-user-activation`.
-  if (!render_frame_host->frame_tree_node()->IsInFencedFrameTree() ||
-      !blink::features::IsFencedFramesMPArchBased() ||
-      (render_frame_host->GetMainFrame()
-           ->frame_tree_node()
-           ->GetFencedFrameMode() !=
-       blink::mojom::FencedFrameMode::kOpaqueAds) ||
-      render_frame_host->IsSandboxed(
-          network::mojom::WebSandboxFlags::kTopNavigationByUserActivation)) {
-    // If we get the IPC elsewhere, assume the renderer is compromised.
-    bad_message::ReceivedBadMessage(
-        initiator_process_id,
-        bad_message::RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME);
-    return false;
-  }
-
-  // Perform checks that normally would be performed in
-  // `blink::CanNavigateHelper` but that we skipped because the target
-  // frame wasn't available in the renderer.
-  // TODO(crbug.com/1123606): Clean this up (make it use a common code path
-  // for maintainability) after OT if possible.
-
-  // Javascript URLs are not allowed, because they can be used to
-  // communicate from the fenced frame to the embedder.
-  // TODO(crbug.com/1315802): It does not seem possible to reach this code
-  // with an uncompromised renderer, because javascript URLs don't reach
-  // the same IPC; instead they run inside the fenced frame as _self.
-  // It also seems that Javascript URLs would be caught earlier in this
-  // particular code path by VerifyOpenURLParams().
-  // In this code's final IPC resting place after the factor, make sure
-  // to check whether this code is redundant.
-  if (url.SchemeIs(url::kJavaScriptScheme)) {
-    render_frame_host->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "The frame attempting navigation must be in the same fenced "
-        "frame tree as the target if navigating to a javascript: url");
-    return false;
-  }
-
-  // User activation is required, because fenced frames use the sandbox
-  // flag `allow-top-navigation-by-user-activation`.
-  // It would be better to instead check
-  // `render_frame_host->frame_tree_node()->HasTransientUserActivation()`,
-  // but it has already been consumed at this point.
-  // TODO(crbug.com/848778): use the browser's source of truth for user
-  // activation here (and elsewhere in this file) rather than trust the
-  // renderer.
-  if (!user_gesture) {
-    render_frame_host->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "The frame attempting navigation of the top-level window is "
-        "sandboxed with the 'allow-top-navigation-by-user-activation' "
-        "flag, but has no user activation (aka gesture). See "
-        "https://www.chromestatus.com/feature/5629582019395584.");
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 struct Navigator::NavigationMetricsData {
@@ -803,7 +737,6 @@ void Navigator::RequestOpenURL(
     WindowOpenDisposition disposition,
     bool should_replace_current_entry,
     bool user_gesture,
-    bool is_unfenced_top_navigation,
     blink::mojom::TriggeringEventInfo triggering_event_info,
     const std::string& href_translate,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
@@ -832,46 +765,8 @@ void Navigator::RequestOpenURL(
   // (possibly of a new or different WebContents) otherwise.
   if (disposition == WindowOpenDisposition::CURRENT_TAB &&
       render_frame_host->GetParentOrOuterDocument()) {
-    if (is_unfenced_top_navigation) {
-      // If the flag `is_unfenced_top_navigation` is set, this is a special code
-      // path for MPArch fenced frames. The target frame doesn't have a handle
-      // inside the MPArch renderer process, so we need to set it here.
-      // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
-
-      // Check that the IPC parameters are valid and that the navigation
-      // is allowed.
-      if (!ValidateUnfencedTopNavigation(render_frame_host, url,
-                                         initiator_process_id, user_gesture)) {
-        return;
-      }
-
-      // Change the navigation target to the outermost frame.
-      // This escapes Portals but not GuestViews.
-      // - We don't especially care about Portals, because the frame won't be
-      //   user activated until it's no longer in a portal
-      // - We don't want _unfencedTop navigations to escape a GuestView
-      //   (<webview>) and affect their embedder.
-      // You can represent the primary NavigationController's FrameTree root
-      // with`RenderFrameHost::kNoFrameTreeNodeId`, but we will pick out the
-      // exact node to be safe.
-      frame_tree_node_id = render_frame_host->GetOutermostMainFrame()
-                               ->frame_tree_node()
-                               ->frame_tree_node_id();
-
-      // Fenced frames are enforced to have a history of length 1. Because the
-      // renderer thinks this navigation is to the fenced frame root, it sets
-      // `should_replace_current_entry` to true, but we do not want this
-      // restriction for navigations outside the fenced frame.
-      // TODO(crbug.com/1315802): Make sure that the browser doesn't rely on
-      // whether the renderer says we should replace the current entry, i.e.
-      // make sure there are no situations where we should actually replace the
-      // current entry but don't, due to this line.
-      should_replace_current_entry = false;
-    } else {
-      // Otherwise, proceed normally.
-      frame_tree_node_id =
-          render_frame_host->frame_tree_node()->frame_tree_node_id();
-    }
+    frame_tree_node_id =
+        render_frame_host->frame_tree_node()->frame_tree_node_id();
   }
 
   // Prerendering frames need to have an FTN id set, so OpenURL() can find

@@ -4183,9 +4183,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Indicates whether the fenced frame is navigated to an opaque url. This flag
   // can only change when the embedder navigates the fenced frame. Any
-  // subsequent navigation from within the fenced frame tree will keep the same
-  // flag. Note that this flag is only relevant for fenced frames based on
-  // MPArch.
+  // subsequent navigation from the fenced frame root will keep the same flag.
+  // Note that this flag is only relevant for fenced frames based on MPArch.
   bool is_fenced_frame_opaque_url_ = false;
 
   // The PolicyContainerHost for the current document, containing security

@@ -438,22 +438,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // on a detached frame.
   absl::optional<mojom::blink::FencedFrameMode> GetFencedFrameMode() const;
 
-  // Returns false if fenced frames are disabled. Returns true if the feature
-  // is enabled with the shadowDOM implementation and if `this` is in a fenced
-  // frame tree whose root is in opaque-ads mode.
-  // TODO(crbug.com/1262022): Remove this when we remove the shadowDOM
-  // implementation for fenced frames, or even earlier when we refactor mode
-  // checks to be based on capabilities instead.
-  bool IsInShadowDOMOpaqueAdsFencedFrameTree() const;
-
-  // Returns false if fenced frames are disabled. Returns true if the feature
-  // is enabled with the MPArch implementation and if `this` is in a fenced
-  // frame tree whose root is in opaque-ads mode.
-  // TODO(crbug.com/1262022): Simplify this when we remove the shadowDOM
-  // implementation for fenced frames, or even earlier when we refactor mode
-  // checks to be based on capabilities instead.
-  bool IsInMPArchOpaqueAdsFencedFrameTree() const;
-
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or
   // opener's WindowAgentFactory. Pass nullptr if the frame is isolated from

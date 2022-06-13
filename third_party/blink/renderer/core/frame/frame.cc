@@ -413,39 +413,6 @@ absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
   }
 }
 
-bool Frame::IsInShadowDOMOpaqueAdsFencedFrameTree() const {
-  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
-  if (!ff_impl)
-    return false;
-
-  switch (ff_impl.value()) {
-    case blink::features::FencedFramesImplementationType::kMPArch:
-      return false;
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      Frame* top = &Tree().Top(FrameTreeBoundary::kFenced);
-      return top->Owner() && top->Owner()->GetFramePolicy().is_fenced &&
-             top->Owner()->GetFramePolicy().fenced_frame_mode ==
-                 mojom::blink::FencedFrameMode::kOpaqueAds;
-    }
-  }
-  return false;
-}
-
-bool Frame::IsInMPArchOpaqueAdsFencedFrameTree() const {
-  const auto& ff_impl = GetPage()->FencedFramesImplementationType();
-  if (!ff_impl)
-    return false;
-
-  switch (ff_impl.value()) {
-    case blink::features::FencedFramesImplementationType::kMPArch:
-      return GetPage() && GetPage()->FencedFrameMode() ==
-                              mojom::blink::FencedFrameMode::kOpaqueAds;
-    case blink::features::FencedFramesImplementationType::kShadowDOM:
-      return false;
-  }
-  return false;
-}
-
 void Frame::SetOwner(FrameOwner* owner) {
   owner_ = owner;
   UpdateInertIfPossible();

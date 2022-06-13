@@ -19,8 +19,7 @@
 async function createAndValidateWindow() {
   const new_window = attachWindowContext();
 
-  const [fenced_frame_url, nested_iframe_url] =
-      await new_window.execute(async (original_referrer) => {
+  await new_window.execute(async (original_referrer) => {
     assert_equals(document.referrer, original_referrer,
                   "Initially, the window's referrer is the test file.");
     assert_not_equals(window.opener, null,
@@ -60,7 +59,7 @@ async function createAndValidateWindow() {
     eventSender.mouseMoveTo(rect.x+rect.width/2, rect.y+rect.height/2);
     eventSender.mouseDown();
 
-    const nested_iframe_url = await window.fenced_frame.execute(async () => {
+    await window.fenced_frame.execute(async () => {
       // User activate MPArch.
       assert_not_equals(eventSender, null);
       eventSender.mouseDown();
@@ -72,35 +71,30 @@ async function createAndValidateWindow() {
         assert_true(navigator.userActivation.isActive,
                     "Now the nested iframe should be active.");
       });
-
-      return window.nested_iframe.src;
     });
-
-    return [window.fenced_frame.src, nested_iframe_url];
   }, [location.href]);
 
-  return [new_window, fenced_frame_url, nested_iframe_url];
+  return new_window;
 }
 
 async function checkNavigationSucceeded(
-    new_window, new_referrer, expected_history_length) {
+    new_window, expected_history_length) {
   message_received = new Promise(resolve => window.onmessage = () => resolve());
 
   // Check that the navigation happened in the correct frame.
-  await new_window.execute((expected_referrer, expected_history_length) => {
+  await new_window.execute((expected_history_length) => {
     assert_not_equals(window.opener, null,
                       `The browsing context has a window.opener, because it
                        is the top-level frame in the opened window.`);
     window.opener.postMessage('This should reach the original opener', '*');
-    assert_equals(document.referrer, expected_referrer,
-                  `The new document.referrer should be from the frame
-                   that originated the navigation.`);
+    assert_equals(document.referrer, "",
+                  `The new document.referrer should be empty.`);
     assert_equals(window.fenced_frame, undefined,
                   `The browsing context has been refreshed, so old variables
                    are gone.`);
     assert_equals(history.length, expected_history_length,
                   `The history length should be as expected.`);
-  }, [new_referrer, expected_history_length]);
+  }, [expected_history_length]);
 
   // Await the postMessage from inside the frame to confirm that the opener
   // is unchanged.
@@ -114,7 +108,7 @@ promise_test(async () => {
   // (We can't do it in this window, or we'd lose the testing harness.)
   // Create a fenced frame in the window, and return its URL (which will
   // become the document.referrer of the navigated outermost frame).
-  const [new_window, new_referrer,] = await createAndValidateWindow();
+  const new_window = await createAndValidateWindow();
 
   // Check the history length before navigation.
   const history_length = await new_window.execute(() => {
@@ -140,12 +134,12 @@ promise_test(async () => {
   });
 
   // Because this is a non-refresh navigation, the history should be extended.
-  await checkNavigationSucceeded(new_window, new_referrer, history_length+1);
+  await checkNavigationSucceeded(new_window, history_length+1);
 }, '_unfencedTop opaque-ads non-refresh success case');
 
 // Test successful top-level refresh from an opaque-ads fenced frame.
 promise_test(async () => {
-  const [new_window, new_referrer,] = await createAndValidateWindow();
+  const new_window = await createAndValidateWindow();
 
   const history_length = await new_window.execute(() => {
     return history.length;
@@ -162,14 +156,18 @@ promise_test(async () => {
     });
   });
 
-  // Because this is a refresh, the history should not be extended.
-  await checkNavigationSucceeded(new_window, new_referrer, history_length);
+  // Even though this is a refresh, we want to treat it as if it's coming from
+  // a cross-origin frame.
+  // await checkNavigationSucceeded(new_window, history_length+1);
+  // TODO(crbug.com/1315802): Uncomment the above when we null out the initiator
+  // origin, frame token, and site instance.
+  await checkNavigationSucceeded(new_window, history_length);
 }, '_unfencedTop opaque-ads refresh success case');
 
 // Test successful top-level navigation (non-refresh) out of an iframe nested
 // inside an opaque-ads fenced frame.
 promise_test(async () => {
-  const [new_window,, new_referrer] = await createAndValidateWindow();
+  const new_window = await createAndValidateWindow();
 
   // Check the history length before navigation.
   const history_length = await new_window.execute(() => {
@@ -194,14 +192,14 @@ promise_test(async () => {
   });
 
   // Because this is a non-refresh navigation, the history should be extended.
-  await checkNavigationSucceeded(new_window, new_referrer, history_length+1);
+  await checkNavigationSucceeded(new_window, history_length+1);
 }, '_unfencedTop opaque-ads nested iframe success case');
 
 // Test unsuccessful navigation out of a fenced frame using _unfencedTop and
 // a javascript: URL.
 promise_test(async() => {
   // Create a new window.
-  const [new_window,,] = await createAndValidateWindow();
+  const new_window = await createAndValidateWindow();
 
   await new_window.execute(async () => {
 
@@ -231,6 +229,26 @@ promise_test(async() => {
                   "The JS URL navigation to _unfencedTop failed");
   });
 }, '_unfencedTop :javascript URL failure');
+
+// Test unsuccessful navigation out of a fenced frame using _unfencedTop and
+// a blob: URL.
+promise_test(async() => {
+  // Create a new window.
+  const new_window = await createAndValidateWindow();
+
+  await new_window.execute(async () => {
+    // Try to navigate _unfencedTop using a Blob URL.
+    await window.fenced_frame.execute(() => {
+      const blob_url = URL.createObjectURL(new Blob([1,2,3]));
+      const result = window.open(blob_url, '_unfencedTop');
+      assert_equals(result, null, "_unfencedTop didn't return a window.");
+    });
+  });
+
+  // In a separate remote script execution (to ensure the navigation has
+  // finished), observe that the context is still there.
+  await new_window.execute(() => {});
+}, '_unfencedTop :blob URL failure');
 
 async function click(frame) {
   var actions = new test_driver.Actions();

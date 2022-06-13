@@ -493,8 +493,8 @@ class CONTENT_EXPORT FrameTreeNode {
   // by FrameTree::Init() or FrameTree::AddFrame().
   void SetFencedFrameNonceIfNeeded();
 
-  // Returns the mode attribute set on the fenced frame if this is a fenced
-  // frame root, otherwise returns `absl::nullopt`.
+  // Returns the mode attribute set on the fenced frame root if this frame is
+  // in a fenced frame tree, otherwise returns `absl::nullopt`.
   absl::optional<blink::mojom::FencedFrameMode> GetFencedFrameMode();
 
   // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
