@@ -309,6 +309,11 @@ disk_cache::MappedFile::buffer_
 network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
 
+# Populated manually - Field initialized with non-nullptr value in constexpr.
+enterprise_connectors::ServiceProvider::analysis
+enterprise_connectors::ServiceProvider::reporting
+enterprise_connectors::ServiceProvider::file_system
+
 # Populated manually - based on sampling profiler data and tab_search:top100:2020 profiler data
 (anonymous namespace)::TlsVectorEntry::data
 LinkNodeBase::next_
