@@ -1360,6 +1360,7 @@ android_library("chrome_unit_test_java") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
+    "//url:gurl_java_unit_tests",
   ]
 }
 
@@ -1702,7 +1703,6 @@ android_library("chrome_test_java") {
     "//ui/android:ui_javatests",
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
-    "//url:gurl_javatests",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
     "//url/mojom:url_mojom_gurl_java",

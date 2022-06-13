@@ -321,7 +321,7 @@ if (is_android) {
     ]
   }
 
-  android_library("gurl_javatests") {
+  android_library("gurl_java_unit_tests") {
     testonly = true
     sources = [
       "android/javatests/src/org/chromium/url/GURLJavaTest.java",
