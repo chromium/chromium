@@ -70,15 +70,28 @@ CONTENT_EXPORT
                         image:(NSImage*)image
                        offset:(NSPoint)offset;
 - (void)clearViewsHostableView;
-// Updates the web contents's visibility state based on its window's visibility.
-- (void)updateWebContentsVisibilityFromWindowVisibility:
-    (remote_cocoa::mojom::Visibility)windowVisibilityState;
 - (void)viewDidBecomeFirstResponder:(NSNotification*)notification;
+
+// API exposed for testing.
+
+// Used to set the web contents's visibility status to occluded after a delay.
+- (void)performDelayedSetWebContentsOccluded;
+
+// Returns YES if the WCVC is scheduled to set its web contents's to the
+// occluded state.
+- (BOOL)willSetWebContentsOccludedAfterDelayForTesting;
+
+// Updates the WCVC's web contents's visibility state. The update may occur
+// immediately or in the near future.
+- (void)updateWebContentsVisibility:(remote_cocoa::mojom::Visibility)visibility;
+
 @end
 
 @interface NSWindow (WebContentsViewCocoa)
 // Returns all the WebContentsViewCocoas in the window.
 - (NSArray<WebContentsViewCocoa*>*)webContentsViewCocoa;
+// Returns YES if the window contains at least one WebContentsViewCocoa.
+- (BOOL)containsWebContentsViewCocoa;
 @end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_VIEW_COCOA_H_

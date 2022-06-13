@@ -17,19 +17,38 @@ extern CONTENT_EXPORT const base::FeatureParam<bool>
 extern CONTENT_EXPORT const base::FeatureParam<bool>
     kDisplaySleepAndAppHideDetection;
 
+// The WebContentsOcclusionCheckerMac performs window occlusion checks
+// for browser windows of similar size, a case macOS's occlusion
+// detection system cannot handle (see crbug.com/883031). It initiates
+// these checks on window state change events (ordering, closing, etc.).
+//
+// The checker makes it easy to learn of window occlusion events from
+// both macOS and from its own occlusion checks. Interested parties should
+// watch for NSWindowDidChangeOcclusionStateNotification notifications
+// where the object is the affected window and the userInfo contains the
+// key "WebContentsOcclusionCheckerMac".
 @interface WebContentsOcclusionCheckerMac : NSObject
 
 + (instancetype)sharedInstance;
+
+// API exposed for testing.
+
 // Resets the state of `sharedInstance` during tests.
 + (void)resetSharedInstanceForTesting;
-// Returns YES if webcontents visibility updates will occur on the next pass
-// of the run loop.
-- (BOOL)willUpdateWebContentsVisibility;
-// Updates the visibility of each WebContentsViewCocoa instance.
-- (void)notifyUpdateWebContentsVisibility;
-// Computes and updates the visibility of the `webContentsViewCocoa`.
-- (void)updateWebContentsVisibility:(WebContentsViewCocoa*)webContentsViewCocoa;
 
+// Schedules an occlusion state update for all windows with web contentses.
+- (void)scheduleOcclusionStateUpdates;
+
+// Updates the occlusion states of all windows with web contentses.
+- (void)performOcclusionStateUpdates;
+
+// Returns YES if occlusion updates are scheduled.
+- (BOOL)occlusionStateUpdatesAreScheduledForTesting;
+
+@end
+
+@interface NSWindow (WebContentsOcclusionCheckerMac)
+@property(nonatomic, assign, getter=isOccluded) BOOL occluded;
 @end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_OCCLUSION_CHECKER_MAC_H_
