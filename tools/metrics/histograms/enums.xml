@@ -40377,6 +40377,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4281" label="V8PendingBeacon_Deactivate_Method"/>
   <int value="4282" label="V8PendingBeacon_SetData_Method"/>
   <int value="4283" label="V8PendingBeacon_SendNow_Method"/>
+  <int value="4284" label="TabSharingBarSwitchToCapturer"/>
+  <int value="4285" label="TabSharingBarSwitchToCapturee"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
