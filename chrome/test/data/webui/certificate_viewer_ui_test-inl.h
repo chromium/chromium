@@ -18,7 +18,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/cert/x509_util_nss.h"
+#include "net/cert/x509_util.h"
 #include "net/test/test_certificate_data.h"
 
 // Test framework for
@@ -29,22 +29,38 @@ class CertificateViewerUITest : public WebUIBrowserTest {
   ~CertificateViewerUITest() override;
 
  protected:
-  void ShowCertificateViewer();
+  void ShowCertificateViewerGoogleCert();
+  void ShowCertificateViewerInvalidCert();
+  void ShowCertificateViewer(std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs);
 };
 
-void CertificateViewerUITest::ShowCertificateViewer() {
-  net::ScopedCERTCertificate google_cert(
-      net::x509_util::CreateCERTCertificateFromBytes(google_der,
-                                                     sizeof(google_der)));
-  ASSERT_TRUE(google_cert);
-  net::ScopedCERTCertificateList certs;
-  certs.push_back(net::x509_util::DupCERTCertificate(google_cert.get()));
+void CertificateViewerUITest::ShowCertificateViewerGoogleCert() {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
+  certs.push_back(
+      net::x509_util::CreateCryptoBuffer(base::make_span(google_der)));
+  ASSERT_TRUE(certs.back());
 
+  ShowCertificateViewer(std::move(certs));
+}
+
+void CertificateViewerUITest::ShowCertificateViewerInvalidCert() {
+  const uint8_t kInvalid[] = {42, 42, 42, 42, 42};
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
+  certs.push_back(
+      net::x509_util::CreateCryptoBuffer(base::make_span(kInvalid)));
+  ASSERT_TRUE(certs.back());
+
+  ShowCertificateViewer(std::move(certs));
+}
+
+void CertificateViewerUITest::ShowCertificateViewer(
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs) {
   ASSERT_TRUE(browser());
   ASSERT_TRUE(browser()->window());
 
   CertificateViewerDialog* dialog = CertificateViewerDialog::ShowConstrained(
-      std::move(certs), browser()->tab_strip_model()->GetActiveWebContents(),
+      std::move(certs), /*cert_nicknames=*/{},
+      browser()->tab_strip_model()->GetActiveWebContents(),
       browser()->window()->GetNativeWindow());
   content::WebContents* webui_webcontents = dialog->webui_->GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(webui_webcontents));

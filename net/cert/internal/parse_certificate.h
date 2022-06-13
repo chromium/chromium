@@ -190,6 +190,8 @@ enum class CertificateVersion {
 // sets.
 struct NET_EXPORT ParsedTbsCertificate {
   ParsedTbsCertificate();
+  ParsedTbsCertificate(ParsedTbsCertificate&& other);
+  ParsedTbsCertificate& operator=(ParsedTbsCertificate&& other) = default;
   ~ParsedTbsCertificate();
 
   // Corresponds with "version" from RFC 5280:

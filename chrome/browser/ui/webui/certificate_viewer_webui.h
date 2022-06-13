@@ -9,11 +9,16 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "net/cert/scoped_nss_types.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/cert/x509_certificate.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "net/cert/scoped_nss_types.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -21,14 +26,24 @@ class WebContents;
 
 class ConstrainedWebDialogDelegate;
 
+// TODO(https://crbug.com/953425): Update comment when this is used by other
+// platforms.
 // Dialog for displaying detailed certificate information. This is used in linux
 // and chromeos builds to display detailed information in a floating dialog when
 // the user clicks on "Certificate Information" from the lock icon of a web site
 // or "View" from the Certificate Manager.
 class CertificateViewerDialog : public ui::WebDialogDelegate {
  public:
+#if BUILDFLAG(USE_NSS_CERTS)
   static CertificateViewerDialog* ShowConstrained(
-      net::ScopedCERTCertificateList certs,
+      net::ScopedCERTCertificateList nss_certs,
+      content::WebContents* web_contents,
+      gfx::NativeWindow parent);
+#endif
+
+  static CertificateViewerDialog* ShowConstrained(
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+      std::vector<std::string> cert_nicknames,
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
@@ -45,7 +60,8 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   // Construct a certificate viewer for the passed in certificate. A reference
   // to the certificate pointer is added for the lifetime of the certificate
   // viewer.
-  explicit CertificateViewerDialog(net::ScopedCERTCertificateList certs);
+  CertificateViewerDialog(std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+                          std::vector<std::string> cert_nicknames);
 
   // ui::WebDialogDelegate:
   ui::ModalType GetDialogModalType() const override;
@@ -61,8 +77,7 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
 
-  // The certificate chain, as NSS cert objects.
-  net::ScopedCERTCertificateList nss_certs_;
+  std::vector<x509_certificate_model::X509CertificateModel> certs_;
 
   // The title of the certificate viewer dialog, Certificate Viewer: CN.
   std::u16string title_;
@@ -75,8 +90,9 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
 // details and export the certificate.
 class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
  public:
-  CertificateViewerDialogHandler(CertificateViewerDialog* dialog,
-                                 net::ScopedCERTCertificateList cert_chain);
+  CertificateViewerDialogHandler(
+      CertificateViewerDialog* dialog,
+      const std::vector<x509_certificate_model::X509CertificateModel>* certs);
 
   CertificateViewerDialogHandler(const CertificateViewerDialogHandler&) =
       delete;
@@ -109,8 +125,7 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // The dialog.
   CertificateViewerDialog* dialog_;
 
-  // The certificate chain.
-  net::ScopedCERTCertificateList cert_chain_;
+  const std::vector<x509_certificate_model::X509CertificateModel>* certs_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_

@@ -18,7 +18,13 @@
       </div>
       <!-- General -->
       <div slot="panel" id="general" aria-labelledby="general-tab">
-        <div class="groups">
+        <div id="general-error" class="groups" hidden>
+          <div>
+            <h3 role="heading">$i18n{certError}</h3>
+          </div>
+        </div>
+
+        <div id="general-fields" class="groups">
           <!-- Issued to -->
           <div>
             <h3 role="heading">$i18n{issuedTo}</h3>
@@ -65,7 +71,9 @@
             <div class="attribute">$i18n{expiresOn}</div>
             <div id="expiry-date" class="value"></div>
           </div>
+        </div>
 
+        <div class="groups">
           <!-- Fingerprints -->
           <div>
             <h3 role="heading">$i18n{fingerprints}</h3>

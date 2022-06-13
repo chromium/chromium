@@ -44,6 +44,7 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
       {"hierarchy", IDS_CERT_DETAILS_CERTIFICATE_HIERARCHY_LABEL},
       {"certFields", IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL},
       {"certFieldVal", IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL},
+      {"certError", IDS_CERT_DUMP_ERROR},
   };
   html_source->AddLocalizedStrings(kStrings);
 

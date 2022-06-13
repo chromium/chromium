@@ -20,6 +20,7 @@ type TreeInfo = {
 type CertificateInfo = {
   general: {[key: string]: string},
   hierarchy: TreeInfo[],
+  isError: boolean,
 };
 
 type TreeItemDetail = {
@@ -140,6 +141,12 @@ function revealTree(tree: CrTreeElement|CrTreeItemElement) {
  * @param certInfo Certificate information in named fields.
  */
 function getCertificateInfo(certInfo: CertificateInfo) {
+  const generalError = document.querySelector<HTMLElement>('#general-error');
+  assert(generalError);
+  generalError.hidden = !certInfo.isError;
+  const generalFields = document.querySelector<HTMLElement>('#general-fields');
+  assert(generalFields);
+  generalFields.hidden = certInfo.isError;
   for (const key in certInfo.general) {
     const el = document.querySelector<HTMLElement>(`#${key}`);
     assert(el);

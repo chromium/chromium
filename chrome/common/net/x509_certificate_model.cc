@@ -1199,6 +1199,9 @@ X509CertificateModel::X509CertificateModel(
   parsed_successfully_ = true;
 }
 
+X509CertificateModel::X509CertificateModel(X509CertificateModel&& other) =
+    default;
+
 X509CertificateModel::~X509CertificateModel() = default;
 
 std::string X509CertificateModel::HashCertSHA256() const {

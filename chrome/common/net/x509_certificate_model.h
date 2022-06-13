@@ -34,6 +34,8 @@ class X509CertificateModel {
   // nickname for the certificate, if available.
   X509CertificateModel(bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
                        std::string nickname);
+  X509CertificateModel(X509CertificateModel&& other);
+  X509CertificateModel& operator=(X509CertificateModel&& other) = default;
   ~X509CertificateModel();
 
   // ---------------------------------------------------------------------------

@@ -31,6 +31,9 @@ suite('CertificateViewer', function() {
 
   // Tests for the correct common name in the test certificate.
   test('CommonName', function() {
+    assertTrue(document.querySelector('#general-error').hidden);
+    assertFalse(document.querySelector('#general-fields').hidden);
+
     assertEquals(
         'www.google.com', document.querySelector('#issued-cn').textContent);
   });
@@ -67,5 +70,17 @@ suite('CertificateViewer', function() {
     // Test that selecting an item without a value empties the field.
     certFields.selectedItem = certFields.items[0];
     assertEquals('', certFieldVal.textContent);
+  });
+
+  test('InvalidCert', async function() {
+    // Error should be shown instead of cert fields.
+    assertFalse(document.querySelector('#general-error').hidden);
+    assertTrue(document.querySelector('#general-fields').hidden);
+
+    // Cert hash should still be shown.
+    assertEquals(
+        '78 71 88 FF A5 CC A4 82 12 ED 29 1E 62 CB 03 E1\n' +
+            '1C 1F 82 79 DF 07 FE B1 D2 B0 E0 2E 0E 4A A9 E4',
+        document.querySelector('#sha256').textContent);
   });
 });
