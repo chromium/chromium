@@ -160,3 +160,84 @@ SYNC_TEST_F('DictationEditingUtilTest', 'InsertBefore', function() {
   beforePhrase = 'coconut';
   assertEquals('This is a test', f());
 });
+
+SYNC_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
+  let value;
+  let caretIndex;
+  let startPhrase;
+  let endPhrase;
+  let selection;
+  const f = () =>
+      EditingUtil.selectBetween(value, caretIndex, startPhrase, endPhrase);
+
+  // Select using words.
+  value = 'This is a test.';
+  caretIndex = value.length;
+  startPhrase = 'is';
+  endPhrase = 'test';
+  selection = f();
+  // "This |is a test|".
+  assertEquals(5, selection.start);
+  assertEquals(14, selection.end);
+
+  // Select using phrases.
+  value = 'The cow jumped over the moon';
+  caretIndex = value.length;
+  startPhrase = 'cow jumped';
+  endPhrase = 'the moon';
+  selection = f();
+  // "The |cow jumped over the moon|".
+  assertEquals(4, selection.start);
+  assertEquals(value.length, selection.end);
+
+  // Select the right-most occurrence of `startPhrase` and `endPhrase`.
+  value = 'The cow jumped over the moon';
+  caretIndex = value.length;
+  startPhrase = 'the';
+  endPhrase = 'moon';
+  selection = f();
+  // "The cow jumped over |the moon|".
+  assertEquals(20, selection.start);
+  assertEquals(value.length, selection.end);
+
+  // `startPhrase` must be to the left of `endPhrase`.
+  value = 'This is a test';
+  caretIndex = value.length;
+  startPhrase = 'test';
+  endPhrase = 'is';
+  selection = f();
+  assertEquals(null, selection);
+
+  // Both `startPhrase` and `endPhrase` must be to the left of the text caret.
+  value = 'This is a test';
+  caretIndex = '4';
+  startPhrase = 'this';
+  endPhrase = 'test';
+  selection = f();
+  assertEquals(null, selection);
+
+  value = 'This is a test';
+  caretIndex = '4';
+  startPhrase = 'coconut';
+  endPhrase = 'this';
+  selection = f();
+  assertEquals(null, selection);
+
+  // `startPhrase` and `endPhrase` can be the same.
+  value = 'This is a test';
+  caretIndex = value.length;
+  startPhrase = 'this';
+  endPhrase = 'this';
+  selection = f();
+  assertEquals(0, selection.start);
+  assertEquals(4, selection.end);
+
+  // selectBetween works with punctuation.
+  value = 'This?is.a,test#';
+  caretIndex = value.length;
+  startPhrase = 'is';
+  endPhrase = 'a';
+  selection = f();
+  assertEquals(5, selection.start);
+  assertEquals(9, selection.end);
+});

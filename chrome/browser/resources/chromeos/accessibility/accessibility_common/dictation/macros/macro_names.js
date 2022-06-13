@@ -91,5 +91,8 @@ export const MacroName = {
   // Inserts a provided word or phrase.
   SMART_INSERT_BEFORE: 23,
 
+  // Sets selection between two provided words or phrases.
+  SMART_SELECT_BTWN_INCL: 24,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

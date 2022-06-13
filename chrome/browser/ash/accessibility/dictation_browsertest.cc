@@ -1200,6 +1200,20 @@ class DictationHiddenMacrosTest : public DictationTest {
     std::ignore = selection_waiter.WaitForNotification();
   }
 
+  void RunSmartSelectMacroAndWaitForSelectionChanged(
+      const std::string& start_phrase,
+      const std::string& end_phrase) {
+    content::AccessibilityNotificationWaiter selection_waiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
+    content::BoundingBoxUpdateWaiter bounding_box_waiter(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    RunHiddenMacroWithTwoStringArgs(/* SMART_SELECT_BTWN_INCL */ 24,
+                                    start_phrase, end_phrase);
+    bounding_box_waiter.Wait();
+    std::ignore = selection_waiter.WaitForNotification();
+  }
+
  private:
   void ExecuteAccessibilityCommonScript(const std::string& script) {
     extensions::browsertest_util::ExecuteScriptInBackgroundPage(
@@ -1407,6 +1421,14 @@ IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, SmartInsertBefore) {
   RunHiddenMacroWithTwoStringArgs(/* SMART_INSERT_BEFORE */ 23, "simple",
                                   "test");
   WaitForTextAreaValue("This is a simple test.");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationHiddenMacrosTest, SmartSelectBetween) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  RunSmartSelectMacroAndWaitForSelectionChanged("is", "test");
+  SendFinalResultAndWaitForTextAreaValue("delete", "This .");
 }
 
 // Tests behavior of Dictation and installation of Pumpkin.

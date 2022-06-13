@@ -70,6 +70,39 @@ export class EditingUtil {
   }
 
   /**
+   * Returns a selection starting at `startPhrase` and ending at `endPhrase`
+   * (inclusive). The function operates on the text to the left of the text
+   * caret. If multiple instances of `startPhrase` or `endPhrase` are present,
+   * the function will use the ones closest to the text caret.
+   * @param {string} value
+   * @param {number} caretIndex
+   * @param {string} startPhrase
+   * @param {string} endPhrase
+   * @return {{start: number, end: number}|null}
+   */
+  static selectBetween(value, caretIndex, startPhrase, endPhrase) {
+    const leftOfCaret = value.substring(0, caretIndex);
+    startPhrase = startPhrase.trim();
+    endPhrase = endPhrase.trim();
+
+    const startRe = EditingUtil.getPhraseRegex_(startPhrase);
+    const endRe = EditingUtil.getPhraseRegex_(endPhrase);
+    const start = leftOfCaret.search(startRe);
+    let end = leftOfCaret.search(endRe);
+    if (start === -1 || end === -1) {
+      return null;
+    }
+
+    // Adjust `end` so that we return an inclusive selection.
+    end += endPhrase.length;
+    if (start > end) {
+      return null;
+    }
+
+    return {start, end};
+  }
+
+  /**
    * Returns a RegExp that matches on the right-most occurrence of a phrase.
    * The returned RegExp is case insensitive and requires that `phrase` is
    * separated by word boundaries.

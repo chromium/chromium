@@ -281,6 +281,32 @@ export class InputController {
         EditingUtil.insertBefore(value, caretIndex, insertPhrase, beforePhrase);
     editableNode.setValue(newValue);
   }
+
+  /**
+   * Sets selection starting at `startPhrase` and ending at `endPhrase`
+   * (inclusive). The function operates on the text to the left of the text
+   * caret. If multiple instances of `startPhrase` or `endPhrase` are present,
+   * the function will use the ones closest to the text caret.
+   * @param {string} startPhrase
+   * @param {string} endPhrase
+   */
+  selectBetween(startPhrase, endPhrase) {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode || !editableNode.value ||
+        editableNode.textSelStart !== editableNode.textSelEnd) {
+      return;
+    }
+
+    const value = editableNode.value;
+    const caretIndex = editableNode.textSelStart;
+    const selection =
+        EditingUtil.selectBetween(value, caretIndex, startPhrase, endPhrase);
+    if (!selection) {
+      return;
+    }
+
+    editableNode.setSelection(selection.start, selection.end);
+  }
 }
 
 /**
