@@ -484,9 +484,7 @@ public class SigninPromoController {
         view.getImage().setImageResource(R.drawable.chrome_sync_logo);
         setImageSize(context, view, R.dimen.signin_promo_cold_state_image_size);
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION)) {
-            view.getIllustration().setVisibility(View.GONE);
-        }
+        view.getIllustration().setVisibility(View.GONE);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
             // TODO(crbug.com/1323197): set the title visible by default in the XML.
