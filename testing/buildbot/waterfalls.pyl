@@ -4489,6 +4489,19 @@
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
         },
       },
+      'Mac FYI Experimental Release (Apple M1)': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_arm64_apple_m1_gpu',
+        ],
+        # When the experimental OS version is identical to the stable version,
+        # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
+        # should have the same test_suites as 'Mac FYI Release (Apple M1)'.
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Mac FYI Experimental Release (Intel)': {
         'os_type': 'mac',
         'browser_config': 'release',

@@ -59,6 +59,19 @@
       "use_goma": true
     }
   },
+  "gpu-fyi-try-mac-arm64-apple-m1-exp": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "gpu-fyi-try-mac-arm64-apple-m1-rel": {
     "gn_args": {
       "dcheck_always_on": true,

@@ -232,6 +232,15 @@ gpu_mac_builder(
 )
 
 gpu_mac_builder(
+    name = "gpu-fyi-try-mac-arm64-apple-m1-exp",
+    mirrors = [
+        "ci/GPU FYI Mac arm64 Builder",
+        "ci/Mac FYI Experimental Release (Apple M1)",
+    ],
+    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+)
+
+gpu_mac_builder(
     name = "gpu-fyi-try-mac-arm64-apple-m1-rel",
     mirrors = [
         "ci/GPU FYI Mac arm64 Builder",

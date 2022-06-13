@@ -391,6 +391,31 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Mac FYI Experimental Release (Apple M1)",
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Apple",
+        short_name = "exp",
+    ),
+    list_view = "chromium.gpu.experimental",
+    triggered_by = ["GPU FYI Mac arm64 Builder"],
+)
+
+ci.thin_tester(
     name = "Mac FYI Experimental Release (Intel)",
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Intel",
