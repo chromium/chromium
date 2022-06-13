@@ -34,6 +34,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
 using testing::Optional;
+using testing::VariantWith;
 
 namespace password_manager {
 
@@ -80,7 +81,6 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 
 class MockPasswordStoreBackendTester {
  public:
-  MOCK_METHOD(void, HandleChanges, (absl::optional<PasswordStoreChangeList>));
   MOCK_METHOD(void, LoginsReceivedConstRef, (const LoginsResult&));
 
   void HandleLoginsOrError(LoginsResultOrError results) {
@@ -232,11 +232,11 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
   const PasswordStoreChange add_change =
       PasswordStoreChange(PasswordStoreChange::ADD, form);
 
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(add_change))));
-  backend->AddLoginAsync(
-      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
-                           base::Unretained(&tester)));
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
+  backend->AddLoginAsync(form, mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -251,11 +251,11 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
   const PasswordStoreChange update_change =
       PasswordStoreChange(PasswordStoreChange::UPDATE, form);
 
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(update_change))));
-  backend->UpdateLoginAsync(
-      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
-                           base::Unretained(&tester)));
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
+  backend->UpdateLoginAsync(form, mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -269,11 +269,11 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
   PasswordStoreChange remove_change =
       PasswordStoreChange(PasswordStoreChange::REMOVE, form);
 
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(remove_change))));
-  backend->RemoveLoginAsync(
-      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
-                           base::Unretained(&tester)));
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(remove_change)))));
+  backend->RemoveLoginAsync(form, mock_reply.Get());
   RunUntilIdle();
 }
 
@@ -282,7 +282,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
 
   // Populate store with test credentials.
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
-  base::MockCallback<PasswordStoreChangeListReply> reply;
+  base::MockCallback<PasswordChangesOrErrorReply> reply;
   EXPECT_CALL(reply, Run).Times(6);
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(FillPasswordFormWithData(test_credential));
@@ -319,11 +319,11 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncMetrics) {
   const PasswordStoreChange add_change =
       PasswordStoreChange(PasswordStoreChange::ADD, form);
 
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(add_change))));
-  backend->AddLoginAsync(
-      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
-                           base::Unretained(&tester)));
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
+  backend->AddLoginAsync(form, mock_reply.Get());
 
   // Get the logins
   backend->GetAllLoginsAsync(base::DoNothing());
@@ -379,11 +379,11 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
   const PasswordStoreChange add_change =
       PasswordStoreChange(PasswordStoreChange::ADD, form);
 
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(add_change))));
-  backend->AddLoginAsync(
-      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
-                           base::Unretained(&tester)));
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
+  backend->AddLoginAsync(form, mock_reply.Get());
 
   // Get the logins
   backend->GetAutofillableLoginsAsync(base::DoNothing());
@@ -463,11 +463,11 @@ TEST_F(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
   const PasswordStoreChange update_change =
       PasswordStoreChange(PasswordStoreChange::UPDATE, form);
 
-  testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(update_change))));
-  backend->UpdateLoginAsync(
-      form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
-                           base::Unretained(&tester)));
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
+  backend->UpdateLoginAsync(form, mock_reply.Get());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();

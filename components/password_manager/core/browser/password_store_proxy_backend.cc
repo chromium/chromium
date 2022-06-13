@@ -174,12 +174,19 @@ struct LoginsResultOrErrorImpl {
   }
 };
 
-struct PasswordStoreChangeListImpl {
-  using ResultType = absl::optional<PasswordStoreChangeList>;
+// An `ApiMethodImpl` for `ShadowTrafficMetricsRecorder` implementing support
+// for the database modification methods returning `PasswordChangesOrError`.
+struct PasswordChangesOrErrorImpl {
+  using ResultType = PasswordChangesOrError;
   using ElementsType = PasswordStoreChangeList;
 
-  static PasswordStoreChangeList* GetElements(
-      absl::optional<PasswordStoreChangeList>& changelist) {
+  static const PasswordStoreChangeList* GetElements(
+      const PasswordChangesOrError& changelist_or_error) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(changelist_or_error))
+      return nullptr;
+    const PasswordChanges& changelist =
+        absl::get<PasswordChanges>(changelist_or_error);
+
     return changelist.has_value() ? &changelist.value() : nullptr;
   }
 
@@ -461,14 +468,14 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
 
 void PasswordStoreProxyBackend::AddLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   auto handler = base::MakeRefCounted<
-      ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
+      ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("AddLoginAsync"));
 
   main_backend()->AddLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
-                               PasswordStoreChangeListImpl>::RecordMainResult,
+                               PasswordChangesOrErrorImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
@@ -476,21 +483,21 @@ void PasswordStoreProxyBackend::AddLoginAsync(
     shadow_backend()->AddLoginAsync(
         form,
         base::BindOnce(&ShadowTrafficMetricsRecorder<
-                           PasswordStoreChangeListImpl>::RecordShadowResult,
+                           PasswordChangesOrErrorImpl>::RecordShadowResult,
                        handler));
   }
 }
 
 void PasswordStoreProxyBackend::UpdateLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   auto handler = base::MakeRefCounted<
-      ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
+      ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("UpdateLoginAsync"));
 
   main_backend()->UpdateLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
-                               PasswordStoreChangeListImpl>::RecordMainResult,
+                               PasswordChangesOrErrorImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
@@ -498,21 +505,21 @@ void PasswordStoreProxyBackend::UpdateLoginAsync(
     shadow_backend()->UpdateLoginAsync(
         form,
         base::BindOnce(&ShadowTrafficMetricsRecorder<
-                           PasswordStoreChangeListImpl>::RecordShadowResult,
+                           PasswordChangesOrErrorImpl>::RecordShadowResult,
                        handler));
   }
 }
 
 void PasswordStoreProxyBackend::RemoveLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   auto handler = base::MakeRefCounted<
-      ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
+      ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("RemoveLoginAsync"));
 
   main_backend()->RemoveLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
-                               PasswordStoreChangeListImpl>::RecordMainResult,
+                               PasswordChangesOrErrorImpl>::RecordMainResult,
                            handler)
                 .Then(std::move(callback)));
   if (ShouldExecuteDeletionsOnShadowBackend(
@@ -520,7 +527,7 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
     shadow_backend()->RemoveLoginAsync(
         form,
         base::BindOnce(&ShadowTrafficMetricsRecorder<
-                           PasswordStoreChangeListImpl>::RecordShadowResult,
+                           PasswordChangesOrErrorImpl>::RecordShadowResult,
                        handler));
   }
 }
@@ -530,15 +537,15 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   auto handler = base::MakeRefCounted<
-      ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
+      ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("RemoveLoginsByURLAndTimeAsync"));
 
   main_backend()->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
       base::BindOnce(&ShadowTrafficMetricsRecorder<
-                         PasswordStoreChangeListImpl>::RecordMainResult,
+                         PasswordChangesOrErrorImpl>::RecordMainResult,
                      handler)
           .Then(std::move(callback)));
   if (ShouldExecuteDeletionsOnShadowBackend(
@@ -547,7 +554,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
         url_filter, std::move(delete_begin), std::move(delete_end),
         base::OnceCallback<void(bool)>(),
         base::BindOnce(&ShadowTrafficMetricsRecorder<
-                           PasswordStoreChangeListImpl>::RecordShadowResult,
+                           PasswordChangesOrErrorImpl>::RecordShadowResult,
                        handler));
   }
 }
@@ -555,15 +562,15 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
 void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   auto handler = base::MakeRefCounted<
-      ShadowTrafficMetricsRecorder<PasswordStoreChangeListImpl>>(
+      ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("RemoveLoginsCreatedBetweenAsync"));
 
   main_backend()->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
       base::BindOnce(&ShadowTrafficMetricsRecorder<
-                         PasswordStoreChangeListImpl>::RecordMainResult,
+                         PasswordChangesOrErrorImpl>::RecordMainResult,
                      handler)
           .Then(std::move(callback)));
   if (ShouldExecuteDeletionsOnShadowBackend(
@@ -571,7 +578,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     shadow_backend()->RemoveLoginsCreatedBetweenAsync(
         std::move(delete_begin), std::move(delete_end),
         base::BindOnce(&ShadowTrafficMetricsRecorder<
-                           PasswordStoreChangeListImpl>::RecordShadowResult,
+                           PasswordChangesOrErrorImpl>::RecordShadowResult,
                        handler));
   }
 }
