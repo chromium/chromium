@@ -1484,9 +1484,10 @@ void toast_surface_set_position(wl_client* client,
                                 uint32_t display_id_lo,
                                 int32_t x,
                                 int32_t y) {
-  GetUserDataAs<ToastSurface>(resource)->SetDisplay(
-      static_cast<int64_t>(display_id_hi) << 32 | display_id_lo);
-  GetUserDataAs<ToastSurface>(resource)->SetBoundsOrigin(gfx::Point(x, y));
+  const int64_t display_id =
+      static_cast<int64_t>(display_id_hi) << 32 | display_id_lo;
+  GetUserDataAs<ToastSurface>(resource)->SetBoundsOrigin(display_id,
+                                                         gfx::Point(x, y));
 }
 
 void toast_surface_set_size(wl_client* client,

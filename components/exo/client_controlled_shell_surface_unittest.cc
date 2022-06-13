@@ -2070,7 +2070,8 @@ TEST_F(ClientControlledShellSurfaceTest,
                 shell_surface->GetWidget()->GetWindowBoundsInScreen().height());
     }
     {
-      // Set display id, bounds origin, bounds size separately.
+      // Set display id and bounds origin at the same time via SetBoundsOrigin
+      // method, and set bounds size separately.
       const auto bounds_to_set =
           default_scale_cancellation ? bounds_dp : bounds_px_for_4x;
       std::unique_ptr<Surface> surface(new Surface);
@@ -2078,8 +2079,8 @@ TEST_F(ClientControlledShellSurfaceTest,
           surface.get(), /*is_modal=*/false, default_scale_cancellation));
 
       shell_surface->SetScale(kOriginalScale);
-      shell_surface->SetDisplay(primary_display_id);
-      shell_surface->SetBoundsOrigin(bounds_to_set.origin());
+      shell_surface->SetBoundsOrigin(primary_display_id,
+                                     bounds_to_set.origin());
       shell_surface->SetBoundsSize(bounds_to_set.size());
       surface->Attach(buffer.get());
       surface->Commit();

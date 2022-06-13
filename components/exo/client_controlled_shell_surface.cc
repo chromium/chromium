@@ -389,10 +389,12 @@ void ClientControlledShellSurface::SetBounds(int64_t display_id,
   SetGeometry(bounds_dp);
 }
 
-void ClientControlledShellSurface::SetBoundsOrigin(const gfx::Point& origin) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetBoundsOrigin", "origin",
-               origin.ToString());
+void ClientControlledShellSurface::SetBoundsOrigin(int64_t display_id,
+                                                   const gfx::Point& origin) {
+  TRACE_EVENT2("exo", "ClientControlledShellSurface::SetBoundsOrigin",
+               "display_id", display_id, "origin", origin.ToString());
 
+  SetDisplay(display_id);
   EnsurePendingScale(/*commit_immediately=*/true);
   const gfx::Point origin_dp =
       gfx::ScaleToRoundedPoint(origin, GetClientToDpPendingScale());

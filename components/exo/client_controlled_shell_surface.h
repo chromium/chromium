@@ -83,7 +83,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void SetBounds(int64_t display_id, const gfx::Rect& bounds);
 
   // Set origin of bounds for surface while preserving the size.
-  void SetBoundsOrigin(const gfx::Point& origin);
+  void SetBoundsOrigin(int64_t display_id, const gfx::Point& origin);
 
   // Set size of bounds for surface while preserving the origin.
   void SetBoundsSize(const gfx::Size& size);
