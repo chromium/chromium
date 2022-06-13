@@ -24,7 +24,7 @@ const loaders = {
             params.set('preload-policy', '');
         else
             params.set('preload-policy', `referrerpolicy=${preloadPolicy}`);
-        iframe.src = `resources/link-header-referrer-policy.html?${params.toString()}`;
+        iframe.src = `resources/link-header-referrer-policy.py?${params.toString()}`;
         t.add_cleanup(() => iframe.remove());
         const done = new Promise(resolve => {
             window.addEventListener('message', ({data}) => {

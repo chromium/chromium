@@ -13,7 +13,6 @@
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
-crbug.com/626703 external/wpt/preload/preload-referrer-policy.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/floats-aspect-ratio-001.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
 crbug.com/626703 external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
