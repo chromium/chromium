@@ -1592,7 +1592,8 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
     mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
     mojom::blink::FetchHandlerExistence fetch_hander_existence,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
-        reporting_observer_receiver) {
+        reporting_observer_receiver,
+    mojom::blink::AncestorFrameType ancestor_frame_type) {
   DCHECK(IsContextThread());
   DCHECK(!global_scope_initialized_);
 
@@ -1618,6 +1619,8 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
       GetExecutionContext(), std::move(service_worker_info));
 
   SetFetchHandlerExistence(fetch_hander_existence);
+
+  ancestor_frame_type_ = ancestor_frame_type;
 
   if (reporting_observer_receiver) {
     ReportingContext::From(this)->Bind(std::move(reporting_observer_receiver));

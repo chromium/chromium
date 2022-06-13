@@ -20,6 +20,7 @@
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -1733,6 +1734,25 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
         data.cross_origin_embedder_policy_report_only_reporting_endpoint();
   }
 
+  if (data.has_ancestor_frame_type()) {
+    if (!ServiceWorkerRegistrationData_AncestorFrameType_IsValid(
+            data.ancestor_frame_type())) {
+      DLOG(ERROR) << "Ancestor frame type '" << data.ancestor_frame_type()
+                  << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
+    switch (data.ancestor_frame_type()) {
+      case ServiceWorkerRegistrationData::NORMAL_FRAME:
+        (*out)->ancestor_frame_type =
+            blink::mojom::AncestorFrameType::kNormalFrame;
+        break;
+      case ServiceWorkerRegistrationData::FENCED_FRAME:
+        (*out)->ancestor_frame_type =
+            blink::mojom::AncestorFrameType::kFencedFrame;
+        break;
+    }
+  }
+
   return Status::kOk;
 }
 
@@ -1827,6 +1847,15 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
     data.set_cross_origin_embedder_policy_report_only_reporting_endpoint(
         registration.cross_origin_embedder_policy.report_only_reporting_endpoint
             .value());
+  }
+
+  switch (registration.ancestor_frame_type) {
+    case blink::mojom::AncestorFrameType::kNormalFrame:
+      data.set_ancestor_frame_type(ServiceWorkerRegistrationData::NORMAL_FRAME);
+      break;
+    case blink::mojom::AncestorFrameType::kFencedFrame:
+      data.set_ancestor_frame_type(ServiceWorkerRegistrationData::FENCED_FRAME);
+      break;
   }
 
   std::string value;

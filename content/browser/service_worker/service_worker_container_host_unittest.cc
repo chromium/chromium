@@ -131,20 +131,23 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options1;
     options1.scope = GURL("https://www.example.com/");
     blink::StorageKey key1(url::Origin::Create(options1.scope));
-    registration1_ = new ServiceWorkerRegistration(options1, key1, 1L,
-                                                   context_->AsWeakPtr());
+    registration1_ = new ServiceWorkerRegistration(
+        options1, key1, 1L, context_->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
 
     blink::mojom::ServiceWorkerRegistrationOptions options2;
     options2.scope = GURL("https://www.example.com/example");
     blink::StorageKey key2(url::Origin::Create(options2.scope));
-    registration2_ = new ServiceWorkerRegistration(options2, key2, 2L,
-                                                   context_->AsWeakPtr());
+    registration2_ = new ServiceWorkerRegistration(
+        options2, key2, 2L, context_->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
 
     blink::mojom::ServiceWorkerRegistrationOptions options3;
     options3.scope = GURL("https://other.example.com/");
     blink::StorageKey key3(url::Origin::Create(options3.scope));
-    registration3_ = new ServiceWorkerRegistration(options3, key3, 3L,
-                                                   context_->AsWeakPtr());
+    registration3_ = new ServiceWorkerRegistration(
+        options3, key3, 3L, context_->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
   }
 
   void TearDown() override {

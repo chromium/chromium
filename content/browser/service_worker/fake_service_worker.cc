@@ -51,7 +51,8 @@ void FakeServiceWorker::InitializeGlobalScope(
     blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
     blink::mojom::FetchHandlerExistence fetch_handler_existence,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        reporting_observer_receiver) {
+        reporting_observer_receiver,
+    blink::mojom::AncestorFrameType ancestor_frame_type) {
   host_.Bind(std::move(service_worker_host));
 
   // Enable callers to use these endpoints without us actually binding them

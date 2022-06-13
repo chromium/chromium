@@ -629,7 +629,7 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
 
   base::RunLoop loop;
   registry()->CreateNewRegistration(
-      std::move(options), kKey,
+      std::move(options), kKey, blink::mojom::AncestorFrameType::kNormalFrame,
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
             EXPECT_EQ(new_registration->scope(), kScope);
@@ -663,7 +663,7 @@ TEST_F(ServiceWorkerRegistryTest, GetOrCreateBucketError) {
 
   base::RunLoop loop;
   registry()->CreateNewRegistration(
-      std::move(options), kKey,
+      std::move(options), kKey, blink::mojom::AncestorFrameType::kNormalFrame,
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
             EXPECT_EQ(new_registration, nullptr);
@@ -719,7 +719,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   options.scope = kScope;
   scoped_refptr<ServiceWorkerRegistration> live_registration =
       base::MakeRefCounted<ServiceWorkerRegistration>(
-          options, kKey, kRegistrationId, context()->AsWeakPtr());
+          options, kKey, kRegistrationId, context()->AsWeakPtr(),
+          blink::mojom::AncestorFrameType::kNormalFrame);
   scoped_refptr<ServiceWorkerVersion> live_version =
       base::MakeRefCounted<ServiceWorkerVersion>(
           live_registration.get(), kResource1,
@@ -869,8 +870,9 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
 
   // Trying to update a unstored registration to active should fail.
   scoped_refptr<ServiceWorkerRegistration> unstored_registration =
-      new ServiceWorkerRegistration(options, kKey, kRegistrationId + 1,
-                                    context()->AsWeakPtr());
+      new ServiceWorkerRegistration(
+          options, kKey, kRegistrationId + 1, context()->AsWeakPtr(),
+          blink::mojom::AncestorFrameType::kNormalFrame);
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
             UpdateToActiveState(unstored_registration.get()));
   unstored_registration = nullptr;
@@ -1705,7 +1707,7 @@ TEST_F(ServiceWorkerRegistryTest,
 
     base::RunLoop loop;
     registry()->CreateNewRegistration(
-        std::move(options), kKey,
+        std::move(options), kKey, blink::mojom::AncestorFrameType::kNormalFrame,
         base::BindLambdaForTesting(
             [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
               EXPECT_EQ(new_registration->scope(), kScope);
@@ -2142,8 +2144,9 @@ TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   scoped_refptr<ServiceWorkerRegistration> registration =
-      new ServiceWorkerRegistration(options, kKey, kRegistrationId,
-                                    context()->AsWeakPtr());
+      new ServiceWorkerRegistration(
+          options, kKey, kRegistrationId, context()->AsWeakPtr(),
+          blink::mojom::AncestorFrameType::kNormalFrame);
   scoped_refptr<ServiceWorkerVersion> version = new ServiceWorkerVersion(
       registration.get(), kScript, blink::mojom::ScriptType::kClassic,
       kVersionId,

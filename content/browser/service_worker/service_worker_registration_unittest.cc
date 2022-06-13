@@ -238,7 +238,8 @@ TEST_F(ServiceWorkerRegistrationTest, SetAndUnsetVersions) {
   options.scope = kScope;
   scoped_refptr<ServiceWorkerRegistration> registration =
       base::MakeRefCounted<ServiceWorkerRegistration>(
-          options, kKey, kRegistrationId, context()->AsWeakPtr());
+          options, kKey, kRegistrationId, context()->AsWeakPtr(),
+          blink::mojom::AncestorFrameType::kNormalFrame);
 
   const int64_t version_1_id = 1L;
   const int64_t version_2_id = 2L;
@@ -313,7 +314,8 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
   auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
-      options, kKey, kRegistrationId, context()->AsWeakPtr());
+      options, kKey, kRegistrationId, context()->AsWeakPtr(),
+      blink::mojom::AncestorFrameType::kNormalFrame);
   // Prepare a ServiceWorkerContainerHost.
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =

@@ -214,7 +214,8 @@ class MockServiceWorkerContextClient final
             KURL("https://example.com"), std::move(service_worker_object_host),
             service_worker_object.InitWithNewEndpointAndPassReceiver()),
         mojom::blink::FetchHandlerExistence::EXISTS,
-        /*reporting_observer_receiver=*/mojo::NullReceiver());
+        /*reporting_observer_receiver=*/mojo::NullReceiver(),
+        /*ancestor_frame_type=*/mojom::blink::AncestorFrameType::kNormalFrame);
 
     // To make the other side callable.
     host_receiver.EnableUnassociatedUsage();

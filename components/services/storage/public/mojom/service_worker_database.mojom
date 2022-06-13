@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/script/script_type.mojom";
 import "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_database.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -65,6 +66,11 @@ struct ServiceWorkerRegistrationData {
   int64 resources_total_size_bytes = 0;
 
   network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // The type of the frame that registered this service worker, which is used
+  // to restrict the use of some powerful APIs in FencedFrames
+  // (crbug.com/1276419).
+  blink.mojom.AncestorFrameType ancestor_frame_type;
 };
 
 // Represents a service worker script data which is stored in database.

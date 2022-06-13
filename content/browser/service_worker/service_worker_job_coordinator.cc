@@ -78,10 +78,12 @@ void ServiceWorkerJobCoordinator::Register(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     const GlobalRenderFrameHostId& requesting_frame_id,
+    blink::mojom::AncestorFrameType ancestor_frame_type,
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   auto job = std::make_unique<ServiceWorkerRegisterJob>(
       context_, script_url, options, key,
-      std::move(outside_fetch_client_settings_object), requesting_frame_id);
+      std::move(outside_fetch_client_settings_object), requesting_frame_id,
+      ancestor_frame_type);
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[UniqueRegistrationKey(options.scope, key)].Push(
           std::move(job)));

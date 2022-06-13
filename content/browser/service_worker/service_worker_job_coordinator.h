@@ -16,6 +16,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -40,6 +41,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
                 blink::mojom::FetchClientSettingsObjectPtr
                     outside_fetch_client_settings_object,
                 const GlobalRenderFrameHostId& requesting_frame_id,
+                blink::mojom::AncestorFrameType ancestor_frame_type,
                 ServiceWorkerRegisterJob::RegistrationCallback callback);
 
   // If |is_immediate| is true, unregister clears the active worker from the

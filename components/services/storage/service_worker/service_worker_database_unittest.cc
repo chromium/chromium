@@ -87,6 +87,7 @@ void VerifyRegistrationData(const RegistrationData& expected,
   EXPECT_EQ(expected.script_response_time, actual.script_response_time);
   EXPECT_EQ(expected.cross_origin_embedder_policy,
             actual.cross_origin_embedder_policy);
+  EXPECT_EQ(expected.ancestor_frame_type, actual.ancestor_frame_type);
 }
 
 void VerifyResourceRecords(const std::vector<ResourceRecordPtr>& expected,
@@ -575,6 +576,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data1.resources_total_size_bytes = 100;
   data1.script_response_time = base::Time::FromJsTime(0);
   data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+  data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -599,6 +601,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data2.resources_total_size_bytes = 200;
   data2.script_response_time = base::Time::FromJsTime(42);
   data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
+  data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -685,6 +688,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
   data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+  data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -700,6 +704,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data2.resources_total_size_bytes = 200;
   data2.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
   data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
+  data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,

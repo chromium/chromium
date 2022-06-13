@@ -37,6 +37,10 @@ message ServiceWorkerRegistrationData {
     REQUIRE_CORP = 1;
     CREDENTIALLESS = 2;
   }
+  enum AncestorFrameType {
+    NORMAL_FRAME = 0;
+    FENCED_FRAME = 1;
+  }
 
   required int64 registration_id = 1;
   required string scope_url = 2;
@@ -86,6 +90,7 @@ message ServiceWorkerRegistrationData {
       [default = NONE_OR_NOT_EXIST];
   optional string cross_origin_embedder_policy_report_only_reporting_endpoint =
       20;
+  optional AncestorFrameType ancestor_frame_type = 21 [default = NORMAL_FRAME];
 }
 
 message ServiceWorkerResourceRecord {

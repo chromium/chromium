@@ -108,7 +108,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
     options.scope = scope_;
     registration_ = new ServiceWorkerRegistration(
         options, blink::StorageKey(url::Origin::Create(scope_)), 1L,
-        context()->AsWeakPtr());
+        context()->AsWeakPtr(), blink::mojom::AncestorFrameType::kNormalFrame);
     version_ = new ServiceWorkerVersion(
         registration_.get(), script_url_, blink::mojom::ScriptType::kClassic,
         1L, mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
