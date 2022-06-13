@@ -194,6 +194,21 @@ std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::CreateEngine(
   return client_->CreateEngine(client, script_option);
 }
 
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+const PDFiumEngine* PdfViewWebPlugin::engine() const {
+  return engine_.get();
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+PDFiumEngine* PdfViewWebPlugin::engine() {
+  return engine_.get();
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+void PdfViewWebPlugin::set_engine(std::unique_ptr<PDFiumEngine> engine) {
+  engine_ = std::move(engine);
+}
+
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK(container);
   client_->SetPluginContainer(container);
@@ -250,8 +265,8 @@ bool PdfViewWebPlugin::InitializeCommon() {
   full_frame_ = params->full_frame;
   background_color_ = params->background_color;
 
-  set_engine(CreateEngine(this, params->script_option));
-  DCHECK(engine());
+  engine_ = CreateEngine(this, params->script_option);
+  DCHECK(engine_);
 
   SendSetSmoothScrolling();
 
@@ -290,7 +305,7 @@ void PdfViewWebPlugin::Destroy() {
     // Explicitly destroy the PDFEngine during destruction as it may call back
     // into this object.
     DestroyPreviewEngine();
-    DestroyEngine();
+    engine_.reset();
     PerProcessInitializer::GetInstance().Release();
     client_->SetPluginContainer(nullptr);
   }
@@ -386,7 +401,7 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 void PdfViewWebPlugin::UpdateFocus(bool focused,
                                    blink::mojom::FocusType focus_type) {
   if (has_focus_ != focused) {
-    engine()->UpdateFocus(focused);
+    engine_->UpdateFocus(focused);
     client_->UpdateTextInputState();
     client_->UpdateSelectionBounds();
   }
@@ -504,19 +519,19 @@ blink::WebString PdfViewWebPlugin::SelectionAsMarkup() const {
 }
 
 bool PdfViewWebPlugin::CanEditText() const {
-  return engine()->CanEditText();
+  return engine_->CanEditText();
 }
 
 bool PdfViewWebPlugin::HasEditableText() const {
-  return engine()->HasEditableText();
+  return engine_->HasEditableText();
 }
 
 bool PdfViewWebPlugin::CanUndo() const {
-  return engine()->CanUndo();
+  return engine_->CanUndo();
 }
 
 bool PdfViewWebPlugin::CanRedo() const {
-  return engine()->CanRedo();
+  return engine_->CanRedo();
 }
 
 bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
@@ -548,18 +563,18 @@ bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  bool case_sensitive,
                                  int identifier) {
   find_identifier_ = identifier;
-  engine()->StartFind(search_text.Utf8(), case_sensitive);
+  engine_->StartFind(search_text.Utf8(), case_sensitive);
   return true;
 }
 
 void PdfViewWebPlugin::SelectFindResult(bool forward, int identifier) {
   find_identifier_ = identifier;
-  engine()->SelectFindResult(forward);
+  engine_->SelectFindResult(forward);
 }
 
 void PdfViewWebPlugin::StopFind() {
   find_identifier_ = -1;
-  engine()->StopFind();
+  engine_->StopFind();
   tickmarks_.clear();
   client_->ReportFindInPageTickmarks(tickmarks_);
 }
@@ -573,10 +588,10 @@ void PdfViewWebPlugin::RotateView(blink::WebPlugin::RotationType type) {
 
   switch (type) {
     case blink::WebPlugin::RotationType::k90Clockwise:
-      engine()->RotateClockwise();
+      engine_->RotateClockwise();
       break;
     case blink::WebPlugin::RotationType::k90Counterclockwise:
-      engine()->RotateCounterclockwise();
+      engine_->RotateCounterclockwise();
       break;
   }
 }
@@ -922,7 +937,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
 }
 
 void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
-  engine()->KillFormFocus();
+  engine_->KillFormFocus();
 
   base::Value::Dict message;
   message.Set("type", "saveData");
@@ -934,15 +949,15 @@ void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
 
   base::Value data_to_save;
   if (edit_mode_) {
-    base::Value::BlobStorage data = engine()->GetSaveData();
+    base::Value::BlobStorage data = engine_->GetSaveData();
     if (IsSaveDataSizeValid(data.size()))
       data_to_save = base::Value(std::move(data));
   } else {
 #if BUILDFLAG(ENABLE_INK)
-    uint32_t length = engine()->GetLoadedByteSize();
+    uint32_t length = engine_->GetLoadedByteSize();
     if (IsSaveDataSizeValid(length)) {
       base::Value::BlobStorage data(length);
-      if (engine()->ReadLoadedBytes(length, data.data()))
+      if (engine_->ReadLoadedBytes(length, data.data()))
         data_to_save = base::Value(std::move(data));
     }
 #else
@@ -955,7 +970,7 @@ void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
 }
 
 void PdfViewWebPlugin::SaveToFile(const std::string& token) {
-  engine()->KillFormFocus();
+  engine_->KillFormFocus();
 
   base::Value::Dict message;
   message.Set("type", "consumeSaveToken");
@@ -1120,7 +1135,7 @@ bool PdfViewWebPlugin::SelectAll() {
   if (!CanEditText())
     return false;
 
-  engine()->SelectAll();
+  engine_->SelectAll();
   return true;
 }
 
@@ -1128,7 +1143,7 @@ bool PdfViewWebPlugin::Cut() {
   if (!HasSelection() || !CanEditText())
     return false;
 
-  engine()->ReplaceSelection("");
+  engine_->ReplaceSelection("");
   return true;
 }
 
@@ -1136,7 +1151,7 @@ bool PdfViewWebPlugin::Paste(const blink::WebString& value) {
   if (!CanEditText())
     return false;
 
-  engine()->ReplaceSelection(value.Utf8());
+  engine_->ReplaceSelection(value.Utf8());
   return true;
 }
 
@@ -1144,7 +1159,7 @@ bool PdfViewWebPlugin::Undo() {
   if (!CanUndo())
     return false;
 
-  engine()->Undo();
+  engine_->Undo();
   return true;
 }
 
@@ -1152,7 +1167,7 @@ bool PdfViewWebPlugin::Redo() {
   if (!CanRedo())
     return false;
 
-  engine()->Redo();
+  engine_->Redo();
   return true;
 }
 
@@ -1194,14 +1209,14 @@ void PdfViewWebPlugin::RecordDocumentMetrics() {
   if (!metrics_handler_)
     return;
 
-  metrics_handler_->RecordDocumentMetrics(engine()->GetDocumentMetadata());
+  metrics_handler_->RecordDocumentMetrics(engine_->GetDocumentMetadata());
   metrics_handler_->RecordAttachmentTypes(
-      engine()->GetDocumentAttachmentInfoList());
+      engine_->GetDocumentAttachmentInfoList());
 }
 
 void PdfViewWebPlugin::SendAttachments() {
   const std::vector<DocumentAttachmentInfo>& attachment_infos =
-      engine()->GetDocumentAttachmentInfoList();
+      engine_->GetDocumentAttachmentInfoList();
   if (attachment_infos.empty())
     return;
 
@@ -1227,7 +1242,7 @@ void PdfViewWebPlugin::SendAttachments() {
 }
 
 void PdfViewWebPlugin::SendBookmarks() {
-  base::Value::List bookmarks = engine()->GetBookmarks();
+  base::Value::List bookmarks = engine_->GetBookmarks();
   if (bookmarks.empty())
     return;
 
@@ -1239,7 +1254,7 @@ void PdfViewWebPlugin::SendBookmarks() {
 
 void PdfViewWebPlugin::SendMetadata() {
   base::Value::Dict metadata;
-  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+  const DocumentMetadata& document_metadata = engine_->GetDocumentMetadata();
 
   const std::string version = FormatPdfVersion(document_metadata.version);
   if (!version.empty())
@@ -1277,11 +1292,10 @@ void PdfViewWebPlugin::SendMetadata() {
                  base::TimeFormatShortDateAndTime(document_metadata.mod_date));
   }
 
-  metadata.Set("pageSize",
-               FormatPageSize(engine()->GetUniformPageSizePoints()));
+  metadata.Set("pageSize", FormatPageSize(engine_->GetUniformPageSizePoints()));
 
   metadata.Set("canSerializeDocument",
-               IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
+               IsSaveDataSizeValid(engine_->GetLoadedByteSize()));
 
   base::Value::Dict message;
   message.Set("type", "metadata");

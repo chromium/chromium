@@ -138,8 +138,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Gets the accessibility doc info based on the information from `engine_`.
   AccessibilityDocInfo GetAccessibilityDocInfo() const;
 
-  void InitializeEngineForTesting(std::unique_ptr<PDFiumEngine> engine);
-
   DocumentLoadState document_load_state_for_testing() const {
     return document_load_state_;
   }
@@ -164,17 +162,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
       PDFEngine::Client* client,
       PDFiumFormFiller::ScriptOption script_option) = 0;
 
-  // Destroys the main `PDFiumEngine`. Subclasses should call this method in
-  // their destructor to ensure the engine is destroyed first.
-  void DestroyEngine();
-
   // Destroys the `PDFiumEngine` used for Print Preview. Subclasses should call
   // this method in their destructor to ensure the engine is destroyed first.
   void DestroyPreviewEngine();
 
-  const PDFiumEngine* engine() const { return engine_.get(); }
-  PDFiumEngine* engine() { return engine_.get(); }
-  void set_engine(std::unique_ptr<PDFiumEngine> engine);
+  virtual const PDFiumEngine* engine() const = 0;
+  virtual PDFiumEngine* engine() = 0;
+  virtual void set_engine(std::unique_ptr<PDFiumEngine> engine) = 0;
 
   // Loads `url`, invoking `callback` on receiving the initial response.
   virtual void LoadUrl(base::StringPiece url, LoadUrlCallback callback) = 0;
@@ -414,7 +408,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // TODO(crbug.com/1302059): `PdfViewPluginBase` is being merged into
   // `PdfViewWebPlugin`, so all methods should be protected or public.
 
-  std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
 
   // The URL of the PDF document.

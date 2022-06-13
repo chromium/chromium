@@ -327,6 +327,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::unique_ptr<PDFiumEngine> CreateEngine(
       PDFEngine::Client* client,
       PDFiumFormFiller::ScriptOption script_option) override;
+  const PDFiumEngine* engine() const override;
+  PDFiumEngine* engine() override;
+  void set_engine(std::unique_ptr<PDFiumEngine> engine) override;
   void LoadUrl(base::StringPiece url, LoadUrlCallback callback) override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   void OnDocumentLoadComplete() override;
@@ -419,6 +422,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_;
 
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
+
+  std::unique_ptr<PDFiumEngine> engine_;
 
   // The id of the current find operation, or -1 if no current operation is
   // present.

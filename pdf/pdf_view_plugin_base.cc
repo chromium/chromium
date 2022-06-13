@@ -191,7 +191,7 @@ void PdfViewPluginBase::ScrollBy(const gfx::Vector2d& delta) {
 }
 
 void PdfViewPluginBase::ScrollToPage(int page) {
-  if (!engine_ || engine_->GetNumberOfPages() == 0)
+  if (!engine() || engine()->GetNumberOfPages() == 0)
     return;
 
   base::Value::Dict message;
@@ -267,12 +267,12 @@ void PdfViewPluginBase::Email(const std::string& to,
 }
 
 void PdfViewPluginBase::Print() {
-  if (!engine_)
+  if (!engine())
     return;
 
   const bool can_print =
-      engine_->HasPermission(DocumentPermission::kPrintLowQuality) ||
-      engine_->HasPermission(DocumentPermission::kPrintHighQuality);
+      engine()->HasPermission(DocumentPermission::kPrintLowQuality) ||
+      engine()->HasPermission(DocumentPermission::kPrintHighQuality);
   if (!can_print)
     return;
 
@@ -482,7 +482,7 @@ void PdfViewPluginBase::EnableAccessibility() {
 
 void PdfViewPluginBase::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
-  engine_->HandleAccessibilityAction(action_data);
+  engine()->HandleAccessibilityAction(action_data);
 }
 
 int PdfViewPluginBase::GetContentRestrictions() const {
@@ -507,22 +507,8 @@ AccessibilityDocInfo PdfViewPluginBase::GetAccessibilityDocInfo() const {
   return doc_info;
 }
 
-void PdfViewPluginBase::InitializeEngineForTesting(
-    std::unique_ptr<PDFiumEngine> engine) {
-  DCHECK(engine);
-  engine_ = std::move(engine);
-}
-
-void PdfViewPluginBase::DestroyEngine() {
-  engine_.reset();
-}
-
 void PdfViewPluginBase::DestroyPreviewEngine() {
   preview_engine_.reset();
-}
-
-void PdfViewPluginBase::set_engine(std::unique_ptr<PDFiumEngine> engine) {
-  engine_ = std::move(engine);
 }
 
 void PdfViewPluginBase::InvalidateAfterPaintDone() {
@@ -544,10 +530,10 @@ void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
 
 blink::WebPrintPresetOptions PdfViewPluginBase::GetPrintPresetOptions() {
   blink::WebPrintPresetOptions options;
-  options.is_scaling_disabled = !engine_->GetPrintScaling();
-  options.copies = engine_->GetCopiesToPrint();
-  options.duplex_mode = engine_->GetDuplexMode();
-  options.uniform_page_size = engine_->GetUniformPageSizePoints();
+  options.is_scaling_disabled = !engine()->GetPrintScaling();
+  options.copies = engine()->GetCopiesToPrint();
+  options.duplex_mode = engine()->GetDuplexMode();
+  options.uniform_page_size = engine()->GetUniformPageSizePoints();
   return options;
 }
 
@@ -580,7 +566,7 @@ void PdfViewPluginBase::PrintEnd() {
     UserMetricsRecordAction("PDF.PrintPage");
   print_pages_called_ = false;
   print_params_.reset();
-  engine_->PrintEnd();
+  engine()->PrintEnd();
 }
 
 void PdfViewPluginBase::UpdateGeometryOnPluginRectChanged(
@@ -767,10 +753,10 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   viewport_info.scale = device_scale_;
   viewport_info.focus_info = {FocusObjectType::kNone, 0, 0};
 
-  engine_->GetSelection(&viewport_info.selection_start_page_index,
-                        &viewport_info.selection_start_char_index,
-                        &viewport_info.selection_end_page_index,
-                        &viewport_info.selection_end_char_index);
+  engine()->GetSelection(&viewport_info.selection_start_page_index,
+                         &viewport_info.selection_start_char_index,
+                         &viewport_info.selection_end_page_index,
+                         &viewport_info.selection_end_char_index);
 
   SetAccessibilityViewportInfo(std::move(viewport_info));
 }
@@ -896,7 +882,7 @@ void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
 
   // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
   // engine settings across a Print Preview reset.
-  engine_ = CreateEngine(this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
+  set_engine(CreateEngine(this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
   engine()->ZoomUpdated(zoom_ * device_scale_);
   engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
   engine()->PluginSizeUpdated(available_area_.size());
@@ -1195,8 +1181,8 @@ void PdfViewPluginBase::LoadAccessibility() {
   SetAccessibilityDocInfo(GetAccessibilityDocInfo());
 
   // If the document contents isn't accessible, don't send anything more.
-  if (!(engine_->HasPermission(DocumentPermission::kCopy) ||
-        engine_->HasPermission(DocumentPermission::kCopyAccessible))) {
+  if (!(engine()->HasPermission(DocumentPermission::kCopy) ||
+        engine()->HasPermission(DocumentPermission::kCopyAccessible))) {
     return;
   }
 
