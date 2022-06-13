@@ -3563,6 +3563,11 @@ const char kRequestDesktopSiteForTabletsDescription[] =
     " On tablets with small screens a mobile site will be requested by "
     "default.";
 
+const char kScreenshotsForAndroidV2Name[] = "Screenshots for Android V2";
+const char kScreenshotsForAndroidV2Description[] =
+    "Adds functionality to the share screenshot panel within Chrome Browser"
+    " on Android";
+
 const char kShowScrollableMVTOnNTPAndroidName[] = "Show scrollable MVT on NTP";
 const char kShowScrollableMVTOnNTPAndroidDescription[] =
     "Enable showing the scrollable most visited tiles on NTP.";

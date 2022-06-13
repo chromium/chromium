@@ -55647,6 +55647,7 @@ from previous Chrome versions.
   <int value="-1559292789" label="SideSearch:disabled"/>
   <int value="-1557747651" label="FractionalScrollOffsets:disabled"/>
   <int value="-1557527869" label="LoadingWithMojo:disabled"/>
+  <int value="-1556805396" label="ScreenshotsForAndroidV2:enabled"/>
   <int value="-1555510175" label="PasswordImport:enabled"/>
   <int value="-1553477903" label="ash-disable-text-filtering-in-overview-mode"/>
   <int value="-1553280810" label="PromoBrowserCommands:enabled"/>
@@ -60064,6 +60065,7 @@ from previous Chrome versions.
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
   <int value="1316142697" label="canvas-2d-layers"/>
   <int value="1316607485" label="MultiProfileAccountConsistency:enabled"/>
+  <int value="1316844889" label="ScreenshotsForAndroidV2:disabled"/>
   <int value="1317562265" label="SeccompSandboxAndroid:disabled"/>
   <int value="1318073661" label="MaterialDesignExtensions:enabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>
