@@ -5596,7 +5596,7 @@
   {
     "name" : "side-panel-improved-clobbering",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 104
+    "expiry_milestone" : 107
   },
   {
     "name" : "side-panel-journeys",
@@ -5606,12 +5606,12 @@
   {
     "name" : "side-search",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 104
+    "expiry_milestone" : 107
   },
   {
     "name" : "side-search-dse-support",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 104
+    "expiry_milestone" : 107
   },
   {
     "name": "sim-lock-policy",
