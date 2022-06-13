@@ -21,6 +21,7 @@ android_library("client_java") {
 }
 
 junit_binary("webapk_client_junit_tests") {
+  package_name = "org.chromium.test"
   sources = [
     "junit/src/org/chromium/webapk/lib/client/WebApkIdentityServiceClientTest.java",
     "junit/src/org/chromium/webapk/lib/client/WebApkServiceConnectionManagerTest.java",

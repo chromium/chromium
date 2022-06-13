@@ -1316,18 +1316,6 @@ def main(argv):
     # for these libraries will get pulled in along with the resources.
     android_resources_library_deps = _DepsFromPathsWithFilters(
         deps_configs_paths, allowlist=['java_library']).All('java_library')
-  if is_apk_or_module_target:
-    # android_resources deps which had recursive_resource_deps set should not
-    # have the manifests from the recursively collected deps added to this
-    # module. This keeps the manifest declarations in the child DFMs, since they
-    # will have the Java implementations.
-    def ExcludeRecursiveResourcesDeps(config):
-      return not config.get('includes_recursive_resources', False)
-
-    extra_manifest_deps = [
-        GetDepConfig(p) for p in GetAllDepsConfigsInOrder(
-            deps_configs_paths, filter_func=ExcludeRecursiveResourcesDeps)
-    ]
 
   base_module_build_config = None
   if options.base_module_build_config:
@@ -1551,6 +1539,8 @@ def main(argv):
       extra_package_names = [
           c['package_name'] for c in all_resources_deps if 'package_name' in c
       ]
+      if options.package_name:
+        extra_package_names += [options.package_name]
 
       # android_resources targets which specified recursive_resource_deps may
       # have extra_package_names.
@@ -2072,11 +2062,6 @@ def main(argv):
         secondary_abi_loadable_modules,
     }
 
-    config['extra_android_manifests'] = []
-    for c in extra_manifest_deps:
-      config['extra_android_manifests'].extend(
-          c.get('mergeable_android_manifests', []))
-
     # Collect java resources
     java_resources_jars = [d['java_resources_jar'] for d in all_library_deps
                           if 'java_resources_jar' in d]
@@ -2090,6 +2075,22 @@ def main(argv):
     config['java_resources_jars'] = java_resources_jars
 
   if is_apk_or_module_target or options.type == 'junit_binary':
+    # android_resources deps which had recursive_resource_deps set should not
+    # have the manifests from the recursively collected deps added to this
+    # module. This keeps the manifest declarations in the child DFMs, since they
+    # will have the Java implementations.
+    def ExcludeRecursiveResourcesDeps(config):
+      return not config.get('includes_recursive_resources', False)
+
+    extra_manifest_deps = [
+        GetDepConfig(p) for p in GetAllDepsConfigsInOrder(
+            deps_configs_paths, filter_func=ExcludeRecursiveResourcesDeps)
+    ]
+    config['extra_android_manifests'] = []
+    for c in extra_manifest_deps:
+      config['extra_android_manifests'].extend(
+          c.get('mergeable_android_manifests', []))
+
     config['assets'], config['uncompressed_assets'], locale_paks = (
         _MergeAssets(deps.All('android_assets')))
     deps_info['locales_java_list'] = _CreateJavaLocaleListFromAssets(

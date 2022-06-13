@@ -4,6 +4,11 @@
 
 package org.chromium.build;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +34,26 @@ public class AndroidAssetsTest {
             return new String(buffer);
         }
     }
+
     @Test
-    public void testTestStarted() throws IOException {
+    public void testAssetsExist() throws IOException {
         String myselfAsAssetData = readTestAsset();
         Assert.assertTrue("asset not correct. It had length=" + myselfAsAssetData.length(),
-                myselfAsAssetData.contains("testTestStarted()"));
+                myselfAsAssetData.contains("String myselfAsAssetData = "));
+    }
+
+    @Test
+    public void testResourcesExist() {
+        String actual = RuntimeEnvironment.getApplication().getString(R.string.test_string);
+        Assert.assertEquals("Hello World", actual);
+    }
+
+    @Test
+    public void testManifestMerged() throws NameNotFoundException {
+        Context context = RuntimeEnvironment.getApplication();
+        ApplicationInfo info = context.getPackageManager().getApplicationInfo(
+                context.getPackageName(), PackageManager.GET_META_DATA);
+        String actual = info.metaData.getString("test-metadata");
+        Assert.assertEquals("Hello World", actual);
     }
 }

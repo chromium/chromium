@@ -59,9 +59,11 @@ template("generate_wrapper") {
   action(target_name) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
+                                 "assert_no_deps",
                                  "data",
                                  "data_deps",
                                  "deps",
+                                 "public_deps",
                                  "sources",
                                ])
     script = _generator_script

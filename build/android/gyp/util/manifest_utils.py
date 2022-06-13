@@ -130,7 +130,8 @@ def AssertPackage(manifest_node, package):
   manifest.
   """
   package_value = GetPackage(manifest_node)
-  if package_value is None or package is None:
+  if package_value is None or package is None or (
+      package_value == 'no.manifest.configured'):
     return
   assert package_value == package, (
       'Package in Android manifest is %s but we expect %s' % (package_value,

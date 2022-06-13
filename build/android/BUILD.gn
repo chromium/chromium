@@ -57,20 +57,27 @@ if (enable_java_templates) {
   # Not all //build embedders pull in junit_binary deps that live in //third_party.
   if (build_with_chromium) {
     android_assets("junit_test_assets") {
+      testonly = true
+
       # We just need any file here, so use the test itself.
       sources = [ "junit/src/org/chromium/build/AndroidAssetsTest.java" ]
     }
-
+    android_resources("junit_test_resources") {
+      testonly = true
+      sources = [ "junit/res/values/strings.xml" ]
+      mergeable_android_manifests = [ "junit/AndroidManifest_mergetest.xml" ]
+    }
     junit_binary("build_junit_tests") {
-      # No JNI is required, and including JNI Generator reference causes trouble
-      # for projects such as Angle, which don't pull in //base.
+      # Test has no JNI, so skip JNI Generator step.
       generate_final_jni = false
+      resources_package = "org.chromium.build"
       sources = [
         "junit/src/org/chromium/build/AndroidAssetsTest.java",
         "junit/src/org/chromium/build/IncrementalJavacTest.java",
       ]
       deps = [
         ":junit_test_assets",
+        ":junit_test_resources",
         "//build/android/test/incremental_javac_gn:no_signature_change_prebuilt_java",
         "//third_party/junit",
       ]

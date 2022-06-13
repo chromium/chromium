@@ -708,6 +708,12 @@ template("test_runner_script") {
   }
 
   generate_android_wrapper(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "assert_no_deps",
+                             "public_deps",
+                             "visibility",
+                           ])
     wrapper_script = "$root_build_dir/bin/run_${_test_name}"
 
     executable = "//testing/test_env.py"
@@ -1975,6 +1981,7 @@ if (enable_java_templates) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
                                    "deps",
+                                   "public_deps",
                                    "sources",
                                  ])
       script = "//build/android/gyp/prepare_resources.py"
@@ -2120,20 +2127,12 @@ if (enable_java_templates) {
   template("compile_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _deps = [
-      invoker.android_sdk_dep,
-      invoker.build_config_dep,
-    ]
+    _deps = invoker.deps + [
+              invoker.android_sdk_dep,
+              invoker.build_config_dep,
+            ]
     if (defined(invoker.android_manifest_dep)) {
       _deps += [ invoker.android_manifest_dep ]
-    }
-    _lib_deps =
-        filter_exclude(filter_include(invoker.deps, java_library_patterns),
-                       java_resource_patterns)
-    _deps += filter_exclude(invoker.deps, _lib_deps)
-    foreach(_lib_dep, _lib_deps) {
-      # Depend on the java libraries' transitive __assetres target instead.
-      _deps += [ "${_lib_dep}__assetres" ]
     }
 
     if (defined(invoker.arsc_output)) {
@@ -3309,10 +3308,6 @@ if (enable_java_templates) {
       _main_target_name = invoker.main_target_name
     }
 
-    if (defined(invoker.resources_package)) {
-      _resources_package = invoker.resources_package
-    }
-
     _java_files = []
     if (defined(invoker.sources)) {
       _java_files = invoker.sources
@@ -3602,8 +3597,8 @@ if (enable_java_templates) {
       requires_android = _requires_android
       bypass_platform_checks = _bypass_platform_checks
 
-      if (defined(_resources_package)) {
-        custom_package = _resources_package
+      if (defined(invoker.resources_package)) {
+        custom_package = invoker.resources_package
       }
       if (_is_prebuilt || _has_sources) {
         ijar_path = _final_ijar_path
@@ -3653,7 +3648,7 @@ if (enable_java_templates) {
             _java_files != [] && _chromium_code && use_errorprone_java_compiler
       }
 
-      if (defined(_resources_package) && _type == "java_library") {
+      if (defined(invoker.resources_package) && _type == "java_library") {
         assert(_requires_android || _bypass_platform_checks,
                "Setting resources_package applicable only for " +
                    "android_library(), or java_library() with " +
@@ -3671,7 +3666,7 @@ if (enable_java_templates) {
           # Filepath has to be exactly this because compile_java looks for the
           # srcjar of srcjar_deps at this location $gen_dir/$target_name.srcjar
           srcjar_path = "$target_gen_dir/$target_name.srcjar"
-          package = _resources_package
+          package = invoker.resources_package
         }
         _srcjar_deps += [ ":$_fake_rjava_target" ]
       }

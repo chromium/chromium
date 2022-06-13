@@ -111,18 +111,18 @@ template("trichrome_library_apk_tmpl") {
 
     min_sdk_version = 29
 
-    if (trichrome_synchronized_proguard) {
-      product_version_resources_dep =
-          "//chrome/android:product_version_resources"
-    } else {
-      generate_buildconfig_java = false
-    }
-
     # TODO(torne): using icon_resources just to get a temporary icon
     deps = [
       "//android_webview/nonembedded:icon_resources",
       "//third_party/icu:icu_assets",
     ]
+
+    if (trichrome_synchronized_proguard) {
+      build_config_include_product_version_resource = true
+      deps += [ "//chrome/android:product_version_resources" ]
+    } else {
+      generate_buildconfig_java = false
+    }
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
