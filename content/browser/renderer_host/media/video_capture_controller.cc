@@ -825,7 +825,16 @@ void VideoCaptureController::Crop(
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(launched_device_);
+
   EmitLogMessage(__func__, 3);
+
+  was_crop_ever_called_ = true;
+
+  if (controller_clients_.size() != 1) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
+    return;
+  }
+
   launched_device_->Crop(crop_id, crop_version, std::move(callback));
 }
 
