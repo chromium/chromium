@@ -975,11 +975,7 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId A string containing the node ID.
      */
     public void triggerNode(Tab tab, String nodeId) throws TimeoutException {
-        if (mPolicy.canResolveLongpress()) {
-            DOMUtils.longPressNode(tab.getWebContents(), nodeId);
-        } else {
-            DOMUtils.clickNode(tab.getWebContents(), nodeId);
-        }
+        DOMUtils.longPressNode(tab.getWebContents(), nodeId);
     }
 
     /**
@@ -1479,16 +1475,5 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void waitForSelectActionBarVisible() {
         assertWaitForSelectActionBarVisible(true);
-    }
-
-    /**
-     * Returns whether all the supported gestures for opted-in users trigger a Resolve request,
-     * aka intelligent search.
-     */
-    protected boolean isConfigurationForResolvingGesturesOnly() {
-        // The current interpretation of the ability to resolve Longpress (which is forced by the
-        // Translations Feature as well as the LongpressResolve Feature) preserves a resolving Tap
-        // so there is no non-resolving gesture for opted-in users.
-        return mPolicy.canResolveLongpress();
     }
 }

@@ -663,7 +663,6 @@ chrome_java_resources = [
   "java/res/xml/bookmark_widget_info.xml",
   "java/res/xml/clear_browsing_data_preferences_tab.xml",
   "java/res/xml/contextual_search_preferences.xml",
-  "java/res/xml/contextual_search_tap_preferences.xml",
   "java/res/xml/developer_preferences.xml",
   "java/res/xml/do_not_track_preferences.xml",
   "java/res/xml/google_services_preferences.xml",

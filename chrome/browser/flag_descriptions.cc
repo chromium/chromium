@@ -3171,15 +3171,6 @@ const char kContextualSearchForceCaptionName[] =
 const char kContextualSearchForceCaptionDescription[] =
     "Forces a caption to always be shown in the Touch to Search Bar.";
 
-const char kContextualSearchLongpressResolveName[] =
-    "Contextual Search long-press Resolves";
-const char kContextualSearchLongpressResolveDescription[] =
-    "Enables communicating with Google servers when a long-press gesture is "
-    "recognized under some privacy-limited conditions, including having Touch "
-    "to Search enabled in preferences. The page context data sent to Google is "
-    "potentially privacy sensitive!  This disables the tap gesture from "
-    "triggering Touch to Search unless that experiment arm is enabled.";
-
 const char KContextualSearchNewSettingsName[] =
     "Contextual Search new settings";
 const char KContextualSearchNewSettingsDescription[] =

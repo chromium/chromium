@@ -114,7 +114,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveTrigger(@EnabledFeature int enabledFeature) throws Exception {
-        if (isConfigurationForResolvingGesturesOnly()) return;
         triggerNonResolve("states");
 
         Assert.assertNull(mFakeServer.getSearchTermRequested());

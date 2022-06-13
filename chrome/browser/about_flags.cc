@@ -1855,12 +1855,6 @@ const FeatureEntry::FeatureVariation kExploreSitesVariations[] = {
      std::size(kExploreSitesDenseTitleBottom), nullptr},
     {"Dense Title Right", kExploreSitesDenseTitleRight,
      std::size(kExploreSitesDenseTitleRight), nullptr}};
-const FeatureEntry::FeatureParam kLongpressResolvePreserveTap = {
-    contextual_search::kLongpressResolveParamName,
-    contextual_search::kLongpressResolvePreserveTap};
-const FeatureEntry::FeatureVariation kLongpressResolveVariations[] = {
-    {"and preserve Tap behavior", &kLongpressResolvePreserveTap, 1, nullptr},
-};
 
 const FeatureEntry::FeatureParam kContextualSearchPromoCardShow3Times = {
     "promo_card_max_shown", "3"};
@@ -3323,14 +3317,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualSearchForceCaptionName,
      flag_descriptions::kContextualSearchForceCaptionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextualSearchForceCaption)},
-    {"contextual-search-longpress-resolve",
-     flag_descriptions::kContextualSearchLongpressResolveName,
-     flag_descriptions::kContextualSearchLongpressResolveDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kContextualSearchLongpressResolve,
-         kLongpressResolveVariations,
-         "ContextualSearchLongpressResolve")},
     {"contextual-search-new-settings",
      flag_descriptions::KContextualSearchNewSettingsName,
      flag_descriptions::KContextualSearchNewSettingsDescription, kOsAndroid,

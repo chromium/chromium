@@ -556,15 +556,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         }, 3000 * waitFactor, DEFAULT_POLLING_INTERVAL * waitFactor);
     }
 
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    public void testTranslationsFeatureCanResolveLongpressGesture() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
-
-        Assert.assertTrue(mPolicy.canResolveLongpress());
-    }
-
     //============================================================================================
     // END Translate Tests
     //============================================================================================
@@ -947,8 +938,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testAllInternalStatesVisitedResolvingLongpress(@EnabledFeature int enabledFeature)
             throws Exception {
-        if (!mPolicy.canResolveLongpress()) return;
-
         // Set up a tracking version of the Internal State Controller.
         ContextualSearchInternalStateControllerWrapper internalStateControllerWrapper =
                 ContextualSearchInternalStateControllerWrapper

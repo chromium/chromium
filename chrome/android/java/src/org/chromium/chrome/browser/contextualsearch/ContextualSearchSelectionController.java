@@ -337,8 +337,7 @@ public class ContextualSearchSelectionController {
                 mAreSelectionHandlesShown = true;
                 mAreSelectionHandlesBeingDragged = false;
                 mWasTapGestureDetected = false;
-                mSelectionType = mPolicy.canResolveLongpress() ? SelectionType.RESOLVING_LONG_PRESS
-                                                               : SelectionType.LONG_PRESS;
+                mSelectionType = SelectionType.RESOLVING_LONG_PRESS;
                 shouldHandleSelection = true;
                 SelectionPopupController controller = getSelectionPopupController();
                 if (controller != null) mSelectedText = controller.getSelectedText();

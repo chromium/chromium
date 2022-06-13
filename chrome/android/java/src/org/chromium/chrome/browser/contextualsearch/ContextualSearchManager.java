@@ -1520,7 +1520,7 @@ public class ContextualSearchManager
 
     @Override
     public void handleValidResolvingLongpress() {
-        if (isSuppressed() || !mPolicy.canResolveLongpress()) return;
+        if (isSuppressed()) return;
 
         mInternalStateController.enter(InternalState.RESOLVING_LONG_PRESS_RECOGNIZED);
     }

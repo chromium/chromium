@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.os.Bundle;
 
-import androidx.annotation.XmlRes;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -27,12 +25,7 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        @XmlRes
-        int tapOrTouchPreferenceId =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE)
-                ? R.xml.contextual_search_preferences
-                : R.xml.contextual_search_tap_preferences;
-        SettingsUtils.addPreferencesFromResource(this, tapOrTouchPreferenceId);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.contextual_search_preferences);
         getActivity().setTitle(R.string.contextual_search_title);
         setHasOptionsMenu(true);
         initSwitches();

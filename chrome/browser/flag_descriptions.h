@@ -1791,9 +1791,6 @@ extern const char kContextualSearchDebugDescription[];
 extern const char kContextualSearchForceCaptionName[];
 extern const char kContextualSearchForceCaptionDescription[];
 
-extern const char kContextualSearchLongpressResolveName[];
-extern const char kContextualSearchLongpressResolveDescription[];
-
 extern const char KContextualSearchNewSettingsName[];
 extern const char KContextualSearchNewSettingsDescription[];
 

@@ -806,11 +806,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_CONTEXTUAL_SEARCH_TITLE" desc="Name for the Contextual Search feature, which allows users to search for a term in a web page by tapping on it.">
         Touch to Search
       </message>
-      <message name="IDS_CONTEXTUAL_SEARCH_TAP_DESCRIPTION" desc="Description for Contextual Search preference">
-        Learn about topics on websites without leaving the page. Touch to Search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results, and other details.
-
-Tap any word to search. To refine your search, touch &amp; hold to select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.
-      </message>
       <message name="IDS_CONTEXTUAL_SEARCH_DESCRIPTION" desc="Description for Contextual Search preference">
         Learn about topics on websites without leaving the page. Touch to Search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results, and other details.
 

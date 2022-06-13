@@ -153,12 +153,6 @@ class ContextualSearchPolicy {
         return isContextualSearchFullyEnabled();
     }
 
-    /** @return Whether a long-press gesture can resolve. */
-    boolean canResolveLongpress() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS);
-    }
-
     /** Returns whether the Delayed Intelligence Feature is currently enabled or not. */
     boolean isDelayedIntelligenceEnabled() {
         return ChromeFeatureList.isEnabled(

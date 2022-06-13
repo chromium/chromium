@@ -8,10 +8,6 @@ namespace contextual_search {
 
 const char kContextualSearchFieldTrialName[] = "ContextualSearch";
 
-// Longpress Resolve variations:
-const char kLongpressResolveParamName[] = "longpress_resolve_variation";
-const char kLongpressResolvePreserveTap[] = "1";
-
 // Contextual Cards variations and integration Api settings.
 const char kContextualCardsVersionParamName[] = "contextual_cards_version";
 
