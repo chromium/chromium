@@ -473,11 +473,16 @@ void PasswordStoreProxyBackend::AddLoginAsync(
       ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("AddLoginAsync"));
 
+  auto maybe_retry_callback =
+      base::BindOnce(&PasswordStoreProxyBackend::MaybeRetryToAddLoginOnFail,
+                     weak_ptr_factory_.GetWeakPtr(), form, std::move(callback),
+                     UsesAndroidBackendAsMainBackend());
+
   main_backend()->AddLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
                                PasswordChangesOrErrorImpl>::RecordMainResult,
                            handler)
-                .Then(std::move(callback)));
+                .Then(std::move(maybe_retry_callback)));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
     shadow_backend()->AddLoginAsync(
@@ -495,11 +500,16 @@ void PasswordStoreProxyBackend::UpdateLoginAsync(
       ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("UpdateLoginAsync"));
 
+  auto maybe_retry_callback =
+      base::BindOnce(&PasswordStoreProxyBackend::MaybeRetryToUpdateLoginOnFail,
+                     weak_ptr_factory_.GetWeakPtr(), form, std::move(callback),
+                     UsesAndroidBackendAsMainBackend());
+
   main_backend()->UpdateLoginAsync(
       form, base::BindOnce(&ShadowTrafficMetricsRecorder<
                                PasswordChangesOrErrorImpl>::RecordMainResult,
                            handler)
-                .Then(std::move(callback)));
+                .Then(std::move(maybe_retry_callback)));
   if (ShouldExecuteModifyOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
     shadow_backend()->UpdateLoginAsync(
@@ -632,6 +642,36 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
   android_backend_->OnSyncServiceInitialized(sync_service);
+}
+
+void PasswordStoreProxyBackend::MaybeRetryToAddLoginOnFail(
+    const PasswordForm& form,
+    PasswordChangesOrErrorReply callback,
+    bool was_using_android_backend,
+    PasswordChangesOrError result) {
+  if (was_using_android_backend &&
+      absl::holds_alternative<PasswordStoreBackendError>(result) &&
+      absl::get<PasswordStoreBackendError>(result) ==
+          PasswordStoreBackendError::kUnrecoverable) {
+    built_in_backend_->AddLoginAsync(form, std::move(callback));
+  } else {
+    std::move(callback).Run(result);
+  }
+}
+
+void PasswordStoreProxyBackend::MaybeRetryToUpdateLoginOnFail(
+    const PasswordForm& form,
+    PasswordChangesOrErrorReply callback,
+    bool was_using_android_backend,
+    const PasswordChangesOrError& result) {
+  if (was_using_android_backend &&
+      absl::holds_alternative<PasswordStoreBackendError>(result) &&
+      absl::get<PasswordStoreBackendError>(result) ==
+          PasswordStoreBackendError::kUnrecoverable) {
+    built_in_backend_->UpdateLoginAsync(form, std::move(callback));
+  } else {
+    std::move(callback).Run(result);
+  }
 }
 
 PasswordStoreBackend* PasswordStoreProxyBackend::main_backend() {
