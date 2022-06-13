@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"
-    expires_after="2022-07-21">
+    expires_after="2023-06-21">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Emitted each time a device forget attempt completes.</summary>
@@ -1035,7 +1035,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.PoweredState.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2022-07-21">
+    enum="BooleanSuccess" expires_after="2023-06-21">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Record emitted when an {Operation}.</summary>
@@ -1076,7 +1076,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure{BluetoothTransportTypes}"
-    units="ms" expires_after="2022-07-19">
+    units="ms" expires_after="2023-06-19">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1090,7 +1090,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Success{BluetoothTransportTypes}"
-    units="ms" expires_after="2022-07-19">
+    units="ms" expires_after="2023-06-19">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
