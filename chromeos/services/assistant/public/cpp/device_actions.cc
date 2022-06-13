@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/assistant/public/cpp/device_actions.h"
 
 namespace chromeos {
 namespace assistant {
 
 namespace {
 
-AssistantService* g_instance = nullptr;
+DeviceActions* g_instance = nullptr;
 
 }  // namespace
 
 // static
-AssistantService* AssistantService::Get() {
+DeviceActions* DeviceActions::Get() {
+  DCHECK(g_instance);
   return g_instance;
 }
 
-AssistantService::AssistantService() {
+DeviceActions::DeviceActions() {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
 
-AssistantService::~AssistantService() {
+DeviceActions::~DeviceActions() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }

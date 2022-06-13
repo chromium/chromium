@@ -19,7 +19,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"

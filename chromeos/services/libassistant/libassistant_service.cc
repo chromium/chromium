@@ -14,8 +14,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 
