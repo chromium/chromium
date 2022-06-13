@@ -73,10 +73,10 @@ class PendingProfiles {
 
   // Collects |serialized_profile|. It may be ignored depending on the
   // pre-defined storage capacity and whether collection is enabled.
-  // |serialized_profile| is not const& because it must be passed with
-  // std::move.
+  // |serialized_profile| must be passed with std::move because it could be very
+  // large.
   void MaybeCollectSerializedProfile(base::TimeTicks profile_start_time,
-                                     std::string serialized_profile);
+                                     std::string&& serialized_profile);
 
   // Allows testing against the initial state multiple times.
   void ResetToDefaultStateForTesting();
@@ -136,8 +136,7 @@ std::vector<SampledProfile> PendingProfiles::RetrieveProfiles() {
   profiles.reserve(serialized_profiles.size());
   for (const auto& serialized_profile : serialized_profiles) {
     SampledProfile profile;
-    if (profile.ParseFromArray(serialized_profile.data(),
-                               serialized_profile.size())) {
+    if (profile.ParseFromString(serialized_profile)) {
       profiles.push_back(std::move(profile));
     }
   }
@@ -204,7 +203,7 @@ void PendingProfiles::MaybeCollectProfile(base::TimeTicks profile_start_time,
 
 void PendingProfiles::MaybeCollectSerializedProfile(
     base::TimeTicks profile_start_time,
-    std::string serialized_profile) {
+    std::string&& serialized_profile) {
   base::AutoLock scoped_lock(lock_);
 
   // There is no room for additional profiles.
@@ -259,13 +258,16 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
 // static
 void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     base::TimeTicks profile_start_time,
-    std::string serialized_profile) {
-  // Heap profiler does not use this path as it only reports profiles
-  // from the browser process.
+    bool is_heap_profile,
+    std::string&& serialized_profile) {
+  // Note: All parameters of this function come from a Mojo message from an
+  // untrusted process.
   if (GetCpuInterceptorCallbackInstance()) {
+    // GetCpuInterceptorCallbackInstance() is set only in tests, so it's safe to
+    // trust `is_heap_profile` and `serialized_profile` here.
+    DCHECK(!is_heap_profile);
     SampledProfile profile;
-    if (profile.ParseFromArray(serialized_profile.data(),
-                               serialized_profile.size())) {
+    if (profile.ParseFromString(serialized_profile)) {
       DCHECK(profile.trigger_event() == SampledProfile::PROCESS_STARTUP ||
              profile.trigger_event() == SampledProfile::PERIODIC_COLLECTION);
       GetCpuInterceptorCallbackInstance().Run(std::move(profile));
@@ -273,8 +275,13 @@ void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kSamplingProfilerReporting))
+  // If an attacker spoofs `is_heap_profile` or `profile_start_time`, the worst
+  // they can do is cause `serialized_profile` to be sent to UMA when profile
+  // reporting should be disabled.
+  if (!is_heap_profile &&
+      !base::FeatureList::IsEnabled(kSamplingProfilerReporting)) {
     return;
+  }
   PendingProfiles::GetInstance()->MaybeCollectSerializedProfile(
       profile_start_time, std::move(serialized_profile));
 }

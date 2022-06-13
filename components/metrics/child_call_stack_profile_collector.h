@@ -79,9 +79,10 @@ class ChildCallStackProfileCollector {
   // for storage, pending availability of the parent mojo interface.
   struct ProfileState {
     ProfileState();
-    // |profile| is not const& because it can be very large and must be passed
-    // with std::move.
-    ProfileState(base::TimeTicks start_timestamp, std::string profile);
+    // |profile| can be very large and must be passed with std::move.
+    ProfileState(base::TimeTicks start_timestamp,
+                 mojom::ProfileType profile_type,
+                 std::string&& profile);
 
     ProfileState(const ProfileState&) = delete;
     ProfileState& operator=(const ProfileState&) = delete;
@@ -93,6 +94,7 @@ class ChildCallStackProfileCollector {
     ProfileState& operator=(ProfileState&&);
 
     base::TimeTicks start_timestamp;
+    mojom::ProfileType profile_type;
 
     // The serialized sampled profile.
     std::string profile;

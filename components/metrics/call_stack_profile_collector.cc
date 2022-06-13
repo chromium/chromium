@@ -25,9 +25,11 @@ void CallStackProfileCollector::Create(
 }
 
 void CallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
+                                        mojom::ProfileType profile_type,
                                         mojom::SampledProfilePtr profile) {
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
-      start_timestamp, std::move(profile->contents));
+      start_timestamp, profile_type == mojom::ProfileType::kHeap,
+      std::move(profile->contents));
 }
 
 }  // namespace metrics

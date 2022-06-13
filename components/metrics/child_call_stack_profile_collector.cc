@@ -21,8 +21,11 @@ ChildCallStackProfileCollector::ProfileState::ProfileState(ProfileState&&) =
 
 ChildCallStackProfileCollector::ProfileState::ProfileState(
     base::TimeTicks start_timestamp,
-    std::string profile)
-    : start_timestamp(start_timestamp), profile(std::move(profile)) {}
+    mojom::ProfileType profile_type,
+    std::string&& profile)
+    : start_timestamp(start_timestamp),
+      profile_type(profile_type),
+      profile(std::move(profile)) {}
 
 ChildCallStackProfileCollector::ProfileState::~ProfileState() = default;
 
@@ -54,7 +57,7 @@ void ChildCallStackProfileCollector::SetParentProfileCollector(
       for (ProfileState& state : profiles_) {
         mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
         mojo_profile->contents = std::move(state.profile);
-        parent_collector_->Collect(state.start_timestamp,
+        parent_collector_->Collect(state.start_timestamp, state.profile_type,
                                    std::move(mojo_profile));
       }
     }
@@ -79,17 +82,24 @@ void ChildCallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
     return;
   }
 
+  const mojom::ProfileType profile_type =
+      profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION
+          ? mojom::ProfileType::kHeap
+          : mojom::ProfileType::kCPU;
+
   if (parent_collector_) {
     mojom::SampledProfilePtr mojo_profile = mojom::SampledProfile::New();
     profile.SerializeToString(&mojo_profile->contents);
-    parent_collector_->Collect(start_timestamp, std::move(mojo_profile));
+    parent_collector_->Collect(start_timestamp, profile_type,
+                               std::move(mojo_profile));
     return;
   }
 
   if (retain_profiles_) {
     std::string serialized_profile;
     profile.SerializeToString(&serialized_profile);
-    profiles_.emplace_back(start_timestamp, std::move(serialized_profile));
+    profiles_.emplace_back(start_timestamp, profile_type,
+                           std::move(serialized_profile));
   }
 }
 

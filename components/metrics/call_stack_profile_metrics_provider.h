@@ -42,10 +42,11 @@ class CallStackProfileMetricsProvider : public MetricsProvider {
   // thread.  Note that receiving serialized profiles is supported separately so
   // that profiles received in serialized form can be kept in that form until
   // upload. This significantly reduces memory costs. Serialized profile strings
-  // may be large, so the caller should use std::move() to provide them to this
+  // may be large, so the caller must use std::move() to provide them to this
   // API rather than copying by value.
   static void ReceiveSerializedProfile(base::TimeTicks profile_start_time,
-                                       std::string serialized_sampled_profile);
+                                       bool is_heap_profile,
+                                       std::string&& serialized_profile);
 
   // Allows tests to intercept received CPU profiles, to validate that the
   // expected profiles are received. This function must be invoked prior to
