@@ -63,6 +63,7 @@ class PLATFORM_EXPORT PageScheduler {
   virtual std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
       BlameContext*,
+      bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) = 0;
 
   virtual void AudioStateChanged(bool is_audio_playing) = 0;

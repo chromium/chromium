@@ -307,14 +307,14 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Tells the scheduler that a provisional load has committed. Must be called
   // from the main thread.
-  void DidStartProvisionalLoad(bool is_main_frame);
+  void DidStartProvisionalLoad(bool is_outermost_main_frame);
 
   // Tells the scheduler that a provisional load has committed. The scheduler
   // may reset the task cost estimators and the UserModel. Must be called from
   // the main thread.
   void DidCommitProvisionalLoad(bool is_web_history_inert_commit,
                                 bool is_reload,
-                                bool is_main_frame);
+                                bool is_outermost_main_frame);
 
   // Note that the main's thread policy should be upto date to compute
   // the correct priority.

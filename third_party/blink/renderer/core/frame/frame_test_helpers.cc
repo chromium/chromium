@@ -44,6 +44,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
@@ -379,10 +380,12 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
     WebFrame* opener,
     TestWebFrameClient* web_frame_client,
     TestWebViewClient* web_view_client,
-    void (*update_settings_func)(WebSettings*)) {
+    void (*update_settings_func)(WebSettings*),
+    absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode) {
   Reset();
 
-  InitializeWebView(web_view_client, opener ? opener->View() : nullptr);
+  InitializeWebView(web_view_client, opener ? opener->View() : nullptr,
+                    fenced_frame_mode);
   if (update_settings_func)
     update_settings_func(web_view_->GetSettings());
 
@@ -393,7 +396,10 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
       web_view_, web_frame_client, nullptr, LocalFrameToken(),
       // Passing a null policy_container will create an empty, default policy
       // container.
-      /*policy_container=*/nullptr, opener);
+      /*policy_container=*/nullptr, opener,
+      /*name=*/WebString(),
+      fenced_frame_mode ? kFencedFrameForcedSandboxFlags
+                        : network::mojom::WebSandboxFlags::kNone);
   web_frame_client->Bind(frame, std::move(owned_web_frame_client));
 
   TestWebFrameWidget* frame_widget =
@@ -451,7 +457,7 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
     TestWebViewClient* web_view_client) {
   Reset();
 
-  InitializeWebView(web_view_client, nullptr);
+  InitializeWebView(web_view_client, nullptr, absl::nullopt);
 
   std::unique_ptr<TestWebRemoteFrameClient> owned_web_remote_frame_client;
   web_remote_frame_client = CreateDefaultClientIfNeeded(
@@ -614,8 +620,10 @@ void WebViewHelper::Resize(const gfx::Size& size) {
   GetWebView()->MainFrameWidget()->Resize(size);
 }
 
-void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
-                                      class WebView* opener) {
+void WebViewHelper::InitializeWebView(
+    TestWebViewClient* web_view_client,
+    class WebView* opener,
+    absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode) {
   test_web_view_client_ =
       CreateDefaultClientIfNeeded(web_view_client, owned_test_web_view_client_);
   web_view_ = To<WebViewImpl>(
@@ -623,7 +631,7 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
                       /*is_hidden=*/false,
                       /*is_prerendering=*/false,
                       /*is_inside_portal=*/false,
-                      /*fenced_frame_mode=*/absl::nullopt,
+                      /*fenced_frame_mode=*/fenced_frame_mode,
                       /*compositing_enabled=*/true,
                       /*widgets_never_composited=*/false,
                       /*opener=*/opener, mojo::NullAssociatedReceiver(),

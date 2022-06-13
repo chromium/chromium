@@ -81,6 +81,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
       BlameContext*,
+      bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override;
   void AudioStateChanged(bool is_audio_playing) override;
   bool IsAudioPlaying() const override;

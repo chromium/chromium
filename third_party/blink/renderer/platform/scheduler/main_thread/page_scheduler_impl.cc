@@ -370,9 +370,10 @@ void PageSchedulerImpl::RegisterFrameSchedulerImpl(
 std::unique_ptr<blink::FrameScheduler> PageSchedulerImpl::CreateFrameScheduler(
     FrameScheduler::Delegate* delegate,
     blink::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
   auto frame_scheduler = std::make_unique<FrameSchedulerImpl>(
-      this, delegate, blame_context, frame_type);
+      this, delegate, blame_context, is_in_embedded_frame_tree, frame_type);
   RegisterFrameSchedulerImpl(frame_scheduler.get());
   return frame_scheduler;
 }
@@ -512,6 +513,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameContentfulPaint() const {
   return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
                      [](const FrameSchedulerImpl* fs) {
                        return fs->IsWaitingForContentfulPaint() &&
+                              !fs->IsInEmbeddedFrameTree() &&
                               fs->GetFrameType() ==
                                   FrameScheduler::FrameType::kMainFrame;
                      });
@@ -521,6 +523,7 @@ bool PageSchedulerImpl::IsWaitingForMainFrameMeaningfulPaint() const {
   return std::any_of(frame_schedulers_.begin(), frame_schedulers_.end(),
                      [](const FrameSchedulerImpl* fs) {
                        return fs->IsWaitingForMeaningfulPaint() &&
+                              !fs->IsInEmbeddedFrameTree() &&
                               fs->GetFrameType() ==
                                   FrameScheduler::FrameType::kMainFrame;
                      });

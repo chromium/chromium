@@ -88,6 +88,10 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   virtual void SetIsAdFrame(bool is_ad_frame) = 0;
   virtual bool IsAdFrame() const = 0;
 
+  // Returns whether this frame scheduler is contained in an embedded frame
+  // tree.
+  virtual bool IsInEmbeddedFrameTree() const = 0;
+
   virtual void TraceUrlChange(const String&) = 0;
 
   // Keep track of the amount of time spent running tasks for the frame.
@@ -138,7 +142,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Tells the scheduler that a provisional load has started, the scheduler may
   // reset the task cost estimators and the UserModel. Must be called from the
   // main thread.
-  virtual void DidStartProvisionalLoad(bool is_main_frame) = 0;
+  virtual void DidStartProvisionalLoad() = 0;
 
   // Tells the scheduler that a provisional load has committed, the scheduler
   // may reset the task cost estimators and the UserModel. Must be called from

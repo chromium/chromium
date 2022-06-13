@@ -1963,10 +1963,11 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
       success && has_tasks;
 }
 
-void MainThreadSchedulerImpl::DidStartProvisionalLoad(bool is_main_frame) {
+void MainThreadSchedulerImpl::DidStartProvisionalLoad(
+    bool is_outermost_main_frame) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidStartProvisionalLoad");
-  if (is_main_frame) {
+  if (is_outermost_main_frame) {
     base::AutoLock lock(any_thread_lock_);
     ResetForNavigationLocked();
   }
@@ -1975,14 +1976,14 @@ void MainThreadSchedulerImpl::DidStartProvisionalLoad(bool is_main_frame) {
 void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
     bool is_web_history_inert_commit,
     bool is_reload,
-    bool is_main_frame) {
+    bool is_outermost_main_frame) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidCommitProvisionalLoad");
   main_thread_only().has_navigated = true;
 
   // If this either isn't a history inert commit or it's a reload then we must
   // reset the task cost estimators.
-  if (is_main_frame && (!is_web_history_inert_commit || is_reload)) {
+  if (is_outermost_main_frame && (!is_web_history_inert_commit || is_reload)) {
     RAILMode old_rail_mode;
     RAILMode new_rail_mode;
     {

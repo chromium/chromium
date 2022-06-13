@@ -65,9 +65,10 @@ std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     PageSchedulerImpl* page_scheduler,
     FrameScheduler::Delegate* delegate,
     blink::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
-  auto frame_scheduler =
-      page_scheduler->CreateFrameScheduler(delegate, blame_context, frame_type);
+  auto frame_scheduler = page_scheduler->CreateFrameScheduler(
+      delegate, blame_context, is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -117,6 +118,7 @@ class PageSchedulerImplTest : public testing::Test {
                             *agent_group_scheduler_);
     frame_scheduler_ =
         CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                             /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe);
   }
 
@@ -268,19 +270,23 @@ class PageSchedulerImplTest : public testing::Test {
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersBefore) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
 }
 
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersAfter) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
   page_scheduler_.reset();
 }
 
@@ -368,6 +374,7 @@ TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
       CreateFrameScheduler(page_scheduler2.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   page_scheduler_->SetPageVisible(true);
@@ -657,6 +664,7 @@ TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   ThrottleableTaskQueueForScheduler(frame_scheduler.get())
@@ -688,6 +696,7 @@ TEST_F(PageSchedulerImplTest, DeleteFrameSchedulers_InTask) {
   for (int i = 0; i < 10; i++) {
     FrameSchedulerImpl* frame_scheduler =
         CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                             /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe)
             .release();
     ThrottleableTaskQueueForScheduler(frame_scheduler)
@@ -709,6 +718,7 @@ TEST_F(PageSchedulerImplTest, DeleteThrottledQueue_InTask) {
 
   FrameSchedulerImpl* frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe)
           .release();
   scoped_refptr<MainThreadTaskQueue> timer_task_queue =
@@ -763,6 +773,7 @@ TEST_F(PageSchedulerImplTest,
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   {
@@ -829,6 +840,7 @@ TEST_F(PageSchedulerImplTest,
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   // Pauses and unpauses virtual time, thereby advancing virtual time by an
@@ -863,6 +875,7 @@ TEST_F(PageSchedulerImplTest,
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   WebScopedVirtualTimePauser virtual_time_pauser1 =
@@ -911,6 +924,7 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
   vtc->EnableVirtualTime(base::Time());
@@ -1131,6 +1145,7 @@ TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
   Vector<base::TimeTicks> run_times;
   frame_scheduler_ =
       CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);
   EXPECT_FALSE(page_scheduler_->IsCPUTimeThrottled());
@@ -1190,9 +1205,11 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler1 =
       CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
       CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   page_scheduler->SetPageVisible(false);

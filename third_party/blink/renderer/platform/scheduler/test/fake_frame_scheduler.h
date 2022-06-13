@@ -60,6 +60,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
                            /*parent_page_scheduler=*/nullptr,
                            /*delegate=*/delegate,
                            /*blame_context=*/nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            /*frame_type=*/frame_type),
         page_scheduler_(page_scheduler),
         is_page_visible_(is_page_visible),
@@ -155,7 +156,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override {
     return WebScopedVirtualTimePauser();
   }
-  void DidStartProvisionalLoad(bool is_main_frame) override {}
+  void DidStartProvisionalLoad() override {}
   void DidCommitProvisionalLoad(
       bool is_web_history_inert_commit,
       FrameScheduler::NavigationType navigation_type) override {}

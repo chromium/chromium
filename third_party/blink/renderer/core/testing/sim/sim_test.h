@@ -31,6 +31,9 @@ class SimTest : public testing::Test {
   // Create a remote frame as the main frame and create a local child frame.
   void InitializeRemote();
 
+  // Create a WebView with a main frame being a fenced frame root.
+  void InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode);
+
   // Load URL in the local frame root.
   void LoadURL(const String& url);
 

@@ -103,11 +103,13 @@ FrameSchedulerImpl::FrameSchedulerImpl(
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
     base::trace_event::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : FrameSchedulerImpl(parent_page_scheduler->GetMainThreadScheduler(),
                          parent_page_scheduler,
                          delegate,
                          blame_context,
+                         is_in_embedded_frame_tree,
                          frame_type) {}
 
 FrameSchedulerImpl::FrameSchedulerImpl(
@@ -115,9 +117,10 @@ FrameSchedulerImpl::FrameSchedulerImpl(
     PageSchedulerImpl* parent_page_scheduler,
     FrameScheduler::Delegate* delegate,
     base::trace_event::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type)
     : frame_type_(frame_type),
-      is_ad_frame_(false),
+      is_in_embedded_frame_tree_(is_in_embedded_frame_tree),
       main_thread_scheduler_(main_thread_scheduler),
       parent_page_scheduler_(parent_page_scheduler),
       delegate_(delegate),
@@ -202,6 +205,7 @@ FrameSchedulerImpl::FrameSchedulerImpl()
                          /*parent_page_scheduler=*/nullptr,
                          /*delegate=*/nullptr,
                          /*blame_context=*/nullptr,
+                         /*is_in_embedded_frame_tree=*/false,
                          FrameType::kSubframe) {}
 
 namespace {
@@ -340,6 +344,10 @@ void FrameSchedulerImpl::SetIsAdFrame(bool is_ad_frame) {
 
 bool FrameSchedulerImpl::IsAdFrame() const {
   return is_ad_frame_;
+}
+
+bool FrameSchedulerImpl::IsInEmbeddedFrameTree() const {
+  return is_in_embedded_frame_tree_;
 }
 
 bool FrameSchedulerImpl::IsCrossOriginToMainFrame() const {
@@ -624,14 +632,17 @@ blink::PageScheduler* FrameSchedulerImpl::GetPageScheduler() const {
   return parent_page_scheduler_;
 }
 
-void FrameSchedulerImpl::DidStartProvisionalLoad(bool is_main_frame) {
-  main_thread_scheduler_->DidStartProvisionalLoad(is_main_frame);
+void FrameSchedulerImpl::DidStartProvisionalLoad() {
+  main_thread_scheduler_->DidStartProvisionalLoad(
+      frame_type_ == FrameScheduler::FrameType::kMainFrame &&
+      !is_in_embedded_frame_tree_);
 }
 
 void FrameSchedulerImpl::DidCommitProvisionalLoad(
     bool is_web_history_inert_commit,
     NavigationType navigation_type) {
-  bool is_main_frame = GetFrameType() == FrameType::kMainFrame;
+  bool is_outermost_main_frame =
+      GetFrameType() == FrameType::kMainFrame && !is_in_embedded_frame_tree_;
   bool is_same_document = navigation_type == NavigationType::kSameDocument;
 
   if (!is_same_document) {
@@ -655,13 +666,13 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
     }
   }
 
-  if (is_main_frame && !is_same_document) {
+  if (is_outermost_main_frame && !is_same_document) {
     task_time_ = base::TimeDelta();
   }
 
   main_thread_scheduler_->DidCommitProvisionalLoad(
       is_web_history_inert_commit, navigation_type == NavigationType::kReload,
-      is_main_frame);
+      is_outermost_main_frame);
   if (!is_same_document)
     ResetForNavigation();
 }
@@ -895,8 +906,10 @@ void FrameSchedulerImpl::OnDomContentLoaded() {
 void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   waiting_for_meaningful_paint_ = false;
 
-  if (GetFrameType() != FrameScheduler::FrameType::kMainFrame)
+  if (GetFrameType() != FrameScheduler::FrameType::kMainFrame ||
+      is_in_embedded_frame_tree_) {
     return;
+  }
 
   main_thread_scheduler_->OnMainFramePaint();
 }

@@ -346,7 +346,9 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebFrame* opener,
       TestWebFrameClient* = nullptr,
       TestWebViewClient* = nullptr,
-      void (*update_settings_func)(WebSettings*) = nullptr);
+      void (*update_settings_func)(WebSettings*) = nullptr,
+      absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode =
+          absl::nullopt);
 
   // Same as InitializeWithOpener(), but always sets the opener to null.
   WebViewImpl* Initialize(TestWebFrameClient* = nullptr,
@@ -453,8 +455,10 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   }
 
  private:
-  void InitializeWebView(TestWebViewClient*,
-                         class WebView* opener);
+  void InitializeWebView(
+      TestWebViewClient*,
+      class WebView* opener,
+      absl::optional<mojom::blink::FencedFrameMode> fenced_frame_mode);
   void CheckFrameIsAssociatedWithWebView(WebFrame* frame);
 
   bool viewport_enabled_ = false;

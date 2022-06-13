@@ -53,6 +53,7 @@ class DummyFrameScheduler : public FrameScheduler {
   bool IsCrossOriginToMainFrame() const override { return false; }
   void SetIsAdFrame(bool is_ad_frame) override {}
   bool IsAdFrame() const override { return false; }
+  bool IsInEmbeddedFrameTree() const override { return false; }
   void TraceUrlChange(const String&) override {}
   void AddTaskTime(base::TimeDelta) override {}
   FrameType GetFrameType() const override { return FrameType::kMainFrame; }
@@ -61,7 +62,7 @@ class DummyFrameScheduler : public FrameScheduler {
       WebScopedVirtualTimePauser::VirtualTaskDuration) override {
     return WebScopedVirtualTimePauser();
   }
-  void DidStartProvisionalLoad(bool is_main_frame) override {}
+  void DidStartProvisionalLoad() override {}
   void DidCommitProvisionalLoad(bool, FrameScheduler::NavigationType) override {
   }
   void OnFirstContentfulPaintInMainFrame() override {}
@@ -122,6 +123,7 @@ class DummyPageScheduler : public PageScheduler {
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
       BlameContext*,
+      bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override {
     return CreateDummyFrameScheduler();
   }

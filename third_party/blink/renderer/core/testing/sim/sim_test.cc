@@ -99,6 +99,21 @@ void SimTest::InitializeRemote() {
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
 }
 
+void SimTest::InitializeFencedFrameRoot(mojom::blink::FencedFrameMode mode) {
+  web_view_helper_->InitializeWithOpener(/*opener=*/nullptr,
+                                         /*frame_client=*/nullptr,
+                                         /*view_client=*/nullptr,
+                                         /*update_settings_func=*/nullptr,
+                                         mode);
+  compositor_->SetWebView(WebView(), *web_view_client_);
+  page_->SetPage(WebView().GetPage());
+  web_frame_client_ =
+      std::make_unique<frame_test_helpers::TestWebFrameClient>();
+  local_frame_root_ = WebView().MainFrameImpl();
+  compositor_->SetLayerTreeHost(
+      local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
+}
+
 void SimTest::LoadURL(const String& url_string) {
   KURL url(url_string);
   frame_test_helpers::LoadFrameDontWait(local_frame_root_.Get(), url);
