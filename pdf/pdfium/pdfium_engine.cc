@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -2498,7 +2499,7 @@ absl::optional<PDFEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
     return {};
 
   int page = FPDFDest_GetDestPageIndex(doc(), dest);
-  if (page < 0)
+  if (!PageIndexInBounds(page))
     return {};
 
   PDFEngine::NamedDestination result;
