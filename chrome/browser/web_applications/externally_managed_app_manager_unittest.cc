@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
@@ -268,6 +269,54 @@ TEST_P(ExternallyManagedAppManagerTest, SynchronizeInstalledApps) {
   Sync(std::vector<GURL>{});
   Expect(0, 1, std::vector<GURL>{});
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+using ExternallyManagedAppManagerTestAndroidSMS =
+    ExternallyManagedAppManagerTest;
+// This test verifies that AndroidSMS is not uninstalled during the Syncing
+// process.
+TEST_P(ExternallyManagedAppManagerTestAndroidSMS,
+       SynchronizeAppsAndroidSMSTest) {
+  GURL android_sms_url1(
+      "https://messages-web.sandbox.google.com/web/authentication");
+  GURL android_sms_url2("https://messages.google.com/web/authentication");
+  GURL extra_url("https://extra.com/");
+
+  // Install all URLs first.
+  Sync(std::vector<GURL>{android_sms_url1, android_sms_url2, extra_url});
+  Expect(/*deduped_install_count=*/3, /*deduped_uninstall_count=*/0,
+         std::vector<GURL>{extra_url, android_sms_url1, android_sms_url2});
+
+  // Assume that extra_url is the only URL desired.
+  // install_count = 0 as no new installs happen.
+  // uninstall_count = 0 as android sms URLs does not get uninstalled.
+  // Both android SMS URLs remain.
+  Sync(std::vector<GURL>{extra_url});
+  Expect(/*deduped_install_count=*/0, /*deduped_uninstall_count=*/0,
+         std::vector<GURL>{extra_url, android_sms_url1, android_sms_url2});
+
+  // Assume that android_sms_url1 is only required.
+  // install_count = 0 as no new installs happen.
+  // uninstall_count = 1 as extra.com gets uninstalled.
+  // Both android SMS URLs remain.
+  Sync(std::vector<GURL>{android_sms_url1});
+  Expect(/*deduped_install_count=*/0, /*deduped_uninstall_count=*/1,
+         std::vector<GURL>{android_sms_url1, android_sms_url2});
+
+  // Assume that no URL is required.
+  // install_count = 0 as no new installs happen.
+  // uninstall_count = 0 as android sms URLs does not get uninstalled.
+  // Both android SMS URLs remain.
+  Sync(std::vector<GURL>{});
+  Expect(/*deduped_install_count=*/0, /*deduped_uninstall_count=*/0,
+         std::vector<GURL>{android_sms_url1, android_sms_url2});
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternallyManagedAppManagerTestAndroidSMS,
+                         ::testing::Values(false));
+
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExternallyManagedAppManagerTest,
