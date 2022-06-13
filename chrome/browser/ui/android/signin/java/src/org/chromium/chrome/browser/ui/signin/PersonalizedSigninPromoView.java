@@ -37,6 +37,7 @@ public class PersonalizedSigninPromoView extends LinearLayout {
         super.onFinishInflate();
 
         mIllustration = findViewById(R.id.sync_promo_illustration);
+        mImage = findViewById(R.id.signin_promo_image);
         mDismissButton = findViewById(R.id.signin_promo_close_button);
         mPrimaryButton = findViewById(R.id.signin_promo_signin_button);
         mSecondaryButton = findViewById(R.id.signin_promo_choose_account_button);
@@ -53,15 +54,6 @@ public class PersonalizedSigninPromoView extends LinearLayout {
             mDescription = findViewById(R.id.signin_promo_description);
             findViewById(R.id.new_signin_promo_description).setVisibility(View.GONE);
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION)) {
-            // TODO(crbug.com/1323197): remove new_signin_promo_image or signin_promo_image, if the
-            // feature enabled or disabled by default.
-            mImage = findViewById(R.id.new_signin_promo_image);
-            mImage.setVisibility(View.VISIBLE);
-            findViewById(R.id.signin_promo_image).setVisibility(View.GONE);
-            return;
-        }
-        mImage = findViewById(R.id.signin_promo_image);
     }
 
     /**
