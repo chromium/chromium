@@ -171,13 +171,37 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedMissingClientSecurityState) {
       kCheckResultHistogramName, Result::kAllowedMissingClientSecurityState, 1);
 }
 
+TEST(PrivateNetworkAccessCheckerTest,
+     CheckAllowedMissingClientSecurityStateInconsistentIpAddressSpace) {
+  base::HistogramTester histogram_tester;
+
+  mojom::URLLoaderFactoryParams factory_params;
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &factory_params,
+                                      mojom::kURLLoadOptionNone);
+
+  EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
+
+  // Even though this is inconsistent with the previous IP address space, the
+  // inconsistency is ignored because of the missing client security state.
+  //
+  // This does not risk triggering https://crbug.com/1279376, because no check
+  // with this checker will ever return `kBlocked*`.
+  EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
+            Result::kAllowedMissingClientSecurityState);
+}
+
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedNoLessPublic) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParamsPtr factory_params =
-      FactoryParamsWithClientAddressSpace(mojom::IPAddressSpace::kPrivate);
+  mojom::URLLoaderFactoryParams factory_params;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPrivate;
+  factory_params.client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
 
-  PrivateNetworkAccessChecker checker(ResourceRequest(), factory_params.get(),
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &factory_params,
                                       mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
@@ -205,6 +229,32 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyAllow) {
 
   histogram_tester.ExpectUniqueSample(kCheckResultHistogramName,
                                       Result::kAllowedByPolicyAllow, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     CheckAllowedByPolicyAllowInconsistentIpAddressSpace) {
+  base::HistogramTester histogram_tester;
+
+  auto factory_params = mojom::URLLoaderFactoryParams::New();
+  factory_params->client_security_state = mojom::ClientSecurityState::New();
+  factory_params->client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPublic;
+  factory_params->client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+
+  PrivateNetworkAccessChecker checker(ResourceRequest(), factory_params.get(),
+                                      mojom::kURLLoadOptionNone);
+
+  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
+            Result::kAllowedByPolicyAllow);
+
+  // Even though this is inconsistent with the previous IP address space, the
+  // inconsistency is ignored because of the `kAllow` policy.
+  //
+  // This does not risk triggering https://crbug.com/1279376, because no check
+  // with this checker will ever return `kBlocked*`.
+  EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
+            Result::kAllowedByPolicyAllow);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyWarn) {
@@ -291,6 +341,11 @@ TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByTargetIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
   mojom::URLLoaderFactoryParams factory_params;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPublic;
+  factory_params.client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kPublic;
@@ -332,6 +387,11 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByTargetIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
   mojom::URLLoaderFactoryParams factory_params;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPublic;
+  factory_params.client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
@@ -372,12 +432,17 @@ TEST(PrivateNetworkAccessCheckerTest,
 TEST(PrivateNetworkAccessCheckerTest,
      CheckBlockedByInconsistentIpAddressSpace) {
   mojom::URLLoaderFactoryParams factory_params;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPrivate;
+  factory_params.client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   PrivateNetworkAccessChecker checker(ResourceRequest(), &factory_params,
                                       mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
-            Result::kAllowedMissingClientSecurityState);
+            Result::kAllowedNoLessPublic);
 
   base::HistogramTester histogram_tester;
 
@@ -445,6 +510,11 @@ TEST(PrivateNetworkAccessCheckerTest, CachedTransportAddressSpace) {
 
 TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
   mojom::URLLoaderFactoryParams factory_params;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->ip_address_space =
+      mojom::IPAddressSpace::kPrivate;
+  factory_params.client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kPublic;
@@ -459,8 +529,8 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
 
   // This succeeds even though the IP address space does not match the target
   // passed at construction time, thanks to `ResetForRedirect()`.
-  EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
-            Result::kAllowedMissingClientSecurityState);
+  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
+            Result::kAllowedNoLessPublic);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {

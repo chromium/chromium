@@ -132,6 +132,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   //
   // Copied from `ResourceRequest::target_ip_address_space`.
   //
+  // Invariant: always `kUnknown` if `client_security_state_` is nullptr, or
+  // if `client_security_state_->private_network_request_policy` is `kAllow`.
+  //
   // https://wicg.github.io/private-network-access/#request-target-ip-address-space
   mojom::IPAddressSpace target_address_space_;
 

@@ -61,7 +61,17 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
                                     request_client_security_state_.get())),
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
-      target_address_space_(request.target_ip_address_space) {}
+      target_address_space_(request.target_ip_address_space) {
+  if (!client_security_state_ ||
+      client_security_state_->private_network_request_policy ==
+          mojom::PrivateNetworkRequestPolicy::kAllow) {
+    // No client security state means PNA is implicitly disabled. A policy of
+    // `kAllow` means PNA is explicitly disabled. In both cases, the target IP
+    // address space should not be set on the request.
+    DCHECK_EQ(target_address_space_, mojom::IPAddressSpace::kUnknown)
+        << request.url;
+  }
+}
 
 PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() {
   base::UmaHistogramBoolean(
@@ -141,45 +151,58 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kBlockedByLoadOption;
   }
 
+  // `response_address_space_` behaves similarly to `target_address_space_`,
+  // except `kUnknown` is also subject to checks (instead
+  // `response_address_space_ == absl::nullopt` indicates that no check
+  // should be performed).
+  bool is_inconsistent_address_space =
+      response_address_space_.has_value() &&
+      resource_address_space != *response_address_space_;
+
+  // A single response may connect to two different IP address spaces without
+  // a redirect in between. This can happen due to split range requests, where
+  // a single `URLRequest` issues multiple network transactions, or when we
+  // create a new connection after auth credentials have been provided, etc.
+  //
+  // We record this even if there is no client security state or the policy is
+  // `kAllow` in order to estimate the compatibility risk of this check without
+  // having to enable PNA.
+  has_connected_to_mismatched_address_spaces_ |= is_inconsistent_address_space;
+
+  if (!client_security_state_) {
+    return Result::kAllowedMissingClientSecurityState;
+  }
+
+  mojom::PrivateNetworkRequestPolicy policy =
+      client_security_state_->private_network_request_policy;
+
+  if (policy == mojom::PrivateNetworkRequestPolicy::kAllow) {
+    return Result::kAllowedByPolicyAllow;
+  }
+
   if (target_address_space_ != mojom::IPAddressSpace::kUnknown) {
     if (resource_address_space == target_address_space_) {
       return Result::kAllowedByTargetIpAddressSpace;
     }
 
-    if (IsPolicyPreflightWarn()) {
+    if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
       return Result::kAllowedByPolicyPreflightWarn;
     }
 
     return Result::kBlockedByTargetIpAddressSpace;
   }
 
-  if (response_address_space_.has_value() &&
-      resource_address_space != *response_address_space_) {
-    // A single response may connect to two different IP address spaces without
-    // a redirect in between. This can happen due to split range requests, where
-    // a single `URLRequest` issues multiple network transactions, or when we
-    // create a new connection after auth credentials have been provided, etc.
-    has_connected_to_mismatched_address_spaces_ = true;
-
-    // `response_address_space_` behaves similarly to `target_address_space_`,
-    // except `kUnknown` is also subject to checks (instead
-    // `response_address_space_ == absl::nullopt` indicates that no check
-    // should be performed).
-    //
+  if (is_inconsistent_address_space) {
     // If the policy is `kPreflightWarn`, the request should not fail just
     // because of this check - PNA checks are only experimentally turned on
     // for this request. Further checks should not be run, otherwise we might
     // return `kBlockedByPolicyPreflightWarn` and trigger a new preflight to be
     // sent, thus causing https://crbug.com/1279376 all over again.
-    if (IsPolicyPreflightWarn()) {
+    if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
       return Result::kAllowedByPolicyPreflightWarn;
     }
 
     return Result::kBlockedByInconsistentIpAddressSpace;
-  }
-
-  if (!client_security_state_) {
-    return Result::kAllowedMissingClientSecurityState;
   }
 
   if (!IsLessPublicAddressSpace(resource_address_space,
@@ -189,8 +212,9 @@ Result PrivateNetworkAccessChecker::CheckInternal(
 
   // We use a switch statement to force this code to be amended when values are
   // added to the `PrivateNetworkRequestPolicy` enum.
-  switch (client_security_state_->private_network_request_policy) {
+  switch (policy) {
     case Policy::kAllow:
+      NOTREACHED();  // Should have been handled by the if statement above.
       return Result::kAllowedByPolicyAllow;
     case Policy::kWarn:
       return Result::kAllowedByPolicyWarn;

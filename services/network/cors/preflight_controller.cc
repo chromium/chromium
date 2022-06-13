@@ -131,6 +131,22 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
         header_names::kAccessControlRequestPrivateNetwork, "true");
   }
 
+  // Copy the client security state as well, if set in the request's trusted
+  // params. Note that the we clone the pointer unconditionally if the original
+  // request has trusted params, but that the cloned pointer may be null. It is
+  // unclear whether it is safe to copy all the trusted params, so we only copy
+  // what we need for PNA.
+  //
+  // This is useful when the client security state is not specified through the
+  // URL loader factory params, typically when a single URL loader factory is
+  // shared by a few different client contexts. This is the case for
+  // navigations and interest group auctions.
+  if (request.trusted_params.has_value()) {
+    preflight_request->trusted_params = ResourceRequest::TrustedParams();
+    preflight_request->trusted_params->client_security_state =
+        request.trusted_params->client_security_state.Clone();
+  }
+
   DCHECK(request.request_initiator);
   preflight_request->request_initiator = request.request_initiator;
   preflight_request->headers.SetHeader(
