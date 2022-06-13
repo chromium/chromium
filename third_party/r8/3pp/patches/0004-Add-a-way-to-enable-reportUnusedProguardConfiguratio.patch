@@ -1,7 +1,7 @@
-From bda472e3d7cb56d1b35e7ac25d1541a3789f747e Mon Sep 17 00:00:00 2001
+From f82443efc9e9a724f8072b8adb13f71ecf3429bf Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Thu, 26 May 2022 13:35:04 -0400
-Subject: [PATCH 4/5] Add a way to enable
+Subject: [PATCH 4/4] Add a way to enable
  reportUnusedProguardConfigurationRules
 
 Bug: 1303951
@@ -10,10 +10,10 @@ Bug: 1303951
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index f3b82e4db..1d7f54c88 100644
+index ee15be255a..01a601c12f 100644
 --- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
 +++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -1827,7 +1827,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -1832,7 +1832,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
      public boolean allowInvokeErrors = false;
      public boolean allowUnnecessaryDontWarnWildcards = true;
      public boolean allowUnusedDontWarnRules = true;
@@ -23,5 +23,5 @@ index f3b82e4db..1d7f54c88 100644
      public boolean alwaysUsePessimisticRegisterAllocation = false;
      public boolean enableCheckCastAndInstanceOfRemoval = true;
 -- 
-2.36.1.255.ge46751e96f-goog
+2.36.1.476.g0c4daa206d-goog
 

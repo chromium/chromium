@@ -1,24 +1,24 @@
-From fd3ddc64e97b0c2514ffd05ca60ecc51a6174d51 Mon Sep 17 00:00:00 2001
-From: Mohamed Heikal <mheikal@google.com>
-Date: Wed, 26 May 2021 19:03:39 -0400
-Subject: [PATCH 1/5] Add disassemble command to keeps
+From 9097a5d26389b27d88ddf256f7c0179da7e847c8 Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@chromium.org>
+Date: Mon, 13 Jun 2022 09:27:22 -0400
+Subject: [PATCH 1/4] Add disassemble command to keeps
 
 ---
  src/main/keep.txt | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/src/main/keep.txt b/src/main/keep.txt
-index e37692451..cdf5cdf4c 100644
+index deb8e6d034..2e7a564430 100644
 --- a/src/main/keep.txt
 +++ b/src/main/keep.txt
-@@ -11,6 +11,7 @@
+@@ -9,6 +9,7 @@
+ # Keep all things that can be reached from the retrace api and keep the annotation
+ -keep @com.android.tools.r8.KeepForRetraceApi class * { public *; }
  
++-keep public class com.android.tools.r8.Disassemble { public static void main(java.lang.String[]); }
  -keep public class com.android.tools.r8.D8 { public static void main(java.lang.String[]); }
  -keep public class com.android.tools.r8.R8 { public static void main(java.lang.String[]); }
-+-keep public class com.android.tools.r8.Disassemble { public static void main(java.lang.String[]); }
  -keep public class com.android.tools.r8.ExtractMarker { public static void main(java.lang.String[]); }
- -keep public class com.android.tools.r8.dexsplitter.DexSplitter { public static void main(java.lang.String[]); }
- 
 -- 
-2.36.1.255.ge46751e96f-goog
+2.36.1.476.g0c4daa206d-goog
 

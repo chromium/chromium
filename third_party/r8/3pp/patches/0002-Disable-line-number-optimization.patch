@@ -1,7 +1,7 @@
-From 87ed7281fb664b3e46aecfe55c54031a38ccc9f3 Mon Sep 17 00:00:00 2001
+From d9c11b79d8963d74c240a44d905c4f0a0ee90e99 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Thu, 20 Jan 2022 16:29:40 -0500
-Subject: [PATCH 2/5] Disable line number optimization
+Subject: [PATCH 2/4] Disable line number optimization
 
 ---
  src/main/java/com/android/tools/r8/D8Command.java | 3 +++
@@ -9,10 +9,10 @@ Subject: [PATCH 2/5] Disable line number optimization
  2 files changed, 5 insertions(+)
 
 diff --git a/src/main/java/com/android/tools/r8/D8Command.java b/src/main/java/com/android/tools/r8/D8Command.java
-index 149507173..00c217b03 100644
+index 203b1d6032..e12b0c7aeb 100644
 --- a/src/main/java/com/android/tools/r8/D8Command.java
 +++ b/src/main/java/com/android/tools/r8/D8Command.java
-@@ -657,6 +657,9 @@ public final class D8Command extends BaseCompilerCommand {
+@@ -662,6 +662,9 @@ public final class D8Command extends BaseCompilerCommand {
      internal.setDumpInputFlags(getDumpInputFlags(), skipDump);
      internal.dumpOptions = dumpOptions();
  
@@ -23,10 +23,10 @@ index 149507173..00c217b03 100644
    }
  
 diff --git a/src/main/java/com/android/tools/r8/R8Command.java b/src/main/java/com/android/tools/r8/R8Command.java
-index 4e7ca32ab..40bacabea 100644
+index 309a475a42..7eb7ec0142 100644
 --- a/src/main/java/com/android/tools/r8/R8Command.java
 +++ b/src/main/java/com/android/tools/r8/R8Command.java
-@@ -966,6 +966,8 @@ public final class R8Command extends BaseCompilerCommand {
+@@ -982,6 +982,8 @@ public final class R8Command extends BaseCompilerCommand {
      internal.mainDexKeptGraphConsumer = mainDexKeptGraphConsumer;
  
      internal.dataResourceConsumer = internal.programConsumer.getDataResourceConsumer();
@@ -36,5 +36,5 @@ index 4e7ca32ab..40bacabea 100644
      internal.featureSplitConfiguration = featureSplitConfiguration;
  
 -- 
-2.36.1.255.ge46751e96f-goog
+2.36.1.476.g0c4daa206d-goog
 
