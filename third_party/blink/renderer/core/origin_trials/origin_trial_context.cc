@@ -581,78 +581,6 @@ OriginTrialStatus OriginTrialContext::EnableTrialFromName(
                             : OriginTrialStatus::kOSNotSupported;
 }
 
-void OriginTrialContext::ValidateTokenResult(
-    bool is_origin_secure,
-    const Vector<OriginInfo>* script_origins,
-    TrialTokenResult& token_result) {
-  DCHECK_EQ(token_result.Status(), OriginTrialTokenStatus::kSuccess);
-
-  const TrialToken& parsed_token = *token_result.ParsedToken();
-
-  if (!origin_trials::IsTrialValid(parsed_token.feature_name())) {
-    token_result.SetStatus(OriginTrialTokenStatus::kUnknownTrial);
-    return;
-  }
-
-  if (parsed_token.is_third_party() &&
-      !origin_trials::IsTrialEnabledForThirdPartyOrigins(
-          parsed_token.feature_name())) {
-    DVLOG(1) << "ValidateTokenResult: feature disabled for third party trial";
-    token_result.SetStatus(OriginTrialTokenStatus::kFeatureDisabled);
-    return;
-  }
-
-  // Origin trials are only enabled for secure origins. The only exception
-  // is for deprecation trials. For those, the secure origin check can be
-  // skipped.
-  if (origin_trials::IsTrialEnabledForInsecureContext(
-          parsed_token.feature_name())) {
-    return;
-  }
-
-  bool is_secure = is_origin_secure;
-  if (parsed_token.is_third_party()) {
-    // For third-party tokens, both the current origin and the script origin
-    // must be secure. Due to subdomain matching, the token origin might not
-    // be an exact match for one of the provided script origins, and the result
-    // doesn't indicate which specific origin was matched. This means it's not
-    // a direct lookup to find the appropriate script origin. To avoid re-doing
-    // all the origin comparisons, there are short cuts that depend on how many
-    // script origins were provided. There must be at least one, or the third
-    // party token would not be validated successfully.
-    DCHECK(script_origins);
-    if (script_origins->size() == 1) {
-      // Only one script origin, it must be the origin used for validation.
-      is_secure &= script_origins->at(0).is_secure;
-    } else {
-      // Match the origin in the token to one of the multiple script origins, if
-      // necessary. If all the provided origins are secure, then it doesn't
-      // matter which one matched. Only insecure origins need to be matched.
-      bool is_script_origin_secure = true;
-      for (const OriginInfo& script_origin_info : *script_origins) {
-        if (script_origin_info.is_secure) {
-          continue;
-        }
-        // Re-use the IsValid() check, as it contains the subdomain matching
-        // logic. The token validation takes the first valid match, so can
-        // assume that success means it was the origin used.
-        if (parsed_token.IsValid(script_origin_info.origin->ToUrlOrigin(),
-                                 base::Time::Now()) ==
-            OriginTrialTokenStatus::kSuccess) {
-          is_script_origin_secure = false;
-          break;
-        }
-      }
-      is_secure &= is_script_origin_secure;
-    }
-  }
-
-  if (!is_secure) {
-    DVLOG(1) << "ValidateTokenResult: not secure";
-    token_result.SetStatus(OriginTrialTokenStatus::kInsecure);
-  }
-}
-
 bool OriginTrialContext::EnableTrialFromToken(const String& token,
                                               const OriginInfo origin_info) {
   return EnableTrialFromToken(token, origin_info, nullptr);
@@ -665,28 +593,33 @@ bool OriginTrialContext::EnableTrialFromToken(
   DCHECK(!token.IsEmpty());
   OriginTrialStatus trial_status = OriginTrialStatus::kValidTokenNotProvided;
   StringUTF8Adaptor token_string(token);
-  std::vector<url::Origin> script_url_origins;
+  // TODO(https://crbug.com/1153336): Remove explicit validator.
+  // Since |blink::SecurityOrigin::IsPotentiallyTrustworthy| is the source of
+  // security information in this context, use that explicitly, instead of
+  // relying on the default in |TrialTokenValidator|
+  Vector<TrialTokenValidator::OriginInfo> script_url_origins;
   if (script_origins) {
     for (const OriginInfo& script_origin_info : *script_origins) {
-      script_url_origins.push_back(script_origin_info.origin->ToUrlOrigin());
+      script_url_origins.emplace_back(script_origin_info.origin->ToUrlOrigin(),
+                                      script_origin_info.is_secure);
     }
   }
-  TrialTokenResult token_result = trial_token_validator_->ValidateToken(
-      token_string.AsStringPiece(), origin_info.origin->ToUrlOrigin(),
-      script_url_origins, base::Time::Now());
+
+  TrialTokenResult token_result =
+      trial_token_validator_->ValidateTokenAndTrialWithOriginInfo(
+          token_string.AsStringPiece(),
+          TrialTokenValidator::OriginInfo(origin_info.origin->ToUrlOrigin(),
+                                          origin_info.is_secure),
+          script_url_origins, base::Time::Now());
   DVLOG(1) << "EnableTrialFromToken: token_result = " << token_result.Status()
            << ", token = " << token;
 
   if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
-    ValidateTokenResult(origin_info.is_secure, script_origins, token_result);
-
-    if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
-      String trial_name =
-          String::FromUTF8(token_result.ParsedToken()->feature_name().data(),
-                           token_result.ParsedToken()->feature_name().size());
-      trial_status = EnableTrialFromName(
-          trial_name, token_result.ParsedToken()->expiry_time());
-    }
+    String trial_name =
+        String::FromUTF8(token_result.ParsedToken()->feature_name().data(),
+                         token_result.ParsedToken()->feature_name().size());
+    trial_status = EnableTrialFromName(
+        trial_name, token_result.ParsedToken()->expiry_time());
   }
 
   RecordTokenValidationResultHistogram(token_result.Status());
@@ -763,5 +696,4 @@ bool OriginTrialContext::IsSecureContext() {
 OriginTrialContext::OriginInfo OriginTrialContext::GetCurrentOriginInfo() {
   return {.origin = GetSecurityOrigin(), .is_secure = IsSecureContext()};
 }
-
 }  // namespace blink

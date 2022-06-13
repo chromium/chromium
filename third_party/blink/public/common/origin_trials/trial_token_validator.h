@@ -36,12 +36,61 @@ constexpr base::TimeDelta kExpiryGracePeriod = base::Days(30);
 // should be enabled or not for a specific document.
 class BLINK_COMMON_EXPORT TrialTokenValidator {
  public:
+  // Wrapper for url::Origin with explicit information about the security
+  // status of the origin.
+  // This should rarely be constructed by calling code.
+  // See ValidateTokenAndTrialWithOriginInfo for more info.
+  struct BLINK_COMMON_EXPORT OriginInfo {
+    url::Origin origin;
+    bool is_secure;
+
+    explicit OriginInfo(const url::Origin& origin);
+    OriginInfo(const url::Origin& origin, bool is_secure);
+
+    // Movable & Copyable
+    OriginInfo(const OriginInfo&) = default;
+    OriginInfo(OriginInfo&&) = default;
+    OriginInfo& operator=(const OriginInfo&) = default;
+    OriginInfo& operator=(OriginInfo&&) = default;
+  };
+
   TrialTokenValidator();
   virtual ~TrialTokenValidator();
 
   using FeatureToTokensMap =
       base::flat_map<std::string /* feature_name */,
                      std::vector<std::string /* token */>>;
+
+  // Convenience function for non-third-party tokens.
+  virtual TrialTokenResult ValidateTokenAndTrial(base::StringPiece token,
+                                                 const url::Origin& origin,
+                                                 base::Time current_time) const;
+
+  // Validates a trial token as |ValidateToken|. If the token itself is valid,
+  // it is then validated against the trial configurations in
+  // runtime_enabled_features.json5 to ensure that
+  // * The trial exists
+  // * If the token is third-party, that the trial allows third-party
+  // * If the trial does not allow insecure origins, |origin| is checked to
+  //   confirm it is secure, and if the token is a third_party token, the
+  //   |third_party_origins| are checked to ensure the token is validated
+  //   against a secure origin.
+  virtual TrialTokenResult ValidateTokenAndTrial(
+      base::StringPiece token,
+      const url::Origin& origin,
+      base::span<const url::Origin> third_party_origins,
+      base::Time current_time) const;
+
+  // Dedicated version of |ValidateTokenAndTrial| intended for use by
+  // |blink::OriginTrialContext|, so it can pass in its own evaluation
+  // of origin security based on |blink::OriginTrialContext::IsSecureContext|.
+  // The browser process should call |ValidateTokenAndTrial| instead, which
+  // takes care of the origin security evaluation internally.
+  virtual TrialTokenResult ValidateTokenAndTrialWithOriginInfo(
+      base::StringPiece token,
+      const OriginInfo& origin,
+      base::span<const OriginInfo> third_party_origins,
+      base::Time current_time) const;
 
   // If the token validates, status will be set to
   // OriginTrialTokenStatus::kSuccess, the rest will be populated with name of
@@ -68,7 +117,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
                              base::StringPiece feature_name,
                              base::Time current_time) const;
 
-  // Returns whether the given response for the given URL enable the named
+  // Returns whether the given response for the given URL enables the named
   // Origin or Deprecation Trial at the given time.
   //
   // |response_headers| must not be nullptr.
