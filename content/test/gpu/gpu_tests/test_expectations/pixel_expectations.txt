@@ -411,6 +411,7 @@ crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUI
 crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1203317 [ android android-shield-android-tv no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
+crbug.com/1203317 [ android android-pixel-2 no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
