@@ -37,10 +37,16 @@ interface PendingBeaconHost {
 interface PendingBeacon {
 
   // Deactivates the pending beacon. After this call it will not be sent.
+  // Calling this will close the message pipe for the interface as well, so no
+  // further calls can be made.
   Deactivate();
 
-  // Sets data for the pending beacon. `content_type` should be the content type
-  // for `data` if applicable.
+  // Sets data for the pending beacon.
   SetData(string data);
+
+  // Sends the pending beacon immediately.
+  // Calling this will close the message pipe for the interface as well, so no
+  // further calls can be made.
+  SendNow();
 
 };

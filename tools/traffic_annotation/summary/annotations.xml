@@ -377,4 +377,5 @@ Refer to README.md for content description and update process.
  <item id="fast_pair_image_decoder" added_in_milestone="103" content_hash_code="04d764bc" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
  <item id="drivefs_http_client" added_in_milestone="104" content_hash_code="042b8f2c" os_list="chromeos" file_path="ash/components/drivefs/drivefs_http_client.cc" />
  <item id="borealis_splash_logo_loader" added_in_milestone="104" content_hash_code="031855a1" os_list="chromeos" file_path="chrome/browser/ui/views/borealis/borealis_splash_screen_view.cc" />
+ <item id="pending_beacon_api" added_in_milestone="105" content_hash_code="02288864" os_list="linux,windows,android,chromeos" file_path="content/browser/renderer_host/pending_beacon_service.cc" />
 </annotations>

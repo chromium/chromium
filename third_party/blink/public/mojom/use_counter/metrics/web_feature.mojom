@@ -3601,6 +3601,7 @@ enum WebFeature {
   kV8PendingBeacon_State_AttributeGetter = 4280,
   kV8PendingBeacon_Deactivate_Method = 4281,
   kV8PendingBeacon_SetData_Method = 4282,
+  kV8PendingBeacon_SendNow_Method = 4283,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

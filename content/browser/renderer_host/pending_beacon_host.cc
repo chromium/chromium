@@ -5,13 +5,17 @@
 #include "content/browser/renderer_host/pending_beacon_host.h"
 
 #include "content/browser/renderer_host/pending_beacon_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content {
 
-PendingBeaconHost::PendingBeaconHost(RenderFrameHost* rfh,
-                                     PendingBeaconService* service)
+PendingBeaconHost::PendingBeaconHost(
+    RenderFrameHost* rfh,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_factory,
+    PendingBeaconService* service)
     : DocumentUserData<PendingBeaconHost>(rfh),
       receiver_(this),
+      shared_url_factory_(std::move(shared_url_factory)),
       service_(service) {}
 
 void PendingBeaconHost::CreateBeacon(
@@ -25,16 +29,30 @@ void PendingBeaconHost::CreateBeacon(
 }
 
 PendingBeaconHost::~PendingBeaconHost() {
-  service_->sendBeacons(beacons_);
+  service_->SendBeacons(beacons_, shared_url_factory_.get());
 }
 
 void PendingBeaconHost::DeleteBeacon(Beacon* beacon) {
-  auto iter = std::find_if(
-      beacons_.begin(), beacons_.end(),
-      [&](std::unique_ptr<Beacon>& b) { return b.get() == beacon; });
+  auto iter = base::ranges::find(
+      beacons_, beacon,
+      [](const std::unique_ptr<Beacon>& b) { return b.get(); });
   if (iter != beacons_.end()) {
     beacons_.erase(iter);
   }
+}
+
+void PendingBeaconHost::SendBeacon(Beacon* beacon) {
+  auto iter = base::ranges::find(
+      beacons_, beacon,
+      [](const std::unique_ptr<Beacon>& b) { return b.get(); });
+  if (iter == beacons_.end()) {
+    return;
+  }
+  std::unique_ptr<Beacon> beacon_ptr = std::move(*iter);
+  beacons_.erase(iter);
+  std::vector<std::unique_ptr<Beacon>> to_send;
+  to_send.emplace_back(std::move(beacon_ptr));
+  service_->SendBeacons(to_send, shared_url_factory_.get());
 }
 
 void PendingBeaconHost::SetReceiver(
@@ -63,6 +81,10 @@ Beacon::~Beacon() = default;
 
 void Beacon::SetData(const std::string& data) {
   beacon_data_ = data;
+}
+
+void Beacon::SendNow() {
+  beacon_host_->SendBeacon(this);
 }
 
 }  // namespace content
