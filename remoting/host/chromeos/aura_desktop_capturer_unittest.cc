@@ -62,6 +62,15 @@ SkBitmap TestBitmap() {
   return bitmap;
 }
 
+SkBitmap CreateBitmap(int width, int height) {
+  SkBitmap bitmap;
+  const SkImageInfo& info =
+      SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
+                        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+  bitmap.setInfo(info);
+  return bitmap;
+}
+
 ACTION_P(SaveUniquePtrArg, dest) {
   *dest = std::move(*arg1);
 }
@@ -161,6 +170,28 @@ TEST_F(AuraDesktopCapturerTest, ShouldSetDpi) {
   ASSERT_THAT(result.frame, NotNull());
   EXPECT_THAT(result.frame->dpi().x(), Eq(dpi));
   EXPECT_THAT(result.frame->dpi().y(), Eq(dpi));
+}
+
+TEST_F(AuraDesktopCapturerTest, ShouldSetDisplayBounds) {
+  const int left = 100;
+  const int top = 200;
+  const int width = 300;
+  const int height = 400;
+
+  display_util().AddPrimaryDisplay().set_bounds(
+      gfx::Rect(left, top, width, height));
+
+  capturer_.Start(&desktop_capturer_callback());
+  capturer_.CaptureFrame();
+
+  display_util().ReplyWithScreenshot(CreateBitmap(width, height));
+
+  CaptureResult result = desktop_capturer_callback().WaitForResult();
+  ASSERT_THAT(result.frame, NotNull());
+  EXPECT_THAT(result.frame->rect().left(), Eq(left));
+  EXPECT_THAT(result.frame->rect().top(), Eq(top));
+  EXPECT_THAT(result.frame->rect().width(), Eq(width));
+  EXPECT_THAT(result.frame->rect().height(), Eq(height));
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldNotCrashIfDisplayIsUnavailable) {
