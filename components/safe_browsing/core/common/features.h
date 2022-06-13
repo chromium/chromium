@@ -104,6 +104,9 @@ extern const base::Feature kFileTypePoliciesTag;
 // `kFileTypePoliciesTag`.
 const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 
+// Enable logging of the account enhanced protection setting in Protego pings.
+extern const base::Feature kLogAccountEnhancedProtectionStateInProtegoPings;
+
 // Enable omitting non-user gesture from referrer chain.
 extern const base::Feature kOmitNonUserGesturesFromReferrerChain;
 

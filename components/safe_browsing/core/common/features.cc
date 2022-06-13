@@ -109,6 +109,10 @@ const base::Feature kExtensionTelemetryReportContactedHosts{
 const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kLogAccountEnhancedProtectionStateInProtegoPings{
+    "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
