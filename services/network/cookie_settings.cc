@@ -233,12 +233,15 @@ CookieSettings::GetCookieSettingWithMetadata(
         FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                        ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
       }
-    } else {
-      // If the third-party cookie blocking setting is enabled and there's no
-      // relevant storage access grant, we check if the user has any content
-      // settings for the first-party URL as the primary pattern. If cookies are
-      // allowed for the first-party URL then we allow partitioned cross-site
-      // cookies.
+    }
+
+    if (blocked_by_third_party_setting ==
+        CookieSettings::ThirdPartyCookieBlockingSetting::
+            kThirdPartyStateDisallowed) {
+      // If the third-party cookie blocking setting is enabled, we check if the
+      // user has any content settings for the first-party URL as the primary
+      // pattern. If cookies are allowed for the first-party URL then we allow
+      // partitioned cross-site cookies.
       if (const ContentSettingPatternSource* match = FindMatchingSetting(
               first_party_url, first_party_url, content_settings_);
           !match || match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
