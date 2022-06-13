@@ -296,9 +296,9 @@
       name: "BlinkRuntimeCallStats",
     },
     {
-      // "blocking" attribute on scripts and link resources
+      // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#blocking-attributes
       name: "BlockingAttribute",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "BlockingFocusWithoutUserActivation",

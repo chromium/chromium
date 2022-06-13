@@ -752,6 +752,7 @@ html element li
     property value
 html element link
     property as
+    property blocking
     property charset
     property crossOrigin
     property disabled
@@ -898,6 +899,7 @@ html element s
 html element samp
 html element script
     property async
+    property blocking
     property charset
     property crossOrigin
     property defer
@@ -953,6 +955,7 @@ html element span
 html element strike
 html element strong
 html element style
+    property blocking
     property disabled
     property media
     property sheet
