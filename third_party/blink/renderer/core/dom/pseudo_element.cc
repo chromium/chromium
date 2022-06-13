@@ -150,7 +150,9 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
     case kPseudoIdPageTransitionImageWrapper:
     case kPseudoIdPageTransitionIncomingImage:
     case kPseudoIdPageTransitionOutgoingImage:
-      return RuntimeEnabledFeatures::DocumentTransitionEnabled();
+      // These elements are generated only when DocumentTransition feature is
+      // enabled.
+      return true;
     default:
       return true;
   }
