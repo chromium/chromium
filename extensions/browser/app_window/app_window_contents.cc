@@ -10,12 +10,14 @@
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/extension_messages.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -107,6 +109,9 @@ bool AppWindowContentsImpl::OnMessageReceived(
 
 void AppWindowContentsImpl::DidFinishNavigation(
     content::NavigationHandle* handle) {
+  if (!handle->IsInPrimaryMainFrame())
+    return;
+
   // The callback inside app_window will be moved after the first call.
   host_->OnDidFinishFirstNavigation();
 }
@@ -114,8 +119,15 @@ void AppWindowContentsImpl::DidFinishNavigation(
 void AppWindowContentsImpl::UpdateDraggableRegions(
     content::RenderFrameHost* sender,
     const std::vector<DraggableRegion>& regions) {
-  if (!sender->GetParent())  // Only process events from the main frame.
-    host_->UpdateDraggableRegions(regions);
+  // This message should come from a primary main frame.
+  if (!sender->IsInPrimaryMainFrame()) {
+    bad_message::ReceivedBadMessage(
+        web_contents_->GetMainFrame()->GetProcess(),
+        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
+    return;
+  }
+
+  host_->UpdateDraggableRegions(regions);
 }
 
 }  // namespace extensions
