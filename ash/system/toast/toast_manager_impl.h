@@ -18,6 +18,10 @@
 
 namespace ash {
 
+namespace eche_app {
+class LaunchAppHelperTest;
+}
+
 // Class managing toast requests.
 class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public ToastOverlay::Delegate,
@@ -46,10 +50,11 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
  private:
-  friend class ToastManagerImplTest;
-  friend class BluetoothNotificationControllerTest;
   friend class AutoConnectNotifierTest;
+  friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
+  friend class ToastManagerImplTest;
+  friend class eche_app::LaunchAppHelperTest;
 
   void ShowLatest();
   void OnDurationPassed(int toast_number);

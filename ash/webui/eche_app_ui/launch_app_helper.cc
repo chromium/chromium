@@ -6,6 +6,9 @@
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/screen_lock_manager.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"

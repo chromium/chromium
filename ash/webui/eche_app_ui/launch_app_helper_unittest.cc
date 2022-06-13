@@ -10,6 +10,8 @@
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_suite.h"
 #include "base/test/scoped_feature_list.h"
@@ -59,6 +61,7 @@ class LaunchAppHelperTest : public ash::AshTestBase {
         base::BindRepeating(&LaunchEcheAppFunction),
         base::BindRepeating(&CloseEcheAppFunction),
         base::BindRepeating(&LaunchNotificationFunction));
+    toast_manager_ = Shell::Get()->toast_manager();
   }
 
   void TearDown() override { AshTestBase::TearDown(); }
@@ -73,11 +76,21 @@ class LaunchAppHelperTest : public ash::AshTestBase {
         lock_status);
   }
 
+  void ShowToast(const std::u16string& text) {
+    launch_app_helper_->ShowToast(text);
+  }
+
+  void VerifyShowToast(const std::u16string& text) {
+    ToastOverlay* overlay = toast_manager_->GetCurrentOverlayForTesting();
+    ASSERT_NE(nullptr, overlay);
+    EXPECT_EQ(overlay->GetText(), text);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<phonehub::FakePhoneHubManager> fake_phone_hub_manager_;
-
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
+  ToastManagerImpl* toast_manager_ = nullptr;
 };
 
 TEST_F(LaunchAppHelperTest, TestProhibitedByPolicy) {
@@ -104,6 +117,14 @@ TEST_F(LaunchAppHelperTest, TestProhibitedByPolicy) {
     EXPECT_EQ(LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock,
               ProhibitedByPolicy(status));
   }
+}
+
+TEST_F(LaunchAppHelperTest, VerifyShowToast) {
+  const std::u16string text = u"text";
+
+  ShowToast(text);
+
+  VerifyShowToast(text);
 }
 
 }  // namespace eche_app
