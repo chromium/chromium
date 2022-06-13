@@ -290,6 +290,7 @@
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
 <translation id="3643810137582748570">Ignorar calibração</translation>
+<translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3678765385266369662">Selecione como quer desativar a proteção contra escrita</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
@@ -307,6 +308,7 @@
 <translation id="3856304145690230735">Giroscópio da base</translation>
 <translation id="385832974417157471">Antes de encerrar, faça um Powerwash ao seu dispositivo. Se o seu dispositivo tiver tampa, aguarde pela conclusão do Powerwash antes de a fechar. A conclusão do Powerwash poderá demorar até um minuto.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3862598938296403232">É necessária uma descrição</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
@@ -680,6 +682,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
+<translation id="7154020516215182599">Partilhe o seu feedback ou descreva o problema. Se possível, inclua passos para reproduzir o problema.</translation>
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>

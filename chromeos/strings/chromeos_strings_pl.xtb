@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2006864819935886708">Łączność</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
+<translation id="2011174342667534258">Wersja SDK:</translation>
 <translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
 <translation id="2016848882344942759">– brak etykiety bez oznaczenia marki –</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">Stan aktywacji</translation>
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
 <translation id="2275586345903859204">Naprawa została ukończona</translation>
+<translation id="2276999893457278469">Najlepsze materiały pomocy</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Podłącz dysk zewnętrzny (np. dysk USB lub kartę SD) z pobranym obrazem aplikacji Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2526590354069164005">Pulpit</translation>
 <translation id="253029298928638905">Uruchamiam ponownie…</translation>
+<translation id="2533048460510040082">Sugerowane materiały pomocy</translation>
 <translation id="2536159006530886390">Nie udało się połączyć z internetem.</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
@@ -858,6 +861,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="885701979325669005">Pamięć</translation>
 <translation id="8863170912498892583">Włącz ciemny motyw</translation>
 <translation id="8863888432376731307">Pobierz <ph name="INTENT" />, aby znajdować odpowiedzi na pytania takie jak „<ph name="QUERY" />” i inne</translation>
+<translation id="8864415976656252616">Brak sugerowanych treści. Zapoznaj się z najpopularniejszymi materiałami pomocy.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>

@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Lagre på USB</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer denne enheten og kan muligens overvåke aktiviteten din.</translation>
+<translation id="147809995039451286">Kunne ikke laste ned oppdateringen</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1491076385728777984">Oppdaterer fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
@@ -178,6 +179,7 @@
 <translation id="2418150275289244458">Åpne i innstillingene</translation>
 <translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
+<translation id="2447969267935997922">Installasjonen er fullført. Nå kan du ta ut USB-stasjonen eller SD-kortet.</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2480034874476596812">Slå av manuelt</translation>

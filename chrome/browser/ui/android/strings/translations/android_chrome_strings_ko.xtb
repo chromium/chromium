@@ -348,6 +348,7 @@
 <translation id="2842985007712546952">상위 폴더</translation>
 <translation id="2856503607207334158">로그인 실패</translation>
 <translation id="2860954141821109167">이 기기에서 전화 앱이 사용 설정되어 있는지 확인하세요.</translation>
+<translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
@@ -890,6 +891,7 @@
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="5869789175361934029">다른 기기에서 탭 가져오기</translation>
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
+<translation id="5879072387416556377">추천 기능 개선</translation>
 <translation id="5880748256563468367">피드로 이동</translation>
 <translation id="5884076754568147479">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다.</translation>
 <translation id="5906513782029855931">사이트의 URL을 알려 주시면 Google 어시스턴트가 작업을 도와드릴 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지하실 수 있습니다.</translation>
@@ -1232,6 +1234,7 @@
 <translation id="770741401784017797">GIF 생성</translation>
 <translation id="7707922173985738739">모바일 데이터 사용</translation>
 <translation id="7709094866268987903">삭제한 관심분야가 여기에 표시됩니다.</translation>
+<translation id="7709918231054955894">탭 모두 가져오기</translation>
 <translation id="7725024127233776428">북마크한 페이지가 여기에 표시됩니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7761849928583394409">날짜 및 시간 선택</translation>
@@ -1427,6 +1430,7 @@
 <translation id="8656747343598256512">Google 계정으로 이 사이트 및 Chrome에 로그인합니다. 나중에 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="8659579665266920523">Chrome으로 검색하는 방법</translation>
 <translation id="8662811608048051533">대부분의 사이트에서 로그아웃됩니다.</translation>
+<translation id="8664215986015753476">원하는 방식으로 Chrome 사용</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
 <translation id="8666759526542103597">브라우저 기반 광고 개인 최적화 알아보기</translation>
 <translation id="8667760277771450375">Chrome은 크로스 사이트 추적을 제한하면서도 사이트에서 광고 스팸과 사기를 근절할 수 있도록 도움을 줄 수 있는 방안을 모색하고 있습니다.</translation>

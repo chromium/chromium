@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">USB တွင် သိမ်းရန်</translation>
 <translation id="1468664791493211953">ကမ်းလှမ်းချက်များ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် သင်၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်ပါသည်။</translation>
+<translation id="147809995039451286">အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်၍ မရပါ</translation>
 <translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="1499900233129743732">ဤအသုံးပြုသူကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">ဆက်တင်များတွင် ဖွင့်ရန်</translation>
 <translation id="2421798028054665193">ပုံ <ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
+<translation id="2447969267935997922">ထည့်သွင်းပြီးပြီ။ USB ဒရိုက်ဗ် (သို့) SD ကတ်ကို ယခု ဖယ်ရှားနိုင်ပြီ။</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
 <translation id="2480034874476596812">ကိုယ်တိုင်ပိတ်ပါ</translation>

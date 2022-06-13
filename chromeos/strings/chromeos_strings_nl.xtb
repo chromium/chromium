@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectiviteit</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
+<translation id="2011174342667534258">SDK-versie:</translation>
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
 <translation id="2016848882344942759">--geen white label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">Activeringsstatus</translation>
 <translation id="2271469253353559191">Planning voor donkere modus</translation>
 <translation id="2275586345903859204">Reparatie is klaar</translation>
+<translation id="2276999893457278469">Belangrijkste Help-content</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
 <translation id="2294753434210277304">Plaats een externe opslag, zoals een USB-drive of een SD-kaart, met de gedownloade image van het Chromebook-herstelprogramma</translation>
 <translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2526590354069164005">Bureaublad</translation>
 <translation id="253029298928638905">Opnieuw opstarten…</translation>
+<translation id="2533048460510040082">Voorgestelde Help-content</translation>
 <translation id="2536159006530886390">Kan geen verbinding met internet maken.</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2584559707064218956">Ga naar Instellingen om het netwerk in te stellen</translation>
@@ -858,6 +861,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="885701979325669005">Opslag</translation>
 <translation id="8863170912498892583">Donker thema aanzetten</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> ophalen voor <ph name="QUERY" /> en meer</translation>
+<translation id="8864415976656252616">Geen voorgestelde content. Bekijk de belangrijkste Help-content.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Apparaat is een tablet.</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>

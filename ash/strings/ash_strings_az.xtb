@@ -504,6 +504,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> qoşulur</translation>
 <translation id="3922427723338465344">{0,plural, =1{1 dəqiqə ərzində cihazı əvvəlki versiyaya dəyişdirin}other{# dəqiqə ərzində cihazı əvvəlki versiyaya dəyişdirin}}</translation>
 <translation id="3923494859158167397">Mobil şəbəkələr ayarlanmayıb</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, Tədbirlər yüklənir.</translation>
 <translation id="3932043219784172185">Qoşulmuş cihaz yoxdur</translation>
 <translation id="3934456833412894880">Uyğunlaşan şarj aktivdir. Batareyanın ömrünü uzatmaq üçün batareyanız 80% olaraq qalacaq və ehtiyac duyduğunuz zaman tam şarj ediləcək.</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
@@ -1055,6 +1056,10 @@ Yeni quraşdırma</translation>
 <translation id="7258828758145722155">Dünən redaktə edilib</translation>
 <translation id="726276584504105859">Ekranı bölmək üçün bura sürüşdürün</translation>
 <translation id="7262906531272962081">Xatırlatma yaradın</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> -
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Google Calendar'da ətraflı məlumat üçün seçin.</translation>
 <translation id="7302889331339392448">Canlı Altyazı deaktivdir.</translation>
 <translation id="7303365578352795231">Digər cihaz cavab verir.</translation>
 <translation id="7305884605064981971">EDGE</translation>

@@ -190,6 +190,7 @@
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1174073918202301297">Товчлол нэмсэн</translation>
 <translation id="1174366174291287894">Chrome таны холболтыг аюултай байна гэж хэлээгүйгээс бусад тохиолдолд энэ нь үргэлж аюулгүй байна</translation>
+<translation id="1174391930667737831">Privacy Hub</translation>
 <translation id="117445914942805388">Хөтчийн өгөгдлийг синк хийсэн бүх төхөөрөмж болон Google Бүртгэлээсээ устгахын тулд <ph name="BEGIN_LINK" />синк хийх тохиргоонд зочилно уу<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Хэвлэх ...</translation>
 <translation id="1176471985365269981">Таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг зөвшөөрөхгүй</translation>
@@ -2630,6 +2631,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> нь дараах файлуудыг үзэх боломжтой</translation>
 <translation id="3484273680291419129">Аюултай программыг устгаж байна...</translation>
 <translation id="3484869148456018791">Шинэ гэрчилгээ авах</translation>
+<translation id="3486950712960783074">Таны аялал</translation>
 <translation id="3487007233252413104">Нэрээ нууцалсан үйлдэл</translation>
 <translation id="3490695139702884919">Татаж байна... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Танай хүүхдийн бүртгэлийг Family Link-н эцэг эхийн хяналт дээр тохируулаагүй байна. Та тохируулгыг дуусгасныхаа дараа эцэг эхийн хяналтыг нэмж болно. Судлах апп дээрээс та эцэг эхийн хяналттай холбоотой мэдээллийг олж авах боломжтой.</translation>
@@ -2940,6 +2942,7 @@
 <translation id="3797739167230984533">Таны <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />-г танай байгууллага удирдаж байна</translation>
 <translation id="3797900183766075808">&amp;“<ph name="SEARCH_TERMS" />”-д зориулсан <ph name="SEARCH_ENGINE" />-ыг хайх</translation>
 <translation id="3798449238516105146">Хувилбар</translation>
+<translation id="3798632811625902122"><ph name="DEVICE" /> Bluetooth төхөөрөмж хослуулах зөвшөөрөл хүсэж байна.</translation>
 <translation id="3799128412641261490">Сэлгүүрийн тохиргоо</translation>
 <translation id="3800806661949714323">Бүгдийг харуулах (санал болгосон)</translation>
 <translation id="3800828618615365228">Google Chrome болон ChromeOS-н нэмэлт нөхцөл</translation>
@@ -4927,6 +4930,7 @@
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" />-н бусад үйлдэл</translation>
 <translation id="5792728279623964091">Асаах товчийг товшино уу</translation>
 <translation id="5793339252089865437">Хэрэв та шинэчлэлтийг мобайл сүлжээгээрээ татвал нэмэлт төлбөр гарч болзошгүй.</translation>
+<translation id="5793420564274426163">Хослуулалтын баталгаажуулалт</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> дэлгэцэд хөтчийн <ph name="NUM_BROWSERS" /> цонх нээлттэй байна</translation>
 <translation id="5794414402486823030">Систем харагчтай үргэлж хамт нээх</translation>
 <translation id="5794700615121138172">Linux-н хуваалцсан фолдерууд</translation>
@@ -7419,6 +7423,7 @@
 <translation id="8242426110754782860">Үргэлжлүүлнэ үү</translation>
 <translation id="8243948765190375130">Медианы чанар муудаж болзошгүй</translation>
 <translation id="8244514732452879619">Гэрэл удахгүй унтарна</translation>
+<translation id="8245361042748627813">Энэ товчлолыг өөрчилсөн. Системийн харилцах цонхыг ашиглан хэвлэхийн тулд <ph name="NEW_SHORTCUT_KEY" />-г ашиглана уу.</translation>
 <translation id="8246776524656196770">Аюулгүй байдлын түлхүүрээ ПИН (Personal Identification Number буюу Хувийн тодорхойлолтын дугаар)-р хамгаалаарай</translation>
 <translation id="8248050856337841185">&amp; Наах</translation>
 <translation id="8248381369318572865">Микрофондоо нэвтэрч, яриагаа задлан шинжилнэ үү</translation>
@@ -7723,6 +7728,7 @@
 <translation id="8561565784790166472">Болгоомжтой үргэлжлүүлнэ үү</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Програмын хувилбарыг бууруулах оролдлого хийсэн.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" />-н тухай дэлгэрэнгүй</translation>
 <translation id="8569682776816196752">Ямар ч зорилтот газар олдсонгүй.</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
 <translation id="8571687764447439720">Kerberos тасалбарыг нэмэх</translation>

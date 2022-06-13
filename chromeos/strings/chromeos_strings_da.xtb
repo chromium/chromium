@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
 <translation id="3643810137582748570">Spring kalibreringen over</translation>
+<translation id="3651050199673793219">Vælg en temperaturenhed</translation>
 <translation id="3678765385266369662">Vælg, hvordan du vil deaktivere Write Protect</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Indlæser...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Basegyroskop</translation>
 <translation id="385832974417157471">Udfør en powerwash på din enhed, inden du lukker ned. Hvis din enhed har et låg, skal du først lukke låget, når din powerwash er gennemført. Det kan tage op til et minut at gennemføre en powerwash.</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3862598938296403232">Du skal angive en beskrivelse</translation>
 <translation id="3865414814144988605">Opløsning</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
@@ -677,6 +679,7 @@
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="714876143603641390">LAN-forbindelse</translation>
+<translation id="7154020516215182599">Del din feedback, eller beskriv dit problem. Medtag en vejledning i at genskabe dit problem, hvis det er muligt.</translation>
 <translation id="7155171745945906037">Eksisterende billede fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbillede</translation>

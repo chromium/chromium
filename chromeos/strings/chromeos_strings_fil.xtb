@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">I-save sa USB</translation>
 <translation id="1468664791493211953">Mga Alok</translation>
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
+<translation id="147809995039451286">Hindi ma-download ang update</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Nag-a-update ng firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
@@ -178,6 +179,7 @@
 <translation id="2418150275289244458">Buksan sa mga setting</translation>
 <translation id="2421798028054665193">Larawan <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
+<translation id="2447969267935997922">Tapos na ang pag-install. Puwede mo nang alisin ang iyong USB drive o SD card.</translation>
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2480034874476596812">Manual na i-off</translation>

@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">الإدخال</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
 <translation id="3643810137582748570">تخطّي المعايرة</translation>
+<translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
 <translation id="3678765385266369662">اختَر كيف تريد إيقاف وضع "الحماية من إضافة المعلومات أو تغييرها"</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">الجيروسكوب المُثبَّت في قاعدة الجهاز</translation>
 <translation id="385832974417157471">‏قبل إطفاء الجهاز، عليك تنفيذ الإجراء Powerwash. إذا كان جهازك يحتوي على شاشة قابل للطي، عليك الانتظار إلى أن يكتمل الإجراء Powerwash قبل طي شاشة الجهاز. قد يستغرق اكتمال تنفيذ الإجراء Powerwash مدة تصل إلى دقيقة.</translation>
 <translation id="3858860766373142691">الاسم</translation>
+<translation id="3862598938296403232">يجب إدخال وصف.</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
@@ -678,6 +680,7 @@
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
+<translation id="7154020516215182599">يُرجى إخبارنا بملاحظاتك وآرائك أو توضيح مشكلتك. يُرجى تضمين خطوات إعادة إظهار المشكلة، إن أمكن.</translation>
 <translation id="7155171745945906037">صورة حالية من الكاميرا أو الملف</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
 <translation id="7170236477717446850">صورة الملف الشخصي</translation>

@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
 <translation id="3643810137582748570">Omet la calibració</translation>
+<translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
 <translation id="3678765385266369662">Selecciona com vols desactivar la protecció contra escriptura</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">S'està carregant...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Giroscopi de la base</translation>
 <translation id="385832974417157471">Abans d'apagar el dispositiu, fes-hi un Powerwash. Si el dispositiu té tapa, espera fins que el Powerwash es completi per tancar-la. Pot tardar fins a un minut a completar-se.</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3862598938296403232">La descripció és obligatòria</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
@@ -678,6 +680,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
+<translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>

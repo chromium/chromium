@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">입력</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3643810137582748570">보정 건너뛰기</translation>
+<translation id="3651050199673793219">온도 단위 선택</translation>
 <translation id="3678765385266369662">쓰기 방지를 사용 중지할 방법 선택</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">베이스 자이로스코프</translation>
 <translation id="385832974417157471">종료하기 전에 기기를 파워워시하세요. 기기에 커버가 있다면 파워워시가 끝난 다음에 커버를 닫으세요. 파워워시가 완료되려면 최대 1분 정도 걸립니다.</translation>
 <translation id="3858860766373142691">이름</translation>
+<translation id="3862598938296403232">설명은 필수 항목입니다.</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="3866249974567520381">설명</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
@@ -678,6 +680,7 @@
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>
+<translation id="7154020516215182599">의견을 공유하거나 문제를 설명해 주세요. 가능하면 문제를 재현하는 방법도 알려주세요.</translation>
 <translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7170236477717446850">프로필 사진</translation>

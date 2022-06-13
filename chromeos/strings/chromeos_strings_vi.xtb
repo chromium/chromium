@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Lưu vào USB</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> quản lý thiết bị này và có thể giám sát hoạt động của bạn.</translation>
+<translation id="147809995039451286">Không thể tải xuống bản cập nhật</translation>
 <translation id="1478594628797167447">Máy quét</translation>
 <translation id="1491076385728777984">Cập nhật chương trình cơ sở trên <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> quản lý người dùng này và có thể quản lý từ xa các tùy chọn cài đặt cũng như giám sát hoạt động của người dùng.</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">Trang xác thực</translation>
 <translation id="2006864819935886708">Kết nối</translation>
 <translation id="2008685064673031089">Tìm kiếm quan trọng</translation>
+<translation id="2011174342667534258">Phiên bản SDK:</translation>
 <translation id="2016697457005847575">Thử các bước khắc phục vấn đề</translation>
 <translation id="2016848882344942759">--không nhãn trắng--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">Trạng thái kích hoạt</translation>
 <translation id="2271469253353559191">Lịch áp dụng chế độ tối</translation>
 <translation id="2275586345903859204">Đã sửa xong</translation>
+<translation id="2276999893457278469">Nội dung trợ giúp hàng đầu</translation>
 <translation id="2287186687001756809">Không có hình ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Hãy lắp thêm bộ nhớ ngoài, chẳng hạn như ổ đĩa USB hoặc thẻ SD, trong đó có hình ảnh được tải xuống qua Tiện ích khôi phục dành cho Chromebook</translation>
 <translation id="2307344026739914387">Dùng cặp khóa hiện tại</translation>
@@ -178,6 +181,7 @@
 <translation id="2418150275289244458">Mở trong phần cài đặt</translation>
 <translation id="2421798028054665193">Hình ảnh <ph name="CURRENT_PAGE" /> trong tổng số <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
+<translation id="2447969267935997922">Đã cài đặt xong. Bây giờ, bạn có thể tháo ổ USB hoặc thẻ SD.</translation>
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2480034874476596812">Tắt theo cách thủ công</translation>
@@ -189,6 +193,7 @@
 <translation id="2517472476991765520">Quét</translation>
 <translation id="2526590354069164005">Màn hình nền</translation>
 <translation id="253029298928638905">Đang khởi động lại…</translation>
+<translation id="2533048460510040082">Nội dung trợ giúp đề xuất</translation>
 <translation id="2536159006530886390">Không thể kết nối Internet.</translation>
 <translation id="2570743873672969996">Đang chạy kiểm tra <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Để thiết lập, hãy chuyển tới phần Cài đặt</translation>
@@ -858,6 +863,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="885701979325669005">Bộ nhớ</translation>
 <translation id="8863170912498892583">Bật giao diện tối</translation>
 <translation id="8863888432376731307">Nhận <ph name="INTENT" /> cho "<ph name="QUERY" />" và nhiều thông tin khác</translation>
+<translation id="8864415976656252616">Không có nội dung đề xuất. Xem nội dung trợ giúp hàng đầu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Thiết bị là máy tính bảng.</translation>
 <translation id="8881098542468797602">Đã kiểm tra thành công</translation>

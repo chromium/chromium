@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Ingresso</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3643810137582748570">Salta calibrazione</translation>
+<translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
 <translation id="3678765385266369662">Specifica come vuoi disattivare la protezione della scrittura</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Giroscopio base</translation>
 <translation id="385832974417157471">Prima di procedere con l'arresto, esegui il Powerwash del dispositivo. Se il dispositivo ha un coperchio, attendi il completamento del Powerwash prima di chiuderlo. Potrebbe essere necessario fino a un minuto prima che il Powerwash venga completato.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3862598938296403232">La descrizione è obbligatoria</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="3866249974567520381">Descrizione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
@@ -678,6 +680,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
+<translation id="7154020516215182599">Condividi il tuo feedback o descrivi il problema. Se possibile, includi i passaggi per riprodurre il problema.</translation>
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7170236477717446850">Immagine del profilo</translation>

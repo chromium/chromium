@@ -18,6 +18,7 @@
 <translation id="1175697296044146566">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Moyen (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Supprimer</translation>
+<translation id="1190378975642195988">Accéléromètre de base</translation>
 <translation id="1195447618553298278">Erreur inconnue.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Lecture/Mise en pause</translation>
@@ -267,6 +268,7 @@
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
+<translation id="3492982278147736083">Gyroscope du couvercle</translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>
@@ -300,6 +302,7 @@
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="385051799172605136">Retour</translation>
+<translation id="3856304145690230735">Gyroscope de base</translation>
 <translation id="385832974417157471">Avant de l'éteindre, effectuez une réinitialisation Powerwash de votre appareil. S'il est doté d'un couvercle, attendez que le processus soit terminé avant de fermer celui-ci. La réinitialisation Powerwash peut prendre jusqu'à une minute.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
@@ -371,6 +374,7 @@
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
+<translation id="4500213108254186382">Accéléromètre du couvercle</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4511264077854731334">Portail</translation>
 <translation id="4521826082652183069">Correspondance du nom alternatif du sujet</translation>
@@ -382,6 +386,7 @@
 <translation id="4561801978359312462">Carte SIM déverrouillée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
 <translation id="4568938274596692027">L'installation est terminée. Préparation au redémarrage en cours…</translation>
+<translation id="4576943788798178439">Prise en charge des stylets</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
@@ -537,6 +542,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5866840822086176774">Très fort</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
+<translation id="5898758006340607522">Interrupteur</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil est un ensemble clavier et souris.</translation>
 <translation id="5916084858004523819">Interdit</translation>
@@ -859,6 +865,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8919792139048574232">Affichez les éléments qui ont été réparés</translation>
 <translation id="8919837981463578619">Échec : bac manquant</translation>
 <translation id="8923267550422472772">Jour du mois pour la réinitialisation</translation>
+<translation id="8925613211674558308">Vpd Cached</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>

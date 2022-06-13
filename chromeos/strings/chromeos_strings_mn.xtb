@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">USB-д хадгалах</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
+<translation id="147809995039451286">Шинэчлэлтийг татаж чадсангүй</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> дээр жижиг программыг шинэчилж байна</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> энэ хэрэглэгчийг удирддаг бөгөөд алсаас тохиргоог удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
@@ -178,6 +179,7 @@
 <translation id="2418150275289244458">Тохиргоонд нээх</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-с <ph name="CURRENT_PAGE" />-р зураг</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
+<translation id="2447969267935997922">Суулгаж дууслаа. Та одоо USB драйв эсвэл SD картаа салгах боломжтой.</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="2480034874476596812">Гар аргаар унтраах</translation>
@@ -288,6 +290,7 @@
 <translation id="3621202678540785336">Оролт</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="3643810137582748570">Тохируулгыг алгасах</translation>
+<translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
 <translation id="3678765385266369662">Та Write Protect-г хэрхэн унтраахыг хүсэж байгаагаа сонгоно уу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
@@ -305,6 +308,7 @@
 <translation id="3856304145690230735">Суурийн гироскоп</translation>
 <translation id="385832974417157471">Унтраахаасаа өмнө төхөөрөмжөө powerwash хийнэ үү. Хэрэв таны төхөөрөмж тагтай бол тагийг нь хаахаас өмнө powerwash хийж дуустал хүлээнэ үү. Powerwash хийж дуусахад хэдэн минут зарцуулж магадгүй.</translation>
 <translation id="3858860766373142691">Нэр</translation>
+<translation id="3862598938296403232">Тайлбар шаардлагатай</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
@@ -678,6 +682,7 @@
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
+<translation id="7154020516215182599">Санал хүсэлтээ хуваалц эсвэл асуудлаа тайлбарлана уу. Боломжтой бол асуудлаа дахин гаргах алхмуудыг оруулаарай.</translation>
 <translation id="7155171745945906037">Камер эсвэл файлд байгаа зураг</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Профайлын зураг</translation>

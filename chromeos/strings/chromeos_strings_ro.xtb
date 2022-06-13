@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Salvează pe USB</translation>
 <translation id="1468664791493211953">Oferte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
+<translation id="147809995039451286">Nu s-a putut descărca actualizarea</translation>
 <translation id="1478594628797167447">Scaner</translation>
 <translation id="1491076385728777984">Se actualizează firmware-ul pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
@@ -178,6 +179,7 @@
 <translation id="2418150275289244458">Deschide în setări</translation>
 <translation id="2421798028054665193">Imaginea <ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
+<translation id="2447969267935997922">Instalarea s-a finalizat. Poți să scoți unitatea USB sau cardul SD.</translation>
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Dezactivează manual</translation>
@@ -288,6 +290,7 @@
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
 <translation id="3643810137582748570">Omite calibrarea</translation>
+<translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
 <translation id="3678765385266369662">Selectează cum dorești să dezactivezi protecția la scriere</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
@@ -305,6 +308,7 @@
 <translation id="3856304145690230735">Giroscopul bazei</translation>
 <translation id="385832974417157471">Înainte de închidere, rulează funcția Powerwash pe dispozitiv. Dacă dispozitivul are capac, așteaptă să se finalizeze funcția Powerwash înainte de a închide capacul. Finalizarea funcției Powerwash poate dura maximum un minut.</translation>
 <translation id="3858860766373142691">Nume</translation>
+<translation id="3862598938296403232">Descrierea este obligatorie</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="3866249974567520381">Descriere</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
@@ -678,6 +682,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
+<translation id="7154020516215182599">Trimite feedback sau descrie problema. Dacă este posibil, include pașii pentru reproducerea problemei.</translation>
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>

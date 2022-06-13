@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar o desactivar la Pantalla de privacidad</translation>
 <translation id="3643810137582748570">Omitir la calibración</translation>
+<translation id="3651050199673793219">Selecciona una unidad de temperatura</translation>
 <translation id="3678765385266369662">Selecciona cómo quieres que se desactive la protección de escritura</translation>
 <translation id="3689839747745352263">Prueba de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Giroscopio en la base</translation>
 <translation id="385832974417157471">Antes de apagar el dispositivo, usa la función Powerwash en tu dispositivo. Si el dispositivo tiene tapa, espera a que finalice la función Powerwash para cerrarla. La función Powerwash puede tardar hasta un minuto.</translation>
 <translation id="3858860766373142691">Nombre</translation>
+<translation id="3862598938296403232">La descripción es obligatoria</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3866249974567520381">Descripción</translation>
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
@@ -678,6 +680,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
+<translation id="7154020516215182599">Comparte tus comentarios o describe el problema. Si es posible, incluye pasos para reproducir el problema.</translation>
 <translation id="7155171745945906037">Foto existente de la cámara o archivo</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7170236477717446850">Foto de perfil</translation>

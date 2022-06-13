@@ -288,6 +288,7 @@
 <translation id="3621202678540785336">Mewnbwn</translation>
 <translation id="3632579075709132555">Togl sgrîn preifatrwydd</translation>
 <translation id="3643810137582748570">Hepgor calibradu</translation>
+<translation id="3651050199673793219">Dewiswch uned tymheredd</translation>
 <translation id="3678765385266369662">Dewiswch sut yr hoffech ddiffodd Diogelu Ysgrifennu</translation>
 <translation id="3689839747745352263">Prawf <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
@@ -305,6 +306,7 @@
 <translation id="3856304145690230735">Geirosgop Gwaelod</translation>
 <translation id="385832974417157471">Cyn diffodd, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="3858860766373142691">Enw</translation>
+<translation id="3862598938296403232">Mae angen disgrifiad</translation>
 <translation id="3865414814144988605">Cydraniad</translation>
 <translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
@@ -678,6 +680,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
 <translation id="714876143603641390">Cysylltedd LAN</translation>
+<translation id="7154020516215182599">Rhannwch eich adborth neu disgrifiwch eich problem. Os yn bosib, cynhwyswch gamau i atgynhyrchu'ch problem.</translation>
 <translation id="7155171745945906037">Llun presennol o'r camera neu ffeil</translation>
 <translation id="7162487448488904999">Oriel</translation>
 <translation id="7170236477717446850">Llun proffil</translation>
