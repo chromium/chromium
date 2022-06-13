@@ -3477,18 +3477,70 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecuteScript(rfh_a->child_at(0)->child_at(0), "true"));
 }
 
-class AccessibilityBackForwardCacheBrowserTest
-    : public BackForwardCacheBrowserTest {
+class BackForwardCacheBrowserTestWithFlagForScreenReader
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
-                              "", "true");
+    if (IsBackForwardCacheEnabledForScreenReader()) {
+      EnableFeatureAndSetParams(
+          features::kEnableBackForwardCacheForScreenReader, "", "true");
+    } else {
+      DisableFeature(features::kEnableBackForwardCacheForScreenReader);
+    }
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
+
+  bool IsBackForwardCacheEnabledForScreenReader() { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_F(AccessibilityBackForwardCacheBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheBrowserTestWithFlagForScreenReader,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
+                       ScreenReaderOn) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  BackForwardCacheDisabledTester tester;
+
+  // Use Screen Reader.
+  EnableAccessibilityForWebContents(shell()->web_contents());
+
+  // Navigate to Page A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  int process_id = current_frame_host()->GetProcess()->GetID();
+  int routing_id = current_frame_host()->GetRoutingID();
+
+  // Navigate away to Page B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (IsBackForwardCacheEnabledForScreenReader()) {
+    EXPECT_TRUE(rfh_a.get());
+    EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+    // Navigate back.
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectRestored(FROM_HERE);
+  } else {
+    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+    // Navigate back.
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    auto reason = BackForwardCacheDisable::DisabledReason(
+        BackForwardCacheDisable::DisabledReasonId::kScreenReader);
+    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
+                      {}, {reason}, {}, FROM_HERE);
+    EXPECT_TRUE(
+        tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
+  }
+}
+
+// Verify that the page will not be evicted upon accessibility events.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
                        DoNotEvictOnAccessibilityEvents) {
+  if (!IsBackForwardCacheEnabledForScreenReader()) {
+    return;
+  }
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -3496,12 +3548,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBackForwardCacheBrowserTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  // Enable accessibility for A.
+  // Use Screen Reader.
   EnableAccessibilityForWebContents(shell()->web_contents());
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), url_b));
   RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  EXPECT_TRUE(rfh_a.get());
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Set the callback for generated events, and expect that this is never
@@ -3732,38 +3785,6 @@ IN_PROC_BROWSER_TEST_F(
   // Check that a2-3 are cached and foregrounded.
   ExpectCached(rfhs[2], /*cached=*/true, /*backgrounded=*/false);
   ExpectCached(rfhs[3], /*cached=*/true, /*backgrounded=*/false);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DisableBackForwardCacheForScreenReader) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  BackForwardCacheDisabledTester tester;
-
-  // Use Screen Reader.
-  content::testing::ScopedContentAXModeSetter ax_mode_setter(
-      ui::AXMode::kScreenReader);
-
-  // Navigate to Page A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostWrapper rfh_a(current_frame_host());
-  RenderFrameDeletedObserver deleted(rfh_a.get());
-  int process_id = current_frame_host()->GetProcess()->GetID();
-  int routing_id = current_frame_host()->GetRoutingID();
-
-  // Navigate away to Page B.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  deleted.WaitUntilDeleted();
-
-  // Navigate back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  auto reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::kScreenReader);
-  ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                    {}, {reason}, {}, FROM_HERE);
-  EXPECT_TRUE(
-      tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
 
 class CustomTTLBackForwardCacheBrowserTest
