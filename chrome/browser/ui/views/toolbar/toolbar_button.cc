@@ -710,21 +710,20 @@ void ToolbarButton::HighlightColorAnimation::Hide() {
 
 absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
     const {
-  if (!IsShown() || !parent_->GetThemeProvider())
+  if (!IsShown() || !parent_->GetColorProvider())
     return absl::nullopt;
   SkColor text_color;
   if (highlight_color_) {
     text_color = *highlight_color_;
   } else {
-    text_color = parent_->GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_BUTTON_TEXT);
+    text_color = parent_->GetColorProvider()->GetColor(kColorToolbarButtonText);
   }
   return FadeWithAnimation(text_color, highlight_color_animation_);
 }
 
 absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
     const {
-  if (!IsShown() || !parent_->GetThemeProvider()) {
+  if (!IsShown() || !parent_->GetColorProvider()) {
     return absl::nullopt;
   }
 
@@ -732,8 +731,8 @@ absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
   if (highlight_color_) {
     border_color = *highlight_color_;
   } else {
-    border_color = parent_->GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER);
+    border_color =
+        parent_->GetColorProvider()->GetColor(kColorToolbarButtonBorder);
   }
   return FadeWithAnimation(border_color, highlight_color_animation_);
 }
