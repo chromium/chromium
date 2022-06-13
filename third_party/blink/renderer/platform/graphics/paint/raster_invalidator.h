@@ -106,6 +106,7 @@ class PLATFORM_EXPORT RasterInvalidator {
   void GenerateRasterInvalidations(RasterInvalidationFunction,
                                    const PaintChunkSubset&,
                                    bool layer_offset_or_state_changed,
+                                   bool layer_effect_changed,
                                    Vector<PaintChunkInfo>& new_chunks_info);
 
   ALWAYS_INLINE const PaintChunk& GetOldChunk(wtf_size_t index) const;
