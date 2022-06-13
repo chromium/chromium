@@ -4663,31 +4663,33 @@ def ChecksCommon(input_api, output_api):
             ],
             non_inclusive_terms=_NON_INCLUSIVE_TERMS))
 
-    for f in input_api.AffectedFiles():
-        path, name = input_api.os_path.split(f.LocalPath())
-        if name == 'PRESUBMIT.py':
-            full_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                               path)
-            test_file = input_api.os_path.join(path, 'PRESUBMIT_test.py')
-            if f.Action() != 'D' and input_api.os_path.exists(test_file):
-                # The PRESUBMIT.py file (and the directory containing it) might
-                # have been affected by being moved or removed, so only try to
-                # run the tests if they still exist.
-                use_python3 = False
-                with open(f.LocalPath()) as fp:
-                    use_python3 = any(
-                        line.startswith('USE_PYTHON3 = True')
-                        for line in fp.readlines())
+    presubmit_py_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=[r'PRESUBMIT\.py$'])
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=presubmit_py_filter):
+        full_path = input_api.os_path.dirname(f.AbsoluteLocalPath())
+        test_file = input_api.os_path.join(full_path, 'PRESUBMIT_test.py')
+        # The PRESUBMIT.py file (and the directory containing it) might have
+        # been affected by being moved or removed, so only try to run the tests
+        # if they still exist.
+        if not input_api.os_path.exists(test_file):
+            continue
 
-                results.extend(
-                    input_api.canned_checks.RunUnitTestsInDirectory(
-                        input_api,
-                        output_api,
-                        full_path,
-                        files_to_check=[r'^PRESUBMIT_test\.py$'],
-                        run_on_python2=not use_python3,
-                        run_on_python3=use_python3,
-                        skip_shebang_check=True))
+        use_python3 = False
+        with open(f.LocalPath()) as fp:
+            use_python3 = any(
+                line.startswith('USE_PYTHON3 = True')
+                for line in fp.readlines())
+
+        results.extend(
+            input_api.canned_checks.RunUnitTestsInDirectory(
+                input_api,
+                output_api,
+                full_path,
+                files_to_check=[r'^PRESUBMIT_test\.py$'],
+                run_on_python2=not use_python3,
+                run_on_python3=use_python3,
+                skip_shebang_check=True))
     return results
 
 
