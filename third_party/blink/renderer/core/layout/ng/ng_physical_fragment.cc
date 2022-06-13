@@ -787,11 +787,13 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
     NGInlineCursor* cursor) const {
   const auto* const text_combine =
       DynamicTo<LayoutNGTextCombine>(containing_block);
-  for (; *cursor; cursor->MoveToNext()) {
+  while (*cursor) {
     DCHECK(cursor->Current().Item());
     const NGFragmentItem& item = *cursor->Current().Item();
-    if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved()))
+    if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved())) {
+      cursor->MoveToNext();
       continue;
+    }
     switch (item.Type()) {
       case NGFragmentItem::kLine: {
         AddOutlineRectsForDescendant(
@@ -825,10 +827,16 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
           AddOutlineRectsForDescendant(
               {child_box, item.OffsetInContainerFragment()}, outline_rects,
               additional_offset, outline_type, containing_block);
+          if (child_box->IsInlineBox()) {
+            // Inline boxes have their children in the flat list. Skip them.
+            cursor->MoveToNextSkippingChildren();
+            continue;
+          }
         }
         break;
       }
     }
+    cursor->MoveToNext();
   }
 }
 
