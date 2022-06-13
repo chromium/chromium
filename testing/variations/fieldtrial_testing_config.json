@@ -2964,6 +2964,21 @@
             ]
         }
     ],
+    "DefaultPassthroughCommandDecoder": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220601",
+                    "enable_features": [
+                        "DefaultPassthroughCommandDecoder"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferBeginMainFrameDuringLoading": [
         {
             "platforms": [
