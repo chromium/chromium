@@ -496,18 +496,28 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 
   // Component extensions with background pages are not enabled during tests
   // because they generate a lot of background behavior that can interfere.
-  if (!enable_background_extensions_during_testing &&
+  const bool should_disable_background_extensions =
+      !enable_background_extensions_during_testing &&
       (command_line->HasSwitch(::switches::kTestType) ||
        command_line->HasSwitch(
-           ::switches::kDisableComponentExtensionsWithBackgroundPages))) {
-    return;
-  }
+           ::switches::kDisableComponentExtensionsWithBackgroundPages));
 
-  if (!skip_session_components) {
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+  const bool enable_hangout_services_extension_for_testing =
+      command_line->HasSwitch(::switches::kTestType) &&
+      command_line->HasSwitch(
+          ::switches::kEnableHangoutServicesExtensionForTesting);
+  if (!skip_session_components &&
+      (!should_disable_background_extensions ||
+       enable_hangout_services_extension_for_testing)) {
     AddHangoutServicesExtension();
+  }
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 
+  if (should_disable_background_extensions)
+    return;
+
+  if (!skip_session_components) {
 #if BUILDFLAG(IS_CHROMEOS)
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));

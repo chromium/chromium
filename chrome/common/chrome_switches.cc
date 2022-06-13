@@ -257,6 +257,10 @@ const char kEnableExtensionActivityLogging[] =
 const char kEnableExtensionActivityLogTesting[] =
     "enable-extension-activity-log-testing";
 
+// Force enabling HangoutServicesExtension.
+const char kEnableHangoutServicesExtensionForTesting[] =
+    "enable-hangout-services-extension-for-testing";
+
 // Runs the Native Client inside the renderer process and enables GPU plugin
 // (internally adds lEnableGpuPlugin to the command line).
 const char kEnableNaCl[] = "enable-nacl";
