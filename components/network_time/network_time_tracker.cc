@@ -488,7 +488,6 @@ void NetworkTimeTracker::CheckTime(CheckTimeType check_type) {
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->enable_load_timing = true;
   // This cancels any outstanding fetch.
   time_fetcher_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                    traffic_annotation);
@@ -499,11 +498,9 @@ void NetworkTimeTracker::CheckTime(CheckTimeType check_type) {
                      base::Unretained(this), check_type),
       max_response_size_);
 
-  timer_.Stop();  // Restarted in OnURLLoaderComplete().
-}
+  fetch_started_ = tick_clock_->NowTicks();
 
-base::TimeDelta NetworkTimeTracker::GetLatestLatencyForTesting() const {
-  return historical_latencies_.GetLatestLatency();
+  timer_.Stop();  // Restarted in OnURLLoaderComplete().
 }
 
 bool NetworkTimeTracker::UpdateTimeFromResponse(
@@ -564,9 +561,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
 
   // Record histograms for the latency of the time query and the time delta
   // between time fetches.
-  base::TimeDelta latency =
-      time_fetcher_->ResponseInfo()->load_timing.receive_headers_start -
-      time_fetcher_->ResponseInfo()->load_timing.send_end;
+  base::TimeDelta latency = tick_clock_->NowTicks() - fetch_started_;
   LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.TimeQueryLatency", latency);
 
   if (!last_fetched_time_.is_null()) {

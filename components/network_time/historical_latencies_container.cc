@@ -25,11 +25,6 @@ void HistoricalLatenciesContainer::Record(base::TimeDelta latency) {
   latencies_.SaveToBuffer(latency);
 }
 
-base::TimeDelta HistoricalLatenciesContainer::GetLatestLatency() const {
-  DCHECK_GT(latencies_.CurrentIndex(), 0u);
-  return **(latencies_.End());
-}
-
 absl::optional<base::TimeDelta> HistoricalLatenciesContainer::StdDeviation()
     const {
   int num_historical_latencies = kNumHistoricalLatencies.Get();

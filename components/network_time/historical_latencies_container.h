@@ -25,9 +25,6 @@ class HistoricalLatenciesContainer {
   // if not enough latencies have been recorded yet.
   absl::optional<base::TimeDelta> StdDeviation() const;
 
-  // Returns the latest recorded latency.
-  base::TimeDelta GetLatestLatency() const;
-
  private:
   base::RingBuffer<base::TimeDelta, size_t{kMaxNumHistoricalLatencies}>
       latencies_;
