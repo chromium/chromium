@@ -39,8 +39,29 @@ void ApcExternalActionDelegate::SetupDisplay() {
   Show(PasswordChangeRunDisplay::Create(GetWeakPtr(), display_delegate_.get()));
 }
 
-void ApcExternalActionDelegate::OnInterruptStarted() {}
-void ApcExternalActionDelegate::OnInterruptFinished() {}
+void ApcExternalActionDelegate::OnInterruptStarted() {
+  DCHECK(!model_before_interrupt_.has_value());
+  model_before_interrupt_ = model_;
+
+  // Reset the current model. The progress step remains the same, so we do not
+  // touch it.
+  SetTitle(std::u16string());
+  SetDescription(std::u16string());
+}
+
+void ApcExternalActionDelegate::OnInterruptFinished() {
+  DCHECK(model_before_interrupt_.has_value());
+
+  // Restore the state from prior to the interrupt. We reset the model
+  // by calling the setters instead of just restoring state to ensure that
+  // the view is informed about the updates.
+  PasswordChangeRunController::Model model = model_before_interrupt_.value();
+  SetTopIcon(model.top_icon);
+  SetTitle(model.title);
+  SetDescription(model.description);
+
+  model_before_interrupt_.reset();
+}
 
 // PasswordChangeRunController
 void ApcExternalActionDelegate::Show(

@@ -11,6 +11,7 @@
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PasswordChangeRunDisplay;
 class AssistantDisplayDelegate;
@@ -66,6 +67,9 @@ class ApcExternalActionDelegate
 
   // Stores the UI state of a password change run.
   PasswordChangeRunController::Model model_;
+
+  // Back up for the state before the start of an interrupt.
+  absl::optional<PasswordChangeRunController::Model> model_before_interrupt_;
 
   // The return values associated with each currently shown base prompt choice.
   // It is empty when no prompt is being displayed.

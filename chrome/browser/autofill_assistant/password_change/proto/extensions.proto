@@ -80,7 +80,7 @@ message GeneratedPasswordPromptSpecification {
 }
 
 // Updates the side panel rendered in desktop during APC runs.
-message UpdatepSidePanelSpecification {
+message UpdateSidePanelSpecification {
   // Icon rendered on top of the side panel.
   optional TopIcon top_icon = 1;
 

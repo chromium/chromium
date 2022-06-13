@@ -18,6 +18,8 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::SaveArg;
+using ProgressStep = autofill_assistant::password_change::ProgressStep;
+using TopIcon = autofill_assistant::password_change::TopIcon;
 
 namespace {
 
@@ -28,6 +30,11 @@ constexpr char kPromptText2[] = "Choice 2";
 constexpr bool kIsHighlighted1 = true;
 constexpr bool kIsHighlighted2 = false;
 constexpr char16_t kPassword[] = u"verySecretPassword123";
+constexpr TopIcon kTopIcon = TopIcon::TOP_ICON_ENTER_OLD_PASSWORD;
+constexpr ProgressStep kStep = ProgressStep::PROGRESS_STEP_START;
+
+constexpr char16_t kInterruptTitle[] = u"Title during interrupt";
+constexpr char16_t kInterruptDescription[] = u"Description during interrupt";
 
 autofill_assistant::password_change::BasePromptSpecification
 CreateBasePrompt() {
@@ -97,6 +104,37 @@ class ApcExternalActionDelegateTest : public ::testing::Test {
   // The object to be tested.
   std::unique_ptr<ApcExternalActionDelegate> action_delegate_;
 };
+
+TEST_F(ApcExternalActionDelegateTest, StartAndFinishInterrupt) {
+  // Simulate state prior to the interrupt.
+  action_delegate()->SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle)));
+  action_delegate()->SetDescription(
+      base::UTF8ToUTF16(base::StringPiece(kDescription)));
+  action_delegate()->SetTopIcon(kTopIcon);
+  action_delegate()->SetProgressBarStep(kStep);
+
+  // The interrupt clears model state apart from the progress step.
+  EXPECT_CALL(*display(), SetTitle(std::u16string()));
+  EXPECT_CALL(*display(), SetDescription(std::u16string()));
+  action_delegate()->OnInterruptStarted();
+
+  // Simulate calls during interrupt.
+  EXPECT_CALL(*display(), SetTitle(std::u16string(kInterruptTitle)));
+  EXPECT_CALL(*display(),
+              SetDescription(std::u16string(kInterruptDescription)));
+  action_delegate()->SetTitle(kInterruptTitle);
+  action_delegate()->SetDescription(kInterruptDescription);
+
+  // Expect the state to be restored when the interrupt finishes.
+  EXPECT_CALL(*display(),
+              SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle))));
+  EXPECT_CALL(
+      *display(),
+      SetDescription(base::UTF8ToUTF16(base::StringPiece(kDescription))));
+  EXPECT_CALL(*display(), SetTopIcon(kTopIcon));
+
+  action_delegate()->OnInterruptFinished();
+}
 
 TEST_F(ApcExternalActionDelegateTest, ShowBasePromptAndAccept) {
   // Save arguments for inspection.
