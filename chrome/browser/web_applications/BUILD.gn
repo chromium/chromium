@@ -261,6 +261,7 @@ source_set("web_applications") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/types:types",
+    "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:non_code_constants",

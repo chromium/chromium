@@ -1185,6 +1185,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/dips:browser_tests",
+      "//chrome/browser/favicon",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/image_decoder:browser_tests",
       "//chrome/browser/media/router:media_router_feature",
@@ -5533,6 +5534,7 @@ test("unit_tests") {
     "//chrome/browser/commerce/shopping_list:unit_tests",
     "//chrome/browser/devtools",
     "//chrome/browser/dips:unit_tests",
+    "//chrome/browser/favicon",
     "//chrome/browser/feature_guide/notifications:unit_tests",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/media/router",
@@ -9709,7 +9711,10 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/sync_test_utils_android.h",
     ]
   }
-  public_deps = [ "//chrome/browser" ]
+  public_deps = [
+    "//chrome/browser",
+    "//chrome/browser/favicon",
+  ]
   deps = [
     ":test_support",
     "//base",

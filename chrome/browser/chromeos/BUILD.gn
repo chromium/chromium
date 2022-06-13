@@ -212,6 +212,7 @@ source_set("chromeos") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",
+    "//chrome/browser/favicon",
     "//chrome/browser/image_decoder",
     "//chrome/browser/metrics/structured",
     "//chrome/browser/nearby_sharing/common",
