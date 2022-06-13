@@ -58,7 +58,7 @@ export class Output {
     /** @type {function(?)} @private */
     this.speechEndCallback_;
 
-    /** Store output rules */
+    // Store output rules.
     /** @type {!OutputRulesStr} @private */
     this.speechRulesStr_ = new OutputRulesStr('enableSpeechLogging');
     /** @type {!OutputRulesStr} @private */
