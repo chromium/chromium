@@ -6,12 +6,9 @@ import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//build_overrides/wayland.gni")
 import("//testing/test.gni")
 import("features.gni")
-
-if (ozone_platform_wayland) {
-  import("//third_party/wayland/features.gni")
-}
 
 # Generate a buildflag header for compile-time checking of Vulkan support.
 buildflag_header("buildflags") {
