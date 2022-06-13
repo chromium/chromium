@@ -6,6 +6,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -4120,6 +4121,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--target",
           "Release_x64"
@@ -8521,6 +8523,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--target",
           "Release_x64"

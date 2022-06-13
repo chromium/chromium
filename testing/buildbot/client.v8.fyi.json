@@ -1460,6 +1460,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -1521,6 +1522,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "-t",
           "Debug",
@@ -1585,6 +1587,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--flag-specific=future-js"
         ],
@@ -1648,6 +1651,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -1690,6 +1694,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",

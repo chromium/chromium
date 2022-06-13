@@ -112,6 +112,9 @@ crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProce
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
+# Vulkan enabled on linux, the crash fallback logic is different.
+crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

@@ -1480,6 +1480,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -3235,6 +3236,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -4998,6 +5000,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -6837,6 +6840,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
@@ -8635,6 +8639,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}",
           "--debug"
         ],
@@ -20864,6 +20869,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "ci_only": true,
@@ -22652,6 +22658,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
         "ci_only": true,
