@@ -23,6 +23,7 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,13 +81,8 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 class MockPasswordStoreBackendTester {
  public:
   MOCK_METHOD(void, HandleChanges, (absl::optional<PasswordStoreChangeList>));
-  MOCK_METHOD(void,
-              LoginsReceivedConstRef,
-              (const std::vector<std::unique_ptr<PasswordForm>>&));
+  MOCK_METHOD(void, LoginsReceivedConstRef, (const LoginsResult&));
 
-  void HandleLogins(std::vector<std::unique_ptr<PasswordForm>> results) {
-    LoginsReceivedConstRef(results);
-  }
   void HandleLoginsOrError(LoginsResultOrError results) {
     LoginsReceivedConstRef(std::move(absl::get<LoginsResult>(results)));
   }

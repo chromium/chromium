@@ -95,10 +95,6 @@ class PasswordStoreAndroidBackend
   // like a bulk deletion just as well as the normal, rather small job load.
   using JobMap = base::small_map<
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
-  using AccumulatedLoginsReply =
-      base::OnceCallback<void(std::unique_ptr<LoginsResult>)>;
-  using AccumulatedPasswordStoreChangeListReply =
-      base::OnceCallback<void(std::unique_ptr<PasswordStoreChangeList>)>;
 
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived stored_passwords_changed,
@@ -110,7 +106,7 @@ class PasswordStoreAndroidBackend
   void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
                                    LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
-      LoginsReply callback,
+      LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
@@ -178,7 +174,7 @@ class PasswordStoreAndroidBackend
   // |callback|.
   static LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
       const MetricInfix& metric_infix,
-      LoginsReply callback);
+      LoginsOrErrorReply callback);
 
   // Creates a metrics recorder that records latency and success metrics for
   // store modification operation with |metric_infix| name prior to

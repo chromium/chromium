@@ -436,25 +436,25 @@ void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
 }
 
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  auto handler =
-      base::MakeRefCounted<ShadowTrafficMetricsRecorder<LoginsResultImpl>>(
-          MethodName("FillMatchingLoginsAsync"));
+  auto handler = base::MakeRefCounted<
+      ShadowTrafficMetricsRecorder<LoginsResultOrErrorImpl>>(
+      MethodName("FillMatchingLoginsAsync"));
   main_backend()->FillMatchingLoginsAsync(
-      base::BindOnce(
-          &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordMainResult,
-          handler)
+      base::BindOnce(&ShadowTrafficMetricsRecorder<
+                         LoginsResultOrErrorImpl>::RecordMainResult,
+                     handler)
           .Then(std::move(callback)),
       include_psl, forms);
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
           prefs_, sync_delegate_->IsSyncingPasswordsEnabled())) {
     shadow_backend()->FillMatchingLoginsAsync(
-        base::BindOnce(
-            &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordShadowResult,
-            handler),
+        base::BindOnce(&ShadowTrafficMetricsRecorder<
+                           LoginsResultOrErrorImpl>::RecordShadowResult,
+                       handler),
         include_psl, forms);
   }
 }

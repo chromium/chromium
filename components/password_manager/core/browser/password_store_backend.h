@@ -113,9 +113,8 @@ class PasswordStoreBackend {
   // If |include_psl|==true, the PSL-matched forms are also included.
   // If multiple forms are given, those will be concatenated.
   // Callback is called on the main sequence.
-  // TODO(crbug.com/1217071): Check whether this needs OptionalLoginsReply, too.
   virtual void FillMatchingLoginsAsync(
-      LoginsReply callback,
+      LoginsOrErrorReply callback,
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) = 0;
 
