@@ -58,9 +58,9 @@
             module: device.createShaderModule({
               code: `
 struct VertexOutput {
-  @builtin(position) Position : vec4<f32>;
-  @location(0) fragUV : vec2<f32>;
-};
+  @builtin(position) Position : vec4<f32>,
+  @location(0) fragUV : vec2<f32>,
+}
 
 @vertex
 fn main(@builtin(vertex_index) idx : u32) -> VertexOutput {

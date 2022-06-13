@@ -32,9 +32,9 @@ async function webGpuInit(canvasWidth, canvasHeight) {
 const wgslShaders = {
   vertex: `
 struct VertexOutput {
-  @builtin(position) Position : vec4<f32>;
-  @location(0) fragUV : vec2<f32>;
-};
+  @builtin(position) Position : vec4<f32>,
+  @location(0) fragUV : vec2<f32>,
+}
 
 @vertex fn main(
   @location(0) position : vec2<f32>,
