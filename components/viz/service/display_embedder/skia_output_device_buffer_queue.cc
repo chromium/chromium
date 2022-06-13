@@ -406,7 +406,6 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
   // TODO(msisov): find a better place for this fence.
   std::unique_ptr<gfx::GpuFence> current_frame_fence;
 
-  std::vector<OutputPresenter::ScopedOverlayAccess*> accesses(overlays.size());
   for (const auto& overlay : overlays) {
     auto mailbox = overlay.mailbox;
 #if defined(USE_OZONE)
