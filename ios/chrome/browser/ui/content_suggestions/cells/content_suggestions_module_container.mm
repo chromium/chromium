@@ -15,6 +15,9 @@ namespace {
 // The horizontal inset of the contents to this container when there is a title.
 const float kContentHorizontalInset = 16.0f;
 
+// The vertical spacing between the title and the content of the module.
+const float kContentTitleVerticalSpacing = 10.0f;
+
 // The top inset of the title label to this container.
 const float kTitleTopInset = -11.0f;
 
@@ -97,7 +100,9 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
             constraintEqualToAnchor:self.trailingAnchor
                            constant:-kContentHorizontalInset],
         [contentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-        [contentView.topAnchor constraintEqualToAnchor:self.title.bottomAnchor],
+        [contentView.topAnchor
+            constraintEqualToAnchor:self.title.bottomAnchor
+                           constant:kContentTitleVerticalSpacing],
       ]];
     } else {
       [NSLayoutConstraint activateConstraints:@[
