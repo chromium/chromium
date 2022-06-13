@@ -23,7 +23,9 @@ class DISPLAY_EXPORT DisplayInfo final {
               Display::Rotation rotation,
               int display_frequency,
               const gfx::Vector2dF& pixels_per_inch,
-              DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology);
+              DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology,
+              const std::string& label);
+  DisplayInfo(const DisplayInfo& other);
   ~DisplayInfo();
 
   static int64_t DeviceIdFromDeviceName(const wchar_t* device_name);
@@ -39,6 +41,10 @@ class DISPLAY_EXPORT DisplayInfo final {
   DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology() const {
     return output_technology_;
   }
+  const std::string& label() const { return label_; }
+
+  bool operator==(const DisplayInfo& rhs) const;
+  bool operator!=(const DisplayInfo& rhs) const { return !(*this == rhs); }
 
  private:
   int64_t id_;
@@ -52,6 +58,7 @@ class DISPLAY_EXPORT DisplayInfo final {
   // monitors. In non-touch cases, it will be set to Zero.
   gfx::Vector2dF pixels_per_inch_;
   DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY output_technology_;
+  std::string label_;
 };
 
 }  // namespace win

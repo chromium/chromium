@@ -165,9 +165,9 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
     MONITORINFOEX monitor_info =
         win::test::CreateMonitorInfo(pixel_bounds, pixel_work, device_name);
     monitor_infos_.push_back(monitor_info);
-    display_infos_.push_back(DisplayInfo(monitor_info, device_scale_factor,
-                                         1.0f, Display::ROTATE_0, 60,
-                                         gfx::Vector2dF(), tech));
+    display_infos_.push_back(
+        DisplayInfo(monitor_info, device_scale_factor, 1.0f, Display::ROTATE_0,
+                    60, gfx::Vector2dF(), tech, std::string()));
   }
 
   HWND CreateFakeHwnd(const gfx::Rect& bounds) override {

@@ -129,6 +129,24 @@ absl::optional<DISPLAYCONFIG_PATH_INFO> GetPathInfo(HMONITOR monitor) {
   return absl::nullopt;
 }
 
+// Gets a user-friendly name for a given display using EDID data. Returns an
+// empty string if the provided path is unset/nullopt or EDID data is not
+// available for the device.
+std::string GetFriendlyDeviceName(
+    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+  if (!path)
+    return std::string();
+  DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
+  targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+  targetName.header.size = sizeof(targetName);
+  targetName.header.adapterId = path->targetInfo.adapterId;
+  targetName.header.id = path->targetInfo.id;
+  LONG result = DisplayConfigGetDeviceInfo(&targetName.header);
+  if (result == ERROR_SUCCESS && targetName.flags.friendlyNameFromEdid)
+    return base::WideToUTF8(targetName.monitorFriendlyDeviceName);
+  return std::string();
+}
+
 float GetSDRWhiteLevel(const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (path) {
     DISPLAYCONFIG_SDR_WHITE_LEVEL white_level = {};
@@ -289,6 +307,7 @@ Display CreateDisplayFromDisplayInfo(
       display_info.screen_work_rect(), 1.0f / scale_factor));
   display.set_rotation(display_info.rotation());
   display.set_display_frequency(display_info.display_frequency());
+  display.set_label(display_info.label());
 
   // DisplayColorSpaces is created using the forced color profile if present, or
   // from the ICC profile provided by |color_profile_reader| for SDR content,
@@ -477,7 +496,7 @@ BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
   display_infos->emplace_back(
       monitor_info, GetMonitorScaleFactor(monitor), GetSDRWhiteLevel(path_info),
       display_settings.rotation, display_settings.frequency, pixels_per_inch,
-      GetOutputTechnology(path_info));
+      GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
   return TRUE;
 }
 

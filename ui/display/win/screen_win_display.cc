@@ -20,6 +20,7 @@ Display CreateDisplayFromDisplayInfo(const DisplayInfo& display_info) {
                                                1.0f / scale_factor));
   display.set_rotation(display_info.rotation());
   display.set_display_frequency(display_info.display_frequency());
+  display.set_label(display_info.label());
   return display;
 }
 
