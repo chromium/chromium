@@ -1715,8 +1715,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             CriticalPersistedTabData.from(this).setUserAgent(tabUserAgent);
         }
         // We only calculate the user agent when users did not manually choose one.
-        if (tabUserAgent == TabUserAgent.DEFAULT
-                && ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)) {
+        if (tabUserAgent == TabUserAgent.DEFAULT) {
             // We only do the following logic to choose the desktop/mobile user agent if:
             // 1. User never manually made a choice in the app menu for requesting desktop site.
             // 2. User-enabled request desktop site in site settings.

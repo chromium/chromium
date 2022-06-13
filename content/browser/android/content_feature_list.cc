@@ -31,7 +31,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kOnDemandAccessibilityEvents,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kRequestDesktopSiteExceptions,
-    &features::kRequestDesktopSiteGlobal,
     &features::kTouchDragAndContextMenu,
     &features::kWebAuthConditionalUI,
     &features::kWebBluetoothNewPermissionsBackend,

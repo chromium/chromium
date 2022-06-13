@@ -105,8 +105,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
                 return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
-            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                return ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL);
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
             default:

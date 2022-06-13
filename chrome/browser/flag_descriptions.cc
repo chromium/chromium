@@ -3565,12 +3565,6 @@ const char kRequestDesktopSiteExceptionsDescription[] =
     "based on site level settings. Flag request-desktop-site-global "
     "needs to be enabled when enabling this flag.";
 
-const char kRequestDesktopSiteGlobalName[] =
-    "Global setting to request desktop site on Android.";
-const char kRequestDesktopSiteGlobalDescription[] =
-    "An option in `Site settings` to persistently request the "
-    "desktop version of websites.";
-
 const char kRequestDesktopSiteForTabletsName[] =
     "Request desktop site for tablets on Android";
 const char kRequestDesktopSiteForTabletsDescription[] =

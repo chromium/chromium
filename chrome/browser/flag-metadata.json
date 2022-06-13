@@ -5303,17 +5303,12 @@
   {
     "name": "request-desktop-site-exceptions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "request-desktop-site-for-tablets",
     "owners": [ "gangwu@chromium.org", "fgorski@chromium.org" ],
     "expiry_milestone": 96
-  },
-  {
-    "name": "request-desktop-site-global",
-    "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
   },
   {
     "name": "restore-session-from-cache",

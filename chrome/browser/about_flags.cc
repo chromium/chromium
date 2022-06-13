@@ -8242,13 +8242,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"request-desktop-site-global",
-     flag_descriptions::kRequestDesktopSiteGlobalName,
-     flag_descriptions::kRequestDesktopSiteGlobalDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kRequestDesktopSiteGlobal)},
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"u2f-security-key-api", flag_descriptions::kU2FSecurityKeyAPIName,
      flag_descriptions::kU2FSecurityKeyAPIDescription, kOsAll,

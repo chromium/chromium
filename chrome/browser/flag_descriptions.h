@@ -2031,9 +2031,6 @@ extern const char kRelatedSearchesUiDescription[];
 extern const char kRequestDesktopSiteExceptionsName[];
 extern const char kRequestDesktopSiteExceptionsDescription[];
 
-extern const char kRequestDesktopSiteGlobalName[];
-extern const char kRequestDesktopSiteGlobalDescription[];
-
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 
