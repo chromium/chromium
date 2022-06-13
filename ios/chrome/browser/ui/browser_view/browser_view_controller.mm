@@ -848,13 +848,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // TODO(crbug.com/1265565): Remove once kSingleNtp feature is launched and
 // directly reference `self.ntpCoordinator`.
 - (NewTabPageCoordinator*)ntpCoordinatorForWebState:(web::WebState*)webState {
-  if (IsSingleNtpEnabled()) {
-    return _ntpCoordinator;
-  }
-  auto found = _ntpCoordinatorsForWebStates.find(webState);
-  if (found != _ntpCoordinatorsForWebStates.end())
-    return found->second;
-  return nil;
+  return _ntpCoordinator;
 }
 
 #pragma mark - Public methods
@@ -1020,12 +1014,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/906199): Move this to the NewTabPageTabHelper when
   // WebStateObserver has a webUsage callback.
   if (!active) {
-    if (IsSingleNtpEnabled()) {
-      [self stopNTP];
-    } else {
-      for (const auto& element : _ntpCoordinatorsForWebStates)
-        [element.second stop];
-    }
+    [self stopNTP];
   }
 
   if (active) {
@@ -2221,9 +2210,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)displayWebState:(web::WebState*)webState {
   DCHECK(webState);
   [self loadViewIfNeeded];
-  if (IsSingleNtpEnabled()) {
-    self.ntpCoordinator.webState = webState;
-  }
+  self.ntpCoordinator.webState = webState;
 
   // Set this before triggering any of the possible page loads below.
   webState->SetKeepRenderProcessAlive(true);
@@ -2555,13 +2542,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // No need to stop _ntpCoordinator with Single NTP enabled since shutdown will
   // do that. In addition, uninstallDelegatesForWebState: is called for
   // individual WebState removals, which should not trigger a stop.
-  if (!IsSingleNtpEnabled()) {
-    auto iterator = _ntpCoordinatorsForWebStates.find(webState);
-    if (iterator != _ntpCoordinatorsForWebStates.end()) {
-      [iterator->second stop];
-      _ntpCoordinatorsForWebStates.erase(iterator);
-    }
-  }
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
@@ -2667,7 +2647,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Checks if there are any WebStates showing an NTP at this time. If not, then
 // deconstructs `ntpCoordinator`.
 - (void)stopNTPIfNeeded {
-  DCHECK(IsSingleNtpEnabled());
   BOOL activeNTP = NO;
   WebStateList* webStateList = self.browser->GetWebStateList();
   for (int i = 0; i < webStateList->count(); i++) {
@@ -2724,15 +2703,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
 
-  if (IsSingleNtpEnabled()) {
-    [self.ntpCoordinator.thumbStripSupporting
-        thumbStripEnabledWithPanHandler:panHandler];
-  } else {
-    for (const auto& element : _ntpCoordinatorsForWebStates) {
-      [element.second.thumbStripSupporting
-          thumbStripEnabledWithPanHandler:panHandler];
-    }
-  }
+  [self.ntpCoordinator.thumbStripSupporting
+      thumbStripEnabledWithPanHandler:panHandler];
 }
 
 - (void)thumbStripDisabled {
@@ -2760,13 +2732,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
 
-  if (IsSingleNtpEnabled()) {
-    [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
-  } else {
-    for (const auto& element : _ntpCoordinatorsForWebStates) {
-      [element.second.thumbStripSupporting thumbStripDisabled];
-    }
-  }
+  [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
 
   _thumbStripEnabled = NO;
 }
@@ -3783,7 +3749,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _keyCommandsProvider.canDismissModals = NO;
   [self.sideSwipeController setEnabled:YES];
 
-  if (self.isNTPActiveForCurrentWebState || IsSingleNtpEnabled()) {
+  if (self.isNTPActiveForCurrentWebState) {
     NewTabPageCoordinator* coordinator =
         [self ntpCoordinatorForWebState:self.currentWebState];
     [coordinator locationBarDidResignFirstResponder];
@@ -4013,9 +3979,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self dismissPopups];
   }
   // TODO(crbug.com/1272513): Move this update to NTPCoordinator.
-  if (IsSingleNtpEnabled()) {
-    self.ntpCoordinator.webState = newWebState;
-  }
+  self.ntpCoordinator.webState = newWebState;
   // NOTE: webStateSelected expects to always be called with a
   // non-null WebState.
   if (!newWebState)
@@ -4045,9 +4009,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     webState->SetKeepRenderProcessAlive(false);
   }
 
-  if (IsSingleNtpEnabled()) {
-    [self stopNTPIfNeeded];
-  }
+  [self stopNTPIfNeeded];
   [self uninstallDelegatesForWebState:webState];
 }
 
@@ -4168,11 +4130,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (tabURL == kChromeUINewTabURL && !_isOffTheRecord &&
       ![self canShowTabStrip]) {
-    if (IsSingleNtpEnabled()) {
-      // Update NTPCoordinator's WebState here since `self.currentWebState` has
-      // not been update to `webState` yet.
-      self.ntpCoordinator.webState = webState;
-    }
+    // Update NTPCoordinator's WebState here since `self.currentWebState` has
+    // not been update to `webState` yet.
+    self.ntpCoordinator.webState = webState;
     // Add a snapshot of the primary toolbar to the background as the
     // animation runs.
     UIViewController* toolbarViewController =
@@ -4549,49 +4509,21 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
                                 forWebState:(web::WebState*)webState {
-  if (IsSingleNtpEnabled()) {
-    if (webState != self.currentWebState) {
-      // In the instance that a pageload starts while the WebState is not the
-      // active WebState anymore, do nothing.
-      return;
-    }
-    if (NTPHelper->IsActive()) {
-      [self.ntpCoordinator ntpDidChangeVisibility:YES];
-      self.ntpCoordinator.webState = webState;
-      self.ntpCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
-      self.ntpCoordinator.shouldScrollIntoFeed =
-          NTPHelper->GetNextNTPScrolledToFeed();
-    } else {
-      [self.ntpCoordinator ntpDidChangeVisibility:NO];
-      self.ntpCoordinator.webState = nullptr;
-      [self stopNTPIfNeeded];
-    }
+  if (webState != self.currentWebState) {
+    // In the instance that a pageload starts while the WebState is not the
+    // active WebState anymore, do nothing.
+    return;
+  }
+  if (NTPHelper->IsActive()) {
+    [self.ntpCoordinator ntpDidChangeVisibility:YES];
+    self.ntpCoordinator.webState = webState;
+    self.ntpCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
+    self.ntpCoordinator.shouldScrollIntoFeed =
+        NTPHelper->GetNextNTPScrolledToFeed();
   } else {
-    if (NTPHelper->IsActive()) {
-      DCHECK(![self ntpCoordinatorForWebState:webState]);
-      // Checks for leaks in `_ntpCoordinatorsForWebStates`.
-      DCHECK_LE(static_cast<int>(_ntpCoordinatorsForWebStates.size()),
-                self.browser->GetWebStateList()->count() - 1);
-      // TODO(crbug.com/1300911): Have BrowserCoordinator manage the NTP.
-      NewTabPageCoordinator* newTabPageCoordinator =
-          [[NewTabPageCoordinator alloc]
-              initWithBaseViewController:self
-                                 browser:self.browser];
-      newTabPageCoordinator.panGestureHandler = self.thumbStripPanHandler;
-      newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
-      newTabPageCoordinator.webState = webState;
-      newTabPageCoordinator.bubblePresenter = _bubblePresenter;
-      newTabPageCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
-      newTabPageCoordinator.shouldScrollIntoFeed =
-          NTPHelper->GetNextNTPScrolledToFeed();
-      _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
-    } else {
-      NewTabPageCoordinator* newTabPageCoordinator =
-          [self ntpCoordinatorForWebState:webState];
-      DCHECK(newTabPageCoordinator);
-      [newTabPageCoordinator stop];
-      _ntpCoordinatorsForWebStates.erase(webState);
-    }
+    [self.ntpCoordinator ntpDidChangeVisibility:NO];
+    self.ntpCoordinator.webState = nullptr;
+    [self stopNTPIfNeeded];
   }
   if (self.active && self.currentWebState == webState) {
     [self displayWebState:webState];
