@@ -488,12 +488,18 @@ class CrossSiteDocumentBlockingImgElementTest
   CrossSiteDocumentBlockingImgElementTest() {
     switch (GetParam().mode) {
       case TestMode::kWithCORBProtectionSniffing:
-        scoped_feature_list_.InitAndEnableFeature(
-            network::features::kCORBProtectionSniffing);
+        scoped_feature_list_.InitWithFeatures(
+            /* enabled_features= */ {network::features::
+                                         kCORBProtectionSniffing},
+            /* disabled_features= */ {
+                network::features::kOpaqueResponseBlockingV01});
         break;
       case TestMode::kWithoutCORBProtectionSniffing:
-        scoped_feature_list_.InitAndDisableFeature(
-            network::features::kCORBProtectionSniffing);
+        scoped_feature_list_.InitWithFeatures(
+            /* enabled_features= */ {},
+            /* disabled_features= */ {
+                network::features::kCORBProtectionSniffing,
+                network::features::kOpaqueResponseBlockingV01});
         break;
       case TestMode::kWithORBv01:
         scoped_feature_list_.InitAndEnableFeature(
