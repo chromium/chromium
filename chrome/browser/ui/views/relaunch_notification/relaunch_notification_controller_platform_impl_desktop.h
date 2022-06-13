@@ -46,9 +46,10 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
   // Checks whether the required dialog is shown or not.
   bool IsRequiredNotificationShown() const;
 
+  views::Widget* GetWidgetForTesting() { return widget_; }
+
  protected:
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // BrowserListObserver:

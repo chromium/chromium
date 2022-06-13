@@ -9301,7 +9301,10 @@ if (!is_android) {
           "//ui/wm/public:public",
         ]
       } else {
-        sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc" ]
+        sources += [
+          "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc",
+          "../browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop_browsertest.cc",
+        ]
         deps += [
           "../browser/media/router:test_support",
           "../browser/ui/views:test_support",
