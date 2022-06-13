@@ -5,7 +5,10 @@
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,11 +21,12 @@ class MockLaunchAppHelper : public LaunchAppHelper {
  public:
   MockLaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,
                       LaunchEcheAppFunction launch_eche_app_function,
-                      LaunchNotificationFunction launch_notification_function)
+                      LaunchNotificationFunction launch_notification_function,
+                      CloseNotificationFunction close_notification_function)
       : LaunchAppHelper(phone_hub_manager,
                         launch_eche_app_function,
-                        launch_notification_function) {}
-
+                        launch_notification_function,
+                        close_notification_function) {}
   ~MockLaunchAppHelper() override = default;
   MockLaunchAppHelper(const MockLaunchAppHelper&) = delete;
   MockLaunchAppHelper& operator=(const MockLaunchAppHelper&) = delete;
@@ -36,6 +40,11 @@ class MockLaunchAppHelper : public LaunchAppHelper {
               (const, override));
 
   MOCK_METHOD(void, ShowToast, (const std::u16string& text), (const, override));
+
+  MOCK_METHOD(void,
+              CloseNotification,
+              (const std::string& notification_id),
+              (const, override));
 };
 
 class EcheAlertGeneratorTest : public testing::Test {
@@ -53,9 +62,14 @@ class EcheAlertGeneratorTest : public testing::Test {
                             base::Unretained(this)),
         base::BindRepeating(
             &EcheAlertGeneratorTest::FakeLaunchNotificationFunction,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &EcheAlertGeneratorTest::FakeCloseNotificationFunction,
             base::Unretained(this)));
-    alert_generator_ =
-        std::make_unique<EcheAlertGenerator>(launch_app_helper_.get());
+    alert_generator_ = std::make_unique<EcheAlertGenerator>(
+        launch_app_helper_.get(), &pref_service_);
+    pref_service_.registry()->RegisterBooleanPref(
+        ash::prefs::kEnableAutoScreenLock, false);
   }
 
   void TearDown() override {
@@ -78,6 +92,10 @@ class EcheAlertGeneratorTest : public testing::Test {
     // Do nothing.
   }
 
+  void FakeCloseNotificationFunction(const std::string& notification_id) {
+    // Do nothing.
+  }
+
   void ShowNotification(const std::u16string& title,
                         const std::u16string& message,
                         mojom::WebNotificationType type) {
@@ -88,11 +106,17 @@ class EcheAlertGeneratorTest : public testing::Test {
     alert_generator_->ShowToast(text);
   }
 
+  void TriggerOnEnableScreenLockChanged() {
+    // Trigger observer callback by changing kEnableAutoScreenLock value.
+    pref_service_.SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
+  }
+
   std::unique_ptr<MockLaunchAppHelper> launch_app_helper_;
 
  private:
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   std::unique_ptr<EcheAlertGenerator> alert_generator_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(EcheAlertGeneratorTest, ShowNotification) {
@@ -151,6 +175,11 @@ TEST_F(EcheAlertGeneratorTest, ShowToast) {
 
   EXPECT_CALL(*launch_app_helper_, ShowToast(testing::_));
   ShowToast(text);
+}
+
+TEST_F(EcheAlertGeneratorTest, VerifyCloseScreenLockNotification) {
+  EXPECT_CALL(*launch_app_helper_, CloseNotification(testing::_));
+  TriggerOnEnableScreenLockChanged();
 }
 
 }  // namespace eche_app

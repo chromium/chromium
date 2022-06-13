@@ -44,6 +44,8 @@ void LaunchNotificationFunction(
     const absl::optional<std::u16string>& message,
     std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {}
 
+void CloseNotificationFunction(const std::string& notification_id) {}
+
 class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
  public:
   FakePresenceMonitorClient() = default;
@@ -116,7 +118,8 @@ class EcheAppManagerTest : public testing::Test {
         fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),
         std::move(fake_presence_monitor_client),
         base::BindRepeating(&LaunchEcheAppFunction),
-        base::BindRepeating(&LaunchNotificationFunction));
+        base::BindRepeating(&LaunchNotificationFunction),
+        base::BindRepeating(&CloseNotificationFunction));
   }
 
   mojo::Remote<mojom::SignalingMessageExchanger>&

@@ -7,6 +7,7 @@
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -17,27 +18,6 @@
 
 namespace ash {
 namespace eche_app {
-
-const char kEcheAppScreenLockNotifierId[] =
-    "eche_app_notification_ids.screen_lock";
-
-// The notification type from WebUI is CONNECTION_FAILED or CONNECTION_LOST
-// allow users to retry.
-const char kEcheAppRetryConnectionNotifierId[] =
-    "eche_app_notification_ids.retry_connection";
-
-// The notification type from WebUI is DEVICE_IDLE
-// allow users to retry.
-const char kEcheAppInactivityNotifierId[] =
-    "eche_app_notification_ids.inactivity";
-
-// The notification type from WebUI without any actions need to do.
-const char kEcheAppFromWebWithoutButtonNotifierId[] =
-    "eche_app_notification_ids.from_web_without_button";
-
-// TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
-// some point.
-const char kEcheAppLearnMoreUrl[] = "https://support.google.com/chromebook";
 
 namespace {
 

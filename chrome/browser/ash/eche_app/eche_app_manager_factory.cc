@@ -185,6 +185,19 @@ void EcheAppManagerFactory::ShowNotification(
 }
 
 // static
+void EcheAppManagerFactory::CloseNotification(
+    base::WeakPtr<EcheAppManagerFactory> weak_ptr,
+    Profile* profile,
+    const std::string& notification_id) {
+  if (!weak_ptr->notification_controller_) {
+    weak_ptr->notification_controller_ =
+        std::make_unique<EcheAppNotificationController>(
+            profile, base::BindRepeating(&RelaunchLast));
+  }
+  weak_ptr->notification_controller_->CloseNotification(notification_id);
+}
+
+// static
 void EcheAppManagerFactory::LaunchEcheApp(
     Profile* profile,
     const absl::optional<int64_t>& notification_id,
@@ -257,6 +270,8 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       std::move(presence_monitor_client),
       base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
+                          weak_ptr_factory_.GetWeakPtr(), profile),
+      base::BindRepeating(&EcheAppManagerFactory::CloseNotification,
                           weak_ptr_factory_.GetWeakPtr(), profile));
 }
 

@@ -45,6 +45,9 @@ class EcheNotificationClickHandlerTest : public testing::Test {
             base::Unretained(this)),
         base::BindRepeating(
             &EcheNotificationClickHandlerTest::FakeLaunchNotificationFunction,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &EcheNotificationClickHandlerTest::FakeCloseNotificationFunction,
             base::Unretained(this)));
     handler_ = std::make_unique<EcheNotificationClickHandler>(
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
@@ -69,6 +72,10 @@ class EcheNotificationClickHandlerTest : public testing::Test {
       const absl::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
     num_notifications_shown_++;
+  }
+
+  void FakeCloseNotificationFunction(const std::string& notification_id) {
+    // Do nothing.
   }
 
   void SetStatus(FeatureStatus status) {

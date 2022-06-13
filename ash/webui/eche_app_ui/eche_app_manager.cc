@@ -42,7 +42,8 @@ EcheAppManager::EcheAppManager(
     std::unique_ptr<secure_channel::PresenceMonitorClient>
         presence_monitor_client,
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
-    LaunchAppHelper::LaunchNotificationFunction launch_notification_function)
+    LaunchAppHelper::LaunchNotificationFunction launch_notification_function,
+    LaunchAppHelper::CloseNotificationFunction close_notification_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -58,7 +59,8 @@ EcheAppManager::EcheAppManager(
       launch_app_helper_(
           std::make_unique<LaunchAppHelper>(phone_hub_manager,
                                             launch_eche_app_function,
-                                            launch_notification_function)),
+                                            launch_notification_function,
+                                            close_notification_function)),
       stream_status_change_handler_(
           std::make_unique<EcheStreamStatusChangeHandler>()),
       eche_notification_click_handler_(
@@ -92,7 +94,8 @@ EcheAppManager::EcheAppManager(
               launch_app_helper_.get(),
               stream_status_change_handler_.get())),
       alert_generator_(
-          std::make_unique<EcheAlertGenerator>(launch_app_helper_.get())),
+          std::make_unique<EcheAlertGenerator>(launch_app_helper_.get(),
+                                               pref_service)),
       apps_access_manager_(std::make_unique<AppsAccessManagerImpl>(
           eche_connector_.get(),
           message_receiver_.get(),

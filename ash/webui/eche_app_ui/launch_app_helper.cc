@@ -11,6 +11,7 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "base/check.h"
 #include "ui/gfx/image/image.h"
 
@@ -34,11 +35,12 @@ LaunchAppHelper::NotificationInfo::~NotificationInfo() = default;
 LaunchAppHelper::LaunchAppHelper(
     phonehub::PhoneHubManager* phone_hub_manager,
     LaunchEcheAppFunction launch_eche_app_function,
-    LaunchNotificationFunction launch_notification_function)
+    LaunchNotificationFunction launch_notification_function,
+    CloseNotificationFunction close_notification_function)
     : phone_hub_manager_(phone_hub_manager),
       launch_eche_app_function_(launch_eche_app_function),
-      launch_notification_function_(launch_notification_function) {}
-
+      launch_notification_function_(launch_notification_function),
+      close_notification_function_(close_notification_function) {}
 LaunchAppHelper::~LaunchAppHelper() = default;
 
 LaunchAppHelper::AppLaunchProhibitedReason
@@ -69,6 +71,11 @@ void LaunchAppHelper::ShowNotification(
     const absl::optional<std::u16string>& message,
     std::unique_ptr<NotificationInfo> info) const {
   launch_notification_function_.Run(title, message, std::move(info));
+}
+
+void LaunchAppHelper::CloseNotification(
+    const std::string& notification_id) const {
+  close_notification_function_.Run(notification_id);
 }
 
 void LaunchAppHelper::ShowToast(const std::u16string& text) const {

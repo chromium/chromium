@@ -10,6 +10,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

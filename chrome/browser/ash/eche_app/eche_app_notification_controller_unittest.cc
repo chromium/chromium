@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"

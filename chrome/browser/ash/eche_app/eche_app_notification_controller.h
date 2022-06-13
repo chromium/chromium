@@ -17,12 +17,6 @@ class Profile;
 namespace ash {
 namespace eche_app {
 
-extern const char kEcheAppScreenLockNotifierId[];
-extern const char kEcheAppRetryConnectionNotifierId[];
-extern const char kEcheAppInactivityNotifierId[];
-extern const char kEcheAppFromWebWithoutButtonNotifierId[];
-extern const char kEcheAppLearnMoreUrl[];
-
 // Controller class to show notifications.
 class EcheAppNotificationController {
  public:

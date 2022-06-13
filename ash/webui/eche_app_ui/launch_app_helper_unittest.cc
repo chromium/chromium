@@ -24,18 +24,41 @@
 namespace ash {
 namespace eche_app {
 
-namespace {
-void LaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
-                           const std::string& package_name,
-                           const std::u16string& visible_name,
-                           const absl::optional<int64_t>& user_id,
-                           const gfx::Image& icon) {}
+class Callback {
+ public:
+  static void LaunchEcheAppFunction(
+      const absl::optional<int64_t>& notification_id,
+      const std::string& package_name,
+      const std::u16string& visible_name,
+      const absl::optional<int64_t>& user_id,
+      const gfx::Image& icon) {
+    launchEcheApp_ = true;
+  }
 
-void LaunchNotificationFunction(
-    const absl::optional<std::u16string>& title,
-    const absl::optional<std::u16string>& message,
-    std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {}
-}  // namespace
+  static void ShowNotificationFunction(
+      const absl::optional<std::u16string>& title,
+      const absl::optional<std::u16string>& message,
+      std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
+    showNotification_ = true;
+  }
+
+  static void CloseNotificationFunction(const std::string& notification_id) {
+    closeNotification_ = true;
+  }
+
+  static bool getCloseNotification() { return closeNotification_; }
+  static bool getShowNotification() { return showNotification_; }
+  static bool getLaunchEcheApp() { return launchEcheApp_; }
+
+ private:
+  static bool showNotification_;
+  static bool closeNotification_;
+  static bool launchEcheApp_;
+};
+
+bool ash::eche_app::Callback::showNotification_ = false;
+bool ash::eche_app::Callback::closeNotification_ = false;
+bool ash::eche_app::Callback::launchEcheApp_ = false;
 
 class LaunchAppHelperTest : public ash::AshTestBase {
  protected:
@@ -56,8 +79,9 @@ class LaunchAppHelperTest : public ash::AshTestBase {
     fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
     launch_app_helper_ = std::make_unique<LaunchAppHelper>(
         fake_phone_hub_manager_.get(),
-        base::BindRepeating(&LaunchEcheAppFunction),
-        base::BindRepeating(&LaunchNotificationFunction));
+        base::BindRepeating(&Callback::LaunchEcheAppFunction),
+        base::BindRepeating(&Callback::ShowNotificationFunction),
+        base::BindRepeating(&Callback::CloseNotificationFunction));
     toast_manager_ = Shell::Get()->toast_manager();
   }
 
@@ -81,6 +105,26 @@ class LaunchAppHelperTest : public ash::AshTestBase {
     ToastOverlay* overlay = toast_manager_->GetCurrentOverlayForTesting();
     ASSERT_NE(nullptr, overlay);
     EXPECT_EQ(overlay->GetText(), text);
+  }
+
+  void LaunchEcheApp(const absl::optional<int64_t>& notification_id,
+                     const std::string& package_name,
+                     const std::u16string& visible_name,
+                     const absl::optional<int64_t>& user_id,
+                     const gfx::Image& icon) {
+    launch_app_helper_->LaunchEcheApp(notification_id, package_name,
+                                      visible_name, user_id, icon);
+  }
+
+  void ShowNotification(
+      const absl::optional<std::u16string>& title,
+      const absl::optional<std::u16string>& message,
+      std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
+    launch_app_helper_->ShowNotification(title, message, std::move(info));
+  }
+
+  void CloseNotification(const std::string& notification_id) {
+    launch_app_helper_->CloseNotification(notification_id);
   }
 
  private:
@@ -122,6 +166,39 @@ TEST_F(LaunchAppHelperTest, VerifyShowToast) {
   ShowToast(text);
 
   VerifyShowToast(text);
+}
+
+TEST_F(LaunchAppHelperTest, LaunchEcheApp) {
+  const absl::optional<int64_t> notification_id = 0;
+  const std::string package_name = "package_name";
+  const std::u16string visible_name = u"visible_name";
+  const absl::optional<int64_t> user_id = 0;
+
+  LaunchEcheApp(notification_id, package_name, visible_name, user_id,
+                gfx::Image());
+
+  EXPECT_TRUE(Callback::getLaunchEcheApp());
+}
+
+TEST_F(LaunchAppHelperTest, ShowNotification) {
+  const absl::optional<std::u16string> title = u"title";
+  const absl::optional<std::u16string> message = u"message";
+
+  ShowNotification(
+      title, message,
+      std::make_unique<LaunchAppHelper::NotificationInfo>(
+          LaunchAppHelper::NotificationInfo::Category::kNative,
+          LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
+
+  EXPECT_TRUE(Callback::getShowNotification());
+}
+
+TEST_F(LaunchAppHelperTest, CloseNotification) {
+  const std::string notification_id = "notification.id";
+
+  CloseNotification(notification_id);
+
+  EXPECT_TRUE(Callback::getCloseNotification());
 }
 
 }  // namespace eche_app
