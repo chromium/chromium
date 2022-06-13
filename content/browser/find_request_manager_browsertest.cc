@@ -160,7 +160,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   }
 
   FindTestWebContentsDelegate test_delegate_;
-  raw_ptr<WebContentsDelegate> normal_delegate_;
+  raw_ptr<WebContentsDelegate, DanglingUntriaged> normal_delegate_;
 
   // The ID of the last find request requested.
   int last_request_id_;

@@ -651,7 +651,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   FileSystemMap filesystem_permissions_;
 
   raw_ptr<BrowserContext> browser_context_;
-  raw_ptr<ResourceContext> resource_context_;
+  raw_ptr<ResourceContext, DanglingUntriaged> resource_context_;
 };
 
 // IsolatedOriginEntry implementation.

@@ -230,7 +230,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // NOTE: This may point to a native implementation (instead of a Mojo proxy
   // object). And it is possible that the implementation of |forwarding_client_|
   // destroys this object synchronously when this object is calling into it.
-  raw_ptr<network::mojom::URLLoaderClient> forwarding_client_;
+  raw_ptr<network::mojom::URLLoaderClient, DanglingUntriaged>
+      forwarding_client_;
   mojo::Remote<network::mojom::URLLoader> url_loader_;
 
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};

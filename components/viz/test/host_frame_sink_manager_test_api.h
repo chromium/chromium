@@ -35,7 +35,7 @@ class HostFrameSinkManagerTestApi {
 
  private:
   // Not owned.
-  raw_ptr<HostFrameSinkManager> host_frame_sink_manager_;
+  raw_ptr<HostFrameSinkManager, DanglingUntriaged> host_frame_sink_manager_;
 };
 
 }  // namespace viz

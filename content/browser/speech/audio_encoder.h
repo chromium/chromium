@@ -42,7 +42,7 @@ class AudioEncoder {
  private:
   AudioBuffer encoded_audio_buffer_;
 
-  raw_ptr<FLAC__StreamEncoder> encoder_;
+  raw_ptr<FLAC__StreamEncoder, DanglingUntriaged> encoder_;
   bool is_encoder_initialized_;
 };
 

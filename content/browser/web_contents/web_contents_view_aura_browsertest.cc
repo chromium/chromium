@@ -292,7 +292,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
-  raw_ptr<RenderWidgetHostImpl> drop_target_widget_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> drop_target_widget_;
 
   // A closure indicating that async drop operation has completed.
   base::OnceClosure async_drop_closure_;

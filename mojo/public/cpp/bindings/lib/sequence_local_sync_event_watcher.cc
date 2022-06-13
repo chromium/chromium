@@ -259,7 +259,7 @@ class SequenceLocalSyncEventWatcher::Registration {
 
  private:
   const base::WeakPtr<SequenceLocalState> weak_shared_state_;
-  const raw_ptr<SequenceLocalState> shared_state_;
+  const raw_ptr<SequenceLocalState, DanglingUntriaged> shared_state_;
   WatcherStateMap::iterator watcher_state_iterator_;
   const scoped_refptr<WatcherState> watcher_state_;
 };

@@ -69,7 +69,8 @@ class NetworkLocationProvider : public LocationProvider,
 
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().
-  raw_ptr<WifiDataProviderManager> wifi_data_provider_manager_;
+  raw_ptr<WifiDataProviderManager, DanglingUntriaged>
+      wifi_data_provider_manager_;
 
   WifiDataProviderManager::WifiDataUpdateCallback wifi_data_update_callback_;
 

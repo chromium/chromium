@@ -82,8 +82,8 @@ class ContextTestBase : public content::ContentBrowserTest {
   }
 
  protected:
-  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
-  raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_ = nullptr;
+  raw_ptr<gpu::ContextSupport, DanglingUntriaged> context_support_ = nullptr;
 
  private:
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;

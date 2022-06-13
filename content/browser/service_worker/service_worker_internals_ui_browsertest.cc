@@ -520,7 +520,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
-  raw_ptr<Shell> active_shell_ = shell();
+  raw_ptr<Shell, DanglingUntriaged> active_shell_ = shell();
 };
 
 // Tests

@@ -3681,7 +3681,7 @@ class FullscreenWebContentsObserver : public WebContentsObserver {
  private:
   base::RunLoop run_loop_;
   bool found_value_ = false;
-  raw_ptr<RenderFrameHost> wanted_rfh_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> wanted_rfh_;
 };
 
 }  // namespace

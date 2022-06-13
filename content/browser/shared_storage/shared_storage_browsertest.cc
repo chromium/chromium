@@ -402,8 +402,8 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
-  raw_ptr<TestSharedStorageWorkletHostManager> test_worklet_host_manager_ =
-      nullptr;
+  raw_ptr<TestSharedStorageWorkletHostManager, DanglingUntriaged>
+      test_worklet_host_manager_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {

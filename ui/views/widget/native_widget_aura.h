@@ -238,7 +238,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
  private:
   void SetInitialFocus(ui::WindowShowState show_state);
 
-  raw_ptr<internal::NativeWidgetDelegate> delegate_;
+  raw_ptr<internal::NativeWidgetDelegate, DanglingUntriaged> delegate_;
 
   // WARNING: set to NULL when destroyed. As the Widget is not necessarily
   // destroyed along with |window_| all usage of |window_| should first verify

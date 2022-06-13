@@ -178,7 +178,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   const FileSystemOptions file_system_options_;
   const base::FilePath base_path_;
   std::unique_ptr<AsyncFileUtil> file_util_;
-  raw_ptr<FileSystemIDToPluginMap> plugin_map_;  // Owned by file_util_.
+  raw_ptr<FileSystemIDToPluginMap, DanglingUntriaged>
+      plugin_map_;  // Owned by file_util_.
   base::WeakPtrFactory<PluginPrivateFileSystemBackend> weak_factory_{this};
 };
 

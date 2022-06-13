@@ -231,7 +231,7 @@ class LocalStorageImpl::StorageAreaHolder final
   // during destruction of the StorageAreaImpl instance we might still get
   // called and need access  to the StorageAreaImpl instance. The unique_ptr
   // could already be null, but this field should still be valid.
-  raw_ptr<StorageAreaImpl> area_ptr_;
+  raw_ptr<StorageAreaImpl, DanglingUntriaged> area_ptr_;
   std::unique_ptr<StorageAreaImpl> area_;
   bool has_bindings_ = false;
 };

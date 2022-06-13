@@ -18783,7 +18783,7 @@ class SandboxedNavigationControllerPopupBrowserTest
   }
 
  protected:
-  raw_ptr<Shell> popup_shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> popup_shell_ = nullptr;
 
  private:
   base::test::ScopedFeatureList feature_list_;

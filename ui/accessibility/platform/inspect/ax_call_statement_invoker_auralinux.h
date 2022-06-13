@@ -72,7 +72,7 @@ class AX_EXPORT AXCallStatementInvokerAuraLinux final {
 
   // Map between AXUIElement objects and their DOMIds/accessible tree
   // line numbers. Owned by the caller and outlives this object.
-  const base::raw_ptr<const AXTreeIndexerAuraLinux> indexer_;
+  const base::raw_ptr<const AXTreeIndexerAuraLinux, DanglingUntriaged> indexer_;
 
   // Variables storage. Owned by the caller and outlives this object.
   const base::raw_ptr<std::map<std::string, Target>> storage_;

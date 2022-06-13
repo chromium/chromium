@@ -151,7 +151,8 @@ class ContextProviderCommandBuffer
   const command_buffer_metrics::ContextType context_type_;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager, DanglingUntriaged>
+      gpu_memory_buffer_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
   // |shared_image_interface_| must be torn down after |command_buffer_| to
@@ -165,7 +166,7 @@ class ContextProviderCommandBuffer
   std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;
 
   // Owned by either gles2_impl_ or raster_interface_, not both.
-  raw_ptr<gpu::ImplementationBase> impl_;
+  raw_ptr<gpu::ImplementationBase, DanglingUntriaged> impl_;
   std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl_;
   std::unique_ptr<gpu::gles2::GLES2TraceImplementation> trace_impl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;

@@ -318,7 +318,7 @@ class PageLifecycleStateManagerTestDelegate
       const blink::mojom::PageLifecycleState& new_state) override;
   void OnDeleted() override;
 
-  raw_ptr<PageLifecycleStateManager> manager_;
+  raw_ptr<PageLifecycleStateManager, DanglingUntriaged> manager_;
   base::OnceClosure store_in_back_forward_cache_sent_;
   base::OnceClosure store_in_back_forward_cache_ack_received_;
   base::OnceClosure restore_from_back_forward_cache_sent_;

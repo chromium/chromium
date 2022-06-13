@@ -45,7 +45,7 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
   SessionMetricsHelper* get() const { return session_metrics_helper_; }
 
  private:
-  raw_ptr<SessionMetricsHelper> session_metrics_helper_;
+  raw_ptr<SessionMetricsHelper, DanglingUntriaged> session_metrics_helper_;
 };
 
 // Helper method to log out both the mode and the initially requested features

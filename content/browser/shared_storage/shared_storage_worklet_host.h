@@ -183,7 +183,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // Both `this` and `shared_storage_manager_` live in the `StoragePartition`.
   // `shared_storage_manager_` almost always outlives `this` (thus is valid)
   // except for inside `~SharedStorageWorkletHost()`.
-  raw_ptr<storage::SharedStorageManager> shared_storage_manager_;
+  raw_ptr<storage::SharedStorageManager, DanglingUntriaged>
+      shared_storage_manager_;
 
   // Pointer to the `BrowserContext`, saved to be able to call
   // `IsSharedStorageAllowed()`.

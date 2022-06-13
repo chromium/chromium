@@ -933,9 +933,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
   AllowlistedOriginContentBrowserClient content_browser_client_;
-  raw_ptr<ContentBrowserClient> old_content_browser_client_;
+  raw_ptr<ContentBrowserClient, DanglingUntriaged> old_content_browser_client_;
   std::unique_ptr<InterestGroupTestObserver> observer_;
-  raw_ptr<InterestGroupManagerImpl> manager_;
+  raw_ptr<InterestGroupManagerImpl, DanglingUntriaged> manager_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
       GUARDED_BY(requests_lock_);

@@ -137,8 +137,8 @@ class BASE_EXPORT BigEndianWriter {
   template<typename T>
   bool Write(T v);
 
-  raw_ptr<char> ptr_;
-  raw_ptr<char> end_;
+  raw_ptr<char, DanglingUntriaged> ptr_;
+  raw_ptr<char, DanglingUntriaged> end_;
 };
 
 }  // namespace base

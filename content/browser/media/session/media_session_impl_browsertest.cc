@@ -308,8 +308,8 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     return std::make_unique<net::test_server::BasicHttpResponse>();
   }
 
-  raw_ptr<MediaSessionImpl> media_session_;
-  raw_ptr<MockAudioFocusDelegate> mock_audio_focus_delegate_;
+  raw_ptr<MediaSessionImpl, DanglingUntriaged> media_session_;
+  raw_ptr<MockAudioFocusDelegate, DanglingUntriaged> mock_audio_focus_delegate_;
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
   net::EmbeddedTestServer favicon_server_;
   base::AtomicSequenceNumber favicon_calls_;

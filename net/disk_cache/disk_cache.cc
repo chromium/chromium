@@ -80,7 +80,7 @@ class CacheCreator {
 #if BUILDFLAG(IS_ANDROID)
   raw_ptr<base::android::ApplicationStatusListener> app_status_listener_;
 #endif
-  raw_ptr<std::unique_ptr<disk_cache::Backend>> backend_;
+  raw_ptr<std::unique_ptr<disk_cache::Backend>, DanglingUntriaged> backend_;
   base::OnceClosure post_cleanup_callback_;
   net::CompletionOnceCallback callback_;
   std::unique_ptr<disk_cache::Backend> created_cache_;

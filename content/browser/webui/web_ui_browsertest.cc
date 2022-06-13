@@ -182,7 +182,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  raw_ptr<TestWebUIMessageHandler> test_handler_ = nullptr;
+  raw_ptr<TestWebUIMessageHandler, DanglingUntriaged> test_handler_ = nullptr;
 };
 
 }  // namespace

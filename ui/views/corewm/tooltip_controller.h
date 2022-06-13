@@ -150,7 +150,8 @@ class VIEWS_EXPORT TooltipController
   // The tooltip should stay hidden after a mouse press event on the view until
   // the cursor moves to another view.
   std::u16string tooltip_text_at_mouse_press_;
-  raw_ptr<aura::Window> tooltip_window_at_mouse_press_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> tooltip_window_at_mouse_press_ =
+      nullptr;
 
   // Location of the last events in |tooltip_window_|'s coordinates.
   gfx::Point last_mouse_loc_;

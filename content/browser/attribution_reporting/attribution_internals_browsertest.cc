@@ -147,7 +147,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   MockAttributionManager* manager() { return manager_; }
 
  private:
-  raw_ptr<MockAttributionManager> manager_;
+  raw_ptr<MockAttributionManager, DanglingUntriaged> manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,

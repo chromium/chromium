@@ -4590,7 +4590,7 @@ class SitePerProcessMouseWheelHitTestBrowserTest
   }
 
  private:
-  raw_ptr<RenderWidgetHostViewAura> rwhv_root_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> rwhv_root_;
 };
 
 // Fails on Windows official build, see // https://crbug.com/800822
@@ -6409,10 +6409,10 @@ class SitePerProcessGestureHitTestBrowserTest
   }
 
  protected:
-  raw_ptr<RenderWidgetHostViewBase> rwhv_child_;
-  raw_ptr<RenderWidgetHostViewAura> rwhva_root_;
-  raw_ptr<RenderWidgetHostImpl> rwhi_child_;
-  raw_ptr<RenderWidgetHostImpl> rwhi_root_;
+  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> rwhv_child_;
+  raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> rwhva_root_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwhi_child_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwhi_root_;
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessGestureHitTestBrowserTest,

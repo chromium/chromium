@@ -587,7 +587,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
   const absl::optional<SkColor4f>& clear_color() const { return clear_color_; }
 
  private:
-  raw_ptr<const SkImage> sk_image_ = nullptr;
+  raw_ptr<const SkImage, DanglingUntriaged> sk_image_ = nullptr;
   raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
   absl::optional<SkColor4f> clear_color_;
 };

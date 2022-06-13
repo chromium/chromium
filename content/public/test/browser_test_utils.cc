@@ -3059,7 +3059,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
       run_loop_.Quit();
   }
 
-  raw_ptr<FrameTreeNode> owner_;
+  raw_ptr<FrameTreeNode, DanglingUntriaged> owner_;
   base::RunLoop run_loop_;
 };
 

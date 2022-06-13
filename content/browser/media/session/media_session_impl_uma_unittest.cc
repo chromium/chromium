@@ -82,7 +82,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
   media::MediaContentType media_content_type_;
 };
 

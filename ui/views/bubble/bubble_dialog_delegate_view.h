@@ -376,7 +376,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   BubbleBorder::Shadow shadow_;
   SkColor color_ = gfx::kPlaceholderColor;
   bool color_explicitly_set_ = false;
-  raw_ptr<Widget> anchor_widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> anchor_widget_ = nullptr;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;

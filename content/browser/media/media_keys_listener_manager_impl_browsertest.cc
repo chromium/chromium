@@ -154,8 +154,9 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
-  raw_ptr<MockMediaKeysListener> media_keys_listener_;
+  raw_ptr<MediaKeysListenerManagerImpl, DanglingUntriaged>
+      media_keys_listener_manager_;
+  raw_ptr<MockMediaKeysListener, DanglingUntriaged> media_keys_listener_;
   std::unique_ptr<TestMediaController> media_controller_;
 };
 

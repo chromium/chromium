@@ -99,7 +99,7 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
 
  private:
   bool is_incognito_;
-  raw_ptr<Shell> browser_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> browser_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

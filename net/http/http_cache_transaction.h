@@ -613,7 +613,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Initial request with which Start() was invoked.
   raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;
 
-  raw_ptr<const HttpRequestInfo> request_ = nullptr;
+  raw_ptr<const HttpRequestInfo, DanglingUntriaged> request_ = nullptr;
 
   std::string method_;
   RequestPriority priority_;
@@ -624,7 +624,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // |external_validation_| contains the value of those headers.
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
-  raw_ptr<HttpCache::ActiveEntry> entry_ = nullptr;
+  raw_ptr<HttpCache::ActiveEntry, DanglingUntriaged> entry_ = nullptr;
   HttpCache::ActiveEntry* new_entry_ = nullptr;
   std::unique_ptr<HttpTransaction> network_trans_;
   CompletionOnceCallback callback_;  // Consumer's callback.
@@ -640,7 +640,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
-  raw_ptr<const HttpResponseInfo> new_response_ = nullptr;
+  raw_ptr<const HttpResponseInfo, DanglingUntriaged> new_response_ = nullptr;
   std::string cache_key_;
   Mode mode_ = NONE;
   bool reading_ = false;          // We are already reading. Never reverts to

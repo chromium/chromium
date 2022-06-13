@@ -373,7 +373,7 @@ class OriginIsolationPrerenderOptInHeaderTest
   test::PrerenderTestHelper prerender_helper_;
 
  private:
-  raw_ptr<WebContents> prerender_web_contents_;
+  raw_ptr<WebContents, DanglingUntriaged> prerender_web_contents_;
 };  // class OriginIsolationPrerenderOptInHeaderTest
 
 // As in OriginIsolationOptInHeaderTest, but with same-process origin
@@ -2529,7 +2529,7 @@ class InjectIsolationRequestingNavigation
   }
 
   raw_ptr<OriginIsolationOptInHeaderTest> test_framework_;
-  raw_ptr<Shell> tab2_;
+  raw_ptr<Shell, DanglingUntriaged> tab2_;
   const GURL& url_;
   bool was_called_ = false;
 };

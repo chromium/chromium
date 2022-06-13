@@ -218,7 +218,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
     void EnsureSafeDelegateAccess() const {}
 #endif
 
-    const raw_ptr<Node> node_;
+    const raw_ptr<Node, DanglingUntriaged> node_;
     const raw_ptr<NodeDelegate> delegate_;
   };
 

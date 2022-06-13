@@ -387,7 +387,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
                                           bool allow_recursion) const;
 
   base::ObserverList<AXTreeObserver> observers_;
-  raw_ptr<AXNode> root_ = nullptr;
+  raw_ptr<AXNode, DanglingUntriaged> root_ = nullptr;
   std::unordered_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
   std::string error_;
   AXTreeData data_;

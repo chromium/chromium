@@ -85,9 +85,9 @@ class ContentIndexTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  raw_ptr<ShellContentIndexProvider> provider_;
-  raw_ptr<ContentIndexContext> context_;
-  raw_ptr<Shell> shell_;
+  raw_ptr<ShellContentIndexProvider, DanglingUntriaged> provider_;
+  raw_ptr<ContentIndexContext, DanglingUntriaged> context_;
+  raw_ptr<Shell, DanglingUntriaged> shell_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, GetIcons) {

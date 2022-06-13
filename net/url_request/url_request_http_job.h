@@ -232,7 +232,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;
-  raw_ptr<const HttpResponseInfo> response_info_ = nullptr;
+  raw_ptr<const HttpResponseInfo, DanglingUntriaged> response_info_ = nullptr;
 
   // Used for any logic, e.g. DNS-based scheme upgrade, that needs to synthesize
   // response info to override the real response info. Transaction should be

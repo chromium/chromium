@@ -445,7 +445,8 @@ class SequenceBound {
     //   destructor will `CHECK()` if `sequence_bound_` is non-null, since that
     //   indicates `Then()` was not invoked. Similarly, note this branch should
     //   be eliminated by the optimizer if the code is free of bugs. :)
-    raw_ptr<const SequenceBound<T, CrossThreadBindTraits>> sequence_bound_;
+    raw_ptr<const SequenceBound<T, CrossThreadBindTraits>, DanglingUntriaged>
+        sequence_bound_;
     // Subtle: this typically points at a Location *temporary*. This is used to
     // try to detect errors resulting from lifetime extension of the async call
     // factory temporaries, since the factory destructors can perform work. If

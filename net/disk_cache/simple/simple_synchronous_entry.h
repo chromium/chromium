@@ -104,7 +104,7 @@ struct SimpleEntryCreationResults {
   explicit SimpleEntryCreationResults(SimpleEntryStat entry_stat);
   ~SimpleEntryCreationResults();
 
-  raw_ptr<SimpleSynchronousEntry> sync_entry;
+  raw_ptr<SimpleSynchronousEntry, DanglingUntriaged> sync_entry;
   // This is set when `sync_entry` is null.
   std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations;
 

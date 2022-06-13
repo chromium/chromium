@@ -296,7 +296,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Owned by LayerTreeHostImpl and is destroyed when LayerTreeHostImpl is
   // destroyed.
-  raw_ptr<CompositorFrameReportingController>
+  raw_ptr<CompositorFrameReportingController, DanglingUntriaged>
       compositor_frame_reporting_controller_;
 
   // What the latest deadline was, and when it was scheduled.

@@ -45,7 +45,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
 
-  raw_ptr<aura_extra::ImageWindowDelegate> window_delegate_;
+  raw_ptr<aura_extra::ImageWindowDelegate, DanglingUntriaged> window_delegate_;
   std::unique_ptr<aura::Window> window_;
   bool enabled_;
   float alpha_;

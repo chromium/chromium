@@ -740,7 +740,7 @@ class RenderViewHostDestroyer : public WebContentsObserver {
   }
 
  private:
-  raw_ptr<RenderViewHost> render_view_host_;
+  raw_ptr<RenderViewHost, DanglingUntriaged> render_view_host_;
   std::unique_ptr<WebContents> web_contents_;
 };
 

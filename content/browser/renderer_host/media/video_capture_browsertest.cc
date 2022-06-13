@@ -239,8 +239,10 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 
   TestParams params_;
-  raw_ptr<MediaStreamManager> media_stream_manager_ = nullptr;
-  raw_ptr<VideoCaptureManager> video_capture_manager_ = nullptr;
+  raw_ptr<MediaStreamManager, DanglingUntriaged> media_stream_manager_ =
+      nullptr;
+  raw_ptr<VideoCaptureManager, DanglingUntriaged> video_capture_manager_ =
+      nullptr;
   base::UnguessableToken session_id_;
   const VideoCaptureControllerID stub_client_id_ =
       base::UnguessableToken::Create();

@@ -428,7 +428,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   //     remote client and |ui_task_runner_| will be nullptr, and calls to
   //     OnFrameTokenChanged() will be directly called (without PostTask) on
   //     |client_|. Used for some unit tests.
-  raw_ptr<mojom::FrameSinkManagerClient> client_ = nullptr;
+  raw_ptr<mojom::FrameSinkManagerClient, DanglingUntriaged> client_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   mojo::Remote<mojom::FrameSinkManagerClient> client_remote_;
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};

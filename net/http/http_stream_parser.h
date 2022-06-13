@@ -301,7 +301,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // The underlying socket, owned by the caller. The HttpStreamParser must be
   // destroyed before the caller destroys the socket, or relinquishes ownership
   // of it.
-  const raw_ptr<StreamSocket> stream_socket_;
+  const raw_ptr<StreamSocket, DanglingUntriaged> stream_socket_;
 
   // Whether the socket has already been used. Only used in HTTP/0.9 detection
   // logic.

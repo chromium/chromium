@@ -1844,7 +1844,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
-    raw_ptr<RenderFrameHost> source_frame;
+    raw_ptr<RenderFrameHost, DanglingUntriaged> source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     std::u16string message;
     int32_t line_no;

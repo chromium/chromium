@@ -71,7 +71,7 @@ class MockWebContentsDelegate : public WebContentsDelegate {
   }
 
  private:
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents, DanglingUntriaged> web_contents_;
   raw_ptr<ManifestBrowserTest> test_;
 };
 

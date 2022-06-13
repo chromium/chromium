@@ -140,7 +140,7 @@ class TestWebContentsDelegate : public WebContentsDelegate {
   bool is_in_picture_in_picture() const { return is_in_picture_in_picture_; }
 
  private:
-  const raw_ptr<Shell> shell_;
+  const raw_ptr<Shell, DanglingUntriaged> shell_;
   bool is_in_picture_in_picture_ = false;
 };
 

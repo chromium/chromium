@@ -111,7 +111,7 @@ class AX_EXPORT AXNode final {
 
    protected:
     raw_ptr<const NodeType> parent_;
-    raw_ptr<NodeType> child_;
+    raw_ptr<NodeType, DanglingUntriaged> child_;
   };
 
   // The constructor requires a parent, id, and index in parent, but

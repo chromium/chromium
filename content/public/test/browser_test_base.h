@@ -279,7 +279,7 @@ class BrowserTestBase : public ::testing::Test {
 
   bool allow_network_access_to_host_resolutions_ = false;
 
-  raw_ptr<BrowserMainParts> browser_main_parts_ = nullptr;
+  raw_ptr<BrowserMainParts, DanglingUntriaged> browser_main_parts_ = nullptr;
 
 #if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;

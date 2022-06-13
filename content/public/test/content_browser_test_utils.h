@@ -165,7 +165,7 @@ class ShellAddedObserver {
  private:
   void ShellCreated(Shell* shell);
 
-  raw_ptr<Shell> shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
   std::unique_ptr<base::RunLoop> runner_;
 };
 

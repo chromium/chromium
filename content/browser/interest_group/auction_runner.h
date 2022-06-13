@@ -324,18 +324,18 @@ class CONTENT_EXPORT AuctionRunner {
 
     // InterestGroup that made the bid. Owned by the BidState of that
     // InterestGroup.
-    const raw_ptr<const blink::InterestGroup> interest_group;
+    const raw_ptr<const blink::InterestGroup, DanglingUntriaged> interest_group;
 
     // Points to the InterestGroupAd within `interest_group`.
-    const raw_ptr<const blink::InterestGroup::Ad> bid_ad;
+    const raw_ptr<const blink::InterestGroup::Ad, DanglingUntriaged> bid_ad;
 
     // `bid_state` of the InterestGroup that made the bid. This should not be
     // written to, except for adding seller debug reporting URLs.
-    const raw_ptr<BidState> bid_state;
+    const raw_ptr<BidState, DanglingUntriaged> bid_state;
 
     // The Auction with the interest group that made this bid. Important in the
     // case of component auctions.
-    const raw_ptr<Auction> auction;
+    const raw_ptr<Auction, DanglingUntriaged> auction;
   };
 
   // Combines a Bid with seller score and seller state needed to invoke its

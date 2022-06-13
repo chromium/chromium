@@ -163,7 +163,7 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
 
  private:
   display::ScreenBase screen_;
-  raw_ptr<Shell> test_shell_ = nullptr;
+  raw_ptr<Shell, DanglingUntriaged> test_shell_ = nullptr;
 };
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.

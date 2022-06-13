@@ -280,7 +280,7 @@ class HttpStreamFactory::JobController
   // reference and is safe as |request_| will notify |this| JobController
   // when it's destructed by calling OnRequestComplete(), which nulls
   // |request_|.
-  raw_ptr<HttpStreamRequest> request_ = nullptr;
+  raw_ptr<HttpStreamRequest, DanglingUntriaged> request_ = nullptr;
 
   const raw_ptr<HttpStreamRequest::Delegate> delegate_;
 
@@ -335,7 +335,7 @@ class HttpStreamFactory::JobController
 
   // At the point where a Job is irrevocably tied to |request_|, we set this.
   // It will be nulled when the |request_| is finished.
-  raw_ptr<Job> bound_job_ = nullptr;
+  raw_ptr<Job, DanglingUntriaged> bound_job_ = nullptr;
 
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;

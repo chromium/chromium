@@ -598,7 +598,7 @@ class RenderFrameHostCreatedObserver : public WebContentsObserver {
   base::RunLoop run_loop_;
 
   // The last RenderFrameHost created.
-  raw_ptr<RenderFrameHost> last_rfh_ = nullptr;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> last_rfh_ = nullptr;
 
   // The callback to call when a RenderFrameCreated call is observed.
   OnRenderFrameHostCreatedCallback on_rfh_created_;

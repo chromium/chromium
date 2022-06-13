@@ -94,8 +94,9 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
-  using ImplType = std::
-      conditional_t<raw_ptr_traits::IsSupportedType<T>::value, raw_ptr<T>, T*>;
+  using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
+                                      raw_ptr<T, DanglingUntriaged>,
+                                      T*>;
   ImplType ptr_;
 };
 
@@ -114,8 +115,9 @@ class UnretainedRefWrapper {
   T& get() const { return *ptr_; }
 
  private:
-  using ImplType = std::
-      conditional_t<raw_ptr_traits::IsSupportedType<T>::value, raw_ptr<T>, T*>;
+  using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
+                                      raw_ptr<T, DanglingUntriaged>,
+                                      T*>;
   ImplType const ptr_;
 };
 

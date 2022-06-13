@@ -403,7 +403,7 @@ class TrustTokensTester {
   }
 
  private:
-  raw_ptr<network::mojom::NetworkContext> network_context_;
+  raw_ptr<network::mojom::NetworkContext, DanglingUntriaged> network_context_;
 };
 
 }  // namespace

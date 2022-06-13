@@ -364,7 +364,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   std::set<std::string> known_type_strings_;
 
   // Not owned.
-  raw_ptr<SandboxFileSystemBackendDelegate> sandbox_delegate_;
+  raw_ptr<SandboxFileSystemBackendDelegate, DanglingUntriaged>
+      sandbox_delegate_;
 
   std::unique_ptr<ObfuscatedFileUtilDelegate> delegate_;
 };

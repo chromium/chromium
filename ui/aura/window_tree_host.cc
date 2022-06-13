@@ -156,7 +156,7 @@ class WindowTreeHost::HideHelper {
     // WARNING: this has been deleted.
   }
 
-  raw_ptr<WindowTreeHost> host_;
+  raw_ptr<WindowTreeHost, DanglingUntriaged> host_;
   scoped_refptr<cc::Layer> compositor_root_layer_;
   std::unique_ptr<ui::Layer> layer_for_transition_;
   base::WeakPtrFactory<HideHelper> weak_ptr_factory_{this};

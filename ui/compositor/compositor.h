@@ -472,7 +472,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   //
   // These pointers are owned by |context_factory_|, and must be reset before
   // calling RemoveCompositor();
-  raw_ptr<viz::mojom::DisplayPrivate> display_private_ = nullptr;
+  raw_ptr<viz::mojom::DisplayPrivate, DanglingUntriaged> display_private_ =
+      nullptr;
   raw_ptr<viz::mojom::ExternalBeginFrameController>
       external_begin_frame_controller_ = nullptr;
 

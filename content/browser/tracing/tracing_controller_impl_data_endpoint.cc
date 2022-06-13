@@ -144,7 +144,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   base::FilePath file_path_;
   base::FilePath pending_file_path_;
   base::OnceClosure completion_callback_;
-  raw_ptr<FILE> file_ = nullptr;
+  raw_ptr<FILE, DanglingUntriaged> file_ = nullptr;
   const scoped_refptr<base::SequencedTaskRunner> may_block_task_runner_;
 };
 

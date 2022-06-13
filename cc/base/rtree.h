@@ -106,7 +106,7 @@ class RTree {
     // valid index pointing to an element in the vector that was used to build
     // this rtree. When the level is not 0, it's an internal node and it has a
     // valid subtree pointer.
-    raw_ptr<Node<U>> subtree;
+    raw_ptr<Node<U>, DanglingUntriaged> subtree;
     U payload;
 
     gfx::Rect bounds;

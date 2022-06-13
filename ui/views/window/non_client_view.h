@@ -232,7 +232,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // A ClientView object or subclass, responsible for sizing the contents view
   // of the window, hit testing and perhaps other tasks depending on the
   // implementation.
-  const raw_ptr<ClientView> client_view_;
+  const raw_ptr<ClientView, DanglingUntriaged> client_view_;
 
   // The NonClientFrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
@@ -241,7 +241,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
-  raw_ptr<View> overlay_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> overlay_view_ = nullptr;
 
   // The accessible name of this view.
   std::u16string accessible_name_;

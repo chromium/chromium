@@ -213,9 +213,9 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
   RenderWidgetHostViewBase* view() { return view_; }
 
  private:
-  raw_ptr<RenderWidgetHostViewBase> view_;
-  raw_ptr<RenderWidgetHostImpl> host_;
-  raw_ptr<RenderWidgetHostInputEventRouter> router_;
+  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> view_;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> host_;
+  raw_ptr<RenderWidgetHostInputEventRouter, DanglingUntriaged> router_;
 
   base::TimeTicks last_simulated_event_time_;
   const base::TimeDelta simulated_event_time_delta_;

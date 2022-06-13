@@ -571,7 +571,8 @@ class EmbeddedTestServer {
   std::unique_ptr<TCPServerSocket> listen_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
 
-  raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_ = nullptr;
+  raw_ptr<EmbeddedTestServerConnectionListener, DanglingUntriaged>
+      connection_listener_ = nullptr;
   uint16_t port_ = 0;
   GURL base_url_;
   IPEndPoint local_endpoint_;

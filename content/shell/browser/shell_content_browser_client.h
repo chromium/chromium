@@ -238,7 +238,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 #endif
 
   // Owned by content::BrowserMainLoop.
-  raw_ptr<ShellBrowserMainParts> shell_browser_main_parts_ = nullptr;
+  raw_ptr<ShellBrowserMainParts, DanglingUntriaged> shell_browser_main_parts_ =
+      nullptr;
 
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<ShellFieldTrials> field_trials_;

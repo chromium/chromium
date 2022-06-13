@@ -100,7 +100,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   // player_id. The value of the vector is the playing status and volume.
   std::vector<MockPlayer> players_;
 
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
 
   int received_resume_calls_ = 0;
   int received_suspend_calls_ = 0;

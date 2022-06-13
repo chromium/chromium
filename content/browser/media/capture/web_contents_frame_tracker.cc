@@ -98,7 +98,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   base::ScopedClosureRunner capture_handle_;
 
   // The backing WebContents.
-  raw_ptr<WebContents> contents_;
+  raw_ptr<WebContents, DanglingUntriaged> contents_;
 };
 
 }  // namespace

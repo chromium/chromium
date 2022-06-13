@@ -68,7 +68,7 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
 
   // An event to signal when the operation completes.
   base::WaitableEvent io_completed_;
-  raw_ptr<InFlightIO>
+  raw_ptr<InFlightIO, DanglingUntriaged>
       controller_;              // The controller that tracks all operations.
   base::Lock controller_lock_;  // A lock protecting clearing of controller_.
 };

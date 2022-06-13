@@ -199,7 +199,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
 
   // This is owned by SignedExchangeLoader which is the owner of |this|.
-  raw_ptr<SignedExchangeReporter> reporter_;
+  raw_ptr<SignedExchangeReporter, DanglingUntriaged> reporter_;
 
   const int frame_tree_node_id_;
 

@@ -111,7 +111,8 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   // `owner_render_frame_host_` is associated with). It is set in the
   // constructor. Initially null, and only set in the constructor (indirectly
   // via `CreateProxyAndAttachToOuterFrameTree()`).
-  raw_ptr<RenderFrameProxyHost> proxy_to_inner_main_frame_ = nullptr;
+  raw_ptr<RenderFrameProxyHost, DanglingUntriaged> proxy_to_inner_main_frame_ =
+      nullptr;
 
   // The FrameTree that we create to host the "inner" fenced frame contents.
   std::unique_ptr<FrameTree> frame_tree_;

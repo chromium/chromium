@@ -304,7 +304,7 @@ class ShellView : public views::BoxLayoutView,
 
   // Contents view contains the web contents view
   raw_ptr<views::View> contents_view_ = nullptr;
-  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<views::WebView, DanglingUntriaged> web_view_ = nullptr;
 };
 
 BEGIN_METADATA(ShellView, views::View)

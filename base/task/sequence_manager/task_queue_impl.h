@@ -330,7 +330,7 @@ class BASE_EXPORT TaskQueueImpl {
 
     base::internal::OperationsController operations_controller_;
     // Pointer might be stale, access guarded by |operations_controller_|
-    const raw_ptr<TaskQueueImpl> outer_;
+    const raw_ptr<TaskQueueImpl, DanglingUntriaged> outer_;
   };
 
   class TaskRunner final : public SingleThreadTaskRunner {

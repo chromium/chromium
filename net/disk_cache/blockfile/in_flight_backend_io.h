@@ -154,14 +154,14 @@ class BackendIO : public BackgroundIO {
   void ExecuteBackendOperation();
   void ExecuteEntryOperation();
 
-  raw_ptr<BackendImpl> backend_;
+  raw_ptr<BackendImpl, DanglingUntriaged> backend_;
   net::CompletionOnceCallback callback_;
   Operation operation_ = OP_NONE;
 
   // Used for ops that open or create entries.
   EntryResultCallback entry_result_callback_;
   // if set, already has the user's ref added.
-  raw_ptr<Entry> out_entry_ = nullptr;
+  raw_ptr<Entry, DanglingUntriaged> out_entry_ = nullptr;
   bool out_entry_opened_ = false;
 
   // For GetAvailableRange
@@ -172,7 +172,7 @@ class BackendIO : public BackgroundIO {
   std::string key_;
   base::Time initial_time_;
   base::Time end_time_;
-  raw_ptr<Rankings::Iterator> iterator_ = nullptr;
+  raw_ptr<Rankings::Iterator, DanglingUntriaged> iterator_ = nullptr;
   std::unique_ptr<Rankings::Iterator> scoped_iterator_;
   raw_ptr<EntryImpl> entry_ = nullptr;
   int index_ = 0;

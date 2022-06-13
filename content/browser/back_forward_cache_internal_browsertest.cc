@@ -2821,7 +2821,7 @@ class RenderViewHostDeletedObserver : public WebContentsObserver {
   bool deleted() const { return deleted_; }
 
  private:
-  raw_ptr<RenderViewHost> render_view_host_;
+  raw_ptr<RenderViewHost, DanglingUntriaged> render_view_host_;
   bool deleted_;
 };
 
