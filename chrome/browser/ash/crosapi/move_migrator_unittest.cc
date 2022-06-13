@@ -106,6 +106,50 @@ void SetUpExtensions(const base::FilePath& profile_path,
   }
 }
 
+// Setup the `Storage` folder inside a profile.
+// If `ash_only` is true, it will only generate data associated to extensions
+// that have to be kept in Ash. Otherwise, it will generate data for both
+// categories of extensions.
+void SetUpStorage(const base::FilePath& profile_path,
+                  bool ash = true,
+                  bool lacros = true,
+                  bool both = true) {
+  base::FilePath path =
+      profile_path.Append(browser_data_migrator_util::kStorageFilePath)
+          .Append(browser_data_migrator_util::kStorageExtFilePath);
+
+  // Generate data for an extension that has to be moved to Lacros.
+  if (lacros) {
+    ASSERT_TRUE(base::CreateDirectory(path.Append(kMoveExtensionId)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(kMoveExtensionId).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
+
+  // Generate data for an extension that has to stay in Ash.
+  if (ash) {
+    std::string keep_extension_id =
+        browser_data_migrator_util::kExtensionsAshOnly[0];
+    ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
+
+  // Generate data for an extension that has to be in both Ash and Lacros.
+  if (both) {
+    std::string both_extension_id =
+        browser_data_migrator_util::kExtensionsBothChromes[0];
+    ASSERT_TRUE(base::CreateDirectory(path.Append(both_extension_id)));
+    ASSERT_EQ(
+        base::WriteFile(path.Append(both_extension_id).Append(kDataFilePath),
+                        kDataContent, kDataSize),
+        kDataSize);
+  }
+}
+
 // Setup the `Local Storage` folder inside a profile.
 // If `ash_only` is true, it will only generate data associated to extensions
 // that have to be kept in Ash. Otherwise, it will generate data for both
@@ -304,6 +348,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   // |- Login Data/
   // |- Policy/
   // |- Preferences
+  // |- Storage/
   // |- Sync Data/
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
   ASSERT_EQ(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
@@ -331,6 +376,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
             kDataSize);
 
   SetUpExtensions(path);
+  SetUpStorage(path);
   SetUpLocalStorage(path);
   SetUpExtensionState(path);
   SetUpIndexedDB(path);
@@ -681,6 +727,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // |- Login Data
     // |- Policy
     // |- Preferences
+    // |- Storage/
     // |- Sync Data
     // |- lacros/First Run
     // |- lacros/Default/
@@ -691,6 +738,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     //     |- Local Storage
     //     |- Policy
     //     |- Preferences
+    //     |- Storage/
     //     |- Sync Data
 
     const base::FilePath new_user_dir =
@@ -740,6 +788,27 @@ class MoveMigratorMigrateTest : public ::testing::Test {
             .Append(kMoveExtensionId)));
     EXPECT_TRUE(base::PathExists(
         new_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)
+            .Append(kMoveExtensionId)));
+
+    // Storage.
+    EXPECT_TRUE(base::PathExists(
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
+            .Append(keep_extension_id)));
+    EXPECT_TRUE(base::PathExists(
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
+            .Append(both_extension_id)));
+    EXPECT_FALSE(base::PathExists(
+        original_profile_dir_
+            .Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
+            .Append(kMoveExtensionId)));
+    EXPECT_TRUE(base::PathExists(
+        new_profile_dir.Append(browser_data_migrator_util::kStorageFilePath)
+            .Append(browser_data_migrator_util::kStorageExtFilePath)
             .Append(kMoveExtensionId)));
 
     // Local Storage.
@@ -870,12 +939,14 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
+  //     |- Storage/
   //     |- Sync Data
   // |- move_migrator_split/
   //     |- Extensions
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Preferences
+  //     |- Storage/
   //     |- Sync Data
 
   const base::FilePath tmp_user_dir =
@@ -908,6 +979,16 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
+
+  // Storage objects that have to stay in both Ash and Lacros were copied to the
+  // split dir.
+  SetUpStorage(tmp_split_dir, /*ash=*/false, /*lacros=*/false,
+               /*both=*/true);
+  // Storage objects have been moved to Lacros's tmp dir.
+  ASSERT_TRUE(base::Move(
+      original_profile_dir_.Append(
+          browser_data_migrator_util::kStorageFilePath),
+      tmp_profile_dir.Append(browser_data_migrator_util::kStorageFilePath)));
 
   // IndexedDB objects that have to stay in both Ash and Lacros were copied to
   // the split dir.
@@ -961,12 +1042,14 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
+  //     |- Storage/
   //     |- Sync Data
   // |- move_migrator_split/
   //     |- Extensions
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Preferences
+  //     |- Storage/
   //     |- Sync Data
 
   const base::FilePath tmp_user_dir =
@@ -1002,6 +1085,17 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
       original_profile_dir_.Append(
           browser_data_migrator_util::kExtensionsFilePath),
       tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath)));
+
+  // Storage objects that have to stay in both Ash and Lacros were copied to the
+  // split dir.
+  SetUpStorage(tmp_split_dir, /*ash=*/false, /*lacros=*/false,
+               /*both=*/true);
+  // Storage objects have been moved to Lacros's tmp dir, but not yet split and
+  // moved to Ash profile dir.
+  ASSERT_TRUE(base::Move(
+      original_profile_dir_.Append(
+          browser_data_migrator_util::kStorageFilePath),
+      tmp_profile_dir.Append(browser_data_migrator_util::kStorageFilePath)));
 
   // IndexedDB objects that have to stay in both Ash and Lacros were copied to
   // the split dir.
@@ -1050,6 +1144,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   // |- Local Storage
   // |- Policy
   // |- Preferences
+  // |- Storage/
   // |- Sync Data
   // |- move_migrator/First Run
   // |- move_migrator/Default/
@@ -1059,6 +1154,7 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   //     |- Local Storage
   //     |- Policy
   //     |- Preferences
+  //     |- Storage/
   //     |- Sync Data
 
   const base::FilePath tmp_user_dir =
@@ -1086,6 +1182,12 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
       browser_data_migrator_util::kExtensionsFilePath)));
   SetUpExtensions(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
   SetUpExtensions(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
+
+  // Storage objects have been split, and Ash's version is in its final place.
+  ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(
+      browser_data_migrator_util::kStorageFilePath)));
+  SetUpStorage(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpStorage(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   // IndexedDB has been split, and Ash's version is in its final place.
   ASSERT_TRUE(base::DeletePathRecursively(original_profile_dir_.Append(

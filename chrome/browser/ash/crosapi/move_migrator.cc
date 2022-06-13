@@ -404,35 +404,22 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
   }
 
   // Copy extensions that have to be in both Ash and Lacros.
-  const base::FilePath original_extensions_dir = original_profile_dir.Append(
-      browser_data_migrator_util::kExtensionsFilePath);
-  if (base::PathExists(original_extensions_dir)) {
-    const base::FilePath split_extensions_dir =
-        tmp_split_dir.Append(browser_data_migrator_util::kExtensionsFilePath);
-    if (!base::CreateDirectory(split_extensions_dir)) {
-      PLOG(ERROR) << "CreateDirectory() failed for  "
-                  << split_extensions_dir.value();
-      return {TaskStatus::kSetupAshDirCreateDirFailed, errno};
-    }
+  TaskResult task_result =
+      CopyBothChromesSubdirs(original_profile_dir, tmp_split_dir,
+                             browser_data_migrator_util::kExtensionsFilePath,
+                             TaskStatus::kSetupAshDirCopyExtensionsFailed);
+  if (task_result.status != TaskStatus::kSucceeded)
+    return task_result;
 
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionsBothChromes) {
-      base::FilePath original_extension_path =
-          original_extensions_dir.Append(extension_id);
-
-      if (base::PathExists(original_extension_path)) {
-        base::FilePath split_extension_path =
-            split_extensions_dir.Append(extension_id);
-
-        if (!base::CopyDirectory(original_extension_path, split_extension_path,
-                                 /*recursive=*/true)) {
-          PLOG(ERROR) << "Failed copying " << original_extension_path.value()
-                      << " to " << split_extension_path.value();
-          return {TaskStatus::kSetupAshDirCopyExtensionsFailed, errno};
-        }
-      }
-    }
-  }
+  // Copy Storage objects for extensions that have to be both in Ash and Lacros.
+  task_result = CopyBothChromesSubdirs(
+      original_profile_dir, tmp_split_dir,
+      base::FilePath(browser_data_migrator_util::kStorageFilePath)
+          .Append(browser_data_migrator_util::kStorageExtFilePath)
+          .value(),
+      TaskStatus::kSetupAshDirCopyStorageFailed);
+  if (task_result.status != TaskStatus::kSucceeded)
+    return task_result;
 
   // Copy IndexedDB objects for extensions that have to be both in
   // Ash and Lacros.
@@ -637,32 +624,23 @@ MoveMigrator::TaskResult MoveMigrator::MoveSplitItemsToOriginalDir(
   }
 
   // Move extensions in the keeplist back to Ash's profile directory.
-  const base::FilePath lacros_extensions_dir =
-      tmp_profile_dir.Append(browser_data_migrator_util::kExtensionsFilePath);
-  if (base::PathExists(lacros_extensions_dir)) {
-    const base::FilePath ash_extensions_dir = original_profile_dir.Append(
-        browser_data_migrator_util::kExtensionsFilePath);
-    if (!base::CreateDirectory(ash_extensions_dir)) {
-      PLOG(ERROR) << "CreateDirectory() failed for  "
-                  << ash_extensions_dir.value();
-      return {TaskStatus::kMoveSplitItemsToOriginalDirCreateDirFailed, errno};
-    }
+  TaskResult task_result = MoveAshSubdirs(
+      tmp_profile_dir, original_profile_dir,
+      browser_data_migrator_util::kExtensionsFilePath,
+      TaskStatus::kMoveSplitItemsToOriginalDirMoveExtensionsFailed);
+  if (task_result.status != TaskStatus::kSucceeded)
+    return task_result;
 
-    // Move Ash-only extensions.
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionsAshOnly) {
-      base::FilePath lacros_path = lacros_extensions_dir.Append(extension_id);
-      if (base::PathExists(lacros_path)) {
-        base::FilePath ash_path = ash_extensions_dir.Append(extension_id);
-        if (!base::Move(lacros_path, ash_path)) {
-          PLOG(ERROR) << "Failed moving " << lacros_path.value() << " to "
-                      << ash_path.value();
-          return {TaskStatus::kMoveSplitItemsToOriginalDirMoveExtensionsFailed,
-                  errno};
-        }
-      }
-    }
-  }
+  // Move Storage objects related to extensions in the keeplist back to Ash's
+  // profile directory.
+  task_result = MoveAshSubdirs(
+      tmp_profile_dir, original_profile_dir,
+      base::FilePath(browser_data_migrator_util::kStorageFilePath)
+          .Append(browser_data_migrator_util::kStorageExtFilePath)
+          .value(),
+      TaskStatus::kMoveSplitItemsToOriginalDirMoveStorageFailed);
+  if (task_result.status != TaskStatus::kSucceeded)
+    return task_result;
 
   // Move IndexedDB objects related to extensions in the keeplist back to Ash's
   // profile directory.
@@ -750,6 +728,80 @@ void MoveMigrator::OnMoveTmpDirToLacrosDir(TaskResult result) {
   InvokeCallback(result);
 }
 
+// static
+MoveMigrator::TaskResult MoveMigrator::CopyBothChromesSubdirs(
+    const base::FilePath& original_profile_dir,
+    const base::FilePath& tmp_split_dir,
+    const std::string& target_dir,
+    TaskStatus copy_fail_status) {
+  const base::FilePath original_target_dir =
+      original_profile_dir.Append(target_dir);
+
+  if (base::PathExists(original_target_dir)) {
+    const base::FilePath split_target_dir = tmp_split_dir.Append(target_dir);
+    if (!base::CreateDirectory(split_target_dir)) {
+      PLOG(ERROR) << "CreateDirectory() failed for  "
+                  << split_target_dir.value();
+      return {TaskStatus::kSetupAshDirCreateDirFailed, errno};
+    }
+
+    // Copy objects that belong to both Ash and Lacros.
+    for (const char* extension_id :
+         browser_data_migrator_util::kExtensionsBothChromes) {
+      base::FilePath original_target_path =
+          original_target_dir.Append(extension_id);
+
+      if (base::PathExists(original_target_path)) {
+        base::FilePath split_target_path =
+            split_target_dir.Append(extension_id);
+
+        if (!base::CopyDirectory(original_target_path, split_target_path,
+                                 /*recursive=*/true)) {
+          PLOG(ERROR) << "Failed copying " << original_target_path.value()
+                      << " to " << split_target_path.value();
+          return {copy_fail_status, errno};
+        }
+      }
+    }
+  }
+
+  return {TaskStatus::kSucceeded};
+}
+
+// static
+MoveMigrator::TaskResult MoveMigrator::MoveAshSubdirs(
+    const base::FilePath& tmp_profile_dir,
+    const base::FilePath& original_profile_dir,
+    const std::string& target_dir,
+    TaskStatus move_fail_status) {
+  const base::FilePath lacros_target_dir = tmp_profile_dir.Append(target_dir);
+
+  if (base::PathExists(lacros_target_dir)) {
+    const base::FilePath ash_target_dir =
+        original_profile_dir.Append(target_dir);
+    if (!base::CreateDirectory(ash_target_dir)) {
+      PLOG(ERROR) << "CreateDirectory() failed for  " << ash_target_dir.value();
+      return {TaskStatus::kMoveSplitItemsToOriginalDirCreateDirFailed, errno};
+    }
+
+    // Move Ash-only objects.
+    for (const char* extension_id :
+         browser_data_migrator_util::kExtensionsAshOnly) {
+      base::FilePath lacros_path = lacros_target_dir.Append(extension_id);
+      if (base::PathExists(lacros_path)) {
+        base::FilePath ash_path = ash_target_dir.Append(extension_id);
+        if (!base::Move(lacros_path, ash_path)) {
+          PLOG(ERROR) << "Failed moving " << lacros_path.value() << " to "
+                      << ash_path.value();
+          return {move_fail_status, errno};
+        }
+      }
+    }
+  }
+
+  return {TaskStatus::kSucceeded};
+}
+
 void MoveMigrator::InvokeCallback(TaskResult result) {
   UMA_HISTOGRAM_ENUMERATION(kMoveMigratorTaskStatusUMA, result.status);
   if (result.status != TaskStatus::kSucceeded &&
@@ -798,6 +850,8 @@ MoveMigrator::ToBrowserDataMigratorMigrationResult(TaskResult result) {
     case TaskStatus::kSetupAshDirCopyExtensionsFailed:
     case TaskStatus::kSetupAshDirCopyIndexedDBFailed:
     case TaskStatus::kSetupAshDirMigrateSyncDataFailed:
+    case TaskStatus::kSetupAshDirCopyStorageFailed:
+    case TaskStatus::kMoveSplitItemsToOriginalDirMoveStorageFailed:
       return {BrowserDataMigratorImpl::DataWipeResult::kSucceeded,
               {BrowserDataMigratorImpl::ResultKind::kFailed}};
   }
@@ -845,6 +899,8 @@ std::string MoveMigrator::TaskStatusToString(TaskStatus task_status) {
     MAPPING(SetupAshDirCopyExtensionsFailed);
     MAPPING(SetupAshDirCopyIndexedDBFailed);
     MAPPING(SetupAshDirMigrateSyncDataFailed);
+    MAPPING(SetupAshDirCopyStorageFailed);
+    MAPPING(MoveSplitItemsToOriginalDirMoveStorageFailed);
 #undef MAPPING
   }
 }

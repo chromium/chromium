@@ -173,7 +173,9 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
     kSetupAshDirCopyExtensionsFailed = 22,
     kSetupAshDirCopyIndexedDBFailed = 23,
     kSetupAshDirMigrateSyncDataFailed = 24,
-    kMaxValue = kSetupAshDirMigrateSyncDataFailed,
+    kSetupAshDirCopyStorageFailed = 25,
+    kMoveSplitItemsToOriginalDirMoveStorageFailed = 26,
+    kMaxValue = kMoveSplitItemsToOriginalDirMoveStorageFailed,
   };
 
   struct TaskResult {
@@ -267,6 +269,25 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
 
   // Called as a reply to `MoveTmpDirToLacrosDir()`.
   void OnMoveTmpDirToLacrosDir(TaskResult);
+
+  // Selectively copy `target_dir` from `original_profile_dir` to
+  // `tmp_split_dir`. Only copy the subdirectories belonging to extensions
+  // that have to stay in both Ash and Lacros.
+  // If copying fails, return a TaskResult with `copy_fail_status` TaskStatus.
+  static TaskResult CopyBothChromesSubdirs(
+      const base::FilePath& original_profile_dir,
+      const base::FilePath& tmp_split_dir,
+      const std::string& target_dir,
+      TaskStatus copy_fail_status);
+
+  // Selectively move `target_dir` from `tmp_profile_dir` to
+  // `original_profile_dir`. Only move the subdirectories belonging to
+  // extensions that have to be in Ash only.
+  // If moving fails, return a TaskResult with `move_fail_status` TaskStatus.
+  static TaskResult MoveAshSubdirs(const base::FilePath& tmp_profile_dir,
+                                   const base::FilePath& original_profile_dir,
+                                   const std::string& target_dir,
+                                   TaskStatus move_fail_status);
 
   // Records the final status of the migration in `kMoveMigratorTaskStatusUMA`
   // and calls `finished_callback_`. This function gets called once regardless

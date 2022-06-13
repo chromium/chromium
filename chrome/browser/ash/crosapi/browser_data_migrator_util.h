@@ -174,6 +174,7 @@ constexpr const char* const kLacrosDataPaths[]{
     "Session Storage",
     "Sessions",
     "Shortcuts",
+    "Storage",
     "Sync App Settings",
     "Sync Extension Settings",
     "Top Sites",
@@ -238,6 +239,10 @@ constexpr const char* const kStateStorePaths[] = {
     "Extension Scripts",
     "Extension State",
 };
+
+// `Storage` path.
+constexpr char kStorageFilePath[] = "Storage";
+constexpr char kStorageExtFilePath[] = "ext";
 
 // The type of LevelDB schema.
 enum class LevelDBType {
