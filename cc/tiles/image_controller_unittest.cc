@@ -13,6 +13,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/skia_common.h"

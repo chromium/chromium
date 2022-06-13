@@ -5,7 +5,8 @@
 #ifndef CC_TILES_IMAGE_CONTROLLER_H_
 #define CC_TILES_IMAGE_CONTROLLER_H_
 
-#include <set>
+#include <map>
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
@@ -13,8 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/simple_thread.h"
+#include "base/thread_annotations.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/cc_export.h"
 #include "cc/paint/draw_image.h"
@@ -31,7 +33,7 @@ class CC_EXPORT ImageController {
   using ImageDecodedCallback =
       base::OnceCallback<void(ImageDecodeRequestId, ImageDecodeResult)>;
   explicit ImageController(
-      base::SequencedTaskRunner* origin_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
       scoped_refptr<base::SequencedTaskRunner> worker_task_runner);
   ImageController(const ImageController&) = delete;
   virtual ~ImageController();
@@ -105,32 +107,51 @@ class CC_EXPORT ImageController {
     bool need_unref;
   };
 
+  enum class WorkerTaskState {
+    kNoTask,
+    kQueuedTask,
+    kRunningTask,
+  };
+
+  // State accessible from the worker thread. Held in a isolated struct so it
+  // can be deleted asynchronously on the worker thread after the
+  // ImageController is deleted.
+  struct WorkerState {
+    WorkerState(scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
+                base::WeakPtr<ImageController> weak_ptr);
+    ~WorkerState();
+
+    base::Lock lock;
+    std::map<ImageDecodeRequestId, ImageDecodeRequest> image_decode_queue
+        GUARDED_BY(lock);
+    std::map<ImageDecodeRequestId, ImageDecodeRequest>
+        requests_needing_completion GUARDED_BY(lock);
+    WorkerTaskState task_state GUARDED_BY(lock) = WorkerTaskState::kNoTask;
+    bool abort_task GUARDED_BY(lock) = false;
+
+    const scoped_refptr<base::SequencedTaskRunner> origin_task_runner;
+    const base::WeakPtr<ImageController> weak_ptr;
+  };
+
   void StopWorkerTasks();
 
-  // Called from the worker thread.
-  void ProcessNextImageDecodeOnWorkerThread();
+  static void ProcessNextImageDecodeOnWorkerThread(WorkerState* worker_state);
 
   void ImageDecodeCompleted(ImageDecodeRequestId id);
   void GenerateTasksForOrphanedRequests();
 
-  base::WeakPtr<ImageController> weak_ptr_;
+  void ScheduleImageDecodeOnWorkerIfNeeded()
+      EXCLUSIVE_LOCKS_REQUIRED(worker_state_->lock);
 
   raw_ptr<ImageDecodeCache> cache_ = nullptr;
   std::vector<DrawImage> predecode_locked_images_;
 
   static ImageDecodeRequestId s_next_image_decode_queue_id_;
   base::flat_map<ImageDecodeRequestId, DrawImage> requested_locked_images_;
-
-  raw_ptr<base::SequencedTaskRunner> origin_task_runner_ = nullptr;
   size_t image_cache_max_limit_bytes_ = 0u;
 
-  // The variables defined below this lock (aside from weak_ptr_factory_) can
-  // only be accessed when the lock is acquired.
-  base::Lock lock_;
-  std::map<ImageDecodeRequestId, ImageDecodeRequest> image_decode_queue_;
-  std::map<ImageDecodeRequestId, ImageDecodeRequest>
-      requests_needing_completion_;
-  bool abort_tasks_ = false;
+  std::unique_ptr<WorkerState> worker_state_;
+
   // Orphaned requests are requests that were either in queue or needed a
   // completion callback when we set the decode cache to be nullptr. When a new
   // decode cache is set, these requests are re-enqueued again with tasks
