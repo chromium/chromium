@@ -523,10 +523,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSingleCellContentSuggestionsName[];
 extern const char kSingleCellContentSuggestionsDescription[];
 
-// Title and description for the flag to use one NTP for all tabs in a Browser.
-extern const char kSingleNtpName[];
-extern const char kSingleNtpDescription[];
-
 // Title and description for the flag to enable smart sorting the new overflow
 // menu.
 extern const char kSmartSortingNewOverflowMenuName[];

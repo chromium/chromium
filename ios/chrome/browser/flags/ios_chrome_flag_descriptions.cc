@@ -570,10 +570,6 @@ const char kSingleCellContentSuggestionsName[] =
 const char kSingleCellContentSuggestionsDescription[] =
     "Uses a single cell for all items in the NTP's content suggestions.";
 
-const char kSingleNtpName[] = "Enable Single NTP";
-const char kSingleNtpDescription[] =
-    "When enabled, uses one NTP for all tabs in a Browser";
-
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
