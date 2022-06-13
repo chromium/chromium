@@ -173,8 +173,11 @@ void WaylandPopup::SetBoundsInPixels(const gfx::Rect& bounds_dip) {
 }
 
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
+  gfx::Rect pending_bounds_dip(bounds_dip);
+  if (pending_bounds_dip.IsEmpty())
+    pending_bounds_dip.set_size(GetBoundsInDIP().size());
   set_pending_bounds_dip(wl::TranslateBoundsToTopLevelCoordinates(
-      bounds_dip, parent_window()->GetBoundsInDIP()));
+      pending_bounds_dip, parent_window()->GetBoundsInDIP()));
 }
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {

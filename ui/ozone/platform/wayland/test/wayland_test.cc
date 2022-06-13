@@ -128,12 +128,20 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
     if (xdg_surface->xdg_toplevel()) {
       zxdg_toplevel_v6_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                       width, height, states);
+    } else {
+      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+      zxdg_popup_v6_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                                   width, height);
     }
     zxdg_surface_v6_send_configure(xdg_surface->resource(), serial);
   } else {
     if (xdg_surface->xdg_toplevel()) {
       xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                   width, height, states);
+    } else {
+      ASSERT_TRUE(xdg_surface->xdg_popup()->resource());
+      xdg_popup_send_configure(xdg_surface->xdg_popup()->resource(), 0, 0,
+                               width, height);
     }
     xdg_surface_send_configure(xdg_surface->resource(), serial);
   }

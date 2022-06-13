@@ -1064,9 +1064,15 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 
     Sync();
 
+    auto* xdg_surface = mock_surface->xdg_surface();
+    ASSERT_TRUE(xdg_surface);
+    ASSERT_FALSE(temp_window->IsSurfaceConfigured());
+
     ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
                                                  false /* fail */);
 
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(_, _, _, _)).Times(0);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
     EXPECT_CALL(*mock_surface, Commit()).Times(0);
@@ -1075,15 +1081,17 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
         widget, kDmabufBufferId, kDmabufBufferId, window_->GetBoundsInPixels(),
         kDefaultScale, window_->GetBoundsInPixels());
     Sync();
+    testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-    DCHECK(mock_surface->xdg_surface());
-    ActivateSurface(mock_surface->xdg_surface());
-
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(0, 0, 800, 600)).Times(1);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(1);
     EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
     EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
     EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
+    ActivateSurface(mock_surface->xdg_surface());
     Sync();
+    testing::Mock::VerifyAndClearExpectations(mock_surface);
 
     window_->SetPointerFocus(false);
     temp_window.reset();
