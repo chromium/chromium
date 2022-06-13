@@ -3043,7 +3043,7 @@
   {
     "name": "enable-webusb-device-detection",
     "owners": [ "reillyg", "deviceapi-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 116
   },
   {
     "name": "enable-webview-tag-site-isolation",
