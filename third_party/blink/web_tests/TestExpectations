@@ -409,8 +409,6 @@ crbug.com/1007134 external/wpt/intersection-observer/v2/delay-test.html [ Failur
 crbug.com/1004547 external/wpt/intersection-observer/cross-origin-iframe.sub.html [ Failure Pass ]
 crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-iframe.sub.html [ Failure Pass ]
 
-crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
-
 crbug.com/849459 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]
 
 # These fail when device_scale_factor is changed, but only for anti-aliasing:
@@ -962,11 +960,31 @@ crbug.com/1261306 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
 
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-002.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-003.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-004.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-005.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-006.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-007.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-008.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-009.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-010.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-011.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-012.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-013.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-014.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-015.html [ Failure ]
+crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-016.html [ Failure ]
+
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-color.html [ Failure ]
 crbug.com/1284170 external/wpt/css/css-text-decor/text-decoration-dotted-001.html [ Failure ]
 crbug.com/1284170 external/wpt/css/css-text-decor/text-decoration-dotted-002.html [ Failure ]
+
+crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
+crbug.com/918905 external/wpt/css/css-sizing/block-size-with-min-or-max-content-table-1b.html [ Failure Pass ]
 
 #### Unprefix and update the implementation for text-emphasis
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-color-001.xht [ Failure ]
@@ -1287,6 +1305,7 @@ crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Fai
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
 crbug.com/1251689 external/wpt/css/css-flexbox/table-as-item-specified-width-vertical.html [ Failure ]
 crbug.com/1311206 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-038.html [ Failure ]
+crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 
 # Needs "new" flex container intrinsic size algorithm.
 crbug.com/240765 external/wpt/css/css-flexbox/flex-container-max-content-001.html [ Failure ]
@@ -1787,6 +1806,24 @@ crbug.com/753671 [ Mac12 ] external/wpt/css/css-content/quotes-020.html [ Failur
 crbug.com/753671 [ Mac12-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-021.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-022.html [ Failure ]
+crbug.com/753671 external/wpt/css/css-content/quotes-030.html [ Failure ]
+crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
+
+crbug.com/1335893 external/wpt/css/css-content/content-none-root-columns.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-root-ruby.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-root-grid.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-math.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-root-flex.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-root-table.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-span-dynamic.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-root-block.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-details.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-fieldset.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-option.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-select-1.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-table.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-select-2.html [ Failure ]
+crbug.com/1335893 external/wpt/css/css-content/content-none-span.html [ Failure ]
 
 crbug.com/995106 external/wpt/css/css-lists/inline-block-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-block-list-marker.html [ Failure ]
@@ -3030,7 +3067,6 @@ crbug.com/937101 external/wpt/css/css-values/ic-unit-014.html [ Failure ]
 crbug.com/937104 external/wpt/css/css-values/lh-unit-002.html [ Failure ]
 crbug.com/937104 external/wpt/css/css-values/lh-unit-001.html [ Failure ]
 
-crbug.com/1067277 external/wpt/css/css-content/element-replacement-on-replaced-element.tentative.html [ Failure ]
 crbug.com/1069300 external/wpt/css/css-pseudo/active-selection-063.html [ Failure ]
 crbug.com/1108711 external/wpt/css/css-pseudo/active-selection-057.html [ Failure ]
 crbug.com/1110399 external/wpt/css/css-pseudo/active-selection-031.html [ Failure ]
@@ -3493,7 +3529,6 @@ crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-en
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-bufferedAmount.html [ Crash ]
-crbug.com/626703 external/wpt/css/css-content/quotes-030.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/ctor-panner.html [ Crash ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
@@ -3549,25 +3584,9 @@ crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/pointerevent_contextmenu_i
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 external/wpt/editing/run/forwarddelete.html?6001-last [ Failure ]
 crbug.com/626703 external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure ]
 crbug.com/626703 external/wpt/geolocation-API/non-fully-active.https.html [ Timeout ]
 crbug.com/626703 external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
 crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio-cross-origin.sub.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-root-columns.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-root-ruby.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-root-grid.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-math.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-root-flex.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-root-table.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-span-dynamic.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-root-block.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-details.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-fieldset.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-option.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-select-1.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-table.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-select-2.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-content/content-none-span.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/candidate-exchange.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-001.html [ Failure ]
@@ -3579,27 +3598,10 @@ crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel.html [ Time
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.worker.html [ Pass Timeout ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-015.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-014.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-010.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-016.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-002.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-006.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-007.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-009.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/restrict-gamepad/external/wpt/gamepad/idlharness-extensions.https.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/restrict-gamepad/external/wpt/gamepad/idlharness-extensions.https.window.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-012.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-003.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-005.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-011.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-013.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-sizing/fit-content-length-percentage-004.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/websockets/remove-own-iframe-during-onerror.window.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.serviceworker.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.worker.html?wss [ Failure Timeout ]
@@ -4090,6 +4092,7 @@ crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-001.html
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-composition.html [ Failure ]
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Failure ]
+crbug.com/1335889 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
 
 # Simple to fix - but blocked on performance regression requiring cache logic change.
 crbug.com/1272533 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-dynamic-block-size.html [ Failure ]
@@ -4722,9 +4725,6 @@ crbug.com/912821 http/tests/devtools/tracing/user-timing.js [ Skip ]
 crbug.com/910452 media/controls/buttons-after-reset.html [ Failure Pass ]
 
 crbug.com/919272 external/wpt/resource-timing/resource-timing.html [ Skip ]
-
-# Sheriff 2019-01-03
-crbug.com/918905 external/wpt/css/css-sizing/block-size-with-min-or-max-content-table-1b.html [ Failure Pass ]
 
 # Some bots are built without H264/AVC1 encoding support.
 crbug.com/719023 fast/mediarecorder/MediaRecorder-isTypeSupported-avc1.html [ Failure Pass ]
@@ -5795,7 +5795,6 @@ crbug.com/1201365 virtual/portals/http/tests/inspector-protocol/portals/device-e
 crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pass ]
 
 # Sheriff 2021-04-23
-crbug.com/1198832 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure Pass ]
 crbug.com/1202051 virtual/scroll-unification/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
 crbug.com/1202051 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
 
@@ -6791,7 +6790,6 @@ crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/nocors
 crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker/thorough/redirect-nocors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1299858 [ Win ] http/tests/fetch/window/thorough/cors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1299858 [ Win ] http/tests/fetch/workers/thorough/cookie-nocors-base-https-other-https.html [ Pass Timeout ]
-crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Pass Timeout ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
