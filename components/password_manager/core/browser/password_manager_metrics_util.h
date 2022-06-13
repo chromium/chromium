@@ -594,6 +594,7 @@ enum class PasswordViewPageInteractions {
   kCredentialEdited = 8,
   kMaxValue = kCredentialEdited,
 };
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 
