@@ -16,6 +16,10 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // Implementation of DownloadUIModel that wrappers around a |DownloadItem*|. As
 // such, the caller is expected to ensure that the |download| passed into the
 // constructor outlives this |DownloadItemModel|. In addition, multiple
@@ -113,6 +117,7 @@ class DownloadItemModel : public DownloadUIModel,
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   void CompleteSafeBrowsingScan() override;
+  void ReviewScanningVerdict(content::WebContents* web_contents) override;
 #endif
 
   bool ShouldShowDropdown() const override;

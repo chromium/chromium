@@ -20,6 +20,7 @@
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_query.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
@@ -336,6 +337,12 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->danger_type = danger_type;
   file_value->is_dangerous = download_item->IsDangerous();
   file_value->is_mixed_content = download_item->IsMixedContent();
+  file_value->is_reviewable =
+      enterprise_connectors::ShouldPromptReviewForDownload(
+          Profile::FromBrowserContext(
+              content::DownloadItemUtils::GetBrowserContext(download_item)),
+          download_item->GetDangerType());
+
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;
   file_value->progress_status_text = base::UTF16ToUTF8(progress_status_text);

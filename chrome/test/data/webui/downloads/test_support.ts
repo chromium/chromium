@@ -54,6 +54,7 @@ class FakePageHandler implements PageHandlerInterface {
   clearAll() {}
   openDownloadsFolderRequiringGesture() {}
   openDuringScanningRequiringGesture(_id: string) {}
+  reviewDangerousRequiringGesture(_id: string) {}
 }
 
 export class TestIconLoader extends TestBrowserProxy implements IconLoader {
@@ -88,6 +89,7 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         id: '123',
         isDangerous: false,
         isMixedContent: false,
+        isReviewable: false,
         lastReasonText: '',
         otr: false,
         percent: 100,

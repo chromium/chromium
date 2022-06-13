@@ -888,6 +888,27 @@ void DownloadItemModel::CompleteSafeBrowsingScan() {
     state->CompleteDownload();
   }
 }
+
+void DownloadItemModel::ReviewScanningVerdict(
+    content::WebContents* web_contents) {
+  auto command_callback =
+      [](std::unique_ptr<DownloadItemModel> model,
+         std::unique_ptr<DownloadCommands> download_commands,
+         DownloadCommands::Command command) {
+        model->ExecuteCommand(download_commands.get(), command);
+      };
+  enterprise_connectors::ShowDownloadReviewDialog(
+      GetFileNameToReportUser().LossyDisplayName(), profile(), download_,
+      web_contents, download_->GetDangerType(),
+      base::BindOnce(
+          command_callback, std::make_unique<DownloadItemModel>(download_),
+          std::make_unique<DownloadCommands>(DownloadUIModel::GetWeakPtr()),
+          DownloadCommands::KEEP),
+      base::BindOnce(
+          command_callback, std::make_unique<DownloadItemModel>(download_),
+          std::make_unique<DownloadCommands>(DownloadUIModel::GetWeakPtr()),
+          DownloadCommands::DISCARD));
+}
 #endif
 
 bool DownloadItemModel::ShouldShowDropdown() const {

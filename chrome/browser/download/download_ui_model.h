@@ -31,6 +31,10 @@
 
 using offline_items_collection::ContentId;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // This class is an abstraction for common UI tasks and properties associated
 // with a download.
 class DownloadUIModel {
@@ -455,6 +459,9 @@ class DownloadUIModel {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Complete the Safe Browsing scan early.
   virtual void CompleteSafeBrowsingScan();
+
+  // Open a dialog to review a scan verdict.
+  virtual void ReviewScanningVerdict(content::WebContents* web_contents);
 #endif
 
   // Whether the dropdown menu button should be shown or not.

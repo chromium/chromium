@@ -1515,6 +1515,8 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void DownloadUIModel::CompleteSafeBrowsingScan() {}
+void DownloadUIModel::ReviewScanningVerdict(
+    content::WebContents* web_contents) {}
 #endif
 
 bool DownloadUIModel::ShouldShowDropdown() const {

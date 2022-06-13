@@ -102,6 +102,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: false,
       },
 
+      isReviewable_: {
+        computed: 'computeIsReviewable_(data.isReviewable)',
+        type: Boolean,
+        value: false,
+      },
+
       isInProgress_: {
         computed: 'computeIsInProgress_(data.state)',
         type: Boolean,
@@ -402,6 +408,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
          this.data.dangerType === DangerType.DANGEROUS_ACCOUNT_COMPROMISE);
   }
 
+  private computeIsReviewable_(): boolean {
+    return this.data.isReviewable;
+  }
+
   private toggleButtonClass_() {
     this.shadowRoot!.querySelector('#pauseOrResume')!.classList.toggle(
         'action-button',
@@ -528,6 +538,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onOpenNowTap_() {
     this.mojoHandler_!.openDuringScanningRequiringGesture(this.data.id);
+  }
+
+  private onReviewDangerousTap_() {
+    this.mojoHandler_!.reviewDangerousRequiringGesture(this.data.id);
   }
 
   private onDragStart_(e: Event) {
