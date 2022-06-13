@@ -113,6 +113,9 @@ function frameToTreeItem(frame: FrameInfo):
   if (frame.siteInstance.requiresOriginKeyedProcess) {
     itemLabel += ', origin-keyed';
   }
+  if (frame.siteInstance.isSandboxed) {
+    itemLabel += ', iframe-sandbox';
+  }
   if (frame.siteInstance.isGuest) {
     itemLabel += ', guest';
   }

@@ -57,6 +57,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
           ? absl::make_optional(site_instance->GetSiteInfo().site_url())
           : absl::nullopt;
   frame_info->site_instance->is_guest = site_instance->IsGuest();
+  frame_info->site_instance->is_sandboxed =
+      site_instance->GetSiteInfo().is_sandboxed();
 
   // If the SiteInstance has a non-default StoragePartition, include a basic
   // string representation of it.  Skip cases where the StoragePartition is
