@@ -101,7 +101,7 @@ def main(argv):
         options.java_version,
     ])
   if options.java_version == '1.8':
-    # Android's boot jar doesn't contain all java 8 classes.
+    # Android's boot jar doesn't contain all java classes.
     options.bootclasspath.append(build_utils.RT_JAR_PATH)
 
   if options.bootclasspath:

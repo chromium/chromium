@@ -70,9 +70,7 @@ java_cpp_enum("chrome_browser_flags_enums_srcjar") {
   sources = [ "android/chrome_session_state.h" ]
 }
 
-java_library("flags_junit_tests") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("flags_junit_tests") {
   testonly = true
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",

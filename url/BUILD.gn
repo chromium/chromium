@@ -309,9 +309,7 @@ if (is_android) {
 
   # Unlike gurl_junit_test_support targets depending on gurl_junit_shadows must
   # bypass platform checks.
-  android_library("gurl_junit_shadows") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
+  robolectric_library("gurl_junit_shadows") {
     testonly = true
     sources = [ "android/test/java/src/org/chromium/url/ShadowGURL.java" ]
     deps = [
@@ -353,9 +351,7 @@ if (is_android) {
         [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
   }
 
-  android_library("gurl_junit_tests") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
+  robolectric_library("gurl_junit_tests") {
     testonly = true
     sources = [ "android/junit/src/org/chromium/url/ShadowGURLTest.java" ]
     deps = [

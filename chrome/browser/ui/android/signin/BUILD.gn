@@ -135,8 +135,7 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("junit") {
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",

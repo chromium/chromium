@@ -46,8 +46,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.continuous_search"
 }
 
-android_library("junit") {
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
 
   sources = [

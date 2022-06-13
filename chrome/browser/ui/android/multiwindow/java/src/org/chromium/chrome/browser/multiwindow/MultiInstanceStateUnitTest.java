@@ -66,6 +66,7 @@ public class MultiInstanceStateUnitTest {
             ApplicationStatus.onStateChangeForTesting(this, ActivityState.STOPPED);
         }
 
+        @Override
         public void destroy() {
             AppTask appTask = null;
             for (AppTask task : sTasks.keySet()) {
@@ -125,7 +126,7 @@ public class MultiInstanceStateUnitTest {
         RecentTaskInfo taskInfo = new RecentTaskInfo();
         taskInfo.id = taskId;
         taskInfo.baseActivity = new ComponentName(
-                activity.getClass().getPackageName(), activity.getClass().getName());
+                activity.getClass().getPackage().getName(), activity.getClass().getName());
         sTasks.put(new AppTask(null), taskInfo);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);

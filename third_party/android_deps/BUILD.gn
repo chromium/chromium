@@ -30,10 +30,6 @@ if (!limit_android_deps) {
   java_group("robolectric_all_java") {
     testonly = true
 
-    # Prevent 'gn format' from sorting deps. In order for the classpath to be
-    # correct, newer robolectric android-all versions should be listed below older
-    # versions.
-    # NOSORT
     deps = [
       ":org_robolectric_annotations_java",
       ":org_robolectric_junit_java",
@@ -48,9 +44,12 @@ if (!limit_android_deps) {
       ":org_robolectric_shadows_playservices_java",
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
+    ]
 
-      "//third_party/robolectric:robolectric_runtime_jars",
-      "//third_party/robolectric:android-all-10-robolectric-5803371_java",
+    # Temporarily keep compiling against robolectric until every target is
+    # migarated to robolectric_library. See https://crbug.com/1296632
+    input_jars_paths = [
+      "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar",
     ]
   }
 

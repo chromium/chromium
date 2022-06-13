@@ -23,11 +23,8 @@ android_library("java") {
   ]
 }
 
-java_library("junit") {
+robolectric_library("junit") {
   testonly = true
-
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
 
   sources = [ "java/src/org/chromium/chrome/browser/back_press/BackPressManagerUnitTest.java" ]
 

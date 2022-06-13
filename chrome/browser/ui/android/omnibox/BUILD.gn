@@ -347,9 +347,7 @@ proto_java_library("partner_location_descriptor_proto_java") {
   sources = [ "$proto_path/partner_location_descriptor.proto" ]
 }
 
-android_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
 
   sources = [

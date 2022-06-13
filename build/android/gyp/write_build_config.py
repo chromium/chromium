@@ -1057,6 +1057,11 @@ def main(argv):
       action='store_true',
       help='True if a java library is not chromium code, used for lint.')
 
+  # robolectric_library options
+  parser.add_option('--is-robolectric',
+                    action='store_true',
+                    help='Whether this is a host side android test library.')
+
   # android library options
   parser.add_option('--dex-path', help='Path to target\'s dex output.')
 
@@ -1442,7 +1447,10 @@ def main(argv):
     deps_info['requires_android'] = bool(options.requires_android)
     deps_info['supports_android'] = bool(options.supports_android)
 
-    if not options.bypass_platform_checks:
+    # robolectric is special in that its an android target that runs on host.
+    # You are allowed to depend on both android |deps_require_android| and
+    # non-android |deps_not_support_android| targets.
+    if not options.bypass_platform_checks and not options.is_robolectric:
       deps_require_android = (all_resources_deps +
           [d['name'] for d in all_library_deps if d['requires_android']])
       deps_not_support_android = (
@@ -1517,7 +1525,8 @@ def main(argv):
     if options.res_sources_path:
       deps_info['res_sources_path'] = options.res_sources_path
 
-  if options.requires_android and options.type == 'java_library':
+  if (options.requires_android
+      and options.type == 'java_library') or options.is_robolectric:
     if options.package_name:
       deps_info['package_name'] = options.package_name
 

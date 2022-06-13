@@ -4,9 +4,7 @@
 
 import("//build/config/android/rules.gni")
 
-java_library("junit_test_support") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit_test_support") {
   testonly = true
   sources = [ "src/org/chromium/webapk/test/WebApkTestHelper.java" ]
   deps = [

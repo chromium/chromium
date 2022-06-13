@@ -133,8 +133,7 @@ if (is_android) {
     ]
   }
 
-  android_library("query_tiles_junit_tests") {
-    bypass_platform_checks = true
+  robolectric_library("query_tiles_junit_tests") {
     testonly = true
     sources = [ "android/java/src/org/chromium/components/query_tiles/TileUmaLoggerTest.java" ]
 

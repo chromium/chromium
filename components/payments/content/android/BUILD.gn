@@ -309,9 +309,7 @@ java_cpp_enum("payments_journey_logger_enum_javagen") {
   sources = [ "//components/payments/core/journey_logger.h" ]
 }
 
-java_library("junit_test_support") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit_test_support") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
@@ -335,9 +333,7 @@ java_library("junit_test_support") {
   ]
 }
 
-java_library("junit") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",

@@ -156,8 +156,7 @@ if (is_android) {
     ]
   }
 
-  android_library("junit") {
-    bypass_platform_checks = true
+  robolectric_library("junit") {
     testonly = true
 
     sources = [

@@ -50,9 +50,8 @@ source_set("android") {
   ]
 }
 
-java_library("junit") {
+robolectric_library("junit") {
   testonly = true
-  bypass_platform_checks = true
   sources = [
     "android/junit/src/org/chromium/components/image_fetcher/CachedImageFetcherTest.java",
     "android/junit/src/org/chromium/components/image_fetcher/ImageFetcherBridgeTest.java",

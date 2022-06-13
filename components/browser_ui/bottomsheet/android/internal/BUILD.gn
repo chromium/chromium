@@ -33,8 +33,7 @@ android_library("java") {
   resources_package = "org.chromium.components.browser_ui.bottomsheet.internal"
 }
 
-android_library("junit_tests") {
-  bypass_platform_checks = true
+robolectric_library("junit_tests") {
   testonly = true
   sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetectorTest.java" ]
   deps = [

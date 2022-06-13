@@ -1456,12 +1456,6 @@ if (enable_java_templates) {
       type = "junit_binary"
       main_target_name = invoker.target_name
 
-      # Include the android SDK jar(s) for resource processing.
-      include_android_sdk = true
-
-      # Robolectric can handle deps that set !supports_android as well those
-      # that set requires_android.
-      bypass_platform_checks = true
       deps = _invoker_deps
       testonly = true
       main_class = _main_class
@@ -1471,6 +1465,11 @@ if (enable_java_templates) {
       # wall time of a single robolectric shard, but does reduce the CPU time by
       # 66%, which makes sharding more effective.
       tiered_stop_at_level_one = true
+
+      is_robolectric = true
+      include_android_sdk = true
+      alternative_android_sdk_dep =
+          "//third_party/robolectric:robolectric_test_sdk_java"
 
       if (!defined(srcjar_deps)) {
         srcjar_deps = []
@@ -1992,6 +1991,70 @@ if (enable_java_templates) {
         "*/Manifest\$*.class",
         "*/GEN_JNI.class",
       ]
+    }
+  }
+
+  # Declare an Android robolectric library target
+  #
+  # This target creates an Android library containing java code and Android
+  # resources.
+  #
+  # Supports all variables of java_library(), plus:
+  #   deps: In addition to defining java deps, this can also include
+  #     android_assets() and android_resources() targets.
+  #   alternative_android_sdk_ijar: if set, the given android_sdk_ijar file
+  #     replaces the default android_sdk_ijar.
+  #   alternative_android_sdk_ijar_dep: the target that generates
+  #      alternative_android_sdk_ijar, must be set if alternative_android_sdk_ijar
+  #      is used.
+  #   alternative_android_sdk_jar: actual jar corresponding to
+  #      alternative_android_sdk_ijar, must be set if alternative_android_sdk_ijar
+  #      is used.
+  #
+  # Example
+  #   robolectric_library("foo_junit") {
+  #     sources = [
+  #       "android/org/chromium/foo/FooTest.java",
+  #       "android/org/chromium/foo/FooTestUtils.java",
+  #       "android/org/chromium/foo/FooMock.java",
+  #     ]
+  #     deps = [
+  #       "//base:base_junit_test_support"
+  #     ]
+  #     srcjar_deps = [
+  #       ":foo_generated_enum"
+  #     ]
+  #     jar_excluded_patterns = [
+  #       "*/FooService.class", "org/chromium/FooService\$*.class"
+  #     ]
+  #   }
+  template("robolectric_library") {
+    java_library(target_name) {
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+      testonly = true
+
+      is_robolectric = true
+      include_android_sdk = true
+      alternative_android_sdk_dep =
+          "//third_party/robolectric:robolectric_test_sdk_java"
+
+      if (!defined(jar_excluded_patterns)) {
+        jar_excluded_patterns = []
+      }
+      jar_excluded_patterns += [
+        "*/R.class",
+        "*/R\$*.class",
+        "*/Manifest.class",
+        "*/Manifest\$*.class",
+        "*/GEN_JNI.class",
+      ]
+
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += [ "//third_party/android_deps:robolectric_all_java" ]
     }
   }
 

@@ -42,9 +42,7 @@ android_library("java") {
   ]
 }
 
-android_library("junit") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
 
   deps = [

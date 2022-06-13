@@ -85,6 +85,8 @@ _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
 _desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.1.5.jar"
 _desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.5.jar"
+_robolectric_jar_path =
+    "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
 
 # Put the bug number in the target name so that false-positives have a hint in
 # the error message about why non-existent dependencies are there.
@@ -287,6 +289,9 @@ template("write_build_config") {
     if (defined(invoker.bypass_platform_checks) &&
         invoker.bypass_platform_checks) {
       args += [ "--bypass-platform-checks" ]
+    }
+    if (defined(invoker.is_robolectric) && invoker.is_robolectric) {
+      args += [ "--is-robolectric" ]
     }
 
     if (defined(invoker.apk_under_test)) {
@@ -1404,6 +1409,11 @@ if (enable_java_templates) {
           invoker.tiered_stop_at_level_one) {
         args += [ "--tiered-stop-at-level-one" ]
       }
+      if (defined(invoker.extra_classpath_jars)) {
+        _rebased_extra_classpath_jars =
+            rebase_path(invoker.extra_classpath_jars, root_build_dir)
+        args += [ "--classpath=${_rebased_extra_classpath_jars}" ]
+      }
       if (defined(invoker.wrapper_script_args)) {
         args += [ "--" ] + invoker.wrapper_script_args
       }
@@ -1884,7 +1894,7 @@ if (enable_java_templates) {
       if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
       }
-      if (invoker.requires_android) {
+      if (invoker.include_android_sdk) {
         args += [ "--sdk-classpath-jars=@FileArg($_rebased_build_config:android:sdk_jars)" ]
       }
       if (invoker.is_prebuilt) {
@@ -3022,7 +3032,6 @@ if (enable_java_templates) {
         ]
       }
 
-      # Currently turbine does not support JDK11.
       if (invoker.supports_android || invoker.use_turbine) {
         args += [ "--java-version=1.8" ]
       }
@@ -3038,7 +3047,7 @@ if (enable_java_templates) {
       if (enable_kythe_annotations && !invoker.enable_errorprone) {
         args += [ "--enable-kythe-annotations" ]
       }
-      if (invoker.requires_android) {
+      if (invoker.include_android_sdk) {
         args += [ "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
       }
       if (_chromium_code) {
@@ -3219,11 +3228,8 @@ if (enable_java_templates) {
   #    library via its built .jar rather than including its .java sources.
   #  proguard_enabled: Optional. True to enable ProGuard obfuscation.
   #  proguard_configs: Optional list of additional proguard config file paths.
-  #  bypass_platform_checks: Optional. If True, platform checks will not
-  #    be performed. They are used to verify that every target with
-  #    requires_android only depends on targets that, at least supports_android.
-  #    Similarly, if a target has !supports_android, then it cannot depend on
-  #    any other target that has requires_android.
+  #  is_robolectric: Optional. If True, this is a host side android test binary
+  #    which is allowed to depend on other android targets.
   #  include_java_resources: Optional. If True, include Java (not Android)
   #    resources into final .jar file.
   #  jar_excluded_patterns: Optional list of .class file patterns to exclude
@@ -3294,6 +3300,7 @@ if (enable_java_templates) {
         defined(invoker.requires_android) && invoker.requires_android
     _bypass_platform_checks = defined(invoker.bypass_platform_checks) &&
                               invoker.bypass_platform_checks
+    _is_robolectric = defined(invoker.is_robolectric) && invoker.is_robolectric
 
     _invoker_deps = []
     if (defined(invoker.deps)) {
@@ -3595,6 +3602,7 @@ if (enable_java_templates) {
 
       supports_android = _supports_android
       requires_android = _requires_android
+      is_robolectric = _is_robolectric
       bypass_platform_checks = _bypass_platform_checks
 
       if (defined(invoker.resources_package)) {
@@ -3649,10 +3657,12 @@ if (enable_java_templates) {
       }
 
       if (defined(invoker.resources_package) && _type == "java_library") {
-        assert(_requires_android || _bypass_platform_checks,
+        # TODO(crbug.com/1296632): remove _bypass_platform_checks from the list
+        # once all robolectric targets have migrated to robolectric_library.
+        assert(_requires_android || _bypass_platform_checks || _is_robolectric,
                "Setting resources_package applicable only for " +
-                   "android_library(), or java_library() with " +
-                   "bypass_platform_checks=true. Target=$target_name")
+                   "android_library(), or robolectric_library(). " +
+                   "Target=$target_name")
 
         # has _resources at the end so it looks like a resources pattern, since
         # it does act like one (and other resources patterns need to depend on
@@ -3707,7 +3717,7 @@ if (enable_java_templates) {
             }
             chromium_code = _chromium_code
             supports_android = _supports_android
-            requires_android = _requires_android
+            include_android_sdk = _is_robolectric || _requires_android
             if (!defined(deps)) {
               deps = []
             }
@@ -3841,7 +3851,8 @@ if (enable_java_templates) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
           deps = _unprocessed_jar_deps + _full_classpath_deps +
                  [ ":$_build_config_target_name" ]
-          requires_android = _requires_android
+
+          include_android_sdk = _requires_android || _is_robolectric
           target_label =
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
           input_jar = _unprocessed_jar_path
@@ -3952,6 +3963,9 @@ if (enable_java_templates) {
           script_name = invoker.wrapper_script_name
         }
         deps = [ ":$_build_config_target_name" ]
+        if (_is_robolectric) {
+          extra_classpath_jars = [ _robolectric_jar_path ]
+        }
       }
       _public_deps += [ ":$_java_binary_script_target_name" ]
     }

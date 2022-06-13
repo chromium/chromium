@@ -13,9 +13,7 @@ generate_jni("jni_headers") {
 }
 
 # TODO(crbug.com/1164979): remove the dependency on chrome_java.
-android_library("junit_test_support") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit_test_support") {
   testonly = true
   deps = [
     "//chrome/android:chrome_java",
@@ -46,9 +44,7 @@ android_library("junit_test_support") {
 }
 
 # TODO(crbug.com/1164979): remove the dependency on chrome_java.
-java_library("junit") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   deps = [
     ":junit_test_support",

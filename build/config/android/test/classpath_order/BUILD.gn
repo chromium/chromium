@@ -92,8 +92,7 @@ generate_dummy_android_library("a2_master_java") {
   ]
 }
 
-java_library("junit_tests") {
-  bypass_platform_checks = true
+robolectric_library("junit_tests") {
   testonly = true
   sources =
       [ "java/src/org/chromium/build/classpath_order/ClassPathOrderTest.java" ]

@@ -76,8 +76,7 @@ android_resources("java_resources") {
   ]
 }
 
-java_library("junit") {
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [ "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediatorUnitTest.java" ]
 

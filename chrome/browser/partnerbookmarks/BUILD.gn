@@ -49,11 +49,8 @@ generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java" ]
 }
 
-android_library("junit") {
+robolectric_library("junit") {
   testonly = true
-
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
 
   sources = [
     "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottleTest.java",

@@ -148,8 +148,7 @@ android_library("javatests") {
   ]
 }
 
-java_library("junit") {
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",

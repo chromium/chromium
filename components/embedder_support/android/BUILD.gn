@@ -290,9 +290,7 @@ generate_jni("native_j_unittests_jni_headers") {
   sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
 }
 
-android_library("junit_test_support") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit_test_support") {
   testonly = true
   sources = [ "junit/src/org/chromium/components/embedder_support/util/ShadowUrlUtilities.java" ]
   deps = [
@@ -301,9 +299,7 @@ android_library("junit_test_support") {
   ]
 }
 
-java_library("components_embedder_support_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("components_embedder_support_junit_tests") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",

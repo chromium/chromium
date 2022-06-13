@@ -67,9 +67,7 @@ android_library("ulp_delegate_public_java") {
   deps = [ ":ulp_delegate_java" ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [ "java/src/org/chromium/components/language/LanguageProfileControllerUnitTest.java" ]
   deps = [

@@ -106,11 +106,8 @@ android_library("incognito_java_tests") {
   ]
 }
 
-android_library("incognito_junit_tests") {
+robolectric_library("incognito_junit_tests") {
   testonly = true
-
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
 
   sources = [
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerTest.java",

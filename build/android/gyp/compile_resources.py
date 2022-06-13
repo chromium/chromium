@@ -409,9 +409,15 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     except build_utils.CalledProcessError:
       return None
 
-  android_sdk_jars = [j for j in options.include_resources
-                      if os.path.basename(j) in ('android.jar',
-                                                 'android_system.jar')]
+  def is_sdk_jar(jar_name):
+    if jar_name in ('android.jar', 'android_system.jar'):
+      return True
+    # Robolectric jar looks a bit different.
+    return 'android-all' in jar_name and 'robolectric' in jar_name
+
+  android_sdk_jars = [
+      j for j in options.include_resources if is_sdk_jar(os.path.basename(j))
+  ]
   extract_all = [maybe_extract_version(j) for j in android_sdk_jars]
   successful_extractions = [x for x in extract_all if x]
   if len(successful_extractions) == 0:

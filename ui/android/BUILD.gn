@@ -403,9 +403,7 @@ java_group("ui_full_java") {
   ]
 }
 
-android_library("ui_junit_test_support") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("ui_junit_test_support") {
   testonly = true
   sources = [
     "junit/src/org/chromium/ui/shadows/ShadowAnimatedStateListDrawable.java",

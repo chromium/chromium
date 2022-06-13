@@ -59,9 +59,7 @@ generate_jni("jni_headers") {
   sources = _jni_sources
 }
 
-java_library("components_policy_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("components_policy_junit_tests") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",

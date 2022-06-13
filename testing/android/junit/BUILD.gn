@@ -6,10 +6,7 @@ assert(is_android)
 
 import("//build/config/android/rules.gni")
 
-java_library("junit_test_support") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit_test_support") {
   sources = [
     "java/src/org/chromium/testing/local/CustomShadowApplicationPackageManager.java",
     "java/src/org/chromium/testing/local/GtestComputer.java",

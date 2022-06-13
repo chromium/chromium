@@ -99,9 +99,8 @@ if (is_android) {
     ]
   }
 
-  java_library("components_background_task_scheduler_junit_tests") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
+  robolectric_library("components_background_task_scheduler_junit_tests") {
+    include_android_sdk = false
     testonly = true
     sources = [
       "internal/android/junit/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskGcmTaskServiceTest.java",
@@ -136,6 +135,7 @@ if (is_android) {
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//third_party/robolectric:robolectric_test_sdk_java",
     ]
   }
 }

@@ -40,8 +40,8 @@ generate_jni("jni_headers") {
 android_library("javatests") {
   testonly = true
   sources = [
-    "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java",
-    "./java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculatorTest.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculatorTest.java",
   ]
 
   deps = [
@@ -60,11 +60,9 @@ android_library("javatests") {
   ]
 }
 
-java_library("junit_test_support") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit_test_support") {
   testonly = true
-  sources = [ "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierUnitTestSupport.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierUnitTestSupport.java" ]
   deps = [
     ":java",
     "//components/embedder_support/android:util_java",

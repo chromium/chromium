@@ -99,9 +99,7 @@ if (is_android) {
     ]
   }
 
-  android_library("junit_tests") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
+  robolectric_library("junit_tests") {
     testonly = true
 
     sources = [

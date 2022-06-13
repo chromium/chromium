@@ -128,9 +128,7 @@ static_library("feature_flags") {
   deps = [ "//base" ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources =
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]

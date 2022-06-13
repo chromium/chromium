@@ -119,9 +119,7 @@ generate_jni("test_jni_headers") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/media_router/BrowserMediaRouterRouteTest.java",

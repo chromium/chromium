@@ -145,8 +145,7 @@ flatbuffer_java_library("critical_persisted_tab_data_flatbuffer_java") {
   sources = [ "$root_dir/critical_persisted_tab_data.fbs" ]
 }
 
-android_library("junit") {
-  bypass_platform_checks = true
+robolectric_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",

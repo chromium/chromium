@@ -4383,9 +4383,7 @@ if (is_android) {
     sources = [ "test/android/javatests/src/org/chromium/base/process_launcher/TestChildProcessConnection.java" ]
   }
 
-  android_library("base_junit_test_support") {
-    # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-    bypass_platform_checks = true
+  robolectric_library("base_junit_test_support") {
     testonly = true
     sources = [
       "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTask.java",
@@ -4406,7 +4404,6 @@ if (is_android) {
     deps = [
       ":base_java",
       "//testing/android/junit:junit_test_support",
-      "//third_party/android_deps:robolectric_all_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/hamcrest:hamcrest_java",

@@ -640,6 +640,7 @@ junit_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
     "junit/src/org/chromium/content_public/browser/MessagePayloadTest.java",
   ]
+
   deps = [
     ":content_java",
     "//base:base_java",
@@ -656,9 +657,10 @@ junit_binary("content_junit_tests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/gfx/geometry/mojom:mojom_java",
   ]
-
   data_deps = [ "//testing/buildbot/filters:content_junit_tests_filters" ]
 }

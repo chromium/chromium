@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.job.JobParameters;
+import android.os.Build;
 import android.os.PersistableBundle;
 
 import org.junit.Before;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BackgroundTaskJobService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.S)
 public class BackgroundTaskJobServiceTest {
     private static BackgroundTaskSchedulerJobService.Clock sClock = () -> 1415926535000L;
     private static BackgroundTaskSchedulerJobService.Clock sZeroClock = () -> 0L;
@@ -196,8 +197,8 @@ public class BackgroundTaskJobServiceTest {
 
         return new JobParameters(null /* callback */, taskId, extras, null /* transientExtras */,
                 null /* clipData */, 0 /* clipGrantFlags */, false /* overrideDeadlineExpired */,
-                null /* triggeredContentUris */, null /* triggeredContentAuthorities */,
-                null /* network */);
+                false /* isExpedited */, null /* triggeredContentUris */,
+                null /* triggeredContentAuthorities */, null /* network */);
     }
 
     private static JobParameters buildPeriodicJobParameters(
@@ -221,7 +222,7 @@ public class BackgroundTaskJobServiceTest {
 
         return new JobParameters(null /* callback */, taskId, extras, null /* transientExtras */,
                 null /* clipData */, 0 /* clipGrantFlags */, false /* overrideDeadlineExpired */,
-                null /* triggeredContentUris */, null /* triggeredContentAuthorities */,
-                null /* network */);
+                false /* isExpedited */, null /* triggeredContentUris */,
+                null /* triggeredContentAuthorities */, null /* network */);
     }
 }

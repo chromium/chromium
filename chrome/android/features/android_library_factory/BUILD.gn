@@ -69,8 +69,7 @@ android_library_factory("a_factory2_java") {
   generator_deps = [ ":factory2" ]
 }
 
-java_library("junit_tests") {
-  bypass_platform_checks = true
+robolectric_library("junit_tests") {
   testonly = true
   sources = [ "junit/src/org/chromium/chrome/browser/android_library_factory/AndroidLibraryFactoryTest.java" ]
   deps = [

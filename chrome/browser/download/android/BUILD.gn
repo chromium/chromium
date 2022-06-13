@@ -189,9 +189,7 @@ android_library("download_java_tests") {
   ]
 }
 
-android_library("junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
+robolectric_library("junit_tests") {
   testonly = true
 
   sources = [

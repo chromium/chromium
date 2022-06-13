@@ -36,9 +36,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-java_library("junit_tests") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
+robolectric_library("junit_tests") {
   testonly = true
   sources = [
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProviderTest.java",
