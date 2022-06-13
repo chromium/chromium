@@ -5025,7 +5025,7 @@
       "andzaytsev",
       "msramek",
       "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 104
+    "expiry_milestone": 106
   },
   {
     "name": "privacy-guide-2",
@@ -5033,7 +5033,7 @@
       "rainhard",
       "msramek",
       "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "privacy-guide-android",
