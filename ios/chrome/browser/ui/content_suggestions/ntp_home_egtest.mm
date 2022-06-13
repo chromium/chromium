@@ -65,7 +65,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Returns a matcher, which is true if the view has its width equals to |width|.
+// Returns a matcher, which is true if the view has its width equals to `width`.
 id<GREYMatcher> OmniboxWidth(CGFloat width) {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
     return fabs(view.bounds.size.width - width) < 0.001;
@@ -80,8 +80,8 @@ id<GREYMatcher> OmniboxWidth(CGFloat width) {
                                               descriptionBlock:describe];
 }
 
-// Returns a matcher, which is true if the view has its width equals to |width|
-// plus or minus |margin|.
+// Returns a matcher, which is true if the view has its width equals to `width`
+// plus or minus `margin`.
 id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   GREYMatchesBlock matches = ^BOOL(UIView* view) {
     return view.bounds.size.width >= width - margin &&
@@ -1305,7 +1305,7 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
   return config;
 }
 
-// Variants set the |--enable-features| flag manually, preventing us from being
+// Variants set the `--enable-features` flag manually, preventing us from being
 // able to add more features without overriding the initial ones. We therefore
 // skip this test for the variants since it relies on enabling a feature.
 - (void)testFeedAblationHidesFeed {
@@ -1325,7 +1325,7 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }
@@ -1347,7 +1347,7 @@ id<GREYMatcher> FeedHeaderSegmentFollowing() {
 - (void)setUp {
   _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on _variant.
   [super setUp];
 }

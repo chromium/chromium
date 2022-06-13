@@ -38,7 +38,7 @@ const CGFloat kDoodleTopMarginRegularXRegular = 162;
 const CGFloat kDoodleTopMarginOther = 48;
 const CGFloat kShrunkDoodleTopMarginOther = 65;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
-// and added to |kDoodleTopMarginOther| on non Regular x Regular form factors.
+// and added to `kDoodleTopMarginOther` on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
 
 // Top margin for the search field

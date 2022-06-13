@@ -26,7 +26,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.25;
 @interface ContentSuggestionsHeaderSynchronizer ()<UIGestureRecognizerDelegate>
 
 @property(nonatomic, weak, readonly) UICollectionView* collectionView;
-// |YES| if the fakebox header should be animated on scroll.
+// `YES` if the fakebox header should be animated on scroll.
 @property(nonatomic, assign) BOOL shouldAnimateHeader;
 @property(nonatomic, weak) id<ContentSuggestionsCollectionControlling>
     collectionController;
@@ -102,9 +102,9 @@ initWithCollectionController:
   // CADisplayLink is used for this animation instead of the standard UIView
   // animation because the standard animation did not properly convert the
   // fakebox from its scrolled up mode to its scrolled down mode. Specifically,
-  // calling |UICollectionView reloadData| adjacent to the standard animation
+  // calling `UICollectionView reloadData` adjacent to the standard animation
   // caused the fakebox's views to jump incorrectly. CADisplayLink avoids this
-  // problem because it allows |shiftTilesDownAnimationDidFire| to directly
+  // problem because it allows `shiftTilesDownAnimationDidFire` to directly
   // control each frame.
   CADisplayLink* link = [CADisplayLink
       displayLinkWithTarget:self
@@ -325,7 +325,7 @@ initWithCollectionController:
   if (percentComplete == 1.0) {
     [link invalidate];
     self.collectionShiftingOffset = 0;
-    // Reset |shiftTileStartTime| to its sentinel value.
+    // Reset `shiftTileStartTime` to its sentinel value.
     self.shiftTileStartTime = -1;
   }
 }

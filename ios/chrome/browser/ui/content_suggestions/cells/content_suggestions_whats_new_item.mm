@@ -121,7 +121,7 @@ const CGFloat kIconSize = 24;
 
 #pragma mark Private
 
-// Configures the |promoLabel| with the |text|.
+// Configures the `promoLabel` with the `text`.
 + (void)configureLabel:(UILabel*)promoLabel withText:(NSString*)text {
   promoLabel.font =
       [[MDCTypography fontLoader] regularFontOfSize:kLabelFontSize];

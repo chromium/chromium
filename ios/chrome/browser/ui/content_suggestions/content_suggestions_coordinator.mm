@@ -287,7 +287,7 @@
   [self.ntpMediator shutdown];
   self.ntpMediator = nil;
   // Reset the observer bridge object before setting
-  // |contentSuggestionsMediator| nil.
+  // `contentSuggestionsMediator` nil.
   if (_startSurfaceObserver) {
     StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
         ->RemoveObserver(_startSurfaceObserver.get());
@@ -555,8 +555,8 @@
   }
 }
 
-// Triggers the URL sharing flow for the given |URL| and |title|, with the
-// origin |view| representing the UI component for that URL.
+// Triggers the URL sharing flow for the given `URL` and `title`, with the
+// origin `view` representing the UI component for that URL.
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         fromView:(UIView*)view {

@@ -21,8 +21,8 @@
     : NSObject<ContentSuggestionsCollectionSynchronizing,
                ContentSuggestionsHeaderSynchronizing>
 
-// Initializes the CommandHandler with the |suggestionsViewController| and the
-// |headerController|.
+// Initializes the CommandHandler with the `suggestionsViewController` and the
+// `headerController`.
 - (nullable instancetype)
 initWithCollectionController:
     (nullable id<ContentSuggestionsCollectionControlling>)collectionController

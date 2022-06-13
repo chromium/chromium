@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @interface ContentSuggestionsCollectionViewController
     : CollectionViewController <ContentSuggestionsCollectionConsumer>
 
-// Inits view controller with |style|.
+// Inits view controller with `style`.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
     NS_DESIGNATED_INITIALIZER;
 

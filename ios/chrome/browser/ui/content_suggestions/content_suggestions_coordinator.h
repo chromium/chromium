@@ -42,7 +42,7 @@ class NotificationPromoWhatsNew;
 
 // The ViewController that this coordinator managers if
 // kContentSuggestionsUIViewControllerMigration is enabled.
-// TODO(crbug.com/1285378): remove |contentSuggestionsCollectionViewController|
+// TODO(crbug.com/1285378): remove `contentSuggestionsCollectionViewController`
 // once migration is finished.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsViewController* viewController;

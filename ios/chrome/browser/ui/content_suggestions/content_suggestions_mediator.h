@@ -101,10 +101,10 @@ class WebStateList;
 // The notification promo owned by this mediator.
 - (NotificationPromoWhatsNew*)notificationPromo;
 
-// Block |URL| from Most Visited sites.
+// Block `URL` from Most Visited sites.
 - (void)blockMostVisitedURL:(GURL)URL;
 
-// Always allow |URL| in Most Visited sites.
+// Always allow `URL` in Most Visited sites.
 - (void)allowMostVisitedURL:(GURL)URL;
 
 // Get the maximum number of sites shown.
@@ -114,7 +114,7 @@ class WebStateList;
 // configureMostRecentTabItemWithWebState: has been called.
 - (BOOL)mostRecentTabStartSurfaceTileIsShowing;
 
-// Configures the most recent tab item with |webState| and |timeLabel|.
+// Configures the most recent tab item with `webState` and `timeLabel`.
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel;
 

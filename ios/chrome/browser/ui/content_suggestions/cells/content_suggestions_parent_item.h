@@ -43,8 +43,8 @@
 // The cell associated with ContentSuggestionsParentItem.
 @interface ContentSuggestionsParentCell : MDCCollectionViewCell
 
-// Adds |view| as a subview. If |spacing| is non-zero, a bottom spacing of
-// |spacing| will be added below |view|.
+// Adds `view` as a subview. If `spacing` is non-zero, a bottom spacing of
+// `spacing` will be added below `view`.
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing;
 
 // Removes all UI elements added by addUIElement:withCustomBottomSpacing:.

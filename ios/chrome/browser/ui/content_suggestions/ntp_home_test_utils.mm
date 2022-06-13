@@ -30,7 +30,7 @@ ntp_snippets::Category Category() {
       ntp_snippets::KnownCategories::ARTICLES);
 }
 
-// Creates a suggestion with a |title| and |url|
+// Creates a suggestion with a `title` and `url`
 ntp_snippets::ContentSuggestion Suggestion(std::string title, GURL url) {
   ntp_snippets::ContentSuggestion suggestion(Category(), title, url);
   suggestion.set_title(base::UTF8ToUTF16(title));
@@ -38,7 +38,7 @@ ntp_snippets::ContentSuggestion Suggestion(std::string title, GURL url) {
   return suggestion;
 }
 
-// Returns the subview of |parentView| corresponding to the
+// Returns the subview of `parentView` corresponding to the
 // ContentSuggestionsViewController. Returns nil if it is not in its subviews.
 UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
                                            UIView* parentView) {

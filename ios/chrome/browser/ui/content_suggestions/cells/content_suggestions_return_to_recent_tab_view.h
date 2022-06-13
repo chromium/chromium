@@ -12,7 +12,7 @@
 // View for the Return To Recent Tab tile.
 @interface ContentSuggestionsReturnToRecentTabView : UIView
 
-// Initializes and configures the view with |config|.
+// Initializes and configures the view with `config`.
 - (instancetype)initWithConfiguration:
     (ContentSuggestionsReturnToRecentTabItem*)config;
 

@@ -367,7 +367,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
     [self.consumer hideWhatsNewView];
   } else {
-    // By reloading data, checking |notificationPromo| will remove the promo
+    // By reloading data, checking `notificationPromo` will remove the promo
     // view.
     [self reloadAllData];
   }
@@ -709,7 +709,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return convertedSuggestions;
 }
 
-// Opens the |URL| in a new tab |incognito| or not. |originPoint| is the origin
+// Opens the `URL` in a new tab `incognito` or not. `originPoint` is the origin
 // of the new tab animation if the tab is opened in background, in window
 // coordinates.
 - (void)openNewTabWithURL:(const GURL&)URL
@@ -737,7 +737,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 // Shows a snackbar with an action to undo the removal of the most visited item
-// with a |URL|.
+// with a `URL`.
 - (void)showMostVisitedUndoForURL:(GURL)URL {
   GURL copiedURL = URL;
 

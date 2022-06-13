@@ -69,7 +69,7 @@
   }
 
   // The fixed header's attributes are not updated if the header's default frame
-  // is far enough away from |rect|, which can occur when the NTP is scrolled
+  // is far enough away from `rect`, which can occur when the NTP is scrolled
   // up.
   if (!fixedHeaderAttributes) {
     UICollectionViewLayoutAttributes* fixedHeaderAttributes =

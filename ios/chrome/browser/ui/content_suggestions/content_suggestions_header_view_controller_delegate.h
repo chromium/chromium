@@ -15,7 +15,7 @@
 // Returns whether the collection is scrolled to the omnibox.
 - (BOOL)isScrolledToMinimumHeight;
 
-// Register |imageUpdater| object as delegate to refresh UI when user account
+// Register `imageUpdater` object as delegate to refresh UI when user account
 // avatar is changed.
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater;
 

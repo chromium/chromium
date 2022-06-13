@@ -78,7 +78,7 @@ const float kModuleVerticalSpacing = 16.0f;
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile;
 // The WhatsNew view.
 @property(nonatomic, strong) ContentSuggestionsWhatsNewView* whatsNewView;
-// StackView holding all of |mostVisitedViews|.
+// StackView holding all of `mostVisitedViews`.
 @property(nonatomic, strong) UIStackView* mostVisitedStackView;
 // Module Container for the Most Visited Tiles.
 @property(nonatomic, strong)
@@ -86,7 +86,7 @@ const float kModuleVerticalSpacing = 16.0f;
 // List of all of the Most Visited views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
-// StackView holding all of |shortcutsViews|.
+// StackView holding all of `shortcutsViews`.
 @property(nonatomic, strong) UIStackView* shortcutsStackView;
 // List of all of the Shortcut views.
 @property(nonatomic, strong)
@@ -550,11 +550,11 @@ const float kModuleVerticalSpacing = 16.0f;
   }
 }
 
-// Add the elements in |mostVisitedViews| into |verticalStackView|, constructing
-// |verticalStackView| beforehand if it has not been yet.
+// Add the elements in `mostVisitedViews` into `verticalStackView`, constructing
+// `verticalStackView` beforehand if it has not been yet.
 - (void)populateMostVisitedModule {
   // If viewDidLoad has been called before the first valid Most Visited Tiles
-  // are available, construct |mostVisitedStackView|.
+  // are available, construct `mostVisitedStackView`.
   if (!IsContentSuggestionsUIModuleRefreshEnabled() && self.verticalStackView &&
       !self.mostVisitedStackView) {
     self.mostVisitedStackView = [[UIStackView alloc] init];

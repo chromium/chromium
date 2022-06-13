@@ -84,7 +84,7 @@ const CGFloat kIconTopMargin = 10;
   return self;
 }
 
-// Configures |promoLabel| with |text|.
+// Configures `promoLabel` with `text`.
 - (void)configureLabelWithText:(NSString*)text {
   _promoLabel.font =
       [[MDCTypography fontLoader] regularFontOfSize:kLabelFontSize];

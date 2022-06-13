@@ -60,10 +60,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 // animations so the constraints aren't changed while the ntp is scrolled.
 @property(nonatomic, assign) BOOL disableScrollAnimation;
 
-// |YES| when notifications indicate the omnibox is focused.
+// `YES` when notifications indicate the omnibox is focused.
 @property(nonatomic, assign, getter=isOmniboxFocused) BOOL omniboxFocused;
 
-// |YES| if this consumer is has voice search enabled.
+// `YES` if this consumer is has voice search enabled.
 @property(nonatomic, assign) BOOL voiceSearchIsEnabled;
 
 // Exposes view and methods to drive the doodle.
@@ -352,7 +352,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                      forControlEvents:UIControlEventTouchUpInside];
   // Because the visual fakebox background is implemented within
   // ContentSuggestionsHeaderView, KVO the highlight events of
-  // |accessibilityButton| and pass them along.
+  // `accessibilityButton` and pass them along.
   [self.accessibilityButton addObserver:self
                              forKeyPath:@"highlighted"
                                 options:NSKeyValueObservingOptionNew
@@ -538,8 +538,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       self.voiceSearchIsEnabled;
 }
 
-// Adds the constraints for the |logoView|, the |fakeomnibox| related to the
-// |headerView|. It also sets the properties constraints related to those views.
+// Adds the constraints for the `logoView`, the `fakeomnibox` related to the
+// `headerView`. It also sets the properties constraints related to those views.
 - (void)addConstraintsForLogoView:(UIView*)logoView
                       fakeOmnibox:(UIView*)fakeOmnibox
                     andHeaderView:(UIView*)headerView {

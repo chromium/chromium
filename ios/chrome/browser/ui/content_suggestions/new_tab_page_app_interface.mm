@@ -46,8 +46,8 @@ using testing::Invoke;
 using testing::WithArg;
 
 namespace {
-// Returns a suggestion created from the |category|, |suggestion_id| and the
-// |url|.
+// Returns a suggestion created from the `category`, `suggestion_id` and the
+// `url`.
 ContentSuggestion CreateSuggestion(Category category,
                                    std::string suggestion_id,
                                    GURL url) {
