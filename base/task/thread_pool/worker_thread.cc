@@ -422,7 +422,7 @@ void WorkerThread::RunWorker() {
 #endif
     absl::optional<WatchHangsInScope> hang_watch_scope;
     if (watch_for_hangs)
-      hang_watch_scope.emplace(base::WatchHangsInScope::kDefaultHangWatchTime);
+      hang_watch_scope.emplace();
 
     UpdateThreadPriority(GetDesiredThreadPriority());
 

@@ -166,10 +166,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     return main_thread_only_;
   }
 
-  // Instantiate a WatchHangsInScope to cover the current work if hang
-  // watching is activated via finch.
-  void MaybeStartWatchHangsInScope();
-
   MainThreadOnly main_thread_only_;
 
   mutable base::internal::CheckedLock task_runner_lock_;
@@ -202,8 +198,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       base::internal::ScopedSetSequenceLocalStorageMapForCurrentThread>
       scoped_set_sequence_local_storage_map_for_current_thread_;
 
-  // Reset at the start of each unit of work to cover the work itself and then
-  // transition to the next one.
+  // Reset at the start & end of each unit of work to cover the work itself and
+  // the overhead between each work item (no-op if HangWatcher is not enabled
+  // on this thread). Cleared when going to sleep and at the end of a Run()
+  // (i.e. when Quit()). Nested runs override their parent.
   absl::optional<WatchHangsInScope> hang_watch_scope_;
 };
 

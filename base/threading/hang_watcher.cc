@@ -205,10 +205,6 @@ constexpr base::FeatureParam<int> kUtilityProcessThreadPoolLogLevel{
     &kEnableHangWatcher, "utility_process_threadpool_log_level",
     static_cast<int>(LoggingLevel::kUmaOnly)};
 
-// static
-const base::TimeDelta WatchHangsInScope::kDefaultHangWatchTime =
-    base::Seconds(10);
-
 constexpr const char* kThreadName = "HangWatcher";
 
 // The time that the HangWatcher thread will sleep for between calls to
@@ -223,7 +219,9 @@ constexpr auto kMonitoringPeriod = base::Seconds(10);
 
 WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   internal::HangWatchState* current_hang_watch_state =
-      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
+      HangWatcher::IsEnabled()
+          ? internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get()
+          : nullptr;
 
   DCHECK(timeout >= base::TimeDelta()) << "Negative timeouts are invalid.";
 
