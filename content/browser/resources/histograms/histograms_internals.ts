@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 // Timer for automatic update in monitoring mode.
-let fetchDiffScheduler = null;
+let fetchDiffScheduler: number|null = null;
 
 // Contains names for expanded histograms.
-const expandedEntries = new Set();
+const expandedEntries: Set<string> = new Set();
 
 // Whether the page is in Monitoring mode.
-let inMonitoringMode = false;
+let inMonitoringMode: boolean = false;
 
 /**
  * Initiates the request for histograms.
@@ -72,7 +73,8 @@ function enableMonitoring() {
   inMonitoringMode = true;
   $('accumulating_section').style.display = 'none';
   $('monitoring_section').style.display = 'block';
-  $('histograms').innerHTML = trustedTypes.emptyHTML;
+  $('histograms').innerHTML =
+      window.trustedTypes!.emptyHTML as unknown as string;
   expandedEntries.clear();
   startMonitoring();
 }
@@ -88,61 +90,74 @@ function disableMonitoring() {
   }
   $('accumulating_section').style.display = 'block';
   $('monitoring_section').style.display = 'none';
-  $('histograms').innerHTML = trustedTypes.emptyHTML;
+  $('histograms').innerHTML =
+      window.trustedTypes!.emptyHTML as unknown as string;
   expandedEntries.clear();
   requestHistograms();
 }
 
-function onHistogramHeaderClick(event) {
-  const headerElement =
-      event.composedPath().find((e) => e.className === 'histogram-header');
+function onHistogramHeaderClick(event: Event) {
+  const headerElement = event.currentTarget as HTMLElement;
   const name = headerElement.getAttribute('histogram-name');
+  assert(name);
   const shouldExpand = !expandedEntries.has(name);
   if (shouldExpand) {
     expandedEntries.add(name);
   } else {
     expandedEntries.delete(name);
   }
-  setExpanded(headerElement.parentNode, shouldExpand);
+  setExpanded(headerElement.parentElement!, shouldExpand);
 }
 
 /**
  * Expands or collapses a histogram node.
- * @param {Element} histogramNode the histogram element to expand or collapse
- * @param {boolean} expanded whether to expand or collapse the node
+ * @param histogramNode the histogram element to expand or collapse
+ * @param expanded whether to expand or collapse the node
  */
-function setExpanded(histogramNode, expanded) {
-  if (expanded) {
-    histogramNode.querySelector('.histogram-body').style.display = 'block';
-    histogramNode.querySelector('.expand').style.display = 'none';
-    histogramNode.querySelector('.collapse').style.display = 'inline';
-  } else {
-    histogramNode.querySelector('.histogram-body').style.display = 'none';
-    histogramNode.querySelector('.expand').style.display = 'inline';
-    histogramNode.querySelector('.collapse').style.display = 'none';
-  }
+function setExpanded(histogramNode: HTMLElement, expanded: boolean) {
+  const body = histogramNode.querySelector<HTMLElement>('.histogram-body');
+  const expand = histogramNode.querySelector<HTMLElement>('.expand');
+  const collapse = histogramNode.querySelector<HTMLElement>('.collapse');
+  assert(body && expand && collapse);
+
+  body.style.display = expanded ? 'block' : 'none';
+  expand.style.display = expanded ? 'none' : 'inline';
+  collapse.style.display = expanded ? 'inline' : 'none';
 }
+
+type Histogram = {
+  name: string,
+  header: string,
+  body: string,
+};
 
 /**
  * Callback from backend with the list of histograms. Builds the UI.
- * @param {!Array<{name: string, header: string, body: string}>} histograms
- *     A list of name, header and body strings representing histograms.
+ * @param histograms A list of name, header and body strings representing
+ *     histograms.
  */
-function addHistograms(histograms) {
-  $('histograms').innerHTML = trustedTypes.emptyHTML;
+function addHistograms(histograms: Histogram[]) {
+  $('histograms').innerHTML =
+      window.trustedTypes!.emptyHTML as unknown as string;
   // TBD(jar) Write a nice HTML bar chart, with divs an mouse-overs etc.
   for (const histogram of histograms) {
     const {name, header, body} = histogram;
-    const clone = $('histogram-template').content.cloneNode(true);
-    const headerNode = clone.querySelector('.histogram-header');
+    const template =
+        document.body.querySelector<HTMLTemplateElement>('#histogram-template');
+    assert(template);
+    const clone = template.content.cloneNode(true) as HTMLElement;
+    const headerNode = clone.querySelector<HTMLElement>('.histogram-header');
+    assert(headerNode);
     headerNode.setAttribute('histogram-name', name);
     headerNode.onclick = onHistogramHeaderClick;
-    clone.querySelector('.histogram-header-text').textContent = header;
-    const link = clone.querySelector('.histogram-header-link');
+    clone.querySelector('.histogram-header-text')!.textContent = header;
+    const link =
+        clone.querySelector<HTMLAnchorElement>('.histogram-header-link');
+    assert(link);
     link.href = '/#' + name;
     // Don't run expand/collapse handler on link click.
-    link.onclick = e => e.stopPropagation();
-    clone.querySelector('p').textContent = body;
+    link.onclick = (e: Event) => e.stopPropagation();
+    clone.querySelector('p')!.textContent = body;
     // If we are not in monitoring mode, default to expand.
     if (!inMonitoringMode) {
       expandedEntries.add(name);

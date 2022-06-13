@@ -9,8 +9,6 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {SiteEngagementDetails, SiteEngagementDetailsProvider} from './site_engagement_details.mojom-webui.js';
 
-declare const trustedTypes: {emptyHTML: string};
-
 const pageIsPopulatedResolver = new PromiseResolver<void>();
 
 const whenPageIsPopulatedForTest = function() {
@@ -130,7 +128,8 @@ function initialize() {
    * Remove all rows from the engagement table.
    */
   function clearTable() {
-    engagementTableBody.innerHTML = trustedTypes.emptyHTML;
+    engagementTableBody.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   }
 
   /**
