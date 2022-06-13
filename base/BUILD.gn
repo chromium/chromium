@@ -1678,6 +1678,8 @@ mixed_component("base") {
       "android/reached_code_profiler.h",
       "android/record_histogram.cc",
       "android/record_user_action.cc",
+      "android/remove_stale_data.cc",
+      "android/remove_stale_data.h",
       "android/scoped_hardware_buffer_fence_sync.cc",
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",
