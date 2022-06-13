@@ -474,16 +474,16 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
       '.',
-      '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M104/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=104',
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M104/out/Release',
+      '--impl-version=104'
     ],
     'identifier': 'with_impl_from_104',
     'swarming': {
@@ -491,23 +491,23 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M104',
-          'revision': 'version:104.0.5112.6',
+          'revision': 'version:104.0.5112.6'
         }
-      ],
-    },
+      ]
+    }
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
       '.',
-      '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M103/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=103',
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M103/out/Release',
+      '--impl-version=103'
     ],
     'identifier': 'with_impl_from_103',
     'swarming': {
@@ -515,10 +515,10 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M103',
-          'revision': 'version:103.0.5060.49',
+          'revision': 'version:103.0.5060.49'
         }
-      ],
-    },
+      ]
+    }
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
     'args': [
@@ -618,16 +618,16 @@
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
       '.',
-      '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M104/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=104',
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M104/out/Release',
+      '--impl-version=104'
     ],
     'identifier': 'with_impl_from_104',
     'swarming': {
@@ -635,23 +635,23 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M104',
-          'revision': 'version:104.0.5112.6',
+          'revision': 'version:104.0.5112.6'
         }
-      ],
-    },
+      ]
+    }
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
       '.',
-      '--implementation-outdir',
-      '../../weblayer_instrumentation_test_M103/out/Release',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--impl-version=103',
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M103/out/Release',
+      '--impl-version=103'
     ],
     'identifier': 'with_impl_from_103',
     'swarming': {
@@ -659,10 +659,10 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M103',
-          'revision': 'version:103.0.5060.49',
+          'revision': 'version:103.0.5060.49'
         }
-      ],
-    },
+      ]
+    }
   },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
     'args': [
@@ -762,16 +762,16 @@
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
-      '--client-outdir',
-      '../../weblayer_instrumentation_test_M104/out/Release',
       '--implementation-outdir',
       '.',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--client-version=104',
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M104/out/Release',
+      '--client-version=104'
     ],
     'identifier': 'with_client_from_104',
     'swarming': {
@@ -779,23 +779,23 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M104',
-          'revision': 'version:104.0.5112.6',
+          'revision': 'version:104.0.5112.6'
         }
-      ],
-    },
+      ]
+    }
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/SystemWebView.apk',
       '--test-runner-outdir',
       '.',
-      '--client-outdir',
-      '../../weblayer_instrumentation_test_M103/out/Release',
       '--implementation-outdir',
       '.',
       '--test-expectations',
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
-      '--client-version=103',
+      '--webview-apk-path=apks/SystemWebView.apk',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M103/out/Release',
+      '--client-version=103'
     ],
     'identifier': 'with_client_from_103',
     'swarming': {
@@ -803,10 +803,10 @@
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M103',
-          'revision': 'version:103.0.5060.49',
+          'revision': 'version:103.0.5060.49'
         }
-      ],
-    },
+      ]
+    }
   },
   'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
     'args': [
