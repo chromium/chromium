@@ -439,13 +439,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING, 118},
        {IDC_FOLLOW, 119},
        {IDC_UNFOLLOW, 120},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 121}});
+       {0, 122}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -518,6 +519,11 @@ int CollapseCommandsForUMA(int id) {
     return IDC_OPEN_LINK_IN_PROFILE_FIRST;
   }
 
+  if (id >= IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST &&
+      id <= IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST) {
+    return IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST;
+  }
+
   return id;
 }
 
@@ -528,12 +534,6 @@ int FindUMAEnumValueForCommand(int id, UmaEnumIdLookupType type) {
 
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(id))
     return 1;
-
-  if (autofill::AutofillContextMenuManager::IsAutofillCustomCommandId(
-          autofill::AutofillContextMenuManager::CommandId(id))) {
-    // TODO(crbug.com/1325811): Track the autofill items.
-    return -1;
-  }
 
   id = CollapseCommandsForUMA(id);
   const auto& map = GetIdcToUmaMap(type);
