@@ -52,6 +52,7 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/load_notification_details.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_details.h"
@@ -5340,6 +5341,54 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       ->InitializeMainRenderFrameForImmediateUse();
   frame_created_obs.WaitForRenderFrameCreated();
   EXPECT_FALSE(shell()->web_contents()->IsCrashed());
+}
+
+namespace {
+
+class MediaWaiter : public WebContentsObserver {
+ public:
+  explicit MediaWaiter(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void MediaStartedPlaying(const MediaPlayerInfo& video_type,
+                           const MediaPlayerId& id) override {
+    started_media_id_ = id;
+    ;
+    media_started_playing_loop_.Quit();
+  }
+  void MediaDestroyed(const MediaPlayerId& id) override {
+    EXPECT_EQ(id, started_media_id_);
+    media_destroyed_loop_.Quit();
+  }
+
+  void WaitForMediaStartedPlaying() { media_started_playing_loop_.Run(); }
+  void WaitForMediaDestroyed() { media_destroyed_loop_.Run(); }
+
+ private:
+  absl::optional<MediaPlayerId> started_media_id_;
+  base::RunLoop media_started_playing_loop_;
+  base::RunLoop media_destroyed_loop_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       MediaDestroyedOnRendererCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  MediaWaiter waiter(shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/media/video-player-autoplay.html")));
+
+  waiter.WaitForMediaStartedPlaying();
+
+  CrashTab(shell()->web_contents());
+  EXPECT_TRUE(shell()->web_contents()->IsCrashed());
+
+  // This will not hang if MediaDestroyed() is dispatched as expected when a
+  // frame with a media player is destroyed.
+  waiter.WaitForMediaDestroyed();
 }
 
 class WebContentsImplInsecureLocalhostBrowserTest

@@ -186,12 +186,25 @@ void MediaWebContentsObserver::RenderFrameDeleted(
                media_player_observer_hosts_value_type.first.frame_routing_id;
       });
 
-  base::EraseIf(media_player_remotes_,
-                [frame_routing_id](const MediaPlayerRemotesMap::value_type&
-                                       media_player_remotes_value_type) {
-                  return frame_routing_id ==
-                         media_player_remotes_value_type.first.frame_routing_id;
-                });
+  std::vector<MediaPlayerId> removed_media_players;
+  base::EraseIf(
+      media_player_remotes_, [&](const MediaPlayerRemotesMap::value_type&
+                                     media_player_remotes_value_type) {
+        const MediaPlayerId& player_id = media_player_remotes_value_type.first;
+        if (frame_routing_id == player_id.frame_routing_id) {
+          removed_media_players.push_back(player_id);
+          return true;
+        }
+        return false;
+      });
+
+  for (const MediaPlayerId& player_id : removed_media_players) {
+    // Call MediaDestroyed() after all state associated with the media player is
+    // deleted, to ensure that observers see up-to-date state. For example,
+    // HasActiveEffectivelyFullscreenVideo() should return false if `player_id`
+    // was the only fullscreen media.
+    web_contents_impl()->MediaDestroyed(player_id);
+  }
 
   session_controllers_manager_->RenderFrameDeleted(render_frame_host);
 
