@@ -86,7 +86,7 @@ class PromptAction : public Action {
   // to the specific choice that matched.
   absl::optional<ElementConditionProto> auto_select_;
 
-  // If >= 0, contains the index of the Choice to auto-select. Set based or the
+  // If >= 0, contains the index of the Choice to auto-select. Set based on the
   // payload reported by |auto_select_|.
   int auto_select_choice_index_ = -1;
 
