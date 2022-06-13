@@ -3599,7 +3599,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   EXPECT_TRUE(ExecJs(rfh_a.get(),
                      "document.getElementsByTagName('body')[0].remove();"));
   // Ensure the AX events are dispatched for |rfh_a|.
-  waiter.WaitForNotification();
+  // TODO(https://crbug.com/1330182): Make this an assert when
+  // WaitForNotification's return value is fixed.
+  std::ignore = waiter.WaitForNotification();
   EXPECT_EQ(waiter.event_render_frame_host(), rfh_a.get());
 }
 

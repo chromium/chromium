@@ -51,12 +51,12 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // AccessibilityNotificationWaiter is received. Ignores notifications for
   // "about:blank". Returns true if an event was received, false if waiting
   // ended for some other reason.
-  bool WaitForNotification();
+  [[nodiscard]] bool WaitForNotification();
 
   // Blocks until the notification is received, or the given timeout passes.
   // Returns true if an event was received, false if waiting ended for some
   // other reason.
-  bool WaitForNotificationWithTimeout(base::TimeDelta timeout);
+  [[nodiscard]] bool WaitForNotificationWithTimeout(base::TimeDelta timeout);
 
   // After WaitForNotification has returned, this will retrieve
   // the tree of accessibility nodes received from the renderer process.
