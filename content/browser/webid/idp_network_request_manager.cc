@@ -95,10 +95,6 @@ constexpr char kResponseBodyContentType[] = "application/json";
 // response size that is a part of this protocol.
 constexpr int maxResponseSizeInKiB = 1024;
 
-// safe_zone_diameter/icon_size as defined in
-// https://www.w3.org/TR/appmanifest/#icon-masks
-constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
-
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
   return net::DefineNetworkTrafficAnnotation("fedcm", R"(
         semantics {
@@ -299,19 +295,10 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
     }
 
     if (brand_icon_minimum_size && brand_icon_ideal_size) {
-      // As only a single bitmap is selected, select a bitmap which works with
-      // a high density display (if the OS supports high density displays).
-      float max_supported_scale = ui::GetScaleForResourceScaleFactor(
-          ui::GetSupportedResourceScaleFactors().back());
-      int minimum_icon_size_px = brand_icon_minimum_size.value() *
-                                 max_supported_scale /
-                                 kMaskableWebIconSafeZoneRatio;
-      int ideal_icon_size_px = brand_icon_ideal_size.value() *
-                               max_supported_scale /
-                               kMaskableWebIconSafeZoneRatio;
       idp_metadata.brand_icon_url =
           blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-              icons, ideal_icon_size_px, minimum_icon_size_px,
+              icons, brand_icon_ideal_size.value(),
+              brand_icon_minimum_size.value(),
               blink::mojom::ManifestImageResource_Purpose::MASKABLE);
     }
   }

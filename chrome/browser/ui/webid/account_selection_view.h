@@ -40,10 +40,12 @@ class AccountSelectionView {
 
   static std::unique_ptr<AccountSelectionView> Create(Delegate* delegate);
 
-  // Returns the brand icon minimum size in dip.
+  // Returns the brand icon minimum size. This includes the size of the
+  // safe-zone defined in https://www.w3.org/TR/appmanifest/#icon-masks
   static int GetBrandIconMinimumSize();
 
-  // Returns the brand icon ideal size in dip.
+  // Returns the brand icon ideal size. This includes the size of the
+  // safe-zone defined in https://www.w3.org/TR/appmanifest/#icon-masks
   static int GetBrandIconIdealSize();
 
   explicit AccountSelectionView(Delegate* delegate) : delegate_(delegate) {}

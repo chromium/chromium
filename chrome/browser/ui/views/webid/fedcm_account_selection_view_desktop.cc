@@ -19,12 +19,17 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
 
 // static
 int AccountSelectionView::GetBrandIconMinimumSize() {
-  return 20;
+  return 20 / FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
 // static
 int AccountSelectionView::GetBrandIconIdealSize() {
-  return 20;
+  // As only a single brand icon is selected and the user can have monitors with
+  // different screen densities, make the ideal size be the size which works
+  // with a high density display (if the OS supports high density displays).
+  float max_supported_scale = ui::GetScaleForResourceScaleFactor(
+      ui::GetSupportedResourceScaleFactors().back());
+  return round(GetBrandIconMinimumSize() * max_supported_scale);
 }
 
 FedCmAccountSelectionView::FedCmAccountSelectionView(
