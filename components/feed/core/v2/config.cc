@@ -171,9 +171,8 @@ void OverrideWithFinch(Config& config) {
 }
 
 void OverrideWithSwitches(Config& config) {
-  config.use_feed_query_requests_for_web_feeds =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "webfeed-legacy-feedquery");
+  config.use_feed_query_requests =
+      base::CommandLine::ForCurrentProcess()->HasSwitch("use-legacy-feedquery");
 }
 
 }  // namespace
@@ -189,10 +188,9 @@ const Config& GetFeedConfig() {
 }
 
 // This is a dev setting that updates Config, which is supposed to be constant.
-// TODO(crbug/1152592): remove when not needed anymore.
-void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy) {
+void SetUseFeedQueryRequests(const bool use_legacy) {
   Config& config = const_cast<Config&>(GetFeedConfig());
-  config.use_feed_query_requests_for_web_feeds = use_legacy;
+  config.use_feed_query_requests = use_legacy;
 }
 
 void SetFeedConfigForTesting(const Config& config) {
