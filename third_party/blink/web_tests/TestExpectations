@@ -3989,6 +3989,8 @@ crbug.com/435547 http/tests/cachestorage/serviceworker/ignore-search-with-creden
 crbug.com/697971 [ Mac10.12 ] virtual/text-antialias/selection/flexbox-selection-nested.html [ Skip ]
 crbug.com/697971 [ Mac10.12 ] virtual/text-antialias/selection/flexbox-selection.html [ Skip ]
 
+crbug.com/1329434 [ Mac10.12 ] virtual/text-antialias/selection/khmer-selection.html [ Failure Pass ]
+
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure Pass ]
