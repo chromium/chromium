@@ -93844,6 +93844,15 @@ Full version information for the fingerprint enum values:
              error"/>
 </enum>
 
+<enum name="TrustedVaultDownloadKeysStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Member not found or corrupted"/>
+  <int value="2" label="No new keys"/>
+  <int value="3" label="Key proof verification failed"/>
+  <int value="4" label="Access token fetching failed"/>
+  <int value="5" label="Other error"/>
+</enum>
+
 <enum name="TrustedVaultFetchKeysAttempt">
   <int value="0" label="First attempt"/>
   <int value="1" label="Second attempt"/>

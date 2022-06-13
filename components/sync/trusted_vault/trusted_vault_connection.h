@@ -32,21 +32,24 @@ enum class TrustedVaultRegistrationStatus {
   kOtherError
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class TrustedVaultDownloadKeysStatus {
-  kSuccess,
+  kSuccess = 0,
   // Member corresponding to the authentication factor doesn't exist, not
   // registered in the security domain or corrupted.
-  kMemberNotFoundOrCorrupted,
+  kMemberNotFoundOrCorrupted = 1,
   // Keys were successfully downloaded and verified, but no new keys exist.
-  kNoNewKeys,
+  kNoNewKeys = 2,
   // At least one of the key proofs isn't valid or unable to verify them using
   // latest local trusted vault key (e.g. it's too old).
-  kKeyProofsVerificationFailed,
+  kKeyProofsVerificationFailed = 3,
   // Used when request isn't sent due to access token fetching failure.
-  kAccessTokenFetchingFailure,
+  kAccessTokenFetchingFailure = 4,
   // Used for all network, http and protocol errors, when no statuses above
   // fits.
-  kOtherError
+  kOtherError = 5,
+  kMaxValue = kOtherError
 };
 
 enum class TrustedVaultRecoverabilityStatus {
