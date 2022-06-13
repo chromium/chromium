@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 
 #include <map>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -79,6 +80,10 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   void DidGetBucket(mojo::ReceiverId receiver_id,
                     OpenBucketCallback callback,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
+
+  void DidGetBuckets(
+      KeysCallback callback,
+      storage::QuotaErrorOr<std::set<storage::BucketInfo>> result);
 
   void DidDeleteBucket(const std::string& bucket_name,
                        DeleteBucketCallback callback,

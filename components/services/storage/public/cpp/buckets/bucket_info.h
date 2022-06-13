@@ -64,6 +64,9 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   blink::mojom::BucketDurability durability;
 };
 
+std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+    BucketInfosToBucketLocators(const std::set<BucketInfo>& bucket_infos);
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_BUCKETS_BUCKET_INFO_H_

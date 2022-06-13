@@ -145,6 +145,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Retrieves all buckets for `storage_key` and `type` that are in the buckets
+  // table.
+  virtual void GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
+
   // Deletes bucket with `bucket_name` for `storage_key` for
   // StorageType::kTemporary for all registered QuotaClients if a bucket exists.
   // Will return QuotaStatusCode to the callback. Called by Storage Buckets API

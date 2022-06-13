@@ -122,11 +122,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   struct AccumulateInfo;
   friend class ClientUsageTracker;
 
-  void DidGetBucketsForType(QuotaErrorOr<std::set<BucketLocator>> result);
+  void DidGetBucketsForType(QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetBucketsForHost(const std::string& host,
-                            QuotaErrorOr<std::set<BucketLocator>> result);
+                            QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetBucketsForStorageKey(const blink::StorageKey& storage_key,
-                                  QuotaErrorOr<std::set<BucketLocator>> result);
+                                  QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetBucketForUsage(QuotaClientType client_type,
                             int64_t delta,
                             QuotaErrorOr<BucketInfo> result);

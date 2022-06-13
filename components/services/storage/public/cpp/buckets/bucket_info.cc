@@ -42,4 +42,13 @@ bool operator<(const BucketInfo& lhs, const BucketInfo& rhs) {
   return lhs.id < rhs.id;
 }
 
+std::set<BucketLocator> COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+    BucketInfosToBucketLocators(const std::set<BucketInfo>& bucket_infos) {
+  std::set<BucketLocator> result;
+  std::transform(bucket_infos.begin(), bucket_infos.end(),
+                 std::inserter(result, result.begin()),
+                 [](const BucketInfo& info) { return info.ToBucketLocator(); });
+  return result;
+}
+
 }  // namespace storage

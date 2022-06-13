@@ -848,14 +848,14 @@ class QuotaManagerImpl::HostDataDeleter {
   }
 
  private:
-  void DidGetBucketsForHost(QuotaErrorOr<std::set<BucketLocator>> result) {
+  void DidGetBucketsForHost(QuotaErrorOr<std::set<BucketInfo>> result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!result.ok()) {
       Complete(/*success=*/false);
       return;
     }
 
-    buckets_ = result.value();
+    buckets_ = BucketInfosToBucketLocators(result.value());
     if (!buckets_.empty()) {
       ScheduleBucketsDeletion();
       return;
@@ -1209,7 +1209,7 @@ void QuotaManagerImpl::GetStorageKeysForType(blink::mojom::StorageType type,
 
 void QuotaManagerImpl::GetBucketsForType(
     blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
@@ -1232,7 +1232,7 @@ void QuotaManagerImpl::GetBucketsForType(
 void QuotaManagerImpl::GetBucketsForHost(
     const std::string& host,
     blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
@@ -1256,7 +1256,7 @@ void QuotaManagerImpl::GetBucketsForHost(
 void QuotaManagerImpl::GetBucketsForStorageKey(
     const StorageKey& storage_key,
     blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
@@ -2947,8 +2947,8 @@ void QuotaManagerImpl::DidGetStorageKeys(
 }
 
 void QuotaManagerImpl::DidGetBuckets(
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback,
-    QuotaErrorOr<std::set<BucketLocator>> result) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+    QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 

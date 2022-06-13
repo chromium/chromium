@@ -104,11 +104,11 @@ void BucketManagerHost::OpenBucket(const std::string& name,
 }
 
 void BucketManagerHost::Keys(KeysCallback callback) {
-  std::vector<std::string> keys;
-  for (auto& bucket : bucket_map_)
-    keys.push_back(bucket.first);
-  // TODO(ayui): Update to retrieve from QuotaManager.
-  std::move(callback).Run(keys, true);
+  manager_->quota_manager_proxy()->GetBucketsForStorageKey(
+      blink::StorageKey(origin_), blink::mojom::StorageType::kTemporary,
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&BucketManagerHost::DidGetBuckets,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BucketManagerHost::DeleteBucket(const std::string& name,
@@ -165,6 +165,24 @@ void BucketManagerHost::DidGetBucket(
   auto pending_remote =
       it->second->CreateStorageBucketBinding(permission_it->second);
   std::move(callback).Run(std::move(pending_remote));
+}
+
+void BucketManagerHost::DidGetBuckets(
+    KeysCallback callback,
+    storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
+  if (!buckets.ok()) {
+    std::move(callback).Run({}, false);
+    return;
+  }
+
+  std::vector<std::string> keys;
+  for (auto& bucket : buckets.value()) {
+    if (!bucket.is_default())
+      keys.push_back(bucket.name);
+  }
+  std::sort(keys.begin(), keys.end());
+
+  std::move(callback).Run(keys, true);
 }
 
 void BucketManagerHost::DidDeleteBucket(const std::string& bucket_name,

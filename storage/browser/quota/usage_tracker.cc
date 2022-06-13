@@ -193,7 +193,7 @@ void UsageTracker::SetUsageCacheEnabled(QuotaClientType client_type,
 }
 
 void UsageTracker::DidGetBucketsForType(
-    QuotaErrorOr<std::set<BucketLocator>> result) {
+    QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = std::make_unique<AccumulateInfo>();
   if (!result.ok()) {
@@ -204,11 +204,14 @@ void UsageTracker::DidGetBucketsForType(
     return;
   }
 
-  const std::set<BucketLocator>& buckets = result.value();
+  const std::set<BucketInfo>& buckets = result.value();
   if (buckets.empty()) {
     FinallySendGlobalUsage(std::move(info));
     return;
   }
+
+  std::set<BucketLocator> bucket_locators =
+      BucketInfosToBucketLocators(buckets);
 
   auto* info_ptr = info.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
@@ -219,7 +222,7 @@ void UsageTracker::DidGetBucketsForType(
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
       client_tracker->GetBucketsUsage(
-          buckets,
+          bucket_locators,
           // base::Unretained usage is safe here because BarrierClosure holds
           // the std::unque_ptr that keeps AccumulateInfo alive, and the
           // BarrierClosure will outlive all the AccumulateClientGlobalUsage
@@ -233,7 +236,7 @@ void UsageTracker::DidGetBucketsForType(
 
 void UsageTracker::DidGetBucketsForHost(
     const std::string& host,
-    QuotaErrorOr<std::set<BucketLocator>> result) {
+    QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = std::make_unique<AccumulateInfo>();
   if (!result.ok()) {
@@ -244,11 +247,14 @@ void UsageTracker::DidGetBucketsForHost(
     return;
   }
 
-  const std::set<BucketLocator>& buckets = result.value();
+  const std::set<BucketInfo>& buckets = result.value();
   if (buckets.empty()) {
     FinallySendHostUsageWithBreakdown(std::move(info), host);
     return;
   }
+
+  std::set<BucketLocator> bucket_locators =
+      BucketInfosToBucketLocators(buckets);
 
   auto* info_ptr = info.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
@@ -259,7 +265,7 @@ void UsageTracker::DidGetBucketsForHost(
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
       client_tracker->GetBucketsUsage(
-          buckets,
+          bucket_locators,
           // base::Unretained usage is safe here because BarrierClosure holds
           // the std::unque_ptr that keeps AccumulateInfo alive, and the
           // BarrierClosure will outlive all the AccumulateClientGlobalUsage
@@ -274,7 +280,7 @@ void UsageTracker::DidGetBucketsForHost(
 
 void UsageTracker::DidGetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
-    QuotaErrorOr<std::set<BucketLocator>> result) {
+    QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = std::make_unique<AccumulateInfo>();
   if (!result.ok()) {
@@ -285,11 +291,14 @@ void UsageTracker::DidGetBucketsForStorageKey(
     return;
   }
 
-  const std::set<BucketLocator>& buckets = result.value();
+  const std::set<BucketInfo>& buckets = result.value();
   if (buckets.empty()) {
     FinallySendStorageKeyUsageWithBreakdown(std::move(info), storage_key);
     return;
   }
+
+  std::set<BucketLocator> bucket_locators =
+      BucketInfosToBucketLocators(buckets);
 
   auto* info_ptr = info.get();
   base::RepeatingClosure barrier = base::BarrierClosure(
@@ -300,7 +309,7 @@ void UsageTracker::DidGetBucketsForStorageKey(
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
       client_tracker->GetBucketsUsage(
-          buckets,
+          bucket_locators,
           // base::Unretained usage is safe here because BarrierClosure holds
           // the std::unque_ptr that keeps AccumulateInfo alive, and the
           // BarrierClosure will outlive all the AccumulateClientGlobalUsage

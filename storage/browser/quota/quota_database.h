@@ -153,18 +153,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Returns all buckets for `type` in the buckets table. Returns a QuotaError
   // if the operation has failed.
-  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForType(
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForType(
       blink::mojom::StorageType type);
 
   // Retrieves all buckets for `host` and `type`. Returns a QuotaError if the
   // operation has failed.
-  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForHost(
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHost(
       const std::string& host,
       blink::mojom::StorageType type);
 
   // Returns all buckets for `storage_key` in the buckets table. Returns a
   // QuotaError if the operation has failed.
-  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForStorageKey(
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type);
 
