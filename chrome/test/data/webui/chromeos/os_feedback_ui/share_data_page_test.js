@@ -99,6 +99,12 @@ export function shareDataPageTestSuite() {
     // Verify the user email label is in the page.
     assertEquals('Email', getElementContent('#userEmailLabel'));
 
+    // Verify the share diagnostic data label is in the page.
+    assertTrue(page.i18nExists('shareDiagnosticDataLabel'));
+    assertEquals(
+        'Share diagnostic data',
+        getElementContent('#shareDiagnosticDataLabel'));
+
     // Screenshot elements.
     assertTrue(!!getElement('#screenshotCheckbox'));
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
