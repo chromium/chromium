@@ -232,12 +232,12 @@ void TabletModeWindowManager::Shutdown() {
                                  was_in_overview);
 }
 
-int TabletModeWindowManager::GetNumberOfManagedWindows() {
-  return window_state_map_.size();
-}
-
 bool TabletModeWindowManager::IsTrackingWindow(aura::Window* window) {
   return base::Contains(window_state_map_, window);
+}
+
+int TabletModeWindowManager::GetNumberOfManagedWindows() {
+  return window_state_map_.size();
 }
 
 void TabletModeWindowManager::AddWindow(aura::Window* window) {
@@ -412,8 +412,8 @@ void TabletModeWindowManager::OnWindowBoundsChanged(
 
   // Reposition all non maximizeable windows.
   for (auto& pair : window_state_map_) {
-    pair.second->UpdateWindowPosition(WindowState::Get(pair.first),
-                                      /*animate=*/false);
+    TabletModeWindowState::UpdateWindowPosition(WindowState::Get(pair.first),
+                                                /*animate=*/false);
   }
   if (session)
     session->ResumeReposition();

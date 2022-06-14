@@ -192,9 +192,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   views::FrameCaptionButton* size_button_ = nullptr;
   views::FrameCaptionButton* close_button_ = nullptr;
 
-  // Change float button status.
-  void ToggleFloatButton();
-
   // Mapping of the image needed to paint a button for each of the values of
   // CaptionButtonIcon.
   std::map<views::CaptionButtonIcon, const gfx::VectorIcon*> button_icon_map_;

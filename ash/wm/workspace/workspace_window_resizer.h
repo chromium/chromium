@@ -212,8 +212,8 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // The location for drag maximize in screen.
   absl::optional<gfx::PointF> dwell_location_in_screen_;
 
-  // The mouse location passed to Drag().
-  gfx::PointF last_mouse_location_;
+  // The location in parent passed to `Drag()`.
+  gfx::PointF last_location_in_parent_;
 
   // Window the drag has magnetically attached to.
   aura::Window* magnetism_window_ = nullptr;

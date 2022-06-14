@@ -82,8 +82,6 @@ bool IsMinimizedWindowStateType(WindowStateType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsNormalWindowStateType(WindowStateType type);
 
-COMPONENT_EXPORT(CHROMEOS_UI_BASE) bool IsValidWindowStateType(int64_t value);
-
 }  // namespace chromeos
 
 #endif  // CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_

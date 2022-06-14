@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -528,9 +530,22 @@ void FrameCaptionButtonContainerView::FloatButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   aura::Window* window = GetWidget()->GetNativeWindow();
+  WindowStateType old_state = window->GetProperty(kWindowStateTypeKey);
+
   // Float current window.
   ToggleFloating(window);
   UpdateCaptionButtonState(true);
+
+  // Update the tooltip if float/unfloat has been successful.
+  WindowStateType new_state = window->GetProperty(kWindowStateTypeKey);
+  if (new_state != old_state) {
+    float_button_->SetTooltipText(
+        new_state == WindowStateType::kFloated
+            // TODO(sammiequon|shidi): Update this to the correct string once UX
+            // writing has a decision.
+            ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
+            : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+  }
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {

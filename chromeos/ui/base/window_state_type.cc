@@ -111,19 +111,4 @@ bool IsNormalWindowStateType(WindowStateType type) {
   return type == WindowStateType::kNormal || type == WindowStateType::kDefault;
 }
 
-bool IsValidWindowStateType(int64_t value) {
-  return value == int64_t(WindowStateType::kDefault) ||
-         value == int64_t(WindowStateType::kNormal) ||
-         value == int64_t(WindowStateType::kMinimized) ||
-         value == int64_t(WindowStateType::kMaximized) ||
-         value == int64_t(WindowStateType::kInactive) ||
-         value == int64_t(WindowStateType::kFullscreen) ||
-         value == int64_t(WindowStateType::kPrimarySnapped) ||
-         value == int64_t(WindowStateType::kSecondarySnapped) ||
-         value == int64_t(WindowStateType::kAutoPositioned) ||
-         value == int64_t(WindowStateType::kPinned) ||
-         value == int64_t(WindowStateType::kTrustedPinned) ||
-         value == int64_t(WindowStateType::kPip);
-}
-
 }  // namespace chromeos

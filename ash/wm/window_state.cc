@@ -231,8 +231,7 @@ void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
 
 // Notifies the window restore controller to write to file.
 void SaveWindowForWindowRestore(WindowState* window_state) {
-  auto* controller = WindowRestoreController::Get();
-  if (controller)
+  if (auto* controller = WindowRestoreController::Get())
     controller->SaveWindow(window_state);
 }
 

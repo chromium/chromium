@@ -48,7 +48,7 @@ WindowRestoreController* g_instance = nullptr;
 WindowRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
 
 // The list of possible app window parents.
-constexpr ShellWindowId kAppParentContainers[10] = {
+constexpr ShellWindowId kAppParentContainers[11] = {
     kShellWindowId_DefaultContainerDeprecated,
     kShellWindowId_DeskContainerB,
     kShellWindowId_DeskContainerC,
@@ -58,6 +58,7 @@ constexpr ShellWindowId kAppParentContainers[10] = {
     kShellWindowId_DeskContainerG,
     kShellWindowId_DeskContainerH,
     kShellWindowId_AlwaysOnTopContainer,
+    kShellWindowId_FloatContainer,
     kShellWindowId_UnparentedContainer,
 };
 

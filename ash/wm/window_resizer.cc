@@ -41,6 +41,11 @@ bool IsRightEdge(int window_component) {
          window_component == HTBOTTOMRIGHT || window_component == HTGROWBOX;
 }
 
+bool IsBottomEdge(int window_component) {
+  return window_component == HTBOTTOMLEFT || window_component == HTBOTTOM ||
+         window_component == HTBOTTOMRIGHT || window_component == HTGROWBOX;
+}
+
 // Convert |window_component| to the ResizeEdge used in
 // gfx::SizeRectToAspectRatio().
 gfx::ResizeEdge GetWindowResizeEdge(int window_component) {
@@ -250,12 +255,6 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   }
 
   return new_bounds;
-}
-
-// static
-bool WindowResizer::IsBottomEdge(int window_component) {
-  return window_component == HTBOTTOMLEFT || window_component == HTBOTTOM ||
-         window_component == HTBOTTOMRIGHT || window_component == HTGROWBOX;
 }
 
 void WindowResizer::SetBoundsDuringResize(const gfx::Rect& bounds) {

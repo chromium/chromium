@@ -691,7 +691,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
       return;
     }
   }
-  last_mouse_location_ = location_in_parent;
+  last_location_in_parent_ = location_in_parent;
 
   int sticky_size;
   if (event_flags & ui::EF_CONTROL_DOWN) {
@@ -842,10 +842,9 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
 void WorkspaceWindowResizer::CompleteDrag() {
   tab_dragging_recorder_.reset();
 
-  gfx::PointF last_mouse_location_in_screen = last_mouse_location_;
-  ::wm::ConvertPointToScreen(GetTarget()->parent(),
-                             &last_mouse_location_in_screen);
-  window_state()->OnCompleteDrag(last_mouse_location_in_screen);
+  gfx::PointF last_location_in_screen = last_location_in_parent_;
+  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen);
+  window_state()->OnCompleteDrag(last_location_in_screen);
   EndDragForAttachedWindows(/*revert_drag=*/false);
 
   if (!did_move_or_resize_)
@@ -969,10 +968,9 @@ void WorkspaceWindowResizer::CompleteDrag() {
 void WorkspaceWindowResizer::RevertDrag() {
   tab_dragging_recorder_.reset();
 
-  gfx::PointF last_mouse_location_in_screen = last_mouse_location_;
-  ::wm::ConvertPointToScreen(GetTarget()->parent(),
-                             &last_mouse_location_in_screen);
-  window_state()->OnRevertDrag(last_mouse_location_in_screen);
+  gfx::PointF last_location_in_screen = last_location_in_parent_;
+  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen);
+  window_state()->OnRevertDrag(last_location_in_screen);
   EndDragForAttachedWindows(/*revert_drag=*/true);
   window_state()->set_bounds_changed_by_user(initial_bounds_changed_by_user_);
   snap_phantom_window_controller_.reset();
@@ -1375,15 +1373,14 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
 
 void WorkspaceWindowResizer::AdjustBoundsForMainWindow(int sticky_size,
                                                        gfx::Rect* bounds) {
-  gfx::Point last_mouse_location_in_screen =
-      gfx::ToRoundedPoint(last_mouse_location_);
-  ::wm::ConvertPointToScreen(GetTarget()->parent(),
-                             &last_mouse_location_in_screen);
+  gfx::Point last_location_in_screen =
+      gfx::ToRoundedPoint(last_location_in_parent_);
+  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen);
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(
-          last_mouse_location_in_screen);
+          last_location_in_screen);
   gfx::Rect work_area = display.work_area();
-  ::wm::ConvertRectFromScreen(GetTarget()->parent(), &work_area);
+  wm::ConvertRectFromScreen(GetTarget()->parent(), &work_area);
   if (details().window_component == HTCAPTION) {
     // Adjust the bounds to the work area where the mouse cursor is located.
     // Always keep kMinOnscreenHeight or the window height (whichever is less)
@@ -1401,7 +1398,7 @@ void WorkspaceWindowResizer::AdjustBoundsForMainWindow(int sticky_size,
     if (sticky_size > 0) {
       // Possibly stick to edge except when a mouse pointer is outside the
       // work area.
-      if (display.work_area().Contains(last_mouse_location_in_screen))
+      if (display.work_area().Contains(last_location_in_screen))
         StickToWorkAreaOnMove(work_area, sticky_size, bounds);
       MagneticallySnapToOtherWindows(display, bounds);
     }
@@ -1740,9 +1737,9 @@ void WorkspaceWindowResizer::EndDragForAttachedWindows(bool revert_drag) {
   for (auto* window : attached_windows_) {
     WindowState* window_state = WindowState::Get(window);
     if (revert_drag)
-      window_state->OnRevertDrag(last_mouse_location_);
+      window_state->OnRevertDrag(last_location_in_parent_);
     else
-      window_state->OnCompleteDrag(last_mouse_location_);
+      window_state->OnCompleteDrag(last_location_in_parent_);
     window_state->DeleteDragDetails();
   }
 }
