@@ -2597,6 +2597,22 @@ TEST_F(CacheStorageIndexMigrationTest, PaddingMigration) {
              }));
 }
 
+TEST_F(CacheStorageIndexMigrationTest, StorageKeyMigration) {
+  DoTest("content/test/data/cache_storage/storage_key/",
+         base::BindLambdaForTesting(
+             [this](const proto::CacheStorageIndex& original_index,
+                    const proto::CacheStorageIndex& upgraded_index,
+                    int64_t total_usage) {
+               EXPECT_FALSE(original_index.has_storage_key());
+               EXPECT_TRUE(upgraded_index.has_storage_key());
+
+               absl::optional<blink::StorageKey> result =
+                   blink::StorageKey::Deserialize(upgraded_index.storage_key());
+               ASSERT_TRUE(result.has_value());
+               EXPECT_EQ(this->storage_key1_, result.value());
+             }));
+}
+
 INSTANTIATE_TEST_SUITE_P(CacheStorageManagerTests,
                          CacheStorageManagerTestP,
                          ::testing::Values(TestStorage::kMemory,

@@ -351,10 +351,13 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     // backwards compatibility with older data. The serializations are
     // subtly different, e.g. Origin does not include a trailing "/".
     // TODO(crbug.com/809329): Add a test for validating fields in the proto
-    //
-    // TODO(https://crbug.com/1199077): We need to serialize the entire
-    // `storage_key_` into the index file.
+    // TODO(https://crbug.com/1199077): Stop setting the origin field once
+    // `CacheStorageManager` no longer uses the origin as a fallback for
+    // getting the storage key associated with each cache (for more info, see
+    // `GetStorageKeysAndLastModifiedOnTaskRunner`).
     protobuf_index.set_origin(storage_key_.origin().GetURL().spec());
+
+    protobuf_index.set_storage_key(storage_key_.Serialize());
 
     for (const auto& cache_metadata : index.ordered_cache_metadata()) {
       DCHECK(base::Contains(cache_name_to_cache_dir_, cache_metadata.name));
@@ -546,6 +549,12 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
         index.mutable_cache(i)->clear_size();
         index_modified = true;
       }
+    }
+
+    if (!index.has_storage_key()) {
+      DCHECK(storage_key.origin().GetURL().spec() == index.origin());
+      index.set_storage_key(storage_key.Serialize());
+      index_modified = true;
     }
 
     if (index_modified) {

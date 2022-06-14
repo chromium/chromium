@@ -18,7 +18,8 @@ message CacheStorageIndex {
     optional int32 padding_version = 6;
   }
   repeated Cache cache = 1;
-  optional string origin = 2;
+  optional string origin = 2 [deprecated = true];
+  optional string storage_key = 3;
 }
 
 message CacheHeaderMap {
