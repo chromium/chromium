@@ -19,6 +19,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -42,6 +43,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
@@ -342,10 +344,10 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     const auto* widget = GetWidget();
     DCHECK(widget);
     const SkColor toolbar_top_separator_color =
-        widget->GetThemeProvider()->GetColor(
+        widget->GetColorProvider()->GetColor(
             tabstrip()->ShouldPaintAsActiveFrame()
-                ? ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_ACTIVE
-                : ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE);
+                ? kColorToolbarTopSeparatorFrameActive
+                : kColorToolbarTopSeparatorFrameInactive);
 
     cc::PaintFlags flags;
     flags.setColor(toolbar_top_separator_color);
