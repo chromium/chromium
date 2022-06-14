@@ -130,6 +130,8 @@ class QtInterface {
                            SkColor default_color,
                            bool is_active,
                            bool use_custom_frame) const = 0;
+  virtual int GetCursorBlinkIntervalMs() const = 0;
+  virtual int GetAnimationDurationMs() const = 0;
 };
 
 }  // namespace qt

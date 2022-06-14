@@ -34,6 +34,8 @@ class QtShim : public QObject, public QtInterface {
                    SkColor default_color,
                    bool is_active,
                    bool use_custom_frame) const override;
+  int GetCursorBlinkIntervalMs() const override;
+  int GetAnimationDurationMs() const override;
 
  private slots:
   void FontChanged(const QFont& font);

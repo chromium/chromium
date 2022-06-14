@@ -254,6 +254,14 @@ SkColor QtShim::GetColor(ColorType role, ColorState state) const {
                                          ColorTypeToColorRole(role)));
 }
 
+int QtShim::GetCursorBlinkIntervalMs() const {
+  return app_.cursorFlashTime();
+}
+
+int QtShim::GetAnimationDurationMs() const {
+  return app_.style()->styleHint(QStyle::SH_Widget_Animation_Duration);
+}
+
 void QtShim::FontChanged(const QFont& font) {
   delegate_->FontChanged();
 }
