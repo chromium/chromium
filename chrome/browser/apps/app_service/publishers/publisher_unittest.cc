@@ -642,7 +642,7 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
 
 class StandaloneBrowserPublisherTest : public PublisherTest {
  public:
-  StandaloneBrowserPublisherTest() : PublisherTest() {
+  StandaloneBrowserPublisherTest() {
     crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(

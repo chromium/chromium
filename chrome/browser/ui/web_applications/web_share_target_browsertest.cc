@@ -255,14 +255,14 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareUsingFileURL) {
 
     intent->mime_type = "text/csv";
     intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-    for (size_t i = 0; i < file_paths.size(); i++) {
+    for (const base::FilePath& file_path : file_paths) {
       int64_t file_size = 0;
-      base::GetFileSize(file_paths[i], &file_size);
+      base::GetFileSize(file_path, &file_size);
       auto file = apps::mojom::IntentFile::New();
-      file->file_name = base::SafeBaseName::Create(file_paths[i]);
+      file->file_name = base::SafeBaseName::Create(file_path);
       file->file_size = file_size;
       file->mime_type = "text/csv";
-      file->url = net::FilePathToFileURL(file_paths[i]);
+      file->url = net::FilePathToFileURL(file_path);
       intent->files->push_back(std::move(file));
     }
     intent->action = apps_util::kIntentActionSendMultiple;

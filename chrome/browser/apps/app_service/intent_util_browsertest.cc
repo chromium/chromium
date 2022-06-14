@@ -125,11 +125,7 @@ void CheckShareFileFilter(const IntentFilterPtr& intent_filter,
 
 }  // namespace
 
-class WebAppsUtilsBrowserTest : public InProcessBrowserTest {
- public:
-  WebAppsUtilsBrowserTest() {}
-  ~WebAppsUtilsBrowserTest() override = default;
-};
+using WebAppsUtilsBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppsUtilsBrowserTest, CreateIntentFilters) {
   ASSERT_TRUE(embedded_test_server()->Start());

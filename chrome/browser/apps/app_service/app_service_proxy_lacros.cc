@@ -441,7 +441,7 @@ void AppServiceProxyLacros::SetCrosapiAppServiceProxyForTesting(
 
 AppServiceProxyLacros::InnerIconLoader::InnerIconLoader(
     AppServiceProxyLacros* host)
-    : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
+    : host_(host) {}
 
 absl::optional<IconKey> AppServiceProxyLacros::InnerIconLoader::GetIconKey(
     const std::string& app_id) {

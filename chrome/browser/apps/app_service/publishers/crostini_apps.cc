@@ -61,7 +61,7 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
 namespace apps {
 
 CrostiniApps::CrostiniApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()), registry_(nullptr) {}
+    : AppPublisher(proxy), profile_(proxy->profile()) {}
 
 CrostiniApps::~CrostiniApps() {
   if (registry_) {

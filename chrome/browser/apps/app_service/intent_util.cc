@@ -789,8 +789,8 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
         break;
       case apps::mojom::ConditionType::kHost:
         for (auto& condition_value : condition->condition_values) {
-          authorities.push_back(arc::IntentFilter::AuthorityEntry(
-              /*host=*/condition_value->value, /*port=*/0));
+          authorities.emplace_back(
+              /*host=*/condition_value->value, /*port=*/0);
         }
         break;
       case apps::mojom::ConditionType::kPattern:
@@ -814,8 +814,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
               NOTREACHED();
               return arc::IntentFilter();
           }
-          paths.push_back(arc::IntentFilter::PatternMatcher(
-              condition_value->value, match_type));
+          paths.emplace_back(condition_value->value, match_type);
         }
         break;
       case apps::mojom::ConditionType::kAction:

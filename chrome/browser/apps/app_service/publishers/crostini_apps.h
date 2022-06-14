@@ -113,7 +113,7 @@ class CrostiniApps : public KeyedService,
 
   Profile* const profile_;
 
-  guest_os::GuestOsRegistryService* registry_;
+  guest_os::GuestOsRegistryService* registry_ = nullptr;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

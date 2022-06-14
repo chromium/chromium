@@ -320,7 +320,7 @@ class AppServiceProxyLacros : public KeyedService,
     // field.
     AppServiceProxyLacros* host_;
 
-    apps::IconLoader* overriding_icon_loader_for_testing_;
+    apps::IconLoader* overriding_icon_loader_for_testing_ = nullptr;
   };
 
   bool IsValidProfile();

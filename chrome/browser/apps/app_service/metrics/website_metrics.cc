@@ -69,7 +69,7 @@ class WebsiteMetrics::ActiveTabWebContentsObserver
   ActiveTabWebContentsObserver& operator=(const ActiveTabWebContentsObserver&) =
       delete;
 
-  ~ActiveTabWebContentsObserver() override {}
+  ~ActiveTabWebContentsObserver() override = default;
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override {

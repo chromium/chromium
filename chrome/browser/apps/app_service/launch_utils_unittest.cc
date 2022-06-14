@@ -241,7 +241,7 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiFiles) {
   auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
   auto params = CreateLaunchParams(container, disposition, false);
-  params.launch_files.push_back(base::FilePath("root"));
+  params.launch_files.emplace_back("root");
 
   auto crosapi_params = apps::ConvertLaunchParamsToCrosapi(params, &profile_);
   auto converted_params =

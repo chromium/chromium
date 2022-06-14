@@ -164,7 +164,7 @@ apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
 namespace apps {
 
 PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()), registry_(nullptr) {
+    : AppPublisher(proxy), profile_(proxy->profile()) {
   // Don't show anything for non-primary profiles. We can't use
   // `PluginVmFeatures::Get()->IsAllowed()` here because we still let the user
   // uninstall Plugin VM when it isn't allowed for some other reasons (e.g.

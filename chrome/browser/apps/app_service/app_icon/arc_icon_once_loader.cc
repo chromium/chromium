@@ -168,8 +168,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::OnIconFailed(ArcAppIcon* icon) {
   OnIconUpdated(icon);
 }
 
-ArcIconOnceLoader::ArcIconOnceLoader(Profile* profile)
-    : profile_(profile), stop_observing_called_(false) {
+ArcIconOnceLoader::ArcIconOnceLoader(Profile* profile) : profile_(profile) {
   ArcAppListPrefs::Get(profile)->AddObserver(this);
   arc_app_icon_factory_ = std::make_unique<arc::ArcAppIconFactory>();
 }

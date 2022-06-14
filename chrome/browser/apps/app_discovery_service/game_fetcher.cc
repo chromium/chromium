@@ -189,9 +189,9 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
     if (localised_name.empty()) {
       continue;
     }
-    results.push_back(Result(AppSource::kGames,
-                             app_with_locale.app().app_id_for_platform(),
-                             localised_name, std::move(extras)));
+    results.emplace_back(AppSource::kGames,
+                         app_with_locale.app().app_id_for_platform(),
+                         localised_name, std::move(extras));
   }
   return results;
 }

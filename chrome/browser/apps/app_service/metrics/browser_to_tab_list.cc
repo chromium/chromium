@@ -59,8 +59,7 @@ void BrowserToTabList::AddActivatedTab(aura::Window* browser_window,
   }
 
   if (!found) {
-    active_browsers_to_tabs_.push_back(
-        BrowserToTab(browser_window, tab_id, app_id));
+    active_browsers_to_tabs_.emplace_back(browser_window, tab_id, app_id);
   }
 }
 

@@ -72,7 +72,7 @@ class WebApkManager : public AppRegistryCache::Observer,
   ash::ApkWebAppService* apk_service_;
   ArcAppListPrefs* app_list_prefs_;
 
-  bool initialized_;
+  bool initialized_ = false;
 
   std::unique_ptr<WebApkInstallQueue> install_queue_;
   std::vector<std::string> uninstall_queue_;

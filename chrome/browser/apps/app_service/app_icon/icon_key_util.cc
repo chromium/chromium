@@ -6,7 +6,7 @@
 
 namespace apps_util {
 
-IncrementingIconKeyFactory::IncrementingIconKeyFactory() : last_timeline_(0) {}
+IncrementingIconKeyFactory::IncrementingIconKeyFactory() = default;
 
 apps::mojom::IconKeyPtr IncrementingIconKeyFactory::MakeIconKey(
     uint32_t icon_effects) {
