@@ -33,7 +33,7 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
     public TabModelSelectorTabModelObserver(TabModelSelector selector) {
         mTabModelSelector = selector;
 
-        List<TabModel> tabModels = selector.getModels();
+        List<TabModel> tabModels = mTabModelSelector.getModels();
         if (tabModels.isEmpty()) {
             mSelectorObserver = new TabModelSelectorObserver() {
                 @Override

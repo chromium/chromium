@@ -69,7 +69,10 @@ android_library_factory("factory_java") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java",
+  ]
 
   deps = [
     ":factory_java",
@@ -78,6 +81,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",

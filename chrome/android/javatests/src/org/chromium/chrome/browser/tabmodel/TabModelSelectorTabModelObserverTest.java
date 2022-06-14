@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for the TabModelSelectorTabModelObserver.
+ * Integration tests for the TabModelSelectorTabModelObserver.
+ * See TabModelSelectorTabModelObserverUnitTest.java for unit tests.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
