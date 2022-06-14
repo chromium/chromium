@@ -544,6 +544,7 @@ enum class PasswordAccountStorageUsageLevel {
   // The user has enabled Sync.
   kSyncing = 2,
 };
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 

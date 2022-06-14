@@ -94217,6 +94217,12 @@ Full version information for the fingerprint enum values:
   </int>
 </enum>
 
+<enum name="UnifiedPasswordManagerActiveStatus">
+  <int value="0" label="Active"/>
+  <int value="1" label="Inactive - passwords sync off"/>
+  <int value="2" label="Inactive - unenrolled due to errors"/>
+</enum>
+
 <enum name="UniformityTrialGroupNotActive">
   <int value="0" label="Invalid"/>
   <int value="1" label="Group not reported"/>
