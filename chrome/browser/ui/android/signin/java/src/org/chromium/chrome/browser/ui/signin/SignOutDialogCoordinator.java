@@ -192,7 +192,6 @@ public class SignOutDialogCoordinator {
                     SigninMetricsUtils.logProfileAccountManagementMenu(
                             ProfileAccountManagementMetrics.SIGNOUT_CANCEL, mGaiaServiceType);
                 }
-                mDialogManager.destroy();
             }
         };
     }

@@ -139,7 +139,6 @@ public class ConfirmImportSyncDataDialogCoordinator {
                     RecordUserAction.record("Signin_ImportDataPrompt_Cancel");
                     mListener.onCancel();
                 }
-                mDialogManager.destroy();
             }
         };
     }
