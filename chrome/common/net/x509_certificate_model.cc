@@ -277,13 +277,42 @@ constexpr uint8_t kEkuMsKeyRecoveryAgent[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
 constexpr auto kNameStringHandling =
     net::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
 
-std::string ProcessRawBytes(net::der::Input data) {
-  return x509_certificate_model::ProcessRawBytes(data.UnsafeData(),
-                                                 data.Length());
+std::string ProcessRawBytesWithSeparators(const unsigned char* data,
+                                          size_t data_length,
+                                          char hex_separator,
+                                          char line_separator) {
+  static const char kHexChars[] = "0123456789ABCDEF";
+
+  // Each input byte creates two output hex characters + a space or newline,
+  // except for the last byte.
+  std::string ret;
+  size_t kMin = 0U;
+
+  if (!data_length)
+    return std::string();
+
+  ret.reserve(std::max(kMin, data_length * 3 - 1));
+
+  for (size_t i = 0; i < data_length; ++i) {
+    unsigned char b = data[i];
+    ret.push_back(kHexChars[(b >> 4) & 0xf]);
+    ret.push_back(kHexChars[b & 0xf]);
+    if (i + 1 < data_length) {
+      if ((i + 1) % 16 == 0)
+        ret.push_back(line_separator);
+      else
+        ret.push_back(hex_separator);
+    }
+  }
+  return ret;
 }
 
 std::string ProcessRawBytes(base::span<const uint8_t> data) {
-  return x509_certificate_model::ProcessRawBytes(data.data(), data.size());
+  return ProcessRawBytesWithSeparators(data.data(), data.size(), ' ', '\n');
+}
+
+std::string ProcessRawBytes(net::der::Input data) {
+  return ProcessRawBytes(data.AsSpan());
 }
 
 OptionalStringOrError FindAttributeOfType(
@@ -1213,13 +1242,13 @@ std::string X509CertificateModel::HashCertSHA256() const {
 std::string X509CertificateModel::HashCertSHA256WithSeparators() const {
   auto hash =
       crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
-  return ProcessRawBytes(hash.data(), hash.size());
+  return ProcessRawBytes(hash);
 }
 
 std::string X509CertificateModel::HashCertSHA1WithSeparators() const {
   auto hash =
       base::SHA1HashSpan(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
-  return ProcessRawBytes(hash.data(), hash.size());
+  return ProcessRawBytes(hash);
 }
 
 std::string X509CertificateModel::GetTitle() const {
@@ -1510,50 +1539,6 @@ std::string ProcessIDN(const std::string& input) {
   // decoded forms.
   return l10n_util::GetStringFUTF8(IDS_CERT_INFO_IDN_VALUE_FORMAT, input16,
                                    output16);
-}
-
-// TODO(https://crbug.com/953425): move to anonymous namespace once
-// x509_certificate_model_nss is removed.
-std::string ProcessRawBytesWithSeparators(const unsigned char* data,
-                                          size_t data_length,
-                                          char hex_separator,
-                                          char line_separator) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
-  // Each input byte creates two output hex characters + a space or newline,
-  // except for the last byte.
-  std::string ret;
-  size_t kMin = 0U;
-
-  if (!data_length)
-    return std::string();
-
-  ret.reserve(std::max(kMin, data_length * 3 - 1));
-
-  for (size_t i = 0; i < data_length; ++i) {
-    unsigned char b = data[i];
-    ret.push_back(kHexChars[(b >> 4) & 0xf]);
-    ret.push_back(kHexChars[b & 0xf]);
-    if (i + 1 < data_length) {
-      if ((i + 1) % 16 == 0)
-        ret.push_back(line_separator);
-      else
-        ret.push_back(hex_separator);
-    }
-  }
-  return ret;
-}
-
-// TODO(https://crbug.com/953425): move to anonymous namespace once
-// x509_certificate_model_nss is removed.
-std::string ProcessRawBytes(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytesWithSeparators(data, data_length, ' ', '\n');
-}
-
-// TODO(https://crbug.com/953425): move to anonymous namespace once
-// x509_certificate_model_nss is removed.
-std::string ProcessRawBits(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytes(data, (data_length + 7) / 8);
 }
 
 std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {

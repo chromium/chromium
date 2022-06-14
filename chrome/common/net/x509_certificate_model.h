@@ -142,20 +142,6 @@ class X509CertificateModel {
 // decoded U-label form.  Otherwise, the string will be returned as is.
 std::string ProcessIDN(const std::string& input);
 
-// Format a buffer as |hex_separator| separated string, with 16 bytes on each
-// line separated using |line_separator|.
-std::string ProcessRawBytesWithSeparators(const unsigned char* data,
-                                          size_t data_length,
-                                          char hex_separator,
-                                          char line_separator);
-
-// Format a buffer as a space separated string, with 16 bytes on each line.
-std::string ProcessRawBytes(const unsigned char* data, size_t data_length);
-
-// Format a buffer as a space separated string, with 16 bytes on each line.
-// |data_length| is the length in bits.
-std::string ProcessRawBits(const unsigned char* data, size_t data_length);
-
 // Parses |public_key_spki_der| as a DER-encoded X.509 SubjectPublicKeyInfo,
 // then formats the public key as a string for displaying. Returns an empty
 // string on error.
