@@ -19,9 +19,8 @@ namespace {
 
 bool IsValidMimeType(const std::string& type_string) {
   std::string top_level_type;
-  std::string subtype;
   if (!net::ParseMimeTypeWithoutParameter(type_string, &top_level_type,
-                                          &subtype)) {
+                                          /*subtype=*/nullptr)) {
     return false;
   }
 

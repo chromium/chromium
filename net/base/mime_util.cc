@@ -43,10 +43,10 @@ class MimeUtil : public PlatformMimeUtil {
       const std::string& mime_type,
       base::FilePath::StringType* extension) const;
 
-  bool MatchesMimeType(const std::string &mime_type_pattern,
-                       const std::string &mime_type) const;
+  bool MatchesMimeType(const std::string& mime_type_pattern,
+                       const std::string& mime_type) const;
 
-  bool ParseMimeTypeWithoutParameter(const std::string& type_string,
+  bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
                                      std::string* top_level_type,
                                      std::string* subtype) const;
 
@@ -573,23 +573,24 @@ bool ParseMimeType(const std::string& type_str,
   return true;
 }
 
-bool MimeUtil::ParseMimeTypeWithoutParameter(
-    const std::string& type_string,
-    std::string* top_level_type,
-    std::string* subtype) const {
-  std::vector<std::string> components = base::SplitString(
+bool MimeUtil::ParseMimeTypeWithoutParameter(base::StringPiece type_string,
+                                             std::string* top_level_type,
+                                             std::string* subtype) const {
+  std::vector<base::StringPiece> components = base::SplitStringPiece(
       type_string, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (components.size() != 2)
     return false;
-  TrimWhitespaceASCII(components[0], base::TRIM_LEADING, &components[0]);
-  TrimWhitespaceASCII(components[1], base::TRIM_TRAILING, &components[1]);
+  components[0] = TrimWhitespaceASCII(components[0], base::TRIM_LEADING);
+  components[1] = TrimWhitespaceASCII(components[1], base::TRIM_TRAILING);
   if (!HttpUtil::IsToken(components[0]) || !HttpUtil::IsToken(components[1]))
     return false;
 
   if (top_level_type)
-    *top_level_type = components[0];
+    top_level_type->assign(std::string(components[0]));
+
   if (subtype)
-    *subtype = components[1];
+    subtype->assign(std::string(components[1]));
+
   return true;
 }
 
@@ -641,7 +642,7 @@ bool MatchesMimeType(const std::string& mime_type_pattern,
   return g_mime_util.Get().MatchesMimeType(mime_type_pattern, mime_type);
 }
 
-bool ParseMimeTypeWithoutParameter(const std::string& type_string,
+bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
                                    std::string* top_level_type,
                                    std::string* subtype) {
   return g_mime_util.Get().ParseMimeTypeWithoutParameter(
