@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/browser/password_store_util.h"
@@ -55,13 +56,13 @@ bool FormSupportsPSL(const PasswordFormDigest& digest) {
 // Helper function which invokes |notifying_callback| and |completion_callback|
 // when changes are received.
 void InvokeCallbacksForSuspectedChanges(
-    PasswordStoreChangeListReply notifying_callback,
+    base::OnceCallback<void(PasswordChanges)> notifying_callback,
     base::OnceCallback<void(bool)> completion_callback,
-    absl::optional<PasswordStoreChangeList> changes) {
+    PasswordChanges changes) {
   DCHECK(notifying_callback);
   // Two cases *presumably* have changes that need to be reported:
   // 1. `changes` contains a non-empty PasswordStoreChangeList.
-  // 2. `changes` contains no PasswordStoreChangeList at all because the
+  // 2. `changes` contains nullopt PasswordStoreChangeList because the
   //    backend can't compute it. A full list will be requested instead.
   // Only if `changes` contains an empty PasswordStoreChangeList, Chrome knows
   // for certain that no changes have happened:
@@ -111,8 +112,10 @@ void PasswordStore::AddLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->AddLoginAsync(
-      form, base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                           this, LoginsChangedTrigger::Addition));
+      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+                .Then(base::BindOnce(
+                    &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                    LoginsChangedTrigger::Addition)));
 }
 
 void PasswordStore::UpdateLogin(const PasswordForm& form) {
@@ -120,8 +123,10 @@ void PasswordStore::UpdateLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->UpdateLoginAsync(
-      form, base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                           this, LoginsChangedTrigger::Update));
+      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+                .Then(base::BindOnce(
+                    &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                    LoginsChangedTrigger::Update)));
 }
 
 void PasswordStore::UpdateLoginWithPrimaryKey(
@@ -147,12 +152,11 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
         InsecureType::kPhished);
   }
 
-  auto barrier_callback =
-      base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
-          2, base::BindOnce(&JoinPasswordStoreChanges)
-                 .Then(base::BindOnce(
-                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                     LoginsChangedTrigger::Update)));
+  auto barrier_callback = base::BarrierCallback<PasswordChangesOrError>(
+      2, base::BindOnce(&JoinPasswordStoreChanges)
+             .Then(base::BindOnce(
+                 &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                 LoginsChangedTrigger::Update)));
 
   backend_->RemoveLoginAsync(old_primary_key, barrier_callback);
   backend_->AddLoginAsync(new_form_with_correct_password_issues,
@@ -164,8 +168,10 @@ void PasswordStore::RemoveLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->RemoveLoginAsync(
-      form, base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                           this, LoginsChangedTrigger::Deletion));
+      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+                .Then(base::BindOnce(
+                    &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                    LoginsChangedTrigger::Deletion)));
 }
 
 void PasswordStore::RemoveLoginsByURLAndTime(
@@ -181,8 +187,10 @@ void PasswordStore::RemoveLoginsByURLAndTime(
   }
   backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
-      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                     LoginsChangedTrigger::BatchDeletion)
+      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+          .Then(
+              base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
+                             this, LoginsChangedTrigger::BatchDeletion))
           .Then(std::move(completion)));
 }
 
@@ -200,8 +208,9 @@ void PasswordStore::RemoveLoginsCreatedBetween(
                      LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
-      base::BindOnce(&InvokeCallbacksForSuspectedChanges, std::move(callback),
-                     std::move(completion)));
+      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+          .Then(base::BindOnce(&InvokeCallbacksForSuspectedChanges,
+                               std::move(callback), std::move(completion))));
 }
 
 void PasswordStore::DisableAutoSignInForOrigins(
@@ -472,10 +481,9 @@ void PasswordStore::UnblocklistInternal(
   if (completion)
     notify_callback = std::move(notify_callback).Then(std::move(completion));
 
-  auto barrier_callback =
-      base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
-          forms_to_remove.size(), base::BindOnce(&JoinPasswordStoreChanges)
-                                      .Then(std::move(notify_callback)));
+  auto barrier_callback = base::BarrierCallback<PasswordChangesOrError>(
+      forms_to_remove.size(), base::BindOnce(&JoinPasswordStoreChanges)
+                                  .Then(std::move(notify_callback)));
 
   for (const auto& form : forms_to_remove) {
     backend_->RemoveLoginAsync(form, barrier_callback);

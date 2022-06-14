@@ -81,7 +81,7 @@ class PasswordStoreAndroidBackend
     JobReturnHandler();
     JobReturnHandler(LoginsOrErrorReply callback,
                      PasswordStoreBackendMetricsRecorder metrics_recorder);
-    JobReturnHandler(PasswordStoreChangeListReply callback,
+    JobReturnHandler(PasswordChangesOrErrorReply callback,
                      PasswordStoreBackendMetricsRecorder metrics_recorder);
     JobReturnHandler(JobReturnHandler&&);
     JobReturnHandler& operator=(JobReturnHandler&&);
@@ -101,7 +101,7 @@ class PasswordStoreAndroidBackend
     base::TimeDelta GetElapsedTimeSinceStart() const;
 
    private:
-    absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>
+    absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
         success_callback_;
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
   };
@@ -126,21 +126,21 @@ class PasswordStoreAndroidBackend
       bool include_psl,
       const std::vector<PasswordFormDigest>& forms) override;
   void AddLoginAsync(const PasswordForm& form,
-                     PasswordStoreChangeListReply callback) override;
+                     PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
+                        PasswordChangesOrErrorReply callback) override;
   void RemoveLoginAsync(const PasswordForm& form,
-                        PasswordStoreChangeListReply callback) override;
+                        PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
-      PasswordStoreChangeListReply callback) override;
+      PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
       base::Time delete_begin,
       base::Time delete_end,
-      PasswordStoreChangeListReply callback) override;
+      PasswordChangesOrErrorReply callback) override;
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
@@ -154,9 +154,8 @@ class PasswordStoreAndroidBackend
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
                             std::vector<PasswordForm> passwords) override;
-  void OnLoginsChanged(
-      PasswordStoreAndroidBackendBridge::JobId task_id,
-      absl::optional<PasswordStoreChangeList> changes) override;
+  void OnLoginsChanged(PasswordStoreAndroidBackendBridge::JobId task_id,
+                       PasswordChanges changes) override;
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
                AndroidBackendError error) override;
 
@@ -175,14 +174,14 @@ class PasswordStoreAndroidBackend
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      PasswordStoreChangeListReply reply,
+      PasswordChangesOrErrorReply reply,
       LoginsResultOrError result);
 
   // Filters logins that match |origin_filer| and asynchronously disables
   // autosignin by updating stored logins.
   void FilterAndDisableAutoSignIn(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      PasswordStoreChangeListReply completion,
+      PasswordChangesOrErrorReply completion,
       LoginsResultOrError result);
 
   // Creates a metrics recorder that records latency and success metrics for
@@ -195,10 +194,10 @@ class PasswordStoreAndroidBackend
   // Creates a metrics recorder that records latency and success metrics for
   // store modification operation with |metric_infix| name prior to
   // calling |callback|.
-  static PasswordStoreChangeListReply
+  static PasswordChangesOrErrorReply
   ReportMetricsAndInvokeCallbackForStoreModifications(
       const MetricInfix& metric_infix,
-      PasswordStoreChangeListReply callback);
+      PasswordChangesOrErrorReply callback);
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) for |account|.
@@ -209,7 +208,7 @@ class PasswordStoreAndroidBackend
   // Removes |form| from |account|.
   void RemoveLoginForAccount(const PasswordForm& form,
                              PasswordStoreAndroidBackendBridge::Account account,
-                             PasswordStoreChangeListReply callback);
+                             PasswordChangesOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the

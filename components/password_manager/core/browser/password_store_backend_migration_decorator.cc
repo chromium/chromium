@@ -210,19 +210,19 @@ void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
 
 void PasswordStoreBackendMigrationDecorator::AddLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->AddLoginAsync(form, std::move(callback));
 }
 
 void PasswordStoreBackendMigrationDecorator::UpdateLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->UpdateLoginAsync(form, std::move(callback));
 }
 
 void PasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
     const PasswordForm& form,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginAsync(form, std::move(callback));
 }
 
@@ -231,7 +231,7 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, std::move(delete_begin), std::move(delete_end),
       std::move(sync_completion), std::move(callback));
@@ -240,7 +240,7 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
 void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
-    PasswordStoreChangeListReply callback) {
+    PasswordChangesOrErrorReply callback) {
   active_backend_->RemoveLoginsCreatedBetweenAsync(
       std::move(delete_begin), std::move(delete_end), std::move(callback));
 }
