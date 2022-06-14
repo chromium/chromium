@@ -71,8 +71,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 
 // Tests that the extension popup does not render over an anchored permissions
 // bubble. Regression test for https://crbug.com/1300006.
+// TODO(https://crbug.com/1336253): Flaky.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ExtensionPopupOverPermissions \
+  DISABLED_ExtensionPopupOverPermissions
+#else
+#define MAYBE_ExtensionPopupOverPermissions ExtensionPopupOverPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
-                       ExtensionPopupOverPermissions) {
+                       MAYBE_ExtensionPopupOverPermissions) {
   // Geolocation requires HTTPS. Since we programmatically show the geolocation
   // prompt from C++ (rather than triggering the web API), this might not be
   // strictly necessary, but is nice to have.
