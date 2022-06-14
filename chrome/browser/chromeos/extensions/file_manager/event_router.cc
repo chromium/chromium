@@ -809,9 +809,10 @@ void EventRouter::OnCopyProgress(
         std::make_unique<std::string>(destination_url.spec());
   }
 
-  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError)
+  if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kError) {
     status.error = std::make_unique<std::string>(
         FileErrorToErrorName(base::File::FILE_ERROR_FAILED));
+  }
   if (type == FileManagerCopyOrMoveHookDelegate::ProgressType::kProgress)
     status.size = std::make_unique<double>(size);
 
@@ -1270,6 +1271,15 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     for (const io_task::EntryStatus& source : base::Reversed(status.sources)) {
       if (source.error && source.error.value() != base::File::FILE_OK) {
         event_status.error_name = FileErrorToErrorName(source.error.value());
+      }
+    }
+    // If we have no error on 'sources', check if an error came from 'outputs'.
+    if (status.state == io_task::State::kError &&
+        event_status.error_name.empty()) {
+      for (const io_task::EntryStatus& dest : base::Reversed(status.outputs)) {
+        if (dest.error && dest.error.value() != base::File::FILE_OK) {
+          event_status.error_name = FileErrorToErrorName(dest.error.value());
+        }
       }
     }
 

@@ -726,7 +726,7 @@ testcase.zipExtractNotEnoughSpace = async () => {
   await repeatUntil(async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
-    const expectedMsg = 'Extract operation failed. An error occurred.';
+    const expectedMsg = 'Extract operation failed. There is not enough space.';
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
