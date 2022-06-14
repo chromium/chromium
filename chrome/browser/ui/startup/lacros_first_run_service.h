@@ -30,6 +30,22 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 // It is not available on the other profiles.
 class LacrosFirstRunService : public KeyedService {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class EntryPoint {
+    // Indicates misc, undifferentiated entry points to the FRE that we don't
+    // particularly worry about. If we have a concern about a specific entry
+    // point, we should register a dedicated value for it to track how often it
+    // gets triggered.
+    kOther = 0,
+
+    kProcessStartup = 1,
+    kWebAppLaunch = 2,
+    kWebAppContextMenu = 3,
+
+    kMaxValue = kWebAppContextMenu
+  };
+
   explicit LacrosFirstRunService(Profile* profile);
   ~LacrosFirstRunService() override;
 
@@ -60,10 +76,12 @@ class LacrosFirstRunService : public KeyedService {
   //    again at the next startup.
   // When this method is called again while FRE is in progress, the previous
   // callback is aborted (called with false), and is replaced by `callback`.
-  void OpenFirstRunIfNeeded(ResumeTaskCallback callback);
+  void OpenFirstRunIfNeeded(EntryPoint entry_point,
+                            ResumeTaskCallback callback);
 
  private:
-  void OpenFirstRunInternal(ResumeTaskCallback callback);
+  void OpenFirstRunInternal(EntryPoint entry_point,
+                            ResumeTaskCallback callback);
   void TryEnableSyncSilentlyWithToken(const CoreAccountId& account_id,
                                       base::OnceClosure callback);
 

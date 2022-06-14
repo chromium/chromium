@@ -52352,6 +52352,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Ahnmatae"/>
 </enum>
 
+<enum name="LacrosFirstRunEntryPoint">
+  <int value="0" label="Other"/>
+  <int value="1" label="Lacros process startup"/>
+  <int value="2" label="Web app launch"/>
+  <int value="3" label="Web app context menu command"/>
+</enum>
+
 <enum name="LacrosLaunchMode">
   <int value="0" label="Only Ash browser"/>
   <int value="1" label="Ash and Lacros browser available"/>

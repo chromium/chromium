@@ -504,7 +504,13 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
     }
   }
 
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
+  // Start tracking the logged histograms from the beginning, since the FRE can
+  // be triggered and completed before we enter the test body.
+  base::HistogramTester histogram_tester_;
+
   base::test::ScopedFeatureList feature_list_{
       switches::kLacrosNonSyncingProfiles};
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
@@ -514,6 +520,8 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        PRE_NewWindow_OpensFirstRun) {
   // Dummy case to set up the primary profile.
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun) {
@@ -521,6 +529,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
       profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::RunLoop run_loop;
   browser_service()->NewWindow(
@@ -531,11 +541,16 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   run_loop.Run();
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
+      LacrosFirstRunService::EntryPoint::kOther, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        PRE_NewWindow_OpensFirstRun_UiClose) {
   // Dummy case to set up the primary profile.
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun_UiClose) {
@@ -543,6 +558,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
       profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::RunLoop run_loop;
   browser_service()->NewWindow(
@@ -553,11 +570,16 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   run_loop.Run();
 
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
+      LacrosFirstRunService::EntryPoint::kOther, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        PRE_NewTab_OpensFirstRun) {
   // Dummy case to set up the primary profile.
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewTab_OpensFirstRun) {
@@ -565,6 +587,8 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
       profile_manager->GetPrimaryUserProfilePath())));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 
   base::RunLoop run_loop;
   browser_service()->NewTab(
@@ -575,4 +599,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   run_loop.Run();
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
+      LacrosFirstRunService::EntryPoint::kOther, 1);
 }

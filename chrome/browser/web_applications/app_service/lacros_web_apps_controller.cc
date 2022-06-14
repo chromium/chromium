@@ -224,12 +224,14 @@ void LacrosWebAppsController::ExecuteContextMenuCommand(
     return;
   }
 
-  fre_service->OpenFirstRunIfNeeded(base::BindOnce(
-      &OnOpenPrimaryProfileFirstRunExited,
-      std::move(execution_finished_callback),
+  fre_service->OpenFirstRunIfNeeded(
+      LacrosFirstRunService::EntryPoint::kWebAppContextMenu,
       base::BindOnce(
-          &LacrosWebAppsController::ExecuteContextMenuCommandInternal,
-          weak_ptr_factory_.GetWeakPtr(), app_id, id)));
+          &OnOpenPrimaryProfileFirstRunExited,
+          std::move(execution_finished_callback),
+          base::BindOnce(
+              &LacrosWebAppsController::ExecuteContextMenuCommandInternal,
+              weak_ptr_factory_.GetWeakPtr(), app_id, id)));
 }
 
 void LacrosWebAppsController::ExecuteContextMenuCommandInternal(
@@ -277,11 +279,13 @@ void LacrosWebAppsController::Launch(
     return;
   }
 
-  fre_service->OpenFirstRunIfNeeded(base::BindOnce(
-      &OnOpenPrimaryProfileFirstRunExited, std::move(launch_finished_callback),
-      base::BindOnce(&LacrosWebAppsController::LaunchInternal,
-                     weak_ptr_factory_.GetWeakPtr(), launch_params->app_id,
-                     std::move(params))));
+  fre_service->OpenFirstRunIfNeeded(
+      LacrosFirstRunService::EntryPoint::kWebAppLaunch,
+      base::BindOnce(&OnOpenPrimaryProfileFirstRunExited,
+                     std::move(launch_finished_callback),
+                     base::BindOnce(&LacrosWebAppsController::LaunchInternal,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    launch_params->app_id, std::move(params))));
 }
 
 void LacrosWebAppsController::LaunchInternal(const std::string& app_id,

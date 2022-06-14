@@ -108,6 +108,7 @@ void OnMainProfileLoaded(base::OnceCallback<void(Profile*)>& callback,
         // TODO(https://crbug.com/1313848): Consider taking a
         // `ScopedProfileKeepAlive`.
         fre_service->OpenFirstRunIfNeeded(
+            LacrosFirstRunService::EntryPoint::kOther,
             base::BindOnce(&MaybeProceedWithProfile, std::move(callback),
                            base::Unretained(profile)));
       } else {

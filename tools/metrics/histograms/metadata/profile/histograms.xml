@@ -310,6 +310,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.LacrosPrimaryProfileFirstRunEntryPoint"
+    enum="LacrosFirstRunEntryPoint" expires_after="2022-09-16">
+  <owner>dgn@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the entry point that triggered the lacros first run for the primary
+    profile being shown. This is recorded when the first run is shown. If the
+    FRE is skipped, this is never recorded. If the FRE is exited early and needs
+    to be shown again, or if the user re-triggers the FRE while it is already
+    shown, there would be more than one record for that install.
+  </summary>
+</histogram>
+
 <histogram name="Profile.LacrosPrimaryProfileFirstRunOutcome"
     enum="ProfileSignedInFlowOutcome" expires_after="2022-09-16">
   <owner>dgn@chromium.org</owner>
