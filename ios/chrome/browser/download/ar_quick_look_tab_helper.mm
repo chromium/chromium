@@ -20,7 +20,6 @@
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

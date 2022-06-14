@@ -4,8 +4,8 @@
 
 #import "ios/web/public/test/fakes/fake_download_task.h"
 
+#import "base/callback.h"
 #import "ios/web/public/download/download_task_observer.h"
-#import "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

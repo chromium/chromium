@@ -9,12 +9,12 @@
 
 #import <PassKit/PassKit.h>
 
+#import "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

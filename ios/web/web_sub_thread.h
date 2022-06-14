@@ -54,9 +54,6 @@ class WebSubThread : public base::Thread {
   void UIThreadRun(base::RunLoop* run_loop);
   void IOThreadRun(base::RunLoop* run_loop);
 
-  // This method encapsulates cleanup that needs to happen on the IO thread.
-  void IOThreadCleanUp();
-
   const WebThread::ID identifier_;
 
   // WebThreads are not allowed to do file I/O nor wait on synchronization

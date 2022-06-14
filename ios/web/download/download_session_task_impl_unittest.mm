@@ -22,7 +22,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/test/fakes/crw_fake_nsurl_session_task.h"
 #import "net/base/net_errors.h"
-#import "net/url_request/url_fetcher_response_writer.h"
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_getter.h"
 #import "testing/gtest/include/gtest/gtest.h"

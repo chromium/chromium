@@ -13,7 +13,6 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_native_task_bridge.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
