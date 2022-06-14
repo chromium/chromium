@@ -1607,6 +1607,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppListSearchAutocomplete" enum="SearchBoxTextMatch"
+    expires_after="2022-12-01">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The outcome of app list search attempting to autocomplete queries by
+    matching user entered text with search result text. This metric is split by
+    prefix match, substring match, and no match. This is gathered each time app
+    list attempts to perform an autocomplete.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppListSearchBoxActivated"
     enum="SearchBoxActivationSource" expires_after="2022-05-01">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->

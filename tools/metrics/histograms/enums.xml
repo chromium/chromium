@@ -84665,6 +84665,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Gesture Tap"/>
 </enum>
 
+<enum name="SearchBoxTextMatch">
+  <int value="0" label="No Match"/>
+  <int value="1" label="Prefix Match"/>
+  <int value="2" label="Substring Match"/>
+</enum>
+
 <enum name="SearchEngine">
   <obsolete>
     Deprecated 8/2013. No longer generated.

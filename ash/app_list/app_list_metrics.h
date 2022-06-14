@@ -223,6 +223,19 @@ enum class AppListUserAction {
   kMaxValue = kOpenSuggestionChip,
 };
 
+// Whether and how user-entered search box text matches up with the first search
+// result. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class SearchBoxTextMatch {
+  // The user entered query is not a substring of the first search result.
+  kNoMatch = 0,
+  // The user entered query matches the prefix of the first search result.
+  kPrefixMatch = 1,
+  // The user entered query is a substring of the first search result.
+  kSubstringMatch = 2,
+  kMaxValue = kSubstringMatch,
+};
+
 // Parameters to call RecordAppListAppLaunched. Passed to code that does not
 // directly have access to them, such ash AppListMenuModelAdapter.
 struct AppLaunchedMetricParams {

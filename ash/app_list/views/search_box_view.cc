@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
@@ -30,6 +32,7 @@
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -110,6 +113,22 @@ SearchBoxView::PlaceholderTextType SelectPlaceholderText() {
     return kGamingPlaceholders[rand() % std::size(kGamingPlaceholders)];
   }
   return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
+}
+
+bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
+                                std::u16string needle_expr) {
+  // Convert complete given String to lower case
+  std::transform(haystack_expr.begin(), haystack_expr.end(),
+                 haystack_expr.begin(), ::tolower);
+  // Convert complete given Sub String to lower case
+  std::transform(needle_expr.begin(), needle_expr.end(), needle_expr.begin(),
+                 ::tolower);
+  // Find sub string in given string
+  return haystack_expr.find(needle_expr) != std::string::npos;
+}
+
+void RecordAutocompleteMatchMetric(SearchBoxTextMatch match_type) {
+  base::UmaHistogramEnumeration("Apps.AppListSearchAutocomplete", match_type);
 }
 
 }  // namespace
@@ -466,13 +485,14 @@ void SearchBoxView::RecordSearchBoxActivationHistogram(
       return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchBoxActivated", activation_type);
+  base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated",
+                                activation_type);
   if (is_tablet_mode_) {
-    UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchBoxActivated.TabletMode",
-                              activation_type);
+    base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated.TabletMode",
+                                  activation_type);
   } else {
-    UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchBoxActivated.ClamshellMode",
-                              activation_type);
+    base::UmaHistogramEnumeration(
+        "Apps.AppListSearchBoxActivated.ClamshellMode", activation_type);
   }
 }
 
@@ -669,21 +689,60 @@ void SearchBoxView::ProcessAutocomplete(
 
   const std::u16string& details = first_visible_result->details();
   const std::u16string& search_text = first_visible_result->title();
+
+  // Don't set autocomplete text if it's the same as user typed text.
+  if (user_typed_text == details || user_typed_text == search_text)
+    return;
+
+  auto is_valid_autocomplete_text =
+      [this](const std::u16string& autocomplete_text) {
+        // Don't set autocomplete text if it's the same as current search box
+        // text.
+        if (autocomplete_text == search_box()->GetText())
+          return false;
+        // Don't set autocomplete text if the highlighted text is the same as
+        // before.
+        if (autocomplete_text.substr(highlight_range_.start()) ==
+            search_box()->GetSelectedText()) {
+          return false;
+        }
+        return true;
+      };
+
   if (base::StartsWith(details, user_typed_text,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      is_valid_autocomplete_text(details)) {
     // Current text in the search_box matches the first result's url.
     SetAutocompleteText(details);
+    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kPrefixMatch);
     return;
   }
+
   if (base::StartsWith(search_text, user_typed_text,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      is_valid_autocomplete_text(search_text)) {
     // Current text in the search_box matches the first result's search result
     // text.
     SetAutocompleteText(search_text);
+    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kPrefixMatch);
     return;
   }
-  // Current text in the search_box does not match the first result's url or
-  // search result text.
+
+  // Record whether the user's query is a substring of the search result. Used
+  // to determine whether we should add substring matching to CrOS search
+  // autocomplete.
+  if (IsSubstringCaseInsensitive(details, user_typed_text) &&
+      is_valid_autocomplete_text(details)) {
+    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kSubstringMatch);
+    // TODO(crbug.com/1334821): Maybe enable substring match autocomplete.
+  } else if (IsSubstringCaseInsensitive(search_text, user_typed_text) &&
+             is_valid_autocomplete_text(search_text)) {
+    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kSubstringMatch);
+    // TODO(crbug.com/1334821): Maybe enable substring match autocomplete.
+  } else {
+    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kNoMatch);
+  }
+
   ClearAutocompleteText();
 }
 
@@ -863,16 +922,12 @@ void SearchBoxView::SetAutocompleteText(
   // Currrent text is a prefix of autocomplete text.
   DCHECK(base::StartsWith(autocomplete_text, current_text,
                           base::CompareCase::INSENSITIVE_ASCII));
-  // Don't set autocomplete text if it's the same as current search box text.
-  if (autocomplete_text == current_text)
-    return;
-
+  // Autocomplete text should not be the same as current search box text.
+  DCHECK(autocomplete_text != current_text);
+  // Autocomplete text should not be the same as highlighted text.
   const std::u16string& highlighted_text =
       autocomplete_text.substr(highlight_range_.start());
-
-  // Don't set autocomplete text if the highlighted text is the same as before.
-  if (highlighted_text == search_box()->GetSelectedText())
-    return;
+  DCHECK(highlighted_text != current_text);
 
   highlight_range_.set_end(autocomplete_text.length());
   ui::CompositionText composition_text;
