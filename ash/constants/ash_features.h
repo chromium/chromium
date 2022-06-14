@@ -453,6 +453,8 @@ extern const base::Feature kOobeNewRecommendApps;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOobeRemoveShutdownButton;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kOobeStartDemoModeForTesting;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOsSettingsAppNotificationsPage;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kOverviewButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPartialSplit;
