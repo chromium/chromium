@@ -33,6 +33,8 @@ using ::ash::multidevice_setup::mojom::HostStatus;
 
 const char kSecureChannelFeatureName[] = "phone_hub";
 const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
+const char kConnectionFailureReasonMetricName[] =
+    "PhoneHub.Connection.Result.FailureReason";
 const char kConnectionDurationMetricName[] = "PhoneHub.Connection.Duration";
 const char kConnectionLatencyMetricName[] = "PhoneHub.Connectivity.Latency";
 
@@ -72,10 +74,14 @@ class TestMetricsRecorder : public NearbyMetricsRecorder {
   void RecordConnectionResult(bool success) override {
     base::UmaHistogramBoolean(kConnectionResultMetricName, success);
   }
-  void RecordConnectionLatency(const base::TimeDelta& latency) override {
+  void RecordConnectionFailureReason(
+      secure_channel::mojom::ConnectionAttemptFailureReason reason) override {
+    base::UmaHistogramEnumeration(kConnectionFailureReasonMetricName, reason);
+  }
+  void RecordConnectionLatency(const base::TimeDelta latency) override {
     base::UmaHistogramTimes(kConnectionLatencyMetricName, latency);
   }
-  void RecordConnectionDuration(const base::TimeDelta& duration) override {
+  void RecordConnectionDuration(const base::TimeDelta duration) override {
     base::UmaHistogramLongTimes100(kConnectionDurationMetricName, duration);
   }
 };
@@ -158,6 +164,13 @@ class ConnectionManagerImplTest : public testing::Test {
                                         expected_count);
   }
 
+  void VerifyConnectionFailureReasonHistogram(
+      secure_channel::mojom::ConnectionAttemptFailureReason sample,
+      base::HistogramBase::Count expected_count) {
+    histogram_tester_.ExpectBucketCount(kConnectionResultMetricName, sample,
+                                        expected_count);
+  }
+
   base::MockOneShotTimer* mock_timer_;
   multidevice::RemoteDeviceRef test_remote_device_;
   multidevice::RemoteDeviceRef test_local_device_;
@@ -213,6 +226,8 @@ TEST_F(ConnectionManagerImplTest, FailedToAttemptConnection) {
   EXPECT_EQ(ConnectionManager::Status::kDisconnected, GetStatus());
 
   VerifyConnectionResultHistogram(false, 1);
+  VerifyConnectionFailureReasonHistogram(
+      mojom::ConnectionAttemptFailureReason::AUTHENTICATION_ERROR, 1);
 }
 
 TEST_F(ConnectionManagerImplTest, SuccessfulAttemptConnectionButDisconnected) {

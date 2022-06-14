@@ -8,6 +8,7 @@
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
@@ -119,6 +120,10 @@ void ConnectionManagerImpl::AttemptNearbyConnection() {
 
 void ConnectionManagerImpl::Disconnect() {
   PA_LOG(INFO) << "ConnectionManager disconnecting connection.";
+  if (last_status_ == Status::kConnecting) {
+    metrics_recorder_->RecordConnectionFailure(
+        mojom::ConnectionAttemptFailureReason::CONNECTION_CANCELLED);
+  }
   TearDownConnection();
 }
 
@@ -167,6 +172,7 @@ void ConnectionManagerImpl::OnConnectionAttemptFailure(
                   << "error: " << reason << ".";
   timer_->Stop();
   connection_attempt_.reset();
+  metrics_recorder_->RecordConnectionFailure(reason);
   OnStatusChanged();
 }
 
@@ -177,6 +183,11 @@ void ConnectionManagerImpl::OnConnection(
   timer_->Stop();
   channel_ = std::move(channel);
   channel_->AddObserver(this);
+  if (last_status_ == Status::kConnecting) {
+    metrics_recorder_->RecordConnectionSuccess(clock_->Now() -
+                                               status_change_timestamp_);
+  }
+
   OnStatusChanged();
 }
 
@@ -192,8 +203,8 @@ void ConnectionManagerImpl::OnConnectionTimeout() {
   PA_LOG(WARNING) << "AttemptConnection() has timed out. Closing connection "
                   << "attempt.";
 
-  connection_attempt_.reset();
-  OnStatusChanged();
+  OnConnectionAttemptFailure(
+      mojom::ConnectionAttemptFailureReason::TIMEOUT_FINDING_DEVICE);
 }
 
 void ConnectionManagerImpl::TearDownConnection() {
@@ -203,39 +214,21 @@ void ConnectionManagerImpl::TearDownConnection() {
   if (channel_)
     channel_->RemoveObserver(this);
   channel_.reset();
+  if (last_status_ == Status::kConnected) {
+    metrics_recorder_->RecordConnectionDuration(clock_->Now() -
+                                                status_change_timestamp_);
+  }
   OnStatusChanged();
 }
 
 void ConnectionManagerImpl::OnStatusChanged() {
   NotifyStatusChanged();
-  RecordMetrics();
-}
 
-void ConnectionManagerImpl::RecordMetrics() {
-  const base::TimeDelta delta = clock_->Now() - status_change_timestamp_;
-  status_change_timestamp_ = clock_->Now();
-
-  const Status status = GetStatus();
-  switch (status) {
-    case Status::kConnecting:
-      break;
-
-    case ConnectionManager::Status::kDisconnected:
-      if (last_status_ == Status::kConnected) {
-        metrics_recorder_->RecordConnectionDuration(delta);
-      } else if (last_status_ == ConnectionManager::Status::kConnecting) {
-        metrics_recorder_->RecordConnectionResult(false);
-      }
-      break;
-
-    case ConnectionManager::Status::kConnected:
-      if (last_status_ == Status::kConnecting) {
-        metrics_recorder_->RecordConnectionLatency(delta);
-        metrics_recorder_->RecordConnectionResult(true);
-      }
-      break;
+  Status status = GetStatus();
+  if (last_status_ != status) {
+    status_change_timestamp_ = clock_->Now();
+    last_status_ = status;
   }
-  last_status_ = status;
 }
 
 }  // namespace ash::secure_channel

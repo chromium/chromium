@@ -93,6 +93,7 @@ static_library("eche_app_ui") {
     "//ash/services/multidevice_setup/public/cpp:prefs",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/cpp/shared",
+    "//ash/services/secure_channel/public/mojom",
     "//ash/webui/eche_app_ui/mojom",
     "//ash/webui/eche_app_ui/proto",
     "//ash/webui/resources:eche_app_resources",

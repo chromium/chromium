@@ -84814,6 +84814,26 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Network error"/>
 </enum>
 
+<enum name="SecureChannelConnectionAttemptFailureReason">
+  <int value="0" label="Authentication error"/>
+  <int value="1" label="Could not generate advertisement"/>
+  <int value="2" label="GATT connection error"/>
+  <int value="3" label="Nearby Connections error"/>
+  <int value="4" label="Local device has invalid public key"/>
+  <int value="5" label="Local device has invalid psk"/>
+  <int value="6" label="Local device has invalid bluetooth address"/>
+  <int value="7" label="Remote device has invalid public key"/>
+  <int value="8" label="Remote device has invalid psk"/>
+  <int value="9" label="Remote device has invalid bluetooth address"/>
+  <int value="10" label="Timeout discovering remote device"/>
+  <int value="11" label="Bluetoth adapter disabled"/>
+  <int value="12" label="Bluetooth adapter not available"/>
+  <int value="13" label="Unsupported connection medium"/>
+  <int value="14" label="Missing nearby connector"/>
+  <int value="15"
+      label="Connection was intentionally cancelled due to a status change"/>
+</enum>
+
 <enum name="SecureChannelNearbyConnectionMedium">
   <int value="0" label="Connected via Bluetooth"/>
   <int value="1" label="Upgraded bandwidth to WebRTC"/>

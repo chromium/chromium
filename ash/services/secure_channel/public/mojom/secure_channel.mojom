@@ -9,60 +9,65 @@ import "ash/services/secure_channel/public/mojom/nearby_connector.mojom";
 import "ash/services/secure_channel/public/mojom/secure_channel_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// Keep in sync with SecureChannelConnectionAttemptFailureReason in
+// tools/metrics/histograms/enums.xml
 enum ConnectionAttemptFailureReason {
   // The local device could not authenticate with the remote device. This likely
   // means that one (or both) devices have not synced their keys recently.
-  AUTHENTICATION_ERROR,
+  AUTHENTICATION_ERROR = 0,
 
   // An advertisement could not be generated for this connection. This likely
   // means that one (or both) devices have not synced their BeaconSeeds
   // recently.
-  COULD_NOT_GENERATE_ADVERTISEMENT,
+  COULD_NOT_GENERATE_ADVERTISEMENT = 1,
 
   // GATT connections were attempted, but they failed. This could be caused by
   // errors creating GATT connections, dropped GATT connections, or an issue
   // relating to GATT services being unavailable.
-  GATT_CONNECTION_ERROR,
+  GATT_CONNECTION_ERROR = 2,
 
   // A Nearby Connection was attempted, but it failed. Potential causes include
   // internal API errors and flaky Bluetooth/WebRTC connections.
-  NEARBY_CONNECTION_ERROR,
+  NEARBY_CONNECTION_ERROR = 3,
 
   // The provided local device does not have a public key set.
-  LOCAL_DEVICE_INVALID_PUBLIC_KEY,
+  LOCAL_DEVICE_INVALID_PUBLIC_KEY = 4,
 
   // The provided local device does not have a persistent symmetric key set.
-  LOCAL_DEVICE_INVALID_PSK,
+  LOCAL_DEVICE_INVALID_PSK = 5,
 
   // The provided local device does not have a valid Bluetooth address.
-  LOCAL_DEVICE_INVALID_BLUETOOTH_ADDRESS,
+  LOCAL_DEVICE_INVALID_BLUETOOTH_ADDRESS = 6,
 
   // The provided remote device does not have a public key set.
-  REMOTE_DEVICE_INVALID_PUBLIC_KEY,
+  REMOTE_DEVICE_INVALID_PUBLIC_KEY = 7,
 
   // The provided remote device does not have a persistent symmetric key set.
-  REMOTE_DEVICE_INVALID_PSK,
+  REMOTE_DEVICE_INVALID_PSK = 8,
 
   // The provided remote device does not have a valid Bluetooth address.
-  REMOTE_DEVICE_INVALID_BLUETOOTH_ADDRESS,
+  REMOTE_DEVICE_INVALID_BLUETOOTH_ADDRESS = 9,
 
   // Timeouts occurred trying to contact the remote device.
-  TIMEOUT_FINDING_DEVICE,
+  TIMEOUT_FINDING_DEVICE = 10,
 
   // The local Bluetooth adapter is disabled (turned off).
-  ADAPTER_DISABLED,
+  ADAPTER_DISABLED = 11,
 
   // The local Bluetooth adapter is not present.
-  ADAPTER_NOT_PRESENT,
+  ADAPTER_NOT_PRESENT = 12,
 
   // Tried to connect using a role which is unsupported for the connection
   // medium (e.g., Nearby Connections only supports the listener role, not the
   // initiator role).
-  UNSUPPORTED_ROLE_FOR_MEDIUM,
+  UNSUPPORTED_ROLE_FOR_MEDIUM = 13,
 
   // Tried requesting a connection via Nearby Connections, but no
   // NearbyConnector was provided.
-  MISSING_NEARBY_CONNECTOR
+  MISSING_NEARBY_CONNECTOR = 14,
+
+  // The attempt was intentionally interrupted.
+  CONNECTION_CANCELLED = 15,
 };
 
 enum ConnectionCreationDetail {

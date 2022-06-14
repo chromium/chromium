@@ -22,8 +22,10 @@ class EcheConnectionMetricsRecorder
 
   // secure_channel::NearbyMetricsRecorder:
   void RecordConnectionResult(bool success) override;
-  void RecordConnectionLatency(const base::TimeDelta& latency) override;
-  void RecordConnectionDuration(const base::TimeDelta& duration) override;
+  void RecordConnectionFailureReason(
+      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
+  void RecordConnectionLatency(const base::TimeDelta latency) override;
+  void RecordConnectionDuration(const base::TimeDelta duration) override;
 };
 
 }  // namespace ash::eche_app

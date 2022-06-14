@@ -5204,7 +5204,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Eche.Connection.Duration" units="ms"
     expires_after="2022-10-04">
   <owner>samchiu@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The duration of time the phone is in the state connected to eche signaling
     service, and becomes disconnected.
@@ -5212,19 +5212,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.Connection.Result" enum="BooleanSuccess"
-    expires_after="2022-12-04">
+    expires_after="2023-06-06">
   <owner>samchiu@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Measures Eche connection success rate, considering attempts where the phone
-    is not nearby as failures.
+    Measures Eche connection success rate. This is recorded at the end of each
+    connection attempt whether it fails or succeeds and the failure bucket is
+    broken down to more specific segments in
+    Eche.Connection.Result.FailureReason
+  </summary>
+</histogram>
+
+<histogram name="Eche.Connection.Result.FailureReason"
+    enum="SecureChannelConnectionAttemptFailureReason"
+    expires_after="2023-06-06">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The reason for which the connection attempt to the phone has failed. This is
+    a breakdown of the failure bucket of Eche.Connection.Result and is recorded
+    at the time a connection attempt fails.
   </summary>
 </histogram>
 
 <histogram name="Eche.Connectivity.Latency" units="ms"
     expires_after="2022-12-04">
   <owner>samchiu@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The duration of time the phone is in the state connecting to eche signaling
     service, and becomes connected.
