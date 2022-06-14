@@ -366,6 +366,8 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/geo/VisibleNetworksTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/VisibleNetworksTrackerTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxResourceProviderTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListBuilderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/DropdownItemViewInfoListManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/BaseSuggestionViewTest.java",

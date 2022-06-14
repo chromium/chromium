@@ -28,11 +28,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.test.util.browser.Features;
@@ -40,8 +40,8 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,31 +50,20 @@ import java.util.List;
 /**
  * Tests for {@link DropdownItemViewInfoListBuilder}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class DropdownItemViewInfoListBuilderUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    AutocompleteController mAutocompleteController;
-
-    @Mock
-    SuggestionProcessor mMockSuggestionProcessor;
-
-    @Mock
-    HeaderProcessor mMockHeaderProcessor;
-
-    @Mock
-    OmniboxPedalDelegate mMockOmniboxPedalDelegate;
-
+    private @Mock AutocompleteController mAutocompleteController;
+    private @Mock SuggestionProcessor mMockSuggestionProcessor;
+    private @Mock HeaderProcessor mMockHeaderProcessor;
+    private @Mock OmniboxPedalDelegate mMockOmniboxPedalDelegate;
     DropdownItemViewInfoListBuilder mBuilder;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-
         when(mMockSuggestionProcessor.createModel())
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
         when(mMockSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
@@ -107,7 +96,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void headers_buildsHeaderForFirstSuggestion() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
@@ -146,7 +134,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void headers_buildsHeadersOnlyWhenGroupChanges() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
@@ -210,7 +197,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void builder_propagatesFocusChangeEvents() {
         mBuilder.onUrlFocusChange(true);
         verify(mMockHeaderProcessor, times(1)).onUrlFocusChange(eq(true));
@@ -226,7 +212,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void builder_propagatesNativeInitializedEvent() {
         mBuilder.onNativeInitialized();
         verify(mMockHeaderProcessor, times(1)).onNativeInitialized();
@@ -238,7 +223,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void visibleSuggestions_missingDropdownHeightAssumesDefaultGroupSize() {
         final AutocompleteMatchBuilder builder =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST);
@@ -260,7 +244,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void visibleSuggestions_computeNumberOfVisibleSuggestionsFromDropdownHeight() {
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(AutocompleteMatch.class), anyInt()))
                 .thenReturn(true);
@@ -285,7 +268,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void visibleSuggestions_partiallyVisibleSuggestionsAreCountedAsVisible() {
         final AutocompleteMatchBuilder builder =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST);
@@ -306,7 +288,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void visibleSuggestions_queriesCorrespondingProcessorsToDetermineViewAllocation() {
         final SuggestionProcessor mockProcessor1 = mock(SuggestionProcessor.class);
         final SuggestionProcessor mockProcessor2 = mock(SuggestionProcessor.class);
@@ -352,7 +333,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void visibleSuggestions_calculatesPresenceOfConcealedSuggestionsFromDropdownHeight() {
         mBuilder.onNativeInitialized();
         final AutocompleteMatch suggestion =
@@ -385,7 +365,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void partialGrouping_matchesWithHeaderAreNotPromotedAboveURLs() {
         final SuggestionProcessor mockProcessor = mock(SuggestionProcessor.class);
         mBuilder.registerSuggestionProcessor(mockProcessor);

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -21,18 +20,22 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,24 +44,19 @@ import java.util.List;
 /**
  * Tests for {@link DropdownItemViewInfoListManager}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class DropdownItemViewInfoListManagerUnitTest {
     private static final int MINIMUM_NUMBER_OF_SUGGESTIONS_TO_SHOW = 5;
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;
 
-    @Mock
-    DropdownItemProcessor mBasicSuggestionProcessor;
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    DropdownItemProcessor mHeaderProcessor;
-
-    @Mock
-    PropertyModel mModel;
-
-    @Mock
-    ListObserver<Void> mListObserver;
+    private @Mock DropdownItemProcessor mBasicSuggestionProcessor;
+    private @Mock DropdownItemProcessor mHeaderProcessor;
+    private @Mock PropertyModel mModel;
+    private @Mock ListObserver<Void> mListObserver;
 
     private ModelList mSuggestionModels;
     private Context mContext;
@@ -66,15 +64,13 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mBasicSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
         when(mHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
         mSuggestionModels = new ModelList();
         mSuggestionModels.addObserver(mListObserver);
 
-        mContext = InstrumentationRegistry.getContext();
+        mContext = ContextUtils.getApplicationContext();
         mManager = new DropdownItemViewInfoListManager(mSuggestionModels, mContext);
     }
 
