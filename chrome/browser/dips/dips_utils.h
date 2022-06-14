@@ -9,10 +9,17 @@
 
 #include "base/strings/string_piece_forward.h"
 
-// CookieAccessType:
-enum class CookieAccessType { kNone, kRead, kWrite, kReadWrite };
+// NOTE: We use this type as a bitfield, and will soon be logging it. Don't
+// change the values or add additional members.
+enum class CookieAccessType {
+  kNone = 0,
+  kRead = 1,
+  kWrite = 2,
+  kReadWrite = 3
+};
 
 base::StringPiece CookieAccessTypeToString(CookieAccessType type);
+
 constexpr CookieAccessType operator|(CookieAccessType lhs,
                                      CookieAccessType rhs) {
   return static_cast<CookieAccessType>(static_cast<int>(lhs) |

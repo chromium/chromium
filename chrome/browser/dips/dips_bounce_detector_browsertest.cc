@@ -228,8 +228,10 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
 // DidFinishNavigation(), so that DIPSBounceDetector can safely perform that
 // judgement in DidFinishNavigation().
 //
-// This test also verifies that for redirects that both read and write cookies,
-// OnCookiesAccessed() is called with kRead before it's called with kChange.
+// This test also verifies that OnCookiesAccessed() is called for URLs in the
+// same order that they're visited (and that for redirects that both read and
+// write cookies, OnCookiesAccessed() is called with kRead before it's called
+// with kChange, although DIPSBounceDetector doesn't depend on that anymore.)
 //
 // If either assumption is incorrect, this test will be flaky. On 2022-04-27 I
 // (rtarpine) ran this test 1000 times in 40 parallel jobs with no failures, so
