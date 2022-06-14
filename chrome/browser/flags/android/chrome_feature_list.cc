@@ -689,7 +689,7 @@ const base::Feature kMostRecentTabOnBackgroundCloseTab{
     "MostRecentTabOnBackgroundCloseTab", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNewInstanceFromDraggedLink{
-    "NewInstanceFromDraggedLink", base::FEATURE_ENABLED_BY_DEFAULT};
+    "NewInstanceFromDraggedLink", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
