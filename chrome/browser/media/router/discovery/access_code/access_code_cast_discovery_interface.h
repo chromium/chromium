@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "components/leveldb_proto/public/proto_database.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"

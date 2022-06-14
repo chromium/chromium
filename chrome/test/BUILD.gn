@@ -1222,6 +1222,7 @@ if (!is_android) {
       "//chrome/test/data:web_ui_test_bindings",
       "//chrome/test/data:webui_test_resources",
       "//chrome/test/data/webui:resources_grit",
+      "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//chrome/test/payments:test_support",
       "//components/accuracy_tips",
       "//components/autofill/content/browser:risk_proto",
@@ -2208,6 +2209,7 @@ if (!is_android) {
       "../browser/ui/web_applications/web_app_url_handling_browsertest.cc",
       "../browser/ui/web_applications/web_app_window_controls_overlay_browsertest.cc",
       "../browser/ui/webauthn/authenticator_dialog_browsertest.cc",
+      "../browser/ui/webui/access_code_cast/access_code_cast_handler_browsertest.cc",
       "../browser/ui/webui/app_service_internals/app_service_internals_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_browsertest.cc",
@@ -2674,6 +2676,7 @@ if (!is_android) {
         "../browser/lifetime/application_lifetime_chromeos_browsertest.cc",
         "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_ash_browsertest.cc",
       ]
+      deps += [ "//chrome/browser/ui:ash_test_support" ]
     }
 
     if (!is_chromeos) {

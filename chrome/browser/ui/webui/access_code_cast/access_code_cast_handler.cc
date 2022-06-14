@@ -120,9 +120,13 @@ AccessCodeCastHandler::AccessCodeCastHandler(
       cast_mode_set_(cast_mode_set),
       media_route_starter_(std::move(media_route_starter)) {
   if (media_route_starter_) {
+    DCHECK(media_route_starter_->GetProfile())
+        << "The MediaRouteStarter does not have a valid profile!";
     // Ensure we don't use an off-the-record profile.
     access_code_sink_service_ = AccessCodeCastSinkServiceFactory::GetForProfile(
         media_route_starter_->GetProfile()->GetOriginalProfile());
+    DCHECK(access_code_sink_service_)
+        << "AccessCodeSinkService was not properly created!";
     Init();
   }
 }
@@ -147,8 +151,6 @@ AccessCodeCastHandler::~AccessCodeCastHandler() {
 }
 
 void AccessCodeCastHandler::Init() {
-  DCHECK(access_code_sink_service_)
-      << "AccessCodeSinkService was not properly created!";
   DCHECK(media_route_starter_) << "Must have MediaRouterService!";
   media_route_starter_->SetLoggerComponent(kLoggerComponent);
   media_route_starter_->AddMediaSinkWithCastModesObserver(this);
