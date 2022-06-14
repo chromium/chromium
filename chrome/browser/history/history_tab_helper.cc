@@ -139,9 +139,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   if (navigation_handle->IsInPrimaryMainFrame() && !referrer_url.is_empty() &&
       referrer_url == referrer_url.DeprecatedGetOriginAsURL() &&
       referrer_url.DeprecatedGetOriginAsURL() ==
-          navigation_handle->GetPreviousMainFrameURL()
+          navigation_handle->GetPreviousPrimaryMainFrameURL()
               .DeprecatedGetOriginAsURL()) {
-    referrer_url = navigation_handle->GetPreviousMainFrameURL();
+    referrer_url = navigation_handle->GetPreviousPrimaryMainFrameURL();
   }
 
   // Note: floc_allowed is set to false initially and is later updated by the
@@ -164,7 +164,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           : absl::nullopt,
       // Only compute the opener page if it's the first committed page for this
       // WebContents.
-      navigation_handle->GetPreviousMainFrameURL().is_empty()
+      navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()
           ? GetHistoryOpenerFromOpenerWebContents(opener_web_contents_)
           // Or use the opener for same-document navigations to connect these
           // visits.
@@ -172,7 +172,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                  ? absl::make_optional(history::Opener(
                        history::ContextIDForWebContents(web_contents()),
                        nav_entry_id,
-                       navigation_handle->GetPreviousMainFrameURL()))
+                       navigation_handle->GetPreviousPrimaryMainFrameURL()))
                  : absl::nullopt));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
@@ -223,6 +223,8 @@ void HistoryTabHelper::DidFinishNavigation(
       no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
     return;
   }
+
+  DCHECK(navigation_handle->GetRenderFrameHost()->GetPage().IsPrimary());
 
   // Most of the time, the displayURL matches the loaded URL, but for about:
   // URLs, we use a data: URL as the real value.  We actually want to save the

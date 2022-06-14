@@ -72,8 +72,8 @@ void NavigationHandleProxy::DidFinish() {
     replacements.ClearRef();
     bool urls_same_ignoring_fragment =
         cpp_navigation_handle_->GetURL().ReplaceComponents(replacements) ==
-        cpp_navigation_handle_->GetPreviousMainFrameURL().ReplaceComponents(
-            replacements);
+        cpp_navigation_handle_->GetPreviousPrimaryMainFrameURL()
+            .ReplaceComponents(replacements);
     is_primary_main_frame_fragment_navigation = urls_same_ignoring_fragment;
   }
 

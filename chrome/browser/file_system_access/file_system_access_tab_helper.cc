@@ -16,7 +16,8 @@ void FileSystemAccessTabHelper::DidFinishNavigation(
   if (!navigation->IsInPrimaryMainFrame() || !navigation->HasCommitted())
     return;
 
-  auto src_origin = url::Origin::Create(navigation->GetPreviousMainFrameURL());
+  auto src_origin =
+      url::Origin::Create(navigation->GetPreviousPrimaryMainFrameURL());
   auto dest_origin = url::Origin::Create(navigation->GetURL());
 
   if (src_origin == dest_origin)

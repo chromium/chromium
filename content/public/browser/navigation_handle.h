@@ -338,8 +338,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual bool ShouldUpdateHistory() = 0;
 
   // The previous main frame URL that the user was on. This may be empty if
-  // there was no last committed entry.
-  virtual const GURL& GetPreviousMainFrameURL() = 0;
+  // there was no last committed entry. It is only valid to call this for
+  // navigations in the primary main frame itself or its subframes.
+  virtual const GURL& GetPreviousPrimaryMainFrameURL() = 0;
 
   // Returns the remote address of the socket which fetched this resource.
   virtual net::IPEndPoint GetSocketAddress() = 0;

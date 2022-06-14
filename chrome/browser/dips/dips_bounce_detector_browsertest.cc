@@ -159,7 +159,7 @@ void WCOCallbackLogger::DidFinishNavigation(
   // Android testing produces callbacks for a finished navigation to "blank" at
   // the beginning of a test. These should be ignored here.
   if (FormatURL(navigation_handle->GetURL()) == "blank" ||
-      navigation_handle->GetPreviousMainFrameURL().is_empty()) {
+      navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()) {
     return;
   }
   log_.push_back(

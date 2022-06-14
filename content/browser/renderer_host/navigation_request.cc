@@ -6845,7 +6845,13 @@ bool NavigationRequest::ShouldUpdateHistory() {
   return should_update_history_;
 }
 
-const GURL& NavigationRequest::GetPreviousMainFrameURL() {
+const GURL& NavigationRequest::GetPreviousPrimaryMainFrameURL() {
+  DCHECK(IsInPrimaryMainFrame() ||
+         GetParentFrame() && GetParentFrame()->GetPage().IsPrimary());
+  return GetPreviousMainFrameURL();
+}
+
+const GURL& NavigationRequest::GetPreviousMainFrameURL() const {
   DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
   return previous_main_frame_url_;
 }

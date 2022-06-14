@@ -327,7 +327,7 @@ class CONTENT_EXPORT NavigationRequest
   bool HasSubframeNavigationEntryCommitted() override;
   bool DidReplaceEntry() override;
   bool ShouldUpdateHistory() override;
-  const GURL& GetPreviousMainFrameURL() override;
+  const GURL& GetPreviousPrimaryMainFrameURL() override;
   net::IPEndPoint GetSocketAddress() override;
   const net::HttpRequestHeaders& GetRequestHeaders() override;
   void RemoveRequestHeader(const std::string& header_name) override;
@@ -845,6 +845,10 @@ class CONTENT_EXPORT NavigationRequest
   // |commit_params_|, which is always set to the first destination URL for this
   // navigation.
   const GURL& GetOriginalRequestURL();
+
+  // The previous main frame URL. This may be empty if there was no last
+  // committed entry.
+  const GURL& GetPreviousMainFrameURL() const;
 
   // This is the same as |NavigationHandle::IsServedFromBackForwardCache|, but
   // adds a const qualifier.

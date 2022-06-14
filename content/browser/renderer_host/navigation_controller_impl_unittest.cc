@@ -294,15 +294,12 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
  public:
   // Observes navigation for the specified |web_contents|.
   explicit LoadCommittedDetailsObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        navigation_type_(NAVIGATION_TYPE_UNKNOWN),
-        reload_type_(ReloadType::NONE),
-        is_same_document_(false),
-        is_main_frame_(false),
-        did_replace_entry_(false) {}
+      : WebContentsObserver(web_contents) {}
 
   NavigationType navigation_type() { return navigation_type_; }
-  const GURL& previous_main_frame_url() { return previous_main_frame_url_; }
+  const GURL& previous_primary_main_frame_url() {
+    return previous_primary_main_frame_url_;
+  }
   ReloadType reload_type() { return reload_type_; }
   bool is_same_document() { return is_same_document_; }
   bool is_main_frame() { return is_main_frame_; }
@@ -316,7 +313,8 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
 
     navigation_type_ =
         NavigationRequest::From(navigation_handle)->navigation_type();
-    previous_main_frame_url_ = navigation_handle->GetPreviousMainFrameURL();
+    previous_primary_main_frame_url_ =
+        navigation_handle->GetPreviousPrimaryMainFrameURL();
     reload_type_ = navigation_handle->GetReloadType();
     is_same_document_ = navigation_handle->IsSameDocument();
     is_main_frame_ = navigation_handle->IsInMainFrame();
@@ -324,13 +322,13 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
     has_navigation_ui_data_ = navigation_handle->GetNavigationUIData();
   }
 
-  NavigationType navigation_type_;
-  GURL previous_main_frame_url_;
-  ReloadType reload_type_;
-  bool is_same_document_;
-  bool is_main_frame_;
-  bool did_replace_entry_;
-  bool has_navigation_ui_data_;
+  NavigationType navigation_type_ = NAVIGATION_TYPE_UNKNOWN;
+  GURL previous_primary_main_frame_url_;
+  ReloadType reload_type_ = ReloadType::NONE;
+  bool is_same_document_ = false;
+  bool is_main_frame_ = false;
+  bool did_replace_entry_ = false;
+  bool has_navigation_ui_data_ = false;
 };
 
 // "Legacy" class that was used to run NavigationControllerTest with the now
@@ -1868,7 +1866,7 @@ TEST_F(NavigationControllerTest, NewSubframe) {
   NavigationSimulator::NavigateAndCommitFromDocument(url2, subframe);
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
-  EXPECT_EQ(url1, observer.previous_main_frame_url());
+  EXPECT_EQ(url1, observer.previous_primary_main_frame_url());
   EXPECT_FALSE(observer.is_same_document());
   EXPECT_FALSE(observer.is_main_frame());
 

@@ -283,7 +283,7 @@ void IntentPickerTabHelper::DidFinishNavigation(
       navigation_handle->HasCommitted() &&
       (!navigation_handle->IsSameDocument() ||
        navigation_handle->GetURL() !=
-           navigation_handle->GetPreviousMainFrameURL())) {
+           navigation_handle->GetPreviousPrimaryMainFrameURL())) {
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {

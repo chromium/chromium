@@ -248,9 +248,9 @@ void DIPSBounceDetector::DidFinishNavigation(
   // verified by checking IsInPrimaryMainFrame, !IsSameDocument, and
   // HasCommitted. HasCommitted is the only one not previously checked here.
   if (navigation_handle->HasCommitted()) {
-    client_detection_state_ =
-        ClientBounceDetectionState(navigation_handle->GetPreviousMainFrameURL(),
-                                   GetSite(navigation_handle->GetURL()), now);
+    client_detection_state_ = ClientBounceDetectionState(
+        navigation_handle->GetPreviousPrimaryMainFrameURL(),
+        GetSite(navigation_handle->GetURL()), now);
   }
 
   if (server_state && !server_state->filter.is_empty()) {
