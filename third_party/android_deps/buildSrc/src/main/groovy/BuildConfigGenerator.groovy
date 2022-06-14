@@ -659,7 +659,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_aidl = true\n')
                 break
             case 'androidx_test_uiautomator_uiautomator':
-                sb.append('  deps = [":androidx_test_runner_java"]\n')
+                sb.append('  deps += [":androidx_test_runner_java"]\n')
                 break
             case 'androidx_mediarouter_mediarouter':
                 sb.append('  # https://crbug.com/1000382\n')
