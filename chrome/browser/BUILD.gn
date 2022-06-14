@@ -1883,6 +1883,9 @@ static_library("browser") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/profiling_host",
+
+    # TODO(crbug.com/1335199): break this dep when favicon is in its own target
+    "//chrome/browser/share",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/storage_access_api:permissions",
@@ -3417,8 +3420,6 @@ static_library("browser") {
       "//url:gurl_android",
       "//url:origin_android",
     ]
-
-    allow_circular_includes_from += [ "//chrome/browser/share" ]
 
     deps -= [ "//components/storage_monitor" ]
 

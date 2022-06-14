@@ -22,6 +22,7 @@ source_set("share") {
 
   deps = [
     "//base",
+    "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/share/proto:proto",
     "//chrome/services/qrcode_generator/public/cpp",

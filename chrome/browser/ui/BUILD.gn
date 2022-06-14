@@ -4764,8 +4764,6 @@ static_library("ui") {
       "views/sharing_hub/sharing_hub_bubble_action_button.h",
       "views/sharing_hub/sharing_hub_bubble_util.cc",
       "views/sharing_hub/sharing_hub_bubble_util.h",
-      "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
-      "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       "views/sharing_hub/sharing_hub_icon_view.cc",
       "views/sharing_hub/sharing_hub_icon_view.h",
       "views/shopping_bubble/shopping_prompt_impl.cc",
@@ -5229,6 +5227,8 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view_layout.h",
         "views/frame/opaque_browser_frame_view_layout_delegate.cc",
         "views/frame/opaque_browser_frame_view_layout_delegate.h",
+        "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
+        "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       ]
       deps += [ "//ui/views/window/vector_icons" ]
     }

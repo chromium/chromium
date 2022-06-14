@@ -162,26 +162,15 @@ bool SharingHubBubbleControllerDesktopImpl::ShouldUsePreview() {
          share::DesktopSharePreviewVariant::kDisabled;
 }
 
-std::u16string SharingHubBubbleControllerDesktopImpl::GetPreviewTitle() {
-  // TODO(https://crbug.com/1312524): get passed this state from the omnibox
-  // instead.
-  return GetWebContents().GetTitle();
-}
-
-GURL SharingHubBubbleControllerDesktopImpl::GetPreviewUrl() {
-  // TODO(https://crbug.com/1312524): get passed this state from the omnibox
-  // instead.
-  return GetWebContents().GetVisibleURL();
-}
-
-ui::ImageModel SharingHubBubbleControllerDesktopImpl::GetPreviewImage() {
-  return ui::ImageModel::FromImage(favicon::GetDefaultFavicon());
-}
-
 base::CallbackListSubscription
 SharingHubBubbleControllerDesktopImpl::RegisterPreviewImageChangedCallback(
     PreviewImageChangedCallback callback) {
   return preview_image_changed_callbacks_.Add(callback);
+}
+
+base::WeakPtr<SharingHubBubbleController>
+SharingHubBubbleControllerDesktopImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
@@ -261,7 +250,7 @@ void SharingHubBubbleControllerDesktopImpl::FetchHQImageForPreview() {
       GetWebContents().GetPrimaryPage().GetMainDocument();
   main_frame.GetOpenGraphMetadata(base::BindOnce(
       &SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata,
-      AsWeakPtr()));
+      internal_weak_factory_.GetWeakPtr()));
 }
 
 void SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata(
@@ -288,7 +277,7 @@ void SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata(
   image_fetcher_->FetchImage(
       *metadata->image,
       base::BindOnce(&SharingHubBubbleControllerDesktopImpl::OnGetHQImage,
-                     AsWeakPtr()),
+                     internal_weak_factory_.GetWeakPtr()),
       image_fetcher::ImageFetcherParams(kPreviewImageNetworkAnnotationTag,
                                         kPreviewUmaClient));
 }

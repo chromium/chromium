@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARE_SHARE_ATTEMPT_H_
 
 #include "base/memory/weak_ptr.h"
+#include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -18,7 +19,10 @@ namespace share {
 // content - a whole page, a link, an image, or perhaps (later on) other types.
 struct ShareAttempt {
   explicit ShareAttempt(content::WebContents* contents);
-  ShareAttempt(content::WebContents* contents, std::u16string title, GURL url);
+  ShareAttempt(content::WebContents* contents,
+               std::u16string title,
+               GURL url,
+               ui::ImageModel preview_image);
   ~ShareAttempt();
 
   ShareAttempt(const ShareAttempt&);
@@ -27,6 +31,11 @@ struct ShareAttempt {
   base::WeakPtr<content::WebContents> web_contents;
   const std::u16string title;
   const GURL url;
+
+  // The initial preview image to use for the share - note that this may get
+  // replaced if a better preview image becomes available. See
+  // SharingHubBubbleController::RegisterPreviewImageChangedCallback().
+  ui::ImageModel preview_image;
 };
 
 }  // namespace share

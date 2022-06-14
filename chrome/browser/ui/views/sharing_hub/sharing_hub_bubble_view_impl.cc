@@ -50,7 +50,7 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(views::View* anchor_view,
       static_cast<SharingHubBubbleControllerDesktopImpl*>(
           SharingHubBubbleController::CreateOrGetFromWebContents(
               attempt.web_contents.get()));
-  controller_ = controller->AsWeakPtr();
+  controller_ = controller->GetWeakPtr();
 }
 
 SharingHubBubbleViewImpl::~SharingHubBubbleViewImpl() = default;
@@ -129,8 +129,7 @@ void SharingHubBubbleViewImpl::Init() {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   if (controller_->ShouldUsePreview()) {
-    auto* preview = AddChildView(std::make_unique<PreviewView>(
-        attempt_, controller_->GetPreviewImage()));
+    auto* preview = AddChildView(std::make_unique<PreviewView>(attempt_));
     preview->TakeCallbackSubscription(
         controller_->RegisterPreviewImageChangedCallback(base::BindRepeating(
             &PreviewView::OnImageChanged, base::Unretained(preview))));

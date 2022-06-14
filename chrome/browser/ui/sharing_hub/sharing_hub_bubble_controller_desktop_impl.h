@@ -38,12 +38,8 @@ class SharingHubBubbleControllerDesktopImpl
     : public SharingHubBubbleController,
       public content::WebContentsObserver,
       public content::WebContentsUserData<
-          SharingHubBubbleControllerDesktopImpl>,
-      public base::SupportsWeakPtr<SharingHubBubbleControllerDesktopImpl> {
+          SharingHubBubbleControllerDesktopImpl> {
  public:
-  using PreviewImageChangedCallback =
-      base::RepeatingCallback<void(ui::ImageModel)>;
-
   SharingHubBubbleControllerDesktopImpl(
       const SharingHubBubbleControllerDesktopImpl&) = delete;
   SharingHubBubbleControllerDesktopImpl& operator=(
@@ -62,27 +58,17 @@ class SharingHubBubbleControllerDesktopImpl
   // Returns the current profile.
   Profile* GetProfile() const;
 
-  // Returns the list of Sharing Hub first party actions.
-  virtual std::vector<SharingHubAction> GetFirstPartyActions();
-  // Returns the list of Sharing Hub third party actions.
-  virtual std::vector<SharingHubAction> GetThirdPartyActions();
-
-  virtual bool ShouldUsePreview();
-  virtual std::u16string GetPreviewTitle();
-  virtual GURL GetPreviewUrl();
-  virtual ui::ImageModel GetPreviewImage();
-
+  // SharingHubBubbleController:
+  std::vector<SharingHubAction> GetFirstPartyActions() override;
+  std::vector<SharingHubAction> GetThirdPartyActions() override;
+  bool ShouldUsePreview() override;
   base::CallbackListSubscription RegisterPreviewImageChangedCallback(
-      PreviewImageChangedCallback callback);
-
-  // Handles when the user clicks on a Sharing Hub action. If this is a first
-  // party action, executes the appropriate browser command. If this is a third
-  // party action, navigates to an external webpage.
-  virtual void OnActionSelected(int command_id,
-                                bool is_first_party,
-                                std::string feature_name_for_metrics);
-  // Handler for when the bubble is closed.
-  void OnBubbleClosed();
+      PreviewImageChangedCallback callback) override;
+  base::WeakPtr<SharingHubBubbleController> GetWeakPtr() override;
+  void OnActionSelected(int command_id,
+                        bool is_first_party,
+                        std::string feature_name_for_metrics) override;
+  void OnBubbleClosed() override;
 
  protected:
   explicit SharingHubBubbleControllerDesktopImpl(
@@ -123,6 +109,17 @@ class SharingHubBubbleControllerDesktopImpl
       preview_image_changed_callbacks_;
 
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+
+  base::WeakPtrFactory<SharingHubBubbleController> weak_factory_{this};
+
+  // This is a bit ugly: SharingHubBubbleController's interface requires it to
+  // be able to create WeakPtr<SharingHubBubbleController>, but this class
+  // internally also needs to be able to bind weak pointers to itself for use
+  // with the image fetching state machine. Those internal weak pointers need to
+  // be to an instance of *this class*, not of the parent interface, so that we
+  // can bind them to methods on this class rather than the parent interface.
+  base::WeakPtrFactory<SharingHubBubbleControllerDesktopImpl>
+      internal_weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
