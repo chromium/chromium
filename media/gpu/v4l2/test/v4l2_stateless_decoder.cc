@@ -14,10 +14,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/gpu/v4l2/test/av1_decoder.h"
+#include "media/gpu/v4l2/test/h264_decoder.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
 
 using media::v4l2_test::Av1Decoder;
+using media::v4l2_test::H264Decoder;
 using media::v4l2_test::VideoDecoder;
 using media::v4l2_test::Vp9Decoder;
 
@@ -78,6 +80,9 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
 
   if (!decoder)
     decoder = Vp9Decoder::Create(stream);
+
+  if (!decoder)
+    decoder = H264Decoder::Create(stream);
 
   return decoder;
 }
