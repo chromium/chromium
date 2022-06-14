@@ -194,8 +194,6 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   const blink::mojom::PolicyContainerPolicies& policies = *container->policies;
   EXPECT_EQ(policies.referrer_policy, builder.FinalPolicies().referrer_policy);
-  EXPECT_EQ(policies.ip_address_space,
-            builder.FinalPolicies().ip_address_space);
 }
 
 // Verifies that when the URL of the document to commit is `about:blank`, and

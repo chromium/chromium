@@ -8,7 +8,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
@@ -43,8 +42,6 @@ class CORE_EXPORT PolicyContainer {
   // PolicyContainerHost.
   void UpdateReferrerPolicy(network::mojom::blink::ReferrerPolicy policy);
   network::mojom::blink::ReferrerPolicy GetReferrerPolicy() const;
-
-  network::mojom::blink::IPAddressSpace GetIPAddressSpace() const;
 
   // Append |policies| to the list of Content Security Policy and sync them with
   // the PolicyContainerHost.
