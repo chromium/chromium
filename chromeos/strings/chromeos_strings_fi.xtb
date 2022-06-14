@@ -290,6 +290,7 @@
 <translation id="3621202678540785336">Äänitulo:</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3643810137582748570">Ohita kalibrointi</translation>
+<translation id="3651050199673793219">Valitse lämpötilan yksikkö</translation>
 <translation id="3678765385266369662">Valitse, miten haluat ottaa kirjoitussuojauksen pois päältä</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Ladataan...</translation>
@@ -307,6 +308,7 @@
 <translation id="3856304145690230735">Perusgyroskooppi</translation>
 <translation id="385832974417157471">Käytä powerwashia laitteellasi ennen sen sulkemista. Jos laitteessa on kansi, odota että powerwash on valmis, ennen kuin suljet kannen. Powerwash voi kestää minuutin.</translation>
 <translation id="3858860766373142691">Nimi</translation>
+<translation id="3862598938296403232">Kuvaus on pakollinen</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
 <translation id="3866249974567520381">Kuvaus</translation>
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
@@ -683,6 +685,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
 <translation id="714876143603641390">LAN-yhteys</translation>
+<translation id="7154020516215182599">Jaa palautteesi tai kerro ongelmastasi. Lisää mahdollisuuksien mukaan vaiheet, jotta ongelma voidaan toistaa.</translation>
 <translation id="7155171745945906037">Olemassa oleva kuva kamerasta tai tiedostosta</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7170236477717446850">Profiilikuva</translation>

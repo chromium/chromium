@@ -58,6 +58,7 @@
 <translation id="4523886039239821078">ਕੁਝ ਐਡ-ਆਨ Chrome ਨੂੰ ਕ੍ਰੈਸ਼ ਕਰ ਸਕਦੇ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਅਣਸਥਾਪਤ ਕਰੋ:</translation>
 <translation id="4633328489441962921">Chrome ਅੱਪਡੇਟਾਂ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
 <translation id="4698415050768537821">Chrome ਸਾਰੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਕੱਲ੍ਹ ਨੂੰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।<ph name="END_LINK" /></translation>
+<translation id="4802922164792993118">Chrome ਲਈ ਨੁਕਤਾ। ਕੀ-ਬੋਰਡ ਦੇ ਸਿਖਰ 'ਤੇ ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨੂੰ ਚੁਣ ਕੇ ਤੇਜ਼ੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="4819268619367838612">ਐਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, Chrome ਵਰਤੋਂ ਅਤੇ ਕ੍ਰੈਸ਼ ਡਾਟਾ Google ਨੂੰ ਭੇਜਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome ਬੀਟਾ 'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="5030102366287574140">ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ, ਅਸੁਰੱਖਿਅਤ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਵਿੱਚ Chrome ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
@@ -112,7 +113,6 @@
 <translation id="8022947259858476807">ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਣ, ਵਿਜੇਟਾਂ ਤੋਂ ਖੋਜ ਕਰਨ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਆਟੋਫਿਲ ਪਾਸਵਰਡਾਂ ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ Chrome ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="81358522153858150">Chrome ਹੁਣ ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਲਈ ਵਰਤੋਂਕਾਰ ਨੀਤੀਆਂ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="8160472928944011082">Chrome ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
-<translation id="8263079278049777200">ਇਸ ਸਾਈਟ, ਆਪਣੇ Google ਖਾਤੇ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਸਿੰਕ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8357607116237445042">ਚੁਣੋ ਕਿ ਕੀ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣਾ Chrome ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ ਜਾਂ ਇਸਨੂੰ ਰੱਖਣਾ ਹੈ</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="840168496893712993">ਕੁਝ ਐਡ-ਆਨ ਨਾਲ Chrome ਕ੍ਰੈਸ਼ ਹੋ ਜਾਂਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਨ੍ਹਾਂ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਕੇ ਦੇਖੋ:</translation>

@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Shranjevanje v napravo USB</translation>
 <translation id="1468664791493211953">Ponudbe</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja to napravo in morda nadzira vašo dejavnost.</translation>
+<translation id="147809995039451286">Posodobitve ni bilo mogoče prenesti.</translation>
 <translation id="1478594628797167447">Optični bralniki</translation>
 <translation id="1491076385728777984">Posodabljanje vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja tega uporabnika in lahko na daljavo upravlja nastavitve ter nadzira dejavnost uporabnika.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Prestrezni portal</translation>
 <translation id="2006864819935886708">Povezljivost</translation>
 <translation id="2008685064673031089">Začetno iskanje</translation>
+<translation id="2011174342667534258">Različica kompleta za razvoj programske opreme:</translation>
 <translation id="2016697457005847575">Poskusite postopke za odpravljanje težav.</translation>
 <translation id="2016848882344942759">--brez bele nalepke--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Stanje aktiviranja</translation>
 <translation id="2271469253353559191">Urnik za temni način</translation>
 <translation id="2275586345903859204">Popravilo je končano</translation>
+<translation id="2276999893457278469">Najbolj priljubljena vsebina s pomočjo</translation>
 <translation id="2287186687001756809">Na voljo ni nobene slike. Fotografije lahko dodate na <ph name="LINK" />.</translation>
 <translation id="2294753434210277304">Vstavite zunanjo napravo za shranjevanje, kot je pogon USB ali kartica SD, na kateri je prenesena slika z Orodjem za obnovitev Chromebooka.</translation>
 <translation id="2307344026739914387">Uporaba trenutnega para ključev</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Odpri v nastavitvah</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. slika od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Natančnost plavajoče točke</translation>
+<translation id="2447969267935997922">Namestitev je končana. Zdaj lahko odstranite pogon USB ali kartico SD.</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2480034874476596812">Ročno izklopi</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Išči</translation>
 <translation id="2526590354069164005">Namizje</translation>
 <translation id="253029298928638905">Vnovičen zagon …</translation>
+<translation id="2533048460510040082">Predlagana vsebina s pomočjo</translation>
 <translation id="2536159006530886390">Internetne povezave ni mogoče vzpostaviti.</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Zakleni</translation>
 <translation id="38114475217616659">Izbriši celotno zgodovino</translation>
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
+<translation id="3824259034819781947">Priloži datoteke</translation>
 <translation id="3838338534323494292">Novo geslo</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3856304145690230735">Osnovni žiroskop</translation>
@@ -863,6 +869,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="885701979325669005">Shramba</translation>
 <translation id="8863170912498892583">Omogočanje temne teme</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> za poizvedbo »<ph name="QUERY" />« in drugo</translation>
+<translation id="8864415976656252616">Ni predlagane vsebine. Oglejte si najbolj priljubljeno vsebino s pomočjo.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Naprava je tablični računalnik.</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>

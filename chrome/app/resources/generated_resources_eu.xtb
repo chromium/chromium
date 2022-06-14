@@ -2245,7 +2245,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3093714882666365141">Ez eman ordainketa-kudeatzaileak instalatzeko baimena webguneei</translation>
 <translation id="3094141017404513551">Zure arakatze-datuak <ph name="EXISTING_USER" /> erabiltzailearenetatik bereiziko dira</translation>
 <translation id="3095871294753148861">Kontu nagusiarekin sinkronizatzen dira laster-markak, pasahitzak eta bestelako arakatze-datuak.</translation>
-<translation id="3096047748133487529">Zure erakundeak fitxategia blokeatu du kontuzko edukia daukalako</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Luzapen kaltegarri bat desaktibatu da. Kendu ere egin dezakezu.}other{{NUM_EXTENSIONS} luzapen kaltegarri desaktibatu dira. Kendu ere egin ditzakezu.}}</translation>
 <translation id="3101126716313987672">Argi gutxi</translation>
 <translation id="3101709781009526431">Data eta ordua</translation>
@@ -4665,7 +4664,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5532223876348815659">Orokorra</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> webguneak hau egin nahi du:</translation>
 <translation id="5534304873398226603">Baztertu argazkia edo bideoa</translation>
-<translation id="5535941515421698170">Eta kendu lehendik dauden datuak gailu honetatik</translation>
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5539221284352502426">Zerbitzariak idatzi duzun pasahitza baztertu du, arrazoi hauetako baten ondorioz: pasahitza laburregia da, pasahitzak zenbakiak edo ikurrak izan behar ditu, edo pasahitza ezin da izan aurreko baten berdina.</translation>
 <translation id="5541694225089836610">Administratzaileak desgaitu egin du ekintza</translation>
@@ -5687,7 +5685,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6555432686520421228">Kendu erabiltzaile-kontu guztiak eta berrezarri <ph name="IDS_SHORT_PRODUCT_NAME" /> gailua, berria izango balitz bezala gera dadin.</translation>
 <translation id="6555604601707417276">Leheneratu da Linux-en babeskopia</translation>
 <translation id="6555810572223193255">Une honetan ez dago erabilgarri garbitzeko aukera</translation>
-<translation id="6556477848444788999">PINak edo pasahitzak <ph name="DEVICE_TYPE" /> gailuko datuak babesten ditu, telefonoaren bidez igortzen duzun edukia barne.</translation>
 <translation id="6556866813142980365">Berregin</translation>
 <translation id="6556903358015358733">Gaia eta horma-papera</translation>
 <translation id="6557290421156335491">Nire lasterbideak</translation>

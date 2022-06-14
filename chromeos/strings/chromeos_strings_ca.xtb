@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Desa a l'USB</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
+<translation id="147809995039451286">No s'ha pogut baixar l'actualització</translation>
 <translation id="1478594628797167447">Escàners</translation>
 <translation id="1491076385728777984">S'està actualitzant el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Obre a Configuració</translation>
 <translation id="2421798028054665193">Imatge <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
+<translation id="2447969267935997922">S'ha completat la instal·lació. Ja pots extreure la unitat USB o la targeta SD.</translation>
 <translation id="2448312741937722512">Tipus</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2480034874476596812">Desactiva manualment</translation>

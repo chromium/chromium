@@ -2262,7 +2262,6 @@
 <translation id="3093714882666365141">사이트에서 결제 핸들러를 설치하도록 허용하지 않음</translation>
 <translation id="3094141017404513551">그러면 <ph name="EXISTING_USER" /> 기록과 내 인터넷 사용 기록이 구분됩니다.</translation>
 <translation id="3095871294753148861">북마크, 비밀번호 등의 브라우저 데이터가 기본 계정과 동기화되어 있습니다.</translation>
-<translation id="3096047748133487529">파일에 민감한 콘텐츠가 포함되어 있기 때문에 조직에서 파일을 차단했습니다</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}}</translation>
 <translation id="3101126716313987672">조명 밝기 줄이기</translation>
 <translation id="3101709781009526431">날짜 및 시간</translation>
@@ -4681,7 +4680,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5532223876348815659">전체</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
 <translation id="5534304873398226603">사진 또는 동영상 삭제</translation>
-<translation id="5535941515421698170">기기에서 기존 데이터도 삭제</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5539221284352502426">입력한 비밀번호가 서버에 의해 거부되었습니다. 가능한 이유는 다음과 같습니다. 비밀번호가 너무 짧습니다. 비밀번호에 숫자 또는 기호가 포함되어야 합니다. 이전 비밀번호와 달라야 합니다.</translation>
 <translation id="5541694225089836610">관리자가 사용 중지한 작업입니다.</translation>
@@ -5706,7 +5704,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6555432686520421228">모든 사용자 계정을 삭제하고 사용 중인 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기를 재설정하여 새것처럼 만듭니다.</translation>
 <translation id="6555604601707417276">Linux 백업 복원됨</translation>
 <translation id="6555810572223193255">현재 정리 기능을 사용할 수 없음</translation>
-<translation id="6556477848444788999">이 PIN 또는 비밀번호는 휴대전화에서 스트림하는 콘텐츠를 비롯하여 이 <ph name="DEVICE_TYPE" />의 데이터를 보호합니다.</translation>
 <translation id="6556866813142980365">다시실행</translation>
 <translation id="6556903358015358733">테마 및 배경화면</translation>
 <translation id="6557290421156335491">내 바로가기</translation>

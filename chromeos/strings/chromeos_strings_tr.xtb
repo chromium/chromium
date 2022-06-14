@@ -290,6 +290,7 @@
 <translation id="3621202678540785336">Giriş</translation>
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
 <translation id="3643810137582748570">Kalibrasyonu atla</translation>
+<translation id="3651050199673793219">Bir sıcaklık birimi seçin</translation>
 <translation id="3678765385266369662">Yazma korumayı nasıl devre dışı bırakmak istediğinizi seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
@@ -307,6 +308,7 @@
 <translation id="3856304145690230735">Tabandaki Jiroskop</translation>
 <translation id="385832974417157471">Cihazınızı kapatmadan önce powerwash işlemi yapın. Cihazınızın kapağı varsa kapağı kapatmadan önce powerwash işleminin tamamlanmasını bekleyin. Powerwash işleminin tamamlanması bir dakika kadar sürebilir.</translation>
 <translation id="3858860766373142691">Ad</translation>
+<translation id="3862598938296403232">Açıklama gerekli</translation>
 <translation id="3865414814144988605">Çözünürlük</translation>
 <translation id="3866249974567520381">Açıklama</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
@@ -683,6 +685,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="714876143603641390">LAN Bağlantısı</translation>
+<translation id="7154020516215182599">Geri bildiriminizi paylaşın veya sorununuzu açıklayın. Mümkünse karşılaştığınız sorunu yeniden oluşturmak için gereken adımları da ekleyin.</translation>
 <translation id="7155171745945906037">Kameradan veya dosyadan mevcut fotoğraf</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Profil resmi</translation>

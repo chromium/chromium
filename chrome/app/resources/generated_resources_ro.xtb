@@ -2247,7 +2247,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3093714882666365141">Nu permite site-urilor să instaleze handlere pentru plăți</translation>
 <translation id="3094141017404513551">Astfel, vei separa navigarea de cea asociată contului <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Marcajele, parolele și alte date ale browserului sunt sincronizate cu contul principal.</translation>
-<translation id="3096047748133487529">Organizația ta a blocat fișierul deoarece include conținut sensibil</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{O extensie potențial dăunătoare a fost dezactivată. Poți să o elimini.}few{{NUM_EXTENSIONS} extensii potențial dăunătoare au fost dezactivate. Poți să le elimini.}other{{NUM_EXTENSIONS} de extensii potențial dăunătoare au fost dezactivate. Poți să le elimini.}}</translation>
 <translation id="3101126716313987672">Lumină slabă</translation>
 <translation id="3101709781009526431">Data și ora</translation>
@@ -4669,7 +4668,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dorește să</translation>
 <translation id="5534304873398226603">Șterge fotografia sau videoclipul</translation>
-<translation id="5535941515421698170">De asemenea, elimină datele existente de pe acest dispozitiv</translation>
 <translation id="5537725057119320332">Proiectează</translation>
 <translation id="5539221284352502426">Parola pe care ai introdus-o a fost respinsă de server. Motivele posibile includ: parola este prea scurtă; parola trebuie să includă cifre sau simboluri; parola trebuie să fie diferită de parolele anterioare.</translation>
 <translation id="5541694225089836610">Acțiunea este dezactivată de administrator</translation>
@@ -5695,7 +5693,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6555432686520421228">Eliminați toate conturile de utilizator și resetați gadgetul <ph name="IDS_SHORT_PRODUCT_NAME" /> la valorile din fabrică.</translation>
 <translation id="6555604601707417276">S-a restabilit backupul pentru Linux</translation>
 <translation id="6555810572223193255">Funcția de curățare este indisponibilă momentan</translation>
-<translation id="6556477848444788999">Codul PIN sau parola îți protejează datele de pe <ph name="DEVICE_TYPE" />, inclusiv conținutul pe care îl redai în stream de pe telefon.</translation>
 <translation id="6556866813142980365">Repetă</translation>
 <translation id="6556903358015358733">Temă și imagine de fundal</translation>
 <translation id="6557290421156335491">Comenzile mele rapide</translation>

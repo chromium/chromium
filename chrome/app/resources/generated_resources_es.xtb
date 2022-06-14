@@ -2246,7 +2246,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3093714882666365141">No permitir que los sitios instalen controladores de pago</translation>
 <translation id="3094141017404513551">Esto separará tu navegación de la de <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Los marcadores, las contraseñas y otros datos del navegador están sincronizados con la cuenta principal.</translation>
-<translation id="3096047748133487529">Tu organización ha bloqueado este archivo porque incluye contenido sensible.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Se ha desactivado 1 extensión potencialmente dañina. También puedes quitarla.}other{Se han desactivado {NUM_EXTENSIONS} extensiones potencialmente dañinas. También puedes quitarlas.}}</translation>
 <translation id="3101126716313987672">Atenuar luz</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
@@ -4665,7 +4664,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5534304873398226603">Descartar foto o vídeo</translation>
-<translation id="5535941515421698170">Eliminar también los datos de este dispositivo</translation>
 <translation id="5537725057119320332">Enviar</translation>
 <translation id="5539221284352502426">El servidor ha rechazado la contraseña que has introducido. Puede deberse a alguna de estas causas: la contraseña es demasiado corta. La contraseña debe contener números o símbolos. La contraseña debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador ha inhabilitado esta acción</translation>
@@ -5690,7 +5688,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6555432686520421228">Elimina todas las cuentas de usuario y restablece tu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> como si lo acabaras de comprar.</translation>
 <translation id="6555604601707417276">Copia de seguridad de Linux restaurada</translation>
 <translation id="6555810572223193255">No se puede eliminar en este momento</translation>
-<translation id="6556477848444788999">El PIN o la contraseña protegerán tus datos en este <ph name="DEVICE_TYPE" />, incluido cualquier contenido que veas en streaming desde tu teléfono.</translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6556903358015358733">Tema y fondo de pantalla</translation>
 <translation id="6557290421156335491">Mis accesos directos</translation>

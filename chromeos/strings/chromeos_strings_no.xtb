@@ -231,6 +231,7 @@
 <translation id="3083667275341675831">Tilkoblingsdiagnostikk</translation>
 <translation id="3084958266922136097">Slå av skjermspareren</translation>
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
+<translation id="3096753366938912951">Sett lokket på flat overflate</translation>
 <translation id="3102119246920354026">Buffer</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3124039320086536031">Enheten er tilkoblet.</translation>
@@ -288,9 +289,11 @@
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
+<translation id="361575905210396100">Takk for tilbakemeldingen</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
+<translation id="3643198267586205643">Oppdater OS-et</translation>
 <translation id="3643810137582748570">Hopp over kalibreringen</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
 <translation id="3678765385266369662">Velg hvordan du vil slå av skrivebeskyttelsen</translation>
@@ -408,6 +411,7 @@
 <translation id="469379815867856270">Signalstyrke</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
 <translation id="473775607612524610">Oppdater</translation>
+<translation id="4740255236714854844">Sett basen på en flat overflate</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
 <translation id="4751272708893364980">Se RMA-logger</translation>
 <translation id="4773299976671772492">Stoppet</translation>
@@ -455,6 +459,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Vis bilder, tidspunkt, vær og medieinfo når skjermen er inaktiv.</translation>
 <translation id="5039804452771397117">Tillat</translation>
+<translation id="5044978354634658544">Sett inn USB-enheten</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste siden. Dette medfører at du blir sendt til startskjermbildet for skanning.</translation>
@@ -739,6 +744,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" />-reparasjonsfeil</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665800271478495366">Bytt brukerbilde</translation>
+<translation id="7682274994254393134">Reparasjonsstart</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>

@@ -2246,7 +2246,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3093714882666365141">Non consentire ai siti di installare gestori dei pagamenti</translation>
 <translation id="3094141017404513551">In questo modo la tua navigazione verrà separata da quella di <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Preferiti, password e altri dati di navigazione sono sincronizzati con l'account principale.</translation>
-<translation id="3096047748133487529">La tua organizzazione ha bloccato questo file perché include contenuti sensibili</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 estensione potenzialmente dannosa è stata disattivata. Puoi anche rimuoverla.}other{{NUM_EXTENSIONS} estensioni potenzialmente dannose sono state disattivate. Puoi anche rimuoverle.}}</translation>
 <translation id="3101126716313987672">Attenuare la luce</translation>
 <translation id="3101709781009526431">Data e ora</translation>
@@ -4666,7 +4665,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5532223876348815659">Generali</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vorrebbe</translation>
 <translation id="5534304873398226603">Elimina foto o video</translation>
-<translation id="5535941515421698170">Rimuovi anche i dati esistenti da questo dispositivo</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="5539221284352502426">La password inserita è stata rifiutata dal server. Alcune possibili cause sono: la password è troppo breve; la password deve includere numeri o simboli; la password deve essere diversa dalle password precedenti.</translation>
 <translation id="5541694225089836610">Azione disattivata dall'amministratore</translation>
@@ -5688,7 +5686,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6555432686520421228">Rimuovi tutti gli account utente e reimposta il tuo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> come se fosse nuovo.</translation>
 <translation id="6555604601707417276">Copia di backup di Linux ripristinata</translation>
 <translation id="6555810572223193255">Pulizia al momento non disponibile</translation>
-<translation id="6556477848444788999">Il PIN o la password protegge i tuoi dati memorizzati su questo <ph name="DEVICE_TYPE" />, inclusi gli eventuali contenuti trasmessi in streaming dal telefono.</translation>
 <translation id="6556866813142980365">Ripeti</translation>
 <translation id="6556903358015358733">Tema e sfondo</translation>
 <translation id="6557290421156335491">Le mie scorciatoie</translation>

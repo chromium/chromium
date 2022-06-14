@@ -2261,7 +2261,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3093714882666365141">Ekki leyfa vefsvæðum að setja upp greiðslumiðlara</translation>
 <translation id="3094141017404513551">Þetta aðskilur vefskoðun þína og <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bókamerki, aðgangsorð og önnur vefskoðunargögn eru samstillt við aðalreikninginn.</translation>
-<translation id="3096047748133487529">Fyrirtækið þitt setti þessa skrá á bannlista vegna þess að hún inniheldur viðkvæmt efni</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Slökkt er á einni hugsanlega hættulegri viðbót. Þú getur einnig fjarlægt hana.}one{Slökkt er á {NUM_EXTENSIONS} hugsanlega hættulegri viðbót. Þú getur einnig fjarlægt þessar viðbætur.}other{Slökkt er á {NUM_EXTENSIONS} hugsanlega hættulegum viðbótum. Þú getur einnig fjarlægt þessar viðbætur.}}</translation>
 <translation id="3101126716313987672">Deyfa ljós</translation>
 <translation id="3101709781009526431">Dagsetning og tími</translation>
@@ -4682,7 +4681,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5532223876348815659">Altækt</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vill</translation>
 <translation id="5534304873398226603">Fleygja mynd eða myndskeiði</translation>
-<translation id="5535941515421698170">Fjarlægja einnig fyrirliggjandi gögn af tækinu</translation>
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="5539221284352502426">Vefþjónninn hafnaði aðgangsorðinu sem þú færðir inn. Mögulegar ástæður geta verið: Aðgangsorðið er of stutt. Aðgangsorðið verður að innihalda tölustafi eða tákn. Aðgangsorðið þarf að vera frábrugðið fyrri aðgangsorðum.</translation>
 <translation id="5541694225089836610">Kerfisstjóri hefur gert aðgerðina óvirka</translation>
@@ -5707,7 +5705,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6555432686520421228">Fjarlæga alla notendareikninga og núllstilla <ph name="IDS_SHORT_PRODUCT_NAME" /> tækið þannig að það verði eins og þegar það var nýtt.</translation>
 <translation id="6555604601707417276">Öryggisafrit Linux var endurheimt</translation>
 <translation id="6555810572223193255">Hreinsun er ekki tiltæk eins og er</translation>
-<translation id="6556477848444788999">Þetta PIN-númer eða aðgangsorð verndar gögn í þessari <ph name="DEVICE_TYPE" />, þ.m.t. efni sem þú streymir úr símanum.</translation>
 <translation id="6556866813142980365">Endurgera</translation>
 <translation id="6556903358015358733">Þema og veggfóður</translation>
 <translation id="6557290421156335491">Flýtileiðirnar mínar</translation>

@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">‏ذخیره در USB</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
+<translation id="147809995039451286">به‌روزرسانی بارگیری نشد</translation>
 <translation id="1478594628797167447">اسکنر</translation>
 <translation id="1491076385728777984">درحال به‌روزرسانی سفت‌افزار در <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">باز کردن در تنظیمات</translation>
 <translation id="2421798028054665193">تصویر <ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
+<translation id="2447969267935997922">‏نصب کامل شد. اکنون می‌توانید درایو USB یا کارت SD را خارج کنید.</translation>
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2480034874476596812">خاموش کردن به‌صورت دستی</translation>

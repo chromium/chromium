@@ -229,6 +229,7 @@
 <translation id="3083667275341675831">కనెక్టివిటీ సమస్య విశ్లేషణ</translation>
 <translation id="3084958266922136097">స్క్రీన్ సేవర్‌ను డిజేబుల్ చేయి</translation>
 <translation id="3091839911843451378">విఫలమైంది - ఆగిపోయింది</translation>
+<translation id="3096753366938912951">లిడ్‌ను చదునుగా ఉన్న ఉపరితలంపై ఉంచండి</translation>
 <translation id="3102119246920354026">కాష్</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">పరికరం కనెక్ట్ చేయబడింది.</translation>
@@ -286,9 +287,11 @@
 <translation id="3604713164406837697">వాల్‌పేపర్‌ను మార్చండి</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="3606583719724308068">HTTPS వెబ్‌సైట్‌లలో ప్రతిస్పందన సమయం ఎక్కువగా ఉంది</translation>
+<translation id="361575905210396100">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు</translation>
 <translation id="3616113530831147358">ఆడియో</translation>
 <translation id="3621202678540785336">ఇన్‌పుట్</translation>
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
+<translation id="3643198267586205643">OSను అప్‌డేట్ చేయండి</translation>
 <translation id="3643810137582748570">క్యాలిబ్రేషన్‌ను స్కిప్ చేయండి</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
 <translation id="3678765385266369662">మీరు 'డేటా రీడ్ ఓన్లీ' ఆప్షన్‌ను ఎలా ఆఫ్ చేయాలనుకుంటున్నారో ఎంచుకోండి</translation>
@@ -406,6 +409,7 @@
 <translation id="469379815867856270">సిగ్నల్ సామర్థ్యం</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
+<translation id="4740255236714854844">బేస్‌ను చదునుగా ఉన్న ఉపరితలంపై ఉంచండి</translation>
 <translation id="4744944742468440486">మీ ఎంపికకు సంబంధించిన సమాచారం</translation>
 <translation id="4751272708893364980">RMA లాగ్‌లను చూడండి</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
@@ -453,6 +457,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">మీ స్క్రీన్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ఫోటోలు, సమయం, వాతావరణం, మీడియా సమాచారాన్ని చూపిస్తుంది.</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
+<translation id="5044978354634658544">USBని ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="5049856988445523908">SIM లాక్ చేయబడింది (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">సమూహం పేరు</translation>
 <translation id="5051044138948155788">ఈ పేజీ మాత్రమే ఉంది. ఇది మిమ్మల్ని స్కానింగ్ ప్రారంభ స్క్రీన్‌కు తీసుకువెళ్తుంది.</translation>
@@ -736,6 +741,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> రిపేర్ ఎర్రర్</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7665800271478495366">అవతార్‌ను మార్చండి</translation>
+<translation id="7682274994254393134">రిపేర్‌ను ప్రారంభించండి</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7705524343798198388">VPN</translation>

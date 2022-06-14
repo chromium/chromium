@@ -1772,6 +1772,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="283478052049914107">Definir a política como "Ativada" e inserir uma porta não padrão (ou seja, uma porta diferente de 80 ou 443) a inclui no SPN do Kerberos gerado.
 
       Definir a política como "Desativada" ou deixá-la sem definição faz com que o SPN do Kerberos gerado não inclua uma porta.</translation>
+<translation id="2835686964326214400">Definir uma programação personalizada para reiniciar dispositivos</translation>
 <translation id="2838830882081735096">Bloquear migração de dados e ARC</translation>
 <translation id="2839294585867804686">Configurações do Compartilhamento de arquivos de rede</translation>
 <translation id="284288632677954003">URL de um arquivo XML contendo URLs que nunca devem acionar uma troca de navegador.</translation>
@@ -3014,6 +3015,16 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
           Se esta política não for definida, o destaque de circunflexos ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4183229833636799228">Configuração padrão de <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="4186244263855283575">Permite configurar uma programação personalizada para reiniciar dispositivos. Se ela for definida como verdadeira, o dispositivo será reiniciado de acordo com a programação. A política precisa ser removida para cancelar outras reinicializações programadas.
+
+      Nas sessões de usuário e de visitante, o seguinte se aplica:
+
+        * Uma hora antes do horário programado, os usuários são notificados de que a reinicialização vai ocorrer. Eles podem reiniciar o app ou esperar a reinicialização programada. A reinicialização programada não pode ser adiada.
+
+        * Existe um período de carência de uma hora após a inicialização do dispositivo. As reinicializações programadas são ignoradas durante esse período e reprogramadas para o próximo dia, semana ou mês, dependendo da configuração.
+
+      Nas sessões de quiosque, não há um período de carência nem notificações sobre a reinicialização.
+</translation>
 <translation id="4187576366596772431">Bloquear a API WebHID nesses sites</translation>
 <translation id="4192388905594723944">URL para validação do token de autenticação do cliente de acesso remoto</translation>
 <translation id="4203055629055264833">Se a política for definida como "Ativada" ou for deixada sem definição, os usuários vão poder ver a página de resultados mais recente do mecanismo de pesquisa padrão em um painel lateral ao ativar um ícone na barra de ferramentas.

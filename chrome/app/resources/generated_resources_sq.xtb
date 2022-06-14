@@ -188,6 +188,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1174073918202301297">Shkurtorja e shtua</translation>
 <translation id="1174366174291287894">Lidhja jote është gjithnjë e sigurt përveç nëse Chrome të thotë ndryshe</translation>
+<translation id="1174391930667737831">Qendra e privatësisë</translation>
 <translation id="117445914942805388">Për të pastruar të dhënat e shfletimit nga të gjitha pajisjet e tua të sinkronizuara dhe nga "Llogaria e Google", <ph name="BEGIN_LINK" />vizito cilësimet e sinkronizimit<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">&amp;Printo...</translation>
 <translation id="1176471985365269981">Nuk lejohen të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
@@ -2242,7 +2243,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3093714882666365141">Mos lejo që sajtet të instalojnë përpunuesit e pagesave</translation>
 <translation id="3094141017404513551">Kjo do ta ndajë shfletimin tënd nga <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Faqeshënuesit, fjalëkalimet dhe të dhënat e tjera të shfletuesit sinkronizohen me llogarinë parësore.</translation>
-<translation id="3096047748133487529">Organizata jote e bllokoi këtë skedar sepse ai ka përmbajtje delikate</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 shtesë që mund të jetë e dëmshme është çaktivizuar. Mund ta heqësh po ashtu atë.}other{{NUM_EXTENSIONS} shtesa që mund të jenë të dëmshme janë çaktivizuar. Mund t'i heqësh po ashtu ato.}}</translation>
 <translation id="3101126716313987672">Errëso dritën</translation>
 <translation id="3101709781009526431">Data dhe ora</translation>
@@ -4662,7 +4662,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5532223876348815659">Globale</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dëshiron</translation>
 <translation id="5534304873398226603">Hiq fotografinë dhe videon</translation>
-<translation id="5535941515421698170">Hiq gjithashtu edhe të dhënat ekzistuese nga kjo pajisje</translation>
 <translation id="5537725057119320332">Transmeto</translation>
 <translation id="5539221284352502426">Fjalëkalimi që fute u refuzua nga serveri. Arsyet e mundshme përfshijnë: fjalëkalimi është tepër i shkurtër. Fjalëkalimi duhet të përfshijë numra ose simbole. Fjalëkalimi duhet të jetë i ndryshëm nga fjalëkalimet e mëparshme.</translation>
 <translation id="5541694225089836610">Veprimi është çaktivizuar nga administratori yt</translation>
@@ -5687,7 +5686,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6555432686520421228">Hiqi të gjitha llogaritë e përdoruesit dhe rivendos pajisjen tënde <ph name="IDS_SHORT_PRODUCT_NAME" /> për ta bërë si të re.</translation>
 <translation id="6555604601707417276">Rezervimi i Linux u restaurua</translation>
 <translation id="6555810572223193255">Pastrimi aktualisht nuk ofrohet</translation>
-<translation id="6556477848444788999">Ky kod PIN ose fjalëkalim i mbron të dhënat e tua në këtë <ph name="DEVICE_TYPE" />, duke përfshirë çdo përmbajtje që ti transmeton nga telefoni yt.</translation>
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6556903358015358733">Tema dhe imazhi i sfondit</translation>
 <translation id="6557290421156335491">Shkurtoret e mia</translation>

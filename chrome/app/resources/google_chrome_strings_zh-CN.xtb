@@ -9,7 +9,7 @@
 <translation id="110877069173485804">这是您的专属Chrome</translation>
 <translation id="1125124144982679672">谁在使用 Chrome？</translation>
 <translation id="1142745911746664600">无法更新 Chrome</translation>
-<translation id="1152920704813762236">关于 Chrome 操作系统</translation>
+<translation id="1152920704813762236">关于 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
 <translation id="1178374936842835197">如果此页面中未显示某项设置，请在 <ph name="LINK_BEGIN" />ChromeOS Flex 设置<ph name="LINK_END" />中查找</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
@@ -219,7 +219,6 @@
 <translation id="5727531838415286053">如果 Chrome 随机将您加入到了某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。兴趣会刷新，除非您将其移除。</translation>
 <translation id="5736850870166430177">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="5756509061973259733">此设备上已有一份使用该帐号创建的 Chrome 个人资料</translation>
-<translation id="5763280521700030406">Chrome 屏蔽了此文件，因为它太大，无法进行安全检查。请使用不超过 50 MB 的文件重试</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">无法启动 Chrome。请重试。</translation>
 <translation id="5867197326698922595">Google Chrome 正在尝试修改密码。</translation>
@@ -327,7 +326,6 @@
 <translation id="840084489713044809">Google Chrome 想导出您的密码。</translation>
 <translation id="8416347857511542594">在 Chrome 设置中详细了解广告个性化</translation>
 <translation id="8418845734693287262">由于您的帐号登录详细信息已过期，Chrome 操作系统无法同步您的数据。</translation>
-<translation id="8421734018304082652">Chrome 屏蔽了此文件，因为它已加密。请让文件所有者解密</translation>
 <translation id="8433638294851456451">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8451192282033883849">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据（例如书签、历史记录和密码）。</translation>
 <translation id="8498858610309223613">Google Chrome 刚刚应用了一项特殊的安全更新。请立即重启，以便系统恢复您的标签页。</translation>

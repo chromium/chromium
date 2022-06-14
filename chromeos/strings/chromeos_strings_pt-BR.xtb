@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2006864819935886708">Conectividade</translation>
 <translation id="2008685064673031089">Pesquisa de números primos</translation>
+<translation id="2011174342667534258">Versão do SDK:</translation>
 <translation id="2016697457005847575">Testar etapas de solução de problemas</translation>
 <translation id="2016848882344942759">--limpar marca branca--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">Status da ativação</translation>
 <translation id="2271469253353559191">Programação do modo escuro</translation>
 <translation id="2275586345903859204">O reparo foi concluído</translation>
+<translation id="2276999893457278469">Conteúdo de ajuda principal</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, acesse <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Insira o dispositivo de armazenamento externo, como um drive USB ou cartão SD, com a imagem transferida por download do Utilitário de recuperação do Chromebook</translation>
 <translation id="2307344026739914387">Usar par de chaves atual</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2526590354069164005">Área de trabalho</translation>
 <translation id="253029298928638905">Reiniciando…</translation>
+<translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
 <translation id="2536159006530886390">Não é possível se conectar à Internet.</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
@@ -303,6 +306,7 @@
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
+<translation id="3824259034819781947">Anexar arquivos</translation>
 <translation id="3838338534323494292">Nova senha</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3856304145690230735">Giroscópio da base</translation>
@@ -863,6 +867,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="885701979325669005">Armazenamento</translation>
 <translation id="8863170912498892583">Ativar o tema escuro</translation>
 <translation id="8863888432376731307">Veja a <ph name="INTENT" /> de "<ph name="QUERY" />" e muito mais</translation>
+<translation id="8864415976656252616">Nenhum conteúdo sugerido. Consulte o conteúdo de ajuda principal.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Este dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste bem sucedido</translation>

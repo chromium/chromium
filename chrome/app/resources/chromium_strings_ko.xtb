@@ -17,7 +17,6 @@
 <translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
-<translation id="1602421994560205104">파일 크기가 너무 커서 보안 확인을 실행할 수 없기 때문에 Chromium에서 파일을 차단했습니다. 50MB 이하의 파일을 사용해 다시 시도해 보세요</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1632539827495546968">이 계정을 한 번만 사용하려면 Chromium 브라우저에서 <ph name="GUEST_LINK_BEGIN" />게스트 모드<ph name="GUEST_LINK_END" />를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
@@ -275,7 +274,6 @@
 <translation id="7218568399872925918">내가 방문한 사이트에서는 Chromium을 종료할 때까지 내 정보를 기억합니다.</translation>
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
 <translation id="7246575524853130370">Chromium에서 예측한 내 관심분야</translation>
-<translation id="7265671031637041256">파일이 암호화되어 있기 때문에 Chromium에서 파일을 차단했습니다. 파일 소유자에게 복호화를 요청하세요</translation>
 <translation id="7309928523159922338">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chromium에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
 <translation id="731795002583552498">Chromium 업데이트 중</translation>
 <translation id="7318036098707714271">환경설정 파일이 손상되었거나 잘못되었습니다.

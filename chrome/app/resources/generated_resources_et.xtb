@@ -2252,7 +2252,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3093714882666365141">Ära luba saitidel maksetöötlejaid installida</translation>
 <translation id="3094141017404513551">See eraldab teie sirvimise kasutaja <ph name="EXISTING_USER" /> omast</translation>
 <translation id="3095871294753148861">Järjehoidjad, paroolid ja muud brauseri andmed sünkroonitakse teie peamise kontoga.</translation>
-<translation id="3096047748133487529">Teie organisatsioon blokeeris selle faili, sest see sisaldab tundlikku sisu</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentsiaalselt ohtlik laiendus on välja lülitatud. Võite selle ka eemaldada.}other{{NUM_EXTENSIONS} potentsiaalselt ohtlikku laiendust on välja lülitatud. Võite need ka eemaldada.}}</translation>
 <translation id="3101126716313987672">Hämar valgus</translation>
 <translation id="3101709781009526431">Kuupäev ja kellaaeg</translation>
@@ -4672,7 +4671,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5532223876348815659">Üldine</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> soovib</translation>
 <translation id="5534304873398226603">Eemalda foto või video</translation>
-<translation id="5535941515421698170">Eemaldage sellest seadmest ka oma olemasolevad andmed</translation>
 <translation id="5537725057119320332">Ülekanne</translation>
 <translation id="5539221284352502426">Server lükkas sisestatud parooli tagasi. Võimalikud põhjused on järgmised. Parool on liiga lühike. Parool peab sisaldama numbreid või sümboleid. Parool peab erinema eelmistest paroolidest.</translation>
 <translation id="5541694225089836610">Administraator on selle toimingu keelanud</translation>
@@ -5697,7 +5695,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6555432686520421228">Eemaldage kõik kasutajakontod ja lähtestage seade <ph name="IDS_SHORT_PRODUCT_NAME" />, et taas nullist alustada.</translation>
 <translation id="6555604601707417276">Linuxi varukoopia taastati</translation>
 <translation id="6555810572223193255">Puhastamine ei ole praegu saadaval</translation>
-<translation id="6556477848444788999">See PIN-kood või parool kaitseb teie andmeid seadmes <ph name="DEVICE_TYPE" />, sealhulgas sisu, mida telefonist voogesitate.</translation>
 <translation id="6556866813142980365">Tee uuesti</translation>
 <translation id="6556903358015358733">Teema ja taustapilt</translation>
 <translation id="6557290421156335491">Minu otseteed</translation>

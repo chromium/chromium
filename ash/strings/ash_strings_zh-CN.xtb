@@ -1056,7 +1056,7 @@
 <translation id="7258828758145722155">昨天修改过</translation>
 <translation id="726276584504105859">拖到此处即可使用分屏模式</translation>
 <translation id="7262906531272962081">创建提醒</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> 至 <ph name="END_TIME" />，<ph name="TIME_ZONE" />，<ph name="EVENT_SUMMARY" />。选择相应条目即可在 Google 日历中了解详情。</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> 至<ph name="END_TIME" />，<ph name="TIME_ZONE" />，<ph name="EVENT_SUMMARY" />。选择相应条目即可在 Google 日历中了解详情。</translation>
 <translation id="7302889331339392448">“实时字幕”功能已关闭。</translation>
 <translation id="7303365578352795231">正在通过另一设备答复。</translation>
 <translation id="7305884605064981971">EDGE</translation>

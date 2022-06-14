@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USB-യിൽ സംരക്ഷിക്കുക</translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
+<translation id="147809995039451286">അപ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="1478594628797167447">സ്‌കാനർ</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> ഉപകരണത്തിലെ ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ആണ് ഈ ഉപയോക്താവിനെ മാനേജ് ചെയ്യുന്നത്, ഒപ്പം വിദൂരമായി ക്രമീകരണം മാനേജ് ചെയ്യുകയും ഉപയോക്തൃ ആക്‌റ്റിവിറ്റി നിരീക്ഷിക്കുകയും ചെയ്തേക്കാം.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
 <translation id="2006864819935886708">കണക്റ്റിവിറ്റി</translation>
 <translation id="2008685064673031089">പ്രധാന തിരയൽ</translation>
+<translation id="2011174342667534258">SDK പതിപ്പ്:</translation>
 <translation id="2016697457005847575">ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ പരീക്ഷിക്കുക</translation>
 <translation id="2016848882344942759">--വൈറ്റ് ലേബൽ ഇല്ല--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">സജീവമാക്കല്‍ സ്റ്റാറ്റസ്</translation>
 <translation id="2271469253353559191">ഡാർക്ക് മോഡ് ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="2275586345903859204">റിപ്പയർ ചെയ്യൽ പൂർത്തിയായി</translation>
+<translation id="2276999893457278469">മികച്ച സഹായ ഉള്ളടക്കം</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
 <translation id="2294753434210277304">ഡൗൺലോഡ് ചെയ്‌ത Chromebook വീണ്ടെടുക്കൽ യൂട്ടിലിറ്റി ഇമേജ് ഉള്ള USB ഡ്രൈവോ SD കാർഡോ പോലുള്ള ബാഹ്യ സ്റ്റോറേജ് ഉപകരണം ഇൻസേർട്ട് ചെയ്യുക</translation>
 <translation id="2307344026739914387">നിലവിലെ കീ ജോടി ഉപയോഗിക്കുക</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">ക്രമീകരണത്തിൽ തുറക്കുക</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" />-ാമത്തെ ചിത്രം</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
+<translation id="2447969267935997922">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായി. നിങ്ങൾക്ക് ഇപ്പോൾ USB ഡ്രൈവോ SD കാർഡോ നീക്കം ചെയ്യാം.</translation>
 <translation id="2448312741937722512">തരം</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
 <translation id="2480034874476596812">നേരിട്ട് ഓഫാക്കുക</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2526590354069164005">ഡെസ്ക്‌ടോപ്പ്</translation>
 <translation id="253029298928638905">റീസ്റ്റാർട്ട് ചെയ്യുന്നു…</translation>
+<translation id="2533048460510040082">നിർദ്ദേശിക്കുന്ന സഹായ ഉള്ളടക്കം</translation>
 <translation id="2536159006530886390">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
 <translation id="38114475217616659">എല്ലാ ചരിത്രവും മായ്ക്കുക</translation>
 <translation id="3820172043799983114">പിൻ നമ്പർ തെറ്റാണ്.</translation>
+<translation id="3824259034819781947">ഫയലുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3856304145690230735">ബേസ് ജൈറോസ്‌കോപ്പ്</translation>
@@ -862,6 +868,7 @@
 <translation id="885701979325669005">സംഭരണം</translation>
 <translation id="8863170912498892583">ഡാർക്ക് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" എന്നതിനും മറ്റുമുള്ള <ph name="INTENT" /> നേടുക</translation>
+<translation id="8864415976656252616">നിർദ്ദേശിക്കുന്ന ഉള്ളടക്കമൊന്നും ഇല്ല. മികച്ച സഹായ ഉള്ളടക്കം കാണുക.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ഉപകരണം ഒരു ടാബ്‌ലെറ്റാണ്.</translation>
 <translation id="8881098542468797602">ടെസ്റ്റ് പൂർത്തിയായി</translation>

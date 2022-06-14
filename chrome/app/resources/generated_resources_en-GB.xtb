@@ -2265,7 +2265,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
 <translation id="3094141017404513551">This will separate your browsing from <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
-<translation id="3096047748133487529">Your organisation blocked this file because it has sensitive content</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentially harmful extension is off. You can also remove it.}other{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}</translation>
 <translation id="3101126716313987672">Dim light</translation>
 <translation id="3101709781009526431">Date and time</translation>
@@ -4693,7 +4692,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
 <translation id="5534304873398226603">Discard photo or video</translation>
-<translation id="5535941515421698170">Also remove your existing data from this device</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">The password that you entered was rejected by the server. Possible reasons include: The password is too short. The password must include numbers or symbols. The password must be different from previous passwords.</translation>
 <translation id="5541694225089836610">Action is disabled by your administrator</translation>
@@ -5719,7 +5717,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6555432686520421228">Remove all user accounts and reset your <ph name="IDS_SHORT_PRODUCT_NAME" /> device to be just like new.</translation>
 <translation id="6555604601707417276">Linux backup restored</translation>
 <translation id="6555810572223193255">Cleanup is currently unavailable</translation>
-<translation id="6556477848444788999">This PIN or password protects your data on this <ph name="DEVICE_TYPE" />, including any content that you stream from your phone.</translation>
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6556903358015358733">Theme and wallpaper</translation>
 <translation id="6557290421156335491">My shortcuts</translation>

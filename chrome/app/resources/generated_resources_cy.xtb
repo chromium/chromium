@@ -2264,7 +2264,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3093714882666365141">Peidio â chaniatáu i wefannau osod trinwyr taliadau</translation>
 <translation id="3094141017404513551">Bydd hyn yn gwahanu'ch pori oddi wrth <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Caiff nodau tudalen, cyfrineiriau a data pori eraill eu cysoni â'r prif gyfrif.</translation>
-<translation id="3096047748133487529">Gwnaeth eich sefydliad rwystro'r ffeil hon oherwydd bod ganddi gynnwys sensitif</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Mae 1 estyniad a allai fod yn niweidiol wedi'i ddiffodd. Gallwch hefyd ei dynnu.}zero{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}two{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}few{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}many{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}other{Mae {NUM_EXTENSIONS} estyniad a allai fod yn niweidiol wedi'u diffodd. Gallwch hefyd eu tynnu.}}</translation>
 <translation id="3101126716313987672">Golau gwan</translation>
 <translation id="3101709781009526431">Dyddiad ac amser</translation>
@@ -4685,7 +4684,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5532223876348815659">Ymhobman</translation>
 <translation id="5533001281916885985">Mae <ph name="SITE_NAME" /> eisiau</translation>
 <translation id="5534304873398226603">Cael gwared ar lun neu fideo</translation>
-<translation id="5535941515421698170">Tynnu'ch data presennol o'r ddyfais hon hefyd</translation>
 <translation id="5537725057119320332">Castio</translation>
 <translation id="5539221284352502426">Gwrthodwyd y cyfrinair a nodoch gan y gweinydd. Mae rhesymau posib yn cynnwys: Mae'r cyfrinair yn rhy fyr. Rhaid i'r cyfrinair gynnwys rhifau neu symbolau. Rhaid i'r cyfrinair fod yn wahanol i gyfrineiriau blaenorol.</translation>
 <translation id="5541694225089836610">Mae'r weithred hon wedi'i hanalluogi gan eich gweinyddwr</translation>
@@ -5710,7 +5708,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6555432686520421228">Tynnwch yr holl gyfrifon defnyddwyr ac ailosodwch eich dyfais <ph name="IDS_SHORT_PRODUCT_NAME" /> i fod yn union fel newydd.</translation>
 <translation id="6555604601707417276">Adferwyd copi wrth gefn Linux</translation>
 <translation id="6555810572223193255">Nid yw glanhau ar gael ar hyn o bryd</translation>
-<translation id="6556477848444788999">Mae'r PIN neu'r cyfrinair hwn yn amddiffyn eich data ar <ph name="DEVICE_TYPE" />, gan gynnwys unrhyw gynnwys rydych yn ei ffrydio o'ch ffôn.</translation>
 <translation id="6556866813142980365">Ail-wneud</translation>
 <translation id="6556903358015358733">Thema a Phapur Wal</translation>
 <translation id="6557290421156335491">Fy llwybrau byr</translation>

@@ -2237,7 +2237,6 @@
 <translation id="3093714882666365141">不允许网站安装付款处理程序</translation>
 <translation id="3094141017404513551">这会将您的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来</translation>
 <translation id="3095871294753148861">书签、密码和其他浏览器数据会与主帐号同步。</translation>
-<translation id="3096047748133487529">贵组织屏蔽了此文件，因为它包含敏感内容</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{关闭了 1 个可能有害的扩展程序。您也可移除它。}other{关闭了 {NUM_EXTENSIONS} 个可能有害的扩展程序。您也可移除它们。}}</translation>
 <translation id="3101126716313987672">暗光</translation>
 <translation id="3101709781009526431">日期和时间</translation>
@@ -4654,7 +4653,6 @@
 <translation id="5532223876348815659">全局</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />想要</translation>
 <translation id="5534304873398226603">舍弃照片或视频</translation>
-<translation id="5535941515421698170">一并从这台设备中移除您的现有数据</translation>
 <translation id="5537725057119320332">投射</translation>
 <translation id="5539221284352502426">您输入的密码被服务器拒绝了。可能的原因包括：此密码太短。此密码必须包含数字或符号，且必须不同于旧密码。</translation>
 <translation id="5541694225089836610">操作已被您的管理员禁止执行</translation>
@@ -5676,7 +5674,6 @@
 <translation id="6555432686520421228">删除所有用户帐号并重置您的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设备，使其焕然一新。</translation>
 <translation id="6555604601707417276">已恢复 Linux 备份</translation>
 <translation id="6555810572223193255">目前无法进行清理</translation>
-<translation id="6556477848444788999">该 PIN 码或密码会保护您在此 <ph name="DEVICE_TYPE" /> 上的数据，包括您从手机流式传输的所有内容。</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主题背景和壁纸</translation>
 <translation id="6557290421156335491">我的快捷方式</translation>

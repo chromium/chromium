@@ -290,6 +290,7 @@
 <translation id="3621202678540785336">Ingång</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3643810137582748570">Hoppa över kalibrering</translation>
+<translation id="3651050199673793219">Välj en temperaturenhet</translation>
 <translation id="3678765385266369662">Välj hur du vill stänga av skrivskyddet</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
@@ -307,6 +308,7 @@
 <translation id="3856304145690230735">Gyroskop i bas</translation>
 <translation id="385832974417157471">Använd Powerwash på enheten innan du stänger av den. Om enheten har ett lock väntar du tills Powerwash har slutförts innan du stänger locket. Det kan ta upp till en minut för Powerwash att slutföras.</translation>
 <translation id="3858860766373142691">Namn</translation>
+<translation id="3862598938296403232">Beskrivning krävs</translation>
 <translation id="3865414814144988605">Upplösning</translation>
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
@@ -683,6 +685,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
+<translation id="7154020516215182599">Ge feedback eller beskriv problemet. Om möjligt inkluderar du stegen för att återskapa problemet.</translation>
 <translation id="7155171745945906037">Befintligt foto från kamera eller fil</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Profilbild</translation>

@@ -2249,7 +2249,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3093714882666365141">Niet toestaan dat sites betalingshandlers installeren</translation>
 <translation id="3094141017404513551">Hierdoor worden je browsegegevens gescheiden van <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmarks, wachtwoorden en andere browsegegevens worden gesynchroniseerd met het primaire account.</translation>
-<translation id="3096047748133487529">Je organisatie heeft dit bestand geblokkeerd omdat het gevoelige content bevat</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentieel schadelijke extensie is uitgezet. Je kunt deze ook verwijderen.}other{{NUM_EXTENSIONS} potentieel schadelijke extensies zijn uitgezet. Je kunt ze ook verwijderen.}}</translation>
 <translation id="3101126716313987672">Licht dimmen</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
@@ -2623,6 +2622,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> kan de volgende bestanden bekijken</translation>
 <translation id="3484273680291419129">Schadelijke software verwijderen...</translation>
 <translation id="3484869148456018791">Nieuw certificaat ophalen</translation>
+<translation id="3486950712960783074">Je reis</translation>
 <translation id="3487007233252413104">anonieme functie</translation>
 <translation id="3490695139702884919">Downloaden… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Het account van je kind is niet ingesteld voor ouderlijk toezicht in Family Link. Je kunt ouderlijk toezicht toevoegen nadat je klaar bent met instellen. In de app Ontdekken vind je meer informatie over ouderlijk toezicht.</translation>
@@ -2909,7 +2909,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3772046291955677288">Ik heb de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Chrome en Chrome OS<ph name="END_LINK2" /> gelezen en ga ermee akkoord.</translation>
 <translation id="3774166835015494435">Recente foto's en meldingen</translation>
 <translation id="3775432569830822555">SSL-servercertificaat</translation>
-<translation id="3775705724665058594">Verzenden naar je apparaten</translation>
+<translation id="3775705724665058594">Naar je apparaten sturen</translation>
 <translation id="3776508619697147021">Sites kunnen vragen of ze automatisch meerdere bestanden mogen downloaden</translation>
 <translation id="3776796446459804932">Deze extensie schendt het beleid voor de Chrome Web Store.</translation>
 <translation id="3777483481409781352">Kan mobiel apparaat niet activeren</translation>
@@ -2935,6 +2935,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3797739167230984533">Je <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> wordt beheerd<ph name="END_LINK" /> door je organisatie</translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> door&amp;zoeken op '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="3798449238516105146">Versie</translation>
+<translation id="3798632811625902122">Bluetooth-apparaat <ph name="DEVICE" /> wil rechten om te koppelen.</translation>
 <translation id="3799128412641261490">Instellingen voor 'Toegang via schakelaar'</translation>
 <translation id="3800806661949714323">Alles bekijken (aanbevolen)</translation>
 <translation id="3800828618615365228">Aanvullende voorwaarden van Google Chrome en Chrome OS</translation>
@@ -4672,7 +4673,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5532223876348815659">Algemeen</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wil het volgende</translation>
 <translation id="5534304873398226603">Foto of video verwijderen</translation>
-<translation id="5535941515421698170">Ook je bestaande gegevens verwijderen van dit apparaat</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Het wachtwoord dat je hebt opgegeven, is afgewezen door de server. Mogelijke redenen zijn: Het wachtwoord is te kort. Het wachtwoord moet cijfers of symbolen bevatten. Het wachtwoord moet verschillen van eerdere wachtwoorden.</translation>
 <translation id="5541694225089836610">Actie is door de beheerder uitgezet</translation>
@@ -4920,6 +4920,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5792295754950501287">Meer acties voor <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Tik op de aan/uit-knop</translation>
 <translation id="5793339252089865437">Als je de update via je mobiele netwerk downloadt, kan dit tot extra kosten leiden.</translation>
+<translation id="5793420564274426163">Koppelingsbevestiging</translation>
 <translation id="5794034487966529952">Bureau <ph name="DESK_TITLE" /> heeft <ph name="NUM_BROWSERS" /> browservensters open</translation>
 <translation id="5794414402486823030">Altijd openen met systeemviewer</translation>
 <translation id="5794700615121138172">Gedeelde mappen voor Linux</translation>
@@ -5693,7 +5694,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6555432686520421228">Alle gebruikersaccounts verwijderen en je <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat opnieuw instellen.</translation>
 <translation id="6555604601707417276">Linux-back-up teruggezet</translation>
 <translation id="6555810572223193255">Opschonen is momenteel niet beschikbaar</translation>
-<translation id="6556477848444788999">Je beschermt je gegevens op deze <ph name="DEVICE_TYPE" /> met een pincode of wachtwoord, waaronder content die je streamt vanaf je telefoon.</translation>
 <translation id="6556866813142980365">Opnieuw</translation>
 <translation id="6556903358015358733">Thema en achtergrond</translation>
 <translation id="6557290421156335491">Mijn snelkoppelingen</translation>
@@ -7412,12 +7412,13 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8242426110754782860">Doorgaan</translation>
 <translation id="8243948765190375130">De kwaliteit van media kan minder worden</translation>
 <translation id="8244514732452879619">Bijna tijd om het licht uit te doen</translation>
+<translation id="8245361042748627813">Deze snelkoppeling is gewijzigd. Gebruik <ph name="NEW_SHORTCUT_KEY" /> om af te drukken via het systeemdialoogvenster.</translation>
 <translation id="8246776524656196770">Bescherm je beveiligingssleutel met een pincode</translation>
 <translation id="8248050856337841185">&amp;Plakken</translation>
 <translation id="8248381369318572865">Toegang krijgen tot je microfoon en je spraak analyseren</translation>
 <translation id="8248887045858762645">Chrome-tip</translation>
 <translation id="8249048954461686687">OEM-map</translation>
-<translation id="8249615410597138718">Verzenden naar je apparaten</translation>
+<translation id="8249615410597138718">Naar je apparaten sturen</translation>
 <translation id="8249672078237421304">Aanbieden om pagina's te vertalen die in een voor jou onbekende taal zijn</translation>
 <translation id="8250210000648910632">Geen opslagruimte</translation>
 <translation id="8251441930213048644">Nu vernieuwen</translation>
@@ -7716,6 +7717,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8561565784790166472">Ga voorzichtig verder</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Je probeert een oudere versie van de app te installeren.</translation>
+<translation id="8569673829373920831">Meer over <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Geen bestemmingen gevonden</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8571687764447439720">Kerberos-ticket toevoegen</translation>

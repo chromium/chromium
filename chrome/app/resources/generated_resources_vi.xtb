@@ -2265,7 +2265,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3093714882666365141">Không cho phép trang web cài đặt trình xử lý thanh toán</translation>
 <translation id="3094141017404513551">Thao tác này sẽ tách biệt hoạt động duyệt web của bạn với <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Dấu trang, mật khẩu và dữ liệu khác của trình duyệt sẽ được đồng bộ hóa với tài khoản chính.</translation>
-<translation id="3096047748133487529">Tổ chức của bạn đã chặn tệp này vì tệp này có nội dung nhạy cảm</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Đã tắt 1 tiện ích có thể gây hại. Bạn cũng có thể xóa tiện ích này.}other{Đã tắt {NUM_EXTENSIONS} tiện ích có thể gây hại. Bạn cũng có thể xóa các tiện ích này.}}</translation>
 <translation id="3101126716313987672">Ánh sáng mờ</translation>
 <translation id="3101709781009526431">Ngày và giờ</translation>
@@ -4693,7 +4692,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5532223876348815659">Toàn cầu</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> muốn</translation>
 <translation id="5534304873398226603">Hủy ảnh hoặc video</translation>
-<translation id="5535941515421698170">Đồng thời, xóa dữ liệu hiện có của bạn khỏi thiết bị này</translation>
 <translation id="5537725057119320332">Truyền</translation>
 <translation id="5539221284352502426">Mật khẩu bạn nhập đã bị máy chủ từ chối. Các lý do có thể bao gồm: Mật khẩu quá ngắn. Mật khẩu phải chứa chữ số hoặc biểu tượng. Mật khẩu phải khác với mật khẩu cũ.</translation>
 <translation id="5541694225089836610">Quản trị viên đã vô hiệu hóa thao tác này</translation>
@@ -5719,7 +5717,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6555432686520421228">Xóa tất cả tài khoản người dùng và khởi động lại thiết bị <ph name="IDS_SHORT_PRODUCT_NAME" /> của bạn như mới.</translation>
 <translation id="6555604601707417276">Đã khôi phục bản sao lưu Linux</translation>
 <translation id="6555810572223193255">Tính năng dọn dẹp hiện không khả dụng</translation>
-<translation id="6556477848444788999">Mã PIN hoặc mật khẩu này bảo vệ dữ liệu của bạn trên thiết bị <ph name="DEVICE_TYPE" />, bao gồm mọi nội dung bạn phát trực tuyến trên điện thoại.</translation>
 <translation id="6556866813142980365">Làm lại</translation>
 <translation id="6556903358015358733">Giao diện và hình nền</translation>
 <translation id="6557290421156335491">Lối tắt của tôi</translation>

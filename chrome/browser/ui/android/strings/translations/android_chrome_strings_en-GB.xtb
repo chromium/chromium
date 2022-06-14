@@ -207,9 +207,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2096012225669085171">Sync and personalise across devices</translation>
 <translation id="2100273922101894616">Auto Sign-in</translation>
 <translation id="2100314319871056947">Try sharing the text in smaller chunks</translation>
-<translation id="2109711654079915747">Learn about topics on websites without leaving the page. Touch to search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results and other details.
-
-Tap any word to search. To refine your search, touch and hold to select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
 <translation id="2111511281910874386">Go to page</translation>
 <translation id="2122601567107267586">Could not open app</translation>
 <translation id="2126426811489709554">Powered by Chrome</translation>
@@ -265,9 +262,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2450083983707403292">Do you want to start downloading <ph name="FILE_NAME" /> again?</translation>
-<translation id="2450907520913474542">Learn about topics on websites without leaving the page. Touch to search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results and other details.
-
-Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2459390580524506445">Enhanced voice search</translation>
 <translation id="2461822463642141190">Current</translation>
@@ -723,6 +717,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4912413785358399818">Move tab</translation>
 <translation id="4913169188695071480">Stop refreshing</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# Page}other{# Pages}}</translation>
+<translation id="492284538114688557">Price drop spotted</translation>
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.</translation>
 <translation id="4932247056774066048">Because you're signing out of an account managed by <ph name="DOMAIN_NAME" />, your Chrome data will be deleted from this device. It will remain in your Google account.</translation>
@@ -1332,7 +1327,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>
-<translation id="8137558756159375272">Touch to Search sends the selected word and the current page as context to Google Search. You can turn it off in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">Assistant will appear when it detects that it can help you on supported websites</translation>
 <translation id="8156139159503939589">What languages do you read?</translation>
 <translation id="8168435359814927499">Content</translation>
@@ -1362,6 +1356,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="834313815369870491">Never translate sites</translation>
+<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="8352996530981010042">Can’t download reactions. Try again.</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
@@ -1435,7 +1430,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8646467750715887511">Pages load only after you open them.</translation>
 <translation id="8655129584991699539">You can clear the data in Chrome Settings</translation>
-<translation id="8656747343598256512">Sign in to this site and Chrome with your Google Account. You can turn on sync later.</translation>
 <translation id="8659579665266920523">How to search with Chrome</translation>
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664215986015753476">Use Chrome your way</translation>
@@ -1475,6 +1469,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8856607253650333758">Get descriptions</translation>
 <translation id="8873817150012960745">Tap here to start</translation>
 <translation id="8881973373982641723">Clears history, including in the search box.</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
 <translation id="889338405075704026">Go to Chrome settings</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8906502871739599113">Reaction duplicated</translation>

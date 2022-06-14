@@ -188,6 +188,7 @@
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1174073918202301297">Դյուրանցումն ավելացվեց</translation>
 <translation id="1174366174291287894">Chrome-ը կզգուշացնի ձեզ, եթե միացումը վտանգավոր լինի</translation>
+<translation id="1174391930667737831">Գաղտնիության հանգույց</translation>
 <translation id="117445914942805388">Այցելությունների պատմությունը բոլոր համաժամացված սարքերից և Google հաշվից ջնջելու համար <ph name="BEGIN_LINK" />անցեք համաժամացման կարգավորումներ<ph name="END_LINK" />:</translation>
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1176471985365269981">Չի թույլատրվում ձեր սարքում խմբագրել ֆայլեր և պանակներ</translation>
@@ -2246,7 +2247,6 @@
 <translation id="3093714882666365141">Թույլ չտալ կայքերին տեղադրել վճարումների մշակիչներ</translation>
 <translation id="3094141017404513551">Դիտարկիչում ձեր աշխատանքը կառանձնացվի <ph name="EXISTING_USER" /> հաշվից</translation>
 <translation id="3095871294753148861">Էջանիշները, գաղտնաբառերն ու դիտարկիչի մյուս տվյալները համաժամացված են հիմնական հաշվի հետ։</translation>
-<translation id="3096047748133487529">Ձեր կազմակերպությունն արգելափակել է այս ֆայլը, քանի որ այն պարունակում է խիստ անձնական տվյալներ</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Անջատվել է 1 վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել այն։}one{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}other{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}}</translation>
 <translation id="3101126716313987672">Թույլ լուսավորություն</translation>
 <translation id="3101709781009526431">Ամսաթիվ և ժամ</translation>
@@ -2619,6 +2619,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> կայքը կարող է դիտել հետևյալ ֆայլերը</translation>
 <translation id="3484273680291419129">Վնասարար ծրագրի հեռացում...</translation>
 <translation id="3484869148456018791">Ստանալ նոր վկայագիր</translation>
+<translation id="3486950712960783074">Ձեր ուղևորությունը</translation>
 <translation id="3487007233252413104">անանուն գործառույթ</translation>
 <translation id="3490695139702884919">Ներբեռնում… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Ձեր երեխայի հաշվում կարգավորված չէ Family Link-ի ծնողական վերահսկողությունը։ Այն կարող եք ավելացնել՝ կարգավորումն ավարտելուց հետո։ Ծնողական վերահսկողության մասին տեղեկությունները դիտեք Հնարավորություններ հավելվածում։</translation>
@@ -2929,6 +2930,7 @@
 <translation id="3797739167230984533">Ձեր <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> սարքը կառավարվում է<ph name="END_LINK" /> ձեր կազմակերպության կողմից</translation>
 <translation id="3797900183766075808">&amp;Որոնել «<ph name="SEARCH_TERMS" />»-ը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3798449238516105146">Տարբերակ</translation>
+<translation id="3798632811625902122">«<ph name="DEVICE" />» Bluetooth սարքը զուգակցման թույլտվություն է խնդրում։</translation>
 <translation id="3799128412641261490">Switch Access-ի կարգավորումներ</translation>
 <translation id="3800806661949714323">Ցույց տալ բոլորը (հանձնարարելի)</translation>
 <translation id="3800828618615365228">Google Chrome-ի և ChromeOS-ի լրացուցիչ պայմաններ</translation>
@@ -4667,7 +4669,6 @@
 <translation id="5532223876348815659">Համընդհանուր</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />․ անհրաժեշտ է հետևյալ թույլտվությունը՝</translation>
 <translation id="5534304873398226603">Հեռացնել լուսանկարը կամ տեսանյութը</translation>
-<translation id="5535941515421698170">Սարքից հեռացնել ընթացիկ տվյալները</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Ձեր մուտքագրած գաղտնաբառը չի ընդունվում սերվերի կողմից: Հնարավոր պատճառներն են՝ գաղտնաբառը չափազանց կարճ է, գաղտնաբառը պետք է պարունակի թվեր կամ նշաններ, գաղտնաբառը պետք է տարբեր լինի նախորդ գաղտնաբառերից:</translation>
 <translation id="5541694225089836610">Ձեր ադմինիստրատորն անջատել է այս գործողությունը</translation>
@@ -4915,6 +4916,7 @@
 <translation id="5792295754950501287">«<ph name="CARD_DESCRIPTION" />» քարտին առնչվող այլ գործողություններ</translation>
 <translation id="5792728279623964091">Հպեք միացնելու/անջատելու կոճակին</translation>
 <translation id="5793339252089865437">Բջջային ինտերնետով թարմացումների ներբեռնումը կարող է հավելյալ ծախսեր առաջացնել։</translation>
+<translation id="5793420564274426163">Զուգակցման հաստատում</translation>
 <translation id="5794034487966529952">«<ph name="DESK_TITLE" />» աշխատասեղանում բացված է դիտարկիչի<ph name="NUM_BROWSERS" /> պատուհան</translation>
 <translation id="5794414402486823030">Միշտ բացել համակարգի դիտման ծրագրի միջոցով</translation>
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
@@ -5689,7 +5691,6 @@
 <translation id="6555432686520421228">Հեռացնել բոլոր օգտատերերի հաշիվները և վերականգնել <ph name="IDS_SHORT_PRODUCT_NAME" /> սարքի գործարանային կարգավորումները:</translation>
 <translation id="6555604601707417276">Լինուքսի պահուստավորված տվյալները վերականգնվեցին</translation>
 <translation id="6555810572223193255">Մաքրիչը ներկայումս հասանելի չէ</translation>
-<translation id="6556477848444788999">Այս PIN կոդը կամ գաղտնաբառը կպաշտպանի ձեր տվյալները <ph name="DEVICE_TYPE" /> սարքում, այդ թվում՝ բովանդակությունը, որը դուք հեռարձակում եք ձեր հեռախոսից։</translation>
 <translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6556903358015358733">Թեմա և պաստառ</translation>
 <translation id="6557290421156335491">Իմ դյուրանցումները</translation>
@@ -7409,6 +7410,7 @@
 <translation id="8242426110754782860">Շարունակել</translation>
 <translation id="8243948765190375130">Մեդիա բովանդակության որակը կարող է նվազել</translation>
 <translation id="8244514732452879619">Շուտով քնելու ժամն է</translation>
+<translation id="8245361042748627813">Այս դյուրանցումը փոխվել է։ Օգտագործեք <ph name="NEW_SHORTCUT_KEY" /> դյուրանցումը՝ համակարգի երկխոսության պատուհանի միջոցով տպելու համար։</translation>
 <translation id="8246776524656196770">Պաշտպանեք անվտանգության բանալին PIN կոդի միջոցով։</translation>
 <translation id="8248050856337841185">&amp;Տեղադրել</translation>
 <translation id="8248381369318572865">Օգտագործել խոսափողը և վերլուծել ձեր խոսքը</translation>
@@ -7713,6 +7715,7 @@
 <translation id="8561565784790166472">Զգույշ եղեք</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Հավելվածի ավելի հին տարբերակի անցնելու փորձ:</translation>
+<translation id="8569673829373920831">Իմանալ ավելին <ph name="APP_NAME" /> հավելվածի մասին</translation>
 <translation id="8569682776816196752">Վերջնակետեր չեն գտնվել</translation>
 <translation id="8571213806525832805">Վերջին 4 շաբաթվա</translation>
 <translation id="8571687764447439720">Ավելացնել Kerberos տոմս</translation>

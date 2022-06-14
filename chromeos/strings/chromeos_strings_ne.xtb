@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">क्याप्टिभ पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिभिटी</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
+<translation id="2011174342667534258">SDK को संस्करण:</translation>
 <translation id="2016697457005847575">समस्या निवारण गर्ने चरणहरू पालना गरी हेर्नुहोस्</translation>
 <translation id="2016848882344942759">--श्वेत लेबल छैन--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
 <translation id="2271469253353559191">अँध्यारो मोडको समयतालिका</translation>
 <translation id="2275586345903859204">मर्मत गर्ने प्रक्रिया पूरा भयो</translation>
+<translation id="2276999893457278469">मद्दतसम्बन्धी मुख्य सामग्री</translation>
 <translation id="2287186687001756809">कुनै पनि फोटो छैन। तपाईं फोटो हाल्न चाहनुहुन्छ भने <ph name="LINK" /> मा जानुहोस्</translation>
 <translation id="2294753434210277304">डाउनलोड गरिएको Chromebook Recovery Utility इमेज भएको USB ड्राइभ वा SD कार्ड जस्ता बाह्य भण्डारण हाल्नुहोस्</translation>
 <translation id="2307344026739914387">हालको किपेयर प्रयोग गर्नुहोस्</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2526590354069164005">डेस्कटप</translation>
 <translation id="253029298928638905">रिस्टार्ट गरिँदै छ...</translation>
+<translation id="2533048460510040082">मद्दतसम्बन्धी सिफारिस गरिएको सामग्री</translation>
 <translation id="2536159006530886390">इन्टरनेटमा कनेक्ट हुन सकेन।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
@@ -303,6 +306,7 @@
 <translation id="3784455785234192852">लक गर्नुहोस्</translation>
 <translation id="38114475217616659">सबै इतिहास मेटाउनुहोस्</translation>
 <translation id="3820172043799983114">अमान्य PIN।</translation>
+<translation id="3824259034819781947">फाइलहरू एट्याच गर्नुहोस्</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3856304145690230735">बेस जाइरोस्कप</translation>
@@ -862,6 +866,7 @@
 <translation id="885701979325669005">भण्डारण</translation>
 <translation id="8863170912498892583">अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" को <ph name="INTENT" /> र अन्य कुरा हेर्नुहोस्</translation>
+<translation id="8864415976656252616">सिफारिस गरिएको सामग्री छैन। मद्दतसम्बन्धी मुख्य सामग्री हेर्नुहोस्।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>

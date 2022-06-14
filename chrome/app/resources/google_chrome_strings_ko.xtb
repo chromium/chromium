@@ -229,7 +229,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5727531838415286053">Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침됩니다.</translation>
 <translation id="5736850870166430177">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="5756509061973259733">이 계정을 사용하는 Chrome 프로필이 기기에 이미 존재합니다.</translation>
-<translation id="5763280521700030406">파일 크기가 너무 커서 보안 확인을 실행할 수 없기 때문에 Chrome에서 파일을 차단했습니다. 50MB 이하의 파일을 사용해 다시 시도해 보세요</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="5867197326698922595">Chrome에서 비밀번호를 수정하려고 합니다.</translation>
@@ -338,7 +337,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="840084489713044809">Chrome에서 비밀번호를 내보내려고 합니다.</translation>
 <translation id="8416347857511542594">Chrome의 광고 개인 최적화에 관해 자세히 알아보기</translation>
 <translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
-<translation id="8421734018304082652">파일이 암호화되어 있기 때문에 Chrome에서 파일을 차단했습니다. 파일 소유자에게 복호화를 요청하세요</translation>
 <translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8451192282033883849">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>

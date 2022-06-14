@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USBમાં સાચવો</translation>
 <translation id="1468664791493211953">ઑફરો</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
+<translation id="147809995039451286">અપડેટ ડાઉનલોડ કરી શકાઈ નથી</translation>
 <translation id="1478594628797167447">સ્કૅનર</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> માટે ફર્મવેયર અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> આ વપરાશકર્તાને મેનેજ કરે છે તથા સેટિંગ અને વપરાશકર્તાની પ્રવૃત્તિને દૂરથી મેનેજ અને તેનું નિરીક્ષણ કરે એવું બની શકે.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">સેટિંગમાં ખોલો</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" />ની છબી</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
+<translation id="2447969267935997922">ઇન્સ્ટૉલ કરવાનું પૂરું થયું. હવે તમે તમારી USB ડ્રાઇવ કે SD કાર્ડ કાઢી નાખી શકો છો.</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2480034874476596812">મેન્યુઅલ રીતે બંધ કરો</translation>
@@ -290,6 +292,7 @@
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3643810137582748570">કેલિબ્રેશન છોડો</translation>
+<translation id="3651050199673793219">તાપમાનનો એકમ પસંદ કરો</translation>
 <translation id="3678765385266369662">તમે Write Protect કેવી રીતે બંધ કરવા માંગો છો તે પસંદ કરો</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
@@ -307,6 +310,7 @@
 <translation id="3856304145690230735">બેઝ જાઇરોસ્કોપ</translation>
 <translation id="385832974417157471">શટ ડાઉન કરતા પહેલાં, તમારા ડિવાઇસને પાવરવોશ કરો. જો તમારું ડિવાઇસ ઢાંકણ ધરાવતું હોય, તો ઢાંકણ બંધ કરતા પહેલાં પાવરવોશ પૂર્ણ થાય ત્યાં સુધી રાહ જુઓ. પાવરવોશ પૂર્ણ થવામાં એક મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="3858860766373142691">નામ</translation>
+<translation id="3862598938296403232">વર્ણન આવશ્યક છે</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
 <translation id="3866249974567520381">વર્ણન</translation>
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
@@ -682,6 +686,7 @@
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
+<translation id="7154020516215182599">તમારી સમસ્યાનું વર્ણન કરો અથવા તમારો પ્રતિસાદ શેર કરો. જો શક્ય હોય, તો તમારી સમસ્યા વધુ સારી રીતે સમજી શકાય તે માટે તબક્કાવાર જણાવો.</translation>
 <translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">પ્રોફાઇલ ચિત્ર</translation>

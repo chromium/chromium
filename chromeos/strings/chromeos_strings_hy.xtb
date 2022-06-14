@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Պահել USB կրիչի վրա</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1476467821656042872">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս կարող է տեսնել ձեր գործողությունները։</translation>
+<translation id="147809995039451286">Չհաջողվեց ներբեռնել թարմացումը</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրաշարը թարմացվում է</translation>
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Բացել կարգավորումներում</translation>
 <translation id="2421798028054665193">Պատկեր <ph name="CURRENT_PAGE" />՝ <ph name="TOTAL_PAGES" />-ից</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
+<translation id="2447969267935997922">Տեղադրումն ավարտված է։ Այժմ դուք կարող եք հեռացնել ձեր USB կրիչը կամ SD քարտը։</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2480034874476596812">Անջատել ձեռքով</translation>
@@ -290,6 +292,7 @@
 <translation id="3621202678540785336">Ներածում</translation>
 <translation id="3632579075709132555">Գաղտնիության էկրանի փոխանջատիչ</translation>
 <translation id="3643810137582748570">Բաց թողնել չափաբերումը</translation>
+<translation id="3651050199673793219">Ընտրել ջերմաստիճանի միավոր</translation>
 <translation id="3678765385266369662">Ընտրեք՝ ինչպես եք ուզում անջատել Write Protect-ը</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> փորձարկում</translation>
 <translation id="370665806235115550">Բեռնում…</translation>
@@ -307,6 +310,7 @@
 <translation id="3856304145690230735">Դիրքորոշիչ (հիմքի)</translation>
 <translation id="385832974417157471">Սարքն անջատելուց առաջ գործարկեք Powerwash գործառույթը։ Եթե ձեր սարքը կափարիչ ունի, մի փակեք այն, մինչև Powerwash-ի աշխատանքն ավարտվի։ Այդ գործընթացը կարող է մեկ րոպե տևել։</translation>
 <translation id="3858860766373142691">Անուն</translation>
+<translation id="3862598938296403232">Նկարագրությունը պարտադիր է</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3866249974567520381">Նկարագրություն</translation>
 <translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
@@ -683,6 +687,7 @@
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
+<translation id="7154020516215182599">Կիսվեք ձեր կարծիքով կամ նկարագրեք խնդիրը։ Հնարավորության դեպքում ավելացրեք քայլեր՝ խնդիրը վերարտադրելու համար։</translation>
 <translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
 <translation id="7170236477717446850">Պրոֆիլի նկար</translation>

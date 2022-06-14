@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Uložiť na USB</translation>
 <translation id="1468664791493211953">Ponuky</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> spravuje toto zariadenie a môže monitorovať vašu aktivitu.</translation>
+<translation id="147809995039451286">Aktualizáciu sa nepodarilo stiahnuť</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1491076385728777984">Aktualizuje sa firmvér zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Prihlasovací portál</translation>
 <translation id="2006864819935886708">Pripojiteľnosť</translation>
 <translation id="2008685064673031089">Vyhľadávanie prvočísel</translation>
+<translation id="2011174342667534258">Verzia súpravy SDK:</translation>
 <translation id="2016697457005847575">Vyskúšať kroky na riešenie problémov</translation>
 <translation id="2016848882344942759">--žiadny štítok White--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Stav aktivácie</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2275586345903859204">Oprava je dokončená</translation>
+<translation id="2276999893457278469">Najlepší pomocný obsah</translation>
 <translation id="2287186687001756809">K dispozícii nie je žiadny obrázok. Ak chcete pridať fotky, prejdite na <ph name="LINK" />.</translation>
 <translation id="2294753434210277304">Vložte externé úložisko, napríklad kľúč USB alebo SD kartu, so stiahnutým obrazom z Nástroja na obnovenie Chromebooku</translation>
 <translation id="2307344026739914387">Použitie aktuálneho páru kľúčov</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Otvoriť v nastaveniach</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. z <ph name="TOTAL_PAGES" /> obrázkov</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
+<translation id="2447969267935997922">Inštalácia je dokončená. Kľúč USB alebo SD kartu môžete vybrať.</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
 <translation id="2480034874476596812">Manuálnym vypnutím</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Skenovať</translation>
 <translation id="2526590354069164005">Pracovná plocha</translation>
 <translation id="253029298928638905">Reštartuje sa…</translation>
+<translation id="2533048460510040082">Navrhovaný pomocný obsah</translation>
 <translation id="2536159006530886390">Nedá sa pripojiť k internetu.</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Ak chcete nastaviť sieť, prejdite do Nastavení</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Uzamknúť</translation>
 <translation id="38114475217616659">Vymazať celú históriu</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
+<translation id="3824259034819781947">Priložiť súbory</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3856304145690230735">Gyroskop v základni</translation>
@@ -863,6 +869,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="885701979325669005">Úložisko</translation>
 <translation id="8863170912498892583">Zapnúť tmavý motív</translation>
 <translation id="8863888432376731307">Získajte <ph name="INTENT" /> pre dopyt <ph name="QUERY" /> a ešte viac</translation>
+<translation id="8864415976656252616">Žiadny navrhovaný obsah. Pozrite si najlepší pomocný obsah.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zariadenie je tablet.</translation>
 <translation id="8881098542468797602">Test bol úspešný</translation>

@@ -290,6 +290,7 @@
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3643810137582748570">דילוג על הכיול</translation>
+<translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
 <translation id="3678765385266369662">‏בחירת הדרך לכיבוי Write Protect</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
@@ -307,6 +308,7 @@
 <translation id="3856304145690230735">ג'ירוסקופ — בסיס</translation>
 <translation id="385832974417157471">‏לפני הכיבוי, צריך לבצע Powerwash במכשיר. אם למכשיר יש מכסה, צריך לחכות לסיום ה-Powerwash לפני שסוגרים את המכסה. פעולת ה-Powerwash עשויה להימשך כדקה.</translation>
 <translation id="3858860766373142691">שם</translation>
+<translation id="3862598938296403232">יש להזין תיאור</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="3866249974567520381">תיאור</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
@@ -683,6 +685,7 @@
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
+<translation id="7154020516215182599">נשמח לקבל ממך משוב או תיאור של הבעיה. אם אפשר, יש לכלול את השלבים לשחזור הבעיה.</translation>
 <translation id="7155171745945906037">תמונה קיימת ממצלמה או מקובץ</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7170236477717446850">תמונת פרופיל</translation>

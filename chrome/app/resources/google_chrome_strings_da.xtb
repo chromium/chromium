@@ -221,7 +221,6 @@
 <translation id="5727531838415286053">Hvis Chrome har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome dine interesser en gang om måneden. Interesserne opdateres, medmindre du fjerner dem.</translation>
 <translation id="5736850870166430177">Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing</translation>
 <translation id="5756509061973259733">Der findes allerede en Chrome-profil med denne konto på enheden</translation>
-<translation id="5763280521700030406">Chrome har blokeret denne fil, fordi den er for stor til, at der kan gennemføres et sikkerhedstjek. Prøv igen med filer på op til 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome kunne ikke startes. Prøv igen.</translation>
 <translation id="5867197326698922595">Google Chrome forsøger at redigere adgangskoder.</translation>
@@ -330,7 +329,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="840084489713044809">Google Chrome anmoder om at eksportere dine adgangskoder.</translation>
 <translation id="8416347857511542594">Få flere oplysninger om annoncetilpasning i Chrome</translation>
 <translation id="8418845734693287262">Chrome OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
-<translation id="8421734018304082652">Chrome har blokeret denne fil, fordi den er krypteret. Bed ejeren af filen om at dekryptere den</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8451192282033883849">Din konto administreres af <ph name="MANAGER_NAME" />. Din administrator kan se og redigere denne Chrome-browserprofil og dens data som f.eks. bogmærker, historik og adgangskoder.</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>

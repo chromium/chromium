@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">キャプティブ ポータル</translation>
 <translation id="2006864819935886708">接続</translation>
 <translation id="2008685064673031089">Prime サーチ</translation>
+<translation id="2011174342667534258">SDK のバージョン:</translation>
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="2016848882344942759">--ホワイトラベルなし--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2271469253353559191">ダークモードのスケジュールを設定する</translation>
 <translation id="2275586345903859204">修復が完了しました</translation>
+<translation id="2276999893457278469">関連するヘルプ コンテンツ</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
 <translation id="2294753434210277304">Chromebook リカバリ ユーティリティ イメージをダウンロードした USB ドライブや SD カードなどの外部ストレージを接続してください</translation>
 <translation id="2307344026739914387">現在の鍵ペアを使用</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="253029298928638905">再起動中…</translation>
+<translation id="2533048460510040082">ヘルプ コンテンツの候補</translation>
 <translation id="2536159006530886390">インターネットに接続できません。</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
@@ -229,6 +232,7 @@
 <translation id="3083667275341675831">接続診断</translation>
 <translation id="3084958266922136097">スクリーン セーバーを無効にする</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
+<translation id="3096753366938912951">平らな場所にふたを開いて置く</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">デバイスは接続されています。</translation>
@@ -286,9 +290,11 @@
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
+<translation id="361575905210396100">ありがとうございました</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3621202678540785336">入力</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
+<translation id="3643198267586205643">OS を更新</translation>
 <translation id="3643810137582748570">キャリブレーションをスキップ</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
 <translation id="3678765385266369662">書き込み保護を無効にする方法を選択してください</translation>
@@ -303,6 +309,7 @@
 <translation id="3784455785234192852">ロック</translation>
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
+<translation id="3824259034819781947">ファイルを添付</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3856304145690230735">本体ジャイロスコープ</translation>
@@ -406,6 +413,7 @@
 <translation id="469379815867856270">電波強度</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4740255236714854844">平らな場所に本体を置く</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
 <translation id="4751272708893364980">RMA ログを表示</translation>
 <translation id="4773299976671772492">停止しました</translation>
@@ -453,6 +461,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">画面がアイドル状態のときに、写真、時刻、天気、メディア情報を表示します。</translation>
 <translation id="5039804452771397117">許可</translation>
+<translation id="5044978354634658544">USB を差し込む</translation>
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
 <translation id="5051044138948155788">これは存在する唯一のページです。削除すると、スキャンのスタート画面に戻ります。</translation>
@@ -737,6 +746,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> 修復エラー</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665800271478495366">アバターを変更</translation>
+<translation id="7682274994254393134">修復を開始</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -863,6 +873,7 @@
 <translation id="885701979325669005">ストレージ</translation>
 <translation id="8863170912498892583">ダークモードを有効にする</translation>
 <translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
+<translation id="8864415976656252616">コンテンツの候補はありません。関連するヘルプ コンテンツをご覧ください。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>

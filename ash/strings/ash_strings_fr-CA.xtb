@@ -504,6 +504,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours...</translation>
 <translation id="3922427723338465344">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai de 1 minute}one{Restaurez la version antérieure de l'appareil dans un délai de # minute}other{Restaurez la version antérieure de l'appareil dans un délai de # minutes}}</translation>
 <translation id="3923494859158167397">Aucun réseau cellulaire n'est configuré</translation>
+<translation id="3925540965556789199"><ph name="DATE" />, chargement des événements en cours…</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934456833412894880">La recharge adaptative est activée. Votre pile restera à 80 % afin de prolonger son autonomie et se rechargera complètement lorsque vous en aurez besoin.</translation>
 <translation id="3943857333388298514">Coller</translation>
@@ -1055,6 +1056,10 @@ Nouvelle installation</translation>
 <translation id="7258828758145722155">Modifié hier</translation>
 <translation id="726276584504105859">Glissez l'élément ici pour utiliser l'écran partagé</translation>
 <translation id="7262906531272962081">Créer un rappel</translation>
+<translation id="7297440678881127227"><ph name="START_TIME" /> à
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />,
+        <ph name="EVENT_SUMMARY" />. Sélectionnez cet événement pour voir davantage d'information dans Google Agenda.</translation>
 <translation id="7302889331339392448">La transcription instantanée est désactivée.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>

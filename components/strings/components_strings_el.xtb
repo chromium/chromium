@@ -291,6 +291,7 @@
 <translation id="1662550410081243962">Αποθήκευση και συμπλήρωση τρόπων πληρωμής</translation>
 <translation id="1663943134801823270">Οι κάρτες και οι διευθύνσεις προέρχονται από το Chrome. Μπορείτε να τις διαχειριστείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Από εδώ και στο εξής, οι σελίδες στα <ph name="SOURCE_LANGUAGE" /> θα μεταφράζονται στα <ph name="TARGET_LANGUAGE" />.</translation>
+<translation id="1673886523110456987">Ολοκλήρωση αγορών με την κάρτα <ph name="CARD_DETAIL" /> για χρήση της προσφοράς</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> προς <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Πρώτα η μικρή πλευρά</translation>
 <translation id="168693727862418163">Αυτή η τιμή πολιτικής δεν επικυρώθηκε με επιτυχία έναντι του σχήματός της και θα παραβλεφθεί.</translation>
@@ -1107,6 +1108,7 @@
 <translation id="3986705137476756801">Απενεργοποίηση Ζωντανών υπότιτλων προς το παρόν</translation>
 <translation id="3987940399970879459">Λιγότερα από 1 MB</translation>
 <translation id="3990250421422698716">Μετατόπιση στοίβας</translation>
+<translation id="3992684624889376114">Σχετικά με αυτήν τη σελίδα</translation>
 <translation id="3996311196211510766">Ο ιστότοπος <ph name="ORIGIN" /> ζήτησε να εφαρμοστεί μια πολιτική προέλευσης
     για όλα τα αιτήματά του, αλλά δεν είναι δυνατή η εφαρμογή της πολιτικής αυτήν τη στιγμή.</translation>
 <translation id="4006465311664329701">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
@@ -1558,6 +1560,7 @@
 <translation id="5171045022955879922">Αναζήτηση ή πληκτρολόγηση διεύθυνσης URL</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Υπολογιστής</translation>
+<translation id="5177076414499237632">Μάθετε σχετικά με αυτήν την πηγή και το θέμα</translation>
 <translation id="5179510805599951267">Δεν είναι στα <ph name="ORIGINAL_LANGUAGE" />; Αναφέρετε αυτό το σφάλμα</translation>
 <translation id="518639307526414276">Τροφή και είδη περιποίησης κατοικίδιων ζώων</translation>
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>

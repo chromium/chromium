@@ -2246,7 +2246,6 @@
 <translation id="3093714882666365141">禁止網站安裝付款處理常式</translation>
 <translation id="3094141017404513551">這會將你和 <ph name="EXISTING_USER" /> 的瀏覽資料分開保存</translation>
 <translation id="3095871294753148861">書籤、密碼和其他瀏覽器資料已與主要帳戶同步。</translation>
-<translation id="3096047748133487529">這個檔案含有敏感內容，因此遭到貴機構封鎖</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{已關閉 1 個可能有害的擴充功能，你也可以移除這項擴充功能。}other{已關閉 {NUM_EXTENSIONS} 個可能有害的擴充功能，你也可以移除這些擴充功能。}}</translation>
 <translation id="3101126716313987672">光線昏暗</translation>
 <translation id="3101709781009526431">日期與時間</translation>
@@ -4665,7 +4664,6 @@
 <translation id="5532223876348815659">通用</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />要求下列權限：</translation>
 <translation id="5534304873398226603">捨棄相片或影片</translation>
-<translation id="5535941515421698170">將你現有的資料從這個裝置上一併移除</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539221284352502426">輸入的密碼遭到伺服器拒絕。可能的原因包括：密碼長度不足、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">你的管理員停用了這個動作</translation>
@@ -5687,7 +5685,6 @@
 <translation id="6555432686520421228">移除所有使用者帳戶，並將你的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置重設為原廠狀態。</translation>
 <translation id="6555604601707417276">Linux 備份已還原</translation>
 <translation id="6555810572223193255">目前無法執行清理作業</translation>
-<translation id="6556477848444788999">這組 PIN 碼或密碼可確保你在這部 <ph name="DEVICE_TYPE" /> 上的資料安全無虞，包括透過手機串流的任何內容。</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主題與桌布</translation>
 <translation id="6557290421156335491">我的捷徑</translation>

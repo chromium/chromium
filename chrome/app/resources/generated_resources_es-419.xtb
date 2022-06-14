@@ -2243,7 +2243,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3093714882666365141">No permitir que los sitios instalen controladores de pago</translation>
 <translation id="3094141017404513551">Esta acción separará tu navegación de la de <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Los favoritos, las contraseñas y otros datos de navegación se sincronizan con la cuenta principal.</translation>
-<translation id="3096047748133487529">Tu organización bloqueó este archivo porque incluye contenido sensible.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Se desactivó 1 extensión potencialmente dañina. También puedes quitarla.}other{Se desactivaron {NUM_EXTENSIONS} extensiones potencialmente dañinas. También puedes quitarlas.}}</translation>
 <translation id="3101126716313987672">Atenuar luz</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
@@ -4663,7 +4662,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5534304873398226603">Descartar foto o video</translation>
-<translation id="5535941515421698170">También quitar tus datos existentes de este dispositivo</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5539221284352502426">El servidor rechazó la contraseña que ingresaste porque es demasiado corta, debe incluir números o símbolos, o debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador inhabilitó esta acción</translation>
@@ -5688,7 +5686,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6555432686520421228">Elimina todas las cuentas de usuario y restablece tu dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /> como si fuera recién comprado.</translation>
 <translation id="6555604601707417276">Se restableció la copia de seguridad de Linux</translation>
 <translation id="6555810572223193255">La limpieza no está disponible en este momento</translation>
-<translation id="6556477848444788999">El PIN o la contraseña protegen los datos que tienes en este dispositivo <ph name="DEVICE_TYPE" />, incluido el contenido que transmites desde el teléfono.</translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6556903358015358733">Tema y fondo de pantalla</translation>
 <translation id="6557290421156335491">Mis accesos directos</translation>

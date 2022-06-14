@@ -2236,7 +2236,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3093714882666365141">Nie zezwalaj witrynom na instalowanie modułów do obsługi płatności</translation>
 <translation id="3094141017404513551">Spowoduje to oddzielenie Twoich danych przeglądania od danych użytkownika <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Zakładki, hasła i inne dane przeglądarki są zsynchronizowane z kontem głównym.</translation>
-<translation id="3096047748133487529">Ten plik zablokowała Twoja organizacja, bo zawiera on poufną treść</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potencjalnie niebezpieczne rozszerzenie zostało wyłączone. Możesz je też usunąć.}few{{NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia zostały wyłączone. Możesz je też usunąć.}many{{NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń zostało wyłączonych. Możesz je też usunąć.}other{{NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia zostało wyłączone. Możesz je też usunąć.}}</translation>
 <translation id="3101126716313987672">Przyciemnianie ekranu</translation>
 <translation id="3101709781009526431">Data i godzina</translation>
@@ -4660,7 +4659,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5532223876348815659">Globalne</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> prosi o pozwolenie na:</translation>
 <translation id="5534304873398226603">Odrzuć zdjęcie lub film</translation>
-<translation id="5535941515421698170">Usuń też swoje dane z tego urządzenia</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="5539221284352502426">Podane hasło zostało odrzucone przez serwer. Możliwe, że jest ono za krótkie, musi zawierać cyfry lub symbole albo musi się różnić od poprzednich haseł.</translation>
 <translation id="5541694225089836610">Administrator wyłączył to działanie</translation>
@@ -5685,7 +5683,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6555432686520421228">Usuń wszystkie konta użytkowników i przywróć urządzenie <ph name="IDS_SHORT_PRODUCT_NAME" /> do stanu fabrycznego.</translation>
 <translation id="6555604601707417276">Przywrócono kopię zapasową Linuksa</translation>
 <translation id="6555810572223193255">Czyszczenie jest obecnie niedostępne</translation>
-<translation id="6556477848444788999">Kod PIN lub hasło chronią znajdujące się na urządzeniu <ph name="DEVICE_TYPE" /> dane, w tym wszystkie treści przesyłane strumieniowo z telefonu.</translation>
 <translation id="6556866813142980365">Ponów</translation>
 <translation id="6556903358015358733">Motyw i tapeta</translation>
 <translation id="6557290421156335491">Moje skróty</translation>

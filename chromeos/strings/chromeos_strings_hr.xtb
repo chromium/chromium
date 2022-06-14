@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Spremi na USB</translation>
 <translation id="1468664791493211953">Ponude</translation>
 <translation id="1476467821656042872">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj možda može nadzirati vašu aktivnost.</translation>
+<translation id="147809995039451286">Preuzimanje ažuriranja nije uspjelo</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1491076385728777984">Ažuriranje opreme na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i možda može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Otvori u postavkama</translation>
 <translation id="2421798028054665193">Slika <ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Točnost pomičnog zareza</translation>
+<translation id="2447969267935997922">Instaliranje je dovršeno. Sad možete ukloniti USB disk ili SD karticu.</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutačno</translation>
 <translation id="2480034874476596812">Ručno isključivanje</translation>

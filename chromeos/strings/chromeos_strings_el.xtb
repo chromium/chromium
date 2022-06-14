@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Αποθήκευση σε USB</translation>
 <translation id="1468664791493211953">Προσφορές</translation>
 <translation id="1476467821656042872">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και μπορεί να έχει τη δυνατότητα να παρακολουθεί τη δραστηριότητά σας.</translation>
+<translation id="147809995039451286">Δεν ήταν δυνατή η λήψη της ενημέρωσης</translation>
 <translation id="1478594628797167447">Σαρωτής</translation>
 <translation id="1491076385728777984">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Άνοιγμα στις Ρυθμίσεις</translation>
 <translation id="2421798028054665193">Εικόνα <ph name="CURRENT_PAGE" /> από <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
+<translation id="2447969267935997922">Η εγκατάσταση ολοκληρώθηκε. Πλέον, μπορείτε να αφαιρέσετε τη μονάδα USB ή την κάρτα SD.</translation>
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
 <translation id="2480034874476596812">Μη αυτόματη απενεργοποίηση</translation>

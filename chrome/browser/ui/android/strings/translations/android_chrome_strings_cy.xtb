@@ -207,9 +207,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2096012225669085171">Cysoni a phersonoleddio ar draws dyfeisiau</translation>
 <translation id="2100273922101894616">Mewngofnodi'n Awtomatig</translation>
 <translation id="2100314319871056947">Rhowch gynnig ar rannu'r testun mewn darnau llai</translation>
-<translation id="2109711654079915747">Dysgu am bynciau ar wefannau heb adael y dudalen. Mae Cyffwrdd i Chwilio yn anfon gair a'i gyd-destun o'i amgylch i Google Search, gan ddychwelyd diffiniadau, lluniau, canlyniadau chwilio, a manylion eraill.
-
-Tapiwch unrhyw air i chwilio. I fireinio'ch chwiliad, cyffyrddwch a daliwch i ddewis rhagor neu lai o eiriau. I olygu eich chwiliad, agorwch y panel, tapiwch yr eicon i agor mewn tab newydd, a gwnewch eich newidiadau yn y blwch chwilio.</translation>
 <translation id="2111511281910874386">Mynd i dudalen</translation>
 <translation id="2122601567107267586">Methu ag agor yr ap</translation>
 <translation id="2126426811489709554">Pwerir gan Chrome</translation>
@@ -265,9 +262,6 @@ Tapiwch unrhyw air i chwilio. I fireinio'ch chwiliad, cyffyrddwch a daliwch i dd
 <translation id="2433507940547922241">Gwedd</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
 <translation id="2450083983707403292">Ydych chi am ddechrau lawrlwytho <ph name="FILE_NAME" /> eto?</translation>
-<translation id="2450907520913474542">Dysgu am bynciau ar wefannau heb adael y dudalen. Mae Cyffwrdd i Chwilio yn anfon gair a'i gyd-destun o'i amgylch i Google Search, gan ddychwelyd diffiniadau, lluniau, canlyniadau chwilio, a manylion eraill.
-
-Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy neu lai o eiriau. I olygu eich chwiliad, agorwch y panel, tapiwch yr eicon i agor mewn tab newydd, a gwnewch eich newidiadau yn y blwch chwilio.</translation>
 <translation id="2453860139492968684">Gorffen</translation>
 <translation id="2459390580524506445">Gwell chwilio llais</translation>
 <translation id="2461822463642141190">Presennol</translation>
@@ -719,6 +713,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4912413785358399818">Symud tab</translation>
 <translation id="4913169188695071480">Stopio ail-lwytho</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# Dudalen}zero{# Tudalen}two{# Dudalen}few{# Tudalen}many{# Thudalen}other{# Tudalen}}</translation>
+<translation id="492284538114688557">Wedi nodi gostyngiad pris</translation>
 <translation id="4925120120285606924">Sgrinlun <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Bydd eich cyfrineiriau'n cael eu hallforio a'u lawrlwytho fel ffeil testun. Byddant yn weladwy i unrhyw un ac unrhyw ap sydd â mynediad at y ffolder cyrchfan.</translation>
 <translation id="4932247056774066048">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="DOMAIN_NAME" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd yn aros yn eich Cyfrif Google.</translation>
@@ -1325,7 +1320,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8127542551745560481">Golygu'r dudalen hafan</translation>
 <translation id="8130309322784422030">Mae'n bosib bod eich gwybodaeth mewngofnodi sydd wedi'i storio yn hen</translation>
 <translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
-<translation id="8137558756159375272">Mae Cyffwrdd i Chwilio yn anfon y gair dan sylw a'r dudalen bresennol fel cyd-destun i Google Search. Gallwch ei ddiffodd yn y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="8153351135626613369">Bydd Assistant yn ymddangos pan fydd yn canfod y gall eich helpu ar wefannau â chymorth</translation>
 <translation id="8156139159503939589">Pa ieithoedd ydych chi'n eu darllen?</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
@@ -1355,6 +1349,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8310344678080805313">Tabiau safonol</translation>
 <translation id="831192587911042850">Mae'n ychwanegu'r wefan bresennol at y rhestr o wefannau rydych yn eu dilyn.</translation>
 <translation id="834313815369870491">Peidio byth â chyfieithu gwefannau</translation>
+<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chrome. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="8352996530981010042">Methu â lawrlwytho ymatebion. Rhowch gynnig arall arni.</translation>
 <translation id="8354977102499939946">Chwilio yn gyflym â'ch llais. I olygu'r llwybr byr hwn, ewch i'r Gosodiadau.</translation>
 <translation id="835847953965672673">Mae <ph name="NUMBER_OF_DOWNLOADS" /> lawrlwythiad wedi'u hadfer</translation>
@@ -1428,7 +1423,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="864544049772947936">Rheoli ffenestri (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8646467750715887511">Dim ond ar ôl i chi eu hagor y mae tudalennau'n llwytho.</translation>
 <translation id="8655129584991699539">Gallwch glirio'r data yn Gosodiadau Chrome</translation>
-<translation id="8656747343598256512">Mewngofnodi i'r wefan hon a Chrome gyda'ch Cyfrif Google. Gallwch droi cysoni ymlaen yn nes ymlaen.</translation>
 <translation id="8659579665266920523">Sut i chwilio gyda Chrome</translation>
 <translation id="8662811608048051533">Yn eich allgofnodi o'r mwyafrif o wefannau.</translation>
 <translation id="8664215986015753476">Defnyddiwch Chrome eich ffordd chi</translation>
@@ -1468,6 +1462,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8856607253650333758">Cael disgrifiadau</translation>
 <translation id="8873817150012960745">Tapiwch yma i ddechrau</translation>
 <translation id="8881973373982641723">Yn clirio hanes, gan gynnwys yn y blwch chwilio.</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Er mwyn amddiffyn eich preifatrwydd, rydym yn dileu gwefannau sy'n hŷn na 4 wythnos o'r rhestr yn awtomatig. Mae'n bosib y bydd gwefan rydych yn ymweld â hi eto yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar wefan os nad ydych am i'r wefan honno fyth ddiffinio diddordebau i chi.</translation>
 <translation id="889338405075704026">Mynd i osodiadau Chrome</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="8906502871739599113">Wedi dyblygu ymateb</translation>

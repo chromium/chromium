@@ -2262,7 +2262,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3093714882666365141">Tillad ikke, at websites installerer betalingshandlers</translation>
 <translation id="3094141017404513551">Denne handling giver dig en separat browseroplevelse, som <ph name="EXISTING_USER" /> ikke har adgang til</translation>
 <translation id="3095871294753148861">Bogmærker, adgangskoder og andre browserdata synkroniseres med den primære konto.</translation>
-<translation id="3096047748133487529">Din organisation har blokeret denne fil, fordi den indeholder følsomt indhold</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentielt skadelig udvidelse er deaktiveret. Du kan også fjerne den.}one{{NUM_EXTENSIONS} potentielt skadelig udvidelse er deaktiveret. Du kan også fjerne den.}other{{NUM_EXTENSIONS} potentielt skadelige udvidelser er deaktiveret. Du kan også fjerne dem.}}</translation>
 <translation id="3101126716313987672">Dæmp belysning</translation>
 <translation id="3101709781009526431">Dato og klokkeslæt</translation>
@@ -4683,7 +4682,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vil gerne</translation>
 <translation id="5534304873398226603">Slet billede eller video</translation>
-<translation id="5535941515421698170">Fjern også dine eksisterende data fra denne enhed</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539221284352502426">Den angivne adgangskode blev afvist af serveren. Mulige årsager: Adgangskoden er for kort. Adgangskoden skal indeholde tal eller symboler. Adgangskoden skal være forskellig fra tidligere adgangskoder.</translation>
 <translation id="5541694225089836610">Handlingen er deaktiveret af din administrator</translation>
@@ -5708,7 +5706,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6555432686520421228">Fjern alle brugerkonti, og nulstil din <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed, så den er som ny.</translation>
 <translation id="6555604601707417276">Din Linux-backup er gendannet</translation>
 <translation id="6555810572223193255">Det er i øjeblikket ikke muligt at rydde indhold</translation>
-<translation id="6556477848444788999">Denne pinkode eller adgangskode beskytter dine data på denne <ph name="DEVICE_TYPE" />, herunder eventuelt indhold, du streamer fra din telefon.</translation>
 <translation id="6556866813142980365">Gør det igen</translation>
 <translation id="6556903358015358733">Tema og baggrund</translation>
 <translation id="6557290421156335491">Mine genveje</translation>

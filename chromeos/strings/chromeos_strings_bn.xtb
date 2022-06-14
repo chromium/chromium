@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">ইউএসবিতে সেভ করুন</translation>
 <translation id="1468664791493211953">অফার</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং তার ফলে হয়ত সে আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
+<translation id="147809995039451286">আপডেট ডাউনলোড করা যায়নি</translation>
 <translation id="1478594628797167447">স্ক্যানার</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> ডিভাইসে ফার্মওয়্যার আপডেট করা হচ্ছে</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং তার ফলে এটি হয়ত অন্য জায়গা থেকে সেটিংস ম্যানেজ করতে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">ক্যাপটিভ পোর্টাল</translation>
 <translation id="2006864819935886708">সংযোজকতা</translation>
 <translation id="2008685064673031089">প্রাইম সার্চ</translation>
+<translation id="2011174342667534258">SDK ভার্সন:</translation>
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
 <translation id="2016848882344942759">--কোনও সাদা-লেবেল নেই--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
 <translation id="2275586345903859204">রিপেয়ার হয়ে গেছে</translation>
+<translation id="2276999893457278469">সেরা সহায়তা কন্টেন্ট</translation>
 <translation id="2287186687001756809">কোনও ছবি নেই। ছবি যোগ করতে, <ph name="LINK" /> লিঙ্কে যান</translation>
 <translation id="2294753434210277304">ডাউনলোড করা Chromebook রিকভারি ইউটিলিটি সম্পর্কিত ছবির সাথে, এক্সটার্নাল স্টোরেজ ঢোকান যেমন, ইউএসবি ড্রাইভ বা এসডি কার্ড</translation>
 <translation id="2307344026739914387">বর্তমান কী পেয়ার ব্যবহার করুন</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">সেটিংসে খুলুন</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" /> নম্বর ছবি</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
+<translation id="2447969267935997922">ইনস্টল করা সম্পূর্ণ হয়েছে। আপনি এখন ইউএসবি ড্রাইভ বা এসডি কার্ড সরিয়ে নিতে পারেন।</translation>
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2480034874476596812">ম্যানুয়ালি বন্ধ করা</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="253029298928638905">রিস্টার্ট হচ্ছে...</translation>
+<translation id="2533048460510040082">সাজেস্ট করা সহায়তা কন্টেন্ট</translation>
 <translation id="2536159006530886390">ইন্টারনেটের সাথে কানেক্ট করা যাচ্ছে না।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
 <translation id="2584559707064218956">সেট আপ করতে, সেটিংসে যান</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="38114475217616659">সব ইতিহাস মুছে ফেলুন</translation>
 <translation id="3820172043799983114">ভুল পিন।</translation>
+<translation id="3824259034819781947">ফাইল অ্যাটাচ করুন</translation>
 <translation id="3838338534323494292">নতুন পাসওয়ার্ড</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3856304145690230735">বেস জাইরোস্কোপ</translation>
@@ -862,6 +868,7 @@
 <translation id="885701979325669005">স্টোরেজ</translation>
 <translation id="8863170912498892583">ডার্ক থিম চালু করুন</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" এবং অনেক কিছুর জন্য <ph name="INTENT" /> পান</translation>
+<translation id="8864415976656252616">সাজেস্ট করা কোনও কন্টেন্ট নেই। সেরা সহায়তা কন্টেন্ট দেখুন।</translation>
 <translation id="8868741746785112895">গ্লোবালি ইউনিক আইডেন্টিফায়ার (GUID)</translation>
 <translation id="8876270629542503161">ডিভাইস একটি ট্যাবলেট।</translation>
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>

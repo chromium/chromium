@@ -290,6 +290,7 @@
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
 <translation id="3643810137582748570">Ignorer le calibrage</translation>
+<translation id="3651050199673793219">Sélectionnez une unité de température</translation>
 <translation id="3678765385266369662">Sélectionnez la façon dont vous souhaitez désactiver la protection en écriture</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
@@ -307,6 +308,7 @@
 <translation id="3856304145690230735">Gyroscope de base</translation>
 <translation id="385832974417157471">Avant de l'éteindre, effectuez une réinitialisation Powerwash de votre appareil. S'il est doté d'un couvercle, attendez que le processus soit terminé avant de fermer celui-ci. La réinitialisation Powerwash peut prendre jusqu'à une minute.</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3862598938296403232">Une description est requise</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="3866249974567520381">Description</translation>
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
@@ -683,6 +685,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
+<translation id="7154020516215182599">Faites-nous part de vos commentaires ou décrivez votre problème. Si possible, incluez les étapes à suivre pour reproduire votre problème.</translation>
 <translation id="7155171745945906037">Photo existante de l'appareil photo ou du fichier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Photo du profil</translation>

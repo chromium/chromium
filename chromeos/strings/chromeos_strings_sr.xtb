@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Сачувај на USB</translation>
 <translation id="1468664791493211953">Понуде</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управља овим уређајем и може да прати ваше активности.</translation>
+<translation id="147809995039451286">Преузимање ажурирања није успело</translation>
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1491076385728777984">Ажурира се фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Отвори у подешавањима</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. слика од <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Прецизност покретног зареза</translation>
+<translation id="2447969267935997922">Инсталирање је завршено. Сада можете да уклоните USB диск или SD картицу.</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Актуелно</translation>
 <translation id="2480034874476596812">Ручно искључивање</translation>

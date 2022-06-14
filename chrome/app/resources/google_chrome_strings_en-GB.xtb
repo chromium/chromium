@@ -228,7 +228,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5727531838415286053">If Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month. Interests refresh unless you remove them.</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
-<translation id="5763280521700030406">Chrome blocked this file because it's too big for a security check. Try again with files up to 50 MB</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
 <translation id="5867197326698922595">Google Chrome is trying to edit passwords.</translation>
@@ -337,7 +336,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="840084489713044809">Google Chrome wants to export your passwords.</translation>
 <translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
-<translation id="8421734018304082652">Chrome blocked this file because it's encrypted. Ask its owner to decrypt it</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
