@@ -2389,6 +2389,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_CURRENT_AVATAR" desc="Aria label for the currently set avatar image.">
         Current Avatar
       </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_NUDGE_TEXT" desc="The text of the educational nudge for keyboard backlight wallpaper-extracted color.">
+        Your keyboard can automatically match your wallpaper
+      </message>
 
       <!-- Personalization App Search Results -->
       <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">

@@ -27,6 +27,13 @@ class ASH_EXPORT KeyboardBacklightColorNudgeController {
 
   ~KeyboardBacklightColorNudgeController();
 
+  // Determines whether the education nudge for wallpaper extracted color in the
+  // personalization hub can be shown.
+  static bool ShouldShowWallpaperColorNudge();
+
+  // Called when the wallpaper color nudge is shown.
+  static void HandleWallpaperColorNudgeShown();
+
   // Determines whether the education nudge can be shown and shows it.
   void MaybeShowEducationNudge(views::View* keyboard_brightness_slider_view);
 

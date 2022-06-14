@@ -15,6 +15,8 @@ export class TestKeyboardBacklightProvider extends
     super([
       'setKeyboardBacklightObserver',
       'setBacklightColor',
+      'shouldShowNudge',
+      'handleNudgeShown',
     ]);
   }
 
@@ -23,6 +25,15 @@ export class TestKeyboardBacklightProvider extends
 
   setBacklightColor(backlightColor: BacklightColor) {
     this.methodCalled('setBacklightColor', backlightColor);
+  }
+
+  shouldShowNudge() {
+    this.methodCalled('shouldShowNudge');
+    return Promise.resolve({shouldShowNudge: true});
+  }
+
+  handleNudgeShown() {
+    this.methodCalled('handleNudgeShown');
   }
 
   setKeyboardBacklightObserver(remote: KeyboardBacklightObserverRemote) {

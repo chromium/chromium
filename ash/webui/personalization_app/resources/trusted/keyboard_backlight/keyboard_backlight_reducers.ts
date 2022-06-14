@@ -23,6 +23,16 @@ export function backlightColorReducer(
   }
 }
 
+export function shouldShowNudgeReducer(
+    state: boolean, action: Actions, _: PersonalizationState): boolean {
+  switch (action.name) {
+    case KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE:
+      return action.shouldShowNudge;
+    default:
+      return state;
+  }
+}
+
 export function wallpaperColorReducer(
     state: SkColor|null, action: Actions, _: PersonalizationState): SkColor|
     null {
@@ -39,5 +49,6 @@ export const keyboardBacklightReducers: {
       ReducerFunction<KeyboardBacklightState[K]>
 } = {
   backlightColor: backlightColorReducer,
+  shouldShowNudge: shouldShowNudgeReducer,
   wallpaperColor: wallpaperColorReducer,
 };

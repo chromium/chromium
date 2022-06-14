@@ -5,8 +5,9 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {KeyboardBacklight, KeyboardBacklightActionName, KeyboardBacklightObserver, SetBacklightColorAction, SetWallpaperColorAction} from 'chrome://personalization/trusted/personalization_app.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {KeyboardBacklight, KeyboardBacklightActionName, KeyboardBacklightObserver, SetBacklightColorAction, SetShouldShowNudgeAction, SetWallpaperColorAction} from 'chrome://personalization/trusted/personalization_app.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
@@ -112,5 +113,51 @@ suite('KeyboardBacklightTest', function() {
                        KeyboardBacklightActionName.SET_WALLPAPER_COLOR) as
         SetWallpaperColorAction;
     assertDeepEquals(wallpaperColor, action.wallpaperColor);
+  });
+
+  test('shows toast on load', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(
+        KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE);
+    keyboardBacklightElement = initElement(KeyboardBacklight);
+    const action = await personalizationStore.waitForAction(
+                       KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE) as
+        SetShouldShowNudgeAction;
+    assertTrue(action.shouldShowNudge);
+    assertTrue(!!keyboardBacklightElement.shadowRoot!.querySelector('#toast'));
+  });
+
+  test('automatically dismisses toast after 3 seconds', async () => {
+    // Spy on calls to |window.setTimeout|.
+    const setTimeout = window.setTimeout;
+    const setTimeoutCalls: {handler: Function|string, delay?: number}[] = [];
+    window.setTimeout =
+        (handler: Function|string, delay?: number, ...args: any[]): number => {
+          setTimeoutCalls.push({handler, delay});
+          return setTimeout(handler, delay, args);
+        };
+
+    keyboardBacklightElement = initElement(KeyboardBacklight);
+    // Create and render the toast.
+    personalizationStore.data.keyboardBacklight.shouldShowNudge = true;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(keyboardBacklightElement);
+
+    // Expect that a timeout will have been scheduled for 3 seconds.
+    const setTimeoutCall: {handler: Function|string, delay?: number}|undefined =
+        setTimeoutCalls.find((setTimeoutCall) => {
+          return typeof setTimeoutCall.handler === 'function' &&
+              setTimeoutCall.delay === 3000;
+        });
+    assertNotEquals(setTimeoutCall, undefined);
+
+    // Expect that the timeout will result in toast dismissal.
+    personalizationStore.expectAction(
+        KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE);
+    (setTimeoutCall!.handler as Function)();
+    const action = await personalizationStore.waitForAction(
+                       KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE) as
+        SetShouldShowNudgeAction;
+    assertFalse(action.shouldShowNudge);
   });
 });

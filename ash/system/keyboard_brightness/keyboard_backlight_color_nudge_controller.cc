@@ -38,6 +38,21 @@ KeyboardBacklightColorNudgeController::KeyboardBacklightColorNudgeController() =
 KeyboardBacklightColorNudgeController::
     ~KeyboardBacklightColorNudgeController() = default;
 
+// static
+bool KeyboardBacklightColorNudgeController::ShouldShowWallpaperColorNudge() {
+  return contextual_tooltip::ShouldShowNudge(
+      GetActivePrefService(),
+      contextual_tooltip::TooltipType::kKeyboardBacklightWallpaperColor,
+      /*recheck_delay=*/nullptr);
+}
+
+// static
+void KeyboardBacklightColorNudgeController::HandleWallpaperColorNudgeShown() {
+  HandleNudgeShown(
+      GetActivePrefService(),
+      contextual_tooltip::TooltipType::kKeyboardBacklightWallpaperColor);
+}
+
 void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
     views::View* keyboard_brightness_slider_view) {
   if (!keyboard_brightness_slider_view)

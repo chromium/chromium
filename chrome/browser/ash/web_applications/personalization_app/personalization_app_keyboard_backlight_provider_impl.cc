@@ -21,8 +21,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_analysis.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 KeyboardBacklightColorController* GetKeyboardBacklightColorController() {
@@ -41,17 +40,14 @@ PersonalizationAppKeyboardBacklightProviderImpl::
     ~PersonalizationAppKeyboardBacklightProviderImpl() = default;
 
 void PersonalizationAppKeyboardBacklightProviderImpl::BindInterface(
-    mojo::PendingReceiver<
-        ash::personalization_app::mojom::KeyboardBacklightProvider> receiver) {
+    mojo::PendingReceiver<mojom::KeyboardBacklightProvider> receiver) {
   keyboard_backlight_receiver_.reset();
   keyboard_backlight_receiver_.Bind(std::move(receiver));
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::
     SetKeyboardBacklightObserver(
-        mojo::PendingRemote<
-            ash::personalization_app::mojom::KeyboardBacklightObserver>
-            observer) {
+        mojo::PendingRemote<mojom::KeyboardBacklightObserver> observer) {
   // May already be bound if user refreshes page.
   keyboard_backlight_observer_remote_.reset();
   keyboard_backlight_observer_remote_.Bind(std::move(observer));
@@ -83,6 +79,16 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
   NotifyBacklightColorChanged();
 }
 
+void PersonalizationAppKeyboardBacklightProviderImpl::ShouldShowNudge(
+    ShouldShowNudgeCallback callback) {
+  std::move(callback).Run(
+      KeyboardBacklightColorNudgeController::ShouldShowWallpaperColorNudge());
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::HandleNudgeShown() {
+  KeyboardBacklightColorNudgeController::HandleWallpaperColorNudgeShown();
+}
+
 void PersonalizationAppKeyboardBacklightProviderImpl::
     OnWallpaperColorsChanged() {
   DCHECK(keyboard_backlight_observer_remote_.is_bound());
@@ -98,5 +104,4 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
       GetKeyboardBacklightColorController()->GetBacklightColor());
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

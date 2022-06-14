@@ -58,6 +58,8 @@ std::string TooltipTypeToString(TooltipType type) {
       return "in_app_to_home";
     case TooltipType::kKeyboardBacklightColor:
       return "keyboard_backlight_color";
+    case TooltipType::kKeyboardBacklightWallpaperColor:
+      return "keyboard_backlight_wallpaper_color";
   }
   return "invalid";
 }

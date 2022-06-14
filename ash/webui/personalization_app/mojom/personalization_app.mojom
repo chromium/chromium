@@ -574,4 +574,10 @@ interface KeyboardBacklightProvider {
 
   // Sets the backlight color.
   SetBacklightColor(BacklightColor backlight_color);
+
+  // Determines whether to show the education nudge.
+  ShouldShowNudge() => (bool should_show_nudge);
+
+  // Called when the nudge is shown.
+  HandleNudgeShown();
 };

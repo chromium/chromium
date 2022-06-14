@@ -11,12 +11,14 @@ import {BacklightColor} from '../personalization_app.mojom-webui.js';
  */
 export interface KeyboardBacklightState {
   backlightColor: BacklightColor|null;
+  shouldShowNudge: boolean;
   wallpaperColor: SkColor|null;
 }
 
 export function emptyState(): KeyboardBacklightState {
   return {
     backlightColor: null,
+    shouldShowNudge: false,
     wallpaperColor: null,
   };
 }

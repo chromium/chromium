@@ -222,6 +222,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PURPLE_COLOR_LABEL},
       {"rainbowColor",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RAINBOW_COLOR_LABEL},
+      {"wallpaperColorNudgeText",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_NUDGE_TEXT},
 
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.

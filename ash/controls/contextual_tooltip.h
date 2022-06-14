@@ -20,6 +20,7 @@ enum class TooltipType {
   kHomeToOverview,
   kInAppToHome,
   kKeyboardBacklightColor,
+  kKeyboardBacklightWallpaperColor,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

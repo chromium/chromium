@@ -1,4 +1,8 @@
 <style include="common-style cros-button-style">
+  :host {
+    --color-container-size: 48px;
+  }
+
   #container {
     display: grid;
     grid-template-areas:
@@ -32,6 +36,7 @@
     flex-flow: row nowrap;
     grid-area: options;
     margin-top: 14px;
+    position: relative;
   }
 
   .divider {
@@ -46,9 +51,9 @@
     border-radius: 50%;
     cursor: pointer;
     display: flex;
-    height: 48px;
+    height: var(--color-container-size);
     justify-content: center;
-    width: 48px;
+    width: var(--color-container-size);
   }
 
   .color-inner-container {
@@ -73,6 +78,43 @@
   .color-container:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
     outline-offset: -2px;
+  }
+
+  #toast {
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: var(--color-container-size);
+  }
+
+  #toastDot {
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 100%;
+    height: 8px;
+    margin-block-end: 5px;
+    margin-inline-start: 20px;
+    width: 8px;
+  }
+
+  #toastContent {
+    align-items: center;
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    padding: 8px 0;
+  }
+
+  #toastContent > svg {
+    fill: var(--cros-button-label-color-primary);
+    padding: 0 14px;
+  }
+
+  #toastContent span {
+    color: var(--cros-button-label-color-primary);
+    font: var(--cros-body-2-font);
+    margin-inline-end: 14px;
   }
 </style>
 <div id="container" class="preview-container">
@@ -109,6 +151,17 @@
         </svg>
       </div>
     </div>
+    <template is="dom-if" if="[[shouldShowNudge_]]">
+      <div id="toast">
+        <div id="toastDot"></div>
+        <div id="toastContent">
+          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.375 4.375L6.5 0.25L4.625 4.375L0.5 6.25L4.625 8.125L6.5 12.25L8.375 8.125L12.5 6.25L8.375 4.375ZM12.5 7.75L11.5625 9.8125L9.5 10.75L11.5625 11.6875L12.5 13.75L13.4375 11.6875L15.5 10.75L13.4375 9.8125L12.5 7.75Z"/>
+          </svg>
+          <span>$i18n{wallpaperColorNudgeText}</span>
+        </div>
+      </div>
+    </template>
     <div class="divider"></div>
     <template is="dom-repeat" items="[[presetColorIds_]]" as="presetColorId">
       <div id$="[[presetColorId]]"

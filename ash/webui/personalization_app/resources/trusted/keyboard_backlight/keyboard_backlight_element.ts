@@ -17,7 +17,7 @@ import {isSelectionEvent} from '../../common/utils.js';
 import {BacklightColor, BLUE_COLOR, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {setBacklightColor} from './keyboard_backlight_controller.js';
+import {getShouldShowNudge, handleNudgeShown, setBacklightColor} from './keyboard_backlight_controller.js';
 import {getTemplate} from './keyboard_backlight_element.html.js';
 import {getKeyboardBacklightProvider} from './keyboard_backlight_interface_provider.js';
 import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
@@ -80,6 +80,12 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
       /** The current wallpaper extracted color. */
       wallpaperColor_: Object,
+
+      shouldShowNudge_: {
+        type: Boolean,
+        value: false,
+        observer: 'onShouldShowNudgeChanged_',
+      },
     };
   }
 
@@ -90,6 +96,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   private ironSelectedColor_: HTMLElement;
   private backlightColor_: BacklightColor|null;
   private wallpaperColor_: SkColor|null;
+  private shouldShowNudge_: boolean;
 
   override ready() {
     super.ready();
@@ -101,9 +108,13 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     KeyboardBacklightObserver.initKeyboardBacklightObserverIfNeeded();
     this.watch<KeyboardBacklight['backlightColor_']>(
         'backlightColor_', state => state.keyboardBacklight.backlightColor);
+    this.watch<KeyboardBacklight['shouldShowNudge_']>(
+        'shouldShowNudge_', state => state.keyboardBacklight.shouldShowNudge);
     this.watch<KeyboardBacklight['wallpaperColor_']>(
         'wallpaperColor_', state => state.keyboardBacklight.wallpaperColor);
     this.updateFromStore();
+
+    getShouldShowNudge(getKeyboardBacklightProvider(), this.getStore());
   }
 
   private computePresetColors_(): Record<string, ColorInfo> {
@@ -300,6 +311,14 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   private getWallpaperColorTitle_() {
     return this.i18n('wallpaperColorTooltipText');
+  }
+
+  private onShouldShowNudgeChanged_(shouldShowNudge: boolean) {
+    if (shouldShowNudge) {
+      setTimeout(() => {
+        handleNudgeShown(getKeyboardBacklightProvider(), this.getStore());
+      }, 3000);
+    }
   }
 }
 
