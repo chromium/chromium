@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
@@ -29,9 +30,12 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -67,6 +71,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -124,6 +129,31 @@ public class FlagsFragmentTest {
 
     private static Matcher<View> withHintText(final String expectedHint) {
         return withHintText(is(expectedHint));
+    }
+
+    private static Matcher<View> containingHighlightSpan() {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public boolean matchesSafely(View view) {
+                if (!(view instanceof TextView)) {
+                    return false;
+                }
+                CharSequence text = ((TextView) view).getText();
+                if (!(text instanceof SpannableString)) {
+                    return false;
+                }
+                BackgroundColorSpan[] spans =
+                        ((SpannableString) text)
+                                .getSpans(0, text.length(), BackgroundColorSpan.class);
+                return Arrays.stream(spans).anyMatch(
+                        span -> span.getBackgroundColor() == Color.YELLOW);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("containing highlight span");
+            }
+        };
     }
 
     @IntDef({CompoundDrawable.START, CompoundDrawable.TOP, CompoundDrawable.END,
@@ -234,6 +264,57 @@ public class FlagsFragmentTest {
         onView(allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING)))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.flags_list)).check(matches(withCount(1)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSearchHighlightingQueryWordsInFlagName() throws Throwable {
+        CallbackHelper helper = getFlagUiSearchBarListener();
+        int searchBarChangeCount = helper.getCallCount();
+        // "verbose" appears in the flag name, but not the description
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose"));
+        helper.waitForCallback(searchBarChangeCount, 1);
+
+        Matcher<View> flagNameMatcher =
+                allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING));
+        onView(flagNameMatcher).check(matches(containingHighlightSpan()));
+        onView(allOf(withId(R.id.flag_description), hasSibling(flagNameMatcher)))
+                .check(matches(not(containingHighlightSpan())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSearchHighlightingQueryWordsInFlagDescription() throws Throwable {
+        CallbackHelper helper = getFlagUiSearchBarListener();
+        int searchBarChangeCount = helper.getCallCount();
+        // "logcat" appears in the flag description, but not the name
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("logcat"));
+        helper.waitForCallback(searchBarChangeCount, 1);
+
+        Matcher<View> flagNameMatcher =
+                allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING));
+        onView(flagNameMatcher).check(matches(not(containingHighlightSpan())));
+        onView(allOf(withId(R.id.flag_description), hasSibling(flagNameMatcher)))
+                .check(matches(containingHighlightSpan()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSearchHighlightingQueryWordsInFlagNameAndDescription() throws Throwable {
+        CallbackHelper helper = getFlagUiSearchBarListener();
+        int searchBarChangeCount = helper.getCallCount();
+        // "log" appears in both the flag name and the description
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("log"));
+        helper.waitForCallback(searchBarChangeCount, 1);
+
+        Matcher<View> flagNameMatcher =
+                allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING));
+        onView(flagNameMatcher).check(matches(containingHighlightSpan()));
+        onView(allOf(withId(R.id.flag_description), hasSibling(flagNameMatcher)))
+                .check(matches(containingHighlightSpan()));
     }
 
     @Test
