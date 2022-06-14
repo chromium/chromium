@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "components/device_signals/core/common/win/com_fakes.h"
 #include "components/device_signals/core/common/win/win_types.h"
@@ -39,7 +40,7 @@ class WscClientImplTest : public testing::Test {
       : wsc_client_(base::BindRepeating(&WscClientImplTest::CreateProductList,
                                         base::Unretained(this))) {}
 
-  HRESULT CreateProductList(IWSCProductList** product_list) {
+  HRESULT CreateProductList(ComPtr<IWSCProductList>* product_list) {
     if (fail_list_creation_) {
       return E_FAIL;
     }
@@ -223,6 +224,8 @@ TEST_F(WscClientImplTest, GetAntiVirusProducts_ProductErrors) {
 // Smoke/sanity test to verify that Defender's instance GUID does not change
 // over time. This test actually calls WSC.
 TEST(RealWscClientImplTest, SmokeWsc_GetAntiVirusProducts) {
+  base::win::ScopedCOMInitializer scoped_com_initializer;
+
   // That part of the display name is not translated when getting it from WSC,
   // so it can be used quite simply.
   constexpr char kPartialDefenderName[] = "Microsoft Defender";

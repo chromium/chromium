@@ -104,15 +104,50 @@ TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Wsc_Success) {
   }
 }
 
-// Tests that AV products are not retrieved on Win7.
-TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Win7) {
+// Tests that AV products are retrieved via WMI on Win7.
+TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Win7_Success) {
+  device_signals::AvProduct fake_av_product;
+  fake_av_product.display_name = "some display name";
+  fake_av_product.product_id = "some product id";
+  fake_av_product.state = device_signals::AvProductState::kOn;
+
+  device_signals::WmiAvProductsResponse fake_response;
+  fake_response.av_products.push_back(fake_av_product);
+
+  EXPECT_CALL(*wmi_client_, GetAntiVirusProducts())
+      .WillOnce(Return(fake_response));
+
+  base::test::TestFuture<const std::vector<device_signals::AvProduct>&> future;
+
+  // Override OS version after initializing `future` to prevent running into
+  // a DCHECK in ScopedWinrtInitializer.
   os_info_override_.emplace(
       base::test::ScopedOSInfoOverride::Type::kWin7ProSP1);
 
-  base::test::TestFuture<const std::vector<device_signals::AvProduct>&> future;
   win_system_signals_service_->GetAntiVirusSignals(future.GetCallback());
 
-  EXPECT_EQ(future.Get().size(), 0U);
+  const auto& av_products = future.Get();
+  EXPECT_EQ(av_products.size(), fake_response.av_products.size());
+  EXPECT_EQ(av_products[0].product_id, fake_response.av_products[0].product_id);
+}
+
+// Tests that Hotfix information is retrieved via WMI.
+TEST_F(WinSystemSignalsServiceTest, GetHotfixSignals_Success) {
+  device_signals::InstalledHotfix fake_hotfix{"some hotfix id"};
+  device_signals::WmiHotfixesResponse fake_response;
+  fake_response.hotfixes.push_back(fake_hotfix);
+
+  EXPECT_CALL(*wmi_client_, GetInstalledHotfixes())
+      .WillOnce(Return(fake_response));
+
+  base::test::TestFuture<const std::vector<device_signals::InstalledHotfix>&>
+      future;
+  win_system_signals_service_->GetHotfixSignals(future.GetCallback());
+
+  const auto& hotfixes_response = future.Get();
+  EXPECT_EQ(hotfixes_response.size(), fake_response.hotfixes.size());
+  EXPECT_EQ(hotfixes_response[0].hotfix_id,
+            fake_response.hotfixes[0].hotfix_id);
 }
 
 }  // namespace system_signals

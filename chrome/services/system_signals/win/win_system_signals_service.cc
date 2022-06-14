@@ -38,18 +38,29 @@ void WinSystemSignalsService::GetBinarySignals(
 
 void WinSystemSignalsService::GetAntiVirusSignals(
     GetAntiVirusSignalsCallback callback) {
-  // WSC is only supported on Win8+, and not server.
+  // The AV signal is not supported on Win server builds.
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info && os_info->version_type() != base::win::SUITE_SERVER &&
-      os_info->version() >= base::win::Version::WIN8) {
-    auto response = wsc_client_->GetAntiVirusProducts();
-
-    // TODO(b/229737923): Collect metrics.
-    std::move(callback).Run(std::move(response.av_products));
+  if (!os_info || os_info->version_type() == base::win::SUITE_SERVER) {
+    std::move(callback).Run({});
     return;
   }
 
-  std::move(callback).Run({});
+  std::vector<device_signals::AvProduct> av_products;
+  if (os_info->version() >= base::win::Version::WIN8) {
+    // WSC is only supported on Win8+.
+    auto response = wsc_client_->GetAntiVirusProducts();
+
+    // TODO(b/229737923): Collect metrics.
+    av_products = std::move(response.av_products);
+  } else {
+    // Fallback to an undocumented WMI table on Win7 and earlier.
+    auto response = wmi_client_->GetAntiVirusProducts();
+
+    // TODO(b/229737923): Collect metrics.
+    av_products = std::move(response.av_products);
+  }
+
+  std::move(callback).Run(std::move(av_products));
 }
 
 void WinSystemSignalsService::GetHotfixSignals(

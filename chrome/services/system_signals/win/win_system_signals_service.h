@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/win/scoped_com_initializer.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -52,6 +53,7 @@ class WinSystemSignalsService
   mojo::Receiver<device_signals::mojom::SystemSignalsService> receiver_;
   std::unique_ptr<device_signals::WmiClient> wmi_client_;
   std::unique_ptr<device_signals::WscClient> wsc_client_;
+  base::win::ScopedCOMInitializer scoped_com_initializer_;
 };
 
 }  // namespace system_signals

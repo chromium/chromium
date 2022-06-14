@@ -14,8 +14,8 @@ namespace device_signals {
 
 class WscClientImpl : public WscClient {
  public:
-  using CreateProductListCallback =
-      base::RepeatingCallback<HRESULT(IWSCProductList**)>;
+  using CreateProductListCallback = base::RepeatingCallback<HRESULT(
+      Microsoft::WRL::ComPtr<IWSCProductList>*)>;
 
   WscClientImpl();
 

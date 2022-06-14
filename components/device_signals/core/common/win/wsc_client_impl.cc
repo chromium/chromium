@@ -40,9 +40,17 @@ AvProductState ConvertState(WSC_SECURITY_PRODUCT_STATE state) {
   }
 }
 
-HRESULT CreateProductList(IWSCProductList** product_list) {
-  return ::CoCreateInstance(__uuidof(WSCProductList), nullptr,
-                            CLSCTX_INPROC_SERVER, IID_PPV_ARGS(product_list));
+HRESULT CreateProductList(ComPtr<IWSCProductList>* out_product_list) {
+  ComPtr<IWSCProductList> product_list;
+  HRESULT hr =
+      ::CoCreateInstance(__uuidof(WSCProductList), nullptr,
+                         CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&product_list));
+
+  if (!FAILED(hr)) {
+    *out_product_list = product_list;
+  }
+
+  return hr;
 }
 
 }  // namespace
