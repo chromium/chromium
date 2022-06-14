@@ -14,21 +14,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -44,7 +42,6 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -124,6 +121,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private CircularProgressDrawable mSpinner;
     private View mToolbarView;
     private View mToolbarCoordinator;
+    private Runnable mPositionUpdater;
 
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -259,8 +257,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         }
     }
 
-    public PartialCustomTabHeightStrategy(Activity activity,
-            ObservableSupplier<? extends FrameLayout> parentViewSupplier, @Px int initialHeight,
+    public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             Integer navigationBarColor, Integer navigationBarDividerColor,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
@@ -268,31 +265,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mMaxHeight = getMaximumPossibleHeight();
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
-
-        // Invoked twice - when populated/destroyed(null)
-        // TODO(jinsukkim): Obtain the CoordinatorLayout and ContentFrame directly,
-        //                  not through CompositorViewHolder which is not in use.
-        parentViewSupplier.addObserver(parentView -> {
-            if (parentView == null) {
-                mCoordinatorLayout = null;
-                mContentFrame = null;
-                return;
-            }
-
-            mCoordinatorLayout = (ViewGroup) parentView.getParent();
-            mContentFrame = (ViewGroup) mCoordinatorLayout.getParent();
-
-            // Elevate the main web contents area as high as the handle bar to have the shadow
-            // effect look right.
-            int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
-            mCoordinatorLayout.setElevation(ev);
-
-            // When the navigation bar on the right side (not at the bottom), no need to set
-            // contents height since it is fixed to the max height.
-            if (mNavbarHeight != 0) setContentsHeight();
-            updateNavbarVisibility(true);
-        });
-
         mOnResizedCallback = onResizedCallback;
         // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
         // 90% of the height.
@@ -337,7 +309,49 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             @Override
             public void onAnimationCancel(Animator animator) {}
         };
+
+        // On pre-R devices, We wait till the layout is complete and get the content
+        // |android.R.id.content| view height. See |getAppUsableScreenHeight|.
+        mPositionUpdater =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? this::updatePosition : () -> {
+            // Maybe invoked before layout inflation? Simply return here - postion update will be
+            // executed by |onPostInflationStartUp| anyway.
+            if (mContentFrame == null) return;
+
+            mContentFrame.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            mContentFrame.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            updatePosition();
+                        }
+                    });
+        };
+    }
+
+    @Override
+    public void onPostInflationStartup() {
+        mContentFrame = (ViewGroup) mActivity.findViewById(android.R.id.content);
+        mCoordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
+
+        // Elevate the main web contents area as high as the handle bar to have the shadow
+        // effect look right.
+        int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
+        mCoordinatorLayout.setElevation(ev);
+
+        mPositionUpdater.run();
+    }
+
+    private void updatePosition() {
+        if (mContentFrame == null) return;
+
         initializeHeight();
+        updateShadowOffset();
+
+        // When the navigation bar on the right side (not at the bottom), no need to
+        // set contents height since it is fixed to the max height.
+        if (mNavbarHeight != 0) setContentsHeight();
+        updateNavbarVisibility(true);
     }
 
     private @Px int getNavbarHeight() {
@@ -348,14 +362,19 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     .getInsets(WindowInsets.Type.navigationBars())
                     .bottom;
         }
+        // On pre-R devices, there is no official way to get the navigation bar height. A common way
+        // was to get it from a resource definition('navigation_bar_height') but it fails on some
+        // vendor-customized devices. A workaround here is to subtract the app-usable height
+        // (client view height + status bar height) from the whole display height.
         return getDisplayHeight() - getAppUsableScreenHeight();
     }
 
     private int getAppUsableScreenHeight() {
-        Display display = mActivity.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.y;
+        // A correct way to get the client area height would be to use |decor_content_parent|,
+        // the parent of |content|, to make sure to include the top action bar dimension. But
+        // CCT (or Chrome for that matter) doesn't have the top action bar. So getting the height
+        // of |content| is enough.
+        return mContentFrame.getHeight() + getStatusBarHeight();
     }
 
     @Override
@@ -378,10 +397,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     public void onConfigurationChanged(Configuration newConfig) {
         if (newConfig.orientation != mOrientation) {
             mOrientation = newConfig.orientation;
-            initializeHeight();
-            updateShadowOffset();
-            setContentsHeight();
-            updateNavbarVisibility(true);
+            if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                // We should update CCT position before Window#FLAG_LAYOUT_NO_LIMITS is set,
+                // otherwise it is not possible to get the correct content height.
+                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            }
+            mPositionUpdater.run();
         }
     }
 
@@ -454,9 +475,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // TODO(jinsukkim): Handle multi-window mode.
         if (attributes.height == height) return;
 
-        // We do not resize Window but just translate its vertical offset, and resize the parent
-        // view of WebContents (CompositorViewHolder) instead. This helps us work around the round-
-        // corner bug in Android S. See b/223536648.
+        // We do not resize Window but just translate its vertical offset, and resize Coordinator-
+        // LayoutForPointer instead. This helps us work around the round-corner bug in Android S.
+        // See b/223536648.
         attributes.y = Math.max(maxExpandedY, maxHeight - height - mNavbarHeight);
         mActivity.getWindow().setAttributes(attributes);
     }
@@ -523,7 +544,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             // Toolbar should not be hidden by spinner screen.
             ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(MATCH_PARENT, 0);
             lp.setMargins(0, mToolbarView.getHeight() + mHandleHeight + mShadowOffset, 0, 0);
-
             mSpinner = new CircularProgressDrawable(mActivity);
             mSpinner.setStyle(CircularProgressDrawable.LARGE);
             mSpinnerView.setImageDrawable(mSpinner);
@@ -571,9 +591,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // Show or hide our own navigation bar.
     private void updateNavbarVisibility(boolean show) {
         if (show) {
-            // No need draw its own navigation bar when it is located on the right side since
-            // the system navigation bar is visible and can handle API #setNavigationBarColor.
-            if (mNavbarHeight == 0) {
+            if (shouldShowSystemNavbar()) {
                 setNavigationBarAndDividerColor();
                 if (mNavbar != null) mNavbar.setVisibility(View.GONE);
                 return;
@@ -599,6 +617,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         showNavbarButtons(show);
     }
 
+    /**
+     * Return whether we need to show not its own custom navigation bar but the system-provided
+     * one that can handle the API |setNavigationBarColor()|.
+     */
+    private boolean shouldShowSystemNavbar() {
+        return mNavbarHeight == 0 || mOrientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
     // Position our own navbar where the system navigation bar which is obscured by WebContents
     // rendered over it due to Window#FLAGS_LAYOUT_NO_LIMITS would be shown.
     private void setNavbarOffset() {
@@ -616,7 +642,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // the bad contrast against buttons when they are both white.
         boolean needsDarkButtons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
         if (needsDarkButtons) color = ColorUtils.getDarkenedColorForStatusBar(color);
-        if (mNavbarHeight == 0) {
+        if (shouldShowSystemNavbar()) {
             mActivity.getWindow().setNavigationBarColor(color);
         } else {
             // Use our own navbar where the system navigation bar which is obscured by WebContents
@@ -629,7 +655,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Integer dividerColor = CustomTabNavigationBarController.getDividerColor(
                 mActivity, mNavigationBarColor, mNavigationBarDividerColor, needsDarkButtons);
-        if (mNavbarHeight == 0) {
+        if (shouldShowSystemNavbar()) {
             if (dividerColor != null) {
                 mActivity.getWindow().setNavigationBarDividerColor(dividerColor);
             }
@@ -692,7 +718,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return displayMetrics.heightPixels;
     }
 
-    private @Px int getFullyExpandedYCoordinate() {
+    private @Px int getStatusBarHeight() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return mActivity.getWindowManager()
                     .getCurrentWindowMetrics()
@@ -710,6 +736,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return statusBarHeight;
     }
 
+    private @Px int getFullyExpandedYCoordinate() {
+        return getStatusBarHeight();
+    }
+
     private @Px int getFullyExpandedYCoordinateWithAdjustment() {
         // Adding |mFullyExpandedAdjustmentHeight| to the y coordinate because the
         // coordinates system's origin is at the top left and y is growing in downward, larger y
@@ -725,14 +755,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
-            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator,
-            ViewGroup coordinatorLayout) {
+            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator) {
         mNavbar = navbar;
         mSpinnerView = spinnerView;
         mSpinner = spinner;
         mToolbarView = toolbar;
         mToolbarCoordinator = toolbarCoordinator;
-        mCoordinatorLayout = coordinatorLayout;
+
+        mPositionUpdater = this::updatePosition;
+        onPostInflationStartup();
     }
 
     @VisibleForTesting
