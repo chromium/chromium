@@ -36,8 +36,8 @@ int GetAddESimTooltipMessageId() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
-  if (!cellular_device)
-    return 0;
+
+  DCHECK(cellular_device);
 
   switch (cellular_device->inhibit_reason) {
     case chromeos::network_config::mojom::InhibitReason::kInstallingProfile:
