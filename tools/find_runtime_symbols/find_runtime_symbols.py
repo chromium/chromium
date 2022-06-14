@@ -42,7 +42,7 @@ _MAPS_FILENAME = 'maps'
 _FILES_FILENAME = 'files.json'
 
 
-class RuntimeSymbolsInProcess(object):
+class RuntimeSymbolsInProcess:
   def __init__(self):
     self.maps = None
     self._static_symbols_in_filse = {}
@@ -54,8 +54,7 @@ class RuntimeSymbolsInProcess(object):
         if static_symbols:
           return static_symbols.find_procedure_by_runtime_address(
               runtime_address, vma)
-        else:
-          return None
+        return None
     return None
 
   def find_sourcefile(self, runtime_address):
@@ -65,8 +64,7 @@ class RuntimeSymbolsInProcess(object):
         if static_symbols:
           return static_symbols.find_sourcefile_by_runtime_address(
               runtime_address, vma)
-        else:
-          return None
+        return None
     return None
 
   def find_typeinfo(self, runtime_address):
@@ -76,8 +74,7 @@ class RuntimeSymbolsInProcess(object):
         if static_symbols:
           return static_symbols.find_typeinfo_by_runtime_address(
               runtime_address, vma)
-        else:
-          return None
+        return None
     return None
 
   @staticmethod
