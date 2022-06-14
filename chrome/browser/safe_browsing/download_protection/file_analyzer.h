@@ -118,10 +118,13 @@ class FileAnalyzer {
       const DocumentAnalyzerResults& document_results);
 #endif
 
+  void LogAnalysisDurationWithAndWithoutSuffix(const std::string& suffix);
+
   base::FilePath target_path_;
   base::FilePath tmp_path_;
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   base::OnceCallback<void(Results)> callback_;
+  base::Time start_time_;
   Results results_;
 
   scoped_refptr<SandboxedZipAnalyzer> zip_analyzer_;

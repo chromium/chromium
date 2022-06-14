@@ -85,6 +85,7 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
   target_path_ = target_path;
   tmp_path_ = tmp_path;
   callback_ = std::move(callback);
+  start_time_ = base::Time::Now();
 
   results_.type = download_type_util::GetDownloadType(target_path_);
 
@@ -135,6 +136,7 @@ void FileAnalyzer::StartExtractFileFeatures() {
 }
 
 void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
+  LogAnalysisDurationWithAndWithoutSuffix("Executable");
   results.type = download_type_util::GetDownloadType(target_path_);
   std::move(callback_).Run(results);
 }
@@ -156,6 +158,7 @@ void FileAnalyzer::OnZipAnalysisFinished(
     const ArchiveAnalyzerResults& archive_results) {
   base::UmaHistogramEnumeration("SBClientDownload.ZipArchiveAnalysisResult",
                                 archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Zip");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Even if !results.success, some of the zip may have been parsed.
@@ -204,6 +207,7 @@ void FileAnalyzer::OnRarAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::UmaHistogramEnumeration("SBClientDownload.RarArchiveAnalysisResult",
                                 archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Rar");
 
   results_.archive_is_valid =
       (archive_results.success ? ArchiveValid::VALID : ArchiveValid::INVALID);
@@ -262,6 +266,7 @@ void FileAnalyzer::OnDmgAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::UmaHistogramEnumeration("SBClientDownload.DmgArchiveAnalysisResult",
                                 archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("Dmg");
 
   if (archive_results.signature_blob.size() > 0) {
     results_.disk_image_signature =
@@ -309,11 +314,9 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Log metrics for Document Analysis.
-  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.DocumentAnalysisSuccess",
-                        document_results.success);
-  UMA_HISTOGRAM_MEDIUM_TIMES(
-      "SBClientDownload.ExtractDocumentFeaturesTimeMedium",
-      base::TimeTicks::Now() - document_analysis_start_time_);
+  base::UmaHistogramBoolean("SBClientDownload.DocumentAnalysisSuccess",
+                            document_results.success);
+  LogAnalysisDurationWithAndWithoutSuffix("Document");
 
   ClientDownloadRequest::DocumentSummary document_summary;
   ClientDownloadRequest::DocumentInfo* document_info =
@@ -335,4 +338,14 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   std::move(callback_).Run(std::move(results_));
 }
 #endif
+
+void FileAnalyzer::LogAnalysisDurationWithAndWithoutSuffix(
+    const std::string& suffix) {
+  base::UmaHistogramMediumTimes("SBClientDownload.FileAnalysisDuration",
+                                base::Time::Now() - start_time_);
+  base::UmaHistogramMediumTimes(
+      "SBClientDownload.FileAnalysisDuration." + suffix,
+      base::Time::Now() - start_time_);
+}
+
 }  // namespace safe_browsing

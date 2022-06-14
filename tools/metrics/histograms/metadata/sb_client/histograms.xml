@@ -254,12 +254,35 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
     expires_after="2022-10-16">
+  <obsolete>
+    Replaced with SBClientDownload.FileAnalysisDuration.Document in 06-2022.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
     info from an Office document.
   </summary>
+</histogram>
+
+<histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
+    expires_after="2023-06-08">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the time it takes for the SafeBrowsing download service to check the
+    safety of the contents of a download which underwent analysis for
+    {Analysis}. This only includes file feature extraction. Also see
+    SBClientDownload.DownloadRequestDuration.
+  </summary>
+  <token key="Analysis">
+    <variant name="" summary="any file type, aggregated"/>
+    <variant name=".Dmg"/>
+    <variant name=".Document" summary="Office documents"/>
+    <variant name=".Executable" summary="executables"/>
+    <variant name=".Rar"/>
+    <variant name=".Zip"/>
+  </token>
 </histogram>
 
 <histogram name="SBClientDownload.MalwareDeepScanResult.{trigger}"
