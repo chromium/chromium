@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
@@ -20,9 +19,7 @@ using CompletionCallback = base::OnceClosure;
 
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
-class LinkToTextMenuObserver
-    : public RenderViewContextMenuObserver,
-      public content::DocumentUserData<LinkToTextMenuObserver> {
+class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
   static std::unique_ptr<LinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy,
@@ -46,7 +43,6 @@ class LinkToTextMenuObserver
 
  private:
   friend class MockLinkToTextMenuObserver;
-  friend class content::DocumentUserData<LinkToTextMenuObserver>;
 
   explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
                                   content::RenderFrameHost* render_frame_host,
@@ -140,8 +136,6 @@ class LinkToTextMenuObserver
   CompletionCallback completion_callback_;
 
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
-
-  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
