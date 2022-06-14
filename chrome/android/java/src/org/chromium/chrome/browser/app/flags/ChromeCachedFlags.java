@@ -141,11 +141,8 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
                         add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
-                        add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);
                         add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
-                        add(StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB);
-                        add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
                         add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT);
                         add(StartSurfaceConfiguration

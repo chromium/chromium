@@ -190,7 +190,6 @@ import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -2502,9 +2501,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     /**
-     * @return Whether opening a new tab is handled by the Start surface. It may show the Start
-     * surface, or open a new tab with the omnibox get focused, depending on the value of
-     * {@link StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB}.
+     * @return Whether opening a new tab is handled by the Start surface.
      */
     private boolean showStartSurfaceHomeForNTP(boolean isNTP, boolean incognito, Tab parentTab,
             @NewTabPageLaunchOrigin int launchOrigin) {

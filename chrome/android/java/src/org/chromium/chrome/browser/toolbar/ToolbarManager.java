@@ -670,7 +670,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
                 refreshSelectedTab(tab);
                 onTabOrModelChanged();
-                maybeTriggerCacheRefreshForZeroSuggest(tab, tab.getUrl());
+                maybeTriggerCacheRefreshForZeroSuggest(tab.getUrl());
             }
 
             @Override
@@ -678,7 +678,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 // Part of scroll jank investigation http://crbug.com/1311003. Will remove
                 // TraceEvent after the investigation is complete.
                 try (TraceEvent te = TraceEvent.scoped("ToolbarManager::onPageLoadFinished")) {
-                    maybeTriggerCacheRefreshForZeroSuggest(tab, url);
+                    maybeTriggerCacheRefreshForZeroSuggest(url);
                 }
             }
 
@@ -687,7 +687,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
              * Avoid issuing multiple concurrent server requests for the same event to
              * reduce server pressure.
              */
-            private void maybeTriggerCacheRefreshForZeroSuggest(Tab tab, GURL url) {
+            private void maybeTriggerCacheRefreshForZeroSuggest(GURL url) {
                 if (url != null && UrlUtilities.isNTPUrl(url)) {
                     mLocationBarModel.notifyZeroSuggestRefresh();
                 }

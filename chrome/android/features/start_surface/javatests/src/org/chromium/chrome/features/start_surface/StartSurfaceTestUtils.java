@@ -226,16 +226,6 @@ public class StartSurfaceTestUtils {
      * Create all the files so that tab models can be restored.
      * @param tabIds all the Tab IDs in the normal tab model.
      * @param urls all of the URLs in the normal tab model.
-     */
-    public static void createTabStateFile(int[] tabIds, @Nullable String[] urls)
-            throws IOException {
-        createTabStateFile(tabIds, urls, 0);
-    }
-
-    /**
-     * Create all the files so that tab models can be restored.
-     * @param tabIds all the Tab IDs in the normal tab model.
-     * @param urls all of the URLs in the normal tab model.
      * @param selectedIndex the selected index of normal tab model.
      */
     public static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex)

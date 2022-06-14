@@ -150,8 +150,6 @@ public class SuggestionsMetrics {
             case PageClassification.NTP_VALUE:
             case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
             case PageClassification.INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
-            case PageClassification.START_SURFACE_NEW_TAB_VALUE:
-            case PageClassification.START_SURFACE_HOMEPAGE_VALUE:
                 suffix = "NTP";
                 break;
 

@@ -465,10 +465,6 @@ public final class ReturnToChromeUtil {
     public static boolean shouldShowOverviewPageOnStart(Context context, Intent intent,
             TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker) {
         String intentUrl = IntentHandler.getUrlFromIntent(intent);
-        // If Chrome is launched by tapping the New Tab Item from the launch icon and
-        // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
-        // shown on Startup.
-        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(intent)) return false;
 
         // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
         // If user taps the "New Tab" item from the app icon, the intentUrl will be chrome://newtab,

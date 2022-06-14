@@ -82,7 +82,6 @@ class FakeTopSites : public history::TopSites {
 };
 
 constexpr const auto* WEB_URL = u"https://example.com/";
-constexpr const auto* NTP_URL = u"chrome://newtab";
 constexpr const auto* SRP_URL = u"https://www.google.com/?q=flowers";
 constexpr const auto* FTP_URL = u"ftp://just.for.filtering.com";
 }  // namespace
@@ -335,18 +334,6 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   EXPECT_TRUE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
           WEB_URL, WEB_URL, OEP::OTHER, OFT::DELETED_PERMANENT_TEXT)));
-
-  // Verifies that metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE is allowed
-  // for MostVisited.
-  EXPECT_TRUE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          {}, NTP_URL, OEP::START_SURFACE_HOMEPAGE, OFT::ON_FOCUS)));
-
-  // Verifies that metrics::OmniboxEventProto::START_SURFACE_NEW_TAB is allowed
-  // for MostVisited.
-  EXPECT_TRUE(
-      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          {}, NTP_URL, OEP::START_SURFACE_NEW_TAB, OFT::ON_FOCUS)));
 }
 
 TEST_P(ParameterizedMostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {

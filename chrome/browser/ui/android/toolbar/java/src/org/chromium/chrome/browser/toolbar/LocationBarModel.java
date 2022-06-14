@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -588,12 +587,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public int getPageClassification(boolean isFocusedFromFakebox) {
         if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC_VALUE;
 
-        // Provide NTP or START_SURFACE_HOMEPAGE as page class in overview mode (when Start Surface
-        // is enabled). No call to the backend necessary or possible, since there is no tab or
-        // navigation entry.
-        if (isInOverviewAndShowingOmnibox()) {
-            return StartSurfaceConfiguration.getPageClassificationForHomepage();
-        }
+        // Provide NTP as page class in overview mode (when Start Surface is enabled). No call
+        // to the backend necessary or possible, since there is no tab or navigation entry.
+        if (isInOverviewAndShowingOmnibox()) return PageClassification.NTP_VALUE;
 
         return LocationBarModelJni.get().getPageClassification(
                 mNativeLocationBarModelAndroid, LocationBarModel.this, isFocusedFromFakebox);

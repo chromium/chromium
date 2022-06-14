@@ -793,11 +793,6 @@ public class TabPersistentStore {
                 RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
                         TabRestoreMethod.SKIPPED_NTP, TabRestoreMethod.NUM_ENTRIES);
                 return;
-            } else if (TextUtils.isEmpty(tabToRestore.url)) {
-                Log.i(TAG, "Skipping restore of empty Tabs.");
-                RecordHistogram.recordEnumeratedHistogram("Tabs.TabRestoreMethod",
-                        TabRestoreMethod.SKIPPED_EMPTY_URL, TabRestoreMethod.NUM_ENTRIES);
-                return;
             }
 
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");

@@ -190,7 +190,6 @@ public class AppLaunchDrawBlocker {
                 tabState, HomepageManager.isHomepageNonNtpPreNative(), singleUrlBarMode);
 
         if (shouldBlockDrawForNtpOnColdStartWithIntent(hasValidIntentUrl, isNtpUrl,
-                    IntentHandler.shouldIntentShowNewTabOmniboxFocused(mIntentSupplier.get()),
                     IncognitoTabLauncher.didCreateIntent(mIntentSupplier.get()),
                     shouldBlockWithoutIntent)) {
             mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
@@ -218,21 +217,16 @@ public class AppLaunchDrawBlocker {
     /**
      * @param hasValidIntentUrl Whether there is an intent that isn't ignored with a non-empty Url.
      * @param isNtpUrl Whether the intent has NTP Url.
-     * @param shouldShowNewTabOmniboxFocused Whether the intent will open a new tab with omnibox
-     *        focused.
      * @param shouldLaunchIncognitoTab Whether the intent is launching an incognito tab.
      * @param shouldBlockDrawForNtpOnColdStartWithoutIntent Result of
      *        {@link #shouldBlockDrawForNtpOnColdStartWithoutIntent}.
      * @return Whether the View draw should be blocked because the NTP will be shown on cold start.
      */
     private boolean shouldBlockDrawForNtpOnColdStartWithIntent(boolean hasValidIntentUrl,
-            boolean isNtpUrl, boolean shouldShowNewTabOmniboxFocused,
-            boolean shouldLaunchIncognitoTab,
+            boolean isNtpUrl, boolean shouldLaunchIncognitoTab,
             boolean shouldBlockDrawForNtpOnColdStartWithoutIntent) {
         if (hasValidIntentUrl && isNtpUrl) {
-            // TODO(crbug.com/1199374): We should find another solution for focusing on new tab
-            // rather than special casing it here.
-            return !shouldShowNewTabOmniboxFocused && !shouldLaunchIncognitoTab;
+            return !shouldLaunchIncognitoTab;
         } else if (hasValidIntentUrl && !isNtpUrl) {
             return false;
         } else {
@@ -250,8 +244,6 @@ public class AppLaunchDrawBlocker {
      */
     private void recordBlockDrawForInitialTabHistograms(
             boolean isTabRegularNtp, boolean isOverviewShownWithoutInstantStart) {
-        boolean focusedOmnibox =
-                IntentHandler.shouldIntentShowNewTabOmniboxFocused(mIntentSupplier.get());
         long durationDrawBlocked =
                 SystemClock.elapsedRealtime() - mTimeStartedBlockingDrawForInitialTab;
 
@@ -266,8 +258,7 @@ public class AppLaunchDrawBlocker {
 
         @BlockDrawForInitialTabAccuracy
         int enumEntry;
-        boolean shouldBlockDraw =
-                (singleUrlBarNtp && !focusedOmnibox) || isOverviewShownWithoutInstantStart;
+        boolean shouldBlockDraw = singleUrlBarNtp || isOverviewShownWithoutInstantStart;
         if (mBlockDrawForInitialTab || mBlockDrawForOverviewPage) {
             enumEntry = shouldBlockDraw
                     ? BlockDrawForInitialTabAccuracy.BLOCKED_CORRECTLY

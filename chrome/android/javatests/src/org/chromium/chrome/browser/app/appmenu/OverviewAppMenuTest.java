@@ -112,24 +112,6 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:omnibox_focused_on_new_tab/true"})
-    public void testNewTabIsEnabledWithStartSurfaceFinale() throws Exception {
-        // clang-format on
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
-
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:open_ntp_instead_of_start/true"})
     public void testNewTabIsEnabledWithStartSurfaceV2() throws Exception {
         // clang-format on

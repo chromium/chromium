@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappActivity;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -1077,44 +1076,6 @@ public class IntentHandler {
         return Settings.Global.getInt(
                        context.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0)
                 != 0;
-    }
-
-    /**
-     * @return Whether the {@link Intent} will open a new tab with the omnibox focused.
-     */
-    public static boolean shouldIntentShowNewTabOmniboxFocused(Intent intent) {
-        final String intentUrl = IntentHandler.getUrlFromIntent(intent);
-        // If Chrome is launched by tapping the New tab item from the launch icon and
-        // OMNIBOX_FOCUSED_ON_NEW_TAB is enabled, a new Tab with omnibox focused will be shown on
-        // Startup.
-        final boolean isCanonicalizedNTPUrl = UrlUtilities.isCanonicalizedNTPUrl(intentUrl);
-
-        final boolean isFromShortcutOrWidget = IntentHandler.isTabOpenAsNewTabFromLauncher(intent)
-                || IntentHandler.isTabOpenAsNewTabFromAppWidget(intent);
-
-        return isCanonicalizedNTPUrl && isFromShortcutOrWidget
-                && StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
-                && IntentHandler.wasIntentSenderChrome(intent);
-    }
-
-    /**
-     * @param intent The {@link Intent} to extract the info from.
-     * @return Whether the Intent specifies to create a new Tab from the launcher shortcut.
-     */
-    public static boolean isTabOpenAsNewTabFromLauncher(Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
-                && IntentUtils.safeGetBooleanExtra(
-                        intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);
-    }
-
-    /**
-     * @param intent The {@link Intent} to extract the info from.
-     * @return Whether the Intent specifies to create a new Tab from an app widget.
-     */
-    public static boolean isTabOpenAsNewTabFromAppWidget(Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
-                && IntentUtils.safeGetBooleanExtra(
-                        intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false);
     }
 
     /*

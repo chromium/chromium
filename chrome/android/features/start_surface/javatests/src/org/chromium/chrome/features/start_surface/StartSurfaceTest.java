@@ -412,7 +412,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/false"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
     public void testSearchInSingleSurface() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());

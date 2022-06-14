@@ -148,9 +148,7 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
   // Any context other than those listed below will be rejected.
   if (page_class != metrics::OmniboxEventProto::OTHER &&
       page_class != metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
-      page_class != metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET &&
-      page_class != metrics::OmniboxEventProto::START_SURFACE_HOMEPAGE &&
-      page_class != metrics::OmniboxEventProto::START_SURFACE_NEW_TAB) {
+      page_class != metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET) {
     return false;
   }
 
