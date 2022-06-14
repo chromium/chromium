@@ -210,12 +210,12 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
  public:
   // Enumerates the list of installed local and network printers.  It will
   // return success when the available installed printers have been enumerated
-  // into `printer_list`.  Note that `printer_list` must not be null and also
-  // should be empty prior to this call.  If there are no printers installed
-  // then it will still return success, and `printer_list` remains empty.  The
-  // result code will return one of the error result codes when there is a
-  // failure in generating the list.
-  virtual mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) = 0;
+  // into `printer_list`.  Note that `printer_list` should be empty prior to
+  // this call.  If there are no printers installed then it will still return
+  // success, and `printer_list` remains empty.  The result code will return
+  // one of the error result codes when there is a failure in generating the
+  // list.
+  virtual mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) = 0;
 
   // Gets the default printer name.  If there is no default printer then it
   // will still return success and `default_printer` will be empty.  The result

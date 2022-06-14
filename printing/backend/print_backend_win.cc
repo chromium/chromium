@@ -266,7 +266,7 @@ class PrintBackendWin : public PrintBackend {
   PrintBackendWin() = default;
 
   // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
   mojom::ResultCode GetDefaultPrinterName(
       std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
@@ -286,8 +286,8 @@ class PrintBackendWin : public PrintBackend {
 };
 
 mojom::ResultCode PrintBackendWin::EnumeratePrinters(
-    PrinterList* printer_list) {
-  DCHECK(printer_list);
+    PrinterList& printer_list) {
+  DCHECK(printer_list.empty());
   DWORD bytes_needed = 0;
   DWORD count_returned = 0;
   constexpr DWORD kFlags = PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS;
@@ -329,7 +329,7 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
     if (printer.OpenPrinterWithName(printer_info[index].pPrinterName) &&
         InitBasicPrinterInfo(printer.Get(), &info)) {
       info.is_default = (info.printer_name == default_printer);
-      printer_list->push_back(info);
+      printer_list.push_back(info);
     }
   }
 

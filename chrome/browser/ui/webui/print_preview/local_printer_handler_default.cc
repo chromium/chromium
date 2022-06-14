@@ -156,7 +156,7 @@ PrinterList LocalPrinterHandlerDefault::EnumeratePrintersAsync(
       PrintBackend::CreateInstance(locale));
 
   PrinterList printer_list;
-  mojom::ResultCode result = print_backend->EnumeratePrinters(&printer_list);
+  mojom::ResultCode result = print_backend->EnumeratePrinters(printer_list);
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Failure enumerating local printers, result: "
                        << result;

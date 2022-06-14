@@ -136,9 +136,8 @@ void PrintBackendCUPS::DestinationDeleter::operator()(cups_dest_t* dest) const {
 }
 
 mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
-    PrinterList* printer_list) {
-  DCHECK(printer_list);
-  printer_list->clear();
+    PrinterList& printer_list) {
+  DCHECK(printer_list.empty());
 
   // If possible prefer to use cupsEnumDests() over GetDests(), because the
   // latter has been found to filter out some destination values if a device
@@ -191,14 +190,14 @@ mojom::ResultCode PrintBackendCUPS::EnumeratePrinters(
     PrinterBasicInfo printer_info;
     if (PrinterBasicInfoFromCUPS(printer, &printer_info) ==
         mojom::ResultCode::kSuccess) {
-      printer_list->push_back(printer_info);
+      printer_list.push_back(printer_info);
     }
   }
 
   cupsFreeDests(dests_data.num_dests, dests_data.dests);
 
   VLOG(1) << "CUPS: Enumerated printers, server: " << print_server_url_
-          << ", # of printers: " << printer_list->size();
+          << ", # of printers: " << printer_list.size();
   return mojom::ResultCode::kSuccess;
 }
 

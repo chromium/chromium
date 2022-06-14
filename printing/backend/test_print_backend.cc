@@ -46,8 +46,8 @@ TestPrintBackend::TestPrintBackend() = default;
 TestPrintBackend::~TestPrintBackend() = default;
 
 mojom::ResultCode TestPrintBackend::EnumeratePrinters(
-    PrinterList* printer_list) {
-  DCHECK(printer_list->empty());
+    PrinterList& printer_list) {
+  DCHECK(printer_list.empty());
   if (printer_map_.empty())
     return mojom::ResultCode::kSuccess;
 
@@ -56,7 +56,7 @@ mojom::ResultCode TestPrintBackend::EnumeratePrinters(
 
     // Can only return basic info for printers which have registered info.
     if (data->info)
-      printer_list->emplace_back(*data->info);
+      printer_list.emplace_back(*data->info);
   }
   return mojom::ResultCode::kSuccess;
 }

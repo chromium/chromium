@@ -412,7 +412,7 @@ void PrintBackendServiceImpl::EnumeratePrinters(
   }
 
   PrinterList printer_list;
-  mojom::ResultCode result = print_backend_->EnumeratePrinters(&printer_list);
+  mojom::ResultCode result = print_backend_->EnumeratePrinters(printer_list);
   if (result != mojom::ResultCode::kSuccess) {
     std::move(callback).Run(mojom::PrinterListResult::NewResultCode(result));
     return;

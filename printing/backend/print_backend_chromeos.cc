@@ -23,7 +23,7 @@ class PrintBackendChromeOS : public PrintBackend {
   PrintBackendChromeOS() = default;
 
   // PrintBackend implementation.
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override;
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
   mojom::ResultCode GetDefaultPrinterName(
       std::string& default_printer) override;
   mojom::ResultCode GetPrinterBasicInfo(
@@ -43,7 +43,7 @@ class PrintBackendChromeOS : public PrintBackend {
 };
 
 mojom::ResultCode PrintBackendChromeOS::EnumeratePrinters(
-    PrinterList* printer_list) {
+    PrinterList& printer_list) {
   return mojom::ResultCode::kSuccess;
 }
 

@@ -39,7 +39,7 @@ class PrintBackendTest : public testing::Test {
 TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
   PrinterList printer_list;
 
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_FALSE(printer_list.empty());
 
@@ -52,7 +52,7 @@ TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersSomeInstalled) {
 TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersNoneInstalled) {
   PrinterList printer_list;
 
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   EXPECT_TRUE(printer_list.empty());
 }
@@ -63,7 +63,7 @@ TEST_F(PrintBackendTest, MANUAL_EnumeratePrintersNoneInstalled) {
 // specific printer.
 TEST_F(PrintBackendTest, MANUAL_GetXmlPrinterCapabilitiesForXpsDriver) {
   PrinterList printer_list;
-  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(&printer_list),
+  EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   for (const auto& printer : printer_list) {
     std::string capabilities;

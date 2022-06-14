@@ -19,7 +19,7 @@ class DummyPrintBackend : public PrintBackend {
   DummyPrintBackend(const DummyPrintBackend&) = delete;
   DummyPrintBackend& operator=(const DummyPrintBackend&) = delete;
 
-  mojom::ResultCode EnumeratePrinters(PrinterList* printer_list) override {
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override {
     return mojom::ResultCode::kFailed;
   }
 
