@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Shell>Containers"
-}
+mixins: "//chrome/browser/ash/guest_os/COMMON_METADATA"

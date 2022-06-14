@@ -1,5 +1,1 @@
-buganizer {
-    # ChromeOS > Software > Guest OS > Crostini
-    component_id: 1122570
-}
-team_email: "clumptini@google.com"
+mixins: "//chrome/browser/ash/guest_os/COMMON_METADATA"
