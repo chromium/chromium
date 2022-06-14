@@ -30,7 +30,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
+#include "ash/style/icon_button.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -55,6 +55,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 using views::BoxLayout;
@@ -71,6 +72,9 @@ constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
 // The padding between different sections within the apps page. Also used for
 // interior apps page container margin.
 constexpr int kVerticalPaddingBetweenSections = 16;
+
+// Label container padding in DIPs.
+constexpr auto kContinueLabelContainerPadding = gfx::Insets::TLBR(0, 16, 0, 16);
 
 // The horizontal interior margin for the apps page container - i.e. the margin
 // between the apps page bounds and the page content.
@@ -160,25 +164,11 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       kVerticalPaddingBetweenSections));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
-  // Add the button to show the continue section, wrapped in a view to center it
-  // horizontally.
-  {
-    auto* container =
-        scroll_contents->AddChildView(std::make_unique<views::View>());
-    auto* layout = container->SetLayoutManager(
-        std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
-    layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-    show_continue_section_button_ =
-        container->AddChildView(std::make_unique<PillButton>(
-            base::BindRepeating(
-                &AppListBubbleAppsPage::OnPressShowContinueSection,
-                base::Unretained(this)),
-            l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
-            PillButton::Type::kIcon, &kExpandAllIcon));
-    show_continue_section_button_->SetUseDefaultLabelFont();
-    // Put the icon on the right.
-    show_continue_section_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  }
+  // When feature LauncherHideContinueSection is enabled, the "Continue where
+  // you left off" label is in a container that is a child of this view.
+  // Otherwise the label is a child of the ContinueSectionView.
+  if (features::IsLauncherHideContinueSectionEnabled())
+    InitContinueLabelContainer(scroll_contents.get());
 
   // Continue section row.
   continue_section_ =
@@ -188,6 +178,12 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_->SetBorder(
       views::CreateEmptyBorder(kContinueSectionInsets));
   continue_section_->SetNudgeController(app_list_nudge_controller_.get());
+  if (features::IsLauncherHideContinueSectionEnabled()) {
+    // Decrease the between-sections spacing so the continue label is closer to
+    // the continue tasks section.
+    continue_section_->SetProperty(views::kMarginsKey,
+                                   gfx::Insets::TLBR(-14, 0, 0, 0));
+  }
 
   // Observe changes in continue section visibility, to keep separator
   // visibility in sync.
@@ -289,9 +285,19 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   // build a single animation with conditional parts. https://crbug.com/1266020
   const int section_offset = is_side_shelf ? -20 : 20;
   int vertical_offset = 0;
+  const bool animate_continue_label_container =
+      continue_label_container_ && continue_label_container_->GetVisible();
+  if (animate_continue_label_container) {
+    vertical_offset += section_offset;
+    SlideViewIntoPosition(continue_label_container_, vertical_offset,
+                          slide_duration);
+  }
   if (continue_section_->GetVisible() &&
       continue_section_->GetTasksSuggestionsCount() > 0) {
-    vertical_offset += section_offset;
+    // Only offset if this is the top section, otherwise animate next to the
+    // continue label container above.
+    if (!animate_continue_label_container)
+      vertical_offset += section_offset;
     SlideViewIntoPosition(continue_section_, vertical_offset, slide_duration);
   }
   if (recent_apps_->GetVisible() && recent_apps_->GetItemViewCount() > 0) {
@@ -646,19 +652,74 @@ ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {
   return scroll_view_->contents()->layer();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// private:
+
+void AppListBubbleAppsPage::InitContinueLabelContainer(
+    views::View* scroll_contents) {
+  continue_label_container_ =
+      scroll_contents->AddChildView(std::make_unique<views::View>());
+  continue_label_container_->SetBorder(
+      views::CreateEmptyBorder(kContinueLabelContainerPadding));
+
+  auto* layout = continue_label_container_->SetLayoutManager(
+      std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal));
+  layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
+
+  continue_label_ =
+      continue_label_container_->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
+  bubble_utils::ApplyStyle(continue_label_,
+                           bubble_utils::LabelStyle::kSubtitle);
+  continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  // Button should be right aligned, so flex label to fill empty space.
+  layout->SetFlexForView(continue_label_, 1);
+
+  toggle_continue_section_button_ =
+      continue_label_container_->AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&AppListBubbleAppsPage::OnToggleContinueSection,
+                              base::Unretained(this)),
+          IconButton::Type::kTinyFloating, &kChevronUpIcon,
+          /*is_togglable=*/false,
+          /*has_border=*/false));
+  // The icon is scaled down since the button is tiny.
+  toggle_continue_section_button_->SetIconSize(16);
+}
+
 void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {
-  // Show the "Show continue section" button if the continue section is hidden.
-  bool hide_continue_section = view_delegate_->ShouldHideContinueSection();
-  show_continue_section_button_->SetVisible(hide_continue_section);
   // The continue section view and recent apps view manage their own visibility
   // internally.
   continue_section_->UpdateElementsVisibility();
   recent_apps_->UpdateVisibility();
+  UpdateContinueLabelContainer();
   UpdateSeparatorVisibility();
 }
 
+void AppListBubbleAppsPage::UpdateContinueLabelContainer() {
+  if (!continue_label_container_)
+    return;
+
+  // If there are no suggested tasks and no recent apps, it doesn't make sense
+  // to show the continue label. This can happen for brand-new users.
+  continue_label_container_->SetVisible(
+      continue_section_->GetTasksSuggestionsCount() > 0 ||
+      recent_apps_->GetItemViewCount() > 0);
+
+  // Update the toggle continue section button tooltip and image.
+  bool is_hidden = view_delegate_->ShouldHideContinueSection();
+  toggle_continue_section_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      is_hidden ? IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION_TOOLTIP
+                : IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION_TOOLTIP));
+  toggle_continue_section_button_->SetVectorIcon(is_hidden ? kChevronDownIcon
+                                                           : kChevronUpIcon);
+}
+
 void AppListBubbleAppsPage::UpdateSeparatorVisibility() {
-  separator_->SetVisible(recent_apps_->GetVisible() ||
+  // The separator only hides if the user has the continue section shown but
+  // there are no suggested tasks and no apps. This is rare.
+  separator_->SetVisible(view_delegate_->ShouldHideContinueSection() ||
+                         recent_apps_->GetVisible() ||
                          continue_section_->GetVisible());
 }
 
@@ -819,9 +880,10 @@ void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
                         kSlideAnimationTweenType, cleanup);
 }
 
-void AppListBubbleAppsPage::OnPressShowContinueSection(const ui::Event& event) {
-  view_delegate_->SetHideContinueSection(false);
-  UpdateContinueSectionVisibility();
+void AppListBubbleAppsPage::OnToggleContinueSection() {
+  bool should_hide = !view_delegate_->ShouldHideContinueSection();
+  view_delegate_->SetHideContinueSection(should_hide);
+  // AppListControllerImpl will trigger UpdateContinueSectionVisibility().
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

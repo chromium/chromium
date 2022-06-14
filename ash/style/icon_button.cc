@@ -26,6 +26,7 @@
 namespace ash {
 namespace {
 
+constexpr int kTinyButtonSize = 24;
 constexpr int kSmallButtonSize = 32;
 constexpr int kMediumButtonSize = 36;
 constexpr int kLargeButtonSize = 48;
@@ -41,6 +42,9 @@ constexpr gfx::Insets kFocusRingPadding(1);
 
 int GetButtonSizeOnType(IconButton::Type type) {
   switch (type) {
+    case IconButton::Type::kTiny:
+    case IconButton::Type::kTinyFloating:
+      return kTinyButtonSize;
     case IconButton::Type::kSmall:
     case IconButton::Type::kSmallFloating:
       return kSmallButtonSize;
@@ -54,7 +58,8 @@ int GetButtonSizeOnType(IconButton::Type type) {
 }
 
 bool IsFloatingIconButton(IconButton::Type type) {
-  return type == IconButton::Type::kSmallFloating ||
+  return type == IconButton::Type::kTinyFloating ||
+         type == IconButton::Type::kSmallFloating ||
          type == IconButton::Type::kMediumFloating ||
          type == IconButton::Type::kLargeFloating;
 }
@@ -157,6 +162,13 @@ void IconButton::SetIconColor(const SkColor icon_color) {
   UpdateVectorIcon();
 }
 
+void IconButton::SetIconSize(int size) {
+  if (icon_size_ == size)
+    return;
+  icon_size_ = size;
+  UpdateVectorIcon();
+}
+
 void IconButton::SetToggled(bool toggled) {
   if (!is_togglable_ || toggled_ == toggled)
     return;
@@ -249,6 +261,7 @@ void IconButton::UpdateVectorIcon() {
   const SkColor toggled_icon_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_icon_color;
+  const int icon_size = icon_size_.value_or(kIconSize);
 
   // Skip repainting if the incoming icon is the same as the current icon. If
   // the icon has been painted before, |gfx::CreateVectorIcon()| will simply
@@ -256,7 +269,7 @@ void IconButton::UpdateVectorIcon() {
   // assumes that toggled/disabled images changes at the same time as the normal
   // image, which it currently does.
   const gfx::ImageSkia new_normal_image =
-      gfx::CreateVectorIcon(*icon_, kIconSize, icon_color);
+      gfx::CreateVectorIcon(*icon_, icon_size, icon_color);
   const gfx::ImageSkia& old_normal_image =
       GetImage(views::Button::STATE_NORMAL);
   if (!new_normal_image.isNull() && !old_normal_image.isNull() &&
@@ -267,7 +280,7 @@ void IconButton::UpdateVectorIcon() {
   SetImage(views::Button::STATE_NORMAL, new_normal_image);
   SetImage(views::Button::STATE_DISABLED,
            gfx::CreateVectorIcon(
-               *icon_, kIconSize,
+               *icon_, icon_size,
                AshColorProvider::GetDisabledColor(normal_icon_color)));
 }
 

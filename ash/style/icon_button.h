@@ -31,9 +31,11 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   METADATA_HEADER(IconButton);
 
   enum class Type {
+    kTiny,
     kSmall,
     kMedium,
     kLarge,
+    kTinyFloating,
     kSmallFloating,
     kMediumFloating,
     kLargeFloating
@@ -97,6 +99,9 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // when it's not toggled.
   void SetIconColor(const SkColor icon_color);
 
+  // Sets the size to use for the vector icon in DIPs.
+  void SetIconSize(int size);
+
   // Updates the `toggled_` state of the button.
   void SetToggled(bool toggled);
 
@@ -125,6 +130,9 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Customized value for button's background color or icon's color.
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> icon_color_;
+
+  // Custom value for icon size (usually used to make the icon smaller).
+  absl::optional<int> icon_size_;
 
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 };

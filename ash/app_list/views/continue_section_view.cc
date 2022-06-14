@@ -21,6 +21,7 @@
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -108,7 +109,9 @@ ContinueSectionView::ContinueSectionView(
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kUnbounded));
 
-  if (!tablet_mode) {
+  // The launcher "hide continue section" feature makes the label a child of
+  // AppListBubbleAppsPage.
+  if (!tablet_mode && !features::IsLauncherHideContinueSectionEnabled()) {
     continue_label_ = AddChildView(CreateContinueLabel(
         l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL)));
     continue_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);

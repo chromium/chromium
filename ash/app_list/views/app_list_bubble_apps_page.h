@@ -28,6 +28,7 @@ class Layer;
 }  // namespace ui
 
 namespace views {
+class Label;
 class Separator;
 }  // namespace views
 
@@ -40,7 +41,7 @@ class AppListFolderController;
 class AppListNudgeController;
 class AppListViewDelegate;
 class ContinueSectionView;
-class PillButton;
+class IconButton;
 class RecentAppsView;
 class RoundedScrollBar;
 class SearchResultPageDialogController;
@@ -151,8 +152,11 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Which layer animates is an implementation detail.
   ui::Layer* GetPageAnimationLayerForTest();
 
-  PillButton* show_continue_section_button_for_test() {
-    return show_continue_section_button_;
+  views::View* continue_label_container_for_test() {
+    return continue_label_container_;
+  }
+  IconButton* toggle_continue_section_button_for_test() {
+    return toggle_continue_section_button_;
   }
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
   views::Separator* separator_for_test() { return separator_; }
@@ -170,6 +174,14 @@ class ASH_EXPORT AppListBubbleAppsPage
 
  private:
   friend class AppListTestHelper;
+
+  // Creates the `continue_label_container_` view and its contents, the
+  // continue label and the toggle continue section button.
+  void InitContinueLabelContainer(views::View* scroll_contents);
+
+  // Updates the continue label container and its child views, including the
+  // container visibility and the toggle button state.
+  void UpdateContinueLabelContainer();
 
   void UpdateSeparatorVisibility();
 
@@ -206,13 +218,19 @@ class ASH_EXPORT AppListBubbleAppsPage
                              int vertical_offset,
                              base::TimeDelta duration);
 
-  // Button press callback for `show_continue_section_button_`.
-  void OnPressShowContinueSection(const ui::Event& event);
+  // Pressed callback for `toggle_continue_section_button_`.
+  void OnToggleContinueSection();
 
   AppListViewDelegate* view_delegate_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   RoundedScrollBar* scroll_bar_ = nullptr;
-  PillButton* show_continue_section_button_ = nullptr;
+
+  // Wraps both the continue label and the toggle continue section button.
+  // Only exists when feature LauncherHideContinueSection is enabled.
+  views::View* continue_label_container_ = nullptr;
+  views::Label* continue_label_ = nullptr;
+  IconButton* toggle_continue_section_button_ = nullptr;
+
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;

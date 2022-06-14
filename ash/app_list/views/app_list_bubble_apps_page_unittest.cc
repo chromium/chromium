@@ -20,7 +20,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/shell.h"
-#include "ash/style/pill_button.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/bind.h"
@@ -249,15 +249,25 @@ TEST_F(AppListBubbleAppsPageTest, ContinueSectionVisibleByDefault) {
   helper->AddAppItems(5);
   helper->ShowAppList();
 
-  // The show continue section button is hidden.
-  auto* apps_page = helper->GetBubbleAppsPage();
-  EXPECT_FALSE(
-      apps_page->show_continue_section_button_for_test()->GetVisible());
-
   // The continue section and recent apps are visible.
+  auto* apps_page = helper->GetBubbleAppsPage();
   EXPECT_TRUE(helper->GetBubbleContinueSectionView()->GetVisible());
   EXPECT_TRUE(helper->GetBubbleRecentAppsView()->GetVisible());
   EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
+}
+
+TEST_F(AppListBubbleAppsPageTest, ContinueLabelHiddenWhenNoTasksAndNoRecents) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
+  // Show the app list with no continue suggestions and no recent apps.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_TRUE(apps_page->continue_label_container_for_test());
+  EXPECT_FALSE(apps_page->continue_label_container_for_test()->GetVisible());
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
@@ -272,19 +282,24 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
   helper->AddAppItems(5);
   helper->ShowAppList();
 
-  // Hide the continue section.
-  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
-
-  // The show continue section button appears.
+  // The toggle continue section button has the "hide" tooltip.
   auto* apps_page = helper->GetBubbleAppsPage();
-  auto* show_continue_section_button =
-      apps_page->show_continue_section_button_for_test();
-  EXPECT_TRUE(show_continue_section_button->GetVisible());
+  IconButton* toggle_continue_section_button =
+      apps_page->toggle_continue_section_button_for_test();
+  ASSERT_TRUE(toggle_continue_section_button);
+  EXPECT_EQ(toggle_continue_section_button->GetTooltipText(),
+            u"Hide all suggestions");
+
+  // Hide the continue section.
+  LeftClickOn(toggle_continue_section_button);
 
   // Continue section and recent apps are hidden.
   EXPECT_FALSE(helper->GetBubbleContinueSectionView()->GetVisible());
   EXPECT_FALSE(helper->GetBubbleRecentAppsView()->GetVisible());
-  EXPECT_FALSE(apps_page->separator_for_test()->GetVisible());
+
+  // Label container and separator stay visible.
+  EXPECT_TRUE(apps_page->continue_label_container_for_test()->GetVisible());
+  EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
@@ -302,22 +317,21 @@ TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
   helper->AddAppItems(5);
   helper->ShowAppList();
 
-  // The show continue section button appears.
+  // The toggle continue section button has the "show" tooltip.
   auto* apps_page = helper->GetBubbleAppsPage();
-  auto* show_continue_section_button =
-      apps_page->show_continue_section_button_for_test();
-  EXPECT_TRUE(show_continue_section_button->GetVisible());
+  IconButton* toggle_continue_section_button =
+      apps_page->toggle_continue_section_button_for_test();
+  ASSERT_TRUE(toggle_continue_section_button);
+  EXPECT_EQ(toggle_continue_section_button->GetTooltipText(),
+            u"Show all suggestions");
 
   // Continue section and recent apps are hidden.
   EXPECT_FALSE(helper->GetBubbleContinueSectionView()->GetVisible());
   EXPECT_FALSE(helper->GetBubbleRecentAppsView()->GetVisible());
-  EXPECT_FALSE(apps_page->separator_for_test()->GetVisible());
+  EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
 
   // Click the show continue section button.
-  LeftClickOn(show_continue_section_button);
-
-  // The button hides.
-  EXPECT_FALSE(show_continue_section_button->GetVisible());
+  LeftClickOn(toggle_continue_section_button);
 
   // The continue section and recent apps are visible.
   EXPECT_TRUE(helper->GetBubbleContinueSectionView()->GetVisible());
