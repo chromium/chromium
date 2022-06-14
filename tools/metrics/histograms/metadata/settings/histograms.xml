@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup" enum="BooleanEnabled"
-    expires_after="2022-08-28">
+    expires_after="2022-12-11">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
   <summary>
@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.SafeBrowsingResult"
-    enum="SafetyCheckSafeBrowsingStatus" expires_after="2022-10-09">
+    enum="SafetyCheckSafeBrowsingStatus" expires_after="2022-12-11">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check Safe Browsing check.</summary>

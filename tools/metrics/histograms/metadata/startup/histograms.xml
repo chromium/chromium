@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.CachedFeedVisibilityConsistency"
-    enum="BooleanConsistent" expires_after="2022-10-09">
+    enum="BooleanConsistent" expires_after="2022-12-11">
   <owner>hanxi@chromium.org</owner>
   <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>ckitagawa@chromium.org</owner>
   <summary>
     Android: The time from the activity creation point to the moment the content
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
-    enum="Boolean" expires_after="2022-10-09">
+    enum="Boolean" expires_after="2022-12-11">
   <owner>hanxi@chromium.org</owner>
   <owner>spdonghao@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.Android.ShowChromeStartSegmentationResultComparison"
     enum="ShowChromeStartSegmentationResultComparison"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>hanxi@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.StartSurfaceShownAtStartup" enum="Boolean"
-    expires_after="2022-10-07">
+    expires_after="2022-12-11">
   <owner>hanxi@chromium.org</owner>
   <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BringToForegroundReason"
-    enum="BooleanBringToForegroundReason" expires_after="2022-10-09">
+    enum="BooleanBringToForegroundReason" expires_after="2022-12-11">
   <owner>peter@chromium.org</owner>
   <summary>
     Records the cause, each time Chrome is brought to the foreground. Currently

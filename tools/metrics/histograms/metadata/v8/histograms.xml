@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.DebugFeatureUsage" enum="V8DebugFeature"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -1297,7 +1297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.InlineCodeCache.MainFrame.CacheTimesMatch"
-    units="BooleanTimesMatch" expires_after="2022-10-10">
+    units="BooleanTimesMatch" expires_after="2022-12-11">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -1309,7 +1309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.InlineCodeCache.Subframe.CacheTimesMatch"
-    units="BooleanTimesMatch" expires_after="2022-10-10">
+    units="BooleanTimesMatch" expires_after="2022-12-11">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -1321,7 +1321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.InlineCodeCache.UsedPreviouslyGeneratedCache"
-    units="BooleanUsed" expires_after="2022-10-10">
+    units="BooleanUsed" expires_after="2022-12-11">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -1331,7 +1331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.InlineCodeCache.WillGenerateCache" units="BooleanUsed"
-    expires_after="2022-10-10">
+    expires_after="2022-12-11">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeConcurrentTotalTime" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>bmeurer@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1616,7 +1616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalBackground" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -1628,7 +1628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalForeground" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalTime" units="microseconds"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>

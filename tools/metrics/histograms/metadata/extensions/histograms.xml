@@ -1833,7 +1833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.ExtensionServiceWorkerCalls"
-    enum="ExtensionFunctions" expires_after="2022-10-09">
+    enum="ExtensionFunctions" expires_after="2022-12-11">
   <owner>lazyboy@chromium.org</owner>
   <owner>dbertoni@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -3153,7 +3153,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2022-10-09">
+    enum="SettingsOverriddenDialogResult" expires_after="2022-12-11">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

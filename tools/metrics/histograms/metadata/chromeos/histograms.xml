@@ -205,7 +205,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Attestation.AttestationFlowStatus"
-    enum="AttestationFlowStatus" expires_after="2022-10-08">
+    enum="AttestationFlowStatus" expires_after="2022-12-11">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec+umas@chromium.org</owner>
   <summary>
@@ -956,7 +956,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2022-10-09">
+    enum="IntentPickerDialogAction" expires_after="2022-12-11">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1113,7 +1113,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.InstallComplete.Success"
-    enum="BooleanSuccess" expires_after="2022-10-01">
+    enum="BooleanSuccess" expires_after="2022-12-11">
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
@@ -1134,7 +1134,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.Mojo.InstallPack.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2022-10-01">
+    enum="LanguagePackMojoFeatureId" expires_after="2022-12-11">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders-eng@google.com</owner>
   <summary>
@@ -1440,7 +1440,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SecurityAnomalyUploadSuccess" enum="Boolean"
-    expires_after="2022-10-03">
+    expires_after="2022-12-11">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
@@ -1487,7 +1487,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FileCount" units="files"
-    expires_after="2022-10-08">
+    expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1497,7 +1497,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2022-10-08">
+    enum="ChromeOSSharesheetFormFactor" expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
@@ -1524,7 +1524,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.LaunchSource"
-    enum="ChromeOSSharesheetLaunchSource" expires_after="2022-10-08">
+    enum="ChromeOSSharesheetLaunchSource" expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1546,7 +1546,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.UserAction"
-    enum="ChromeOSSharesheetAction" expires_after="2022-10-08">
+    enum="ChromeOSSharesheetAction" expires_after="2022-12-11">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records user action on sharesheet invocations.</summary>
@@ -1769,7 +1769,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.TypeC.UsbDeviceSpeed" enum="UsbDeviceSpeedMetric"
-    expires_after="2022-09-30">
+    expires_after="2022-12-11">
   <owner>wonchung@google.com</owner>
   <owner>chromeos-usb@google.com</owner>
   <summary>
@@ -1790,7 +1790,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.UrlXattrsCount" units="units"
-    expires_after="2022-10-10">
+    expires_after="2022-12-11">
   <owner>jorgelo@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>

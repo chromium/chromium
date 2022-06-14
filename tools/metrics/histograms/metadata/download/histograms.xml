@@ -617,7 +617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.MixedContentDialog.Events"
-    enum="MixedContentDownloadDialogEvent" expires_after="2022-10-09">
+    enum="MixedContentDownloadDialogEvent" expires_after="2022-12-11">
   <owner>qinmin@chromium.org</owner>
   <summary>
     Records user interactions with the mixed content download dialog on Android.
@@ -664,7 +664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.OpenDownloads.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-10-09">
+    enum="BrowserProfileType" expires_after="2022-12-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -675,7 +675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.OpenDownloadsFromMenu.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-10-09">
+    enum="BrowserProfileType" expires_after="2022-12-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.ShelfContextMenuAction"
-    enum="DownloadShelfContextMenuAction" expires_after="2022-10-11">
+    enum="DownloadShelfContextMenuAction" expires_after="2022-12-11">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -1275,7 +1275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.PerProfileType" enum="BrowserProfileType"
-    expires_after="2022-10-09">
+    expires_after="2022-12-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
