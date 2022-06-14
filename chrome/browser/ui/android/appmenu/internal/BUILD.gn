@@ -58,7 +58,7 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   resources_package = "org.chromium.chrome.browser.ui.appmenu.test"
@@ -99,19 +99,15 @@ android_resources("test_java_resources") {
   testonly = true
 
   sources = [
-    "test/java/res/drawable/test_ic_arrow_downward_black_24dp.xml",
-    "test/java/res/drawable/test_ic_arrow_forward_black_24dp.xml",
-    "test/java/res/drawable/test_ic_info_outline_black_24dp.xml",
-    "test/java/res/drawable/test_ic_more_vert_black_24dp.xml",
-    "test/java/res/drawable/test_ic_refresh_black_24dp.xml",
-    "test/java/res/drawable/test_ic_star_border_black_24dp.xml",
-    "test/java/res/drawable/test_ic_vintage_filter.xml",
     "test/java/res/layout/test_app_menu_activity_layout.xml",
     "test/java/res/layout/test_menu_footer.xml",
     "test/java/res/layout/test_menu_header.xml",
     "test/java/res/menu/test_menu.xml",
   ]
-  deps = [ ":java_resources" ]
+  deps = [
+    ":java_resources",
+    "//components/browser_ui/widget/android:java_test_resources",
+  ]
 }
 
 robolectric_library("junit") {
