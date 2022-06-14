@@ -250,9 +250,6 @@ class TwoClientSendTabToSelfWithTransportModeSyncTest
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
 
- protected:
-  network::TestURLLoaderFactory test_url_loader_factory_;
-
  private:
   base::CallbackListSubscription test_signin_client_subscription_;
 };
