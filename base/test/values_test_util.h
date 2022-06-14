@@ -15,32 +15,24 @@
 
 namespace base {
 
-// All the functions below expect that the value for the given key in
+// All the functions below expect that the value for the given path in
 // the given dictionary equals the given expected value.
-// TODO(thestig): Add more Value::Dict variants as needed.
-// TODO(thestig): Remove Value variants.
 
 void ExpectDictBooleanValue(bool expected_value,
                             const Value::Dict& dict,
                             StringPiece path);
-void ExpectDictBooleanValue(bool expected_value,
-                            const Value& value,
-                            const std::string& key);
 
 void ExpectDictIntegerValue(int expected_value,
-                            const Value& value,
-                            const std::string& key);
+                            const Value::Dict& dict,
+                            StringPiece path);
 
 void ExpectDictStringValue(StringPiece expected_value,
                            const Value::Dict& dict,
                            StringPiece path);
-void ExpectDictStringValue(const std::string& expected_value,
-                           const Value& value,
-                           const std::string& key);
 
 void ExpectDictValue(const Value& expected_value,
-                     const Value& value,
-                     const std::string& key);
+                     const Value::Dict& dict,
+                     StringPiece path);
 
 void ExpectStringValue(const std::string& expected_str, const Value& actual);
 

@@ -24,16 +24,11 @@ void ExpectDictBooleanValue(bool expected_value,
       << path;
 }
 
-void ExpectDictBooleanValue(bool expected_value,
-                            const Value& value,
-                            const std::string& key) {
-  ExpectDictBooleanValue(expected_value, value.GetDict(), key);
-}
-
 void ExpectDictIntegerValue(int expected_value,
-                            const Value& value,
-                            const std::string& key) {
-  EXPECT_EQ(value.FindIntPath(key), absl::optional<int>(expected_value)) << key;
+                            const Value::Dict& dict,
+                            StringPiece path) {
+  EXPECT_EQ(dict.FindIntByDottedPath(path), absl::make_optional(expected_value))
+      << path;
 }
 
 void ExpectDictStringValue(StringPiece expected_value,
@@ -44,18 +39,12 @@ void ExpectDictStringValue(StringPiece expected_value,
       << path;
 }
 
-void ExpectDictStringValue(const std::string& expected_value,
-                           const Value& value,
-                           const std::string& key) {
-  ExpectDictStringValue(expected_value, value.GetDict(), key);
-}
-
 void ExpectDictValue(const Value& expected_value,
-                     const Value& value,
-                     const std::string& key) {
-  const Value* found_value = value.FindPath(key);
-  EXPECT_TRUE(found_value) << key;
-  EXPECT_EQ(*found_value, expected_value) << key;
+                     const Value::Dict& dict,
+                     StringPiece path) {
+  const Value* found_value = dict.FindByDottedPath(path);
+  ASSERT_TRUE(found_value) << path;
+  EXPECT_EQ(*found_value, expected_value) << path;
 }
 
 void ExpectStringValue(const std::string& expected_str, const Value& actual) {

@@ -160,15 +160,16 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
     ASSERT_TRUE(value->is_list());
     ASSERT_EQ(1u, value->GetList().size());
 
-    base::Value& report = value->GetList()[0];
+    const base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
-    EXPECT_EQ(5u, report.GetDict().size());
+    const base::Value::Dict& report_dict = report.GetDict();
+    EXPECT_EQ(5u, report_dict.size());
 
-    ExpectDictIntegerValue(0, report, "age");
-    ExpectDictStringValue(kType_, report, "type");
-    ExpectDictStringValue(kUrl_.spec(), report, "url");
-    ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    ExpectDictIntegerValue(0, report_dict, "age");
+    ExpectDictStringValue(kType_, report_dict, "type");
+    ExpectDictStringValue(kUrl_.spec(), report_dict, "url");
+    ExpectDictStringValue(kUserAgent_, report_dict, "user_agent");
+    const base::Value::Dict* body = report_dict.FindDict("body");
     EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -238,12 +239,13 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
 
     const base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
+    const base::Value::Dict& report_dict = report.GetDict();
 
-    ExpectDictIntegerValue(0, report, "age");
-    ExpectDictStringValue(kType_, report, "type");
-    ExpectDictStringValue(kUrl_.spec(), report, "url");
-    ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    ExpectDictIntegerValue(0, report_dict, "age");
+    ExpectDictStringValue(kType_, report_dict, "type");
+    ExpectDictStringValue(kUrl_.spec(), report_dict, "url");
+    ExpectDictStringValue(kUserAgent_, report_dict, "user_agent");
+    const base::Value::Dict* body = report_dict.FindDict("body");
     EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -314,15 +316,16 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
     ASSERT_TRUE(value->is_list());
     ASSERT_EQ(1u, value->GetList().size());
 
-    base::Value& report = value->GetList()[0];
+    const base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
-    EXPECT_EQ(5u, report.GetDict().size());
+    const base::Value::Dict& report_dict = report.GetDict();
+    EXPECT_EQ(5u, report_dict.size());
 
-    ExpectDictIntegerValue(0, report, "age");
-    ExpectDictStringValue(kType_, report, "type");
-    ExpectDictStringValue(kSubdomainUrl_.spec(), report, "url");
-    ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    ExpectDictIntegerValue(0, report_dict, "age");
+    ExpectDictStringValue(kType_, report_dict, "type");
+    ExpectDictStringValue(kSubdomainUrl_.spec(), report_dict, "url");
+    ExpectDictStringValue(kUserAgent_, report_dict, "user_agent");
+    const base::Value::Dict* body = report_dict.FindDict("body");
     EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
@@ -393,15 +396,16 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
     ASSERT_TRUE(value->is_list());
     ASSERT_EQ(1u, value->GetList().size());
 
-    base::Value& report = value->GetList()[0];
+    const base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
-    EXPECT_EQ(5u, report.GetDict().size());
+    const base::Value::Dict& report_dict = report.GetDict();
+    EXPECT_EQ(5u, report_dict.size());
 
-    ExpectDictIntegerValue(0, report, "age");
-    ExpectDictStringValue(kType_, report, "type");
-    ExpectDictStringValue(kUrl_.spec(), report, "url");
-    ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    ExpectDictIntegerValue(0, report_dict, "age");
+    ExpectDictStringValue(kType_, report_dict, "type");
+    ExpectDictStringValue(kUrl_.spec(), report_dict, "url");
+    ExpectDictStringValue(kUserAgent_, report_dict, "user_agent");
+    const base::Value::Dict* body = report_dict.FindDict("body");
     EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);

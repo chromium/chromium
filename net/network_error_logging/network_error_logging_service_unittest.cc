@@ -429,27 +429,28 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
   // TODO(juliatuttle): Extract these constants.
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1000, *body,
+  base::ExpectDictIntegerValue(1000, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("application", *body,
+  base::ExpectDictStringValue("application", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("ok", *body,
+  base::ExpectDictStringValue("ok", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -473,27 +474,28 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
   // TODO(juliatuttle): Extract these constants.
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1000, *body,
+  base::ExpectDictIntegerValue(1000, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("connection", *body,
+  base::ExpectDictStringValue("connection", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("tcp.refused", *body,
+  base::ExpectDictStringValue("tcp.refused", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -511,10 +513,12 @@ TEST_P(NetworkErrorLoggingServiceTest, UnknownFailureReportQueued) {
 
   ASSERT_EQ(1u, reports().size());
   const base::Value* body = reports()[0].body.get();
+  ASSERT_TRUE(body);
   ASSERT_TRUE(body->is_dict());
-  base::ExpectDictStringValue("application", *body,
+  const base::Value::Dict& body_dict = body->GetDict();
+  base::ExpectDictStringValue("application", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("unknown", *body,
+  base::ExpectDictStringValue("unknown", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -534,10 +538,12 @@ TEST_P(NetworkErrorLoggingServiceTest, UnknownCertFailureReportQueued) {
 
   ASSERT_EQ(1u, reports().size());
   const base::Value* body = reports()[0].body.get();
+  ASSERT_TRUE(body);
   ASSERT_TRUE(body->is_dict());
-  base::ExpectDictStringValue("connection", *body,
+  const base::Value::Dict& body_dict = body->GetDict();
+  base::ExpectDictStringValue("connection", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("unknown", *body,
+  base::ExpectDictStringValue("unknown", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -560,27 +566,28 @@ TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportQueued) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
   // TODO(juliatuttle): Extract these constants.
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(504, *body,
+  base::ExpectDictIntegerValue(504, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1000, *body,
+  base::ExpectDictIntegerValue(1000, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("application", *body,
+  base::ExpectDictStringValue("application", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("http.error", *body,
+  base::ExpectDictStringValue("http.error", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -601,26 +608,27 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportDowngraded) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kOtherServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kOtherServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("dns", *body,
+  base::ExpectDictStringValue("dns", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("dns.address_changed", *body,
+  base::ExpectDictStringValue("dns.address_changed", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -641,26 +649,27 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportDowngraded) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kOtherServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kOtherServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("dns", *body,
+  base::ExpectDictStringValue("dns", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("dns.address_changed", *body,
+  base::ExpectDictStringValue("dns.address_changed", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -681,26 +690,27 @@ TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportDowngraded) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kOtherServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kOtherServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("dns", *body,
+  base::ExpectDictStringValue("dns", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("dns.address_changed", *body,
+  base::ExpectDictStringValue("dns.address_changed", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -721,26 +731,27 @@ TEST_P(NetworkErrorLoggingServiceTest, DNSFailureReportNotDowngraded) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kOtherServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kOtherServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(0, *body,
+  base::ExpectDictIntegerValue(0, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1000, *body,
+  base::ExpectDictIntegerValue(1000, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
-  base::ExpectDictStringValue("dns", *body,
+  base::ExpectDictStringValue("dns", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("dns.name_not_resolved", *body,
+  base::ExpectDictStringValue("dns.name_not_resolved", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -760,22 +771,23 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessPOSTReportQueued) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("", *body,
+  base::ExpectDictStringValue("", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("POST", *body,
+  base::ExpectDictStringValue("POST", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictStringValue("application", *body,
+  base::ExpectDictStringValue("application", body_dict,
                               NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("ok", *body,
+  base::ExpectDictStringValue("ok", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 }
 
@@ -1237,41 +1249,41 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("http/1.1", *body,
+  base::ExpectDictStringValue("http/1.1", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(200, *body,
+  base::ExpectDictIntegerValue(200, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1234, *body,
+  base::ExpectDictIntegerValue(1234, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
   base::ExpectDictStringValue(
-      NetworkErrorLoggingService::kSignedExchangePhaseValue, *body,
+      NetworkErrorLoggingService::kSignedExchangePhaseValue, body_dict,
       NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("ok", *body,
+  base::ExpectDictStringValue("ok", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 
-  const base::Value* sxg_body =
-      body_dict->Find(NetworkErrorLoggingService::kSignedExchangeBodyKey);
-  ASSERT_TRUE(sxg_body && sxg_body->is_dict());
+  const base::Value::Dict* sxg_body =
+      body_dict.FindDict(NetworkErrorLoggingService::kSignedExchangeBodyKey);
+  ASSERT_TRUE(sxg_body);
 
   base::ExpectDictStringValue(kUrl_.spec(), *sxg_body,
                               NetworkErrorLoggingService::kOuterUrlKey);
   base::ExpectDictStringValue(kInnerUrl_.spec(), *sxg_body,
                               NetworkErrorLoggingService::kInnerUrlKey);
-  base::ExpectStringValue(kCertUrl_.spec(),
-                          sxg_body->GetDict()
-                              .Find(NetworkErrorLoggingService::kCertUrlKey)
-                              ->GetList()[0]);
+  base::ExpectStringValue(
+      kCertUrl_.spec(),
+      sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
@@ -1291,41 +1303,41 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
   EXPECT_EQ(0, reports()[0].depth);
 
   const base::Value* body = reports()[0].body.get();
-  const base::Value::Dict* body_dict = body->GetIfDict();
-  ASSERT_TRUE(body_dict);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(body->is_dict());
+  const base::Value::Dict& body_dict = body->GetDict();
 
-  base::ExpectDictStringValue(kReferrer_.spec(), *body,
+  base::ExpectDictStringValue(kReferrer_.spec(), body_dict,
                               NetworkErrorLoggingService::kReferrerKey);
-  ExpectDictDoubleValue(1.0, *body_dict,
+  ExpectDictDoubleValue(1.0, body_dict,
                         NetworkErrorLoggingService::kSamplingFractionKey);
-  base::ExpectDictStringValue(kServerIP_.ToString(), *body,
+  base::ExpectDictStringValue(kServerIP_.ToString(), body_dict,
                               NetworkErrorLoggingService::kServerIpKey);
-  base::ExpectDictStringValue("http/1.1", *body,
+  base::ExpectDictStringValue("http/1.1", body_dict,
                               NetworkErrorLoggingService::kProtocolKey);
-  base::ExpectDictStringValue("GET", *body,
+  base::ExpectDictStringValue("GET", body_dict,
                               NetworkErrorLoggingService::kMethodKey);
-  base::ExpectDictIntegerValue(200, *body,
+  base::ExpectDictIntegerValue(200, body_dict,
                                NetworkErrorLoggingService::kStatusCodeKey);
-  base::ExpectDictIntegerValue(1234, *body,
+  base::ExpectDictIntegerValue(1234, body_dict,
                                NetworkErrorLoggingService::kElapsedTimeKey);
   base::ExpectDictStringValue(
-      NetworkErrorLoggingService::kSignedExchangePhaseValue, *body,
+      NetworkErrorLoggingService::kSignedExchangePhaseValue, body_dict,
       NetworkErrorLoggingService::kPhaseKey);
-  base::ExpectDictStringValue("sxg.failed", *body,
+  base::ExpectDictStringValue("sxg.failed", body_dict,
                               NetworkErrorLoggingService::kTypeKey);
 
-  const base::Value* sxg_body =
-      body_dict->Find(NetworkErrorLoggingService::kSignedExchangeBodyKey);
-  ASSERT_TRUE(sxg_body && sxg_body->is_dict());
+  const base::Value::Dict* sxg_body =
+      body_dict.FindDict(NetworkErrorLoggingService::kSignedExchangeBodyKey);
+  ASSERT_TRUE(sxg_body);
 
   base::ExpectDictStringValue(kUrl_.spec(), *sxg_body,
                               NetworkErrorLoggingService::kOuterUrlKey);
   base::ExpectDictStringValue(kInnerUrl_.spec(), *sxg_body,
                               NetworkErrorLoggingService::kInnerUrlKey);
-  base::ExpectStringValue(kCertUrl_.spec(),
-                          sxg_body->GetDict()
-                              .Find(NetworkErrorLoggingService::kCertUrlKey)
-                              ->GetList()[0]);
+  base::ExpectStringValue(
+      kCertUrl_.spec(),
+      sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomain_SignedExchange) {

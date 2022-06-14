@@ -112,25 +112,28 @@ struct ExpectedReportWaiter {
 
     base::Value body = base::test::ParseJson(request.content);
     EXPECT_THAT(body, base::test::DictionaryHasValues(expected_body));
+    const base::Value::Dict& body_dict = body.GetDict();
 
     // The report ID is random, so just test that the field exists here and is a
     // valid GUID.
-    std::string* report_id = body.FindStringKey("report_id");
-    EXPECT_TRUE(report_id);
+    const std::string* report_id = body_dict.FindString("report_id");
+    ASSERT_TRUE(report_id);
     EXPECT_TRUE(base::GUID::ParseLowercase(*report_id).is_valid());
 
-    EXPECT_TRUE(body.FindDoubleKey("randomized_trigger_rate"));
+    EXPECT_TRUE(body_dict.FindDouble("randomized_trigger_rate"));
 
     if (source_debug_key.empty()) {
-      EXPECT_FALSE(body.FindStringKey("source_debug_key"));
+      EXPECT_FALSE(body_dict.FindString("source_debug_key"));
     } else {
-      base::ExpectDictStringValue(source_debug_key, body, "source_debug_key");
+      base::ExpectDictStringValue(source_debug_key, body_dict,
+                                  "source_debug_key");
     }
 
     if (trigger_debug_key.empty()) {
-      EXPECT_FALSE(body.FindStringKey("trigger_debug_key"));
+      EXPECT_FALSE(body_dict.FindString("trigger_debug_key"));
     } else {
-      base::ExpectDictStringValue(trigger_debug_key, body, "trigger_debug_key");
+      base::ExpectDictStringValue(trigger_debug_key, body_dict,
+                                  "trigger_debug_key");
     }
 
     // Clear the port as it is assigned by the EmbeddedTestServer at runtime.

@@ -51,24 +51,25 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
   EXPECT_EQ(14u, value->DictSize());
-  ExpectDictStringValue(kBirthday, *value, "birthday");
+  const base::Value::Dict& dict = value->GetDict();
+  ExpectDictStringValue(kBirthday, dict, "birthday");
   // Base64-encoded version of |kBagOfChips|.
-  ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");
-  ExpectDictIntegerValue(model_neutral.num_successful_commits, *value,
+  ExpectDictStringValue("YmFnb2ZjaGlwcwE=", dict, "bagOfChips");
+  ExpectDictIntegerValue(model_neutral.num_successful_commits, dict,
                          "numSuccessfulCommits");
-  ExpectDictIntegerValue(model_neutral.num_successful_bookmark_commits, *value,
+  ExpectDictIntegerValue(model_neutral.num_successful_bookmark_commits, dict,
                          "numSuccessfulBookmarkCommits");
-  ExpectDictIntegerValue(model_neutral.num_updates_downloaded_total, *value,
+  ExpectDictIntegerValue(model_neutral.num_updates_downloaded_total, dict,
                          "numUpdatesDownloadedTotal");
   ExpectDictIntegerValue(model_neutral.num_tombstone_updates_downloaded_total,
-                         *value, "numTombstoneUpdatesDownloadedTotal");
-  ExpectDictValue(*expected_download_progress_markers_value, *value,
+                         dict, "numTombstoneUpdatesDownloadedTotal");
+  ExpectDictValue(*expected_download_progress_markers_value, dict,
                   "downloadProgressMarkers");
-  ExpectDictBooleanValue(kIsSilenced, *value, "isSilenced");
-  ExpectDictIntegerValue(kNumServerConflicts, *value, "numServerConflicts");
-  ExpectDictBooleanValue(false, *value, "notificationsEnabled");
-  ExpectDictBooleanValue(false, *value, "hasRemainingLocalChanges");
-  ExpectDictStringValue("0h 30m", *value, "poll_interval");
+  ExpectDictBooleanValue(kIsSilenced, dict, "isSilenced");
+  ExpectDictIntegerValue(kNumServerConflicts, dict, "numServerConflicts");
+  ExpectDictBooleanValue(false, dict, "notificationsEnabled");
+  ExpectDictBooleanValue(false, dict, "hasRemainingLocalChanges");
+  ExpectDictStringValue("0h 30m", dict, "poll_interval");
   // poll_finish_time includes the local time zone, so simply verify its
   // existence.
   EXPECT_TRUE(
