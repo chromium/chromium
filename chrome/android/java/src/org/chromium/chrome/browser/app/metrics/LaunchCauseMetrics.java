@@ -45,14 +45,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
 
     @SuppressLint("StaticFieldLeak")
     private static Activity sLastResumedActivity;
-    static {
-        ApplicationStatus.registerStateListenerForAllActivities((activity, newState) -> {
-            if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
-            if (newState == ActivityState.DESTROYED) {
-                if (activity == sLastResumedActivity) sLastResumedActivity = null;
-            }
-        });
-    }
+    private static ApplicationStatus.ActivityStateListener sAppActivityListener;
 
     // State pertaining to the current launch, reset when Chrome is backgrounded,
     // and after computing LaunchCause.
@@ -109,6 +102,22 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
      */
     public LaunchCauseMetrics(final Activity activity) {
         mActivity = activity;
+        if (sAppActivityListener == null) {
+            sAppActivityListener = new ApplicationStatus.ActivityStateListener() {
+                @Override
+                public void onActivityStateChange(Activity activity, int newState) {
+                    if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
+                    if (newState == ActivityState.DESTROYED) {
+                        if (activity == sLastResumedActivity) sLastResumedActivity = null;
+                    }
+                }
+            };
+            ApplicationStatus.registerStateListenerForAllActivities(sAppActivityListener);
+            if (ApplicationStatus.getStateForApplication()
+                    == ApplicationState.HAS_RUNNING_ACTIVITIES) {
+                sLastResumedActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+            }
+        }
         ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, activity);
     }
@@ -260,6 +269,11 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     public static void resetForTests() {
         ThreadUtils.assertOnUiThread();
         sRecordedLaunchCause = false;
+        if (sAppActivityListener != null) {
+            ApplicationStatus.unregisterActivityStateListener(sAppActivityListener);
+            sAppActivityListener = null;
+        }
+        sLastResumedActivity = null;
     }
 
     @CheckDiscard("")

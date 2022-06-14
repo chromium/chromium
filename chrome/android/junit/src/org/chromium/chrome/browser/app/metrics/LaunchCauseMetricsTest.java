@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.app.metrics;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,21 +16,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Tests basic functionality of LaunchCauseMetrics.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowRecordHistogram.class})
 public final class LaunchCauseMetricsTest {
     @Mock
     private Activity mActivity;
@@ -42,22 +37,16 @@ public final class LaunchCauseMetricsTest {
 
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        });
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
     }
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.resetActivitiesForInstrumentationTests();
-            LaunchCauseMetrics.resetForTests();
-        });
+        LaunchCauseMetrics.resetForTests();
     }
 
     private static int histogramCountForValue(int value) {
-        return RecordHistogram.getHistogramValueCountForTesting(
+        return ShadowRecordHistogram.getHistogramValueCountForTesting(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
     }
 
@@ -84,8 +73,6 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testRecordsOncePerLaunch() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
@@ -111,8 +98,6 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testRecordsOnceWithMultipleInstances() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
@@ -125,8 +110,6 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testLaunchedFromRecents() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
@@ -134,18 +117,17 @@ public final class LaunchCauseMetricsTest {
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
-        LaunchCauseMetrics.resetForTests();
+        metrics.onUserLeaveHint();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         metrics.onLaunchFromRecents();
-        metrics.onUserLeaveHint();
         metrics.recordLaunchCause();
         count++;
         Assert.assertEquals(count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS));
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testResumedFromRecents() throws Throwable {
         int recentsCount = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
         int backCount = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS_OR_BACK);
@@ -167,8 +149,6 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testResumedFromScreenOn() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);
@@ -196,8 +176,6 @@ public final class LaunchCauseMetricsTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testLaunchAborted() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECENTS);
         TestLaunchCauseMetrics metrics = new TestLaunchCauseMetrics(mActivity);

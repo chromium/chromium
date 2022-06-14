@@ -10,8 +10,6 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.speech.RecognizerResultsIntent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,28 +21,24 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.components.webapps.ShortcutSource;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * Unit tests for TabbedActivityLaunchCauseMetrics.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowRecordHistogram.class})
 public final class TabbedActivityLaunchCauseMetricsUnitTest {
     @Mock
     private Activity mActivity;
@@ -54,29 +48,20 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        });
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
     }
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.resetActivitiesForInstrumentationTests();
-            LaunchCauseMetrics.resetForTests();
-        });
+        LaunchCauseMetrics.resetForTests();
     }
 
     private static int histogramCountForValue(int value) {
-        if (!LibraryLoader.getInstance().isInitialized()) return 0;
-        return RecordHistogram.getHistogramValueCountForTesting(
+        return ShadowRecordHistogram.getHistogramValueCountForTesting(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testOpenInBrowserMetrics() throws Throwable {
         int count =
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU);
@@ -114,19 +99,17 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
 
         // Ensures other metrics still aren't recorded when Chrome has already recorded a launch.
-        int total = RecordHistogram.getHistogramTotalCountForTesting(
+        int total = ShadowRecordHistogram.getHistogramTotalCountForTesting(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false);
         metrics.onReceivedIntent();
         metrics.recordLaunchCause();
         Assert.assertEquals(total,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testVoiceSearchResultsMetrics() throws Throwable {
         int count = histogramCountForValue(
                 LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT);
@@ -151,8 +134,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testBringToFrontNotification() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
         Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
@@ -182,8 +163,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testBringToFrontSearch() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET);
         Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
@@ -200,8 +179,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testBringToFrontActiviteTab() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
         Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
@@ -218,8 +195,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testExternalViewIntent() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT);
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -235,8 +210,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testChromeViewIntent() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME);
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -254,8 +227,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testOtherChromeIntent() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME);
         Intent intent = new Intent();
@@ -275,8 +246,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testHomescreenShortcut() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_SHORTCUT);
         Intent intent = ShortcutHelper.createShortcutIntent(
