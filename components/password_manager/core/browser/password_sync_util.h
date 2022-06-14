@@ -51,10 +51,6 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
 // If syncing passwords is enabled in settings.
 bool IsPasswordSyncEnabled(syncer::SyncService* sync_service);
 
-// Returns true if sync is broken due to a persistent auth error. In this case
-// the UPM experience should be disabled until the error is resolved.
-bool CannotUseUPMDueToPersistentSyncError(syncer::SyncService* sync_service);
-
 }  // namespace sync_util
 
 }  // namespace password_manager

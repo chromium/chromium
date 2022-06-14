@@ -70,6 +70,11 @@ extern const char kRequiresMigrationAfterSyncStatusChange[];
 // label is shown for the users who have not clicked on this item yet.
 // TODO(crbug.com/1217070): Remove this once the feature is rolled out.
 extern const char kPasswordsPrefWithNewLabelUsed[];
+
+// Boolean value indicating if the user should not get UPM experience because
+// of user-unresolvable errors received on communication with Google Mobile
+// Services.
+extern const char kUnenrolledFromGoogleMobileServicesDueToErrors[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

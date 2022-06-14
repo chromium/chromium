@@ -38,15 +38,16 @@ class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
       public PasswordStoreAndroidBackendBridge::Consumer {
  public:
-  explicit PasswordStoreAndroidBackend(
-      std::unique_ptr<SyncDelegate> sync_delegate);
+  PasswordStoreAndroidBackend(std::unique_ptr<SyncDelegate> sync_delegate,
+                              PrefService* prefs);
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
       std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
       std::unique_ptr<SyncDelegate> sync_delegate,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-          sync_controller_delegate);
+          sync_controller_delegate,
+      PrefService* prefs);
   ~PasswordStoreAndroidBackend() override;
 
  private:
@@ -231,6 +232,8 @@ class PasswordStoreAndroidBackend
   // Delegate to handle sync events.
   std::unique_ptr<PasswordSyncControllerDelegateAndroid>
       sync_controller_delegate_;
+
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   base::WeakPtrFactory<PasswordStoreAndroidBackend> weak_ptr_factory_{this};
 };

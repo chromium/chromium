@@ -24,6 +24,14 @@ namespace {
 // the Android backend is delayed.
 constexpr int kMigrationToAndroidBackendDelay = 30;
 
+// Check the experiment stage allows migration and that user wasn't kicked out
+// from the experiment after receiving errors from the backend.
+bool ShouldAttemptMigration(PrefService* prefs) {
+  return features::RequiresMigrationForUnifiedPasswordManager() &&
+         !prefs->GetBoolean(
+             prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
 }  // namespace
 
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
@@ -142,7 +150,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
 
   // Only start the migration when launching the UPM which needs chrome-local
   // data in the remote store. For shadow traffic, this doesn't matter.
-  if (features::RequiresMigrationForUnifiedPasswordManager()) {
+  if (ShouldAttemptMigration(prefs_)) {
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         built_in_backend_.get(), android_backend_.get(), prefs_,
         sync_delegate_.get());
@@ -296,7 +304,7 @@ void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
 }
 
 void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
-  if (!features::RequiresMigrationForUnifiedPasswordManager())
+  if (!ShouldAttemptMigration(prefs_))
     return;
 
   sync_settings_helper_.SyncStatusChangeApplied();
