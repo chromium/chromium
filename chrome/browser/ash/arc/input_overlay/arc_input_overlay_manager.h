@@ -86,8 +86,6 @@ class ArcInputOverlayManager : public KeyedService,
 
   // TODO(djacobo|cuicuiruan): Sort this, functions first, members last.
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
-  base::ScopedObservation<ash::TabletModeController, ash::TabletModeObserver>
-      tablet_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
   base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
