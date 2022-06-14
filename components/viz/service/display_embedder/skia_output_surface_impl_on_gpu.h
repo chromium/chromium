@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -94,6 +95,10 @@ class SkiaOutputSurfaceImplOnGpu
       base::RepeatingCallback<void(const gfx::PresentationFeedback& feedback)>;
   using ContextLostCallback = base::OnceClosure;
 
+  using ScheduleGpuTaskCallback =
+      base::RepeatingCallback<void(base::OnceClosure,
+                                   std::vector<gpu::SyncToken>)>;
+
   // |gpu_vsync_callback| must be safe to call on any thread. The other
   // callbacks will only be called via |deps->PostTaskToClientThread|.
   static std::unique_ptr<SkiaOutputSurfaceImplOnGpu> Create(
@@ -104,6 +109,7 @@ class SkiaOutputSurfaceImplOnGpu
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
+      ScheduleGpuTaskCallback schedule_gpu_task,
       GpuVSyncCallback gpu_vsync_callback);
 
   SkiaOutputSurfaceImplOnGpu(
@@ -116,6 +122,7 @@ class SkiaOutputSurfaceImplOnGpu
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
+      ScheduleGpuTaskCallback schedule_gpu_task,
       GpuVSyncCallback gpu_vsync_callback);
 
   SkiaOutputSurfaceImplOnGpu(const SkiaOutputSurfaceImplOnGpu&) = delete;
@@ -278,16 +285,7 @@ class SkiaOutputSurfaceImplOnGpu
 
   void MarkContextLost(ContextLostReason reason);
 
-  void RunDestroyCopyOutputResourcesOnGpuThread(
-      ReleaseCallback* callback,
-      const gpu::SyncToken& sync_token,
-      bool is_lost);
-
-  void DestroyCopyOutputResourcesOnGpuThread(
-      std::unique_ptr<gpu::SharedImageRepresentationSkia> representation,
-      scoped_refptr<gpu::SharedContextState> context_state,
-      const gpu::SyncToken& sync_token,
-      bool is_lost);
+  void DestroyCopyOutputResourcesOnGpuThread(const gpu::Mailbox& mailbox);
 
   void SwapBuffersInternal(absl::optional<OutputSurfaceFrame> frame);
   void PostSubmit(absl::optional<OutputSurfaceFrame> frame);
@@ -431,15 +429,17 @@ class SkiaOutputSurfaceImplOnGpu
   DidSwapBufferCompleteCallback did_swap_buffer_complete_callback_;
   BufferPresentedCallback buffer_presented_callback_;
   ContextLostCallback context_lost_callback_;
+  ScheduleGpuTaskCallback schedule_gpu_task_;
   GpuVSyncCallback gpu_vsync_callback_;
 
   // ImplOnGpu::CopyOutput can create SharedImages via ImplOnGpu's
   // SharedImageFactory. Clients can use these images via CopyOutputResult and
   // when done, release the resources by invoking the provided callback. If
   // ImplOnGpu is already destroyed, however, there is no way of running the
-  // release callback from the client, so this vector holds all pending release
-  // callbacks so resources can still be cleaned up in the dtor.
-  std::vector<std::unique_ptr<ReleaseCallback>> release_on_gpu_callbacks_;
+  // release callback from the client, so this vector holds all pending images
+  // so resources can still be cleaned up in the dtor.
+  std::vector<std::unique_ptr<gpu::SharedImageRepresentationSkia>>
+      copy_output_images_;
 
   // Helper, creates a release callback for the passed in |representation|.
   ReleaseCallback CreateDestroyCopyOutputResourcesOnGpuThreadCallback(

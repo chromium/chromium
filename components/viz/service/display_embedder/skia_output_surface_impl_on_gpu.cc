@@ -9,12 +9,14 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
+#include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -24,6 +26,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/skia_helper.h"
 #include "components/viz/common/viz_utils.h"
@@ -39,6 +42,7 @@
 #include "components/viz/service/display_embedder/skia_output_device_webview.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -264,6 +268,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
+    ScheduleGpuTaskCallback schedule_gpu_task,
     GpuVSyncCallback gpu_vsync_callback) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Create");
 
@@ -286,7 +291,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
       context_state->feature_info(), renderer_settings, sequence_id,
       shared_gpu_deps, std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(gpu_vsync_callback));
+      std::move(schedule_gpu_task), std::move(gpu_vsync_callback));
   if (!impl_on_gpu->Initialize())
     return nullptr;
 
@@ -303,6 +308,7 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
+    ScheduleGpuTaskCallback schedule_gpu_task,
     GpuVSyncCallback gpu_vsync_callback)
     : dependency_(std::move(deps)),
       shared_gpu_deps_(shared_gpu_deps),
@@ -324,6 +330,7 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
       did_swap_buffer_complete_callback_(
           std::move(did_swap_buffer_complete_callback)),
       context_lost_callback_(std::move(context_lost_callback)),
+      schedule_gpu_task_(std::move(schedule_gpu_task)),
       gpu_vsync_callback_(std::move(gpu_vsync_callback)),
       gpu_preferences_(dependency_->GetGpuPreferences()),
       display_context_(std::make_unique<DisplayContext>(deps, this)),
@@ -355,8 +362,9 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
     }
   }
 
-  for (auto& callback : release_on_gpu_callbacks_)
-    std::move(*callback).Run(gpu::SyncToken(), /*is_lost=*/true);
+  DCHECK(copy_output_images_.empty() || context_state_)
+      << "We must have a valid context if copy requests were serviced";
+  copy_output_images_.clear();
 
   // |output_device_| may still need |shared_image_factory_|, so release it
   // first.
@@ -1310,18 +1318,45 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 ReleaseCallback
 SkiaOutputSurfaceImplOnGpu::CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
     std::unique_ptr<gpu::SharedImageRepresentationSkia> representation) {
-  auto gpu_callback = std::make_unique<ReleaseCallback>(base::BindOnce(
+  copy_output_images_.push_back(std::move(representation));
+
+  auto closure_on_gpu_thread = base::BindOnce(
       &SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread,
-      weak_ptr_factory_.GetWeakPtr(), std::move(representation),
-      context_state_));
-  release_on_gpu_callbacks_.push_back(std::move(gpu_callback));
+      weak_ptr_, copy_output_images_.back()->mailbox());
 
-  auto run_gpu_callback = base::BindOnce(
-      &SkiaOutputSurfaceImplOnGpu::RunDestroyCopyOutputResourcesOnGpuThread,
-      weak_ptr_factory_.GetWeakPtr(), release_on_gpu_callbacks_.back().get());
+  // The destruction sequence for the textures cached by |copy_output_images_|
+  // is as follows:
+  // 1) The ReleaseCallback returned here can be invoked on any thread. When
+  //    invoked, we post a task to the client thread with sync token
+  //    dependencies that must be met before the texture can be released.
+  // 2) When this task runs on the Viz thread, it will retain the closure above
+  //    until the next draw (for WebView). At the next draw, the Viz thread
+  //    synchronously waits to satisfy the sync token dependencies.
+  // 3) Once the step above finishes, the closure is dispatched on the GPU
+  //    thread (or render thread on WebView).
+  ReleaseCallback release_callback = base::BindOnce(
+      [](ScheduleGpuTaskCallback schedule_gpu_task, base::OnceClosure callback,
+         const gpu::SyncToken& sync_token,
+         bool) { schedule_gpu_task.Run(std::move(callback), {sync_token}); },
+      schedule_gpu_task_, std::move(closure_on_gpu_thread));
 
-  return base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
-                            std::move(run_gpu_callback));
+  return base::BindPostTask(dependency_->GetClientTaskRunner(),
+                            std::move(release_callback));
+}
+
+void SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread(
+    const gpu::Mailbox& mailbox) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  for (size_t i = 0; i < copy_output_images_.size(); ++i) {
+    if (copy_output_images_[i]->mailbox() == mailbox) {
+      context_state_->MakeCurrent(nullptr);
+      copy_output_images_.erase(copy_output_images_.begin() + i);
+      return;
+    }
+  }
+  NOTREACHED() << "The Callback returned by GetDeleteCallback() was called "
+               << "more than once.";
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutput(
@@ -1477,30 +1512,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   }
 
   ScheduleCheckReadbackCompletion();
-}
-
-void SkiaOutputSurfaceImplOnGpu::RunDestroyCopyOutputResourcesOnGpuThread(
-    ReleaseCallback* callback,
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {
-  for (size_t i = 0; i < release_on_gpu_callbacks_.size(); ++i) {
-    if (release_on_gpu_callbacks_[i].get() == callback) {
-      std::move(*release_on_gpu_callbacks_[i]).Run(sync_token, is_lost);
-      release_on_gpu_callbacks_.erase(release_on_gpu_callbacks_.begin() + i);
-      return;
-    }
-  }
-  NOTREACHED() << "The Callback returned by GetDeleteCallback() was called "
-               << "more than once.";
-}
-
-void SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread(
-    std::unique_ptr<gpu::SharedImageRepresentationSkia> representation,
-    scoped_refptr<gpu::SharedContextState> context_state,
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {
-  context_state_->MakeCurrent(nullptr);
-  representation.reset();
 }
 
 void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(

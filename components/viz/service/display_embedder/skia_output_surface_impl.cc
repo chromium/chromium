@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -32,6 +33,7 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -852,13 +854,15 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       base::BindRepeating(&SkiaOutputSurfaceImpl::BufferPresented, weak_ptr_);
   auto context_lost_callback =
       base::BindOnce(&SkiaOutputSurfaceImpl::ContextLost, weak_ptr_);
+  auto schedule_gpu_task = base::BindRepeating(
+      &SkiaOutputSurfaceImpl::ScheduleOrRetainGpuTask, weak_ptr_);
 
   impl_on_gpu_ = SkiaOutputSurfaceImplOnGpu::Create(
       dependency_, renderer_settings_, gpu_task_scheduler_->GetSequenceId(),
       display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(vsync_callback_runner));
+      std::move(schedule_gpu_task), std::move(vsync_callback_runner));
   if (!impl_on_gpu_) {
     *result = false;
   } else {
@@ -1250,6 +1254,13 @@ void SkiaOutputSurfaceImpl::ContextLost() {
   gr_context_thread_safe_.reset();
   for (auto& observer : observers_)
     observer.OnContextLost();
+}
+
+void SkiaOutputSurfaceImpl::ScheduleOrRetainGpuTask(
+    base::OnceClosure callback,
+    std::vector<gpu::SyncToken> tokens) {
+  gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(callback),
+                                               std::move(tokens));
 }
 
 gfx::Rect SkiaOutputSurfaceImpl::GetCurrentFramebufferDamage() const {
