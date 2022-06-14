@@ -806,7 +806,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)systemSelectionCallout {
-  return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
+  if (@available(iOS 16.0, *)) {
+    return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
+  } else {
+    return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
+  }
 }
 
 + (id<GREYMatcher>)systemSelectionCalloutLinkToTextButton {
