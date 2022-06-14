@@ -47,7 +47,7 @@ robolectric_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "javatests/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogIntegrationTest.java" ]
