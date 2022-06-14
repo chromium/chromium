@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -91,10 +92,15 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         mMainController.recordAction(action);
         if (mEphemeralTabCoordinatorSupplier != null
                 && mEphemeralTabCoordinatorSupplier.get() != null) {
-            String title =
-                    mRowView.getContext().getString(R.string.page_info_about_this_page_title);
-            mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(
-                    new GURL(url), title, /*isIncognito=*/false);
+            // Append parameter to open the page with reduced UI elements in the bottomsheet.
+            Uri.Builder builder = Uri.parse(url).buildUpon();
+            if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
+                builder.appendQueryParameter("ilrm", "minimal");
+            }
+            GURL bottomSheetUrl = new GURL(builder.toString());
+            GURL fullPageUrl = new GURL(url);
+            mEphemeralTabCoordinatorSupplier.get().requestOpenSheetWithFullPageUrl(
+                    bottomSheetUrl, fullPageUrl, getTitle(), /*isIncognito=*/false);
             mMainController.dismiss();
         } else {
             new TabDelegate(/*incognito=*/false)
@@ -126,9 +132,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         assert mSiteInfo.hasDescription();
         String subtitle = mSiteInfo.getDescription().getDescription();
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        rowParams.title = mRowView.getContext().getResources().getString(more_info_enabled
-                        ? R.string.page_info_about_this_page_title
-                        : R.string.page_info_about_this_site_title);
+        rowParams.title = getTitle();
         rowParams.subtitle = subtitle;
         rowParams.singleLineSubTitle = true;
         rowParams.visible = true;
@@ -140,6 +144,13 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
                         PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED)
                 : this::launchSubpage;
         mRowView.setParams(rowParams);
+    }
+
+    private String getTitle() {
+        return mRowView.getContext().getResources().getString(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO)
+                        ? R.string.page_info_about_this_page_title
+                        : R.string.page_info_about_this_site_title);
     }
 
     private @Nullable SiteInfo getSiteInfo() {
