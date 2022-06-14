@@ -18,6 +18,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace web_app {
@@ -30,11 +31,12 @@ class LacrosWebAppBrowserTest : public WebAppControllerBrowserTest {
  protected:
   // If ash is does not contain the relevant test controller functionality, then
   // there's nothing to do for this test. We require https://crrev.com/c/3688993
-  // or later (SelectContextMenuForShelfItem bug fix).
+  // (SelectContextMenuForShelfItem bug fix) and https://crrev.com/c/3703077
+  // (ApplyBackgroundAndMask fix for PWA shortcuts without icons).
   bool IsServiceAvailable() {
     DCHECK(IsWebAppsCrosapiEnabled());
     return chromeos::IsAshVersionAtLeastForTesting(
-        base::Version({104, 0, 5102}));
+        base::Version({105, 0, 5120}));
   }
 };
 
@@ -96,6 +98,73 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, AppInfo) {
 
   // Wait for item to stop existing in shelf.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+}
+
+// Regression test for crbug.com/1335266
+IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, Shortcut) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP() << "Unsupported ash version.";
+
+  // The menu contains 5 items common across running web apps, then a separator
+  // and label for each of the 6 shortcut entries.
+  const uint32_t kNumShortcutItems = 17U;
+  const int kShortcutOneIndex = 6;
+  const int kShortcutThreeIndex = 10;
+  const int kShortcutSixIndex = 16;
+
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+
+  const GURL app_url =
+      https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  EXPECT_EQ(provider().registrar().GetAppShortcutsMenuItemInfos(app_id).size(),
+            6U);
+
+  // Wait for item to exist in shelf.
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+
+  auto selectContextMenu = [&](int index) {
+    bool success = false;
+    waiter.SelectContextMenuForShelfItem(app_id, index, &success);
+    return success;
+  };
+
+  {
+    // Get the context menu.
+    std::vector<std::string> items;
+    waiter.GetContextMenuForShelfItem(app_id, &items);
+    EXPECT_EQ(kNumShortcutItems, items.size());
+    EXPECT_EQ(items[kShortcutOneIndex], "One");
+    EXPECT_EQ(items[kShortcutThreeIndex], "Three");
+    EXPECT_EQ(items[kShortcutSixIndex], "Six");
+  }
+
+  {
+    content::TestNavigationObserver navigation_observer(
+        https_server()->GetURL("/web_app_shortcuts/shortcuts.html#one"));
+    navigation_observer.StartWatchingNewWebContents();
+    ASSERT_TRUE(selectContextMenu(kShortcutOneIndex));
+    navigation_observer.Wait();
+  }
+
+  {
+    content::TestNavigationObserver navigation_observer(
+        https_server()->GetURL("/web_app_shortcuts/shortcuts.html#three"));
+    navigation_observer.StartWatchingNewWebContents();
+    ASSERT_TRUE(selectContextMenu(kShortcutThreeIndex));
+    navigation_observer.Wait();
+  }
+
+  {
+    content::TestNavigationObserver navigation_observer(
+        https_server()->GetURL("/web_app_shortcuts/shortcuts.html#six"));
+    navigation_observer.StartWatchingNewWebContents();
+    ASSERT_TRUE(selectContextMenu(kShortcutSixIndex));
+    navigation_observer.Wait();
+  }
 }
 
 }  // namespace web_app

@@ -4664,14 +4664,15 @@ if (is_chromeos_lacros) {
 
     data = [
       "data/extensions/api_test/login_screen_apis/",
-      "data/extensions/api_test/vpn_provider/",
       "data/extensions/api_test/preference/",
+      "data/extensions/api_test/vpn_provider/",
       "data/extensions/platform_apps/minimal/",
       "data/media/",
+      "data/policy/test_certs/",
+      "data/web_app_shortcuts/",
       "data/web_apps/",
       "data/web_share_target/",
       "data/webshare/",
-      "data/policy/test_certs/",
     ]
 
     data_deps = [
