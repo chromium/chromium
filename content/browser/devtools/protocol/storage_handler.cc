@@ -370,6 +370,10 @@ Response StorageHandler::GetStorageKeyForFrame(
   if (!node)
     return Response::InvalidParams("Frame tree node for given frame not found");
   RenderFrameHostImpl* rfh = node->current_frame_host();
+  if (rfh->storage_key().origin().opaque())
+    return Response::ServerError(
+        "Frame corresponds to an opaque origin and its storage key cannot be "
+        "serialized");
   *serialized_storage_key = rfh->storage_key().Serialize();
   return Response::Success();
 }
