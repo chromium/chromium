@@ -58,7 +58,7 @@ public class AppMenuItemViewBinderRenderTest {
                     new ParameterSet().value(true, false).name("NightMode_MenuItemDisabled"));
 
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+    public static BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -93,10 +93,10 @@ public class AppMenuItemViewBinderRenderTest {
 
     @Before
     public void setUpTest() throws Exception {
-        sActivityTestRule.launchActivity(null);
+        mActivityTestRule.launchActivity(null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity = sActivityTestRule.getActivity();
+            sActivity = mActivityTestRule.getActivity();
             mMenuList = new ModelListAdapter.ModelList();
             mModelListAdapter = new ModelListAdapter(mMenuList);
 

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import static org.mockito.ArgumentMatchers.eq;
 
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.KeyEvent;
@@ -20,18 +19,14 @@ import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -47,6 +42,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.ArrayList;
@@ -60,13 +56,8 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.UNIT_TESTS)
-public class AppMenuTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private Activity mActivity;
+@Batch(Batch.PER_CLASS)
+public class AppMenuTest extends BlankUiTestActivityTestCase {
     private AppMenuCoordinatorImpl mAppMenuCoordinator;
     private AppMenuHandlerImpl mAppMenuHandler;
     private TestAppMenuPropertiesDelegate mPropertiesDelegate;
@@ -84,23 +75,14 @@ public class AppMenuTest {
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         BlankUiTestActivity.setTestLayout(R.layout.test_app_menu_activity_layout);
-        sActivityTestRule.launchActivity(null);
     }
 
-    @Before
+    @Override
     public void setUpTest() throws Exception {
+        super.setUpTest();
         mCanvas = Mockito.mock(Canvas.class);
         TestThreadUtils.runOnUiThreadBlocking(this::setUpTestOnUiThread);
         mLifecycleDispatcher.observerRegisteredCallbackHelper.waitForCallback(0);
-    }
-
-    @After
-    public void teardownTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppMenuHandler.hideAppMenu();
-            mTestMenuButtonDelegate.getMenuButtonView().setPressed(false);
-            mAppMenuCoordinator.destroy();
-        });
     }
 
     @AfterClass
@@ -109,13 +91,12 @@ public class AppMenuTest {
     }
 
     private void setUpTestOnUiThread() {
-        mActivity = sActivityTestRule.getActivity();
         mLifecycleDispatcher = new TestActivityLifecycleDispatcher();
         mDelegate = new TestAppMenuDelegate();
         mTestMenuButtonDelegate = new TestMenuButtonDelegate();
-        mAppMenuCoordinator = new AppMenuCoordinatorImpl(mActivity, mLifecycleDispatcher,
-                mTestMenuButtonDelegate, mDelegate, mActivity.getWindow().getDecorView(),
-                mActivity.findViewById(R.id.menu_anchor_stub));
+        mAppMenuCoordinator = new AppMenuCoordinatorImpl(getActivity(), mLifecycleDispatcher,
+                mTestMenuButtonDelegate, mDelegate, getActivity().getWindow().getDecorView(),
+                getActivity().findViewById(R.id.menu_anchor_stub));
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
@@ -161,7 +142,7 @@ public class AppMenuTest {
         AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(false);
         showMenuAndAssert();
 
-        View topAnchor = mActivity.findViewById(R.id.top_button);
+        View topAnchor = getActivity().findViewById(R.id.top_button);
         Rect viewRect = getViewLocationRect(topAnchor);
         Rect popupRect = getPopupLocationRect();
 
@@ -186,7 +167,7 @@ public class AppMenuTest {
         AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(true);
         showMenuAndAssert();
 
-        View anchorStub = mActivity.findViewById(R.id.menu_anchor_stub);
+        View anchorStub = getActivity().findViewById(R.id.menu_anchor_stub);
         Rect viewRect = getViewLocationRect(anchorStub);
         Rect popupRect = getPopupLocationRect();
 
@@ -255,7 +236,7 @@ public class AppMenuTest {
         showMenuAndAssert();
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
-        View dummyView = new View(mActivity);
+        View dummyView = new View(getActivity());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             spiedMenu.onItemLongClick(
                     mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_one),
@@ -272,7 +253,7 @@ public class AppMenuTest {
         showMenuAndAssert();
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
-        View dummyView = new View(mActivity);
+        View dummyView = new View(getActivity());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             spiedMenu.onItemLongClick(
                     mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_two),
@@ -289,7 +270,7 @@ public class AppMenuTest {
         showMenuAndAssert();
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
-        View dummyView = new View(mActivity);
+        View dummyView = new View(getActivity());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             spiedMenu.onItemLongClick(
                     mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_three),
@@ -892,7 +873,7 @@ public class AppMenuTest {
         @Nullable
         @Override
         public View getMenuButtonView() {
-            return mActivity.findViewById(R.id.top_button);
+            return getActivity().findViewById(R.id.top_button);
         }
     }
 
