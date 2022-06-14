@@ -35,10 +35,9 @@ TEST(ChromePaths, UserCacheDir) {
 #elif BUILDFLAG(IS_FUCHSIA)
   // Fuchsia uses the Component's cache directory as the base.
   expected_cache_dir = base::FilePath(base::kPersistedCacheDirectoryPath);
-  // TODO(crbug.com/1263566): Support profile-specific cache and uncomment this.
-  // test_profile_dir =
-  //     base::FilePath(base::kPersistedDataDirectoryPath).Append("foobar");
-  // expected_cache_dir = expected_cache_dir.Append("foobar");
+  test_profile_dir =
+      base::FilePath(base::kPersistedDataDirectoryPath).Append("foobar");
+  expected_cache_dir = expected_cache_dir.Append("foobar");
 #elif BUILDFLAG(IS_MAC)
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &test_profile_dir));
   test_profile_dir = test_profile_dir.Append("foobar");
@@ -78,10 +77,7 @@ TEST(ChromePaths, UserCacheDir) {
   base::FilePath non_special_profile_dir =
       base::FilePath(FILE_PATH_LITERAL("/some/other/path"));
   GetUserCacheDirectory(non_special_profile_dir, &cache_dir);
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
-  // Fuchsia always uses the same base cache directory.
-  EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android always uses the same application cache directory.
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
 #else
