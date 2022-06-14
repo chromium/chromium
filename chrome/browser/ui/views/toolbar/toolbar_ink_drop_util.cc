@@ -6,10 +6,11 @@
 
 #include "base/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -63,11 +64,10 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
 }
 
 SkColor GetToolbarInkDropBaseColor(const views::View* host_view) {
-  const auto* theme_provider = host_view->GetThemeProvider();
-  // There may be no theme provider in unit tests.
-  return theme_provider
-             ? theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_INK_DROP)
-             : gfx::kPlaceholderColor;
+  const auto* color_provider = host_view->GetColorProvider();
+  // There may be no color provider in unit tests.
+  return color_provider ? color_provider->GetColor(kColorToolbarInkDrop)
+                        : gfx::kPlaceholderColor;
 }
 
 void ConfigureInkDropForToolbar(views::Button* host) {
