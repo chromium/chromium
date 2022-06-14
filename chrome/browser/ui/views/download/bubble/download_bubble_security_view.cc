@@ -219,6 +219,10 @@ void DownloadBubbleSecurityView::UpdateButtons() {
 
   if (ui_info.subpage_buttons.size() > 0) {
     first_button_ = GetButtonForCommand(ui_info.subpage_buttons[0].command);
+    first_button_->SetCallback(base::BindRepeating(
+        &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
+        ui_info.subpage_buttons[0].command,
+        /*is_first_button=*/true));
     first_button_->SetText(ui_info.subpage_buttons[0].label);
     first_button_->SetProminent(ui_info.subpage_buttons[0].is_prominent);
     first_button_->SetEnabledTextColors(GetColorProvider()->GetColor(
@@ -229,6 +233,10 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   if (ui_info.subpage_buttons.size() > 1) {
     views::MdTextButton* second_button =
         GetButtonForCommand(ui_info.subpage_buttons[1].command);
+    second_button->SetCallback(base::BindRepeating(
+        &DownloadBubbleSecurityView::ProcessButtonClick, base::Unretained(this),
+        ui_info.subpage_buttons[1].command,
+        /*is_first_button=*/false));
     second_button->SetText(ui_info.subpage_buttons[1].label);
     second_button->SetVisible(true);
     second_button->SetProminent(ui_info.subpage_buttons[1].is_prominent);
@@ -263,17 +271,14 @@ void DownloadBubbleSecurityView::AddButtons() {
       gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
 
-  auto add_button_for_command = [button_row, button_margin,
-                                 this](DownloadCommands::Command command) {
-    auto* button =
-        button_row->AddChildView(std::make_unique<views::MdTextButton>(
-            base::BindRepeating(&DownloadBubbleSecurityView::ProcessButtonClick,
-                                base::Unretained(this), command,
-                                /*is_first_button=*/true),
-            std::u16string()));
-    button->SetProperty(views::kMarginsKey, button_margin);
-    return button;
-  };
+  auto add_button_for_command =
+      [button_row, button_margin](DownloadCommands::Command command) {
+        auto* button =
+            button_row->AddChildView(std::make_unique<views::MdTextButton>(
+                views::Button::PressedCallback(), std::u16string()));
+        button->SetProperty(views::kMarginsKey, button_margin);
+        return button;
+      };
 
   // The buttons come in this order KEEP, DISCARD, BYPASS_DEEP_SCANNING,
   // DEEP_SCAN. Reorder buttons in runtime if required.
