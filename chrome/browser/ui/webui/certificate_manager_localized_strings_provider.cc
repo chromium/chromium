@@ -81,7 +81,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_CERTIFICATE_MANAGER_CONFIRM_PASSWORD},
     {"certificateImportErrorFormat",
      IDS_SETTINGS_CERTIFICATE_MANAGER_IMPORT_ERROR_FORMAT},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {"certificateProvisioningListHeader",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER},
     {"certificateProvisioningRefresh",
@@ -103,7 +103,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
     {"certificateProvisioningLastUnsuccessfulStatus",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UNSUCCESSFUL_STATUS},
     {"certificateProvisioningPublicKey", IDS_CERT_DETAILS_SUBJECT_KEY},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     // For A11y.
     {"menu", IDS_MENU},
   };

@@ -71,7 +71,7 @@ TEST_F('CrComponentsCertificateManagerTest', 'All', function() {
 GEN('#endif  // BUILDFLAG(USE_NSS_CERTS)');
 
 
-GEN('#if BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#if BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)');
 
 /**
  * ChromeOS specific test fixture for chrome://settings/certificates, testing
@@ -90,7 +90,7 @@ TEST_F('CrComponentsCertificateManagerProvisioningTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)');
 
 var CrComponentsManagedDialogTest = class extends CrComponentsBrowserTest {
   /** @override */

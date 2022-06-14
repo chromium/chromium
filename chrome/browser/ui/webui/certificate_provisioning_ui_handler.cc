@@ -22,6 +22,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -31,13 +36,21 @@
 
 using crosapi::mojom::CertProvisioningProcessState;
 
-namespace chromeos {
-namespace cert_provisioning {
+namespace chromeos::cert_provisioning {
 
 namespace {
 
 crosapi::mojom::CertProvisioning* GetCertProvisioningInterface(
     Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!profile->IsMainProfile() || !service ||
+      !service->IsAvailable<crosapi::mojom::CertProvisioning>()) {
+    return nullptr;
+  }
+  return service->GetRemote<crosapi::mojom::CertProvisioning>().get();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
@@ -238,5 +251,4 @@ void CertificateProvisioningUiHandler::GotStatus(
                     std::move(all_processes));
 }
 
-}  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace chromeos::cert_provisioning

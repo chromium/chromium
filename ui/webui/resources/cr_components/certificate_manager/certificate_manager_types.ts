@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-// <if expr="chromeos_ash">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 // </if>
 import {CertificatesError, CertificatesImportError,CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
@@ -47,7 +47,7 @@ export enum CertificateAction {
  */
 export const CertificateActionEvent = 'certificate-action';
 
-// <if expr="chromeos_ash">
+// <if expr="chromeos_ash or chromeos_lacros">
 /**
  * The payload of the 'certificate-provisioning-view-details-action' event.
  */
@@ -69,7 +69,7 @@ declare global {
   interface HTMLElementEventMap {
     'certificates-error': CustomEvent<CertificatesErrorEventDetail>;
     'certificate-action': CustomEvent<CertificateActionEventDetail>;
-    // <if expr="chromeos_ash">
+    // <if expr="chromeos_ash or chromeos_lacros">
     'certificate-provisioning-view-details-action':
         CustomEvent<CertificateProvisioningActionEventDetail>;
     // </if>

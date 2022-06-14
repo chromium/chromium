@@ -14,7 +14,7 @@ preprocessed_files = [ "managed_footnote_test.ts" ]
 if (use_nss_certs) {
   # Test files that contain // <if expr> and therefore require preprocessing.
   preprocessed_files += [ "certificate_manager_test.ts" ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     preprocessed_files += [ "certificate_manager_provisioning_test.ts" ]
   }
 }

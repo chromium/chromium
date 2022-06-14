@@ -34,7 +34,7 @@ class CertificateProvisioningUiHandler
   // cert provisioning component, can be nullptr.
   // The constructor is public for testing, prefer using CreateForProfile when
   // possible.
-  CertificateProvisioningUiHandler(
+  explicit CertificateProvisioningUiHandler(
       crosapi::mojom::CertProvisioning* cert_provisioning_interface);
 
   CertificateProvisioningUiHandler(

@@ -117,7 +117,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
@@ -135,6 +134,10 @@
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 #include "chrome/browser/ui/webui/settings/system_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/ui/webui/certificates_handler.h"
@@ -179,11 +182,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<NativeCertificatesHandler>());
 #endif  // BUILDFLAG(USE_NSS_CERTS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AddSettingsPageUIHandler(
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::
           CreateForProfile(profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   AddSettingsPageUIHandler(std::make_unique<AccessibilityMainHandler>());
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());

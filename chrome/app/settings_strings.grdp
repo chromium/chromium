@@ -1002,7 +1002,7 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_WRITE_ERROR_FORMAT" desc="The text in the error dialog for PKCS #12 file write errors.">
       There was an error while trying to write the file: <ph name="ERROR_TEXT">$1<ex>Permission denied.</ex></ph>.
     </message>
-    <if expr="chromeos_ash">
+    <if expr="chromeos_ash or chromeos_lacros">
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LIST_HEADER" desc="Header that lists the certificate provisioning processes.">
         Certificates are being provisioned for these certificate profiles
       </message>

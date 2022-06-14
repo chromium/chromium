@@ -6906,6 +6906,7 @@ test("unit_tests") {
       "../browser/extensions/api/document_scan/document_scan_api_unittest.cc",
       "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
+      "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "chromeos/printing/fake_local_printer_chromeos.cc",
       "chromeos/printing/fake_local_printer_chromeos.h",
     ]
@@ -7137,7 +7138,6 @@ test("unit_tests") {
       "../browser/ui/quick_answers/ui/quick_answers_view_unittest.cc",
       "../browser/ui/views/crostini/crostini_app_restart_dialog_unittest.cc",
       "../browser/ui/web_applications/file_stream_data_pipe_getter_unittest.cc",
-      "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils_unittest.cc",
       "../browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_handler_unittest.cc",
       "../browser/ui/webui/chromeos/edu_account_login_handler_unittest.cc",
