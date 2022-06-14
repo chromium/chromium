@@ -137,4 +137,26 @@ TEST(WinUtil, RunElevated) {
   EXPECT_EQ(exit_code, 0UL);
 }
 
+TEST(WinUtil, GetOSVersion) {
+  absl::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
+  ASSERT_NE(rtl_os_version, absl::nullopt);
+
+  // Compare to the version from `::GetVersionEx`.
+  OSVERSIONINFOEX os = {};
+  os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  EXPECT_TRUE(::GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&os)));
+
+  EXPECT_EQ(rtl_os_version->dwOSVersionInfoSize, os.dwOSVersionInfoSize);
+  EXPECT_EQ(rtl_os_version->dwMajorVersion, os.dwMajorVersion);
+  EXPECT_EQ(rtl_os_version->dwMinorVersion, os.dwMinorVersion);
+  EXPECT_EQ(rtl_os_version->dwBuildNumber, os.dwBuildNumber);
+  EXPECT_EQ(rtl_os_version->dwPlatformId, os.dwPlatformId);
+  EXPECT_STREQ(rtl_os_version->szCSDVersion, os.szCSDVersion);
+  EXPECT_EQ(rtl_os_version->wServicePackMajor, os.wServicePackMajor);
+  EXPECT_EQ(rtl_os_version->wServicePackMinor, os.wServicePackMinor);
+  EXPECT_EQ(rtl_os_version->wSuiteMask, os.wSuiteMask);
+  EXPECT_EQ(rtl_os_version->wProductType, os.wProductType);
+  EXPECT_EQ(rtl_os_version->wReserved, os.wReserved);
+}
+
 }  // namespace updater

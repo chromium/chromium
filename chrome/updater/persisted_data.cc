@@ -4,9 +4,13 @@
 
 #include "chrome/updater/persisted_data.h"
 
+#include <vector>
+
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,6 +20,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "chrome/updater/win/win_util.h"
+#endif
 
 namespace {
 
@@ -34,6 +45,7 @@ constexpr char kHadApps[] = "had_apps";
 // TODO(crbug.com/1292189): rename "updater_time" to "last_checked".
 constexpr char kLastChecked[] = "update_time";
 constexpr char kLastStarted[] = "last_started";
+constexpr char kLastOSVersion[] = "last_os_version";
 
 }  // namespace
 
@@ -237,12 +249,55 @@ void PersistedData::SetLastStarted(const base::Time& time) {
     pref_service_->SetTime(kLastStarted, time);
 }
 
+#if BUILDFLAG(IS_WIN)
+absl::optional<OSVERSIONINFOEX> PersistedData::GetLastOSVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Unpacks the os version from a base-64-encoded string internally.
+  const std::string encoded_os_version =
+      pref_service_->GetString(kLastOSVersion);
+
+  if (encoded_os_version.empty())
+    return absl::nullopt;
+
+  const absl::optional<std::vector<uint8_t>> decoded_os_version =
+      base::Base64Decode(encoded_os_version);
+  if (!decoded_os_version ||
+      decoded_os_version->size() != sizeof(OSVERSIONINFOEX)) {
+    return absl::nullopt;
+  }
+
+  return *reinterpret_cast<const OSVERSIONINFOEX*>(decoded_os_version->data());
+}
+
+void PersistedData::SetLastOSVersion() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!pref_service_)
+    return;
+
+  // Get and set the current OS version.
+  absl::optional<OSVERSIONINFOEX> os_version = GetOSVersion();
+  if (!os_version)
+    return;
+
+  // The os version is internally stored as a base-64-encoded string.
+  std::string encoded_os_version;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(&os_version.value()),
+                        sizeof(OSVERSIONINFOEX)),
+      &encoded_os_version);
+  return pref_service_->SetString(kLastOSVersion, encoded_os_version);
+}
+#endif
+
 // Register persisted data prefs, except for kPersistedDataPreference.
 // kPersistedDataPreference is registered by update_client::RegisterPrefs.
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
   registry->RegisterTimePref(kLastChecked, {});
   registry->RegisterTimePref(kLastStarted, {});
+  registry->RegisterStringPref(kLastOSVersion, {});
 }
 
 }  // namespace updater

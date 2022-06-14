@@ -752,4 +752,24 @@ HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope) {
                                         : HKEY_CURRENT_USER;
 }
 
+absl::optional<OSVERSIONINFOEX> GetOSVersion() {
+  // `::RtlGetVersion` is being used here instead of `::GetVersionEx`, because
+  // the latter function can return the incorrect version if it is shimmed using
+  // an app compat shim.
+  using RtlGetVersion = LONG(WINAPI*)(OSVERSIONINFOEX*);
+  static const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
+      ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
+  if (!rtl_get_version)
+    return absl::nullopt;
+
+  OSVERSIONINFOEX os_out = {};
+  os_out.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+  rtl_get_version(&os_out);
+  if (!os_out.dwMajorVersion)
+    return absl::nullopt;
+
+  return os_out;
+}
+
 }  // namespace updater

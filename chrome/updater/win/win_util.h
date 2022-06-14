@@ -256,6 +256,9 @@ bool IsServiceRunning(const std::wstring& service_name);
 // * scope == UpdaterScope::kUser == HKEY_CURRENT_USER
 HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope);
 
+// Returns an OSVERSIONINFOEX for the current OS version.
+absl::optional<OSVERSIONINFOEX> GetOSVersion();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

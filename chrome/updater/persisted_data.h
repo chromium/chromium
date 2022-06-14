@@ -12,6 +12,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 class PrefService;
 class PrefRegistrySimple;
@@ -97,6 +102,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // working.
   base::Time GetLastStarted() const;
   void SetLastStarted(const base::Time& time);
+
+#if BUILDFLAG(IS_WIN)
+  // Retrieves the previously stored OS version.
+  absl::optional<OSVERSIONINFOEX> GetLastOSVersion() const;
+
+  // Stores the current os version.
+  void SetLastOSVersion();
+#endif
 
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
