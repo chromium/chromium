@@ -294,6 +294,7 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter) {
   message_center_view->SetVisible(true);
 
   EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(message_center_view->collapsed());
 
   auto did_focus = tray->FocusMessageCenter(false);
 
@@ -314,34 +315,6 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_MessageCenterBubbleNotShown) {
   auto did_focus = tray->FocusMessageCenter(false);
 
   EXPECT_FALSE(did_focus);
-}
-
-TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_CollapseQuickSettings) {
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-
-  auto* message_center_view =
-      tray->message_center_bubble()->message_center_view();
-  auto* focus_manager = message_center_view->GetFocusManager();
-
-  AddNotification();
-  AddNotification();
-  message_center_view->SetVisible(true);
-
-  EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
-
-  auto* quick_settings_controller =
-      GetUnifiedSystemTrayBubble()->unified_system_tray_controller();
-  quick_settings_controller->EnsureExpanded();
-
-  auto did_focus = tray->FocusMessageCenter(false);
-
-  EXPECT_TRUE(did_focus);
-
-  EXPECT_FALSE(quick_settings_controller->IsExpanded());
-  EXPECT_TRUE(tray->IsMessageCenterBubbleShown());
-  EXPECT_FALSE(message_center_view->collapsed());
-  EXPECT_TRUE(message_center_view->Contains(focus_manager->GetFocusedView()));
 }
 
 TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
@@ -366,7 +339,6 @@ TEST_F(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
 
   EXPECT_TRUE(tray->IsMessageCenterBubbleShown());
   EXPECT_TRUE(message_center_bubble->GetBubbleWidget()->IsActive());
-  EXPECT_FALSE(message_center_view->collapsed());
   EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
 }
 
@@ -482,6 +454,40 @@ TEST_F(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
                "CalendarDateCellView");
+}
+
+// Tests that CalendarView switches back to Quick Settings when screen size is
+// limited and the bubble requires a collapsed state.
+TEST_F(UnifiedSystemTrayTest, CalendarGoesToMainView) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+
+  // Set a limited screen size.
+  UpdateDisplay("800x600");
+
+  // Generate a notification, close and open the bubble so we can show the
+  // collapsed message center.
+  AddNotification();
+  tray->CloseBubble();
+  tray->ShowBubble();
+
+  // Ensure message center is collapsed when Calendar is not being shown.
+  auto* message_center_view =
+      tray->message_center_bubble()->message_center_view();
+  EXPECT_FALSE(tray->IsShowingCalendarView());
+  EXPECT_TRUE(message_center_view->collapsed());
+
+  // Ensure message center is collapsed when the Calendar is being shown.
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(tray->IsShowingCalendarView());
+  EXPECT_TRUE(message_center_view->collapsed());
+
+  // Test that Calendar is no longer shown after expanding the collapsed
+  // message center.
+  tray->message_center_bubble()->ExpandMessageCenter();
+  EXPECT_FALSE(message_center_view->collapsed());
+  EXPECT_FALSE(tray->IsShowingCalendarView());
 }
 
 }  // namespace ash

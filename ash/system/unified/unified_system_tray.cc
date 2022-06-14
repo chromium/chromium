@@ -385,12 +385,6 @@ bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
 
   Shell::Get()->focus_cycler()->FocusWidget(message_center_widget);
 
-  ExpandMessageCenter();
-
-  // TODO(1225479): Only collapse if space is an issue.
-  if (collapse_quick_settings)
-    EnsureQuickSettingsCollapsed(/*animate*/ false);
-
   // Focus an individual element in the message center if chrome vox is
   // disabled.
   if (!ShouldEnableExtraKeyboardAccessibility())
