@@ -52,6 +52,10 @@ export class UrlGeneratorElement extends PolymerElement {
       errorMessage_: {
         type: String,
         value: '',
+      },
+      buttonDisabled_: {
+        type: Boolean,
+        value: true,
       }
     };
   }
@@ -59,6 +63,7 @@ export class UrlGeneratorElement extends PolymerElement {
   private caseId_: string;
   private generatedURL_: string;
   private errorMessage_: string;
+  private buttonDisabled_: boolean;
   private dataCollectors_: DataCollectorItem[];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -69,6 +74,20 @@ export class UrlGeneratorElement extends PolymerElement {
         (dataCollectors: DataCollectorItem[]) => {
           this.dataCollectors_ = dataCollectors;
         });
+  }
+
+  private onDataCollectorItemClicked_() {
+    // The button should be disabled if no data collector is selected.
+    this.buttonDisabled_ = !this.hasDataCollectorSelected();
+  }
+
+  private hasDataCollectorSelected(): boolean {
+    for (let index = 0; index < this.dataCollectors_.length; index++) {
+      if (this.dataCollectors_[index]!.isIncluded) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private showErrorMessageToast_(errorMessage: string) {

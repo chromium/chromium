@@ -10,6 +10,7 @@
 import 'chrome://support-tool/support_tool.js';
 import 'chrome://support-tool/url_generator.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -277,13 +278,19 @@ suite('UrlGeneratorTest', function() {
   });
 
   test('url generation success', async () => {
+    // Ensure the button is disabled when we open the page.
+    const copyLinkButton = urlGenerator.shadowRoot!.getElementById(
+                               'copyURLButton')! as CrButtonElement;
+    assertTrue(copyLinkButton.disabled);
     const caseIdInput = urlGenerator.shadowRoot!.getElementById(
                             'caseIdInput')! as CrInputElement;
     caseIdInput.value = 'test123';
     const dataCollectors =
-        urlGenerator.shadowRoot!.querySelector('iron-list')!.items!;
+        urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select the first one of data collectors.
-    dataCollectors[0]!.selected = true;
+    dataCollectors[0]!.click();
+    // Ensure the button is enabled after we select at least one data collector.
+    assertFalse(copyLinkButton.disabled);
     const expectedLink = 'chrome://support-tool/?case_id=test123&module=jekhh';
     // Set the expected result of URL generation to successful.
     const expectedResult: UrlGenerationResult = {
@@ -293,7 +300,7 @@ suite('UrlGeneratorTest', function() {
     };
     browserProxy.setUrlGenerationResult(expectedResult);
     // Click the button to generate URL and copy to clipboard.
-    urlGenerator.shadowRoot!.getElementById('copyURLButton')!.click();
+    copyLinkButton.click();
     await browserProxy.whenCalled('generateCustomizedURL');
     // Check the URL value copied to clipboard if it's as expected.
     const copiedLink = await navigator.clipboard.readText();
@@ -308,8 +315,13 @@ suite('UrlGeneratorTest', function() {
       errorMessage: 'Test error message'
     };
     browserProxy.setUrlGenerationResult(expectedResult);
+    const copyLinkButton = urlGenerator.shadowRoot!.getElementById(
+                               'copyURLButton')! as CrButtonElement;
+    // Enable the button for testing. The input fields are not important as
+    // we're testing for the error message.
+    copyLinkButton.disabled = false;
     // Click the button to generate URL.
-    urlGenerator.shadowRoot!.getElementById('copyURLButton')!.click();
+    copyLinkButton!.click();
     await browserProxy.whenCalled('generateCustomizedURL');
     // Check that there's an error message shown to user.
     assertTrue(urlGenerator.$.errorMessageToast.open);
