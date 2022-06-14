@@ -10,14 +10,12 @@ import android.util.SparseArray;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -25,8 +23,8 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,14 +34,9 @@ import java.util.Set;
 /**
  * Unit tests for {@link CachedZeroSuggestionsManager}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class CachedZeroSuggestionsManagerUnitTest {
-    @Before
-    public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
-
     /**
      * Compare two instances of CachedZeroSuggestionsManager to see if they are same, asserting if
      * they're not. Note that order is just as relevant as the content for caching.
@@ -109,7 +102,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void setNewSuggestions_cachedSuggestionsWithPostdataBeforeAndAfterAreSame() {
         AutocompleteResult dataToCache =
                 AutocompleteResult.fromCache(buildDummySuggestionsList(2, true), null);
@@ -120,7 +112,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void setNewSuggestions_cachedSuggestionsWithoutPostdataBeforeAndAfterAreSame() {
         AutocompleteResult dataToCache =
                 AutocompleteResult.fromCache(buildDummySuggestionsList(2, false), null);
@@ -131,7 +122,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void setNewSuggestions_DoNotcacheClipboardSuggestions() {
         List<AutocompleteMatch> mix_list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.CLIPBOARD_IMAGE).build(),
@@ -151,7 +141,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void groupsDetails_restoreDetailsFromEmptyCache() {
         // Note: purge cache explicitly, because tests are run on an actual device
         // and cache may hold content from other test runs.
@@ -163,7 +152,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void groupsDetails_cacheAllSaneGroupDetails() {
         SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
         groupsDetails.put(10, new GroupDetails("Header For Group 10", false));
@@ -177,7 +165,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void groupsDetails_cachePartiallySaneGroupDetailsDropsInvalidEntries() {
         SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
         groupsDetails.put(10, new GroupDetails("Header For Group 10", false));
@@ -197,7 +184,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void groupsDetails_restoreInvalidGroupsDetailsFromCache() {
         SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
         groupsDetails.put(
@@ -213,7 +199,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void dropSuggestions_suggestionsWithValidGroupsAssociation() {
         List<AutocompleteMatch> list = buildDummySuggestionsList(2, false);
         list.add(createSuggestionBuilder(33).setGroupId(1).build());
@@ -228,7 +213,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void dropSuggestions_suggestionsWithInvalidGroupsAssociation() {
         List<AutocompleteMatch> listExpected = buildDummySuggestionsList(2, false);
         List<AutocompleteMatch> listToCache = buildDummySuggestionsList(2, false);
@@ -243,7 +227,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void malformedCache_dropsMissingSuggestions() {
         // Clear cache explicitly, otherwise this test will be flaky until the suite is re-executed.
         ContextUtils.getAppSharedPreferences().edit().clear().apply();
@@ -279,7 +262,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void malformedCache_dropsMissingGroupDetails() {
         // Clear cache explicitly, otherwise this test will be flaky until the suite is re-executed.
         ContextUtils.getAppSharedPreferences().edit().clear().apply();
@@ -323,7 +305,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void removeInvalidSuggestions_dropsInvalidSuggestionsAndGroupsDetails() {
         // Write 3 wrong group groupsDetails to the cache
         SparseArray<GroupDetails> groupsDetailsExpected = new SparseArray<>();
@@ -340,8 +321,10 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
         List<AutocompleteMatch> listWithInvalidItems = buildDummySuggestionsList(2, false);
         listWithInvalidItems.add(createSuggestionBuilder(72).setGroupId(12).build());
-        listWithInvalidItems.add(
-                createSuggestionBuilder(73).setGroupId(12).setUrl(new GURL("bad URL")).build());
+        listWithInvalidItems.add(createSuggestionBuilder(73)
+                                         .setGroupId(12)
+                                         .setUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.INVALID_URL))
+                                         .build());
         listWithInvalidItems.add(createSuggestionBuilder(74).setGroupId(34).build());
 
         AutocompleteResult dataWithInvalidItems =
@@ -356,7 +339,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void cacheAndRestoreSuggestionSubtypes() {
         List<AutocompleteMatch> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
@@ -381,7 +363,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void rejectCacheIfSubtypesAreMalformed() {
         List<AutocompleteMatch> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
@@ -409,7 +390,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void rejectCacheIfSubtypesIncludeNull() {
         List<AutocompleteMatch> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
