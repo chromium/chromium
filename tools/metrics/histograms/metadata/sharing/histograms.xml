@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.BitmapGenerationStatus"
-    enum="SharingLongScreenshotsEvent" expires_after="M105">
+    enum="SharingLongScreenshotsEvent" expires_after="M107">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.BitmapSelectedHeight" units="pixels"
-    expires_after="M105">
+    expires_after="M107">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.LongScreenshots.Event"
-    enum="SharingLongScreenshotsEvent" expires_after="M105">
+    enum="SharingLongScreenshotsEvent" expires_after="M107">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
-    units="ms" expires_after="M105">
+    units="ms" expires_after="M107">
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
