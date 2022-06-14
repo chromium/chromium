@@ -158,6 +158,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       },
 
       /** @private */
+      firmwareUpdateCount_: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @private */
       showCrostini: Boolean,
 
       /** @private */
@@ -301,6 +307,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {
       this.hasInternetConnection_ = result;
     });
+
+    if (this.showFirmwareUpdatesApp_) {
+      this.aboutBrowserProxy_.getFirmwareUpdateCount().then(result => {
+        this.firmwareUpdateCount_ = result;
+      });
+    }
 
     if (Router.getInstance().getQueryParameters().get('checkForUpdate') ===
         'true') {
@@ -467,6 +479,13 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     return this.currentUpdateStatusEvent_.status === UpdateStatus.FAILED;
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowFirmwareUpdatesBadge_() {
+    return this.showFirmwareUpdatesApp_ && this.firmwareUpdateCount_ > 0;
+  }
 
   /**
    * @return {string}
@@ -567,6 +586,22 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       default:
         return null;
     }
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getFirmwareUpdatesIcon_() {
+    if (this.firmwareUpdateCount_ === 0) {
+      return '';
+    }
+
+    const maxBadgeId = 9;
+    // If the number of firmware updates is > 9, then we want to show
+    // the 9 badge.
+    const updateBadgeId = Math.min(this.firmwareUpdateCount_, maxBadgeId);
+    return `os-settings:counter-${updateBadgeId}`;
   }
 
   /**

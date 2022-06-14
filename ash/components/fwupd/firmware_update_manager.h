@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // Gets the global instance pointer.
   static FirmwareUpdateManager* Get();
 
+  // Gets the number of cached updates.
+  size_t GetUpdateCount() { return updates_.size(); }
+
   // FwupdClient::Observer:
   // When the fwupd DBus client gets a response with devices from fwupd,
   // it calls this function and passes the response.
@@ -171,8 +174,6 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void SetFakeUrlForTesting(const std::string& fake_url) {
     fake_url_for_testing_ = fake_url;
   }
-
-  int GetNumUpdatesForTesting() { return updates_.size(); }
 
   // Resets the mojo::Receiver |install_controller_receiver_|
   // and |update_progress_observer_|.

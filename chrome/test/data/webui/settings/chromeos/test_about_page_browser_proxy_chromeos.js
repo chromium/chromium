@@ -27,6 +27,7 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
       'refreshTPMFirmwareUpdateStatus',
       'requestUpdate',
       'setChannel',
+      'getFirmwareUpdateCount',
       'openFirmwareUpdatesPage',
       'isManagedAutoUpdateEnabled',
       'isConsumerAutoUpdateEnabled',
@@ -73,6 +74,9 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
 
     /** @private {!boolean} */
     this.consumerAutoUpdateEnabled_ = true;
+
+    /** @private {number} */
+    this.firmwareUpdateCount_ = 0;
   }
 
   /** @param {!UpdateStatus} updateStatus */
@@ -241,6 +245,17 @@ export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   /** @override */
   openFirmwareUpdatesPage() {
     this.methodCalled('openFirmwareUpdatesPage');
+  }
+
+  /** @override */
+  getFirmwareUpdateCount() {
+    this.methodCalled('getFirmwareUpdateCount');
+    return Promise.resolve(this.firmwareUpdateCount_);
+  }
+
+  /** @param {number} firmwareUpdatesCount */
+  setFirmwareUpdatesCount(firmwareUpdatesCount) {
+    this.firmwareUpdateCount_ = firmwareUpdatesCount;
   }
 
   /** @override */

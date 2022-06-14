@@ -3021,6 +3021,7 @@ static_library("ui") {
       "//ash/components/disks",
       "//ash/components/drivefs",
       "//ash/components/drivefs/mojom:mojom",
+      "//ash/components/fwupd",
       "//ash/components/login/auth",
       "//ash/components/login/session",
       "//ash/components/multidevice",

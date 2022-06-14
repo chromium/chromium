@@ -177,6 +177,12 @@ export class AboutPageBrowserProxy {
   openFirmwareUpdatesPage() {}
 
   /**
+   * Requests the number of firmware updates.
+   * @return {!Promise<number>}
+   */
+  getFirmwareUpdateCount() {}
+
+  /**
    * Checks for available update and applies if it exists.
    */
   requestUpdate() {}
@@ -299,6 +305,11 @@ export class AboutPageBrowserProxyImpl {
   /** @override */
   openFirmwareUpdatesPage() {
     chrome.send('openFirmwareUpdatesPage');
+  }
+
+  /** @override */
+  getFirmwareUpdateCount() {
+    return sendWithPromise('getFirmwareUpdateCount');
   }
 
   /** @override */

@@ -749,6 +749,57 @@ suite('AboutPageTest', function() {
         `Diagnostics should be focused for settingId=${diagnosticsId}.`);
   });
 
+  test('FirmwareUpdatesBadge No Updates', async function() {
+    loadTimeData.overrideValues({isFirmwareUpdaterAppEnabled: true});
+
+    aboutBrowserProxy.setFirmwareUpdatesCount(0);
+    await initNewPage();
+    flush();
+    await aboutBrowserProxy.whenCalled('getFirmwareUpdateCount');
+
+    assertTrue(!!page.$.firmwareUpdateBadge);
+    assertTrue(!!page.$.firmwareUpdateBadgeSeparator);
+
+    assertTrue(page.$.firmwareUpdateBadge.hidden);
+    assertTrue(page.$.firmwareUpdateBadgeSeparator.hidden);
+  });
+
+  test('FirmwareUpdatesBadge N Updates', async function() {
+    loadTimeData.overrideValues({isFirmwareUpdaterAppEnabled: true});
+
+    for (let i = 1; i < 10; i++) {
+      aboutBrowserProxy.setFirmwareUpdatesCount(i);
+      await initNewPage();
+      flush();
+      await aboutBrowserProxy.whenCalled('getFirmwareUpdateCount');
+
+      assertTrue(!!page.$.firmwareUpdateBadge);
+      assertTrue(!!page.$.firmwareUpdateBadgeSeparator);
+
+      assertFalse(page.$.firmwareUpdateBadge.hidden);
+      assertEquals('os-settings:counter-' + i, page.$.firmwareUpdateBadge.icon);
+
+      assertFalse(page.$.firmwareUpdateBadgeSeparator.hidden);
+    }
+  });
+
+  test('FirmwareUpdatesBadge 10 Updates', async function() {
+    loadTimeData.overrideValues({isFirmwareUpdaterAppEnabled: true});
+
+    aboutBrowserProxy.setFirmwareUpdatesCount(10);
+    await initNewPage();
+    flush();
+    await aboutBrowserProxy.whenCalled('getFirmwareUpdateCount');
+
+    assertTrue(!!page.$.firmwareUpdateBadge);
+    assertTrue(!!page.$.firmwareUpdateBadgeSeparator);
+
+    assertFalse(page.$.firmwareUpdateBadge.hidden);
+    assertEquals('os-settings:counter-9', page.$.firmwareUpdateBadge.icon);
+
+    assertFalse(page.$.firmwareUpdateBadgeSeparator.hidden);
+  });
+
   test('LaunchFirmwareUpdates', async function() {
     loadTimeData.overrideValues({
       isDeepLinkingEnabled: true,

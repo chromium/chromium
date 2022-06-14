@@ -106,6 +106,9 @@ class AboutHandler : public settings::SettingsPageUIHandler,
       std::string callback_id,
       std::unique_ptr<base::DictionaryValue> version_info);
 
+  // Retrieves the number of firmware updates available.
+  void HandleGetFirmwareUpdateCount(const base::Value::List& args);
+
   // Retrieves channel info.
   void HandleGetChannelInfo(const base::Value::List& args);
 
