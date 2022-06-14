@@ -4,7 +4,7 @@
 
 """Implements commands for running and interacting with Fuchsia on devices."""
 
-import boot_data
+import itertools
 import logging
 import os
 import pkg_repo
@@ -178,11 +178,15 @@ class DeviceTarget(target.Target):
       Exception: If more than one device is found.
     """
 
-    if not self._node_name:
+    if self._node_name:
+      target = ffx_session.FfxTarget.from_node_name(self._ffx_runner,
+                                                    self._node_name)
+    else:
       # Get the node name of a single attached target.
-      targets = None
       try:
-        targets = self._ffx_runner.list_targets()
+        # Get at most the first 2 valid targets
+        targets = list(
+            itertools.islice(self._ffx_runner.list_active_targets(), 2))
       except subprocess.CalledProcessError:
         # A failure to list targets could mean that the device is in zedboot.
         # Return false in this case so that Start() will attempt to provision.
@@ -194,23 +198,17 @@ class DeviceTarget(target.Target):
         raise Exception('More than one device was discovered on the network. '
                         'Use --node-name <name> to specify the device to use.'
                         'List of devices: {}'.format(targets))
-      assert len(targets) == 1
-
-      node_name = targets[0].get('nodename')
-      if not node_name or node_name == '<unknown>':
-        return False
-      self._node_name = node_name
+      target = targets[0]
 
     # Get the ssh address of the target.
-    ffx_target = ffx_session.FfxTarget(self._ffx_runner, self._node_name)
-    try:
-      self._host, self._port = ffx_target.get_ssh_address()
-    except subprocess.CalledProcessError:
+    if address := target.get_ssh_address():
+      self._host, self._port = address
+    else:
       return False
 
-    logging.info(
-        'Found device "%s" at %s.' %
-        (self._node_name, ffx_session.format_host_port(self._host, self._port)))
+    logging.info('Found device "%s" at %s.' %
+                 (self._node_name if self._node_name else '<unknown>',
+                  ffx_session.format_host_port(self._host, self._port)))
 
     # TODO(crbug.com/1307220): Remove this once the telemetry scripts can handle
     # specifying the port for a device that is not listening on localhost.
@@ -343,22 +341,20 @@ class DeviceTarget(target.Target):
     if self._node_name:
       # Assume that ffx already knows about the target, so there's no need to
       # add/remove it.
-      self._ffx_target = ffx_session.FfxTarget(self._ffx_runner,
-                                               self._node_name)
+      self._ffx_target = ffx_session.FfxTarget.from_node_name(
+          self._ffx_runner, self._node_name)
     else:
       # The target may not be known by ffx. Probe to see if it has already been
       # added.
-      ffx_target = ffx_session.FfxTarget(
-          self._ffx_runner,
-          ffx_session.format_host_port(self._host, self._port))
-      try:
-        ffx_target.get_ssh_address()
+      ffx_target = ffx_session.FfxTarget.from_address(self._ffx_runner,
+                                                      self._host, self._port)
+      if ffx_target.get_ssh_address():
         # If we could lookup the address, the target must be reachable. Do not
         # open a new scoped_target_context, as that will `ffx target add` now
         # and then `ffx target remove` later, which will break subsequent
         # interactions with a persistent emulator.
         self._ffx_target = ffx_target
-      except subprocess.CalledProcessError:
+      else:
         # The target is not known, so take on responsibility of adding and
         # removing it.
         self._target_context = self._ffx_runner.scoped_target_context(

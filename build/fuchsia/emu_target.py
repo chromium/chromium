@@ -130,11 +130,10 @@ class EmuTarget(target.Target):
       self._ffx_target.wait(common.ATTACH_RETRY_SECONDS)
     super(EmuTarget, self)._ConnectToTarget()
     if with_network:
-      # Interact with the target via its node name, which ffx should now know
+      # Interact with the target via its address:port, which ffx should now know
       # about.
-      address, port = self._GetNetworkAddress()
-      self._ffx_target = ffx_session.FfxTarget(
-          self._ffx_runner, self._ffx_runner.get_node_name(address, port))
+      self._ffx_target = ffx_session.FfxTarget.from_address(
+          self._ffx_runner, *self._GetEndpoint())
 
   def _DisconnectFromTarget(self):
     self._ffx_target = None

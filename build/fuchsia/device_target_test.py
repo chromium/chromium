@@ -26,7 +26,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
                           logs_dir=None,
                           system_image_dir=None)
 
-  def testNoNodeNameOneDeviceReturnNoneCheckNameAndAddress(
+  def testUnspecifiedNodeNameOneDeviceReturnNoneCheckNameAndAddress(
       self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
@@ -40,22 +40,46 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
           "serial": "<unknown>",
           "target_type": "terminal.qemu-x64",
           "target_state": "Product",
+      }]
+      mock_get_ssh_address.return_value = ('address', 12345)
+      mock_connecttotarget.return_value = True
+      self.assertIsNone(device_target_instance.Start())
+      self.assertEqual(device_target_instance._host, 'address')
+      self.assertEqual(device_target_instance._port, 12345)
+    mock_daemon_stop.assert_called_once()
+
+  def testUnspecifiedNodeNameOneUnknownDeviceReturnNoneCheckAddressAndPort(
+      self, mock_daemon_stop):
+    with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
+         mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
+         mock.patch.object(
+             FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
+         mock.patch.object(
+             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
+      mock_list_targets.return_value = [{
+          "nodename": "<unknown>",
+          "rcs_state": "Y",
+          "serial": "<unknown>",
+          "target_type": "terminal.qemu-x64",
+          "target_state": "Product",
           "addresses": ["address"]
       }]
       mock_get_ssh_address.return_value = ('address', 12345)
       mock_connecttotarget.return_value = True
       self.assertIsNone(device_target_instance.Start())
-      self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
       self.assertEqual(device_target_instance._port, 12345)
     mock_daemon_stop.assert_called_once()
 
-  def testNoNodeNameTwoDevicesRaiseExceptionAmbiguousTarget(
+  def testUnspecifiedNodeNameTwoDevicesRaiseExceptionAmbiguousTarget(
       self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
+         mock.patch.object(
+           FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          self.assertRaisesRegex(Exception, \
                                 'More than one device was discovered'):
+      mock_get_ssh_address.return_value = ('address', 12345)
       mock_list_targets.return_value = [{
           "nodename": "device_name1",
           "rcs_state": "Y",
@@ -70,24 +94,6 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
           "target_type": "terminal.qemu-x64",
           "target_state": "Product",
           "addresses": ["address2"]
-      }]
-      device_target_instance.Start()
-      self.assertIsNone(device_target_instance._node_name)
-      self.assertIsNone(device_target_instance._host)
-    mock_daemon_stop.assert_called_once()
-
-  def testNoNodeNameDeviceDoesntHaveNameRaiseExceptionCouldNotFind(
-      self, mock_daemon_stop):
-    with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
-         mock.patch.object(FfxRunner, 'list_targets') as mock_list_targets, \
-         self.assertRaisesRegex(Exception, 'Could not find device.'):
-      mock_list_targets.return_value = [{
-          "nodename": "<unknown>",
-          "rcs_state": "Y",
-          "serial": "<unknown>",
-          "target_type": "terminal.qemu-x64",
-          "target_state": "Product",
-          "addresses": ["address"]
       }]
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
@@ -117,8 +123,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(
              FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
-      mock_get_ssh_address.side_effect = subprocess.CalledProcessError(
-          1, 'ffx', 'Timeout attempting to reach target "wrong_device_name"')
+      mock_get_ssh_address.return_value = None
       device_target_instance.Start()
       self.assertIsNone(device_target_instance._node_name)
       self.assertIsNone(device_target_instance._host)
@@ -177,8 +182,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(
              FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(DeviceTarget, '_ProvisionDevice') as mock_provision:
-      mock_get_ssh_address.side_effect = subprocess.CalledProcessError(
-          1, 'ffx', 'Timeout attempting to reach target "mocknode"')
+      mock_get_ssh_address.return_value = None
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 1)
     mock_daemon_stop.assert_called_once()
