@@ -403,7 +403,9 @@ TEST_F(ImageControllerTest, QueueImageDecodeMultipleImagesSameTask) {
   EXPECT_TRUE(task->HasCompleted());
 }
 
-TEST_F(ImageControllerTest, QueueImageDecodeChangeControllerWithTaskQueued) {
+// TODO(crbug.com/1336053): Re-enable this test
+TEST_F(ImageControllerTest,
+       DISABLED_QueueImageDecodeChangeControllerWithTaskQueued) {
   scoped_refptr<BlockingTask> task_one(new BlockingTask);
   cache()->SetTaskToUse(task_one);
 
