@@ -10,7 +10,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -38,7 +37,7 @@ namespace blink {
 namespace {
 
 std::unique_ptr<Thread> CreateThread(const char* name) {
-  return Platform::Current()->CreateThread(
+  return Thread::CreateThread(
       ThreadCreationParams(ThreadType::kTestThread).SetThreadNameForTest(name));
 }
 

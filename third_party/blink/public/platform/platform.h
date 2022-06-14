@@ -123,7 +123,6 @@ class BrowserInterfaceBrokerProxy;
 class MediaInspectorContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class Thread;
-struct ThreadCreationParams;
 class URLLoaderThrottle;
 class UserMetricsAction;
 class WebAudioBus;
@@ -366,13 +365,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   }
 
   // Threads -------------------------------------------------------
-
-  // Most of threading functionality has moved to blink::Thread. The functions
-  // in Platform are deprecated; use the counterpart in blink::Thread as noted
-  // below.
-
-  // DEPRECATED: Use Thread::CreateThread() instead.
-  std::unique_ptr<Thread> CreateThread(const ThreadCreationParams&);
 
   // The two compositor-related functions below are called by the embedder.
   // TODO(yutak): Perhaps we should move these to somewhere else?

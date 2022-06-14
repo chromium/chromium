@@ -29,7 +29,6 @@
 #include "base/location.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -267,9 +266,9 @@ TEST_F(ImageFrameGeneratorTest,
   // LocalFrame can now be decoded completely.
   SetFrameStatus(ImageFrame::kFrameComplete);
   AddNewData();
-  std::unique_ptr<Thread> thread = Platform::Current()->CreateThread(
-      ThreadCreationParams(ThreadType::kTestThread)
-          .SetThreadNameForTest("DecodeThread"));
+  std::unique_ptr<Thread> thread =
+      Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                               .SetThreadNameForTest("DecodeThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&DecodeThreadMain, WTF::RetainedRef(generator_),

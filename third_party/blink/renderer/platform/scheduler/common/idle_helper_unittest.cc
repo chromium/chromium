@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -1102,9 +1101,9 @@ class MultiThreadedIdleHelperTest : public IdleHelperTest {
   }
 
   void PostDelayedIdleTaskFromNewThread(base::TimeDelta delay, int* run_count) {
-    std::unique_ptr<Thread> thread = Platform::Current()->CreateThread(
-        ThreadCreationParams(ThreadType::kTestThread)
-            .SetThreadNameForTest("TestBackgroundThread"));
+    std::unique_ptr<Thread> thread =
+        Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                                 .SetThreadNameForTest("TestBackgroundThread"));
     PostCrossThreadTask(
         *thread->GetTaskRunner(), FROM_HERE,
         CrossThreadBindOnce(&PostIdleTaskFromBackgroundThread,

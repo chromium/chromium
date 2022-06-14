@@ -6,7 +6,6 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
@@ -53,9 +52,9 @@ TEST(ResourceResponseTest, CrossThreadAtomicStrings) {
 
   ResourceResponse response(CreateTestResponse());
   RunHeaderRelatedTest(response);
-  std::unique_ptr<Thread> thread = Platform::Current()->CreateThread(
-      ThreadCreationParams(ThreadType::kTestThread)
-          .SetThreadNameForTest("WorkerThread"));
+  std::unique_ptr<Thread> thread =
+      Thread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
+                               .SetThreadNameForTest("WorkerThread"));
   PostCrossThreadTask(*thread->GetTaskRunner(), FROM_HERE,
                       CrossThreadBindOnce(&RunInThread));
   thread.reset();

@@ -321,11 +321,6 @@ ThreadSafeBrowserInterfaceBrokerProxy* Platform::GetBrowserInterfaceBroker() {
   return &proxy;
 }
 
-std::unique_ptr<Thread> Platform::CreateThread(
-    const ThreadCreationParams& params) {
-  return Thread::CreateThread(params);
-}
-
 void Platform::CreateAndSetCompositorThread() {
   Thread::CreateAndSetCompositorThread();
 }
