@@ -47,5 +47,5 @@ declare_args() {
 
   # Platforms for which the builtin cert verifier can use the Chrome Root Store.
   # See https://crbug.com/1216547 for status.
-  chrome_root_store_supported = is_win
+  chrome_root_store_supported = is_win || is_mac
 }

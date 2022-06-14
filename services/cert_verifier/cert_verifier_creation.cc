@@ -191,7 +191,17 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
       primary_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
                                                  root_store_data);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) && \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  scoped_refptr<net::CertVerifyProcFactory> trial_proc_factory;
+  if (net::features::kCertDualVerificationTrialUseCrs.Get()) {
+    trial_proc_factory =
+        base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>();
+  } else {
+    trial_proc_factory =
+        base::MakeRefCounted<NewCertVerifyProcBuiltinFactory>();
+  }
+#elif BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   auto trial_proc_factory =
       base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>();
 #else

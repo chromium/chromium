@@ -81,6 +81,17 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     kLruCache = 3,
   };
 
+  enum class TrustDomains {
+    // Load trust settings and certificates from all three trust domains
+    // (user, admin, system).
+    kAll = 0,
+
+    // Load trust settings and certificates from only the user and admin trust
+    // domains. This will find trust settings that have been set locally or by
+    // an enterprise, but not those distributed with the OS.
+    kUserAndAdmin = 1,
+  };
+
   class ResultDebugData : public base::SupportsUserData::Data {
    public:
     static const ResultDebugData* Get(const base::SupportsUserData* debug_data);
@@ -111,7 +122,10 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // |impl| selects which internal implementation is used for checking trust
   // settings, and the interpretation of |cache_size| varies depending on
   // |impl|.
-  TrustStoreMac(CFStringRef policy_oid, TrustImplType impl, size_t cache_size);
+  TrustStoreMac(CFStringRef policy_oid,
+                TrustImplType impl,
+                size_t cache_size,
+                TrustDomains domains);
 
   TrustStoreMac(const TrustStoreMac&) = delete;
   TrustStoreMac& operator=(const TrustStoreMac&) = delete;
@@ -143,7 +157,8 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // The result is an array of CRYPTO_BUFFERs containing the DER certificate
   // data.
   static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
-  FindMatchingCertificatesForMacNormalizedSubject(CFDataRef name_data);
+  FindMatchingCertificatesForMacNormalizedSubject(CFDataRef name_data,
+                                                  TrustDomains domains);
 
   // Returns the OS-normalized issuer of |cert|.
   // macOS internally uses a normalized form of subject/issuer names for
@@ -152,6 +167,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   static base::ScopedCFTypeRef<CFDataRef> GetMacNormalizedIssuer(
       const ParsedCertificate* cert);
 
+  TrustDomains domains_;
   std::unique_ptr<TrustImpl> trust_cache_;
 };
 

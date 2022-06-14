@@ -4,6 +4,7 @@
 
 #include "net/cert/internal/system_trust_store.h"
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 
@@ -78,15 +79,18 @@ class DummySystemTrustStore : public SystemTrustStore {
 }  // namespace
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-class SystemTrustStoreChrome : public SystemTrustStore {
+class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
  public:
-  explicit SystemTrustStoreChrome(
+  // Creates a SystemTrustStore that gets publicly trusted roots from
+  // |trust_store_chrome| and local trust settings from |trust_store_system|.
+  // Does not take ownership of |trust_store_system|, which must outlive this
+  // object.
+  explicit SystemTrustStoreChromeWithUnOwnedSystemStore(
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-      std::unique_ptr<TrustStore> trust_store_system)
-      : trust_store_chrome_(std::move(trust_store_chrome)),
-        trust_store_system_(std::move(trust_store_system)) {
+      TrustStore* trust_store_system)
+      : trust_store_chrome_(std::move(trust_store_chrome)) {
     trust_store_collection_.AddTrustStore(trust_store_chrome_.get());
-    trust_store_collection_.AddTrustStore(trust_store_system_.get());
+    trust_store_collection_.AddTrustStore(trust_store_system);
   }
 
   TrustStore* GetTrustStore() override { return &trust_store_collection_; }
@@ -105,8 +109,24 @@ class SystemTrustStoreChrome : public SystemTrustStore {
 
  private:
   std::unique_ptr<TrustStoreChrome> trust_store_chrome_;
-  std::unique_ptr<TrustStore> trust_store_system_;
   TrustStoreCollection trust_store_collection_;
+};
+
+class SystemTrustStoreChrome
+    : public SystemTrustStoreChromeWithUnOwnedSystemStore {
+ public:
+  // Creates a SystemTrustStore that gets publicly trusted roots from
+  // |trust_store_chrome| and local trust settings from |trust_store_system|.
+  explicit SystemTrustStoreChrome(
+      std::unique_ptr<TrustStoreChrome> trust_store_chrome,
+      std::unique_ptr<TrustStore> trust_store_system)
+      : SystemTrustStoreChromeWithUnOwnedSystemStore(
+            std::move(trust_store_chrome),
+            trust_store_system.get()),
+        trust_store_system_(std::move(trust_store_system)) {}
+
+ private:
+  std::unique_ptr<TrustStore> trust_store_system_;
 };
 
 std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
@@ -115,7 +135,6 @@ std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(trust_store_chrome), std::move(trust_store_system));
 }
-
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -193,6 +212,61 @@ CreateSslSystemTrustStoreNSSWithNoUserSlots() {
 
 #elif BUILDFLAG(IS_MAC)
 
+namespace {
+
+TrustStoreMac::TrustImplType ParamToTrustImplType(
+    int param,
+    TrustStoreMac::TrustImplType default_impl) {
+  switch (param) {
+    case 1:
+      return TrustStoreMac::TrustImplType::kDomainCache;
+    case 2:
+      return TrustStoreMac::TrustImplType::kSimple;
+    case 3:
+      return TrustStoreMac::TrustImplType::kLruCache;
+    default:
+      return default_impl;
+  }
+}
+
+TrustStoreMac::TrustImplType GetTrustStoreImplParam(
+    TrustStoreMac::TrustImplType default_impl) {
+  // TODO(https://crbug.com/1327433): A limitation of this approach is that if
+  // the primary verifier is being set to use the builtin verifier via a
+  // feature flag, it isn't possible to run dual verifier trial comparing that
+  // to the builtin verifier with different flags, since this method can't tell
+  // which flags to use for which verifier.
+  // If handling that becomes necessary, the flags should be checked in the
+  // higher level code (maybe in cert_verifier_creation.cc) so that each
+  // type of CertVerifyProc could be created with the appropriate flags.
+  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
+    return ParamToTrustImplType(features::kCertVerifierBuiltinImpl.Get(),
+                                default_impl);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kCertDualVerificationTrialFeature)) {
+    return ParamToTrustImplType(features::kCertDualVerificationTrialImpl.Get(),
+                                default_impl);
+  }
+  return default_impl;
+}
+
+size_t GetTrustStoreCacheSize() {
+  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature) &&
+      features::kCertVerifierBuiltinCacheSize.Get() > 0) {
+    return features::kCertVerifierBuiltinCacheSize.Get();
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kCertDualVerificationTrialFeature) &&
+      features::kCertDualVerificationTrialCacheSize.Get() > 0) {
+    return features::kCertDualVerificationTrialCacheSize.Get();
+  }
+  constexpr size_t kDefaultCacheSize = 512;
+  return kDefaultCacheSize;
+}
+
+}  // namespace
+
 class SystemTrustStoreMac : public SystemTrustStore {
  public:
   SystemTrustStoreMac() = default;
@@ -211,50 +285,18 @@ class SystemTrustStoreMac : public SystemTrustStore {
     GetGlobalTrustStoreMac()->InitializeTrustCache();
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t chrome_root_store_version() override { return 0; }
+#endif
+
  private:
   static constexpr TrustStoreMac::TrustImplType kDefaultTrustImpl =
       TrustStoreMac::TrustImplType::kLruCache;
 
-  static TrustStoreMac::TrustImplType ParamToTrustImplType(int param) {
-    switch (param) {
-      case 1:
-        return TrustStoreMac::TrustImplType::kDomainCache;
-      case 2:
-        return TrustStoreMac::TrustImplType::kSimple;
-      case 3:
-        return TrustStoreMac::TrustImplType::kLruCache;
-      default:
-        return kDefaultTrustImpl;
-    }
-  }
-
-  static TrustStoreMac::TrustImplType GetTrustStoreImplParam() {
-    if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature))
-      return ParamToTrustImplType(features::kCertVerifierBuiltinImpl.Get());
-    if (base::FeatureList::IsEnabled(
-            features::kCertDualVerificationTrialFeature))
-      return ParamToTrustImplType(
-          features::kCertDualVerificationTrialImpl.Get());
-    return kDefaultTrustImpl;
-  }
-
-  static size_t GetTrustStoreCacheSize() {
-    if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature) &&
-        features::kCertVerifierBuiltinCacheSize.Get() > 0) {
-      return features::kCertVerifierBuiltinCacheSize.Get();
-    }
-    if (base::FeatureList::IsEnabled(
-            features::kCertDualVerificationTrialFeature) &&
-        features::kCertDualVerificationTrialCacheSize.Get() > 0) {
-      return features::kCertDualVerificationTrialCacheSize.Get();
-    }
-    constexpr size_t kDefaultCacheSize = 512;
-    return kDefaultCacheSize;
-  }
-
   static TrustStoreMac* GetGlobalTrustStoreMac() {
     static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
-        kSecPolicyAppleSSL, GetTrustStoreImplParam(), GetTrustStoreCacheSize());
+        kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultTrustImpl),
+        GetTrustStoreCacheSize(), TrustStoreMac::TrustDomains::kAll);
     return static_trust_store_mac.get();
   }
 };
@@ -263,11 +305,45 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
   return std::make_unique<SystemTrustStoreMac>();
 }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+namespace {
+
+TrustStoreMac* GetGlobalTrustStoreMacForCRS() {
+  constexpr TrustStoreMac::TrustImplType kDefaultMacTrustImplForCRS =
+      TrustStoreMac::TrustImplType::kDomainCache;
+  static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
+      kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultMacTrustImplForCRS),
+      GetTrustStoreCacheSize(), TrustStoreMac::TrustDomains::kUserAndAdmin);
+  return static_trust_store_mac.get();
+}
+
+void InitializeTrustCacheForCRSOnWorkerThread() {
+  GetGlobalTrustStoreMacForCRS()->InitializeTrustCache();
+}
+
+}  // namespace
+
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
+    std::unique_ptr<TrustStoreChrome> chrome_root) {
+  return std::make_unique<SystemTrustStoreChromeWithUnOwnedSystemStore>(
+      std::move(chrome_root), GetGlobalTrustStoreMacForCRS());
+}
+#endif  // CHROME_ROOT_STORE_SUPPORTED
+
 void InitializeTrustStoreMacCache() {
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&SystemTrustStoreMac::InitializeTrustCacheOnWorkerThread));
+  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&InitializeTrustCacheForCRSOnWorkerThread));
+  } else if (base::FeatureList::IsEnabled(
+                 net::features::kCertVerifierBuiltinFeature)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(
+            &SystemTrustStoreMac::InitializeTrustCacheOnWorkerThread));
+  }
 }
 
 #elif BUILDFLAG(IS_FUCHSIA)

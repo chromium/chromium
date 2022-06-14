@@ -229,7 +229,8 @@ const std::vector<CertVerifyProcType> kAllCertVerifiers = {
 #elif BUILDFLAG(IS_IOS)
     CERT_VERIFY_PROC_IOS
 #elif BUILDFLAG(IS_MAC)
-    CERT_VERIFY_PROC_MAC, CERT_VERIFY_PROC_BUILTIN
+    CERT_VERIFY_PROC_MAC, CERT_VERIFY_PROC_BUILTIN,
+    CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS
 #elif BUILDFLAG(IS_WIN)
     CERT_VERIFY_PROC_WIN, CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1621,7 +1622,7 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
                              << "against mattm.";
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
 #if BUILDFLAG(IS_MAC)
-  if (VerifyProcTypeIsBuiltin()) {
+  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
     auto* mac_trust_debug_info =
         net::TrustStoreMac::ResultDebugData::Get(&verify_result);
     ASSERT_TRUE(mac_trust_debug_info);

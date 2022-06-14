@@ -99,7 +99,8 @@ CreateSystemTrustStoreChromeForTesting(
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 
 #if BUILDFLAG(IS_MAC)
-// Initializes trust cache on a worker thread.
+// Initializes trust cache on a worker thread, if the builtin verifier is
+// enabled.
 NET_EXPORT void InitializeTrustStoreMacCache();
 #endif
 

@@ -212,6 +212,11 @@ const base::FeatureParam<int> kCertDualVerificationTrialImpl{
 const base::FeatureParam<int> kCertDualVerificationTrialCacheSize{
     &kCertDualVerificationTrialFeature, "cachesize", 0};
 #endif /* BUILDFLAG(IS_MAC) */
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) && \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+const base::FeatureParam<bool> kCertDualVerificationTrialUseCrs{
+    &kCertDualVerificationTrialFeature, "use_crs", false};
+#endif
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

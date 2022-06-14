@@ -314,6 +314,14 @@ NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
 NET_EXPORT extern const base::FeatureParam<int>
     kCertDualVerificationTrialCacheSize;
 #endif /* BUILDFLAG(IS_MAC) */
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) && \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// If both builtin verifier+system roots and builtin verifier+CRS flags are
+// supported in the same build, this param can be used to choose which to test
+// in the trial.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kCertDualVerificationTrialUseCrs;
+#endif
 #endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
