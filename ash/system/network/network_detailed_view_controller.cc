@@ -171,6 +171,11 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
 
 void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {}
 
-void NetworkDetailedViewController::OnWifiToggleClicked(bool new_state) {}
+void NetworkDetailedViewController::OnWifiToggleClicked(bool new_state) {
+  Shell::Get()
+      ->system_tray_model()
+      ->network_state_model()
+      ->SetNetworkTypeEnabledState(NetworkType::kWiFi, new_state);
+}
 
 }  // namespace ash

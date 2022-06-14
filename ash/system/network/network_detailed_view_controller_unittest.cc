@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -25,7 +26,7 @@ using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 
 const std::string kCellular = "cellular";
-constexpr char kWifi[] = "WifiGuid";
+constexpr char kWifi[] = "Wifi";
 
 const int kSignalStrength = 50;
 constexpr char kUser1Email[] = "user1@quicksettings.com";
@@ -121,6 +122,18 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
         wifi_service_path_, std::string(shill::kStateProperty),
         base::Value(shill::kStateIdle));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void ToggleWifiState(bool new_state) {
+    (static_cast<NetworkDetailedNetworkView::Delegate*>(
+         network_detailed_view_controller_.get()))
+        ->OnWifiToggleClicked(new_state);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  chromeos::NetworkStateHandler::TechnologyState GetWifiDeviceState() {
+    return network_state_helper()->network_state_handler()->GetTechnologyState(
+        chromeos::NetworkTypePattern::WiFi());
   }
 
  private:
@@ -286,6 +299,25 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
   EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectConfigured));
   EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
+}
+
+TEST_F(NetworkDetailedViewControllerTest, WifiStateChange) {
+  // By default ash test instantiates WiFi networks and enables them.
+  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            GetWifiDeviceState());
+
+  // Disable wifi.
+  ToggleWifiState(/*new_state=*/false);
+
+  EXPECT_EQ(
+      chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+      GetWifiDeviceState());
+
+  // Renable wifi.
+  ToggleWifiState(/*new_state=*/true);
+
+  EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            GetWifiDeviceState());
 }
 
 }  // namespace ash
