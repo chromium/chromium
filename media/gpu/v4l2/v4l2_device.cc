@@ -991,6 +991,7 @@ V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
   reqbufs.count = 0;
   reqbufs.type = type;
   reqbufs.memory = V4L2_MEMORY_MMAP;
+  reqbufs.flags = V4L2_MEMORY_FLAG_NON_COHERENT;
   if (device_->Ioctl(VIDIOC_REQBUFS, &reqbufs) != 0) {
     VPLOGF(1) << "Request support checks's VIDIOC_REQBUFS ioctl failed.";
     return;
@@ -1137,6 +1138,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
   reqbufs.count = count;
   reqbufs.type = type_;
   reqbufs.memory = memory;
+  if (memory == V4L2_MEMORY_MMAP)
+    reqbufs.flags = V4L2_MEMORY_FLAG_NON_COHERENT;
   DVQLOGF(3) << "Requesting " << count << " buffers.";
 
   int ret = device_->Ioctl(VIDIOC_REQBUFS, &reqbufs);
@@ -1195,6 +1198,8 @@ bool V4L2Queue::DeallocateBuffers() {
   reqbufs.count = 0;
   reqbufs.type = type_;
   reqbufs.memory = memory_;
+  if (memory_ == V4L2_MEMORY_MMAP)
+    reqbufs.flags = V4L2_MEMORY_FLAG_NON_COHERENT;
 
   int ret = device_->Ioctl(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
