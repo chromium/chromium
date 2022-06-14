@@ -4978,7 +4978,6 @@ crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-delaynode-interface/de
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/cors-check.https.html [ Failure ]
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html [ Failure ]
 crbug.com/1050754 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/no-cors.https.html [ Failure ]
-crbug.com/1050754 external/wpt/webauthn/createcredential-badargs-attestation.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/webauthn/createcredential-badargs-authnrselection.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/webauthn/createcredential-badargs-challenge.https.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/webauthn/createcredential-badargs-rp.https.html [ Crash Failure ]

@@ -85,6 +85,7 @@ namespace blink {
 
 namespace {
 
+using mojom::blink::AttestationConveyancePreference;
 using mojom::blink::AuthenticatorAttachment;
 using mojom::blink::AuthenticatorStatus;
 using mojom::blink::CredentialInfo;
@@ -1445,6 +1446,16 @@ ScriptPromise CredentialsContainer::create(
     }
     options->signal()->AddAlgorithm(
         WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
+  }
+
+  if (options->publicKey()->hasAttestation() &&
+      !mojo::ConvertTo<absl::optional<AttestationConveyancePreference>>(
+          options->publicKey()->attestation())) {
+    resolver->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Ignoring unknown publicKey.attestation value"));
   }
 
   if (options->publicKey()->hasAuthenticatorSelection() &&

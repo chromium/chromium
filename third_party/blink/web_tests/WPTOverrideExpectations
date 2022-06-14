@@ -182,7 +182,6 @@ external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Pass ] #
 external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Pass ] # wpt_use_checked_in_metadata
 
-external/wpt/webauthn/createcredential-badargs-attestation.https.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/webauthn/createcredential-badargs-authnrselection.https.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/webauthn/createcredential-badargs-challenge.https.html [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/webauthn/createcredential-badargs-rp.https.html [ Pass ] # wpt_use_checked_in_metadata

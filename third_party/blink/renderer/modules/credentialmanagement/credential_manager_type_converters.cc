@@ -232,8 +232,8 @@ TypeConverter<absl::optional<UserVerificationRequirement>, String>::Convert(
 }
 
 // static
-AttestationConveyancePreference
-TypeConverter<AttestationConveyancePreference, String>::Convert(
+absl::optional<AttestationConveyancePreference>
+TypeConverter<absl::optional<AttestationConveyancePreference>, String>::Convert(
     const String& preference) {
   if (preference == "none")
     return AttestationConveyancePreference::NONE;
@@ -243,8 +243,7 @@ TypeConverter<AttestationConveyancePreference, String>::Convert(
     return AttestationConveyancePreference::DIRECT;
   if (preference == "enterprise")
     return AttestationConveyancePreference::ENTERPRISE;
-  NOTREACHED();
-  return AttestationConveyancePreference::NONE;
+  return absl::nullopt;
 }
 
 // static
@@ -470,23 +469,13 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         AuthenticatorSelectionCriteria::From(*options.authenticatorSelection());
   }
 
-  mojo_options->attestation =
-      blink::mojom::AttestationConveyancePreference::NONE;
+  mojo_options->attestation = AttestationConveyancePreference::NONE;
   if (options.hasAttestation()) {
-    const auto& attestation = options.attestation();
-    if (attestation == "none") {
-      // Default value.
-    } else if (attestation == "indirect") {
-      mojo_options->attestation =
-          blink::mojom::AttestationConveyancePreference::INDIRECT;
-    } else if (attestation == "direct") {
-      mojo_options->attestation =
-          blink::mojom::AttestationConveyancePreference::DIRECT;
-    } else if (attestation == "enterprise") {
-      mojo_options->attestation =
-          blink::mojom::AttestationConveyancePreference::ENTERPRISE;
-    } else {
-      return nullptr;
+    absl::optional<AttestationConveyancePreference> attestation =
+        ConvertTo<absl::optional<AttestationConveyancePreference>>(
+            options.attestation());
+    if (attestation) {
+      mojo_options->attestation = *attestation;
     }
   }
 

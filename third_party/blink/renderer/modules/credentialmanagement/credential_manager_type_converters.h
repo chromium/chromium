@@ -91,10 +91,11 @@ struct TypeConverter<
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::AttestationConveyancePreference,
-                     String> {
-  static blink::mojom::blink::AttestationConveyancePreference Convert(
-      const String&);
+struct TypeConverter<
+    absl::optional<blink::mojom::blink::AttestationConveyancePreference>,
+    String> {
+  static absl::optional<blink::mojom::blink::AttestationConveyancePreference>
+  Convert(const String&);
 };
 
 template <>

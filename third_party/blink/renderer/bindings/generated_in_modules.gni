@@ -1050,8 +1050,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_app_banner_prompt_outcome.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_append_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_append_mode.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_attestation_conveyance_preference.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_attestation_conveyance_preference.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_context_latency_category.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_context_latency_category.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_audio_context_state.cc",
