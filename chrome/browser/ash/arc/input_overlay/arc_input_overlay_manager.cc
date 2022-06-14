@@ -224,10 +224,15 @@ void ArcInputOverlayManager::RemoveObserverFromInputMethod() {
 }
 
 void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
+  // Only register the focused window that is not registered.
   if (!window || window != window->GetToplevelWindow() ||
       registered_top_level_window_ == window) {
     return;
   }
+  DCHECK_EQ(ash::window_util::GetFocusedWindow()->GetToplevelWindow(), window);
+  if (ash::window_util::GetFocusedWindow()->GetToplevelWindow() != window)
+    return;
+
   auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end())
     return;
@@ -327,8 +332,10 @@ void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
 }
 
 void ArcInputOverlayManager::OnWindowAddedToRootWindow(aura::Window* window) {
-  if (!window)
+  if (!window ||
+      ash::window_util::GetFocusedWindow()->GetToplevelWindow() != window) {
     return;
+  }
   RegisterWindow(window);
 }
 
