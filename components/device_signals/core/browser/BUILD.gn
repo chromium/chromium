@@ -7,6 +7,7 @@ static_library("browser") {
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
     "signals_collector.h",
+    "signals_types.h",
     "system_signals_service_host.h",
     "user_context.h",
     "user_delegate.h",
@@ -16,6 +17,7 @@ static_library("browser") {
 
   sources = [
     "signals_aggregator_impl.cc",
+    "signals_types.cc",
     "user_context.cc",
     "user_permission_service_impl.cc",
   ]
@@ -24,6 +26,7 @@ static_library("browser") {
     "//base",
     "//components/device_signals/core/common/mojom",
     "//components/keyed_service/core",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
@@ -31,6 +34,10 @@ static_library("browser") {
     "//components/policy/core/common",
     "//components/signin/public/identity_manager",
   ]
+
+  if (is_win) {
+    public_deps += [ "//components/device_signals/core/common/win" ]
+  }
 }
 
 static_library("test_support") {

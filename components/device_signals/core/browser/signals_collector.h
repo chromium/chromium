@@ -5,31 +5,32 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_COLLECTOR_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_SIGNALS_COLLECTOR_H_
 
-#include <string>
 #include <unordered_set>
 
 #include "base/callback_forward.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace device_signals {
+
+enum class SignalName;
+struct SignalsAggregationRequest;
+struct SignalsAggregationResponse;
 
 class SignalsCollector {
  public:
-  using GetSignalCallback = base::OnceCallback<void(base::Value)>;
-
   virtual ~SignalsCollector() = default;
 
   // Returns the set of signal names that this collector can collect.
-  virtual const std::unordered_set<std::string> GetSupportedSignalNames() = 0;
+  virtual const std::unordered_set<SignalName> GetSupportedSignalNames() = 0;
 
-  // Collects the signal named `signal_name` using `params` (if needed), and
-  // invokes `callback` with the signal value.
-  virtual void GetSignal(const std::string& signal_name,
-                         const base::Value& params,
-                         GetSignalCallback callback) = 0;
+  // Collects the signal named `signal_name` using parameters in `request`
+  // (if needed), sets the collected values on `response` and invokes
+  // `done_closure` when the signal is collected. `response` is owned by the
+  // caller who is responsible for keeping the value alive while the signal is
+  // being collected.
+  virtual void GetSignal(SignalName signal_name,
+                         const SignalsAggregationRequest& request,
+                         SignalsAggregationResponse& response,
+                         base::OnceClosure done_closure) = 0;
 };
 
 }  // namespace device_signals

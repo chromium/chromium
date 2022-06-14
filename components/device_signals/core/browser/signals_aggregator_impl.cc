@@ -4,12 +4,15 @@
 
 #include "components/device_signals/core/browser/signals_aggregator_impl.h"
 
+#include <functional>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/signals_collector.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -18,19 +21,32 @@ namespace device_signals {
 
 namespace {
 
-std::string PermissionToError(const UserPermission permission) {
+SignalCollectionError PermissionToError(const UserPermission permission) {
   switch (permission) {
     case UserPermission::kUnaffiliated:
-      return errors::kUnaffiliatedUser;
+      return SignalCollectionError::kUnaffiliatedUser;
     case UserPermission::kMissingConsent:
-      return errors::kConsentRequired;
+      return SignalCollectionError::kConsentRequired;
     case UserPermission::kConsumerUser:
     case UserPermission::kUnknownUser:
-      return errors::kUnsupported;
+      return SignalCollectionError::kUnsupported;
     case UserPermission::kGranted:
       NOTREACHED();
-      return "";
+      return SignalCollectionError::kUnsupported;
   }
+}
+
+void RespondWithError(SignalCollectionError error,
+                      SignalsAggregator::GetSignalsCallback callback) {
+  SignalsAggregationResponse response;
+  response.top_level_error = error;
+  std::move(callback).Run(std::move(response));
+}
+
+void OnSignalRetrieved(std::unique_ptr<SignalsAggregationResponse> response,
+                       SignalsAggregator::GetSignalsCallback callback) {
+  DCHECK(response);
+  std::move(callback).Run(std::move(*response));
 }
 
 }  // namespace
@@ -45,62 +61,60 @@ SignalsAggregatorImpl::SignalsAggregatorImpl(
 
 SignalsAggregatorImpl::~SignalsAggregatorImpl() = default;
 
-void SignalsAggregatorImpl::GetSignals(const UserContext& user_context,
-                                       base::Value::Dict parameters,
+void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
                                        GetSignalsCallback callback) {
-  if (parameters.empty()) {
-    std::move(callback).Run(base::Value(errors::kUnsupported));
+  if (request.signal_names.empty()) {
+    RespondWithError(SignalCollectionError::kUnsupported, std::move(callback));
     return;
   }
 
   // Request for collection of multiple signals is not yet supported. Only the
   // first signal will be returned.
-  DCHECK(parameters.size() == 1);
+  DCHECK(request.signal_names.size() == 1);
 
+  // Capture a reference to `user_context` before calling the function to
+  // prevent a "use after move" warning on `request`, since we cannot guarantee
+  // the order of execution when evaluation function parameters.
+  const auto& user_context = request.user_context;
   permission_service_->CanCollectSignals(
       user_context,
       base::BindOnce(&SignalsAggregatorImpl::OnUserPermissionChecked,
-                     weak_factory_.GetWeakPtr(), std::move(parameters),
+                     weak_factory_.GetWeakPtr(), std::move(request),
                      std::move(callback)));
 }
 
 void SignalsAggregatorImpl::OnUserPermissionChecked(
-    base::Value::Dict parameters,
+    const SignalsAggregationRequest& request,
     GetSignalsCallback callback,
     const UserPermission user_permission) {
   if (user_permission != UserPermission::kGranted) {
-    std::move(callback).Run(base::Value(PermissionToError(user_permission)));
+    RespondWithError(PermissionToError(user_permission), std::move(callback));
     return;
   }
 
-  std::pair<const std::string&, const base::Value&> signal_request =
-      *parameters.begin();
+  SignalName signal_name = *request.signal_names.begin();
   for (const auto& collector : collectors_) {
     const auto signals_set = collector->GetSupportedSignalNames();
-    if (signals_set.find(signal_request.first) == signals_set.end()) {
+    if (signals_set.find(signal_name) == signals_set.end()) {
       // Signal is not supported by current collector.
       continue;
     }
 
+    // Create `response` on the heap to prevent memory access errors from
+    // occurring in the collectors.
+    auto response = std::make_unique<SignalsAggregationResponse>();
+    SignalsAggregationResponse* response_ptr = response.get();
+
     // Signal is supported by current collector.
-    auto return_callback = base::BindOnce(
-        &SignalsAggregatorImpl::OnSignalCollected, weak_factory_.GetWeakPtr(),
-        signal_request.first, std::move(callback));
-    collector->GetSignal(signal_request.first, signal_request.second,
-                         std::move(return_callback));
+    auto done_closure = base::BindOnce(&OnSignalRetrieved, std::move(response),
+                                       std::move(callback));
+    collector->GetSignal(signal_name, request, *response_ptr,
+                         std::move(done_closure));
     return;
   }
 
   // Not a supported signal.
-  std::move(callback).Run(base::Value(errors::kUnsupported));
-}
-
-void SignalsAggregatorImpl::OnSignalCollected(const std::string signal_name,
-                                              GetSignalsCallback callback,
-                                              base::Value value) {
-  base::Value::Dict return_value;
-  return_value.Set(signal_name, std::move(value));
-  std::move(callback).Run(base::Value(std::move(return_value)));
+  RespondWithError(SignalCollectionError::kUnsupported, std::move(callback));
 }
 
 }  // namespace device_signals

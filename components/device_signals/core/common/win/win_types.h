@@ -31,6 +31,8 @@ struct AvProduct {
   // software.
   std::string product_id;
 
+  bool operator==(const AvProduct& other) const;
+
   base::Value ToValue() const;
 };
 
@@ -40,6 +42,8 @@ struct InstalledHotfix {
   // "Win32_QuickFixEngineering". They have a format looking like `KB123123`.
   // https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-quickfixengineering
   std::string hotfix_id;
+
+  bool operator==(const InstalledHotfix& other) const;
 
   base::Value ToValue() const;
 };

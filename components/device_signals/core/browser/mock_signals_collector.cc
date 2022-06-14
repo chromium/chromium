@@ -4,6 +4,8 @@
 
 #include "components/device_signals/core/browser/mock_signals_collector.h"
 
+#include "components/device_signals/core/browser/signals_types.h"
+
 namespace device_signals {
 
 MockSignalsCollector::MockSignalsCollector() = default;

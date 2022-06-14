@@ -8,12 +8,21 @@
 
 namespace device_signals {
 
+bool AvProduct::operator==(const AvProduct& other) const {
+  return display_name == other.display_name && state == other.state &&
+         product_id == other.product_id;
+}
+
 base::Value AvProduct::ToValue() const {
   base::Value::Dict values;
   values.Set("displayName", display_name);
   values.Set("state", static_cast<int>(state));
   values.Set("productId", product_id);
   return base::Value(std::move(values));
+}
+
+bool InstalledHotfix::operator==(const InstalledHotfix& other) const {
+  return hotfix_id == other.hotfix_id;
 }
 
 base::Value InstalledHotfix::ToValue() const {

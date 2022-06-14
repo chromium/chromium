@@ -29,18 +29,13 @@ class SignalsAggregatorImpl : public SignalsAggregator {
   ~SignalsAggregatorImpl() override;
 
   // SignalsAggregator:
-  void GetSignals(const UserContext& user_context,
-                  base::Value::Dict parameters,
+  void GetSignals(const SignalsAggregationRequest& request,
                   GetSignalsCallback callback) override;
 
  private:
-  void OnUserPermissionChecked(base::Value::Dict parameters,
+  void OnUserPermissionChecked(const SignalsAggregationRequest& request,
                                GetSignalsCallback callback,
                                const UserPermission user_permission);
-
-  void OnSignalCollected(const std::string signal_name,
-                         GetSignalsCallback callback,
-                         base::Value value);
 
   base::raw_ptr<UserPermissionService> permission_service_;
   std::vector<std::unique_ptr<SignalsCollector>> collectors_;

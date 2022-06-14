@@ -4,12 +4,15 @@
 
 #include "components/device_signals/core/browser/win/win_signals_collector.h"
 
+#include <functional>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/values.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
-#include "components/device_signals/core/common/signals_constants.h"
+#include "components/device_signals/core/common/win/win_types.h"
 
 namespace device_signals {
 
@@ -17,10 +20,10 @@ WinSignalsCollector::WinSignalsCollector(
     SystemSignalsServiceHost* system_service_host)
     : system_service_host_(system_service_host),
       signals_collection_map_({
-          {names::kAntiVirusInfo,
+          {SignalName::kAntiVirus,
            base::BindRepeating(&WinSignalsCollector::GetAntiVirusSignal,
                                base::Unretained(this))},
-          {names::kInstalledHotfixes,
+          {SignalName::kHotfixes,
            base::BindRepeating(&WinSignalsCollector::GetHotfixSignal,
                                base::Unretained(this))},
       }) {
@@ -29,9 +32,9 @@ WinSignalsCollector::WinSignalsCollector(
 
 WinSignalsCollector::~WinSignalsCollector() = default;
 
-const std::unordered_set<std::string>
+const std::unordered_set<SignalName>
 WinSignalsCollector::GetSupportedSignalNames() {
-  std::unordered_set<std::string> supported_signals;
+  std::unordered_set<SignalName> supported_signals;
   for (const auto& collection_pair : signals_collection_map_) {
     supported_signals.insert(collection_pair.first);
   }
@@ -39,64 +42,79 @@ WinSignalsCollector::GetSupportedSignalNames() {
   return supported_signals;
 }
 
-void WinSignalsCollector::GetSignal(const std::string& signal_name,
-                                    const base::Value& params,
-                                    GetSignalCallback callback) {
+void WinSignalsCollector::GetSignal(SignalName signal_name,
+                                    const SignalsAggregationRequest& request,
+                                    SignalsAggregationResponse& response,
+                                    base::OnceClosure done_closure) {
   const auto it = signals_collection_map_.find(signal_name);
   if (it == signals_collection_map_.end()) {
-    std::move(callback).Run(base::Value(errors::kUnsupported));
+    response.top_level_error = SignalCollectionError::kUnsupported;
+    std::move(done_closure).Run();
     return;
   }
 
-  it->second.Run(params, std::move(callback));
+  it->second.Run(request, response, std::move(done_closure));
 }
 
-void WinSignalsCollector::GetAntiVirusSignal(const base::Value& params,
-                                             GetSignalCallback callback) {
+void WinSignalsCollector::GetAntiVirusSignal(
+    const SignalsAggregationRequest& request,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure) {
   auto* system_signals_service = system_service_host_->GetService();
   if (!system_signals_service) {
-    std::move(callback).Run(base::Value(errors::kMissingSystemService));
+    AntiVirusSignalResponse av_response;
+    av_response.collection_error = SignalCollectionError::kMissingSystemService;
+    response.av_signal_response = std::move(av_response);
+    std::move(done_closure).Run();
     return;
   }
 
-  system_signals_service->GetAntiVirusSignals(
-      base::BindOnce(&WinSignalsCollector::OnAntiVirusSignalCollected,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  system_signals_service->GetAntiVirusSignals(base::BindOnce(
+      &WinSignalsCollector::OnAntiVirusSignalCollected,
+      weak_factory_.GetWeakPtr(), std::ref(response), std::move(done_closure)));
 }
 
 void WinSignalsCollector::OnAntiVirusSignalCollected(
-    GetSignalCallback callback,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure,
     const std::vector<AvProduct>& av_products) {
-  base::Value::List av_values;
-  for (const auto& av_product : av_products) {
-    av_values.Append(av_product.ToValue());
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AntiVirusSignalResponse av_response;
+  av_response.av_products = std::move(av_products);
+  response.av_signal_response = std::move(av_response);
 
-  std::move(callback).Run(base::Value(std::move(av_values)));
+  std::move(done_closure).Run();
 }
 
-void WinSignalsCollector::GetHotfixSignal(const base::Value& params,
-                                          GetSignalCallback callback) {
+void WinSignalsCollector::GetHotfixSignal(
+    const SignalsAggregationRequest& request,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure) {
   auto* system_signals_service = system_service_host_->GetService();
   if (!system_signals_service) {
-    std::move(callback).Run(base::Value(errors::kMissingSystemService));
+    HotfixSignalResponse hotfix_response;
+    hotfix_response.collection_error =
+        SignalCollectionError::kMissingSystemService;
+    response.hotfix_signal_response = std::move(hotfix_response);
+    std::move(done_closure).Run();
     return;
   }
 
-  system_signals_service->GetHotfixSignals(
-      base::BindOnce(&WinSignalsCollector::OnHotfixSignalCollected,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  system_signals_service->GetHotfixSignals(base::BindOnce(
+      &WinSignalsCollector::OnHotfixSignalCollected, weak_factory_.GetWeakPtr(),
+      std::ref(response), std::move(done_closure)));
 }
 
 void WinSignalsCollector::OnHotfixSignalCollected(
-    GetSignalCallback callback,
+    SignalsAggregationResponse& response,
+    base::OnceClosure done_closure,
     const std::vector<InstalledHotfix>& hotfixes) {
-  base::Value::List hotfix_values;
-  for (const auto& hotfix : hotfixes) {
-    hotfix_values.Append(hotfix.ToValue());
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HotfixSignalResponse hotfix_response;
+  hotfix_response.hotfixes = std::move(hotfixes);
+  response.hotfix_signal_response = std::move(hotfix_response);
 
-  std::move(callback).Run(base::Value(std::move(hotfix_values)));
+  std::move(done_closure).Run();
 }
 
 }  // namespace device_signals

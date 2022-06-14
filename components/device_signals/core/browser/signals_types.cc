@@ -1,0 +1,55 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/device_signals/core/browser/signals_types.h"
+
+namespace device_signals {
+
+BaseSignalResponse::~BaseSignalResponse() = default;
+
+#if BUILDFLAG(IS_WIN)
+AntiVirusSignalResponse::AntiVirusSignalResponse() = default;
+AntiVirusSignalResponse::AntiVirusSignalResponse(
+    const AntiVirusSignalResponse&) = default;
+
+AntiVirusSignalResponse& AntiVirusSignalResponse::operator=(
+    const AntiVirusSignalResponse&) = default;
+
+AntiVirusSignalResponse::~AntiVirusSignalResponse() = default;
+
+HotfixSignalResponse::HotfixSignalResponse() = default;
+HotfixSignalResponse::HotfixSignalResponse(const HotfixSignalResponse&) =
+    default;
+
+HotfixSignalResponse& HotfixSignalResponse::operator=(
+    const HotfixSignalResponse&) = default;
+
+HotfixSignalResponse::~HotfixSignalResponse() = default;
+#endif  // BUILDFLAG(IS_WIN)
+
+SignalsAggregationRequest::SignalsAggregationRequest() = default;
+SignalsAggregationRequest::SignalsAggregationRequest(
+    const SignalsAggregationRequest&) = default;
+
+SignalsAggregationRequest& SignalsAggregationRequest::operator=(
+    const SignalsAggregationRequest&) = default;
+
+SignalsAggregationRequest::~SignalsAggregationRequest() = default;
+
+bool SignalsAggregationRequest::operator==(
+    const SignalsAggregationRequest& other) const {
+  return user_context == other.user_context &&
+         signal_names == other.signal_names;
+}
+
+SignalsAggregationResponse::SignalsAggregationResponse() = default;
+SignalsAggregationResponse::SignalsAggregationResponse(
+    const SignalsAggregationResponse&) = default;
+
+SignalsAggregationResponse& SignalsAggregationResponse::operator=(
+    const SignalsAggregationResponse&) = default;
+
+SignalsAggregationResponse::~SignalsAggregationResponse() = default;
+
+}  // namespace device_signals
