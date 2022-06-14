@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
+#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -89,8 +90,9 @@ FirstPartySetsManager::ComputeMetadata(
   if (!sets_.has_value()) {
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::ComputeMetadataAndInvoke,
-        weak_factory_.GetWeakPtr(), site, top_frame_site, party_context,
-        fps_context_config, std::move(callback), base::TimeTicks::Now()));
+        weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
+        party_context, fps_context_config, std::move(callback),
+        base::TimeTicks::Now()));
     return absl::nullopt;
   }
 
@@ -100,7 +102,7 @@ FirstPartySetsManager::ComputeMetadata(
 
 void FirstPartySetsManager::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    const absl::optional<net::SchemefulSite> top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
     const FirstPartySetsContextConfig& fps_context_config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
@@ -111,8 +113,9 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata",
                       base::TimeTicks::Now() - enqueued_at);
 
-  std::move(callback).Run(ComputeMetadataInternal(
-      site, top_frame_site, party_context, fps_context_config));
+  std::move(callback).Run(
+      ComputeMetadataInternal(site, base::OptionalOrNullptr(top_frame_site),
+                              party_context, fps_context_config));
 }
 
 net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(

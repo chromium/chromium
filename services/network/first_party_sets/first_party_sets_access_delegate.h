@@ -114,7 +114,7 @@ class FirstPartySetsAccessDelegate
   // only be called once the instance is fully initialized.
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      const absl::optional<net::SchemefulSite> top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
