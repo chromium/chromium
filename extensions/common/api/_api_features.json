@@ -376,8 +376,6 @@
       "896B85CC7E913E11C34892C1425A093C0701D386",  // http://crbug.com/456214
       "11A01C82EF355E674E4F9728A801F5C3CB40D83F",  // http://crbug.com/456214
       "F410C88469990EE7947450311D24B8AF2ADB2595",  // http://crbug.com/456214
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA",  // Media Router Stable
       // TODO (ntang) Remove the following 2 hashes by 12/31/2017.
       "B620CF4203315F9F2E046EDED22C7571A935958D",  // http://crbug.com/510270
       "B206D8716769728278D2D300349C6CB7D7DE2EF9",  // http://crbug.com/510270
@@ -404,8 +402,6 @@
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
     "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",   // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA",   // Media Router Stable
       "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",   // Chrome Camera App Dev
       "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94"    // Chrome Camera App Stable
     ]

@@ -469,9 +469,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
   // The 'chrome.app' object should have 'runtime' and 'window' entries, but
   // not the internal 'currentWindowInternal' object.
-  v8::Local<v8::Value> app_binding_keys =
-      V8ValueFromScriptSource(context,
-                              "JSON.stringify(Object.keys(chrome.app));");
+  v8::Local<v8::Value> app_binding_keys = V8ValueFromScriptSource(
+      context, "JSON.stringify(Object.keys(chrome.app));");
   ASSERT_FALSE(app_binding_keys.IsEmpty());
   ASSERT_TRUE(app_binding_keys->IsString());
   EXPECT_EQ("[\"runtime\",\"window\"]",
@@ -923,7 +922,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
 // does not allow for accessing the source API (networkingPrivate) directly.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasSourceDoesntGiveAliasAccess) {
-  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
@@ -955,7 +954,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // allow for accessing the alias.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasDoesntGiveAliasSourceAccess) {
-  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
@@ -985,7 +984,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // Test that if an extension has access to both an alias and an alias source,
 // the objects on the API are different.
 TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
-  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetID(kAllowlistedId)
