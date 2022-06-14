@@ -193,6 +193,7 @@ static_library("secure_channel") {
   visibility = [
     ":*",
     "//ash/services/secure_channel/public/cpp/client:unit_tests",
+    "//chrome/browser/ash",
     "//chrome/browser/chromeos",
   ]
 }
