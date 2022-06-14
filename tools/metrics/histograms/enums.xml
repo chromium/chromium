@@ -4646,6 +4646,19 @@ Unknown properties are collapsed to zero. -->
       label="Failed to enable CloudDPC due to an unspecified error."/>
 </enum>
 
+<enum name="ArcTosScreenUserActions">
+  <summary>Actions which happen on the ARC ToS screen.</summary>
+  <int value="0" label="Accept button clicked"/>
+  <int value="1" label="Next button clicked"/>
+  <int value="2" label="Retry button clicked"/>
+  <int value="3" label="Back button clicked"/>
+  <int value="4" label="Learn more about usage stats button clicked"/>
+  <int value="5" label="Learn more about backup button clicked"/>
+  <int value="6" label="Learn more about location services button clicked"/>
+  <int value="7" label="Learn more about play auto install button clicked"/>
+  <int value="8" label="Privacy policy button clicked"/>
+</enum>
+
 <enum name="ArcTracingToolAction">
   <summary>Defines Arc Tracing tool actions</summary>
   <int value="0" label="UI Shown"/>

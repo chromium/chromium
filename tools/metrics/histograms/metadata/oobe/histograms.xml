@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.ArcTermsOfServiceScreen.UserActions"
+    enum="ArcTosScreenUserActions" expires_after="2022-12-13">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the ArcTermsOfService screen. Recorded when user
+    clicks on buttons on the ArcTermsOfService screen.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.BootToSignInCompleted" units="ms"
     expires_after="2022-04-03">
   <owner>alemate@chromium.org</owner>
