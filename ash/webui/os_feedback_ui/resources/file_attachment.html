@@ -36,10 +36,10 @@
   }
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
-  <label id="addFileLabel" class="file-input"
-      on-click="handleOpenFileInputClick_" tabindex="0">
+  <button id="addFileLabel" class="file-input"
+      on-click="handleOpenFileInputClick_">
     <iron-icon icon="attachment:add-file"></iron-icon>Add file
-  </label>
+  </button>
 </div>
 <input id="selectFileDialog" type="file" on-change="handleFileSelectChange_"
     tabindex="-1">
@@ -47,10 +47,10 @@
   <input type="checkbox" id="selectFileCheckbox">
   <div>
     <div id="selectedFileName"></div>
-    <label id="replaceFileLabel" class="file-input"
-        on-click="handleOpenFileInputClick_" tabindex="0">
+    <button id="replaceFileLabel" class="file-input"
+        on-click="handleOpenFileInputClick_">
       [[i18n('replaceFileLabel')]]
-    </label>
+    </button>
   </div>
 </div>
 <cr-toast id="fileTooBigErrorMessage" duration="5000">
