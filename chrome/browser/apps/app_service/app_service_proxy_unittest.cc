@@ -528,59 +528,75 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
   bool called_1 = false;
   bool called_2 = false;
   auto instance_id_1 = base::UnguessableToken::Create();
-  LaunchResult result_1;
-  result_1.instance_ids.push_back(instance_id_1);
   auto instance_id_2 = base::UnguessableToken::Create();
-  LaunchResult result_2;
-  result_2.instance_ids.push_back(instance_id_2);
 
   // If the instance is not created yet, the callback will be stored.
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_1),
-      std::move(result_1));
+  {
+    LaunchResult result_1;
+    result_1.instance_ids.push_back(instance_id_1);
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_1),
+                     std::move(result_1));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_FALSE(called_1);
 
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_2),
-      std::move(result_2));
+  {
+    LaunchResult result_2;
+    result_2.instance_ids.push_back(instance_id_2);
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_2),
+                     std::move(result_2));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 2U);
   EXPECT_FALSE(called_2);
 
   // Once the instance is created, the callback will be called.
-  auto delta = std::make_unique<apps::Instance>("abc", instance_id_1, nullptr);
-  proxy.InstanceRegistry().OnInstance(std::move(delta));
+  {
+    auto delta =
+        std::make_unique<apps::Instance>("abc", instance_id_1, nullptr);
+    proxy.InstanceRegistry().OnInstance(std::move(delta));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
 
   // New callback with existing instance will be called immediately.
   called_1 = false;
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_1),
-      std::move(result_1));
+  {
+    LaunchResult result_3;
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_1),
+                     std::move(result_3));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 1U);
   EXPECT_TRUE(called_1);
   EXPECT_FALSE(called_2);
 
   // A launch that results in multiple instances.
-  LaunchResult result_multi;
   auto instance_id_3 = base::UnguessableToken::Create();
   auto instance_id_4 = base::UnguessableToken::Create();
-  result_multi.instance_ids.push_back(instance_id_3);
-  result_multi.instance_ids.push_back(instance_id_4);
   bool called_multi = false;
-  proxy.OnLaunched(
-      base::BindOnce([](bool* called,
-                        apps::LaunchResult&& launch_result) { *called = true; },
-                     &called_multi),
-      std::move(result_multi));
+  {
+    LaunchResult result_multi;
+    result_multi.instance_ids.push_back(instance_id_3);
+    result_multi.instance_ids.push_back(instance_id_4);
+    proxy.OnLaunched(base::BindOnce(
+                         [](bool* called, apps::LaunchResult&& launch_result) {
+                           *called = true;
+                         },
+                         &called_multi),
+                     std::move(result_multi));
+  }
   EXPECT_EQ(proxy.callback_list_.size(), 2U);
   EXPECT_FALSE(called_multi);
   proxy.InstanceRegistry().OnInstance(
