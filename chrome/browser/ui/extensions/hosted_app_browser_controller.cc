@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/security_state/core/security_state.h"
@@ -228,22 +227,12 @@ void HostedAppBrowserController::OnTabRemoved(content::WebContents* contents) {
 
 void HostedAppBrowserController::LoadAppIcon(
     bool allow_placeholder_icon) const {
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->LoadIcon(apps::AppType::kChromeApp, GetExtension()->id(),
-                   apps::IconType::kStandard,
-                   extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
-                   base::BindOnce(&HostedAppBrowserController::OnLoadIcon,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->LoadIcon(apps::mojom::AppType::kChromeApp, GetExtension()->id(),
-                   apps::mojom::IconType::kStandard,
-                   extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
-                   apps::MojomIconValueToIconValueCallback(
-                       base::BindOnce(&HostedAppBrowserController::OnLoadIcon,
-                                      weak_ptr_factory_.GetWeakPtr())));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->LoadIcon(apps::AppType::kChromeApp, GetExtension()->id(),
+                 apps::IconType::kStandard,
+                 extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
+                 base::BindOnce(&HostedAppBrowserController::OnLoadIcon,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HostedAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {

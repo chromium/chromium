@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -287,25 +286,13 @@ void SharesheetService::LoadAppIcons(
 
   // Making a copy because we move |intent_launch_info| out below.
   auto app_id = intent_launch_info[index].app_id;
-  auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(app_id);
-  constexpr bool allow_placeholder_icon = false;
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(
-        app_type, app_id, apps::IconType::kStandard, kIconSize,
-        allow_placeholder_icon,
-        base::BindOnce(&SharesheetService::OnIconLoaded,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(intent_launch_info), std::move(targets), index,
-                       std::move(callback)));
-  } else {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type), app_id,
-        apps::mojom::IconType::kStandard, kIconSize, allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &SharesheetService::OnIconLoaded, weak_factory_.GetWeakPtr(),
-            std::move(intent_launch_info), std::move(targets), index,
-            std::move(callback))));
-  }
+  app_service_proxy_->LoadIcon(
+      app_service_proxy_->AppRegistryCache().GetAppType(app_id), app_id,
+      apps::IconType::kStandard, kIconSize,
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&SharesheetService::OnIconLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(intent_launch_info),
+                     std::move(targets), index, std::move(callback)));
 }
 
 void SharesheetService::OnIconLoaded(

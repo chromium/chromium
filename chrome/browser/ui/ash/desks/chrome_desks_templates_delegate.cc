@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/app_constants/constants.h"
@@ -360,20 +359,11 @@ void ChromeDesksTemplatesDelegate::GetIconForAppId(
     return;
   }
 
-  auto app_type = app_service_proxy->AppRegistryCache().GetAppType(app_id);
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy->LoadIcon(app_type, app_id, apps::IconType::kStandard,
-                                desired_icon_size,
-                                /*allow_placeholder_icon=*/false,
-                                AppIconResultToImageSkia(std::move(callback)));
-  } else {
-    app_service_proxy->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type), app_id,
-        apps::mojom::IconType::kStandard, desired_icon_size,
-        /*allow_placeholder_icon=*/false,
-        apps::MojomIconValueToIconValueCallback(
-            AppIconResultToImageSkia(std::move(callback))));
-  }
+  app_service_proxy->LoadIcon(
+      app_service_proxy->AppRegistryCache().GetAppType(app_id), app_id,
+      apps::IconType::kStandard, desired_icon_size,
+      /*allow_placeholder_icon=*/false,
+      AppIconResultToImageSkia(std::move(callback)));
 }
 
 bool ChromeDesksTemplatesDelegate::IsAppAvailable(

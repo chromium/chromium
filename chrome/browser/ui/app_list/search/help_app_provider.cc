@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -233,25 +232,12 @@ void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 }
 
 void HelpAppProvider::LoadIcon() {
-  auto app_type =
-      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId);
-
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy_->LoadIcon(
-        app_type, web_app::kHelpAppId, apps::IconType::kStandard,
-        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        base::BindOnce(&HelpAppProvider::OnLoadIcon,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    app_service_proxy_->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type), web_app::kHelpAppId,
-        apps::mojom::IconType::kStandard,
-        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
-  }
+  app_service_proxy_->LoadIcon(
+      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId),
+      web_app::kHelpAppId, apps::IconType::kStandard,
+      ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace app_list

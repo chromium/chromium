@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_handle.h"
@@ -77,18 +76,10 @@ void LoadSingleAppIcon(Profile* profile,
                        const std::string& app_id,
                        int size_in_dip,
                        base::OnceCallback<void(apps::IconValuePtr)> callback) {
-  constexpr bool allow_placeholder_icon = false;
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id,
-        apps::IconType::kStandard, size_in_dip, allow_placeholder_icon,
-        std::move(callback));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-        app_type, app_id, apps::mojom::IconType::kStandard, size_in_dip,
-        allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(std::move(callback)));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+      apps::ConvertMojomAppTypToAppType(app_type), app_id,
+      apps::IconType::kStandard, size_in_dip, /*allow_placeholder_icon=*/false,
+      std::move(callback));
 }
 
 }  // namespace
