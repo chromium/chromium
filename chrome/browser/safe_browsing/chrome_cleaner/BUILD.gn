@@ -46,6 +46,8 @@ static_library("chrome_cleaner") {
     "chrome_prompt_actions_win.h",
     "chrome_prompt_channel_win.cc",
     "chrome_prompt_channel_win.h",
+    "reporter_histogram_recorder.cc",
+    "reporter_histogram_recorder.h",
     "reporter_runner_win.cc",
     "reporter_runner_win.h",
     "settings_resetter_win.cc",

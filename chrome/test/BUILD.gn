@@ -5861,6 +5861,7 @@ test("unit_tests") {
       "../browser/safe_browsing/chrome_cleaner/chrome_prompt_channel_win_unittest.cc",
       "../browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.cc",
       "../browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.h",
+      "../browser/safe_browsing/chrome_cleaner/reporter_histogram_recorder_unittest.cc",
       "../browser/safe_browsing/chrome_cleaner/reporter_runner_win_unittest.cc",
       "../browser/safe_browsing/chrome_cleaner/srt_field_trial_win_unittest.cc",
       "../browser/shell_integration_win_unittest.cc",
