@@ -127,6 +127,8 @@ void VideoCaptureManager::UnregisterListener(
 void VideoCaptureManager::EnumerateDevices(
     EnumerationCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::EnumerateDevices");
   EmitLogMessage("VideoCaptureManager::EnumerateDevices", 1);
 
   // Pass a timer for UMA histogram collection.
@@ -138,8 +140,8 @@ void VideoCaptureManager::EnumerateDevices(
 base::UnguessableToken VideoCaptureManager::Open(
     const blink::MediaStreamDevice& device) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::Open", TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::Open");
 
   // Generate a new id for the session being opened.
   const base::UnguessableToken capture_session_id =
@@ -167,8 +169,8 @@ base::UnguessableToken VideoCaptureManager::Open(
 void VideoCaptureManager::Close(
     const base::UnguessableToken& capture_session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::Close", TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::Close");
 
   std::ostringstream string_stream;
   string_stream << "VideoCaptureManager::Close, capture_session_id = "
@@ -243,9 +245,8 @@ void VideoCaptureManager::QueueStartDevice(
 
 void VideoCaptureManager::DoStopDevice(VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::DoStopDevice",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::DoStopDevice");
   // TODO(mcasas): use a helper function https://crbug.com/624854.
   DCHECK(std::find_if(
              controllers_.begin(), controllers_.end(),
@@ -284,9 +285,8 @@ void VideoCaptureManager::DoStopDevice(VideoCaptureController* controller) {
 
 void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::ProcessDeviceStartRequestQueue",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::ProcessDeviceStartRequestQueue");
   auto request = device_start_request_queue_.begin();
   if (request == device_start_request_queue_.end())
     return;
@@ -401,9 +401,8 @@ void VideoCaptureManager::ConnectClient(
     VideoCaptureControllerEventHandler* client_handler,
     DoneCB done_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::ConnectClient",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::ConnectClient");
   {
     std::ostringstream string_stream;
     string_stream << "ConnectClient: session_id = " << session_id
@@ -445,9 +444,8 @@ void VideoCaptureManager::DisconnectClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(controller);
   DCHECK(client_handler);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::DisconnectClient",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::DisconnectClient");
 
   if (!IsControllerPointerValid(controller)) {
     NOTREACHED();
@@ -709,9 +707,8 @@ void VideoCaptureManager::TakePhoto(
     const base::UnguessableToken& session_id,
     media::VideoCaptureDevice::TakePhotoCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::TakePhoto",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::TakePhoto");
 
   VideoCaptureController* controller = LookupControllerBySessionId(session_id);
   if (!controller)
@@ -721,9 +718,8 @@ void VideoCaptureManager::TakePhoto(
     return;
   }
   // Queue up a request for later.
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::TakePhoto enqueuing request",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::TakePhoto enqueuing request");
   photo_request_queue_.emplace_back(
       session_id,
       base::BindOnce(&VideoCaptureController::TakePhoto,
@@ -751,9 +747,8 @@ void VideoCaptureManager::OnDeviceInfosReceived(
     EnumerationCallback client_callback,
     const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "VideoCaptureManager::OnDeviceInfosReceived",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureManager::OnDeviceInfosReceived");
 
   base::UmaHistogramTimes(
       "Media.VideoCaptureManager.GetAvailableDevicesInfoOnDeviceThreadTime",

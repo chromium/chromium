@@ -7,9 +7,11 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/scoped_async_trace.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
@@ -24,6 +26,9 @@
 
 namespace {
 
+using ScopedCaptureTrace =
+    media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
@@ -37,6 +42,13 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
       decoder_task_runner);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void TakePhotoCallbackTrampoline(
+    media::VideoCaptureDevice::TakePhotoCallback callback,
+    std::unique_ptr<ScopedCaptureTrace> trace,
+    media::mojom::BlobPtr blob) {
+  std::move(callback).Run(std::move(blob));
+}
 
 }  // anonymous namespace
 
@@ -68,6 +80,8 @@ void DeviceMediaToMojoAdapter::Start(
     mojo::PendingRemote<mojom::VideoFrameHandler>
         video_frame_handler_pending_remote) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "DeviceMediaToMojoAdapter::Start");
   mojo::Remote<mojom::VideoFrameHandler> handler_remote(
       std::move(video_frame_handler_pending_remote));
   handler_remote.set_disconnect_handler(
@@ -92,10 +106,15 @@ void DeviceMediaToMojoAdapter::Start(
     return;
   }
 
-  // Create a dedicated buffer pool for the device usage session.
-  scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
-      new media::VideoCaptureBufferPoolImpl(requested_settings.buffer_type,
-                                            max_buffer_pool_buffer_count()));
+  scoped_refptr<media::VideoCaptureBufferPool> buffer_pool;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                 "CreateVideoCaptureBufferPoolImpl");
+    // Create a dedicated buffer pool for the device usage session.
+    buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
+        requested_settings.buffer_type, max_buffer_pool_buffer_count());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       requested_settings.buffer_type, std::move(media_receiver), buffer_pool,
@@ -145,9 +164,13 @@ void DeviceMediaToMojoAdapter::SetPhotoOptions(
 }
 
 void DeviceMediaToMojoAdapter::TakePhoto(TakePhotoCallback callback) {
+  auto scoped_trace = ScopedCaptureTrace::CreateIfEnabled("TakePhoto");
   media::mojom::ImageCapture::TakePhotoCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          media::BindToCurrentLoop(std::move(callback)), nullptr);
+          media::BindToCurrentLoop(base::BindOnce(&TakePhotoCallbackTrampoline,
+                                                  std::move(callback),
+                                                  std::move(scoped_trace))),
+          nullptr);
   device_->TakePhoto(std::move(scoped_callback));
 }
 
@@ -163,6 +186,8 @@ void DeviceMediaToMojoAdapter::RequestRefreshFrame() {
 
 void DeviceMediaToMojoAdapter::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "DeviceMediaToMojoAdapter::Stop");
   if (!device_started_)
     return;
   device_started_ = false;

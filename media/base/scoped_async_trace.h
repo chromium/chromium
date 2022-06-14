@@ -7,32 +7,22 @@
 
 #include <memory>
 
-#include "base/memory/ptr_util.h"
-#include "base/trace_event/trace_event.h"
 #include "media/base/media_export.h"
 
 namespace media {
+
+// When adding a new TraceCategory there are two additional steps in the .cc:
+//
+//   1. Add a new Category::Name() implementation at the top.
+//   2. Add a new  TypedScopedAsyncTrace<$NEW_CATEGORY> entry at the bottom.
+//
+// For frequently used scoped traces you may also add a "using" entry along with
+// the "using ScopedAsyncTrace..." entry below.
 enum class TraceCategory : uint32_t {
   kMedia,
   kMediaStream,
+  kVideoAndImageCapture,
 };
-namespace {
-template <TraceCategory category>
-struct Category {};
-
-template <>
-struct Category<TraceCategory::kMedia> {
-  static constexpr const char* Name() { return "media"; }
-};
-
-template <>
-struct Category<TraceCategory::kMediaStream> {
-  static constexpr const char* Name() {
-    return TRACE_DISABLED_BY_DEFAULT("mediastream");
-  }
-};
-
-}  // namespace
 
 // Utility class that starts and stops an async trace event.  The intention is
 // that it it will be created somewhere to start the trace event, passed around
@@ -42,31 +32,26 @@ struct Category<TraceCategory::kMediaStream> {
 template <TraceCategory category>
 class MEDIA_EXPORT TypedScopedAsyncTrace {
  public:
-  // Create a TypedScopedAsyncTrace if tracing for "media" is enabled, else
-  // return nullptr. |name| provided to the trace as the name(!). IMPORTANT:
-  // These strings must outlive |this|, since tracing needs it. In other words,
-  // use literal strings only. See trace_event_common.h.
+  // Create a TypedScopedAsyncTrace if tracing for `cateogory` is enabled,
+  // returns nullptr otherwise. `name` will be the trace name.
+  //
+  // IMPORTANT: All string parameters must outlive |this|, since tracing needs
+  // them. Use literal strings only; see trace_event_common.h.
   static std::unique_ptr<TypedScopedAsyncTrace<category>> CreateIfEnabled(
-      const char* name) {
-    bool enabled = false;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED(Category<category>::Name(), &enabled);
-    return enabled ? base::WrapUnique(new TypedScopedAsyncTrace(name))
-                   : nullptr;
-  }
-  ~TypedScopedAsyncTrace() {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(Category<category>::Name(), name_,
-                                    TRACE_ID_LOCAL(this));
-  }
+      const char* name);
 
-  // TODO(liberato): Add StepInto / StepPast.
+  ~TypedScopedAsyncTrace();
+
+  // Adds a nested step under the current trace.
+  void AddStep(const char* step_name);
 
  private:
-  explicit TypedScopedAsyncTrace(const char* name) : name_(name) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(Category<category>::Name(), name_,
-                                      TRACE_ID_LOCAL(this));
-  }
+  explicit TypedScopedAsyncTrace(const char* name);
+  TypedScopedAsyncTrace(const char* name, const void* id);
 
-  const char* name_ = nullptr;
+  const char* name_;
+  const void* id_;
+  std::unique_ptr<TypedScopedAsyncTrace<category>> step_;
 };
 
 using ScopedAsyncTrace = TypedScopedAsyncTrace<TraceCategory::kMedia>;

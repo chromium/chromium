@@ -173,16 +173,22 @@ void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
     const std::string& device_id,
     GetAllVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
   GetVideoInputDeviceFormats(device_id, false /* try_in_use_first */,
-                             std::move(client_callback));
+                             std::move(client_callback),
+                             std::move(scoped_trace));
 }
 
 void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
     const std::string& device_id,
     GetAvailableVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  auto scoped_trace = ScopedMediaStreamTrace::CreateIfEnabled(__func__);
   GetVideoInputDeviceFormats(device_id, true /* try_in_use_first */,
-                             std::move(client_callback));
+                             std::move(client_callback),
+                             std::move(scoped_trace));
 }
 
 void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
@@ -389,7 +395,10 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
 void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
     const std::string& device_id,
     bool try_in_use_first,
-    GetVideoInputDeviceFormatsCallback client_callback) {
+    GetVideoInputDeviceFormatsCallback client_callback,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace) {
+  if (scoped_trace)
+    scoped_trace->AddStep("GetSaltAndOrigin");
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   base::PostTaskAndReplyWithResult(
       GetUIThreadTaskRunner({}).get(), FROM_HERE,
@@ -399,21 +408,24 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
       base::BindOnce(
           &MediaDevicesDispatcherHost::EnumerateVideoDevicesForFormats,
           weak_factory_.GetWeakPtr(), std::move(client_callback), device_id,
-          try_in_use_first));
+          try_in_use_first, std::move(scoped_trace)));
 }
 
 void MediaDevicesDispatcherHost::EnumerateVideoDevicesForFormats(
     GetVideoInputDeviceFormatsCallback client_callback,
     const std::string& device_id,
     bool try_in_use_first,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (scoped_trace)
+    scoped_trace->AddStep(__func__);
   media_stream_manager_->video_capture_manager()->EnumerateDevices(
       base::BindOnce(
           &MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats,
           weak_factory_.GetWeakPtr(), std::move(client_callback), device_id,
           try_in_use_first, salt_and_origin.device_id_salt,
-          salt_and_origin.origin));
+          salt_and_origin.origin, std::move(scoped_trace)));
 }
 
 void MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats(
@@ -422,8 +434,11 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputDeviceFormats(
     bool try_in_use_first,
     const std::string& device_id_salt,
     const url::Origin& security_origin,
+    std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
     const media::VideoCaptureDeviceDescriptors& device_descriptors) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (scoped_trace)
+    scoped_trace->AddStep(__func__);
   for (const auto& descriptor : device_descriptors) {
     if (DoesMediaDeviceIDMatchHMAC(device_id_salt, security_origin, device_id,
                                    descriptor.device_id)) {

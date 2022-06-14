@@ -42,6 +42,7 @@ include_rules = [
     "+media/webrtc/audio_processor.h",
     "+media/webrtc/audio_processor_controls.h",
     "+media/webrtc/constants.h",
+    "+media/webrtc/scoped_mediastream_trace.h",
     "+media/webrtc/webrtc_features.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",

@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/scoped_async_trace.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -55,10 +56,14 @@ class VideoSourceImpl : public mojom::VideoSource {
     kStoppingAsynchronously
   };
 
+  using ScopedCaptureTrace =
+      media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
+
   void OnClientDisconnected();
   void StartDeviceWithSettings(
       const media::VideoCaptureParams& requested_settings);
-  void OnCreateDeviceResponse(media::VideoCaptureError result_code);
+  void OnCreateDeviceResponse(std::unique_ptr<ScopedCaptureTrace> scoped_trace,
+                              media::VideoCaptureError result_code);
   void OnPushSubscriptionClosedOrDisconnectedOrDiscarded(
       PushVideoStreamSubscriptionImpl* subscription,
       base::OnceClosure done_cb);

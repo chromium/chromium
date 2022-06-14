@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/scoped_async_trace.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
@@ -21,7 +22,6 @@
 namespace blink {
 class MediaStreamAudioSource;
 class MediaStreamVideoTrack;
-class ScopedAsyncTrace;
 
 // ApplyConstraintsProcessor is responsible for processing applyConstraints()
 // requests. Only one applyConstraints() request can be processed at a time.
@@ -88,7 +88,10 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   // |video_source_| and |request_completed_cb_| are the video source and
   // reply callback for the current request.
   Member<blink::ApplyConstraintsRequest> current_request_;
-  std::unique_ptr<ScopedAsyncTrace> video_device_request_trace_;
+
+  using ScopedMediaStreamTrace =
+      media::TypedScopedAsyncTrace<media::TraceCategory::kMediaStream>;
+  std::unique_ptr<ScopedMediaStreamTrace> video_device_request_trace_;
 
   // TODO(crbug.com/704136): Change to use Member.
   blink::MediaStreamVideoSource* video_source_ = nullptr;

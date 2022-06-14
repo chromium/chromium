@@ -92,19 +92,29 @@ void VideoSourceImpl::OnClientDisconnected() {
 void VideoSourceImpl::StartDeviceWithSettings(
     const media::VideoCaptureParams& requested_settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto scoped_trace = ScopedCaptureTrace::CreateIfEnabled(
+      "VideoSourceImpl::StartDeviceWithSettings");
+  if (scoped_trace)
+    scoped_trace->AddStep("CreateDevice");
+
   device_start_settings_ = requested_settings;
   device_status_ = DeviceStatus::kStartingAsynchronously;
   device_factory_->CreateDevice(
       device_id_, device_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&VideoSourceImpl::OnCreateDeviceResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(scoped_trace)));
 }
 
 void VideoSourceImpl::OnCreateDeviceResponse(
+    std::unique_ptr<ScopedCaptureTrace> scoped_trace,
     media::VideoCaptureError result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result_code == media::VideoCaptureError::kNone) {
+    if (scoped_trace)
+      scoped_trace->AddStep("StartDevice");
+
     // Device was created successfully.
     broadcaster_video_frame_handler_.reset();
     device_->Start(device_start_settings_,

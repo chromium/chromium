@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
@@ -251,6 +252,8 @@ void V4L2CaptureDelegate::AllocateAndStart(
     int height,
     float frame_rate,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "V4L2CaptureDelegate::AllocateAndStart");
   DCHECK(v4l2_task_runner_->BelongsToCurrentThread());
   DCHECK(client);
   client_ = std::move(client);
@@ -373,6 +376,8 @@ void V4L2CaptureDelegate::AllocateAndStart(
 
 void V4L2CaptureDelegate::StopAndDeAllocate() {
   DCHECK(v4l2_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "V4L2CaptureDelegate::StopAndDeAllocate");
   StopStream();
   // At this point we can close the device.
   // This is also needed for correctly changing settings later via VIDIOC_S_FMT.

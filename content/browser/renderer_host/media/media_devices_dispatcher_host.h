@@ -17,6 +17,7 @@
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/common/content_export.h"
+#include "media/base/scoped_async_trace.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
@@ -111,14 +112,19 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   void FinalizeGetAudioInputCapabilities();
 
+  using ScopedMediaStreamTrace =
+      media::TypedScopedAsyncTrace<media::TraceCategory::kMediaStream>;
+
   void GetVideoInputDeviceFormats(
       const std::string& device_id,
       bool try_in_use_first,
-      GetVideoInputDeviceFormatsCallback client_callback);
+      GetVideoInputDeviceFormatsCallback client_callback,
+      std::unique_ptr<ScopedMediaStreamTrace> scoped_trace);
   void EnumerateVideoDevicesForFormats(
       GetVideoInputDeviceFormatsCallback client_callback,
       const std::string& device_id,
       bool try_in_use_first,
+      std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
   void FinalizeGetVideoInputDeviceFormats(
       GetVideoInputDeviceFormatsCallback client_callback,
@@ -126,6 +132,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       bool try_in_use_first,
       const std::string& device_id_salt,
       const url::Origin& security_origin,
+      std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
       const media::VideoCaptureDeviceDescriptors& device_descriptors);
 
   void ReceivedBadMessage(int render_process_id,
