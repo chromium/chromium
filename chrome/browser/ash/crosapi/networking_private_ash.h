@@ -94,6 +94,9 @@ class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
   void DevicePropertiesUpdated(const chromeos::DeviceState* device) override;
   void NetworkListChanged() override;
   void NetworkPropertiesUpdated(const chromeos::NetworkState* network) override;
+  void PortalStateChanged(
+      const chromeos::NetworkState* default_network,
+      chromeos::NetworkState::PortalState portal_state) override;
 
  private:
   void OnObserverDisconnected(mojo::RemoteSetElementId id);

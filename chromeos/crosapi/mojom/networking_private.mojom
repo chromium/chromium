@@ -42,6 +42,23 @@ union PropertiesSuccessOrErrorReturn {
   mojo_base.mojom.Value success_result;
 };
 
+[Stable, Extensible]
+enum CaptivePortalStatus {
+  // The netwok state is unknown.
+  [Default] kUnknown = 0,
+  // The network is not connected.
+  kOffline,
+  // The network is connected and no portal is detected.
+  kOnline,
+  // The network is in one of the following states:
+  // - Connected but no internet is available and no proxy was detected.
+  // - A portal is suspected but no redirect was provided.
+  // - A portal state with a redirect URL.
+  kPortal,
+  // A proxy requiring authentication is detected.
+  kProxyAuthRequired,
+};
+
 // This interface mirrors NetworkingPrivateDelegateObserver. It allows Ash
 // to notify lacros of such events. Lacros, on its turn, will then forward
 // those notifications to its local observers.
@@ -59,6 +76,12 @@ interface NetworkingPrivateDelegateObserver {
   // have changed.
   [MinVersion=1]
   OnDeviceStateListChanged@2();
+
+  // Fired when a portal detection for a network completes. Sends the guid of
+  // the network and the corresponding captive portal status.
+  [MinVersion=2]
+  OnPortalDetectionCompleted@3(string networkGuid,
+                               CaptivePortalStatus status);
 };
 
 // This interface mirrors the NetworkingPrivateDelegate from Lacros to Ash to

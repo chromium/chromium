@@ -43,6 +43,9 @@ class NetworkingPrivateEventRouterImpl
   void OnNetworkListChangedEvent(
       const std::vector<std::string>& network_guids) override;
   void OnDeviceStateListChanged() override;
+  void OnPortalDetectionCompleted(
+      std::string networkGuid,
+      api::networking_private::CaptivePortalStatus status) override;
 
  private:
   // Decide if we should listen for network changes or not. If there are any
@@ -171,6 +174,23 @@ void NetworkingPrivateEventRouterImpl::OnDeviceStateListChanged() {
   auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_DEVICE_STATE_LIST_CHANGED,
       api::networking_private::OnDeviceStateListChanged::kEventName,
+      std::move(args));
+  event_router->BroadcastEvent(std::move(extension_event));
+}
+
+void NetworkingPrivateEventRouterImpl::OnPortalDetectionCompleted(
+    std::string guid,
+    api::networking_private::CaptivePortalStatus status) {
+  EventRouter* event_router = EventRouter::Get(browser_context_);
+  if (!event_router) {
+    return;
+  }
+
+  auto args(api::networking_private::OnPortalDetectionCompleted::Create(
+      guid, status));
+  auto extension_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_PORTAL_DETECTION_COMPLETED,
+      api::networking_private::OnPortalDetectionCompleted::kEventName,
       std::move(args));
   event_router->BroadcastEvent(std::move(extension_event));
 }

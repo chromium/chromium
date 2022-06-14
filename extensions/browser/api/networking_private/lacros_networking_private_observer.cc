@@ -8,6 +8,27 @@
 
 using crosapi::mojom::NetworkingPrivate;
 
+namespace {
+
+extensions::api::networking_private::CaptivePortalStatus
+GetApiCaptivePortalStatus(crosapi::mojom::CaptivePortalStatus mojoStatus) {
+  switch (mojoStatus) {
+    case crosapi::mojom::CaptivePortalStatus::kUnknown:
+      return extensions::api::networking_private::CAPTIVE_PORTAL_STATUS_UNKNOWN;
+    case crosapi::mojom::CaptivePortalStatus::kOffline:
+      return extensions::api::networking_private::CAPTIVE_PORTAL_STATUS_OFFLINE;
+    case crosapi::mojom::CaptivePortalStatus::kOnline:
+      return extensions::api::networking_private::CAPTIVE_PORTAL_STATUS_ONLINE;
+    case crosapi::mojom::CaptivePortalStatus::kPortal:
+      return extensions::api::networking_private::CAPTIVE_PORTAL_STATUS_PORTAL;
+    case crosapi::mojom::CaptivePortalStatus::kProxyAuthRequired:
+      return extensions::api::networking_private::
+          CAPTIVE_PORTAL_STATUS_PROXYAUTHREQUIRED;
+  }
+}
+
+}  // namespace
+
 LacrosNetworkingPrivateObserver::LacrosNetworkingPrivateObserver()
     : receiver_{this} {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
@@ -46,6 +67,15 @@ void LacrosNetworkingPrivateObserver::OnNetworkListChangedEvent(
 void LacrosNetworkingPrivateObserver::OnDeviceStateListChanged() {
   for (auto& observer : lacros_observers_) {
     observer.OnDeviceStateListChanged();
+  }
+}
+
+void LacrosNetworkingPrivateObserver::OnPortalDetectionCompleted(
+    const std::string& networkGuid,
+    crosapi::mojom::CaptivePortalStatus status) {
+  for (auto& observer : lacros_observers_) {
+    observer.OnPortalDetectionCompleted(networkGuid,
+                                        GetApiCaptivePortalStatus(status));
   }
 }
 

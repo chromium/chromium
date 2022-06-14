@@ -17,6 +17,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using chromeos::NetworkHandler;
+using chromeos::NetworkState;
 using chromeos::NetworkStateHandler;
 
 namespace crosapi {
@@ -226,6 +227,29 @@ void DeviceStateListCallbackAdapter(
   }
 
   std::move(callback).Run(std::move(list));
+}
+
+mojom::CaptivePortalStatus GetCaptivePortalStatusFromNetworkState(
+    const NetworkState* network) {
+  if (!network) {
+    return mojom::CaptivePortalStatus::kUnknown;
+  }
+  if (!network->IsConnectedState()) {
+    return mojom::CaptivePortalStatus::kOnline;
+  }
+
+  switch (network->portal_state()) {
+    case NetworkState::PortalState::kUnknown:
+      return mojom::CaptivePortalStatus::kUnknown;
+    case NetworkState::PortalState::kOnline:
+      return mojom::CaptivePortalStatus::kOnline;
+    case NetworkState::PortalState::kPortalSuspected:
+    case NetworkState::PortalState::kPortal:
+    case NetworkState::PortalState::kNoInternet:
+      return mojom::CaptivePortalStatus::kPortal;
+    case NetworkState::PortalState::kProxyAuthRequired:
+      return mojom::CaptivePortalStatus::kProxyAuthRequired;
+  }
 }
 
 }  // namespace
@@ -451,6 +475,18 @@ void NetworkingPrivateAsh::NetworkPropertiesUpdated(
   for (auto& observer : observers_) {
     observer->OnNetworksChangedEvent(
         std::vector<std::string>(1, network->guid()));
+  }
+}
+
+void NetworkingPrivateAsh::PortalStateChanged(
+    const NetworkState* network,
+    NetworkState::PortalState portal_state) {
+  const std::string guid = network ? network->guid() : std::string();
+  const mojom::CaptivePortalStatus status =
+      GetCaptivePortalStatusFromNetworkState(network);
+
+  for (auto& observer : observers_) {
+    observer->OnPortalDetectionCompleted(guid, status);
   }
 }
 

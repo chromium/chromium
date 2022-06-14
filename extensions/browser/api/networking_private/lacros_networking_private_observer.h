@@ -29,6 +29,9 @@ class LacrosNetworkingPrivateObserver
   void OnNetworkListChangedEvent(
       const std::vector<std::string>& network_guids) override;
   void OnDeviceStateListChanged() override;
+  void OnPortalDetectionCompleted(
+      const std::string& networkGuid,
+      crosapi::mojom::CaptivePortalStatus status) override;
 
   void AddObserver(extensions::NetworkingPrivateDelegateObserver* observer);
   void RemoveObserver(extensions::NetworkingPrivateDelegateObserver* observer);
