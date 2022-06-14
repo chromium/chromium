@@ -90,6 +90,10 @@ crbug.com/1277877 http/tests/inspector-protocol/network/blocked-cookie-same-site
 crbug.com/1277877 http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-js-navigate.js [ Slow ]
 crbug.com/1277877 http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-js-subresource.js [ Slow ]
 crbug.com/1280736 http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict.js [ Slow ]
+crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ Slow ]
+crbug.com/1325514 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Slow ]
+crbug.com/1280882 http/tests/inspector-protocol/network/cors-errors.js [ Slow ]
+crbug.com/1289238 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-navigation-context-downgrade.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
