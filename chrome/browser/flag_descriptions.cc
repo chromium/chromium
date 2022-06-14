@@ -2150,10 +2150,6 @@ const char kPersonalizationHubDescription[] =
     "Enable the UI to let users customize their wallpapers, screensaver, and "
     "avatars.";
 
-const char kPlaybackSpeedButtonName[] = "Playback Speed Button";
-const char kPlaybackSpeedButtonDescription[] =
-    "Enable the playback speed button on the media controls.";
-
 const char kPointerLockOptionsName[] = "Enables pointer lock options";
 const char kPointerLockOptionsDescription[] =
     "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "

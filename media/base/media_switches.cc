@@ -1040,10 +1040,6 @@ const base::Feature kUseFakeDeviceForMediaStream{
 const base::Feature kBresenhamCadence{"BresenhamCadence",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Display the playback speed button on the media controls.
-const base::Feature kPlaybackSpeedButton{"PlaybackSpeedButton",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);

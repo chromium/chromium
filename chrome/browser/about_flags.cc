@@ -7942,10 +7942,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kEnableInputInDiagnosticsApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"playback-speed-button", flag_descriptions::kPlaybackSpeedButtonName,
-     flag_descriptions::kPlaybackSpeedButtonDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kPlaybackSpeedButton)},
-
     {"use-passthrough-command-decoder",
      flag_descriptions::kUsePassthroughCommandDecoderName,
      flag_descriptions::kUsePassthroughCommandDecoderDescription,

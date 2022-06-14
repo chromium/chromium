@@ -1208,9 +1208,6 @@ extern const char kPersistentQuotaIsTemporaryQuotaDescription[];
 extern const char kPersonalizationHubName[];
 extern const char kPersonalizationHubDescription[];
 
-extern const char kPlaybackSpeedButtonName[];
-extern const char kPlaybackSpeedButtonDescription[];
-
 extern const char kPointerLockOptionsName[];
 extern const char kPointerLockOptionsDescription[];
 

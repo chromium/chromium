@@ -4991,11 +4991,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "playback-speed-button",
-    "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
     "expiry_milestone": 100
