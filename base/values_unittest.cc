@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <string>
@@ -211,25 +212,6 @@ TEST(ValuesTest, ConstructDictFromValueDict) {
     EXPECT_TRUE(value.GetIfDict());
     EXPECT_TRUE(value.GetDict().FindString("foo"));
     EXPECT_EQ("baz", *value.GetDict().FindString("foo"));
-  }
-}
-
-TEST(ValuesTest, ConstructDictFromDeprecatedDictStorage) {
-  Value::DeprecatedDictStorage storage;
-  storage.emplace("foo", "bar");
-  {
-    Value value(storage);
-    EXPECT_EQ(Value::Type::DICTIONARY, value.type());
-    EXPECT_EQ(Value::Type::STRING, value.FindKey("foo")->type());
-    EXPECT_EQ("bar", value.FindKey("foo")->GetString());
-  }
-
-  storage["foo"] = base::Value("baz");
-  {
-    Value value(std::move(storage));
-    EXPECT_EQ(Value::Type::DICTIONARY, value.type());
-    EXPECT_EQ(Value::Type::STRING, value.FindKey("foo")->type());
-    EXPECT_EQ("baz", value.FindKey("foo")->GetString());
   }
 }
 
@@ -470,53 +452,15 @@ TEST(ValuesTest, MoveAssignDictionary) {
   EXPECT_EQ(123, blank.FindKey("Int")->GetInt());
 }
 
-TEST(ValuesTest, MoveConstructDeprecatedDictStorage) {
-  Value::DeprecatedDictStorage storage;
-  storage.emplace("Int", 123);
-
-  Value value(std::move(storage));
-  Value moved_value(std::move(value));
-  EXPECT_EQ(Value::Type::DICTIONARY, moved_value.type());
-  EXPECT_EQ(123, moved_value.FindKey("Int")->GetInt());
-}
-
-TEST(ValuesTest, MoveAssignDeprecatedDictStorage) {
-  Value::DeprecatedDictStorage storage;
-  storage.emplace("Int", 123);
+TEST(ValuesTest, ConstructDictWithIterators) {
+  std::vector<std::pair<std::string, Value>> values;
+  values.emplace_back(std::make_pair("Int", 123));
 
   Value blank;
-  blank = Value(std::move(storage));
+  blank = Value(Value::Dict(std::make_move_iterator(values.begin()),
+                            std::make_move_iterator(values.end())));
   EXPECT_EQ(Value::Type::DICTIONARY, blank.type());
   EXPECT_EQ(123, blank.FindKey("Int")->GetInt());
-}
-
-TEST(ValuesTest, TakeDictDeprecated) {
-  // Prepare a dict with a value of each type.
-  Value::DeprecatedDictStorage storage;
-  storage.emplace("null", Value::Type::NONE);
-  storage.emplace("bool", Value::Type::BOOLEAN);
-  storage.emplace("int", Value::Type::INTEGER);
-  storage.emplace("double", Value::Type::DOUBLE);
-  storage.emplace("string", Value::Type::STRING);
-  storage.emplace("blob", Value::Type::BINARY);
-  storage.emplace("list", Value::Type::LIST);
-  storage.emplace("dict", Value::Type::DICTIONARY);
-  Value value(std::move(storage));
-
-  // Take ownership of the dict and make sure its contents are what we expect.
-  auto dict = std::move(value).TakeDictDeprecated();
-  EXPECT_EQ(8u, dict.size());
-  EXPECT_TRUE(dict["null"].is_none());
-  EXPECT_TRUE(dict["bool"].is_bool());
-  EXPECT_TRUE(dict["int"].is_int());
-  EXPECT_TRUE(dict["double"].is_double());
-  EXPECT_TRUE(dict["string"].is_string());
-  EXPECT_TRUE(dict["blob"].is_blob());
-  EXPECT_TRUE(dict["list"].is_list());
-  EXPECT_TRUE(dict["dict"].is_dict());
-
-  // Validate that |value| no longer contains values.
-  EXPECT_TRUE(value.DictEmpty());
 }
 
 TEST(ValuesTest, MoveList) {

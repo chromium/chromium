@@ -5,6 +5,7 @@
 #include "base/json/json_parser.h"
 
 #include <cmath>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -423,7 +424,7 @@ absl::optional<Value> JSONParser::ConsumeDictionary() {
     return absl::nullopt;
   }
 
-  std::vector<Value::DeprecatedDictStorage::value_type> dict_storage;
+  std::vector<std::pair<std::string, Value>> values;
 
   Token token = GetNextToken();
   while (token != T_OBJECT_END) {
@@ -453,7 +454,7 @@ absl::optional<Value> JSONParser::ConsumeDictionary() {
       return absl::nullopt;
     }
 
-    dict_storage.emplace_back(key.DestructiveAsString(), std::move(*value));
+    values.emplace_back(key.DestructiveAsString(), std::move(*value));
 
     token = GetNextToken();
     if (token == T_LIST_SEPARATOR) {
@@ -472,8 +473,9 @@ absl::optional<Value> JSONParser::ConsumeDictionary() {
   ConsumeChar();  // Closing '}'.
   // Reverse |dict_storage| to keep the last of elements with the same key in
   // the input.
-  ranges::reverse(dict_storage);
-  return Value(Value::DeprecatedDictStorage(std::move(dict_storage)));
+  ranges::reverse(values);
+  return Value(Value::Dict(std::make_move_iterator(values.begin()),
+                           std::make_move_iterator(values.end())));
 }
 
 absl::optional<Value> JSONParser::ConsumeList() {
