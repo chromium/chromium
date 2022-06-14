@@ -59,44 +59,52 @@ impl Depfile {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::{fs::File, io::Read};
+// Removed for Chromium: these tests are missing dependencies that were not
+// resolved correctly by tools/crates/crates.py. We may not want to run them
+// anyway.
+//
+// See https://crbug.com/1336017 for a related issue.
+//
+// TODO(https://crbug.com/1336017): decide whether to restore these tests.
 
-    use tempfile::tempdir;
-
-    use super::Depfile;
-
-    #[test]
-    fn test_simple_depfile() {
-        let tmp_dir = tempdir().unwrap();
-        let f = tmp_dir.path().join("depfile.d");
-        let mut df = Depfile::new(&f).unwrap();
-        df.add_output(&tmp_dir.path().join("a/b"));
-        df.add_dependency(&tmp_dir.path().join("c/d"));
-        df.add_dependency(&tmp_dir.path().join("e/f"));
-        df.write().unwrap();
-
-        let mut f = File::open(&f).unwrap();
-        let mut contents = String::new();
-        f.read_to_string(&mut contents).unwrap();
-        assert_eq!(contents, "a/b: c/d \\\n  e/f\n\n");
-    }
-
-    #[test]
-    fn test_multiple_outputs() {
-        let tmp_dir = tempdir().unwrap();
-        let f = tmp_dir.path().join("depfile.d");
-        let mut df = Depfile::new(&f).unwrap();
-        df.add_output(&tmp_dir.path().join("a/b"));
-        df.add_output(&tmp_dir.path().join("z"));
-        df.add_dependency(&tmp_dir.path().join("c/d"));
-        df.add_dependency(&tmp_dir.path().join("e/f"));
-        df.write().unwrap();
-
-        let mut f = File::open(&f).unwrap();
-        let mut contents = String::new();
-        f.read_to_string(&mut contents).unwrap();
-        assert_eq!(contents, "a/b: c/d \\\n  e/f\n\nz: c/d \\\n  e/f\n\n");
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use std::{fs::File, io::Read};
+// 
+//     use tempfile::tempdir;
+// 
+//     use super::Depfile;
+// 
+//     #[test]
+//     fn test_simple_depfile() {
+//         let tmp_dir = tempdir().unwrap();
+//         let f = tmp_dir.path().join("depfile.d");
+//         let mut df = Depfile::new(&f).unwrap();
+//         df.add_output(&tmp_dir.path().join("a/b"));
+//         df.add_dependency(&tmp_dir.path().join("c/d"));
+//         df.add_dependency(&tmp_dir.path().join("e/f"));
+//         df.write().unwrap();
+// 
+//         let mut f = File::open(&f).unwrap();
+//         let mut contents = String::new();
+//         f.read_to_string(&mut contents).unwrap();
+//         assert_eq!(contents, "a/b: c/d \\\n  e/f\n\n");
+//     }
+// 
+//     #[test]
+//     fn test_multiple_outputs() {
+//         let tmp_dir = tempdir().unwrap();
+//         let f = tmp_dir.path().join("depfile.d");
+//         let mut df = Depfile::new(&f).unwrap();
+//         df.add_output(&tmp_dir.path().join("a/b"));
+//         df.add_output(&tmp_dir.path().join("z"));
+//         df.add_dependency(&tmp_dir.path().join("c/d"));
+//         df.add_dependency(&tmp_dir.path().join("e/f"));
+//         df.write().unwrap();
+// 
+//         let mut f = File::open(&f).unwrap();
+//         let mut contents = String::new();
+//         f.read_to_string(&mut contents).unwrap();
+//         assert_eq!(contents, "a/b: c/d \\\n  e/f\n\nz: c/d \\\n  e/f\n\n");
+//     }
+// }

@@ -47,20 +47,27 @@ version = "0.2.1"
 [dependencies.proc-macro2]
 version = "1.0"
 
-[dev-dependencies.assert_cmd]
-version = "1.0.3"
-
-[dev-dependencies.autocxx-integration-tests]
-version = "=0.22.2"
-
-[dev-dependencies.cxx]
-version = "1.0.68"
-
-[dev-dependencies.itertools]
-version = "0.10.3"
-
-[dev-dependencies.tempfile]
-version = "3.1"
+# Removed for Chromium: autocxx-integration-tests transitively depends on cc
+# which is not allowed. See https://crbug.com/1336017. For now we simply remove
+# the tests.
+#
+# TODO(https://crbug.com/1336017): remove the dependency on cc and restore these
+# tests.
+#
+# [dev-dependencies.assert_cmd]
+# version = "1.0.3"
+#
+# [dev-dependencies.autocxx-integration-tests]
+# version = "=0.22.2"
+# 
+# [dev-dependencies.cxx]
+# version = "1.0.68"
+# 
+# [dev-dependencies.itertools]
+# version = "0.10.3"
+# 
+# [dev-dependencies.tempfile]
+# version = "3.1"
 
 [features]
 runtime = ["autocxx-engine/runtime"]
