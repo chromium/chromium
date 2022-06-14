@@ -68,6 +68,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static bool SendAcceleratorNatively(const ui::Accelerator& accelerator);
   static bool WaitForUiUpdate(int64_t previous_update_count);
   static int GetUsersCount();
+  static bool FocusKioskDefaultMessage();
   static bool FocusUser(const AccountId& account_id);
   static AccountId GetFocusedUser();
   static bool RemoveUser(const AccountId& account_id);

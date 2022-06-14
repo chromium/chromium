@@ -553,6 +553,21 @@ int LoginScreenTestApi::GetUsersCount() {
 }
 
 // static
+bool LoginScreenTestApi::FocusKioskDefaultMessage() {
+  if (!IsKioskDefaultMessageShown()) {
+    ADD_FAILURE() << "Kiosk default message is not visible.";
+    return false;
+  }
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi test_api(lock_screen_test.contents_view());
+  auto event_generator = MakeAshEventGenerator();
+  event_generator->MoveMouseTo(
+      test_api.kiosk_default_message()->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+  return true;
+}
+
+// static
 bool LoginScreenTestApi::FocusUser(const AccountId& account_id) {
   LoginBigUserView* big_user_view = GetBigUserView(account_id);
   if (!big_user_view) {
