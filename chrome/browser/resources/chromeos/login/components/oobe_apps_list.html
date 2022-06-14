@@ -173,8 +173,9 @@
       <div id="appsList">
         <template is="dom-repeat" items="[[appList]]">
           <div class="app-item">
-            <cr-checkbox checked="{{item.checked}}" class="no-label"
-                aria-description="[[item.title]]" on-change="updateCount_">
+            <cr-checkbox id="[[item.package_name]]" checked="{{item.checked}}"
+                class="no-label" aria-description="[[item.title]]"
+                on-change="updateCount_">
             </cr-checkbox>
             <webview role="img" class="app-icon"
                 src="[[getWrappedIcon_(item.icon_url)]]" aria-hidden="true"
