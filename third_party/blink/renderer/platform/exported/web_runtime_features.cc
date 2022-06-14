@@ -637,6 +637,10 @@ void WebRuntimeFeatures::EnableFedCmIdpSignout(bool enable) {
   RuntimeEnabledFeatures::SetFedCmIdpSignoutEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableFedCmIframeSupport(bool enable) {
+  RuntimeEnabledFeatures::SetFedCmIframeSupportEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableDocumentTransition(bool enable) {
   RuntimeEnabledFeatures::SetDocumentTransitionEnabled(enable);
 }

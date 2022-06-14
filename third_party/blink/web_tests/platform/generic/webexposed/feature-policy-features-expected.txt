@@ -35,6 +35,7 @@ document-domain
 encrypted-media
 execution-while-not-rendered
 execution-while-out-of-viewport
+federated-credentials
 focus-without-user-activation
 fullscreen
 gamepad

@@ -230,6 +230,11 @@
       depends_on: ["FreezeFramesOnVisibility"],
     },
     {
+      name: "FederatedCredentials",
+      permissions_policy_name: "federated-credentials",
+      depends_on: ["FedCmIframeSupport"],
+    },
+    {
       name: "FocusWithoutUserActivation",
       permissions_policy_name: "focus-without-user-activation",
       feature_default: "EnableForAll",

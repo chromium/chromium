@@ -40529,6 +40529,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="99" label="ClientHintSaveData"/>
   <int value="100" label="LocalFonts"/>
   <int value="101" label="Bluetooth"/>
+  <int value="102" label="FederatedCredentials"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

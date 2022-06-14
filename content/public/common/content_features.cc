@@ -350,6 +350,10 @@ const char kFedCmAutoSigninFieldTrialParamName[] = "AutoSignin";
 // is enabled.
 const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 
+// Field trial boolean parameter which indicates that FedCM API is enabled in
+// cross-origin iframes.
+const char kFedCmIframeSupportFieldTrialParamName[] = "IframeSupport";
+
 // Kill switch for FedCm manifest validation.
 const base::Feature kFedCmManifestValidation{"FedCmManifestValidation",
                                              base::FEATURE_ENABLED_BY_DEFAULT};

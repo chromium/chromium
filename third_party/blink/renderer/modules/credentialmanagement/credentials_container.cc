@@ -105,6 +105,10 @@ using payments::mojom::blink::PaymentCredentialStorageStatus;
 constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
 
+// Maximum number of unique origins in ancestor chain (including the source
+// frame origin) for which FedCM API is enabled.
+const int kMaxUniqueOriginInAncestorChainForFedCM = 2;
+
 // RequiredOriginType enumerates the requirements on the environment to perform
 // an operation.
 enum class RequiredOriginType {
@@ -123,6 +127,9 @@ enum class RequiredOriginType {
   kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy,
   // Similar to the enum above, checks the "otp-credentials" permissions policy.
   kSecureAndPermittedByWebOTPAssertionPermissionsPolicy,
+  // Similar to the enum above, checks the "federated-credentials" permissions
+  // policy.
+  kSecureAndPermittedByFederatedPermissionsPolicy,
   // Must be a secure origin with allowed payment permission policy.
   kSecureWithPaymentPermissionPolicy,
 };
@@ -141,35 +148,42 @@ bool IsSameOriginWithAncestors(const Frame* frame) {
   return true;
 }
 
-// An ancestor chain is valid iff there are at most 2 unique origins on the
-// chain (current origin included), the unique origins must be consecutive.
-// e.g. the following are valid:
-// A.com (calls WebOTP API)
-// A.com -> A.com (calls WebOTP API)
-// A.com -> A.com -> B.com (calls WebOTP API)
-// A.com -> B.com -> B.com (calls WebOTP API)
-// while the following are invalid:
-// A.com -> B.com -> A.com (calls WebOTP API)
-// A.com -> B.com -> C.com (calls WebOTP API)
-// Note that there is additional requirement on feature permission being granted
-// upon crossing origins but that is not verified by this function.
-bool IsAncestorChainValidForWebOTP(const Frame* frame) {
+// Returns whether the number of unique origins in the ancestor chain, including
+// the current origin are less or equal to |max_unique_origins|.
+//
+// Examples:
+// A.com = 1 unique origin
+// A.com -> A.com = 1 unique origin
+// A.com -> A.com -> B.com = 2 unique origins
+// A.com -> B.com -> B.com = 2 unique origins
+// A.com -> B.com -> A.com = 3 unique origins
+bool AreUniqueOriginsLessOrEqualTo(const Frame* frame, int max_unique_origins) {
   const SecurityOrigin* current_origin =
       frame->GetSecurityContext()->GetSecurityOrigin();
-  int number_of_unique_origin = 1;
+  int num_unique_origins = 1;
 
   const Frame* parent = frame->Tree().Parent();
   while (parent) {
     auto* parent_origin = parent->GetSecurityContext()->GetSecurityOrigin();
     if (!parent_origin->IsSameOriginWith(current_origin)) {
-      ++number_of_unique_origin;
+      ++num_unique_origins;
       current_origin = parent_origin;
     }
-    if (number_of_unique_origin > kMaxUniqueOriginInAncestorChainForWebOTP)
+    if (num_unique_origins > max_unique_origins)
       return false;
     parent = parent->Tree().Parent();
   }
   return true;
+}
+
+bool IsAncestorChainValidForWebOTP(const Frame* frame) {
+  return AreUniqueOriginsLessOrEqualTo(
+      frame, kMaxUniqueOriginInAncestorChainForWebOTP);
+}
+
+bool IsAncestorChainValidForFedCM(const Frame* frame) {
+  return AreUniqueOriginsLessOrEqualTo(frame,
+                                       kMaxUniqueOriginInAncestorChainForFedCM);
 }
 
 bool CheckSecurityRequirementsBeforeRequest(
@@ -252,6 +266,22 @@ bool CheckSecurityRequirementsBeforeRequest(
         return false;
       }
       break;
+    case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
+      if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kFederatedCredentials)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "The 'federated-credentials` feature is not enabled in this "
+            "document."));
+        return false;
+      }
+      if (!IsAncestorChainValidForFedCM(resolver->DomWindow()->GetFrame())) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "More than two unique origins are detected in the origin chain."));
+        return false;
+      }
+      break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
@@ -303,6 +333,13 @@ void AssertSecurityRequirementsBeforeResponse(
           resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials) &&
           IsAncestorChainValidForWebOTP(resolver->DomWindow()->GetFrame()));
+      break;
+
+    case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
+      SECURITY_CHECK(
+          resolver->GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::kFederatedCredentials) &&
+          IsAncestorChainValidForFedCM(resolver->DomWindow()->GetFrame()));
       break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
@@ -896,6 +933,14 @@ ScriptPromise CredentialsContainer::get(
              RuntimeEnabledFeatures::WebOTPAssertionFeaturePolicyEnabled()) {
     required_origin_type = RequiredOriginType::
         kSecureAndPermittedByWebOTPAssertionPermissionsPolicy;
+  } else if (options->hasFederated() && options->federated()->hasProviders() &&
+             options->federated()->providers().size() == 1 &&
+             options->federated()
+                 ->providers()[0]
+                 ->IsFederatedIdentityProvider() &&
+             RuntimeEnabledFeatures::FedCmIframeSupportEnabled(context)) {
+    required_origin_type =
+        RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy;
   }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;

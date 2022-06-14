@@ -263,18 +263,6 @@ void FederatedAuthRequestImpl::Create(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   DCHECK(host);
 
-  // TODO(yigu): Once cross-orign support is implemented, we should reject the
-  // request with specific error messages instead of crashing the renderer.
-  // https://crbug.com/1286839.
-  // It is safe to access host->GetLastCommittedOrigin during construction
-  // but DocumentService::origin() should be used thereafter.
-  if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
-    mojo::ReportBadMessage(
-        "navigator.credentials.get() cannot be invoked from within "
-        "cross-origin iframes.");
-    return;
-  }
-
   // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
   // interface error occurs, the RenderFrameHost is deleted, or the
   // RenderFrameHost navigates to a new document.
