@@ -256,6 +256,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/session_manager/core/session_manager.h"
 #endif
@@ -1079,10 +1080,14 @@ bool Browser::CanSaveContents(content::WebContents* web_contents) const {
 }
 
 bool Browser::ShouldDisplayFavicon(content::WebContents* web_contents) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Suppress for System Apps.
-  if (app_controller_ && app_controller_->system_app()) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kTerminalMultiProfile) &&
+      app_controller_ && app_controller_->system_app()) {
     return false;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Otherwise, always display the favicon.
   return true;

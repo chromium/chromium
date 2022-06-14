@@ -20,6 +20,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 bool ShouldThemifyFaviconForEntryUrl(const GURL& url) {
@@ -31,7 +36,9 @@ bool ShouldThemifyFaviconForEntryUrl(const GURL& url) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Themify menu favicon for CrOS Terminal home page.
-  if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kTerminalMultiProfile) &&
+      url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     return url.host_piece() == chrome::kChromeUIUntrustedTerminalHost;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

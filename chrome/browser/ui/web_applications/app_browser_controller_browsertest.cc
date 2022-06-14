@@ -182,10 +182,12 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest, TabsTest) {
 
   EXPECT_TRUE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
 
-  // No favicons shown for system apps.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // No favicons shown for ash system apps.
   EXPECT_FALSE(
       app_browser_->tab_strip_model()->delegate()->ShouldDisplayFavicon(
           app_browser_->tab_strip_model()->GetActiveWebContents()));
+#endif
 
   // Tabbed PWAs only open URLs within the scope of the app. The manifest is
   // another URL besides |tabbed_app_url_| in scope.
