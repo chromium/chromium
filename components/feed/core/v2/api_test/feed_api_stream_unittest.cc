@@ -322,6 +322,22 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
                        ModelStateFor(GetStreamType(), store_.get()));
 }
 
+TEST_P(FeedStreamTestForAllStreamTypes, UseFeedQueryOverride) {
+  Config config = GetFeedConfig();
+  config.use_feed_query_requests = true;
+  SetFeedConfigForTesting(config);
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_TRUE(network_.query_request_sent);
+  // There should be no API refresh requests when using use_feed_query_requests.
+  auto api_request_counts = network_.GetApiRequestCounts();
+  api_request_counts.erase(NetworkRequestType::kListWebFeeds);  // ignore
+  EXPECT_EQ((std::map<NetworkRequestType, int>()), api_request_counts);
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+}
+
 TEST_F(FeedApiTest, OnboardingFetchAfterStartup) {
   // Enable WebFeed and WebFeedOnboarding flags.
   base::test::ScopedFeatureList features;
@@ -439,7 +455,7 @@ TEST_F(FeedApiTest, LoadFromNetworkDiscoFeedEnabled) {
 }
 
 TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
-  SetUseFeedQueryRequestsForWebFeeds(GetWebFeedUsesFeedQueryRequests());
+  SetUseFeedQueryRequests(GetUseFeedQueryRequests());
 
   // Enable WebFeed and subscribe to a page, so that we can check if the WebFeed
   // is refreshed by ForceRefreshForDebugging.
@@ -470,10 +486,10 @@ TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
   // Total 2 queries (Web + For You).
   EXPECT_EQ(2, network_.send_query_call_count);
   // API request to DiscoFeed (For You) - if enabled by feature
-  EXPECT_EQ(GetDiscoFeedEnabled() ? 1 : 0,
+  EXPECT_EQ((!GetUseFeedQueryRequests() && GetDiscoFeedEnabled()) ? 1 : 0,
             network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
   // API request to WebFeedList if FeedQuery not enabled by config.
-  EXPECT_EQ(GetWebFeedUsesFeedQueryRequests() ? 0 : 1,
+  EXPECT_EQ(GetUseFeedQueryRequests() ? 0 : 1,
             network_.GetApiRequestCount<WebFeedListContentsDiscoverApi>());
 }
 

@@ -15,6 +15,7 @@
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
@@ -94,9 +95,8 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
       request_metadata, stream_.GetMetadata().consistency_token(),
       stream_.GetModel(stream_type_)->GetNextPageToken());
 
-  // TODO(crbug/1152592): Send a different network request type for
-  // WebFeeds.
-  if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
+  if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint) &&
+      !GetFeedConfig().use_feed_query_requests) {
     stream_.GetNetwork().SendApiRequest<QueryNextPageDiscoverApi>(
         request, account_info, std::move(request_metadata),
         base::BindOnce(&LoadMoreTask::QueryApiRequestComplete, GetWeakPtr()));

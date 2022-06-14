@@ -102,7 +102,7 @@ struct Config {
   // Until we get the new list contents API working, keep using FeedQuery.
   // TODO(crbug/1152592): remove this when new endpoint is tested enough.
   // Set using snippets-internals, or the --webfeed-legacy-feedquery switch.
-  bool use_feed_query_requests_for_web_feeds = false;
+  bool use_feed_query_requests = false;
 
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
@@ -124,7 +124,7 @@ const Config& GetFeedConfig();
 
 // Sets whether the legacy feed endpoint should be used for Web Feed content
 // fetches.
-void SetUseFeedQueryRequestsForWebFeeds(const bool use_legacy);
+void SetUseFeedQueryRequests(const bool use_legacy);
 
 void SetFeedConfigForTesting(const Config& config);
 void OverrideConfigWithFinchForTesting();
