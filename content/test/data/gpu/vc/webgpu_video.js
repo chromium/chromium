@@ -545,13 +545,12 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
     uiFrames++;
 
-    // Always import all videos. The video textures are destroyed before the
-    // next frame.
-    // TODO(crbugs.com/1310172): Only import expired video frames.
     for (let i = 0; i < videos.length; ++i) {
-      videoTextures[i] =
-        device.importExternalTexture(externalTextureDescriptor[i]);
-      totalVideoFrames++;
+      if (!videoTextures[i] || videoTextures[i].expired) {
+        videoTextures[i] =
+          device.importExternalTexture(externalTextureDescriptor[i]);
+        totalVideoFrames++;
+      }
     }
 
     const swapChainTexture = context.getCurrentTexture();
