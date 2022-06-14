@@ -255,14 +255,7 @@ void AutofillAgent::BindPendingReceiver(
 }
 
 void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
-  blink::WebFrame* frame = render_frame()->GetWebFrame();
-  // TODO(dvadym): check if we need to check if it is main frame navigation
-  // http://crbug.com/443155
-  if (frame->Parent())
-    return;  // Not a top-level navigation.
-
   // Navigation to a new page or a page refresh.
-
   element_.Reset();
 
   form_cache_.Reset();
