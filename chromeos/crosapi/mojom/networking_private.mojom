@@ -42,6 +42,20 @@ union PropertiesSuccessOrErrorReturn {
   mojo_base.mojom.Value success_result;
 };
 
+// This interface mirrors NetworkingPrivateDelegateObserver. It allows Ash
+// to notify lacros of such events. Lacros, on its turn, will then forward
+// those notifications to its local observers.
+[Stable, Uuid="67b08eef-7f47-43cd-8bf6-ad64f05af13c"]
+interface NetworkingPrivateDelegateObserver {
+  // Notifies observers when properties may have changed for the networks listed
+  // in |network_guids|.
+  OnNetworksChangedEvent@0(array<string> network_guids);
+
+  // Notifies observers that the list of networks changed. |network_guids|
+  // contains the complete list of network guids.
+  OnNetworkListChangedEvent@1(array<string> network_guids);
+};
+
 // This interface mirrors the NetworkingPrivateDelegate from Lacros to Ash to
 // allow the networking.private / networking.onc extensions to be used. Note
 // that this API is stable since years and will rather be deprecated than
@@ -159,4 +173,9 @@ interface NetworkingPrivate {
   // all supported network types except Cellular, which must be requested
   // explicitly.
   RequestScan@20(string type) => (bool scan_requested);
+
+  // Adds a new observer that will be notified by Ash when relevant events
+  // take place.
+  [MinVersion=1]
+  AddObserver@21(pending_remote<NetworkingPrivateDelegateObserver> observer);
 };

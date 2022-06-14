@@ -568,4 +568,25 @@ void NetworkingPrivateLacros::RequestScan(const std::string& type,
   (*networking_private)->RequestScan(std::move(type), std::move(callback));
 }
 
+void NetworkingPrivateLacros::AddObserver(
+    NetworkingPrivateDelegateObserver* observer) {
+  if (!lacros_observer_) {
+    lacros_observer_ = std::make_unique<LacrosNetworkingPrivateObserver>();
+  }
+  lacros_observer_->AddObserver(observer);
+}
+
+void NetworkingPrivateLacros::RemoveObserver(
+    NetworkingPrivateDelegateObserver* observer) {
+  if (!lacros_observer_) {
+    return;
+  }
+
+  lacros_observer_->RemoveObserver(observer);
+
+  if (!lacros_observer_->HasObservers()) {
+    lacros_observer_.reset();
+  }
+}
+
 }  // namespace extensions

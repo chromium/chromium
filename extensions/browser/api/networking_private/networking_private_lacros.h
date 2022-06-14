@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "extensions/browser/api/networking_private/lacros_networking_private_observer.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -95,8 +96,13 @@ class NetworkingPrivateLacros : public NetworkingPrivateDelegate {
                           BoolCallback callback) override;
   void RequestScan(const std::string& type, BoolCallback callback) override;
 
+  void AddObserver(NetworkingPrivateDelegateObserver* observer) override;
+  void RemoveObserver(NetworkingPrivateDelegateObserver* observer) override;
+
  private:
   const bool is_primary_user_;
+
+  std::unique_ptr<LacrosNetworkingPrivateObserver> lacros_observer_;
 
   base::WeakPtrFactory<NetworkingPrivateLacros> weak_ptr_factory_{this};
 };

@@ -15,6 +15,9 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 
+using chromeos::NetworkHandler;
+using chromeos::NetworkStateHandler;
+
 namespace crosapi {
 
 namespace {
@@ -226,7 +229,11 @@ void DeviceStateListCallbackAdapter(
 
 }  // namespace
 
-NetworkingPrivateAsh::NetworkingPrivateAsh() = default;
+NetworkingPrivateAsh::NetworkingPrivateAsh() {
+  observers_.set_disconnect_handler(base::BindRepeating(
+      &NetworkingPrivateAsh::OnObserverDisconnected, base::Unretained(this)));
+}
+
 NetworkingPrivateAsh::~NetworkingPrivateAsh() = default;
 
 void NetworkingPrivateAsh::BindReceiver(
@@ -383,6 +390,49 @@ void NetworkingPrivateAsh::DisableNetworkType(
 void NetworkingPrivateAsh::RequestScan(const std::string& type,
                                        RequestScanCallback callback) {
   GetDelegate()->RequestScan(type, std::move(callback));
+}
+
+void NetworkingPrivateAsh::AddObserver(
+    mojo::PendingRemote<mojom::NetworkingPrivateDelegateObserver> observer) {
+  const bool is_listening_network_state = !observers_.empty();
+
+  observers_.Add(mojo::Remote<mojom::NetworkingPrivateDelegateObserver>(
+      std::move(observer)));
+
+  if (!is_listening_network_state) {
+    network_state_observation_.Observe(
+        NetworkHandler::Get()->network_state_handler());
+  }
+}
+
+void NetworkingPrivateAsh::NetworkListChanged() {
+  NetworkStateHandler::NetworkStateList networks;
+  NetworkHandler::Get()->network_state_handler()->GetVisibleNetworkList(
+      &networks);
+  std::vector<std::string> changes;
+  for (NetworkStateHandler::NetworkStateList::const_iterator iter =
+           networks.begin();
+       iter != networks.end(); ++iter) {
+    changes.push_back((*iter)->guid());
+  }
+
+  for (auto& observer : observers_) {
+    observer->OnNetworkListChangedEvent(changes);
+  }
+}
+
+void NetworkingPrivateAsh::NetworkPropertiesUpdated(
+    const chromeos::NetworkState* network) {
+  for (auto& observer : observers_) {
+    observer->OnNetworksChangedEvent(
+        std::vector<std::string>(1, network->guid()));
+  }
+}
+
+void NetworkingPrivateAsh::OnObserverDisconnected(mojo::RemoteSetElementId id) {
+  if (observers_.empty()) {
+    network_state_observation_.Reset();
+  }
 }
 
 }  // namespace crosapi

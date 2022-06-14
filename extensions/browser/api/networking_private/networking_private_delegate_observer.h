@@ -11,8 +11,8 @@
 namespace extensions {
 
 // Implemented by event handlers so they are notified when a change event
-// occurs. Triggered by NetworkingPrivateServiceClient or
-// NetworkingPrivateLinux. Not used on Chrome OS.
+// occurs. Triggered by NetworkingPrivateServiceClient,
+// NetworkingPrivateLinux or LacrosNetworkingPrivateObserver.
 class NetworkingPrivateDelegateObserver {
  public:
   NetworkingPrivateDelegateObserver& operator=(
