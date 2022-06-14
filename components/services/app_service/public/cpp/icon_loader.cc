@@ -86,6 +86,17 @@ std::unique_ptr<IconLoader::Releaser> IconLoader::LoadIcon(
                              std::move(callback));
 }
 
+std::unique_ptr<IconLoader::Releaser> IconLoader::LoadIconFromIconKey(
+    apps::mojom::AppType app_type,
+    const std::string& app_id,
+    apps::mojom::IconKeyPtr icon_key,
+    apps::mojom::IconType icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::mojom::Publisher::LoadIconCallback callback) {
+  return nullptr;
+}
+
 std::unique_ptr<IconLoader::Releaser> IconLoader::LoadIcon(
     apps::mojom::AppType app_type,
     const std::string& app_id,

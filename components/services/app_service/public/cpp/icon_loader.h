@@ -90,7 +90,7 @@ class IconLoader {
       apps::mojom::IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) = 0;
+      apps::mojom::Publisher::LoadIconCallback callback);
 
   // Convenience method that calls "LoadIconFromIconKey(app_type, app_id,
   // GetIconKey(app_id), etc)".
