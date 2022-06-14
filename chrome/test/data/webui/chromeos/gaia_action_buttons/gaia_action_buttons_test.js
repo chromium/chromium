@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://chrome-signin/gaia_action_buttons.js';
-
+import {GaiaActionButtonsElement} from 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -64,9 +63,9 @@ suite(gaia_action_buttons_test.suiteName, () => {
     actionButtonsComponent.setAuthExtHostForTest(testAuthenticator);
     flush();
     primaryButton = /** @type {!CrButtonElement} */ (
-        actionButtonsComponent.$$('.action-button'));
+        actionButtonsComponent.shadowRoot.querySelector('.action-button'));
     secondaryButton = /** @type {!CrButtonElement} */ (
-        actionButtonsComponent.$$('.secondary-button'));
+        actionButtonsComponent.shadowRoot.querySelector('.secondary-button'));
   });
 
   test(assert(gaia_action_buttons_test.TestNames.ButtonLabels), () => {

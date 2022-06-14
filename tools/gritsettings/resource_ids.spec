@@ -124,6 +124,10 @@
     "META": {"sizes": {"includes": [80]}},
     "includes": [1340],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/gaia_action_buttons/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1350],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/emoji_picker/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [1360],

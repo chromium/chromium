@@ -18,6 +18,7 @@ group("resources") {
     "assistant_optin:resources",
     "audio:resources",
     "emoji_picker:resources",
+    "gaia_action_buttons:resources",
     "launcher_internals:resources",
     "login:conditional_resources",
     "login:unconditional_resources",

@@ -47,6 +47,8 @@
 #include "chrome/grit/arc_account_picker_resources.h"
 #include "chrome/grit/arc_account_picker_resources_map.h"
 #include "components/account_manager_core/pref_names.h"
+#include "chrome/grit/gaia_action_buttons_resources.h"
+#include "chrome/grit/gaia_action_buttons_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -114,6 +116,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddResourcePaths(base::make_span(kArcAccountPickerResources,
                                            kArcAccountPickerResourcesSize));
+  source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
+                                           kGaiaActionButtonsResourcesSize));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Only add a filter when runing as test.
@@ -135,7 +139,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS},
     {"signin_error_page.js", IDR_INLINE_LOGIN_SIGNIN_ERROR_PAGE_JS},
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
-    {"gaia_action_buttons.js", IDR_GAIA_ACTION_BUTTONS_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
     // Resources for the server-based edu coexistence flow.
     {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
