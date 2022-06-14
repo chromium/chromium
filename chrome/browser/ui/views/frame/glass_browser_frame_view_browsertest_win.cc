@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -34,6 +33,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/view_utils.h"
 
 class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
@@ -105,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, NoThemeColor) {
   if (!InstallAndLaunchWebApp())
     return;
 
-  EXPECT_EQ(glass_frame_view_->GetTitlebarColor(),
-            browser()->window()->GetThemeProvider()->GetColor(
-                ThemeProperties::COLOR_FRAME_ACTIVE));
+  EXPECT_EQ(
+      glass_frame_view_->GetTitlebarColor(),
+      browser()->window()->GetColorProvider()->GetColor(ui::kColorFrameActive));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {
