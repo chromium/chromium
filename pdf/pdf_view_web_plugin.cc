@@ -445,7 +445,7 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
           ? blink::WebInputEventResult::kHandledApplication
           : blink::WebInputEventResult::kNotHandled;
 
-  *cursor = cursor_type();
+  *cursor = cursor_type_;
 
   return result;
 }
@@ -649,7 +649,7 @@ void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {
 }
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
-  set_cursor_type(new_cursor_type);
+  cursor_type_ = new_cursor_type;
 }
 
 void PdfViewWebPlugin::UpdateTickMarks(

@@ -32,6 +32,7 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
@@ -424,6 +425,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 
   std::unique_ptr<PDFiumEngine> engine_;
+
+  // The current cursor type.
+  ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
 
   // The id of the current find operation, or -1 if no current operation is
   // present.

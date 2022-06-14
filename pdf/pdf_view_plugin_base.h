@@ -26,7 +26,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -298,11 +297,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_url(std::string url) { url_ = std::move(url); }
 
-  ui::mojom::CursorType cursor_type() const { return cursor_type_; }
-  void set_cursor_type(ui::mojom::CursorType cursor_type) {
-    cursor_type_ = cursor_type;
-  }
-
   const std::string& link_under_cursor() const { return link_under_cursor_; }
 
   virtual bool full_frame() const = 0;
@@ -412,9 +406,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The URL of the PDF document.
   std::string url_;
-
-  // The current cursor type.
-  ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
 
   // The URL currently under the cursor.
   std::string link_under_cursor_;
