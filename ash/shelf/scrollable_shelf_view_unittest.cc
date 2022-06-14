@@ -1433,7 +1433,8 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
 // Verifies the basic function of app scaling which scales down the hotseat and
 // its children's sizes if there is insufficient space for shelf buttons to show
 // without scrolling.
-TEST_F(ScrollableShelfViewWithAppScalingTest, AppScalingBasics) {
+// TODO(crbug.com/1336159): Re-enable this test
+TEST_F(ScrollableShelfViewWithAppScalingTest, DISABLED_AppScalingBasics) {
   if (features::IsCalendarViewEnabled())
     PopulateAppShortcut(kAppCountWithShowingDateTray);
   else
@@ -1478,8 +1479,9 @@ TEST_F(ScrollableShelfViewWithAppScalingTest, AppScalingBasics) {
 }
 
 // Verifies that app scaling works as expected with hotseat state transition.
+// TODO(crbug.com/1336159): Re-enable this test
 TEST_F(ScrollableShelfViewWithAppScalingTest,
-       VerifyWithHotseatStateTransition) {
+       DISABLED_VerifyWithHotseatStateTransition) {
   if (features::IsCalendarViewEnabled())
     PopulateAppShortcut(kAppCountWithShowingDateTray);
   else
