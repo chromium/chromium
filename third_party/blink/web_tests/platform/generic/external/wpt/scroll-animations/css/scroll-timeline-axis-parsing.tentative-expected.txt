@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL e.style['scroll-timeline-axis'] = "initial" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "inherit" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "unset" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "revert" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "block" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "inline" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "vertical" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['scroll-timeline-axis'] = "horizontal" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['scroll-timeline-axis'] = "abc" should not set the property value
+PASS e.style['scroll-timeline-axis'] = "10px" should not set the property value
+PASS e.style['scroll-timeline-axis'] = "auto" should not set the property value
+PASS e.style['scroll-timeline-axis'] = "none" should not set the property value
+Harness: the test ran to completion.
+

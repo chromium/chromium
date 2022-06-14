@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+FAIL Property scroll-timeline-name value 'initial' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value 'inherit' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value 'unset' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value 'revert' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value 'none' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"test"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"none"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"auto"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"initial"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"inherit"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"unset"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value '"revert"' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL Property scroll-timeline-name value 'test' assert_true: scroll-timeline-name doesn't seem to be supported in the computed style expected true got false
+FAIL The scroll-timeline-name property shows up in CSSStyleDeclaration enumeration assert_not_equals: got disallowed value -1
+FAIL The scroll-timeline-name property shows up in CSSStyleDeclaration.cssText assert_not_equals: got disallowed value -1
+Harness: the test ran to completion.
+
