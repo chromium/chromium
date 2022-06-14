@@ -15,25 +15,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * Unit tests for RoundedIconGenerator.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@Batch(Batch.UNIT_TESTS)
 public class RoundedIconGeneratorTest {
     private static Context sContext;
 
     @BeforeClass
     public static void setUp() {
         sContext = InstrumentationRegistry.getTargetContext();
-        LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
-        LibraryLoader.getInstance().ensureInitialized();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
     private String getIconTextForUrl(String url, boolean includePrivateRegistries) {
