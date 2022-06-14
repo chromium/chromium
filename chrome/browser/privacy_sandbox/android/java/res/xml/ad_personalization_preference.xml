@@ -18,7 +18,7 @@
     <PreferenceCategory
         android:key="topic_interests"
         android:title="@string/privacy_sandbox_topic_interests_subtitle"
-        app:isPreferenceVisible="false"/>
+        app:isPreferenceVisible="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="empty_topics"
@@ -31,13 +31,14 @@
         android:title="@string/privacy_sandbox_remove_interest_title"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
         app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"
-        app:isPreferenceVisible="false"/>
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false" />
 
     <PreferenceCategory
         android:key="fledge_interests"
         android:title="@string/privacy_sandbox_fledge_subtitle"
         app:isPreferenceVisible="false"
-        app:allowDividerAbove="true"/>
+        app:allowDividerAbove="true" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="empty_fledge"
@@ -50,6 +51,8 @@
         android:title="@string/privacy_sandbox_remove_sites_title"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
         app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"
-        app:isPreferenceVisible="false"/>
+        app:isPreferenceVisible="false"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
 
 </PreferenceScreen>
