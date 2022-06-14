@@ -1202,10 +1202,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TpmManagerSecretStatus"
-    enum="TpmManagerSecretStatus" expires_after="2021-09-01">
+    enum="TpmManagerSecretStatus" expires_after="2022-12-13">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>The status of the secrets that tpm manager holds.</summary>
+  <summary>
+    The status of the secrets that tpm manager holds.
+
+    Warning: this histogram was expired from 2021-09-01 to 2022-06-14; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
