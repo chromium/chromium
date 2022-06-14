@@ -978,6 +978,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Render.Glitches" units="glitches"
     expires_after="2022-10-16">
+  <obsolete>
+    Removed 06/2022, replaced by Media.Audio.Render.Glitches2.
+  </obsolete>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -987,8 +990,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Render.Glitches2" units="glitches"
+    expires_after="2023-06-10">
+  <owner>olka@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <summary>
+    The number of glitches that were detected at the OS level while an audio
+    output stream was active. A glitch is detected if the OS has to skip
+    rendering a set of frames. This value is aggregated over a period of 1000 OS
+    callbacks (every 10 seconds for buffer size 10 ms) and is logged at the end
+    of each collection interval. Not recorded for streams shorter than 1000
+    callbacks. Reported on Windows and Mac.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Render.LargestGlitchMs" units="ms"
     expires_after="2022-10-16">
+  <obsolete>
+    Removed 06/2022, replaced by Media.Audio.Render.LargestGlitchMs2.
+  </obsolete>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -998,8 +1018,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Render.LargestGlitchMs2" units="ms"
+    expires_after="2023-06-10">
+  <owner>olka@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <summary>
+    The length in milliseconds of the largest glitch that was detected at the OS
+    level by an audio output stream. This value is aggregated over a period of
+    1000 OS callbacks (every 10 seconds for buffer size 10 ms) and is logged at
+    the end of each collection interval if any glitches were detected. Not
+    recorded for streams shorter than 1000 callbacks. Reported on Windows and
+    Mac.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Render.LostFramesInMs" units="ms"
     expires_after="2022-10-23">
+  <obsolete>
+    Removed 06/2022, replaced by Media.Audio.Render.LostFramesInMs2.
+  </obsolete>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1007,6 +1044,20 @@ chromium-metrics-reviews@google.com.
     know in particular for audio processing such as echo cancellation. This
     value is logged when an audio output stream that has suffered glitches is
     stopped.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Render.LostFramesInMs2" units="ms"
+    expires_after="2023-06-10">
+  <owner>olka@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <summary>
+    The combined length in milliseconds of audio glitches. This is useful to
+    know in particular for audio processing such as echo cancellation. This
+    value is aggregated over a period of 1000 OS callbacks (every 10 seconds for
+    buffer size 10 ms) and is logged at the end of each collection interval if
+    any glitches were detected. Not recorded for streams shorter than 1000
+    callbacks. Reported on Windows and Mac.
   </summary>
 </histogram>
 

@@ -674,17 +674,11 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         const int64_t qpc_position_diff_us =
             qpc_position_us - last_qpc_position_us;
 
-        if (qpc_position_diff_us - position_diff_us > buffer_duration_us / 2) {
-          ++num_glitches_detected_;
+        const int64_t gap_duration_us = qpc_position_diff_us - position_diff_us;
 
-          base::TimeDelta glitch_duration =
-              base::Microseconds(qpc_position_diff_us - position_diff_us);
-
-          if (glitch_duration > largest_glitch_)
-            largest_glitch_ = glitch_duration;
-
-          cumulative_audio_lost_ += glitch_duration;
-        }
+        glitch_reporter_.UpdateStats(gap_duration_us > buffer_duration_us / 2
+                                         ? base::Microseconds(gap_duration_us)
+                                         : base::TimeDelta());
       }
 
       last_position_ = position;
@@ -834,25 +828,14 @@ void WASAPIAudioOutputStream::StopThread() {
 }
 
 void WASAPIAudioOutputStream::ReportAndResetStats() {
-  // Even if there aren't any glitches, we want to record it to get a feel for
-  // how often we get no glitches vs the alternative.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Media.Audio.Render.Glitches",
-                              num_glitches_detected_, 1, 999999, 100);
-  // Don't record these unless there actually was a glitch, though.
-  if (num_glitches_detected_ != 0) {
-    UMA_HISTOGRAM_COUNTS_1M("Media.Audio.Render.LostFramesInMs",
-                            cumulative_audio_lost_.InMilliseconds());
-    UMA_HISTOGRAM_COUNTS_1M("Media.Audio.Render.LargestGlitchMs",
-                            largest_glitch_.InMilliseconds());
-  }
+  SystemOutputGlitchReporter::Stats stats =
+      glitch_reporter_.GetLongTermStatsAndReset();
   SendLogMessage(
       "%s => (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
       "largest_glitch=[%llu ms])",
-      __func__, num_glitches_detected_, cumulative_audio_lost_.InMilliseconds(),
-      largest_glitch_.InMilliseconds());
-  num_glitches_detected_ = 0;
-  cumulative_audio_lost_ = base::TimeDelta();
-  largest_glitch_ = base::TimeDelta();
+      __func__, stats.glitches_detected,
+      stats.total_glitch_duration.InMilliseconds(),
+      stats.largest_glitch_duration.InMilliseconds());
 }
 
 void WASAPIAudioOutputStream::OnDeviceChanged() {

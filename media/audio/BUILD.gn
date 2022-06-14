@@ -136,6 +136,8 @@ source_set("audio") {
     "scoped_task_runner_observer.h",
     "simple_sources.cc",
     "simple_sources.h",
+    "system_output_glitch_reporter.cc",
+    "system_output_glitch_reporter.h",
     "wav_audio_handler.cc",
     "wav_audio_handler.h",
   ]
