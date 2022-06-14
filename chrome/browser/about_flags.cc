@@ -8761,6 +8761,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kCommerceHintAndroid)},
 #endif
 
+    {"autofill-enable-get-details-for-enroll-parsing-in-upload-card-response",
+     flag_descriptions::
+         kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseName,
+     flag_descriptions::
+         kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponseDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
