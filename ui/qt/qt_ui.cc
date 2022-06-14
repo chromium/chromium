@@ -186,28 +186,23 @@ bool QtUi::GetDisplayProperty(int id, int* result) const {
 }
 
 SkColor QtUi::GetFocusRingColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
 SkColor QtUi::GetActiveSelectionBgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
 SkColor QtUi::GetActiveSelectionFgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightFg, ColorState::kNormal);
 }
 
 SkColor QtUi::GetInactiveSelectionBgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kInactive);
 }
 
 SkColor QtUi::GetInactiveSelectionFgColor() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::kPlaceholderColor;
+  return shim_->GetColor(ColorType::kHighlightFg, ColorState::kInactive);
 }
 
 base::TimeDelta QtUi::GetCursorBlinkInterval() const {
