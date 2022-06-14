@@ -55,6 +55,7 @@ type SyncRoutes = {
   SYNC: Route,
   SYNC_ADVANCED: Route,
   OS_SYNC: Route,
+  OS_PEOPLE: Route,
 };
 
 function getSyncRoutes(): SyncRoutes {
@@ -372,6 +373,17 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     return getSyncRoutes().SYNC_ADVANCED;
   }
 
+  private getPeoplePageRoute_(): Route {
+    // <if expr="chromeos_ash">
+    if (loadTimeData.getBoolean('isOSSettings')) {
+      // In OS settings on ChromeOS a different page is used as a people page.
+      return getSyncRoutes().OS_PEOPLE;
+    }
+    // </if>
+
+    return getSyncRoutes().PEOPLE;
+  }
+
   private onFocusConfigChange_() {
     this.focusConfig.set(this.getSyncAdvancedPageRoute_().path, () => {
       const toFocus = this.shadowRoot!.querySelector('#sync-advanced-row');
@@ -637,7 +649,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         return;
       case PageStatus.DONE:
         if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
-          router.navigateTo(getSyncRoutes().PEOPLE);
+          router.navigateTo(this.getPeoplePageRoute_());
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:
