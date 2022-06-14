@@ -373,6 +373,8 @@ component("headless_non_renderer") {
     "lib/browser/headless_quota_permission_context.h",
     "lib/browser/headless_request_context_manager.cc",
     "lib/browser/headless_request_context_manager.h",
+    "lib/browser/headless_select_file_dialog_factory.cc",
+    "lib/browser/headless_select_file_dialog_factory.h",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -477,6 +479,7 @@ component("headless_non_renderer") {
     "//ui/display",
     "//ui/events/devices",
     "//ui/gfx",
+    "//ui/shell_dialogs",
     "//url",
   ]
 
@@ -846,6 +849,7 @@ test("headless_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/clipboard",
+    "//ui/shell_dialogs",
   ]
 
   if (is_mac) {
