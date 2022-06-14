@@ -134,6 +134,7 @@ import org.chromium.ui.util.TokenHolder;
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
  */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {
+    private static boolean sDisableStatusIndicatorAnimations;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
     private @Nullable EmptyBackgroundViewWrapper mEmptyBackgroundViewWrapper;
@@ -765,7 +766,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void onStatusIndicatorHeightChanged(int indicatorHeight) {
                 mStatusIndicatorHeight = indicatorHeight;
-                updateTopControlsHeight(/*animate=*/true);
+                boolean animate = sDisableStatusIndicatorAnimations ? false : true;
+                updateTopControlsHeight(animate);
             }
         };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
@@ -932,5 +934,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
         return LanguageAskPrompt.maybeShowLanguageAskPrompt(mActivity, mModalDialogManagerSupplier);
+    }
+
+    @VisibleForTesting
+    public static void setDisableStatusIndicatorAnimationsForTesting(boolean disable) {
+        sDisableStatusIndicatorAnimations = disable;
     }
 }

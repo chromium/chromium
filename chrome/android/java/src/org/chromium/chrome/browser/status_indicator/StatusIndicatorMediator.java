@@ -442,4 +442,20 @@ class StatusIndicatorMediator
     void updateVisibilityForTesting(boolean hiding) {
         updateVisibility(hiding);
     }
+
+    @VisibleForTesting
+    void finishAnimationsForTesting() {
+        if (mStatusBarAnimation != null && mStatusBarAnimation.isRunning()) {
+            mStatusBarAnimation.end();
+        }
+        if (mTextFadeInAnimation != null && mTextFadeInAnimation.isRunning()) {
+            mTextFadeInAnimation.end();
+        }
+        if (mUpdateAnimatorSet != null && mUpdateAnimatorSet.isRunning()) {
+            mUpdateAnimatorSet.end();
+        }
+        if (mHideAnimatorSet != null && mHideAnimatorSet.isRunning()) {
+            mHideAnimatorSet.end();
+        }
+    }
 }
