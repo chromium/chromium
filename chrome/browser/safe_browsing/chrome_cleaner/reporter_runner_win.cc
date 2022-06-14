@@ -410,7 +410,8 @@ class ReporterRunner {
 
     // The enterprise policy overrides all other choices.
     if (!SwReporterReportingIsAllowedByPolicy(profile)) {
-      uma.RecordLogsUploadEnabled(REPORTER_LOGS_UPLOADS_DISABLED_BY_POLICY);
+      uma.RecordLogsUploadEnabled(
+          SwReporterLogsUploadsEnabled::DISABLED_BY_POLICY);
       return false;
     }
 
@@ -421,25 +422,29 @@ class ReporterRunner {
         return false;
 
       case SwReporterInvocationType::kUserInitiatedWithLogsDisallowed:
-        uma.RecordLogsUploadEnabled(REPORTER_LOGS_UPLOADS_DISABLED_BY_USER);
+        uma.RecordLogsUploadEnabled(
+            SwReporterLogsUploadsEnabled::DISABLED_BY_USER);
         return false;
 
       case SwReporterInvocationType::kUserInitiatedWithLogsAllowed:
-        uma.RecordLogsUploadEnabled(REPORTER_LOGS_UPLOADS_ENABLED_BY_USER);
+        uma.RecordLogsUploadEnabled(
+            SwReporterLogsUploadsEnabled::ENABLED_BY_USER);
         return true;
 
       case SwReporterInvocationType::kPeriodicRun:
         if (!SafeBrowsingExtendedReportingEnabled()) {
-          uma.RecordLogsUploadEnabled(REPORTER_LOGS_UPLOADS_SBER_DISABLED);
+          uma.RecordLogsUploadEnabled(
+              SwReporterLogsUploadsEnabled::SBER_DISABLED);
           return false;
         }
 
         if (!time_info_.InLogsUploadPeriod()) {
-          uma.RecordLogsUploadEnabled(REPORTER_LOGS_UPLOADS_RECENTLY_SENT_LOGS);
+          uma.RecordLogsUploadEnabled(
+              SwReporterLogsUploadsEnabled::RECENTLY_SENT_LOGS);
           return false;
         }
 
-        uma.RecordLogsUploadEnabled(REPORTER_LOGS_UPLOADS_SBER_ENABLED);
+        uma.RecordLogsUploadEnabled(SwReporterLogsUploadsEnabled::SBER_ENABLED);
         return true;
     }
 

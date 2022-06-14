@@ -7,11 +7,10 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/metrics/histogram.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/sparse_histogram.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -24,14 +23,34 @@ namespace safe_browsing {
 namespace {
 
 // Used to send UMA information about missing logs upload result in the registry
-// for the reporter. Replicated in the histograms.xml file, so the order
-// MUST NOT CHANGE.
-enum SwReporterLogsUploadResultRegistryError {
-  REPORTER_LOGS_UPLOAD_RESULT_ERROR_NO_ERROR = 0,
-  REPORTER_LOGS_UPLOAD_RESULT_ERROR_REGISTRY_KEY_INVALID = 1,
-  REPORTER_LOGS_UPLOAD_RESULT_ERROR_VALUE_NOT_FOUND = 2,
-  REPORTER_LOGS_UPLOAD_RESULT_ERROR_VALUE_OUT_OF_BOUNDS = 3,
-  REPORTER_LOGS_UPLOAD_RESULT_ERROR_MAX,
+// for the reporter. Matches SoftwareReporterLogsUploadResultRegistryError in
+// enums.xml.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LogsUploadResultRegistryError {
+  NO_ERROR = 0,
+  REGISTRY_KEY_INVALID = 1,
+  VALUE_NOT_FOUND = 2,
+  VALUE_OUT_OF_BOUNDS = 3,
+  kMaxValue = VALUE_OUT_OF_BOUNDS,
+};
+
+// Network errors encountered by the reporter when uploading logs, written by
+// the reporter to the registry. Matches SoftwareReporterLogsUploadResult in
+// enums.xml.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LogsUploadResult {
+  kSuccess = 0,
+  kRequestFailed = 1,
+  kInvalidResponse = 2,
+  kTimedOut = 3,
+  kInternalError = 4,
+  kReportTooLarge = 5,
+  kNoNetwork = 6,
+  kMaxValue = kNoNetwork,
 };
 
 const char kFoundUwsMetricName[] = "SoftwareReporter.FoundUwS";
@@ -46,27 +65,15 @@ const char kLogsUploadResultRegistryErrorMetricName[] =
 const char kExitCodeMetricName[] = "SoftwareReporter.ExitCodeFromRegistry";
 const char kEngineErrorCodeMetricName[] = "SoftwareReporter.EngineErrorCode";
 
-// The max value for histogram SoftwareReporter.LogsUploadResult, which is used
-// to send UMA information about the result of Software Reporter's attempt to
-// upload logs, when logs are enabled. This value must be consistent with the
-// SoftwareReporterLogsUploadResult enum defined in the histograms.xml file.
-const int kSwReporterLogsUploadResultMax = 30;
-
-// TODO(crbug.com/1335637): Should use the UmaHistogram functions instead
-// of relying on this histogram implementation detail.
-constexpr base::HistogramBase::Flags kUmaHistogramFlag =
-    base::HistogramBase::kUmaTargetedHistogramFlag;
-
 }  // namespace
 
 ReporterHistogramRecorder::ReporterHistogramRecorder(const std::string& suffix)
     : suffix_(suffix),
-      registry_key_(suffix.empty()
-                        ? chrome_cleaner::kSoftwareRemovalToolRegistryKey
-                        : base::StringPrintf(
-                              L"%ls\\%ls",
-                              chrome_cleaner::kSoftwareRemovalToolRegistryKey,
-                              base::UTF8ToUTF16(suffix).c_str())) {}
+      registry_key_(
+          suffix.empty()
+              ? chrome_cleaner::kSoftwareRemovalToolRegistryKey
+              : base::StrCat({chrome_cleaner::kSoftwareRemovalToolRegistryKey,
+                              L"\\", base::UTF8ToWide(suffix)})) {}
 
 void ReporterHistogramRecorder::RecordVersion(
     const base::Version& version) const {
@@ -78,7 +85,8 @@ void ReporterHistogramRecorder::RecordVersion(
     minor_version = version.components()[version.components().size() - 2];
   else
     minor_version = version.components()[0];
-  RecordSparseHistogram("SoftwareReporter.MinorVersion", minor_version);
+  base::UmaHistogramSparse(FullName("SoftwareReporter.MinorVersion"),
+                           minor_version);
 
   // The major version for X.Y.Z is X*256^3+Y*256+Z. If there are additional
   // components, only the first three count, and if there are less than 3, the
@@ -93,7 +101,8 @@ void ReporterHistogramRecorder::RecordVersion(
     DCHECK_LT(version.components()[2], 0x100U);
     major_version += version.components()[2];
   }
-  RecordSparseHistogram("SoftwareReporter.MajorVersion", major_version);
+  base::UmaHistogramSparse(FullName("SoftwareReporter.MajorVersion"),
+                           major_version);
 }
 
 void ReporterHistogramRecorder::RecordExitCode(int exit_code) const {
@@ -107,7 +116,8 @@ void ReporterHistogramRecorder::RecordExitCode(int exit_code) const {
     return;
   }
 
-  RecordSparseHistogram(kExitCodeMetricName, exit_code_in_registry);
+  base::UmaHistogramSparse(FullName(kExitCodeMetricName),
+                           exit_code_in_registry);
   reporter_key.DeleteValue(chrome_cleaner::kExitCodeValueName);
 }
 
@@ -121,7 +131,8 @@ void ReporterHistogramRecorder::RecordEngineErrorCode() const {
     return;
   }
 
-  RecordSparseHistogram(kEngineErrorCodeMetricName, engine_error_code);
+  base::UmaHistogramSparse(FullName(kEngineErrorCodeMetricName),
+                           engine_error_code);
   reporter_key.DeleteValue(chrome_cleaner::kEngineErrorCodeValueName);
 }
 
@@ -140,7 +151,7 @@ void ReporterHistogramRecorder::RecordFoundUwS() const {
     // All UwS ids are expected to be integers.
     uint32_t uws_id = 0;
     if (base::StringToUint(uws_string, &uws_id)) {
-      RecordSparseHistogram(kFoundUwsMetricName, uws_id);
+      base::UmaHistogramSparse(FullName(kFoundUwsMetricName), uws_id);
     } else {
       parse_error = true;
     }
@@ -148,7 +159,8 @@ void ReporterHistogramRecorder::RecordFoundUwS() const {
 
   // Clean up the old value.
   reporter_key.DeleteValue(chrome_cleaner::kFoundUwsValueName);
-  RecordBooleanHistogram(kFoundUwsReadErrorMetricName, parse_error);
+  base::UmaHistogramBoolean(FullName(kFoundUwsReadErrorMetricName),
+                            parse_error);
 }
 
 void ReporterHistogramRecorder::RecordMemoryUsage() const {
@@ -160,17 +172,19 @@ void ReporterHistogramRecorder::RecordMemoryUsage() const {
                                &memory_used) != ERROR_SUCCESS) {
     return;
   }
-  RecordMemoryKBHistogram(kMemoryUsedMetricName, memory_used);
+  base::UmaHistogramMemoryKB(FullName(kMemoryUsedMetricName), memory_used);
   reporter_key.DeleteValue(chrome_cleaner::kMemoryUsedValueName);
 }
 
 void ReporterHistogramRecorder::RecordRuntime(
     const base::TimeDelta& reporter_running_time,
     const base::TimeDelta& running_time_without_sleep) const {
-  RecordLongTimesHistogram("SoftwareReporter.RunningTimeAccordingToChrome2",
-                           reporter_running_time);
-  RecordLongTimesHistogram("SoftwareReporter.RunningTimeWithoutSleep2",
-                           running_time_without_sleep);
+  base::UmaHistogramLongTimes(
+      FullName("SoftwareReporter.RunningTimeAccordingToChrome2"),
+      reporter_running_time);
+  base::UmaHistogramLongTimes(
+      FullName("SoftwareReporter.RunningTimeWithoutSleep2"),
+      running_time_without_sleep);
 
   // TODO(b/641081): This should only have KEY_QUERY_VALUE and KEY_SET_VALUE.
   base::win::RegKey reporter_key;
@@ -186,8 +200,7 @@ void ReporterHistogramRecorder::RecordRuntime(
 
 void ReporterHistogramRecorder::RecordLogsUploadEnabled(
     SwReporterLogsUploadsEnabled value) const {
-  RecordEnumerationHistogram(kLogsUploadEnabledMetricName, value,
-                             REPORTER_LOGS_UPLOADS_MAX);
+  base::UmaHistogramEnumeration(FullName(kLogsUploadEnabledMetricName), value);
 }
 
 void ReporterHistogramRecorder::RecordLogsUploadResult() const {
@@ -195,94 +208,46 @@ void ReporterHistogramRecorder::RecordLogsUploadResult() const {
   DWORD logs_upload_result = 0;
   if (reporter_key.Open(HKEY_CURRENT_USER, registry_key_.c_str(),
                         KEY_QUERY_VALUE | KEY_SET_VALUE) != ERROR_SUCCESS) {
-    RecordEnumerationHistogram(
-        kLogsUploadResultRegistryErrorMetricName,
-        REPORTER_LOGS_UPLOAD_RESULT_ERROR_REGISTRY_KEY_INVALID,
-        REPORTER_LOGS_UPLOAD_RESULT_ERROR_MAX);
+    base::UmaHistogramEnumeration(
+        FullName(kLogsUploadResultRegistryErrorMetricName),
+        LogsUploadResultRegistryError::REGISTRY_KEY_INVALID);
     return;
   }
 
   if (reporter_key.ReadValueDW(chrome_cleaner::kLogsUploadResultValueName,
                                &logs_upload_result) != ERROR_SUCCESS) {
-    RecordEnumerationHistogram(
-        kLogsUploadResultRegistryErrorMetricName,
-        REPORTER_LOGS_UPLOAD_RESULT_ERROR_VALUE_NOT_FOUND,
-        REPORTER_LOGS_UPLOAD_RESULT_ERROR_MAX);
+    base::UmaHistogramEnumeration(
+        FullName(kLogsUploadResultRegistryErrorMetricName),
+        LogsUploadResultRegistryError::VALUE_NOT_FOUND);
     return;
   }
 
-  if (logs_upload_result >= kSwReporterLogsUploadResultMax) {
-    RecordEnumerationHistogram(
-        kLogsUploadResultRegistryErrorMetricName,
-        REPORTER_LOGS_UPLOAD_RESULT_ERROR_VALUE_OUT_OF_BOUNDS,
-        REPORTER_LOGS_UPLOAD_RESULT_ERROR_MAX);
+  if (logs_upload_result < 0 ||
+      logs_upload_result >= static_cast<DWORD>(LogsUploadResult::kMaxValue)) {
+    base::UmaHistogramEnumeration(
+        FullName(kLogsUploadResultRegistryErrorMetricName),
+        LogsUploadResultRegistryError::VALUE_OUT_OF_BOUNDS);
     return;
   }
 
-  RecordEnumerationHistogram(kLogsUploadResultMetricName,
-                             static_cast<Sample>(logs_upload_result),
-                             kSwReporterLogsUploadResultMax);
+  base::UmaHistogramEnumeration(
+      FullName(kLogsUploadResultMetricName),
+      static_cast<LogsUploadResult>(logs_upload_result));
   reporter_key.DeleteValue(chrome_cleaner::kLogsUploadResultValueName);
-  RecordEnumerationHistogram(kLogsUploadResultRegistryErrorMetricName,
-                             REPORTER_LOGS_UPLOAD_RESULT_ERROR_NO_ERROR,
-                             REPORTER_LOGS_UPLOAD_RESULT_ERROR_MAX);
+  base::UmaHistogramEnumeration(
+      FullName(kLogsUploadResultRegistryErrorMetricName),
+      LogsUploadResultRegistryError::NO_ERROR);
 }
 
 void ReporterHistogramRecorder::RecordCreateJobResult(DWORD result) const {
-  RecordSparseHistogram("SoftwareReporter.CreateJobResult", result);
+  base::UmaHistogramSparse(FullName("SoftwareReporter.CreateJobResult"),
+                           result);
 }
 
 std::string ReporterHistogramRecorder::FullName(const std::string& name) const {
   if (suffix_.empty())
     return name;
-  return base::StringPrintf("%s_%s", name.c_str(), suffix_.c_str());
-}
-
-void ReporterHistogramRecorder::RecordBooleanHistogram(const std::string& name,
-                                                       bool sample) const {
-  auto* histogram =
-      base::BooleanHistogram::FactoryGet(FullName(name), kUmaHistogramFlag);
-  if (histogram)
-    histogram->AddBoolean(sample);
-}
-
-void ReporterHistogramRecorder::RecordEnumerationHistogram(
-    const std::string& name,
-    Sample sample,
-    Sample boundary) const {
-  // See HISTOGRAM_ENUMERATION_WITH_FLAG for the parameters to |FactoryGet|.
-  auto* histogram = base::LinearHistogram::FactoryGet(
-      FullName(name), 1, boundary, boundary + 1, kUmaHistogramFlag);
-  if (histogram)
-    histogram->Add(sample);
-}
-
-void ReporterHistogramRecorder::RecordLongTimesHistogram(
-    const std::string& name,
-    const base::TimeDelta& sample) const {
-  // See UMA_HISTOGRAM_LONG_TIMES for the parameters to |FactoryTimeGet|.
-  auto* histogram =
-      base::Histogram::FactoryTimeGet(FullName(name), base::Milliseconds(1),
-                                      base::Hours(1), 100, kUmaHistogramFlag);
-  if (histogram)
-    histogram->AddTime(sample);
-}
-
-void ReporterHistogramRecorder::RecordMemoryKBHistogram(const std::string& name,
-                                                        Sample sample) const {
-  // See UMA_HISTOGRAM_MEMORY_KB for the parameters to |FactoryGet|.
-  auto* histogram = base::Histogram::FactoryGet(FullName(name), 1000, 500000,
-                                                50, kUmaHistogramFlag);
-  if (histogram)
-    histogram->Add(sample);
-}
-
-void ReporterHistogramRecorder::RecordSparseHistogram(const std::string& name,
-                                                      Sample sample) const {
-  auto* histogram =
-      base::SparseHistogram::FactoryGet(FullName(name), kUmaHistogramFlag);
-  if (histogram)
-    histogram->Add(sample);
+  return base::StrCat({name, "_", suffix_});
 }
 
 }  // namespace safe_browsing

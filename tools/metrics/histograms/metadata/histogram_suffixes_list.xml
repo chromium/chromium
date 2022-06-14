@@ -9978,21 +9978,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.SSLProtocolErrorReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SoftwareReporterEngine" separator="_">
-  <suffix name="ESET" label=""/>
-  <suffix name="URZA" label=""/>
-  <affected-histogram name="SoftwareReporter.CreateJobResult"/>
-  <affected-histogram name="SoftwareReporter.FoundUwSReadError"/>
-  <affected-histogram name="SoftwareReporter.LogsUploadEnabled"/>
-  <affected-histogram name="SoftwareReporter.LogsUploadResult"/>
-  <affected-histogram name="SoftwareReporter.LogsUploadResultRegistryError"/>
-  <affected-histogram name="SoftwareReporter.MajorVersion"/>
-  <affected-histogram name="SoftwareReporter.MemoryUsed"/>
-  <affected-histogram name="SoftwareReporter.MinorVersion"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeAccordingToChrome2"/>
-  <affected-histogram name="SoftwareReporter.RunningTimeWithoutSleep2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SpdyImpact" separator="_">
   <suffix name="npn_with_http"
       label="with NPN negotiated but using HTTP instead of SPDY"/>
