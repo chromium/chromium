@@ -3155,10 +3155,13 @@ Press an assigned switch or key to remove assignment.
     Set a PIN or password
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE" desc="The subtitle of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
-    This PIN or password protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, including any content you stream from your phone.
+    This PIN or password protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, including any information you access from your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION" desc="The instruction message of the screen lock dialog.">
     Choose either one each time you sign in
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_ICON_INSTRUCTION" desc="The icon instruction message of the screen lock dialog.">
+    If Smart Lock is turned on, you won't need to enter a PIN or password
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on

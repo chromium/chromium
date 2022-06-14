@@ -124,6 +124,13 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       },
 
       /** @private */
+      isSetupScreenLockInProgress_: {
+        type: Boolean,
+        computed: 'computeIsSetupScreenLockInProgress_(flowState_)',
+        reflectToAttribute: true,
+      },
+
+      /** @private */
       didSetupAttemptFail_: {
         type: Boolean,
         computed: 'computeDidSetupAttemptFail_(setupState_)',
@@ -377,6 +384,14 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
    * @return {boolean}
    * @private
    */
+  computeIsSetupScreenLockInProgress_() {
+    return this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   computeHasCompletedSetupSuccessfully_() {
     return this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY;
   }
@@ -603,6 +618,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
    */
   computeShouldShowLearnMoreButton_() {
     return this.flowState_ === SetupFlowStatus.INTRO ||
+        this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN ||
         this.setupState_ ===
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE;
   }
