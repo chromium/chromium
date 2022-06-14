@@ -178,7 +178,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1231024")
     public void testBackPressCloseDialog() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
