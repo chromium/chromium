@@ -1555,6 +1555,7 @@ android_library("chrome_test_java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:javatests",
     "//components/browser_ui/widget/android:test_support_java",
     "//components/commerce/core:proto_java",
     "//components/commerce/core/android:core_java",
@@ -3143,13 +3144,9 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//chrome/browser/ui/messages/android:unit_device_javatests",
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
-    "//components/browser_ui/widget/android:unit_device_javatests",
   ]
-
-  data_deps = [
-    "//testing/buildbot/filters:chrome_public_unit_test_apk_filters",
-    "//ui/base:goldctl",
-  ]
+  data_deps =
+      [ "//testing/buildbot/filters:chrome_public_unit_test_apk_filters" ]
 
   # Required by //build/config/android/test/resource_overlay:javatests
   enforce_resource_overlays_in_tests = true
