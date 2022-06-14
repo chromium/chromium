@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <atomic>
 #include <limits>
 #include <memory>
 
@@ -33,6 +34,18 @@ const CFStringRef kMessageLoopExclusiveRunLoopMode =
     CFSTR("kMessageLoopExclusiveRunLoopMode");
 
 namespace {
+
+// Enables two optimizations in MessagePumpCFRunLoop:
+// - Skip calling CFRunLoopTimerSetNextFireDate if the next delayed wake up
+//  time hasn't changed.
+// - Cancel an already scheduled timer wake up if there is no delayed work.
+const base::Feature kMessagePumpMacDelayedWorkOptimizations{
+    "MessagePumpMacDelayedWorkOptimizations",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Caches the state of the "MessagePumpMacDelayedWorkOptimizations"
+// feature for efficiency.
+std::atomic_bool g_enable_optimizations = false;
 
 // Mask that determines which modes to use.
 enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
@@ -180,20 +193,38 @@ void MessagePumpCFRunLoopBase::ScheduleWork() {
 void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
     const Delegate::NextWorkInfo& next_work_info) {
   DCHECK(!next_work_info.is_immediate());
-  if (!next_work_info.delayed_run_time.is_max())
-    ScheduleDelayedWorkImpl(next_work_info.remaining_delay());
-}
 
-void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
-  // The tolerance needs to be set before the fire date or it may be ignored.
-
-  if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
-    CFRunLoopTimerSetTolerance(delayed_work_timer_, delta.InSecondsF() * 0.5);
+  if (g_enable_optimizations.load(std::memory_order_relaxed)) {
+    // No-op if the delayed run time hasn't changed.
+    if (next_work_info.delayed_run_time == delayed_work_scheduled_at_)
+      return;
   } else {
-    CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
+    // Preserve the old behavior of not adjusting the timer when
+    // `delayed_run_time.is_max()`.
+    //
+    // TODO(crbug.com/1335524): Remove this once the
+    // "MessagePumpMacDelayedWorkOptimizations" feature is shipped.
+    if (next_work_info.delayed_run_time.is_max())
+      return;
   }
-  CFRunLoopTimerSetNextFireDate(
-      delayed_work_timer_, CFAbsoluteTimeGetCurrent() + delta.InSecondsF());
+
+  if (next_work_info.delayed_run_time.is_max()) {
+    CFRunLoopTimerSetNextFireDate(delayed_work_timer_, kCFTimeIntervalMax);
+  } else {
+    const double delay_seconds = next_work_info.remaining_delay().InSecondsF();
+
+    // The tolerance needs to be set before the fire date or it may be ignored.
+    if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
+      CFRunLoopTimerSetTolerance(delayed_work_timer_, delay_seconds * 0.5);
+    } else {
+      CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
+    }
+
+    CFRunLoopTimerSetNextFireDate(delayed_work_timer_,
+                                  CFAbsoluteTimeGetCurrent() + delay_seconds);
+  }
+
+  delayed_work_scheduled_at_ = next_work_info.delayed_run_time;
 }
 
 void MessagePumpCFRunLoopBase::SetTimerSlack(TimerSlack timer_slack) {
@@ -293,6 +324,13 @@ MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
   CFRelease(run_loop_);
 }
 
+// static
+void MessagePumpCFRunLoopBase::InitializeFeatures() {
+  g_enable_optimizations.store(
+      base::FeatureList::IsEnabled(kMessagePumpMacDelayedWorkOptimizations),
+      std::memory_order_relaxed);
+}
+
 void MessagePumpCFRunLoopBase::OnAttach() {
   CHECK_EQ(nesting_level_, 0);
   // On iOS: the MessagePump is attached while it's already running.
@@ -379,6 +417,8 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
   // The timer fired, assume we have work and let RunWork() figure out what to
   // do and what to schedule after.
   base::mac::CallWithEHFrame(^{
+    DCHECK_GE(base::TimeTicks::Now(), self->delayed_work_scheduled_at_);
+    self->delayed_work_scheduled_at_ = base::TimeTicks::Max();
     self->RunWork();
   });
 }
@@ -425,8 +465,10 @@ bool MessagePumpCFRunLoopBase::RunWork() {
     return true;
   }
 
-  if (!next_work_info.delayed_run_time.is_max())
-    ScheduleDelayedWorkImpl(next_work_info.remaining_delay());
+  // This adjusts the next delayed wake up time (potentially cancels an already
+  // scheduled wake up if there is no delayed work).
+  ScheduleDelayedWork(next_work_info);
+
   return false;
 }
 

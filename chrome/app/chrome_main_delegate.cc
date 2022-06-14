@@ -109,6 +109,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
+#include "base/message_loop/message_pump_mac.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/mac/relauncher.h"
@@ -794,6 +795,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
 #if BUILDFLAG(IS_MAC)
   base::PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+  base::MessagePumpCFRunLoopBase::InitializeFeatures();
 #endif
 }
 
