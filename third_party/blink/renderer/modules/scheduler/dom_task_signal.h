@@ -36,7 +36,7 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
   AtomicString priority();
   DEFINE_ATTRIBUTE_EVENT_LISTENER(prioritychange, kPrioritychange)
 
-  void AddPriorityChangeAlgorithm(base::OnceClosure algorithm);
+  void AddPriorityChangeAlgorithm(base::RepeatingClosure algorithm);
   void SignalPriorityChange(const AtomicString& priority, ExceptionState&);
 
   bool IsTaskSignal() const override { return true; }
@@ -53,7 +53,7 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
   PriorityChangeStatus priority_change_status_ =
       PriorityChangeStatus::kNoPriorityChange;
 
-  Vector<base::OnceClosure> priority_change_algorithms_;
+  Vector<base::RepeatingClosure> priority_change_algorithms_;
 
   bool is_priority_changing_ = false;
 };
