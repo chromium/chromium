@@ -28,11 +28,9 @@
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/background_tracing_utils.h"
-#include "components/tracing/common/pref_names.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
@@ -107,13 +105,6 @@ class DevicePolicyObserver {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
-
-void ChromeTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
-  // TODO(ssid): This is no longer used, remove the pref once the new one is
-  // stable.
-  registry->RegisterInt64Pref(prefs::kBackgroundTracingLastUpload, 0);
-  tracing::RegisterPrefs(registry);
-}
 
 ChromeTracingDelegate::ChromeTracingDelegate() {
   // Ensure that this code is called on the UI thread, except for

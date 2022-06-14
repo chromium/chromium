@@ -1022,8 +1022,6 @@ extern const char kLacrosAccessibilityVirtualKeyboardEnabled[];
 extern const char kLacrosDockedMagnifierEnabled[];
 #endif
 
-extern const char kBackgroundTracingLastUpload[];
-
 extern const char kAllowDinosaurEasterEgg[];
 
 #if BUILDFLAG(IS_ANDROID)

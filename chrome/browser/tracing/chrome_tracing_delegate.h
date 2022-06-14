@@ -18,8 +18,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif
 
-class PrefRegistrySimple;
-
 namespace base {
 class Value;
 }
@@ -34,8 +32,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
  public:
   ChromeTracingDelegate();
   ~ChromeTracingDelegate() override;
-
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Returns if the tracing session is allowed to begin. Also updates the
   // background tracing state in prefs using BackgroundTracingStateManager. So,

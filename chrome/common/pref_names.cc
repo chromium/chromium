@@ -3043,8 +3043,6 @@ const char kLacrosAccessibilityVirtualKeyboardEnabled[] =
     "lacros.settings.a11y.virtual_keyboard";
 #endif
 
-const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
-
 const char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
 
 #if BUILDFLAG(IS_ANDROID)

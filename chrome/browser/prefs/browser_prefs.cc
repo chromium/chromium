@@ -150,6 +150,7 @@
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_prefs.h"
+#include "components/tracing/common/pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/update_client/update_client.h"
 #include "components/variations/service/variations_service.h"
@@ -742,6 +743,9 @@ const char kNativeBridge64BitSupportExperimentEnabled[] =
 const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+// Deprecated 06/2022.
+const char kBackgroundTracingLastUpload[] = "background_tracing.last_upload";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -795,6 +799,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kNativeBridge64BitSupportExperimentEnabled,
                                 false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 06/2022.
+  registry->RegisterInt64Pref(kBackgroundTracingLastUpload, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -980,7 +987,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chrome_labs_prefs::RegisterLocalStatePrefs(registry);
 #endif
   ChromeMetricsServiceClient::RegisterPrefs(registry);
-  ChromeTracingDelegate::RegisterPrefs(registry);
   chrome::enterprise_util::RegisterLocalStatePrefs(registry);
   component_updater::RegisterPrefs(registry);
   embedder_support::OriginTrialPrefs::RegisterPrefs(registry);
@@ -1019,6 +1025,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   SSLConfigServiceManager::RegisterPrefs(registry);
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(registry);
   SystemNetworkContextManager::RegisterPrefs(registry);
+  tracing::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
 
@@ -1645,6 +1652,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 05/2022.
   local_state->ClearPref(kNativeBridge64BitSupportExperimentEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 06/2022.
+  local_state->ClearPref(kBackgroundTracingLastUpload);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
