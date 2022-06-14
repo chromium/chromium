@@ -129,11 +129,14 @@ void ModelExecutionManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   new_metadata->CopyFrom(metadata);
   new_segment_info.set_model_version(model_version);
 
-  if (!old_model_version.has_value() ||
-      old_model_version.value() != model_version) {
-    new_segment_info.set_model_update_time_s(
-        clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  int64_t new_model_update_time_s =
+      clock_->Now().ToDeltaSinceWindowsEpoch().InSeconds();
+  if (old_model_version.has_value() &&
+      old_model_version.value() == model_version &&
+      old_segment_info->has_model_update_time_s()) {
+    new_model_update_time_s = old_segment_info->model_update_time_s();
   }
+  new_segment_info.set_model_update_time_s(new_model_update_time_s);
 
   // We have a valid segment id, and the new metadata was valid, therefore the
   // new metadata should be valid. We are not allowed to invoke the callback
