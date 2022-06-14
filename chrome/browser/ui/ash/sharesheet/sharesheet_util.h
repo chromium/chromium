@@ -28,6 +28,7 @@ enum SharesheetViewID {
   // sharesheet.
   TARGETS_DEFAULT_VIEW_ID,
   HEADER_VIEW_TEXT_PREVIEW_ID,
+  SHARE_ACTION_VIEW_ID,
 };
 
 std::unique_ptr<views::Label> CreateShareLabel(

@@ -217,8 +217,12 @@ void SharesheetService::ShowBubbleForTesting(
     bool contains_hosted_document,
     LaunchSource source,
     DeliveredCallback delivered_callback,
-    CloseCallback close_callback) {
+    CloseCallback close_callback,
+    int num_actions_to_add) {
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
+  for (int i = 0; i < num_actions_to_add; ++i) {
+    share_action_cache_->AddShareActionForTesting();  // IN-TEST
+  }
   auto targets = GetActionsForIntent(intent, contains_hosted_document);
   OnReadyToShowBubble(native_window, std::move(intent),
                       std::move(delivered_callback), std::move(close_callback),
@@ -434,6 +438,8 @@ void SharesheetService::RecordUserActionMetrics(
                  IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kCopyAction);
+  } else if (target_name == u"example") {
+    // This is a test. Do nothing.
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Should be an app if we reached here.
@@ -508,6 +514,8 @@ void SharesheetService::RecordShareActionMetrics(
                  IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL)) {
     SharesheetMetrics::RecordSharesheetShareAction(
         SharesheetMetrics::UserAction::kCopyAction);
+  } else if (target_name == u"example") {
+    // This is a test. Do nothing.
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     NOTREACHED();

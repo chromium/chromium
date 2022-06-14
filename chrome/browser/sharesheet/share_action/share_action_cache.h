@@ -42,6 +42,8 @@ class ShareActionCache {
   const gfx::VectorIcon* GetVectorIconFromName(
       const std::u16string& display_name);
 
+  void AddShareActionForTesting();
+
  private:
   void AddShareAction(std::unique_ptr<ShareAction> action);
 

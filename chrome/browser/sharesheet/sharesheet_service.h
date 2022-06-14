@@ -125,7 +125,8 @@ class SharesheetService : public KeyedService {
                             bool contains_hosted_document,
                             LaunchSource source,
                             DeliveredCallback delivered_callback,
-                            CloseCallback close_callback);
+                            CloseCallback close_callback,
+                            int num_actions_to_add);
   SharesheetUiDelegate* GetUiDelegateForTesting(
       gfx::NativeWindow native_window);
   static void SetSelectedAppForTesting(const std::u16string& target_name);
