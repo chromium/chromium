@@ -117,6 +117,8 @@ class SidePanelContentSwappingContainer : public views::View {
     }
   }
 
+  SidePanelEntry* loading_entry() const { return loading_entry_; }
+
  private:
   void RunLoadedCallback() {
     DCHECK(!loaded_callback_.is_null());
@@ -186,14 +188,6 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
         feature_engagement::kIPHReadingListInSidePanelFeature);
   }
 
-  // Ensure that the correct combobox entry is selected. This may not be the
-  // case if `Show()` was called after registering a contextual entry.
-  if (entry_id.has_value()) {
-    DCHECK(header_combobox_);
-    header_combobox_->SetSelectedIndex(
-        combobox_model_->GetIndexForId(entry_id.value()));
-  }
-
   SidePanelContentSwappingContainer* content_wrapper =
       static_cast<SidePanelContentSwappingContainer*>(
           GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
@@ -258,7 +252,12 @@ void SidePanelCoordinator::SetNoDelaysForTesting() {
   no_delays_for_testing_ = true;
 }
 
-views::View* SidePanelCoordinator::GetContentView() {
+SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
+    const {
+  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
+}
+
+views::View* SidePanelCoordinator::GetContentView() const {
   return browser_view_->right_aligned_side_panel()->GetViewByID(
       kSidePanelContentViewId);
 }
@@ -307,6 +306,12 @@ void SidePanelCoordinator::PopulateSidePanel(
   if (current_entry_.get() == entry) {
     return;
   }
+
+  // Ensure that the correct combobox entry is selected. This may not be the
+  // case if `Show()` was called after registering a contextual entry.
+  DCHECK(header_combobox_);
+  header_combobox_->SetSelectedIndex(
+      combobox_model_->GetIndexForId(entry->id()));
 
   auto* content_wrapper =
       GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
@@ -365,6 +370,18 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetLastActiveEntryId()
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetSelectedId() const {
   if (!header_combobox_)
     return absl::nullopt;
+
+  // If we are waiting on content swapping delays we want to return the id for
+  // the entry we are attempting to swap to.
+  const SidePanelContentSwappingContainer* content_wrapper =
+      static_cast<SidePanelContentSwappingContainer*>(
+          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
+  DCHECK(content_wrapper);
+  if (const auto* entry = content_wrapper->loading_entry())
+    return entry->id();
+
+  // If we are not waiting on content swapping we want to return the active
+  // selected entry id.
   return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
 }
 
@@ -411,14 +428,14 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 
 std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   auto combobox = std::make_unique<views::Combobox>(combobox_model_.get());
+  combobox->SetMenuSelectionAtCallback(
+      base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
+                          base::Unretained(this)));
   combobox->SetSelectedIndex(combobox_model_->GetIndexForId(
       GetLastActiveEntryId().value_or(kDefaultEntry)));
   // TODO(corising): Replace this with something appropriate.
   combobox->SetAccessibleName(
       combobox_model_->GetItemAt(combobox->GetSelectedIndex()));
-
-  combobox->SetCallback(base::BindRepeating(
-      &SidePanelCoordinator::OnComboboxChanged, base::Unretained(this)));
   combobox->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -429,10 +446,10 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   return combobox;
 }
 
-void SidePanelCoordinator::OnComboboxChanged() {
-  SidePanelEntry::Id entry_id =
-      combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
+bool SidePanelCoordinator::OnComboboxChangeTriggered(int index) {
+  SidePanelEntry::Id entry_id = combobox_model_->GetIdAt(index);
   Show(entry_id);
+  return true;
 }
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,9 +14,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
@@ -678,4 +683,84 @@ TEST_F(SidePanelCoordinatorTest,
   // Verify that the previous entry has deregistered.
   EXPECT_FALSE(
       contextual_registries_[0]->GetEntryForId(SidePanelEntry::Id::kAssistant));
+}
+
+// Test that the SidePanelCoordinator behaves and updates corrected when dealing
+// with entries that load/display asynchronously.
+class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures({features::kUnifiedSidePanel}, {});
+    TestWithBrowserView::SetUp();
+
+    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+
+    coordinator_ = browser_view()->side_panel_coordinator();
+    global_registry_ = coordinator_->GetGlobalSidePanelRegistry();
+
+    // Add a kSideSearch entry to the global registry with loading content not
+    // available.
+    std::unique_ptr<SidePanelEntry> entry1 = std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kSideSearch, u"testing1",
+        ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+        base::BindRepeating([]() {
+          auto view = std::make_unique<views::View>();
+          SidePanelUtil::GetSidePanelContentProxy(view.get())
+              ->SetAvailable(false);
+          return view;
+        }));
+    loading_content_entry1_ = entry1.get();
+    global_registry_->Register(std::move(entry1));
+
+    // Add a kLens entry to the global registry with loading content not
+    // available.
+    std::unique_ptr<SidePanelEntry> entry2 = std::make_unique<SidePanelEntry>(
+        SidePanelEntry::Id::kLens, u"testing2",
+        ui::ImageModel::FromVectorIcon(kReadLaterIcon, ui::kColorIcon),
+        base::BindRepeating([]() {
+          auto view = std::make_unique<views::View>();
+          SidePanelUtil::GetSidePanelContentProxy(view.get())
+              ->SetAvailable(false);
+          return view;
+        }));
+    loading_content_entry2_ = entry2.get();
+    global_registry_->Register(std::move(entry2));
+  }
+
+  raw_ptr<SidePanelEntry> loading_content_entry1_;
+  raw_ptr<SidePanelEntry> loading_content_entry2_;
+};
+
+TEST_F(SidePanelCoordinatorLoadingContentTest,
+       ContentAndComboboxDelayForLoadingContent) {
+  coordinator_->Show(loading_content_entry1_->id());
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+  // A loading entry's view should be stored as the cached view and be
+  // unavailable.
+  views::View* loading_content = loading_content_entry1_->CachedView();
+  EXPECT_NE(loading_content, nullptr);
+  SidePanelContentProxy* loading_content_proxy =
+      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+  EXPECT_FALSE(loading_content_proxy->IsAvailable());
+  // Set the content proxy to available.
+  loading_content_proxy->SetAvailable(true);
+  EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  // Switch to another entry that has loading content.
+  coordinator_->Show(loading_content_entry2_->id());
+  EXPECT_TRUE(GetLastActiveEntryId().has_value());
+  EXPECT_EQ(GetLastActiveEntryId().value(), loading_content_entry1_->id());
+  loading_content = loading_content_entry2_->CachedView();
+  EXPECT_NE(loading_content, nullptr);
+  loading_content_proxy =
+      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+  EXPECT_FALSE(loading_content_proxy->IsAvailable());
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry1_->id());
+  // Set as available and make sure the combobox has updated.
+  loading_content_proxy->SetAvailable(true);
+  EXPECT_EQ(coordinator_->GetComboboxDisplayedEntryIdForTesting(),
+            loading_content_entry2_->id());
 }

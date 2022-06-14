@@ -52,6 +52,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
     return current_entry_.get();
   }
 
+  SidePanelEntry::Id GetComboboxDisplayedEntryIdForTesting() const;
+
  private:
   friend class SidePanelCoordinatorTest;
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
@@ -59,7 +61,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            PopulateUserNoteSidePanel);
 
-  views::View* GetContentView();
+  views::View* GetContentView() const;
   SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);
 
   // Creates header and SidePanelEntry content container within the side panel.
@@ -88,7 +90,12 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   std::unique_ptr<views::View> CreateHeader();
   std::unique_ptr<views::Combobox> CreateCombobox();
-  void OnComboboxChanged();
+
+  // This is called after a user has made a selection in the combobox dropdown
+  // and before any selected id and combobox model change takes place. This
+  // allows us to make the entry displayed in the combobox follow the same
+  // delays as the side panel content when there are delays for loading content.
+  bool OnComboboxChangeTriggered(int index);
 
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelEntry* entry) override;
