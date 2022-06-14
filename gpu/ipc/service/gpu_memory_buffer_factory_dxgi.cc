@@ -27,7 +27,9 @@ GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
 Microsoft::WRL::ComPtr<ID3D11Device>
 GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!d3d11_device_) {
+  if (!d3d11_device_ || FAILED(d3d11_device_->GetDeviceRemovedReason())) {
+    // Reset device if it was removed.
+    d3d11_device_ = nullptr;
     // Use same adapter as ANGLE device.
     auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
     if (!angle_d3d11_device) {
