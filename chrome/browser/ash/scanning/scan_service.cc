@@ -380,6 +380,7 @@ void ScanService::CompleteMultiPageScan() {
 
 void ScanService::BindInterface(
     mojo::PendingReceiver<mojo_ipc::ScanService> pending_receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));
 }
 
