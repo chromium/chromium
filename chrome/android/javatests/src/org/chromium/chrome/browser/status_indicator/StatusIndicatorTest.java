@@ -202,6 +202,7 @@ public class StatusIndicatorTest {
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:start_surface_variation/single"})
+    @DisabledTest(message = "https://crbug.com/1109965")
     public void testShowAndHideOnStartSurface() {
         // clang-format on
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
@@ -254,6 +255,7 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1109965")
     public void testShowAndHideOnNTP() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -298,6 +300,7 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1109965")
     public void testShowAndHideOnRecentTabsPage() {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
