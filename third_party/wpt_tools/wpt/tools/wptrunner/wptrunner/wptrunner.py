@@ -230,6 +230,7 @@ def run_test_iteration(test_status, test_loader, test_source_kwargs, test_source
                           run_test_kwargs["restart_on_unexpected"],
                           run_test_kwargs["debug_info"],
                           not run_test_kwargs["no_capture_stdio"],
+                          run_test_kwargs["restart_on_new_group"],
                           recording=recording) as manager_group:
             try:
                 manager_group.run(test_type, run_tests)
