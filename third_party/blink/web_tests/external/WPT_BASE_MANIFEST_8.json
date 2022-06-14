@@ -5211,6 +5211,13 @@
       {}
      ]
     ],
+    "console-log-shadowrealm-manual.html": [
+     "b091a850c0c94fd7c97ba1670e3ee6fe4daa4613",
+     [
+      null,
+      {}
+     ]
+    ],
     "console-number-format-specifiers-symbol-manual.html": [
      "f77b84e51595f3c0d7613072e82c8476caa322da",
      [
@@ -306436,7 +306443,7 @@
        []
       ],
       "common.js": [
-       "ff6be1bbe53545e4ef64b31e7969e640cf59c3b0",
+       "c898207fd9593fb3e566bd24bf4dbf0baec1bbf6",
        []
       ],
       "coop-coep.py": [
@@ -306453,10 +306460,6 @@
       ],
       "fully-loaded.js": [
        "d40e00af432097e27d10295df5bbf349c6357c0d",
-       []
-      ],
-      "iframe-popup.sub.html": [
-       "30692e4730c77f7cfd36f74538f7544628aba71d",
        []
       ],
       "iframe-test.js": [
@@ -317750,7 +317753,7 @@
      []
     ],
     "console.idl": [
-     "7cd73a61764fc178294a9aecec5f4781256deec5",
+     "fdf1d0df978378903390421f3fe439e84bdc93b1",
      []
     ],
     "contact-api.idl": [
@@ -360062,14 +360065,39 @@
    },
    "console": {
     "console-is-a-namespace.any.js": [
-     "45c9c56c0e8d2b2300a0c1d51e45552605a253e2",
+     "1756ba6bc1b27d6b9398b4ce078a891b4a4540f5",
      [
       "console/console-is-a-namespace.any.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ],
+     [
+      "console/console-is-a-namespace.any.shadowrealm.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ],
      [
       "console/console-is-a-namespace.any.worker.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ]
     ],
     "console-label-conversion.any.js": [
@@ -360095,14 +360123,53 @@
      ]
     ],
     "console-tests-historical.any.js": [
-     "4c4d4c276d0cd4de4b7b2dc5ab71de6647cffaad",
+     "1b18a9879fb08075d68f04118690f25e34febd7c",
      [
       "console/console-tests-historical.any.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ],
+     [
+      "console/console-tests-historical.any.shadowrealm.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ],
      [
       "console/console-tests-historical.any.worker.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idlharness-shadowrealm.window.js": [
+     "8f68252dcd2b13d25f7e623495987517a3dea411",
+     [
+      "console/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
      ]
     ],
     "idlharness.any.js": [
@@ -395589,13 +395656,6 @@
     "cssom": {
      "CSS-namespace-object-class-string.html": [
       "31454670737057148701e7ae8314d8e4e4d63e57",
-      [
-       null,
-       {}
-      ]
-     ],
-     "CSSConditionRule-conditionText.html": [
-      "bccfc3135a4c80695b90638c42268f8a35d7f2fd",
       [
        null,
        {}
@@ -460280,147 +460340,231 @@
       ]
      },
      "iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html": [
-      "f05afaa1f273c9562ed314e73eb45e8a52939f11",
+      "099424790a5e88500dcc47147c25b04ff124bf17",
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin-allow-popups.https.html?9-last",
        {
         "timeout": "long"
        }
       ]
      ],
      "iframe-popup-same-origin-allow-popups-to-same-origin.https.html": [
-      "67cf8fd33c01f7a0beaddb257c8f4ef04cc490a8",
+      "34699c8d08460501175524d9b1bbf4dd5ab18bb4",
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-same-origin.https.html?9-last",
        {
         "timeout": "long"
        }
       ]
      ],
      "iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html": [
-      "94c08c262376baf79dc3283f55500a20bd3cec5d",
+      "29fb5cfa2df3513eab9c3fb51bc86e138f64002a",
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?9-last",
        {
         "timeout": "long"
        }
       ]
      ],
      "iframe-popup-same-origin-to-same-origin.https.html": [
-      "ae528208a23a2ee1d0859a211455dec13e44cb52",
+      "7d312565842ae1e5e773322c7c259c9fb548b838",
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?9-last",
        {
         "timeout": "long"
        }
       ]
      ],
      "iframe-popup-same-origin-to-unsafe-none.https.html": [
-      "c0f18016c2a60b1b603c55c27f2cdf3d2f2b6b1b",
+      "847f75665beb6ef3b7e90db143aacab99efe28c9",
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?9-last",
        {
         "timeout": "long"
        }
       ]
      ],
      "iframe-popup-unsafe-none-to-same-origin.https.html": [
-      "aa5871b0c9c6409432db815974b74f8ebcb56b81",
+      "8158b9f4d5a2b8a91831cbe1e9cc2e2e5fa197f2",
       [
-       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-same-origin.https.html?9-last",
        {
         "timeout": "long"
        }
       ]
      ],
      "iframe-popup-unsafe-none-to-unsafe-none.https.html": [
-      "ab6525971848685d47d98f13cb253b00964f4a64",
+      "74ceeb290d47ad0260a1ff3811bbb3fcdb5b69d6",
       [
-       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?1-3",
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?1-2",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?4-6",
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?3-4",
        {
         "timeout": "long"
        }
       ],
       [
-       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-last",
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?5-6",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?7-8",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "html/cross-origin-opener-policy/iframe-popup-unsafe-none-to-unsafe-none.https.html?9-last",
        {
         "timeout": "long"
        }
