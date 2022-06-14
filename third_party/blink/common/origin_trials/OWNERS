@@ -12,3 +12,5 @@ per-file manual_completion_origin_trial_features.cc=set noparent
 per-file manual_completion_origin_trial_features.cc=file://third_party/blink/common/origin_trials/OT_OWNERS
 per-file navigation_origin_trial_features.cc=set noparent
 per-file navigation_origin_trial_features.cc=file://third_party/blink/SECURITY_OWNERS
+per-file persistent_origin_trials.cc=set noparent
+per-file persistent_origin_trials.cc=file://third_party/blink/SECURITY_OWNERS

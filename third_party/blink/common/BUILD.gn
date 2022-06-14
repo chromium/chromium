@@ -187,6 +187,7 @@ source_set("common") {
     "notifications/platform_notification_data.cc",
     "origin_trials/manual_completion_origin_trial_features.cc",
     "origin_trials/navigation_origin_trial_features.cc",
+    "origin_trials/persistent_origin_trials.cc",
     "origin_trials/trial_token.cc",
     "origin_trials/trial_token_result.cc",
     "origin_trials/trial_token_validator.cc",

@@ -1713,6 +1713,12 @@
     // As above. Do not change this flag to stable, as it exists solely to
     // generate code used by the origin trials sample API implementation.
     {
+      name: "OriginTrialsSampleAPIPersistentFeature",
+      origin_trial_feature_name: "FrobulatePersistent",
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
+    {
       name: "OriginTrialsSampleAPIThirdParty",
       origin_trial_feature_name: "FrobulateThirdParty",
       origin_trial_allows_third_party: true,
