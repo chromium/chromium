@@ -673,35 +673,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnExport) {
-  SetUpPasswordStore({CreateSampleForm()});
-  StrictMock<base::MockCallback<base::OnceCallback<void(const std::string&)>>>
-      mock_accepted;
-
-  PasswordsPrivateDelegateImpl delegate(&profile_);
-  // Spin the loop to allow PasswordStore tasks posted on the creation of
-  // |delegate| to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  MockReauthCallback callback;
-  delegate.set_os_reauth_call(callback.Get());
-
-  EXPECT_CALL(mock_accepted, Run(std::string())).Times(2);
-
-  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(true); }));
-  delegate.ExportPasswords(mock_accepted.Get(), nullptr);
-
-  // Export should ignore previous reauthentication results.
-  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT, _))
-      .WillOnce(testing::WithArg<1>(
-          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
-                  callback) { std::move(callback).Run(true); }));
-  delegate.ExportPasswords(mock_accepted.Get(), nullptr);
-}
-
 TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
   SetUpPasswordStore({CreateSampleForm()});
   StrictMock<base::MockCallback<base::OnceCallback<void(const std::string&)>>>

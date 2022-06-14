@@ -10,9 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
-#include "components/password_manager/core/browser/ui/export_flow.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
-#include "components/password_manager/core/browser/ui/import_flow.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
@@ -28,9 +26,7 @@ class Profile;
 
 // Handles the exporting of passwords to a file, and the importing of such a
 // file to the Password Manager.
-class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
-                              public password_manager::ExportFlow,
-                              public password_manager::ImportFlow {
+class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
  public:
   using ProgressCallback =
       base::RepeatingCallback<void(password_manager::ExportProgressStatus,
@@ -47,21 +43,18 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
 
   ~PasswordManagerPorter() override;
 
-  void set_web_contents(content::WebContents* web_contents) {
-    web_contents_ = web_contents;
-  }
+  // Triggers passwords export flow for the given |web_contents|.
+  bool Export(content::WebContents* web_contents);
 
-  // password_manager::ExportFlow
-  bool Store() override;
-  void CancelStore() override;
-  password_manager::ExportProgressStatus GetExportProgressStatus() override;
+  void CancelExport();
+  password_manager::ExportProgressStatus GetExportProgressStatus();
 
   // The next export will use |exporter|, instead of creating a new instance.
   void SetExporterForTesting(
       std::unique_ptr<password_manager::PasswordManagerExporter> exporter);
 
-  // password_manager::ImportFlow
-  void Load() override;
+  // Triggers passwords import flow for the given |web_contents|.
+  void Import(content::WebContents* web_contents);
 
   // ImportPasswordsFromPathForTesting allows tests to call
   // ImportPasswordsFromPath without the need to trigger UI with file choosers.
@@ -104,9 +97,6 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
   // exporter, instead of creating a new instance.
   std::unique_ptr<password_manager::PasswordManagerExporter>
       exporter_for_testing_;
-
-  // Caching the current WebContents for when PresentFileSelector is called.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_H_

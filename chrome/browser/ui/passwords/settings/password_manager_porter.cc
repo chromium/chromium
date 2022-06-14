@@ -120,11 +120,7 @@ PasswordManagerPorter::PasswordManagerPorter(
 
 PasswordManagerPorter::~PasswordManagerPorter() = default;
 
-bool PasswordManagerPorter::Store() {
-  // In unittests a null WebContents means: "Abort creating the file Selector."
-  if (!web_contents_)
-    return true;
-
+bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
                        password_manager::ExportProgressStatus::IN_PROGRESS) {
     return false;
@@ -138,13 +134,13 @@ bool PasswordManagerPorter::Store() {
 
   // Start serialising while the user selects a file.
   exporter_->PreparePasswordsForExport();
-  PresentFileSelector(web_contents_,
+  PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_EXPORT);
 
   return true;
 }
 
-void PasswordManagerPorter::CancelStore() {
+void PasswordManagerPorter::CancelExport() {
   if (exporter_)
     exporter_->Cancel();
 }
@@ -160,9 +156,9 @@ void PasswordManagerPorter::SetExporterForTesting(
   exporter_for_testing_ = std::move(exporter);
 }
 
-void PasswordManagerPorter::Load() {
-  DCHECK(web_contents_);
-  PresentFileSelector(web_contents_,
+void PasswordManagerPorter::Import(content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  PresentFileSelector(web_contents,
                       PasswordManagerPorter::Type::PASSWORD_IMPORT);
 }
 

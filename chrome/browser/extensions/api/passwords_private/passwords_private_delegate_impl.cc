@@ -465,8 +465,7 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(
     content::WebContents* web_contents) {
-  password_manager_porter_->set_web_contents(web_contents);
-  password_manager_porter_->Load();
+  password_manager_porter_->Import(web_contents);
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(
@@ -486,7 +485,7 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
 }
 
 void PasswordsPrivateDelegateImpl::CancelExportPasswords() {
-  password_manager_porter_->CancelStore();
+  password_manager_porter_->CancelExport();
 }
 
 api::passwords_private::ExportProgressStatus
@@ -652,8 +651,7 @@ void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
     return;
   }
 
-  password_manager_porter_->set_web_contents(web_contents);
-  bool accepted = password_manager_porter_->Store();
+  bool accepted = password_manager_porter_->Export(web_contents);
   std::move(accepted_callback)
       .Run(accepted ? std::string() : kExportInProgress);
 }

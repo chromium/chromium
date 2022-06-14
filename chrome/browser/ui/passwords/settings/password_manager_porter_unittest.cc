@@ -238,8 +238,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PasswordManagerPorterTest, PasswordImport) {
   EXPECT_CALL(*password_manager_porter(), ImportPasswordsFromPath(_));
 
-  password_manager_porter()->set_web_contents(web_contents());
-  password_manager_porter()->Load();
+  password_manager_porter()->Import(web_contents());
 }
 
 TEST_F(PasswordManagerPorterTest, PasswordExport) {
@@ -251,9 +250,8 @@ TEST_F(PasswordManagerPorterTest, PasswordExport) {
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
   EXPECT_CALL(*mock_password_manager_exporter_, SetDestination(selected_file_));
 
-  porter.set_web_contents(web_contents());
   porter.SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter.Store();
+  porter.Export(web_contents());
 }
 
 TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
@@ -267,12 +265,11 @@ TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
   EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
 
-  porter.set_web_contents(web_contents());
   porter.SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter.Store();
+  porter.Export(web_contents());
 }
 
-TEST_F(PasswordManagerPorterTest, CancelStore) {
+TEST_F(PasswordManagerPorterTest, CancelExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
   PasswordManagerPorter porter(nullptr,
@@ -282,10 +279,9 @@ TEST_F(PasswordManagerPorterTest, CancelStore) {
   EXPECT_CALL(*mock_password_manager_exporter_, SetDestination(_));
   EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
 
-  porter.set_web_contents(web_contents());
   porter.SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter.Store();
-  porter.CancelStore();
+  porter.Export(web_contents());
+  porter.CancelExport();
 }
 
 struct FormDescription {
