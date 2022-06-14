@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
 #include "components/metrics/call_stack_profile_params.h"
@@ -20,9 +21,16 @@
 // snapshots for the current process.
 class HeapProfilerController {
  public:
-  // Returns true if heap profiling is enabled for the given `process_type`.
-  static bool IsProfilingEnabled(
-      metrics::CallStackProfileParams::Process process_type);
+  enum class ProfilingEnabled {
+    kNoController,
+    kDisabled,
+    kEnabled,
+  };
+
+  // Returns kEnabled if heap profiling is enabled, kDisabled if not. If no
+  // HeapProfilerController exists the profiling state is indeterminate so the
+  // function returns kNoController.
+  static ProfilingEnabled GetProfilingEnabled();
 
   // Checks if heap profiling should be enabled for this process. If so, starts
   // sampling heap allocations immediately but does not schedule snapshots of
@@ -123,10 +131,6 @@ class HeapProfilerController {
 
   static void RetrieveAndSendSnapshot(ProcessType process_type);
 
-  // On startup this will be determined randomly based on the current channel
-  // and the probability parameters of the HeapProfilerReporting feature.
-  const bool profiling_enabled_;
-
   const ProcessType process_type_;
 
   // This flag is set when the HeapProfilerController is torn down, to stop
@@ -135,6 +139,8 @@ class HeapProfilerController {
   // HeapProfilerController is deleted on the main thread.
   scoped_refptr<StoppedFlag> stopped_;
   bool suppress_randomness_for_testing_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_

@@ -34,6 +34,14 @@
 
 namespace {
 
+using ProfilingEnabled = HeapProfilerController::ProfilingEnabled;
+
+// Records whether heap profiling is enabled for this process.
+// HeapProfilerController will set this on creation, and reset it to
+// kNoController on destruction, so that it's always reset to the default
+// state after each unit test that creates a HeapProfilerController.
+ProfilingEnabled g_profiling_enabled = ProfilingEnabled::kNoController;
+
 using ProcessType = metrics::CallStackProfileParams::Process;
 
 // Platform-specific parameter defaults.
@@ -61,7 +69,7 @@ constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
 
 // Sets the chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.
-constexpr base::FeatureParam<double> kStableProbability{
+[[maybe_unused]] constexpr base::FeatureParam<double> kStableProbability {
   &HeapProfilerController::kHeapProfilerReporting, "stable-probability",
 #if BUILDFLAG(IS_ANDROID)
       // With stable-probability 0.01 we get about 4x as many records as before
@@ -75,7 +83,7 @@ constexpr base::FeatureParam<double> kStableProbability{
 
 // Sets the chance that this client will report heap samples through a metrics
 // provider if it's on a non-stable channel.
-constexpr base::FeatureParam<double> kNonStableProbability{
+[[maybe_unused]] constexpr base::FeatureParam<double> kNonStableProbability{
     &HeapProfilerController::kHeapProfilerReporting, "nonstable-probability",
     0.5};
 
@@ -122,14 +130,38 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
   }
 }
 
-bool DecideIfCollectionIsEnabled(version_info::Channel channel,
-                                 ProcessType process_type) {
-  if (!HeapProfilerController::IsProfilingEnabled(process_type))
-    return false;
+ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
+                                             ProcessType process_type) {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
+  // TODO(crbug.com/1297724): The POSIX implementation of
+  // ModuleCache::CreateModuleForAddress is stubbed out on ARM64, so all samples
+  // would lack module information (see base/profiler/module_cache_posix.cc).
+  // Without this the reports cannot be symbolized so no point in collecting
+  // them. If this is fixed, also re-enable the tests in
+  // heap_profiler_controller_unittests.cc.
+  return ProfilingEnabled::kDisabled;
+#else
+  if (!base::FeatureList::IsEnabled(
+          HeapProfilerController::kHeapProfilerReporting)) {
+    return ProfilingEnabled::kDisabled;
+  }
+  const char* process_string = ProcessParamString(process_type);
+  if (!process_string) {
+    // This process type is never supported.
+    return ProfilingEnabled::kDisabled;
+  }
+  const std::vector<std::string> supported_processes =
+      base::SplitString(kSupportedProcesses.Get(), ";", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  if (!base::Contains(supported_processes, process_string))
+    return ProfilingEnabled::kDisabled;
   const double probability = (channel == version_info::Channel::STABLE)
                                  ? kStableProbability.Get()
                                  : kNonStableProbability.Get();
-  return base::RandDouble() < probability;
+  if (base::RandDouble() >= probability)
+    return ProfilingEnabled::kDisabled;
+  return ProfilingEnabled::kEnabled;
+#endif
 }
 
 // Records a time histogram for the `interval` between snapshots, using the
@@ -181,46 +213,34 @@ HeapProfilerController::SnapshotParams::operator=(SnapshotParams&& other) =
     default;
 
 // static
-bool HeapProfilerController::IsProfilingEnabled(ProcessType process_type) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/1297724): The POSIX implementation of
-  // ModuleCache::CreateModuleForAddress is stubbed out on ARM64, so all samples
-  // would lack module information (see base/profiler/module_cache_posix.cc).
-  // Without this the reports cannot be symbolized so no point in collecting
-  // them. If this is fixed, also re-enable the tests in
-  // heap_profiler_controller_unittests.cc.
-  return false;
-#else
-  if (!base::FeatureList::IsEnabled(
-          HeapProfilerController::kHeapProfilerReporting)) {
-    return false;
-  }
-  const char* process_string = ProcessParamString(process_type);
-  if (!process_string) {
-    // This process type is never supported.
-    return false;
-  }
-  const std::vector<std::string> supported_processes =
-      base::SplitString(kSupportedProcesses.Get(), ";", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  return base::Contains(supported_processes, process_string);
-#endif
+ProfilingEnabled HeapProfilerController::GetProfilingEnabled() {
+  return g_profiling_enabled;
 }
 
 HeapProfilerController::HeapProfilerController(version_info::Channel channel,
                                                ProcessType process_type)
-    : profiling_enabled_(DecideIfCollectionIsEnabled(channel, process_type)),
-      process_type_(process_type),
-      stopped_(base::MakeRefCounted<StoppedFlag>()) {}
+    : process_type_(process_type),
+      stopped_(base::MakeRefCounted<StoppedFlag>()) {
+  // Only one HeapProfilerController should exist at a time in each
+  // process. The class is not a singleton so it can be created and
+  // destroyed in tests.
+  DCHECK_EQ(g_profiling_enabled, ProfilingEnabled::kNoController);
+  g_profiling_enabled = DecideIfCollectionIsEnabled(channel, process_type);
+}
 
 HeapProfilerController::~HeapProfilerController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   stopped_->data.Set();
+  g_profiling_enabled = ProfilingEnabled::kNoController;
 }
 
 void HeapProfilerController::StartIfEnabled() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool profiling_enabled =
+      g_profiling_enabled == ProfilingEnabled::kEnabled;
   base::UmaHistogramBoolean("HeapProfiling.InProcess.Enabled",
-                            profiling_enabled_);
-  if (!profiling_enabled_)
+                            profiling_enabled);
+  if (!profiling_enabled)
     return;
   int sampling_rate_bytes = kSamplingRateBytes.Get();
   if (sampling_rate_bytes > 0)

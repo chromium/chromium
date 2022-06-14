@@ -14,7 +14,6 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
@@ -69,18 +68,22 @@ void ChromeContentUtilityClient::UtilityThreadStarted() {
       base::CommandLine::ForCurrentProcess();
   const std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
-  if (process_type ==
-          switches::kUtilityProcess &&  // An in-process utility thread may run
-                                        // in other processes, only set up
-                                        // collector in a utility process.
-      (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
-       HeapProfilerController::IsProfilingEnabled(
-           GetProfileParamsProcess(*command_line)))) {
-    mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
-    content::ChildThread::Get()->BindHostReceiver(
-        collector.InitWithNewPipeAndPassReceiver());
-    metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
-        std::move(collector));
+  // An in-process utility thread may run in other processes, only set up
+  // collector in a utility process.
+  if (process_type == switches::kUtilityProcess) {
+    // The HeapProfilerController should have been created in
+    // ChromeMainDelegate::PostEarlyInitialization.
+    DCHECK_NE(HeapProfilerController::GetProfilingEnabled(),
+              HeapProfilerController::ProfilingEnabled::kNoController);
+    if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
+        HeapProfilerController::GetProfilingEnabled() ==
+            HeapProfilerController::ProfilingEnabled::kEnabled) {
+      mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
+      content::ChildThread::Get()->BindHostReceiver(
+          collector.InitWithNewPipeAndPassReceiver());
+      metrics::CallStackProfileBuilder::
+          SetParentProfileCollectorForChildProcess(std::move(collector));
+    }
   }
 }
 

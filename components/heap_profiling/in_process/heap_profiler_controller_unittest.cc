@@ -164,6 +164,8 @@ class HeapProfilerControllerTest : public ::testing::Test {
         ConnectRemoteProfileCollector(std::move(collector_callback));
     }
 
+    ASSERT_EQ(HeapProfilerController::GetProfilingEnabled(),
+              HeapProfilerController::ProfilingEnabled::kNoController);
     controller_ =
         std::make_unique<HeapProfilerController>(channel, process_type);
     controller_->SuppressRandomnessForTesting();
@@ -394,6 +396,10 @@ TEST_P(HeapProfilerControllerFeatureTest, StableChannel) {
       version_info::Channel::STABLE, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
                           base::Unretained(this)));
+  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+            GetParam().stable.expect_browser_sample
+                ? HeapProfilerController::ProfilingEnabled::kEnabled
+                : HeapProfilerController::ProfilingEnabled::kDisabled);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        GetParam().stable.expect_browser_sample,
                                        1);
@@ -412,6 +418,10 @@ TEST_P(HeapProfilerControllerFeatureTest, MAYBE_CanaryChannel) {
       version_info::Channel::CANARY, ProcessType::kBrowser,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
                           base::Unretained(this)));
+  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+            GetParam().nonstable.expect_browser_sample
+                ? HeapProfilerController::ProfilingEnabled::kEnabled
+                : HeapProfilerController::ProfilingEnabled::kDisabled);
   histogram_tester_.ExpectUniqueSample(
       "HeapProfiling.InProcess.Enabled",
       GetParam().nonstable.expect_browser_sample, 1);
@@ -424,6 +434,10 @@ TEST_P(HeapProfilerControllerFeatureTest, ChildProcess) {
       version_info::Channel::STABLE, ProcessType::kUtility,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
                           base::Unretained(this)));
+  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+            GetParam().stable.expect_child_sample
+                ? HeapProfilerController::ProfilingEnabled::kEnabled
+                : HeapProfilerController::ProfilingEnabled::kDisabled);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
                                        GetParam().stable.expect_child_sample,
                                        1);
@@ -438,6 +452,8 @@ TEST_P(HeapProfilerControllerFeatureTest, UnhandledProcess) {
       version_info::Channel::STABLE, ProcessType::kUnknown,
       base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
                           base::Unretained(this)));
+  EXPECT_EQ(HeapProfilerController::GetProfilingEnabled(),
+            HeapProfilerController::ProfilingEnabled::kDisabled);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled", false,
                                        1);
   AddOneSampleAndWait();

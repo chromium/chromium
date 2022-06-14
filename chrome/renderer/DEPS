@@ -28,7 +28,6 @@ include_rules = [
   "+components/history_clusters/core/config.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+components/metrics/call_stack_profile_builder.h",
-  "+components/metrics/call_stack_profile_params.h",
   "+components/nacl/common",
   "+components/nacl/renderer",
   "+components/network_hints/renderer",
