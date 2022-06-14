@@ -1086,7 +1086,8 @@ public class TabGridDialogTest {
 
     private boolean isDialogShowing(ChromeTabbedActivity cta) {
         View dialogView = cta.findViewById(R.id.dialog_parent_view);
-        return dialogView.getVisibility() == View.VISIBLE && dialogView.getAlpha() == 1f;
+        View dialogContainerView = cta.findViewById(R.id.dialog_container_view);
+        return dialogView.getVisibility() == View.VISIBLE && dialogContainerView.getAlpha() == 1f;
     }
 
     private boolean isDialogHiding(ChromeTabbedActivity cta) {
