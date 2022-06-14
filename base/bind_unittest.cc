@@ -1169,6 +1169,28 @@ TYPED_TEST(BindVariantsTest, UniquePtrReceiver) {
   TypeParam::Bind(&NoRef::VoidMethod0, std::move(no_ref)).Run();
 }
 
+TYPED_TEST(BindVariantsTest, ImplicitRefPtrReceiver) {
+  StrictMock<HasRef> has_ref;
+  EXPECT_CALL(has_ref, AddRef()).Times(1);
+  EXPECT_CALL(has_ref, Release()).Times(1);
+  EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillRepeatedly(Return(true));
+
+  HasRef* ptr = &has_ref;
+  auto ptr_cb = TypeParam::Bind(&HasRef::HasAtLeastOneRef, ptr);
+  EXPECT_EQ(1, std::move(ptr_cb).Run());
+}
+
+TYPED_TEST(BindVariantsTest, RawPtrReceiver) {
+  StrictMock<HasRef> has_ref;
+  EXPECT_CALL(has_ref, AddRef()).Times(1);
+  EXPECT_CALL(has_ref, Release()).Times(1);
+  EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillRepeatedly(Return(true));
+
+  raw_ptr<HasRef> rawptr(&has_ref);
+  auto rawptr_cb = TypeParam::Bind(&HasRef::HasAtLeastOneRef, rawptr);
+  EXPECT_EQ(1, std::move(rawptr_cb).Run());
+}
+
 // Tests for Passed() wrapper support:
 //   - Passed() can be constructed from a pointer to scoper.
 //   - Passed() can be constructed from a scoper rvalue.
@@ -1750,6 +1772,12 @@ TEST(BindDeathTest, BanFirstOwnerOfRefCountedType) {
   EXPECT_DCHECK_DEATH({
     EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillOnce(Return(false));
     base::BindOnce(&HasRef::VoidMethod0, &has_ref);
+  });
+
+  EXPECT_DCHECK_DEATH({
+    raw_ptr<HasRef> rawptr(&has_ref);
+    EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillOnce(Return(false));
+    base::BindOnce(&HasRef::VoidMethod0, rawptr);
   });
 }
 

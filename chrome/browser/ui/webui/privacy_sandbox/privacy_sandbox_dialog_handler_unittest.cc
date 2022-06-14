@@ -93,9 +93,7 @@ class PrivacySandboxDialogHandlerTest : public testing::Test {
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   PrivacySandboxDialogHandler* handler() { return handler_.get(); }
   TestingProfile* profile() { return &profile_; }
-  raw_ptr<MockPrivacySandboxDialogView> dialog_mock() {
-    return dialog_mock_.get();
-  }
+  MockPrivacySandboxDialogView* dialog_mock() { return dialog_mock_.get(); }
   MockPrivacySandboxService* mock_privacy_sandbox_service() {
     return mock_privacy_sandbox_service_;
   }
@@ -120,15 +118,18 @@ class PrivacySandboxConsentDialogHandlerTest
     : public PrivacySandboxDialogHandlerTest {
  protected:
   std::unique_ptr<PrivacySandboxDialogHandler> CreateHandler() override {
+    // base::Unretained is safe because the created handler does not outlive the
+    // mock.
     return std::make_unique<PrivacySandboxDialogHandler>(
-        base::BindOnce(&MockPrivacySandboxDialogView::Close, dialog_mock()),
+        base::BindOnce(&MockPrivacySandboxDialogView::Close,
+                       base::Unretained(dialog_mock())),
         base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
-                       dialog_mock()),
+                       base::Unretained(dialog_mock())),
         base::BindOnce(&MockPrivacySandboxDialogView::ShowNativeView,
-                       dialog_mock()),
+                       base::Unretained(dialog_mock())),
         base::BindOnce(
             &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
-            dialog_mock()),
+            base::Unretained(dialog_mock())),
         PrivacySandboxService::DialogType::kConsent);
   }
 };
@@ -247,15 +248,18 @@ class PrivacySandboxNoticeDialogHandlerTest
     : public PrivacySandboxDialogHandlerTest {
  protected:
   std::unique_ptr<PrivacySandboxDialogHandler> CreateHandler() override {
+    // base::Unretained is safe because the created handler does not outlive the
+    // mock.
     return std::make_unique<PrivacySandboxDialogHandler>(
-        base::BindOnce(&MockPrivacySandboxDialogView::Close, dialog_mock()),
+        base::BindOnce(&MockPrivacySandboxDialogView::Close,
+                       base::Unretained(dialog_mock())),
         base::BindOnce(&MockPrivacySandboxDialogView::ResizeNativeView,
-                       dialog_mock()),
+                       base::Unretained(dialog_mock())),
         base::BindOnce(&MockPrivacySandboxDialogView::ShowNativeView,
-                       dialog_mock()),
+                       base::Unretained(dialog_mock())),
         base::BindOnce(
             &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
-            dialog_mock()),
+            base::Unretained(dialog_mock())),
         PrivacySandboxService::DialogType::kNotice);
   }
 };
