@@ -4152,8 +4152,14 @@ Unknown properties are collapsed to zero. -->
   <int value="134" label="Terminated by SIGABRT">
     MINIJAIL_ERR_SIG_BASE + SIGABRT from libminijail
   </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
   <int value="139" label="Terminated by SIGSEGV">
     MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
+  </int>
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
   </int>
   <int value="251" label="Cannot bind-mount file">
     MINIJAIL_ERR_MOUNT from libminijail
@@ -42949,6 +42955,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="134" label="Terminated by SIGABRT">
     MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
   </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
+  </int>
   <int value="139" label="Terminated by SIGSEGV">
     MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
   </int>
@@ -43001,11 +43010,17 @@ Called by update_permissions_policy_enum.py.-->
   <int value="37" label="Bad password">
     ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_WRONGPASSWD (27) from libzip
   </int>
+  <int value="38" label="Operation not supported">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_OPNOTSUPP (28) from libzip
+  </int>
   <int value="132" label="Terminated by SIGILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
   <int value="134" label="Terminated by SIGABRT">
     MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
   </int>
   <int value="139" label="Terminated by SIGSEGV">
     MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
@@ -80513,6 +80528,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
   <int value="134" label="Terminated by SIGABRT">
     MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="137" label="Terminated by SIGKILL">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
   </int>
   <int value="139" label="Terminated by SIGSEGV">
     MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
