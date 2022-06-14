@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResourcePrefetch,
     &kCCTToolbarCustomizations,
     &kDontAutoHideBrowserControls,
+    &kCacheDeprecatedSystemLocationSetting,
     &kChromeNewDownloadTab,
     &kChromeShareLongScreenshot,
     &kChromeSharingHub,
@@ -530,6 +531,9 @@ const base::Feature kCCTToolbarCustomizations{"CCTToolbarCustomizations",
 
 const base::Feature kDontAutoHideBrowserControls{
     "DontAutoHideBrowserControls", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCacheDeprecatedSystemLocationSetting{
+    "CacheDeprecatedSystemLocationSetting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kChromeNewDownloadTab{"ChromeNewDownloadTab",
                                           base::FEATURE_DISABLED_BY_DEFAULT};

@@ -51,6 +51,7 @@ extern const base::Feature kCCTResourcePrefetch;
 extern const base::Feature kCCTRetainingState;
 extern const base::Feature kCCTToolbarCustomizations;
 extern const base::Feature kDontAutoHideBrowserControls;
+extern const base::Feature kCacheDeprecatedSystemLocationSetting;
 extern const base::Feature kChromeNewDownloadTab;
 extern const base::Feature kChromeShareLongScreenshot;
 extern const base::Feature kChromeShareScreenshot;
