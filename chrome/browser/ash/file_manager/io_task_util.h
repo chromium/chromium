@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_UTIL_H_
 
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -26,6 +27,11 @@ storage::FileSystemOperationRunner::OperationID StartDeleteOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& file_url,
     storage::FileSystemOperation::StatusCallback status_callback);
+
+// Helper operator to enable pretty debugging of a `ProgressStatus`.
+// Typical usage in an IOTask might be:
+//   LOG(INFO) << progress_;
+std::ostream& operator<<(std::ostream& out, const ProgressStatus& value);
 
 }  // namespace io_task
 }  // namespace file_manager
