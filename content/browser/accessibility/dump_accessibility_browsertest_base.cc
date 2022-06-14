@@ -310,6 +310,12 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       test_helper_.GetExpectationFilePath(file_path, expectations_qualifier);
   if (!expected_file.empty()) {
     expected_lines = test_helper_.LoadExpectationFile(expected_file);
+  } else if (GetParam() == ui::AXApiType::kWinUIA) {
+    // TODO: UIA is not yet supported, see crbug.com/1327652, crbug.com/1329523,
+    // crbug.com/1329847.
+    LOG(INFO) << "No expectation file present, ignoring test on this "
+                 "platform.";
+    return;
   }
 #if BUILDFLAG(IS_FUCHSIA)
   else {
@@ -318,13 +324,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     return;
   }
 #endif
-  // TODO: UIA is not yet supported, see crbug.com/1327652, crbug.com/1329523,
-  // crbug.com/1329847.
-  if (GetParam() == ui::AXApiType::kWinUIA) {
-    LOG(INFO) << "No expectation file present, ignoring test on this "
-                 "platform.";
-    return;
-  }
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL(
