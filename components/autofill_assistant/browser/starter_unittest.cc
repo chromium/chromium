@@ -2386,6 +2386,44 @@ TEST_F(StarterTest, CanStartSucceeds) {
                      Metrics::AutofillAssistantExperiment::NO_EXPERIMENT}}})));
 }
 
+TEST_F(StarterTest, FirstTimeUserNotShowOnboardingIfHandledExternally) {
+  SetupPlatformDelegateForFirstTimeUser();
+  base::flat_map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+  options.is_externally_triggered = true;
+  base::MockCallback<
+      base::OnceCallback<void(bool success, absl::optional<GURL> url,
+                              std::unique_ptr<TriggerContext> trigger_context)>>
+      mock_preconditions_checked_callback;
+  EXPECT_CALL(mock_preconditions_checked_callback,
+              Run(true, Optional(GURL(kExampleDeeplink)), _));
+
+  starter_->CanStart(
+      std::make_unique<TriggerContext>(
+          std::make_unique<ScriptParameters>(script_parameters), options),
+      mock_preconditions_checked_callback.Get());
+
+  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
+              Eq(1));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(0));
+  // Prerendering should not affect any trigger script's behaviour and not
+  // record anything.
+  EXPECT_THAT(GetUkmTriggerScriptStarted(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmTriggerScriptOnboarding(ukm_recorder_), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_FOREGROUND_INSTALLATION_SUCCEEDED,
+      1u);
+  EXPECT_THAT(GetUkmRegularScriptOnboarding(ukm_recorder_),
+              ElementsAreArray(ToHumanReadableMetrics(
+                  {{navigation_ids_[0], {Metrics::Onboarding::OB_EXTERNAL}}})));
+}
+
 TEST_F(StarterTest, RegularStartupFailsForSupervisedUser) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.is_supervised_user_ = true;

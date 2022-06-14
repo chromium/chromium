@@ -777,7 +777,8 @@ TEST_F(UiControllerTest, SetTtsMessageReEnablesTtsButtonWithNonStickyStateExp) {
           /* experiment_ids= */ "4624822", /* is_cct= */ false,
           /* onboarding_shown= */ false, /* is_direct_action= */ false,
           /* initial_url= */ "http://a.example.com/path",
-          /* is_in_chrome_triggered= */ false));
+          /* is_in_chrome_triggered= */ false,
+          /* is_externally_triggered = */ false));
   EXPECT_CALL(mock_execution_delegate_, GetTriggerContext())
       .WillRepeatedly(Return(&trigger_context));
   ui_controller_->OnStart(trigger_context);

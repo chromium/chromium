@@ -570,7 +570,8 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
       SafeConvertJavaStringToNative(env, jexperiment_ids), is_custom_tab,
       onboarding_shown, is_direct_action,
       SafeConvertJavaStringToNative(env, jinitial_url),
-      /* is_in_chrome_triggered = */ false);
+      /* is_in_chrome_triggered = */ false,
+      /* is_externally_triggered = */ false);
 }
 
 std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,

@@ -699,6 +699,9 @@ std::ostream& operator<<(std::ostream& out, const Metrics::Onboarding& metric) {
     case Metrics::Onboarding::OB_NO_ANSWER:
       out << "OB_NO_ANSWER";
       break;
+    case Metrics::Onboarding::OB_EXTERNAL:
+      out << "OB_EXTERNAL";
+      break;
       // Do not add default case to force compilation error for new values.
   }
   return out;

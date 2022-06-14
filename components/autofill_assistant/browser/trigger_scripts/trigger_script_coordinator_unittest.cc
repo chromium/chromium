@@ -208,7 +208,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
                           /* onboarding_shown = */ true,
                           /* is_direct_action = */ true,
                           /* initial_url = */ "https://www.example.com",
-                          /* is_in_chrome_triggered = */ true),
+                          /* is_in_chrome_triggered = */ true,
+                          /* is_externally_triggered = */ false),
                       mock_callback_.Get());
 }
 

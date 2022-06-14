@@ -317,12 +317,15 @@ void Starter::OnHeuristicMatch(const GURL& url,
 
   Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
-      TriggerContext::Options{/* experiment_ids = */ std::string(),
-                              /* is_cct = */ is_custom_tab_,
-                              /* onboarding_shown = */ false,
-                              /* is_direct_action = */ false,
-                              /* initial_url = */ std::string(),
-                              /* is_in_chrome_triggered = */ true}));
+      TriggerContext::Options{
+          /* experiment_ids = */ std::string(),
+          /* is_cct = */ is_custom_tab_,
+          /* onboarding_shown = */ false,
+          /* is_direct_action = */ false,
+          /* initial_url = */ std::string(),
+          /* is_in_chrome_triggered = */ true,
+          /* is_externally_triggered = */ false,
+      }));
 }
 
 bool Starter::IsStartupPending() const {
@@ -733,6 +736,16 @@ void Starter::OnTriggerScriptFinished(
 
 void Starter::MaybeShowOnboarding(
     absl::optional<TriggerScriptProto> trigger_script) {
+  // The onboarding is handled externally for external runs.
+  if (pending_trigger_context_ &&
+      pending_trigger_context_->GetIsExternallyTriggered()) {
+    Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                           current_ukm_source_id_,
+                                           Metrics::Onboarding::OB_EXTERNAL);
+    OnStartDone(/* start_script = */ true, trigger_script);
+    return;
+  }
+
   if (platform_delegate_->GetOnboardingAccepted()) {
     OnOnboardingFinished(trigger_script, /* shown = */ false,
                          OnboardingResult::ACCEPTED);

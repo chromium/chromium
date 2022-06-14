@@ -90,8 +90,10 @@ class Metrics {
     // The user implicitly rejected the onboarding. Some of the possible reasons
     // include navigating away, tapping the back button, closing the tab, etc.
     OB_NO_ANSWER = 4,
+    // The onboarding flow is provided externally.
+    OB_EXTERNAL = 5,
 
-    kMaxValue = OB_NO_ANSWER
+    kMaxValue = OB_EXTERNAL
   };
 
   // The different actions that can be performed on TTS button click.

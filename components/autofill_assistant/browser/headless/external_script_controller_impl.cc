@@ -52,7 +52,8 @@ void ExternalScriptControllerImpl::StartScript(
       /*onboarding_shown = */ false,
       /*is_direct_action = */ false,
       /* initial_url = */ "",
-      /* is_in_chrome_triggered = */ true);
+      /* is_in_chrome_triggered = */ true,
+      /* is_externally_triggered = */ true);
   starter->CanStart(
       std::move(trigger_context),
       base::BindOnce(&ExternalScriptControllerImpl::OnReadyToStart,

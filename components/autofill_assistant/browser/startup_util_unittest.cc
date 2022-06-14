@@ -81,10 +81,12 @@ const base::flat_map<std::string, std::string> kBase64TriggerScript = {
     {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
 
 const TriggerContext::Options kDefaultCCTOptions = {
-    std::string(), /* is_cct = */ true, false, false, std::string(), false};
+    std::string(), /* is_cct = */ true, false, false, std::string(), false,
+    false};
 
 const TriggerContext::Options kDefaultNonCCTOptions = {
-    std::string(), /* is_cct = */ false, false, false, std::string(), false};
+    std::string(), /* is_cct = */ false, false, false, std::string(), false,
+    false};
 
 // The set of feature combinations to test.
 const TestFeatureConfig kTestFeatureConfigs[] = {
@@ -415,7 +417,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
                   base::flat_map<std::string, std::string>{
                       {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}}),
               {std::string(), /* is_cct = */ true, false, false,
-               /* initial_url = */ "https://www.example.com", false}},
+               /* initial_url = */ "https://www.example.com", false, false}},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = true}),
