@@ -909,7 +909,8 @@ config("compiler_cpu_abi") {
         ]
       }
     } else if (current_cpu == "arm") {
-      if (is_clang && !is_android && !is_nacl) {
+      if (is_clang && !is_android && !is_nacl &&
+          !(is_chromeos_lacros && is_chromeos_device)) {
         cflags += [ "--target=arm-linux-gnueabihf" ]
         ldflags += [ "--target=arm-linux-gnueabihf" ]
       }
@@ -923,7 +924,8 @@ config("compiler_cpu_abi") {
         cflags += [ "-mtune=$arm_tune" ]
       }
     } else if (current_cpu == "arm64") {
-      if (is_clang && !is_android && !is_nacl && !is_fuchsia) {
+      if (is_clang && !is_android && !is_nacl && !is_fuchsia &&
+          !(is_chromeos_lacros && is_chromeos_device)) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
       }
