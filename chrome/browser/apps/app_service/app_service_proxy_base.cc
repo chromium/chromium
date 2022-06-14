@@ -640,7 +640,47 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForFiles(
 
 void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
                                           const GURL& url) {
-  AddPreferredApp(app_id, apps_util::CreateIntentFromUrl(url));
+  if (preferred_apps_impl_) {
+    AddPreferredApp(
+        app_id, std::make_unique<Intent>(apps_util::kIntentActionView, url));
+  } else {
+    AddPreferredApp(app_id, apps_util::CreateIntentFromUrl(url));
+  }
+}
+
+void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
+                                          const IntentPtr& intent) {
+  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
+  // after finding out the root cause.
+  if (app_id.empty() || !preferred_apps_impl_) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  auto intent_filter = FindBestMatchingFilter(intent);
+  if (!intent_filter) {
+    return;
+  }
+
+  // Treat kUseBrowserForLink like an app with a single supported link, so
+  // that any apps with overlapping supported links will have their preference
+  // removed correctly.
+  if (app_id == apps_util::kUseBrowserForLink) {
+    std::vector<IntentFilterPtr> filters;
+    filters.push_back(std::move(intent_filter));
+    preferred_apps_impl_->SetSupportedLinksPreference(AppType::kUnknown, app_id,
+                                                      std::move(filters));
+    return;
+  }
+
+  if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
+    SetSupportedLinksPreference(app_id);
+    return;
+  }
+
+  preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
+  preferred_apps_impl_->AddPreferredApp(
+      app_registry_cache_.GetAppType(app_id), app_id, std::move(intent_filter),
+      intent->Clone(), /*from_publisher=*/false);
 }
 
 void AppServiceProxyBase::AddPreferredApp(
@@ -652,7 +692,7 @@ void AppServiceProxyBase::AddPreferredApp(
     base::debug::DumpWithoutCrashing();
     return;
   }
-  auto mojom_intent_filter = FindBestMatchingFilter(intent);
+  auto mojom_intent_filter = FindBestMatchingMojomFilter(intent);
   if (!mojom_intent_filter || !app_service_.is_connected()) {
     return;
   }
@@ -819,7 +859,33 @@ void AppServiceProxyBase::InitializePreferredApps(
       ConvertMojomPreferredAppsToPreferredApps(mojom_preferred_apps));
 }
 
-apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(
+IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(
+    const IntentPtr& intent) {
+  IntentFilterPtr best_matching_intent_filter;
+  if (!intent) {
+    return best_matching_intent_filter;
+  }
+
+  int best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
+  app_registry_cache_.ForEachApp(
+      [&intent, &best_match_level,
+       &best_matching_intent_filter](const apps::AppUpdate& update) {
+        for (auto& filter : update.IntentFilters()) {
+          if (!intent->MatchFilter(filter)) {
+            continue;
+          }
+          auto match_level = filter->GetFilterMatchLevel();
+          if (match_level <= best_match_level) {
+            continue;
+          }
+          best_matching_intent_filter = std::move(filter);
+          best_match_level = match_level;
+        }
+      });
+  return best_matching_intent_filter;
+}
+
+apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingMojomFilter(
     const apps::mojom::IntentPtr& mojom_intent) {
   apps::mojom::IntentFilterPtr best_matching_intent_filter;
   if (!app_service_.is_bound() || !mojom_intent) {

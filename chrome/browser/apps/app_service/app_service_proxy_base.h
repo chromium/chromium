@@ -258,6 +258,9 @@ class AppServiceProxyBase : public KeyedService,
   // Adds a preferred app for |url|.
   void AddPreferredApp(const std::string& app_id, const GURL& url);
   // Adds a preferred app for |intent|.
+  void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   void AddPreferredApp(const std::string& app_id,
                        const apps::mojom::IntentPtr& intent);
 
@@ -395,7 +398,10 @@ class AppServiceProxyBase : public KeyedService,
   void InitializePreferredApps(
       std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) override;
 
-  apps::mojom::IntentFilterPtr FindBestMatchingFilter(
+  IntentFilterPtr FindBestMatchingFilter(const IntentPtr& intent);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
+  apps::mojom::IntentFilterPtr FindBestMatchingMojomFilter(
       const apps::mojom::IntentPtr& intent);
 
   virtual void PerformPostLaunchTasks(apps::mojom::LaunchSource launch_source);
