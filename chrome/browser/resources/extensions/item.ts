@@ -28,7 +28,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {getTemplate} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, SourceType, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
@@ -96,6 +96,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         type: Boolean,
         value: false,
       },
+
+      // First inspectable view after sorting.
+      firstInspectView_: {
+        type: Object,
+        computed: 'computeFirstInspectView_(data.views)',
+      },
     };
   }
 
@@ -107,6 +113,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   inDevMode: boolean;
   data: chrome.developerPrivate.ExtensionInfo;
   private showingDetails_: boolean;
+  private firstInspectView_: chrome.developerPrivate.ExtensionView;
   /** Prevents reloading the same item while it's already being reloaded. */
   private isReloading_: boolean = false;
 
@@ -169,8 +176,12 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     navigation.navigateTo({page: Page.DETAILS, extensionId: this.data.id});
   }
 
+  private computeFirstInspectView_(): chrome.developerPrivate.ExtensionView {
+    return sortViews(this.data.views)[0];
+  }
+
   private onInspectTap_() {
-    this.delegate.inspectItemView(this.data.id, this.data.views[0]);
+    this.delegate.inspectItemView(this.data.id, this.firstInspectView_);
   }
 
   private onExtraInspectTap_() {
@@ -279,7 +290,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     // sometimes it can. Even when it is, the UI behaves properly, but we
     // need to handle the case gracefully.
     return this.data.views.length > 0 ?
-        computeInspectableViewLabel(this.data.views[0]) :
+        computeInspectableViewLabel(this.firstInspectView_) :
         '';
   }
 

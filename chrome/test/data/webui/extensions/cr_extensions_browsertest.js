@@ -178,6 +178,10 @@ TEST_F('CrExtensionsItemsTest', 'RepairButton', function() {
   this.runMochaTest(extension_item_tests.TestNames.RepairButton);
 });
 
+TEST_F('CrExtensionsItemsTest', 'InspectableViewSortOrder', function() {
+  this.runMochaTest(extension_item_tests.TestNames.InspectableViewSortOrder);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Activity Log Tests
 
@@ -297,6 +301,11 @@ TEST_F(
       this.runMochaTest(extension_detail_view_tests.TestNames
                             .NoSiteAccessWithEnhancedSiteControls);
     });
+
+TEST_F('CrExtensionsDetailViewTest', 'InspectableViewSortOrder', function() {
+  this.runMochaTest(
+      extension_detail_view_tests.TestNames.InspectableViewSortOrder);
+});
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests

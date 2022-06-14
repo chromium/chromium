@@ -25,6 +25,7 @@ const extension_detail_view_tests = {
     Warnings: 'warnings',
     NoSiteAccessWithEnhancedSiteControls:
         'no site access with enhanced site controls',
+    InspectableViewSortOrder: 'inspectable view sort order',
   },
 };
 
@@ -519,5 +520,40 @@ suite(extension_detail_view_tests.suiteName, function() {
                 .length);
         assertFalse(testIsVisible('#no-permissions'));
         assertTrue(testIsVisible('#permissions-list li:last-of-type'));
+      });
+
+  test(
+      assert(extension_detail_view_tests.TestNames.InspectableViewSortOrder),
+      function() {
+        function getUrl(path: string) {
+          return `chrome-extension://${extensionData.id}/${path}`;
+        }
+        item.set('data.views', [
+          {
+            type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
+            url: getUrl('_generated_background_page.html')
+          },
+          {
+            type: chrome.developerPrivate.ViewType
+                      .EXTENSION_SERVICE_WORKER_BACKGROUND,
+            url: getUrl('sw.js')
+          },
+          {
+            type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
+            url: getUrl('popup.html')
+          }
+        ]);
+        item.set('inDevMode', true);
+        flush();
+
+        const orderedListItems =
+            Array
+                .from(item.shadowRoot!.querySelectorAll<HTMLElement>(
+                    '.inspectable-view'))
+                .map(e => e.textContent!.trim());
+
+        assertDeepEquals(
+            ['service worker', 'background page', 'popup.html'],
+            orderedListItems);
       });
 });

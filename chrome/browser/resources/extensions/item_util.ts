@@ -149,6 +149,27 @@ export function computeInspectableViewLabel(
 }
 
 /**
+ * Clones the array and returns a new array with background pages and service
+ * workers sorted before other views.
+ * @returns Sorted array.
+ */
+export function sortViews(views: chrome.developerPrivate.ExtensionView[]):
+    chrome.developerPrivate.ExtensionView[] {
+  function getSortValue(view: chrome.developerPrivate.ExtensionView): number {
+    switch (view.type) {
+      case chrome.developerPrivate.ViewType.EXTENSION_SERVICE_WORKER_BACKGROUND:
+        return 2;
+      case chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE:
+        return 1;
+      default:
+        return 0;
+    }
+  }
+
+  return [...views].sort((a, b) => getSortValue(b) - getSortValue(a));
+}
+
+/**
  * @return Whether the extension is in the terminated state.
  */
 function isTerminated(state: chrome.developerPrivate.ExtensionState): boolean {

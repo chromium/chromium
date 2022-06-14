@@ -34,7 +34,7 @@ import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resource
 import {getTemplate} from './detail_view.html.js';
 import {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 import {ExtensionsToggleRowElement} from './toggle_row.js';
 
@@ -91,6 +91,12 @@ export class ExtensionsDetailViewElement extends
 
       /** Whether the user navigated to this page from the activity log page. */
       fromActivityLog: Boolean,
+
+      /** Inspectable views sorted to put background/service workers first */
+      sortedViews_: {
+        type: Array,
+        computed: 'computeSortedViews_(data.views)',
+      },
     };
   }
 
@@ -106,10 +112,7 @@ export class ExtensionsDetailViewElement extends
   showActivityLog: boolean;
   fromActivityLog: boolean;
   private size_: string;
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
+  private sortedViews_: chrome.developerPrivate.ExtensionView[];
 
   override ready() {
     super.ready();
@@ -194,6 +197,10 @@ export class ExtensionsDetailViewElement extends
       offText: string): string {
     // TODO(devlin): Get the full spectrum of these strings from bettes.
     return isEnabled(state) ? onText : offText;
+  }
+
+  private computeSortedViews_(): chrome.developerPrivate.ExtensionView[] {
+    return sortViews(this.data.views);
   }
 
   private computeInspectLabel_(view: chrome.developerPrivate.ExtensionView):

@@ -279,7 +279,7 @@
             <li hidden="[[data.views.length]]">
               $i18n{noActiveViews}
             </li>
-            <template is="dom-repeat" items="[[data.views]]">
+            <template is="dom-repeat" items="[[sortedViews_]]">
               <li>
                 <a is="action-link" class="inspectable-view"
                     on-click="onInspectTap_">
