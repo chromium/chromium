@@ -13,6 +13,7 @@ import subprocess
 import target
 import time
 
+import ermine_ctl
 import ffx_session
 
 from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
@@ -95,6 +96,7 @@ class DeviceTarget(target.Target):
     self._pkg_repo = None
     self._target_context = None
     self._ffx_target = None
+    self._ermine_ctl = ermine_ctl.ErmineCtl(self)
     if not self._system_image_dir and self._os_check != 'ignore':
       raise Exception("Image directory must be provided if a repave is needed.")
 
@@ -217,12 +219,23 @@ class DeviceTarget(target.Target):
 
     return True
 
+  def _Login(self):
+    """Attempts to log into device, if possible.
+
+    This method should not be called from anything other than Start,
+    though calling it multiple times should have no adverse effect.
+    """
+    if self._ermine_ctl.exists:
+      self._ermine_ctl.TakeToShell()
+
   def Start(self):
     if self._host:
       self._ConnectToTarget()
+      self._Login()
     elif self._Discover():
       self._ConnectToTarget()
       if self._os_check == 'ignore':
+        self._Login()
         return
 
       # If accessible, check version.
@@ -240,12 +253,14 @@ class DeviceTarget(target.Target):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
         self._ProvisionDevice()
+      self._Login()
     else:
       if self._node_name:
         logging.info('Could not detect device %s.' % self._node_name)
         if self._os_check == 'update':
           logging.info('Assuming it is in zedboot. Continuing with paving...')
           self._ProvisionDevice()
+          self._Login()
           return
       raise Exception('Could not find device. If the device is connected '
                       'to the host remotely, make sure that --host flag '

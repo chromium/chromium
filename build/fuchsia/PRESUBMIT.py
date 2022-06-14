@@ -24,6 +24,7 @@ def CommonChecks(input_api, output_api):
       J('binary_sizes_test.py'),
       J('binary_size_differ_test.py'),
       J('device_target_test.py'),
+      J('ermine_ctl_test.py'),
   ]
 
   # TODO(1309977): enable on Windows when fixed.
@@ -34,7 +35,8 @@ def CommonChecks(input_api, output_api):
                                            output_api,
                                            unit_tests=unit_tests,
                                            run_on_python2=False,
-                                           run_on_python3=True))
+                                           run_on_python3=True,
+                                           skip_shebang_check=True))
   return input_api.RunTests(tests)
 
 

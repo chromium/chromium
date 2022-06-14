@@ -3,11 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Tests scenarios with number of devices and invalid devices"""
+import common
+import os
 import subprocess
+import time
 import unittest
 import unittest.mock as mock
 from argparse import Namespace
 from device_target import DeviceTarget
+from ermine_ctl import ErmineCtl
 from ffx_session import FfxRunner, FfxTarget
 from target import Target, FuchsiaTargetException
 
@@ -33,7 +37,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(
              FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(
-             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
+             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget, \
+         mock.patch.object(
+             DeviceTarget, '_Login') as mock_login:
       mock_list_targets.return_value = [{
           "nodename": "device_name",
           "rcs_state": "Y",
@@ -55,7 +61,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(
              FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(
-             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
+             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget, \
+         mock.patch.object(
+             DeviceTarget, '_Login') as mock_login:
       mock_list_targets.return_value = [{
           "nodename": "<unknown>",
           "rcs_state": "Y",
@@ -69,6 +77,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       self.assertIsNone(device_target_instance.Start())
       self.assertEqual(device_target_instance._host, 'address')
       self.assertEqual(device_target_instance._port, 12345)
+      mock_login.assert_called_once()
     mock_daemon_stop.assert_called_once()
 
   def testUnspecifiedNodeNameTwoDevicesRaiseExceptionAmbiguousTarget(
@@ -107,13 +116,16 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(
              FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
          mock.patch.object(
-             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget:
+             DeviceTarget, '_ConnectToTarget') as mock_connecttotarget, \
+         mock.patch.object(
+             DeviceTarget, '_Login') as mock_login:
       mock_get_ssh_address.return_value = ('address', 12345)
       mock_connecttotarget.return_value = True
       self.assertIsNone(device_target_instance.Start())
       self.assertEqual(device_target_instance._node_name, 'device_name')
       self.assertEqual(device_target_instance._host, 'address')
       self.assertEqual(device_target_instance._port, 12345)
+      mock_login.assert_called_once()
     mock_daemon_stop.assert_called_once()
 
   def testNodeNameDefinedDeviceNotFoundRaiseExceptionCouldNotFind(
@@ -148,12 +160,16 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \
-         mock.patch.object(DeviceTarget, '_ProvisionDevice') as mock_provision:
+         mock.patch.object(
+             DeviceTarget, '_ProvisionDevice') as mock_provision, \
+         mock.patch.object(
+             DeviceTarget, '_Login') as mock_login:
       mock_discover.return_value = True
       mock_hash.return_value = '1.0'
       mock_version.return_value = '1.0'
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 0)
+      mock_login.assert_called_once()
     mock_daemon_stop.assert_called_once()
 
   def testRaiseExceptionIfCheckVersionsNoMatch(self, mock_daemon_stop):
@@ -174,6 +190,31 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
       device_target_instance.Start()
     mock_daemon_stop.assert_called_once()
 
+  def testLoginCallsOnlyIfErmineExists(self, mock_daemon_stop):
+    with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
+         mock.patch.object(
+             ErmineCtl, 'exists',
+             new_callable=mock.PropertyMock) as mock_exists, \
+         mock.patch.object(ErmineCtl, 'TakeToShell') as mock_shell:
+      mock_exists.return_value = True
+
+      device_target_instance._Login()
+
+      mock_exists.assert_called_once()
+      mock_shell.assert_called_once()
+
+    with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
+         mock.patch.object(
+             ErmineCtl, 'exists',
+             new_callable=mock.PropertyMock) as mock_exists, \
+         mock.patch.object(ErmineCtl, 'TakeToShell') as mock_shell:
+      mock_exists.return_value = False
+
+      device_target_instance._Login()
+
+      mock_exists.assert_called_once()
+      self.assertEqual(mock_shell.call_count, 0)
+
   def testProvisionIfOneNonDetectableDevice(self, mock_daemon_stop):
     self.args.os_check = 'update'
     self.args.node_name = 'mocknode'
@@ -181,7 +222,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(
              FfxTarget, 'get_ssh_address') as mock_get_ssh_address, \
-         mock.patch.object(DeviceTarget, '_ProvisionDevice') as mock_provision:
+         mock.patch.object(DeviceTarget,
+                           '_ProvisionDevice') as mock_provision, \
+         mock.patch.object(DeviceTarget, '_Login') as mock_bypass:
       mock_get_ssh_address.return_value = None
       device_target_instance.Start()
       self.assertEqual(mock_provision.call_count, 1)
