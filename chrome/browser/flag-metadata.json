@@ -1924,7 +1924,7 @@
   {
     "name": "enable-desktop-pwas-remove-status-bar",
     "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 110
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
@@ -3263,13 +3263,13 @@
   },
   {
     "name": "file-handling-api",
-    "owners": [ "estade", "mgiuca", "cmp" ],
-    "expiry_milestone": 104
+    "owners": [ "dmurph", "mgiuca", "cmp" ],
+    "expiry_milestone": 110
   },
   {
     "name": "file-handling-icons",
-    "owners": [ "estade", "mgiuca", "cmp" ],
-    "expiry_milestone": 104
+    "owners": [ "dmurph", "mgiuca", "cmp" ],
+    "expiry_milestone": 110
   },
   {
     "name": "files-app-experimental",
