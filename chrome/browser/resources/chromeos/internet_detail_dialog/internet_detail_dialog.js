@@ -96,6 +96,9 @@ Polymer({
       value: false,
       computed: 'computeDisabled_(deviceState_.*)'
     },
+
+    /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy_: Object,
   },
 
   /**
@@ -152,6 +155,9 @@ Polymer({
     this.managedProperties_ = OncMojo.getDefaultManagedProperties(
         OncMojo.getNetworkTypeFromString(type), this.guid, name);
     this.getNetworkDetails_();
+
+    // Fetch global policies.
+    this.onPoliciesApplied(/*userhash=*/ '');
   },
 
   /** @private */
@@ -172,6 +178,16 @@ Polymer({
   /** @private */
   close_() {
     this.browserProxy_.closeDialog();
+  },
+
+  /**
+   * CrosNetworkConfigObserver impl
+   * @param {!string} userhash
+   */
+  onPoliciesApplied(userhash) {
+    this.networkConfig_.getGlobalPolicy().then(response => {
+      this.globalPolicy_ = response.result;
+    });
   },
 
   /**

@@ -67,7 +67,8 @@
           </div>
         </div>
         <cr-button id="changePinButton" on-click="onChangePinTap_"
-            hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]"
+            hidden$="[[!showChangePinButton_(deviceState, isActiveSim_,
+                isSimPinLockRestricted_)]]"
             disabled="[[disabled]]">
           [[i18n('networkSimChangePin')]]
         </cr-button>
@@ -82,7 +83,8 @@
           <div class="separator"></div>
         </template>
         <cr-toggle id="simLockButton"
-            disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_)]]"
+            disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_,
+                isSimPinLockRestricted_, lockEnabled_)]]"
             on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
             aria-labelledby="pinRequiredLabel pinRequiredSublabel">
         </cr-toggle>

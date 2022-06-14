@@ -90,6 +90,9 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
           return result;
         },
       },
+
+      /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+      globalPolicy_: Object,
     };
   }
 
@@ -113,6 +116,18 @@ class NetworkSummaryElement extends NetworkSummaryElementBase {
     super.connectedCallback();
 
     this.getNetworkLists_();
+
+    // Fetch global policies.
+    this.onPoliciesApplied(/*userhash=*/ '');
+  }
+  /**
+   * CrosNetworkConfigObserver impl
+   * @param {!string} userhash
+   */
+  onPoliciesApplied(userhash) {
+    this.networkConfig_.getGlobalPolicy().then(response => {
+      this.globalPolicy_ = response.result;
+    });
   }
 
   /**

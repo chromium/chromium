@@ -99,6 +99,9 @@ class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
               loadTimeData.getBoolean('showTechnologyBadge');
         }
       },
+
+      /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+      globalPolicy: Object,
     };
   }
 
