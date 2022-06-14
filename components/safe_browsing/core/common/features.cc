@@ -116,6 +116,9 @@ const base::Feature kLogAccountEnhancedProtectionStateInProtegoPings{
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kTailoredSecurityDesktopNotice{
+    "TailoredSecurityDesktopNotice", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kTailoredSecurityIntegration{
     "TailoredSecurityIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 

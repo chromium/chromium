@@ -141,6 +141,12 @@ extern const base::Feature kSendSampledPingsForProtegoAllowlistDomains;
 // default and control groups of the experiment.
 extern const base::Feature kSimplifiedUrlDisplay;
 
+// Controls whether to automatically enable Enhanced Protection for desktop
+// tailored security users. If not enabled, users of tailored security are
+// notified that they can enable Enhanced Protection through an operating system
+// notification.
+extern const base::Feature kTailoredSecurityDesktopNotice;
+
 // Controls whether the integration of tailored security settings is enabled.
 extern const base::Feature kTailoredSecurityIntegration;
 
