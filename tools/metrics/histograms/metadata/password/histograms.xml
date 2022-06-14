@@ -1987,7 +1987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M105">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M108">
   <owner>ioanap@chromium.org</owner>
   <owner>maxan@google.com</owner>
   <summary>
@@ -2000,7 +2000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.Error"
-    enum="CredentialManagerError" expires_after="M105">
+    enum="CredentialManagerError" expires_after="M108">
   <owner>ioanap@chromium.org</owner>
   <owner>maxan@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
@@ -2015,7 +2015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.ErrorLatency"
-    units="ms" expires_after="M105">
+    units="ms" expires_after="M108">
   <owner>ioanap@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <owner>maxan@google.com</owner>
@@ -2030,7 +2030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.Latency"
-    units="ms" expires_after="M105">
+    units="ms" expires_after="M108">
   <owner>ioanap@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <owner>maxan@google.com</owner>
@@ -2044,7 +2044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordCheckup.{Operation}.Success"
-    enum="BooleanSuccess" expires_after="M105">
+    enum="BooleanSuccess" expires_after="M108">
   <owner>ioanap@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <owner>maxan@google.com</owner>
@@ -2190,7 +2190,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.APIError1"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="M106">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M108">
   <owner>maxan@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -2208,7 +2208,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="M106">
+    enum="PasswordStoreAndroidBackendError" expires_after="M108">
   <owner>maxan@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -2223,7 +2223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordSettings.{Function}.{Setting}.ErrorLatency"
-    units="ms" expires_after="M106">
+    units="ms" expires_after="M108">
   <owner>maxan@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -2236,7 +2236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Latency"
-    units="ms" expires_after="M106">
+    units="ms" expires_after="M108">
   <owner>maxan@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -2249,7 +2249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordSettings.{Function}.{Setting}.Success"
-    enum="BooleanSuccess" expires_after="M106">
+    enum="BooleanSuccess" expires_after="M108">
   <owner>maxan@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
