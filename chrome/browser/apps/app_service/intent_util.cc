@@ -1046,6 +1046,51 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 
 #if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
+    const apps::IntentPtr& app_service_intent,
+    Profile* profile) {
+  auto crosapi_intent = crosapi::mojom::Intent::New();
+  crosapi_intent->action = app_service_intent->action;
+  if (app_service_intent->url.has_value()) {
+    crosapi_intent->url = app_service_intent->url.value();
+  }
+  if (app_service_intent->mime_type.has_value()) {
+    crosapi_intent->mime_type = app_service_intent->mime_type.value();
+  }
+  if (app_service_intent->share_text.has_value()) {
+    crosapi_intent->share_text = app_service_intent->share_text.value();
+  }
+  if (app_service_intent->share_title.has_value()) {
+    crosapi_intent->share_title = app_service_intent->share_title.value();
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!app_service_intent->files.empty() && profile) {
+    std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
+    for (const auto& file : app_service_intent->files) {
+      if (file->url.SchemeIsFile()) {
+        auto crosapi_file = crosapi::mojom::IntentFile::New();
+        net::FileURLToFilePath(file->url, &crosapi_file->file_path);
+        crosapi_file->mime_type = file->mime_type;
+        crosapi_files.push_back(std::move(crosapi_file));
+      } else if (file->url.SchemeIsFileSystem()) {
+        auto file_system_url = apps::GetFileSystemURL(profile, file->url);
+        if (file_system_url.is_valid()) {
+          auto crosapi_file = crosapi::mojom::IntentFile::New();
+          crosapi_file->file_path = file_system_url.path();
+          crosapi_file->mime_type = file->mime_type;
+          crosapi_files.push_back(std::move(crosapi_file));
+        }
+      }
+    }
+    crosapi_intent->files = std::move(crosapi_files);
+  }
+#endif
+  if (app_service_intent->activity_name.has_value()) {
+    crosapi_intent->activity_name = app_service_intent->activity_name.value();
+  }
+  return crosapi_intent;
+}
+
+crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     const apps::mojom::IntentPtr& app_service_intent,
     Profile* profile) {
   auto crosapi_intent = crosapi::mojom::Intent::New();
@@ -1088,6 +1133,52 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     crosapi_intent->activity_name = app_service_intent->activity_name.value();
   }
   return crosapi_intent;
+}
+
+apps::IntentPtr CreateAppServiceIntentFromCrosapi(
+    const crosapi::mojom::IntentPtr& crosapi_intent,
+    Profile* profile) {
+  auto app_service_intent =
+      std::make_unique<apps::Intent>(crosapi_intent->action);
+  if (crosapi_intent->url.has_value()) {
+    app_service_intent->url = crosapi_intent->url.value();
+  }
+  if (crosapi_intent->mime_type.has_value()) {
+    app_service_intent->mime_type = crosapi_intent->mime_type.value();
+  }
+  if (crosapi_intent->share_text.has_value()) {
+    app_service_intent->share_text = crosapi_intent->share_text.value();
+  }
+  if (crosapi_intent->share_title.has_value()) {
+    app_service_intent->share_title = crosapi_intent->share_title.value();
+  }
+  if (crosapi_intent->files.has_value() && profile) {
+    std::vector<apps::IntentFilePtr> intent_files;
+    for (const auto& file : crosapi_intent->files.value()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      auto file_url = apps::GetFileSystemUrl(profile, file->file_path);
+      if (file_url.is_empty()) {
+        continue;
+      }
+      auto intent_file = std::make_unique<apps::IntentFile>(file_url);
+#else
+      auto intent_file = std::make_unique<apps::IntentFile>(GURL());
+      // The directory is omitted from the human readable file name.
+      intent_file->file_name =
+          base::SafeBaseName::Create(file->file_path.BaseName());
+#endif
+      intent_file->mime_type = file->mime_type;
+
+      intent_files.push_back(std::move(intent_file));
+    }
+    if (intent_files.size() > 0) {
+      app_service_intent->files = std::move(intent_files);
+    }
+  }
+  if (crosapi_intent->activity_name.has_value()) {
+    app_service_intent->activity_name = crosapi_intent->activity_name.value();
+  }
+  return app_service_intent;
 }
 
 apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(

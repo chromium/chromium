@@ -375,12 +375,12 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForFiles(
 
 void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
                                             const GURL& url) {
-  AddPreferredApp(app_id, apps_util::CreateIntentFromUrl(url));
+  AddPreferredApp(app_id, std::make_unique<apps::Intent>(
+                              apps_util::kIntentActionView, url));
 }
 
-void AppServiceProxyLacros::AddPreferredApp(
-    const std::string& app_id,
-    const apps::mojom::IntentPtr& intent) {
+void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
+                                            const IntentPtr& intent) {
   if (!remote_crosapi_app_service_proxy_) {
     return;
   }

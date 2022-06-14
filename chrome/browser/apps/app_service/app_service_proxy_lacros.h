@@ -22,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -229,8 +230,7 @@ class AppServiceProxyLacros : public KeyedService,
   // Adds a preferred app for |url|.
   void AddPreferredApp(const std::string& app_id, const GURL& url);
   // Adds a preferred app for |intent|.
-  void AddPreferredApp(const std::string& app_id,
-                       const apps::mojom::IntentPtr& intent);
+  void AddPreferredApp(const std::string& app_id, const IntentPtr& intent);
 
   // Sets |app_id| as the preferred app for all of its supported links ('view'
   // intent filters with a scheme and host). Any existing preferred apps for
