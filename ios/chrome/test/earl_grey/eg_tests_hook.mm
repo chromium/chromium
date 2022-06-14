@@ -73,7 +73,6 @@ void SetUpTestsIfPresent() {
     // AuthenticationService will log the fake user off.
     std::unique_ptr<ios::FakeChromeIdentityService> service(
         new ios::FakeChromeIdentityService());
-    service->SetUpForIntegrationTests();
     ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
         std::move(service));
     ios::FakeChromeIdentityService* identity_service =
