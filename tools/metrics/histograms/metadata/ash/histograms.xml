@@ -3665,6 +3665,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Shelf.Palette.Assistant.DeprecateStylusFeaturesToastEvent"
+    units="dp" expires_after="2022-12-15">
+  <owner>angelaxiao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Whether or not the user is shown the limitation toast notifying that the
+    Assistant stylus features (i.e. what's on my screen) have been deprecated.
+    Also considers whether or not the deprecation flag has been set. Recorded
+    upon every stylus long press action.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.Palette.Assistant.GestureDuration" units="ms"
     expires_after="2021-12-12">
   <owner>amehfooz@chromium.org</owner>

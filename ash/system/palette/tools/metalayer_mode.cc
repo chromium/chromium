@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -37,6 +38,10 @@ const char kToastId[] = "palette_metalayer_mode";
 // Toast ID for toast that shows for long press stylus actions when metalayer
 // mode is deprecated.
 const char kDeprecateAssistantStylusToastId[] = "deprecate_assistant_stylus";
+
+// Histogram for Assistant stylus features deprecation toast events.
+const char kDeprecateStylusFeaturesToastEvent[] =
+    "Ash.Shelf.Palette.Assistant.DeprecateStylusFeaturesToastEvent";
 
 // If the last stroke happened within this amount of time,
 // assume writing/sketching usage.
@@ -148,12 +153,15 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
   if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return;
 
+  DeprecateStylusFeaturesToastEvent toast_event = kNotDeprecatedToastNotShown;
+
   // Assistant stylus features are in the process of being deprecated.
   // After deprecation, which is currently gated by a feature flag, long
   // press stylus events will not trigger the metalayer mode.
   if (ash::features::IsDeprecateAssistantStylusFeaturesEnabled()) {
     // Only show the toast once when the metalayer is triggered for the first
     // time.
+    toast_event = kDeprecatedToastNotShown;
     if (!GetPrefs()->GetBoolean(
             chromeos::assistant::prefs::kAssistantDeprecateStylusToast)) {
       // Set the deprecate stylus toast assistant pref so that the toast doesn't
@@ -168,9 +176,17 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
                     ToastData::kDefaultToastDuration,
                     /*visible_on_lock_screen=*/false,
                     /*has_dismiss_button=*/true));
+      toast_event = kDeprecatedToastShown;
     }
+    // Record toast event (feature is deprecated).
+    base::UmaHistogramEnumeration(kDeprecateStylusFeaturesToastEvent,
+                                  toast_event);
     return;
   }
+
+  // Record toast event (feature is not deprecated).
+  base::UmaHistogramEnumeration(kDeprecateStylusFeaturesToastEvent,
+                                toast_event);
 
   if (loading()) {
     // Repetitive presses will create toasts with the same id which will be

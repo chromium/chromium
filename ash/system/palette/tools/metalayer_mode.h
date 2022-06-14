@@ -15,6 +15,24 @@
 
 namespace ash {
 
+// This will be used for the UMA stats to note deprecation toast events
+// for Assistant stylus features.
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Also remember to update the
+// DeprecateStylusFeaturesToastEvent enum listing in
+// tools/metrics/histograms/enums.xml.
+enum DeprecateStylusFeaturesToastEvent {
+  // Features not deprecated, toast not shown.
+  kNotDeprecatedToastNotShown = 0,
+  // Features deprecated, toast shown (first time).
+  kDeprecatedToastShown = 1,
+  // Features deprecated, toast not shown (already shown).
+  kDeprecatedToastNotShown = 2,
+
+  kMaxValue = kDeprecatedToastNotShown
+};
+
 // A palette tool that lets the user select a screen region to be passed
 // to the Assistant framework.
 //
