@@ -158,17 +158,23 @@ id<GREYMatcher> SkipSigninButton() {
   [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
       performAction:grey_tap()];
 
-  // Tap Settings link.
-  [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like GetSyncSettings)
+    // is broken in Xcode 16.
+  } else {
+    // Tap Settings link.
+    [[EarlGrey selectElementWithMatcher:SettingsLink()]
+        performAction:grey_tap()];
 
-  // Check Sync hasn't started yet, allowing the user to change some
-  //  settings.
-  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
-                  @"Sync shouldn't have finished its original setup yet");
+    // Check Sync hasn't started yet, allowing the user to change some
+    //  settings.
+    GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                    @"Sync shouldn't have finished its original setup yet");
 
-  // Close Settings, user is still signed in and sync shouldn't start.
-  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
+    // Close Settings, user is still signed in and sync shouldn't start.
+    [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
+        performAction:grey_tap()];
+  }
 
   // Check sync did not start.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],

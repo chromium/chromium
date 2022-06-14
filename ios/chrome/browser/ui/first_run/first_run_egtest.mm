@@ -504,6 +504,12 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Navigates to the Terms of Service and back.
 - (void)testTermsAndConditions {
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like
+    // termsOfServiceLink) is broken in Xcode 16.
+    EARL_GREY_TEST_SKIPPED(@"Does not work with Xcode 16 beta bug.")
+  }
+
   // Tap on “Terms of Service” on the first screen
   [self verifyWelcomeScreenIsDisplayed];
 
@@ -717,18 +723,24 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
-      performAction:grey_tap()];
 
-  // Check that Sync hasn't started yet, allowing the user to change some
-  // settings.
-  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
-                  @"Sync shouldn't have finished its original setup yet");
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like GetSyncSettings)
+    // is broken in Xcode 16.
+  } else {
+    [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
+        performAction:grey_tap()];
 
-  [self scrollToElementAndAssertVisibility:
-            AdvancedSyncSettingsDoneButtonMatcher()];
-  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
+    // Check that Sync hasn't started yet, allowing the user to change some
+    // settings.
+    GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                    @"Sync shouldn't have finished its original setup yet");
+
+    [self scrollToElementAndAssertVisibility:
+              AdvancedSyncSettingsDoneButtonMatcher()];
+    [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
+        performAction:grey_tap()];
+  }
 
   // Check sync did not start yet.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
@@ -775,18 +787,24 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
-  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
-      performAction:grey_tap()];
 
-  // Check that Sync hasn't started yet, allowing the user to change some
-  // settings.
-  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
-                  @"Sync shouldn't have finished its original setup yet");
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like GetSyncSettings)
+    // is broken in Xcode 16.
+  } else {
+    [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
+        performAction:grey_tap()];
 
-  [self scrollToElementAndAssertVisibility:
-            AdvancedSyncSettingsDoneButtonMatcher()];
-  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
-      performAction:grey_tap()];
+    // Check that Sync hasn't started yet, allowing the user to change some
+    // settings.
+    GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                    @"Sync shouldn't have finished its original setup yet");
+
+    [self scrollToElementAndAssertVisibility:
+              AdvancedSyncSettingsDoneButtonMatcher()];
+    [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
+        performAction:grey_tap()];
+  }
 
   // Check sync did not start yet.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
@@ -810,6 +828,12 @@ GREYLayoutConstraint* BelowConstraint() {
 // Checks that sync is turned on after the user chose to turn on sync in the
 // advanced sync settings screen and that the correct sync options are selected.
 - (void)testCustomSyncOn {
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like GetSyncSettings)
+    // is broken in Xcode 16.
+    EARL_GREY_TEST_SKIPPED(@"Does not work with Xcode 16 beta bug.")
+  }
+
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -872,6 +896,12 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the user is signed in, but no sync options is selected.
 - (void)testCustomSyncOff {
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like GetSyncSettings)
+    // is broken in Xcode 16.
+    EARL_GREY_TEST_SKIPPED(@"Does not work with Xcode 16 beta bug.")
+  }
+
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -945,6 +975,12 @@ GREYLayoutConstraint* BelowConstraint() {
 // user chose to not sign-in even though they selected some sync options in the
 // advanced sync settings screen.
 - (void)testCustomSyncSignout {
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1335912): Tapping UITextView links (like GetSyncSettings)
+    // is broken in Xcode 16.
+    EARL_GREY_TEST_SKIPPED(@"Does not work with Xcode 16 beta bug.")
+  }
+
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
