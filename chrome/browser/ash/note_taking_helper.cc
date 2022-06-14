@@ -29,6 +29,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_base.h"
@@ -401,14 +402,20 @@ void NoteTakingHelper::OnArcPlayStoreEnabledChanged(bool enabled) {
 
 void NoteTakingHelper::OnProfileAdded(Profile* profile) {
   auto* registry = extensions::ExtensionRegistry::Get(profile);
-  DCHECK(!extension_registry_observations_.IsObservingSource(registry));
-  extension_registry_observations_.AddObservation(registry);
+  if (extension_registry_observations_.IsObservingSource(registry)) {
+    base::debug::DumpWithoutCrashing();
+  } else {
+    extension_registry_observations_.AddObservation(registry);
+  }
 
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     auto& cache = apps::AppServiceProxyFactory::GetForProfile(profile)
                       ->AppRegistryCache();
-    DCHECK(!app_registry_observations_.IsObservingSource(&cache));
-    app_registry_observations_.AddObservation(&cache);
+    if (app_registry_observations_.IsObservingSource(&cache)) {
+      base::debug::DumpWithoutCrashing();
+    } else {
+      app_registry_observations_.AddObservation(&cache);
+    }
   }
 
   if (!play_store_enabled_ && arc::IsArcPlayStoreEnabledForProfile(profile)) {
@@ -418,8 +425,13 @@ void NoteTakingHelper::OnProfileAdded(Profile* profile) {
   }
 
   auto* bridge = arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
-  if (bridge)
-    bridge->AddObserver(this);
+  if (bridge) {
+    if (arc_intent_helper_observations_.IsObservingSource(bridge)) {
+      base::debug::DumpWithoutCrashing();
+    } else {
+      arc_intent_helper_observations_.AddObservation(bridge);
+    }
+  }
 }
 
 NoteTakingHelper::NoteTakingHelper()
@@ -455,7 +467,11 @@ NoteTakingHelper::NoteTakingHelper()
             profile)) {
       auto& cache = apps::AppServiceProxyFactory::GetForProfile(profile)
                         ->AppRegistryCache();
-      app_registry_observations_.AddObservation(&cache);
+      if (app_registry_observations_.IsObservingSource(&cache)) {
+        base::debug::DumpWithoutCrashing();
+      } else {
+        app_registry_observations_.AddObservation(&cache);
+      }
     }
 
     // Check if the profile has already enabled Google Play Store.
@@ -465,10 +481,14 @@ NoteTakingHelper::NoteTakingHelper()
 
     // ArcIntentHelperBridge will notify us about changes to the list of
     // available Android apps.
-    auto* intent_helper_bridge =
-        arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
-    if (intent_helper_bridge)
-      intent_helper_bridge->AddObserver(this);
+    auto* bridge = arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
+    if (bridge) {
+      if (arc_intent_helper_observations_.IsObservingSource(bridge)) {
+        base::debug::DumpWithoutCrashing();
+      } else {
+        arc_intent_helper_observations_.AddObservation(bridge);
+      }
+    }
   }
 
   // Watch for changes of Google Play Store enabled state.
@@ -494,13 +514,6 @@ NoteTakingHelper::~NoteTakingHelper() {
   // ArcSessionManagerTest shuts down ARC before NoteTakingHelper.
   if (arc::ArcSessionManager::Get())
     arc::ArcSessionManager::Get()->RemoveObserver(this);
-  for (Profile* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    auto* intent_helper_bridge =
-        arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
-    if (intent_helper_bridge)
-      intent_helper_bridge->RemoveObserver(this);
-  }
 }
 
 std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(

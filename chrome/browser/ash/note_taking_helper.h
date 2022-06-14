@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_helper.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/browser/extension_registry.h"
@@ -251,10 +252,18 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   std::vector<NoteTakingAppInfo> android_apps_;
 
   // Tracks ExtensionRegistry observation for different profiles.
-  // TODO(crbug.com/1225848): Remove when App Service publishes Chrome Apps.
+  // TODO(crbug.com/1336120): Remove when App Service publishes Chrome Apps with
+  // note-taking intent.
   base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
                                      extensions::ExtensionRegistryObserver>
       extension_registry_observations_{this};
+
+  // Observes ArcIntentHelper for changes to Android intent filters.
+  // TODO(crbug.com/1336120): Remove when App Service publishes Android Apps
+  // with note-taking intent.
+  base::ScopedMultiSourceObservation<arc::ArcIntentHelperBridge,
+                                     arc::ArcIntentHelperObserver>
+      arc_intent_helper_observations_{this};
 
   // Obseves App Registry for all profiles with an App Registry.
   base::ScopedMultiSourceObservation<apps::AppRegistryCache,
