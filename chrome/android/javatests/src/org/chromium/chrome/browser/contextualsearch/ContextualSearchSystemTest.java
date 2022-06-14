@@ -155,7 +155,8 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285, /https://crbug.com/1192561")
+    // Revived 6/2022 based on reviver: https://crbug.com/1333277
+    // Previously disabled: https://crbug.com/1192285, https://crbug.com/1192561
     public void testContextualSearchNotDismissedOnBackgroundTabCrash(
             @EnabledFeature int enabledFeature) throws Exception {
         ChromeTabUtils.newTabFromMenu(
