@@ -72,6 +72,19 @@ bool FilterNoUrl(const GURL& gurl) {
   return true;
 }
 
+MATCHER_P(PasswordChangesAre, expectations, "") {
+  if (absl::holds_alternative<PasswordStoreBackendError>(arg)) {
+    return false;
+  }
+
+  auto changes = absl::get<PasswordChanges>(arg);
+  if (!changes.has_value()) {
+    return false;
+  }
+
+  return changes.value() == expectations;
+}
+
 }  // namespace
 
 class PasswordStoreProxyBackendTest : public testing::Test {
@@ -753,6 +766,78 @@ TEST_F(PasswordStoreProxyBackendTest,
   EXPECT_CALL(android_backend(), GetAllLoginsAsync).Times(0);
   EXPECT_CALL(built_in_backend(), GetAllLoginsAsync);
   proxy_backend().GetAllLoginsAsync(base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       RetriesAddLoginOnBuiltInBackendWhenOnAndroidFails) {
+  base::test::ScopedFeatureList feature_list;
+  // Enable UPM for syncing users only.
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+
+  EXPECT_CALL(android_backend(), AddLoginAsync)
+      .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
+        std::move(reply).Run(PasswordStoreBackendError::kUnrecoverable);
+      })));
+  const PasswordStoreChangeList changes = {
+      PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
+  EXPECT_CALL(built_in_backend(), AddLoginAsync)
+      .WillOnce(WithArg<1>(Invoke(
+          [&changes](auto reply) -> void { std::move(reply).Run(changes); })));
+  // Check that caller doesn't receive an error from android backend.
+  EXPECT_CALL(mock_reply, Run(PasswordChangesAre(changes)));
+  proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
+}
+
+TEST_F(PasswordStoreProxyBackendTest, DoesntRetryAddLoginOnRecoverableError) {
+  base::test::ScopedFeatureList feature_list;
+  // Enable UPM for syncing users only.
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+
+  EXPECT_CALL(android_backend(), AddLoginAsync)
+      .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
+        std::move(reply).Run(PasswordStoreBackendError::kRecoverable);
+      })));
+  EXPECT_CALL(built_in_backend(), AddLoginAsync).Times(0);
+  // Check that caller doesn't receive an error from android backend.
+  EXPECT_CALL(
+      mock_reply,
+      Run(PasswordChangesOrError(PasswordStoreBackendError::kRecoverable)));
+  proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       RetriesUpdateLoginOnBuiltInBackendWhenOnAndroidFails) {
+  base::test::ScopedFeatureList feature_list;
+  // Enable UPM for syncing users only.
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+
+  EXPECT_CALL(android_backend(), UpdateLoginAsync)
+      .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
+        std::move(reply).Run(PasswordStoreBackendError::kUnrecoverable);
+      })));
+  const PasswordStoreChangeList changes = {
+      PasswordStoreChange(PasswordStoreChange::Type::UPDATE, CreateTestForm())};
+  EXPECT_CALL(built_in_backend(), UpdateLoginAsync)
+      .WillOnce(WithArg<1>(Invoke(
+          [&changes](auto reply) -> void { std::move(reply).Run(changes); })));
+  // Check that caller doesn't receive an error from android backend.
+  EXPECT_CALL(mock_reply, Run(PasswordChangesAre(changes)));
+  proxy_backend().UpdateLoginAsync(CreateTestForm(), mock_reply.Get());
 }
 
 // Holds the main and shadow backend's logins and the expected number of common
