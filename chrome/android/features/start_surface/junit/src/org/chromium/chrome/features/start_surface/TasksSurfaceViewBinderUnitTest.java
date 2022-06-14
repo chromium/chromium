@@ -13,6 +13,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -20,41 +21,42 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link TasksSurfaceViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksSurfaceViewBinderTest extends BlankUiTestActivityTestCase {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class TasksSurfaceViewBinderUnitTest {
+    private Activity mActivity;
     private ViewGroup mParentView;
     private ViewGroup mTasksSurfaceView;
     private PropertyModel mPropertyModel;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Note that the specific type of the parent view and tasks surface view do not matter
-            // for the TasksSurfaceViewBinder.
-            mParentView = new FrameLayout(getActivity());
-            mTasksSurfaceView = new FrameLayout(getActivity());
-            getActivity().setContentView(mParentView);
+        // Note that the specific type of the parent view and tasks surface view do not matter for
+        // the TasksSurfaceViewBinder.
+        mParentView = new FrameLayout(mActivity);
+        mTasksSurfaceView = new FrameLayout(mActivity);
+        mActivity.setContentView(mParentView);
 
-            mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                    new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
-                    TasksSurfaceViewBinder::bind);
-        });
+        mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
+        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
+                new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
+                TasksSurfaceViewBinder::bind);
     }
 
     @Test

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
@@ -21,42 +22,43 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link SecondaryTasksSurfaceViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class SecondaryTasksSurfaceViewBinderTest extends BlankUiTestActivityTestCase {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class SecondaryTasksSurfaceViewBinderUnitTest {
+    private Activity mActivity;
     private ViewGroup mParentView;
     private View mTasksSurfaceView;
     private PropertyModel mPropertyModel;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() throws Exception {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Note that the specific type of the parent view and tasks surface view do not matter
-            // for the SecondaryTasksSurfaceViewBinderTest.
-            mParentView = new FrameLayout(getActivity());
-            mTasksSurfaceView = new View(getActivity());
-            mTasksSurfaceView.setBackground(new ColorDrawable(Color.WHITE));
-            getActivity().setContentView(mParentView);
+        // Note that the specific type of the parent view and tasks surface view do not matter for
+        // the SecondaryTasksSurfaceViewBinderTest.
+        mParentView = new FrameLayout(mActivity);
+        mTasksSurfaceView = new View(mActivity);
+        mTasksSurfaceView.setBackground(new ColorDrawable(Color.WHITE));
+        mActivity.setContentView(mParentView);
 
-            mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                    new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
-                    SecondaryTasksSurfaceViewBinder::bind);
-        });
+        mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
+        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
+                new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
+                SecondaryTasksSurfaceViewBinder::bind);
     }
 
     @Test
