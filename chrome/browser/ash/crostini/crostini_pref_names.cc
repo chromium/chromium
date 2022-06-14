@@ -7,9 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crostini/crostini_simple_types.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "components/guest_os/guest_os_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"

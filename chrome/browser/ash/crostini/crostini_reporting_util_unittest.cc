@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"

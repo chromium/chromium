@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 
-#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"

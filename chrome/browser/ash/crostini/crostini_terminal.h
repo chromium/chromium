@@ -7,12 +7,10 @@
 
 #include <vector>
 
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/geometry/point.h"
 
 class Profile;
 

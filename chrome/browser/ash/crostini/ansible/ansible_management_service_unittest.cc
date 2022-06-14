@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"

@@ -8,12 +8,9 @@
 #include <memory>
 
 #include "base/stl_util.h"
-#include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
-#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

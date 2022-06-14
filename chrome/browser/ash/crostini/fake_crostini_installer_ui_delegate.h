@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_INSTALLER_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_INSTALLER_UI_DELEGATE_H_
 
-#include "base/callback.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 

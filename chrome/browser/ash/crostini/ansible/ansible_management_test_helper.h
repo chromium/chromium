@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_MANAGEMENT_TEST_HELPER_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
