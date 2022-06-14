@@ -5853,7 +5853,9 @@ bool AXObject::OnNativeShowContextMenuAction() {
   document->GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
       element, kMenuSourceKeyboard);
 
-  if (RuntimeEnabledFeatures::
+  // The node may have ceased to exist due to the event handler actions
+  if (GetNode() &&
+      RuntimeEnabledFeatures::
           SynthesizedKeyboardEventsForAccessibilityActionsEnabled()) {
     // TODO: should we actually synthesize the mouseup event?
     KeyboardEvent* keyup =
