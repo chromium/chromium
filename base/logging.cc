@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include <atomic>
+#include <memory>
 
 // logging.h is a widely included header and its size has significant impact on
 // build time. Try not to raise this limit unless absolutely necessary. See
@@ -137,13 +138,33 @@ int g_min_log_level = 0;
 // causing a problem as updates tend to happen early. Atomic ensures there are
 // no problems. To avoid some of the overhead of Atomic, we use
 // |load(std::memory_order_acquire)| and |store(...,
-// std::memory_order_release)| when reading or writing. This
-// guarantees that referenced object is available at the time the point is read.
+// std::memory_order_release)| when reading or writing. This guarantees that the
+// referenced object is available at the time the |g_vlog_info| is read and that
+// |g_vlog_info| is updated atomically.
+//
+// Do not access this directly. You must use |GetVlogInfo|, |InitializeVlogInfo|
+// and/or |ExchangeVlogInfo|.
 std::atomic<VlogInfo*> g_vlog_info = nullptr;
+
+VlogInfo* GetVlogInfo() {
+  return g_vlog_info.load(std::memory_order_acquire);
+}
+
+// Sets g_vlog_info if it is not already set. Checking that it's not already set
+// prevents logging initialization (which can come late in test setup) from
+// overwriting values set via ScopedVmoduleSwitches.
+bool InitializeVlogInfo(VlogInfo* vlog_info) {
+  VlogInfo* previous_vlog_info = nullptr;
+  return g_vlog_info.compare_exchange_strong(previous_vlog_info, vlog_info);
+}
+
+VlogInfo* ExchangeVlogInfo(VlogInfo* vlog_info) {
+  return g_vlog_info.exchange(vlog_info);
+}
 
 // Creates a VlogInfo from the commandline if it has been initialized and if it
 // contains relevant switches, otherwise this returns |nullptr|.
-VlogInfo* VlogInfoFromCommandLine() {
+std::unique_ptr<VlogInfo> VlogInfoFromCommandLine() {
   if (!base::CommandLine::InitializedForCurrentProcess())
     return nullptr;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -155,9 +176,25 @@ VlogInfo* VlogInfoFromCommandLine() {
   // See comments on |g_vlog_info|.
   ScopedLeakSanitizerDisabler lsan_disabler;
 #endif  // defined(LEAK_SANITIZER)
-  return new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
-                      command_line->GetSwitchValueASCII(switches::kVModule),
-                      &g_min_log_level);
+  return std::make_unique<VlogInfo>(
+      command_line->GetSwitchValueASCII(switches::kV),
+      command_line->GetSwitchValueASCII(switches::kVModule), &g_min_log_level);
+}
+
+// If the commandline is initialized for the current process this will
+// initialize g_vlog_info. If there are no VLOG switches, it will initialize it
+// to |nullptr|.
+void MaybeInitializeVlogInfo() {
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    std::unique_ptr<VlogInfo> vlog_info = VlogInfoFromCommandLine();
+    if (vlog_info) {
+      // VlogInfoFromCommandLine is annotated with ScopedLeakSanitizerDisabler
+      // so it's allowed to leak. If the object was installed, we release it.
+      if (InitializeVlogInfo(vlog_info.get())) {
+        vlog_info.release();
+      }
+    }
+  }
 }
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
@@ -432,9 +469,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 #endif
 
 #if BUILDFLAG(USE_RUNTIME_VLOG)
-  if (base::CommandLine::InitializedForCurrentProcess()) {
-    g_vlog_info.store(VlogInfoFromCommandLine(), std::memory_order_release);
-  }
+  MaybeInitializeVlogInfo();
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
   g_logging_destination = settings.logging_dest;
@@ -522,7 +557,7 @@ int GetVlogLevelHelper(const char* file, size_t N) {
 #if BUILDFLAG(USE_RUNTIME_VLOG)
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
-  VlogInfo* vlog_info = g_vlog_info.load(std::memory_order_acquire);
+  VlogInfo* vlog_info = GetVlogInfo();
   return vlog_info ?
       vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
       GetVlogVerbosity();
@@ -1105,6 +1140,53 @@ int GetDisableAllVLogLevel() {
   return -1;
 }
 #endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
+
+// Used for testing. Declared in test/scoped_logging_settings.h.
+ScopedVmoduleSwitches::ScopedVmoduleSwitches() = default;
+#if BUILDFLAG(USE_RUNTIME_VLOG)
+VlogInfo* ScopedVmoduleSwitches::CreateVlogInfoWithSwitches(
+    const std::string& vmodule_switch) {
+  // Try get a VlogInfo on which to base this.
+  // First ensure that VLOG has been initialized.
+  MaybeInitializeVlogInfo();
+
+  // Getting this now and setting it later is racy, however if a
+  // ScopedVmoduleSwitches is being used on multiple threads that requires
+  // further coordination and avoids this race.
+  VlogInfo* base_vlog_info = GetVlogInfo();
+  if (!base_vlog_info) {
+    // Base is |nullptr|, so just create it from scratch.
+    return new VlogInfo(/*v_switch_=*/"", vmodule_switch, &g_min_log_level);
+  }
+  return base_vlog_info->WithSwitches(vmodule_switch);
+}
+
+void ScopedVmoduleSwitches::InitWithSwitches(
+    const std::string& vmodule_switch) {
+  // Make sure we are only initialized once.
+  CHECK(!scoped_vlog_info_);
+  {
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+    // See comments on |g_vlog_info|.
+    ScopedLeakSanitizerDisabler lsan_disabler;
+#endif  // defined(LEAK_SANITIZER)
+    scoped_vlog_info_ = CreateVlogInfoWithSwitches(vmodule_switch);
+  }
+  previous_vlog_info_ = ExchangeVlogInfo(scoped_vlog_info_);
+}
+
+ScopedVmoduleSwitches::~ScopedVmoduleSwitches() {
+  VlogInfo* replaced_vlog_info = ExchangeVlogInfo(previous_vlog_info_);
+  // Make sure something didn't replace our scoped VlogInfo while we weren't
+  // looking.
+  CHECK_EQ(replaced_vlog_info, scoped_vlog_info_);
+}
+#else
+void ScopedVmoduleSwitches::InitWithSwitches(
+    const std::string& vmodule_switch) {}
+
+ScopedVmoduleSwitches::~ScopedVmoduleSwitches() = default;
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging
 

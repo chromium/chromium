@@ -220,6 +220,7 @@ void BackForwardCacheBrowserTest::SetupFeaturesAndParameters() {
 
   feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                               disabled_features_);
+  vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
 }
 
 void BackForwardCacheBrowserTest::EnableFeatureAndSetParams(

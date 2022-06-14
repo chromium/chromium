@@ -170,6 +170,19 @@ TEST(VlogTest, VmoduleOrderSample) {
   EXPECT_EQ(0, vlog_info.GetVlogLevel("foo.cc"));
 }
 
+TEST(VlogTest, WithSwitches) {
+  // Set up simple VlogInfo with just "foo".
+  int min_log_level = 0;
+  VlogInfo vlog_info("", "foo=1", &min_log_level);
+  EXPECT_EQ(1, vlog_info.GetVlogLevel("foo.cc"));
+  EXPECT_EQ(0, vlog_info.GetVlogLevel("bar.cc"));
+
+  // Now create another one adding "bar".
+  std::unique_ptr<VlogInfo> vlog_info_with_switches(
+      vlog_info.WithSwitches("bar=2"));
+  EXPECT_EQ(1, vlog_info_with_switches->GetVlogLevel("foo.cc"));
+  EXPECT_EQ(2, vlog_info_with_switches->GetVlogLevel("bar.cc"));
+}
 }  // namespace
 
 }  // namespace logging

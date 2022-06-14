@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -246,6 +247,7 @@ class BackForwardCacheBrowserTest
   content::ContentMockCertVerifier mock_cert_verifier_;
 
   base::test::ScopedFeatureList feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
 
   FrameTreeVisualizer visualizer_;
   std::vector<base::Bucket> expected_outcomes_;

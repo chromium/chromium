@@ -862,6 +862,49 @@ TEST_F(LoggingTest, String16) {
   }
 }
 
+// Tests that we don't VLOG from logging_unittest except when in the scope
+// of the ScopedVmoduleSwitches.
+TEST_F(LoggingTest, ScopedVmoduleSwitches) {
+#if BUILDFLAG(USE_RUNTIME_VLOG)
+  EXPECT_TRUE(VLOG_IS_ON(0));
+#else
+  // VLOG defaults to off when not USE_RUNTIME_VLOG.
+  EXPECT_FALSE(VLOG_IS_ON(0));
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
+
+  // To avoid unreachable-code warnings when VLOG is disabled at compile-time.
+  int expected_logs = 0;
+  if (VLOG_IS_ON(0))
+    expected_logs += 1;
+
+  SetMinLogLevel(LOGGING_FATAL);
+
+  {
+    MockLogSource mock_log_source;
+    EXPECT_CALL(mock_log_source, Log()).Times(0);
+
+    VLOG(1) << mock_log_source.Log();
+  }
+
+  {
+    ScopedVmoduleSwitches scoped_vmodule_switches;
+    scoped_vmodule_switches.InitWithSwitches(__FILE__ "=1");
+    MockLogSource mock_log_source;
+    EXPECT_CALL(mock_log_source, Log())
+        .Times(expected_logs)
+        .WillRepeatedly(Return("log message"));
+
+    VLOG(1) << mock_log_source.Log();
+  }
+
+  {
+    MockLogSource mock_log_source;
+    EXPECT_CALL(mock_log_source, Log()).Times(0);
+
+    VLOG(1) << mock_log_source.Log();
+  }
+}
+
 #if !BUILDFLAG(USE_RUNTIME_VLOG)
 TEST_F(LoggingTest, BuildTimeVLOG) {
   // Use a static because only captureless lambdas can be converted to a
@@ -895,6 +938,10 @@ TEST_F(LoggingTest, BuildTimeVLOG) {
   EXPECT_TRUE(log_string->empty());
 }
 #endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
+
+// NO NEW TESTS HERE
+// The test above redefines ENABLED_VLOG_LEVEL, so new tests should be added
+// before it.
 
 }  // namespace
 
