@@ -1687,6 +1687,7 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/multi-page-background.html
 crbug.com/1121942 virtual/layout_ng_printing/printing/named-page-breaks.html [ Failure ]
 crbug.com/1121942 [ Linux ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
 crbug.com/1121942 [ Mac11 ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
+crbug.com/1121942 [ Mac12 ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
 crbug.com/1121942 [ Win ] virtual/layout_ng_printing/printing/overflow-auto.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-break-avoid.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation-propagated.html [ Failure ]
