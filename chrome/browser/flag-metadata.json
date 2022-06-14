@@ -2271,7 +2271,7 @@
   {
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 115
   },
   {
     "name": "enable-instant-start",
@@ -2672,7 +2672,7 @@
   {
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 104
+    "expiry_milestone": 115
   },
   {
     "name": "enable-shortened-password-auto-fill-instruction",
