@@ -23,7 +23,7 @@ CastAppController::CastAppController(Client* client,
   std::unique_ptr<webview::WebviewResponse> response =
       std::make_unique<webview::WebviewResponse>();
 
-  auto ax_id = contents->GetMainFrame()->GetAXTreeID().ToString();
+  auto ax_id = contents->GetPrimaryMainFrame()->GetAXTreeID().ToString();
   response->mutable_create_response()
       ->mutable_accessibility_info()
       ->set_ax_tree_id(ax_id);

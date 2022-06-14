@@ -448,7 +448,7 @@ void WebContentController::JavascriptCallback(int64_t id, base::Value result) {
 void WebContentController::HandleEvaluateJavascript(
     int64_t id,
     const webview::EvaluateJavascriptRequest& request) {
-  GetWebContents()->GetMainFrame()->ExecuteJavaScript(
+  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScript(
       base::UTF8ToUTF16(request.javascript_blob()),
       base::BindOnce(&WebContentController::JavascriptCallback,
                      weak_ptr_factory_.GetWeakPtr(), id));

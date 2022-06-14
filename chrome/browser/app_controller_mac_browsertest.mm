@@ -1234,7 +1234,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffPrerenderBrowserTest,
   content::TestActivationManager navigation_manager(GetActiveWebContents(),
                                                     prerender_url);
   ASSERT_TRUE(
-      content::ExecJs(GetActiveWebContents()->GetMainFrame(),
+      content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
                       content::JsReplace("location = $1", prerender_url)));
   navigation_manager.WaitForNavigationFinished();
   EXPECT_TRUE(navigation_manager.was_activated());

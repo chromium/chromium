@@ -122,7 +122,7 @@ void AppWindowContentsImpl::UpdateDraggableRegions(
   // This message should come from a primary main frame.
   if (!sender->IsInPrimaryMainFrame()) {
     bad_message::ReceivedBadMessage(
-        web_contents_->GetMainFrame()->GetProcess(),
+        web_contents_->GetPrimaryMainFrame()->GetProcess(),
         bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
     return;
   }

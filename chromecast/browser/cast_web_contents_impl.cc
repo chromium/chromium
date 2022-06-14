@@ -162,9 +162,9 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   DCHECK(web_contents_);
   DCHECK(web_contents_->GetController().IsInitialNavigation());
   DCHECK(!web_contents_->IsLoading());
-  DCHECK(web_contents_->GetMainFrame());
+  DCHECK(web_contents_->GetPrimaryMainFrame());
 
-  main_process_host_ = web_contents_->GetMainFrame()->GetProcess();
+  main_process_host_ = web_contents_->GetPrimaryMainFrame()->GetProcess();
   DCHECK(main_process_host_);
   main_process_host_->AddObserver(this);
 
@@ -201,7 +201,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
       switches::kCastAppBackgroundColor, SK_ColorBLACK));
 
   if (params_->enable_webui_bindings_permission) {
-    web_contents_->GetMainFrame()->AllowBindings(
+    web_contents_->GetPrimaryMainFrame()->AllowBindings(
         content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
   }
 }
@@ -407,11 +407,11 @@ void CastWebContentsImpl::ExecuteJavaScript(
     base::OnceCallback<void(base::Value)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!web_contents_ || closing_ || !main_frame_loaded_ ||
-      !web_contents_->GetMainFrame())
+      !web_contents_->GetPrimaryMainFrame())
     return;
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(javascript,
-                                                   std::move(callback));
+  web_contents_->GetPrimaryMainFrame()->ExecuteJavaScript(javascript,
+                                                          std::move(callback));
 }
 
 void CastWebContentsImpl::ConnectToBindingsService(
@@ -450,12 +450,12 @@ void CastWebContentsImpl::SetEnabledForRemoteDebugging(bool enabled) {
 }
 
 void CastWebContentsImpl::GetMainFramePid(GetMainFramePidCallback cb) {
-  if (!web_contents_ || !web_contents_->GetMainFrame()) {
+  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame()) {
     std::move(cb).Run(base::kNullProcessHandle);
     return;
   }
 
-  auto* rph = web_contents_->GetMainFrame()->GetProcess();
+  auto* rph = web_contents_->GetPrimaryMainFrame()->GetProcess();
   if (!rph || rph->GetProcess().Handle() == base::kNullProcessHandle) {
     std::move(cb).Run(base::kNullProcessHandle);
     return;
@@ -747,7 +747,7 @@ void CastWebContentsImpl::DidFinishLoad(
     const GURL& validated_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (page_state_ != PageState::LOADING || !web_contents_ ||
-      render_frame_host != web_contents_->GetMainFrame()) {
+      render_frame_host != web_contents_->GetPrimaryMainFrame()) {
     return;
   }
 
@@ -884,7 +884,8 @@ void CastWebContentsImpl::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  if (!web_contents_ || render_frame_host != web_contents_->GetMainFrame())
+  if (!web_contents_ ||
+      render_frame_host != web_contents_->GetPrimaryMainFrame())
     return;
   int net_error = resource_load_info.net_error;
   if (net_error == net::OK)

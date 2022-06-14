@@ -735,7 +735,8 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
     requests_access_.container->SetVisible(false);
     site_settings_button_->SetVisible(false);
   } else {
-    url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+    url::Origin origin =
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     extensions::PermissionsManager::UserSiteSetting site_setting =
         extensions::PermissionsManager::Get(browser_->profile())
             ->GetUserSiteSetting(origin);
@@ -833,8 +834,8 @@ ExtensionsTabbedMenuView::GetSectionForAction(
       extensions::PermissionsManager::UserSiteSetting site_setting;
       site_setting =
           extensions::PermissionsManager::Get(browser_->profile())
-              ->GetUserSiteSetting(
-                  web_contents->GetMainFrame()->GetLastCommittedOrigin());
+              ->GetUserSiteSetting(web_contents->GetPrimaryMainFrame()
+                                       ->GetLastCommittedOrigin());
       if (site_setting == UserSiteSetting::kGrantAllExtensions)
         return &has_access_;
       return &requests_access_;
@@ -871,7 +872,7 @@ void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
 void ExtensionsTabbedMenuView::OnSiteSettingSelected(
     extensions::PermissionsManager::UserSiteSetting site_settings) {
   auto current_origin =
-      GetActiveWebContents()->GetMainFrame()->GetLastCommittedOrigin();
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   auto* permissions_manager =
       extensions::PermissionsManager::Get(browser_->profile());
   switch (site_settings) {

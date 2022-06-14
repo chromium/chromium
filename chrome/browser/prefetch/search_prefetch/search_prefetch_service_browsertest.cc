@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
     history.replaceState(null, "", url.toString());
   )";
 
-  content::RenderFrameHost* frame = GetWebContents()->GetMainFrame();
+  content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
   EXPECT_TRUE(content::ExecuteScript(frame, script));
 
   // The prefetch should be served, and only 1 request should be issued.

@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_P(RendererAppContainerEnabledTest, IsRespected) {
   base::ProcessId renderer_process_id = browser()
                                             ->tab_strip_model()
                                             ->GetActiveWebContents()
-                                            ->GetMainFrame()
+                                            ->GetPrimaryMainFrame()
                                             ->GetProcess()
                                             ->GetProcess()
                                             .Pid();

@@ -202,7 +202,8 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
 
   void CreateImageAndWaitForCookieAccess(const GURL& image_url) {
     WebContents* web_contents = GetActiveWebContents();
-    CookieAccessObserver observer(web_contents, web_contents->GetMainFrame());
+    CookieAccessObserver observer(web_contents,
+                                  web_contents->GetPrimaryMainFrame());
     ASSERT_TRUE(content::ExecJs(web_contents,
                                 content::JsReplace(
                                     R"(
@@ -445,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Visit initial page
   ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Wait for navigation to finish to initial page
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   // Wait until we can click.
@@ -461,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to interstitial page
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Advance TimeTicks by 1 second
   AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
   // Write Cookie via JS on bounce page
@@ -564,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to bounce page (b.test).
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Advance TimeTicks by 1 second.
   AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
   // Write Cookie via JS on bounce page.
@@ -632,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
   // Wait for navigation to finish to initial page.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Wait until we can click.
   content::WaitForHitTestData(frame);
   // Advance TimeTicks 10 seconds.
@@ -646,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to bounce page 1.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Wait until we can click.
   content::WaitForHitTestData(frame);
   // simulate mouse click
@@ -667,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to bounce page 2.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Advance TimeTicks by 1 second.
   AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
   // Write Cookie via JS on bounce page 2.
@@ -682,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to bounce page 3.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Advance TimeTicks by 1 second.
   AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
   // Write Cookie via JS on bounce page 3.
@@ -810,14 +811,14 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Set cookies on c.test without of user engagement signal.
   ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
-      web_contents->GetMainFrame(),
+      web_contents->GetPrimaryMainFrame(),
       embedded_test_server()->GetURL("c.test", "/set-cookie?name=value")));
 
   // Visit initial page.
   ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
   // Wait for navigation to finish to initial page.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Wait until we can click.
   content::WaitForHitTestData(frame);
   // Advance TimeTicks 10 seconds.
@@ -832,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to bounce page 1.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Wait until we can click.
   content::WaitForHitTestData(frame);
   // Advance TimeTicks by 1 second
@@ -844,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Wait for navigation to finish to bounce page 2.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  frame = web_contents->GetMainFrame();
+  frame = web_contents->GetPrimaryMainFrame();
   // Advance TimeTicks by 1 second.
   AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
   // Write Cookie via JS on bounce page 2 (c.test).

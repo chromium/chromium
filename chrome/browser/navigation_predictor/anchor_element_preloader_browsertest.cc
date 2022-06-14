@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, Duplicates) {
   ukm::SourceId ukm_source_id = browser()
                                     ->tab_strip_model()
                                     ->GetActiveWebContents()
-                                    ->GetMainFrame()
+                                    ->GetPrimaryMainFrame()
                                     ->GetPageUkmSourceId();
 
   // First link with mousedown event should get preconnected.

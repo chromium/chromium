@@ -114,7 +114,7 @@ struct TabInfo {
   void SetUpMailman(const GURL& url) {
     std::string script_result;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StringPrintf("setUpMailman('%s');", url.spec().c_str()),
         &script_result));
     EXPECT_EQ(script_result, "mailman-ready");
@@ -198,7 +198,7 @@ struct TabInfo {
   bool CloneTrack() {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(), "clone();", &script_result));
+        web_contents->GetPrimaryMainFrame(), "clone();", &script_result));
     DCHECK(script_result == "clone-track-success" ||
            script_result == "clone-track-failure");
     return script_result == "clone-track-success";
@@ -207,7 +207,7 @@ struct TabInfo {
   bool Deallocate(Track track) {
     std::string script_result = "error-not-modified";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents->GetMainFrame(),
+        web_contents->GetPrimaryMainFrame(),
         base::StringPrintf("deallocate('%s');", ToString(track)),
         &script_result));
     DCHECK(script_result == "deallocate-failure" ||

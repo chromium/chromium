@@ -103,7 +103,7 @@ void AccessibilityServiceImpl::NotifyAccessibilitySettingChanged(
   for (chromecast::CastWebContents* webview : webviews) {
     mojo::Remote<mojom::CastAccessibilityClient> accessibility_client;
     content::RenderFrameHost* render_frame_host =
-        webview->web_contents()->GetMainFrame();
+        webview->web_contents()->GetPrimaryMainFrame();
 
     if (!render_frame_host)
       continue;

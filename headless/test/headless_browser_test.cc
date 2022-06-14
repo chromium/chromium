@@ -237,7 +237,7 @@ void HeadlessBrowserTest::WaitForLoadAndGainFocus(
   // is issued first is undefined. The following code is waiting on both, in any
   // order.
   content::TestNavigationObserver load_observer(content, 1);
-  content::FrameFocusedObserver focus_observer(content->GetMainFrame());
+  content::FrameFocusedObserver focus_observer(content->GetPrimaryMainFrame());
   load_observer.Wait();
   focus_observer.Wait();
 }

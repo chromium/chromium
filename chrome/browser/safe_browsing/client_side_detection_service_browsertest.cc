@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   content::RenderProcessHost* rph = rfh->GetProcess();
 
   // Update the model and wait for confirmation
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   content::RenderProcessHost* rph = rfh->GetProcess();
 
   // Update the model and wait for confirmation

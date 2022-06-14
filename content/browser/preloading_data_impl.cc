@@ -37,7 +37,7 @@ PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
   // TODO(crbug.com/1330783): Extend this for non-primary page and inner
   // WebContents preloading attempts.
   ukm::SourceId triggered_primary_page_source_id =
-      web_contents()->GetMainFrame()->GetPageUkmSourceId();
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   auto attempt = std::make_unique<PreloadingAttemptImpl>(
       predictor, preloading_type, triggered_primary_page_source_id,
@@ -59,7 +59,7 @@ void PreloadingDataImpl::AddPreloadingPrediction(
   // TODO(crbug.com/1330783): Extend this for non-primary page and inner
   // WebContents preloading predictions.
   ukm::SourceId triggered_primary_page_source_id =
-      web_contents()->GetMainFrame()->GetPageUkmSourceId();
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
   auto prediction = std::make_unique<PreloadingPrediction>(
       predictor, confidence, triggered_primary_page_source_id,

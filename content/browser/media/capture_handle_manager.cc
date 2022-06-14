@@ -43,7 +43,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   // Observing CaptureHandle wheneither the capturing or the captured party
   // is incognito is disallowed, except for self-capture.
-  if (capturer->GetMainFrame() != captured->GetMainFrame()) {
+  if (capturer->GetMainFrame() != captured->GetPrimaryMainFrame()) {
     if (capturer->GetBrowserContext()->IsOffTheRecord() ||
         captured->GetBrowserContext()->IsOffTheRecord()) {
       return nullptr;
@@ -52,7 +52,7 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   auto result = media::mojom::CaptureHandle::New();
   if (capture_handle_config.expose_origin) {
-    result->origin = captured->GetMainFrame()->GetLastCommittedOrigin();
+    result->origin = captured->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   }
   result->capture_handle = capture_handle_config.capture_handle;
 
