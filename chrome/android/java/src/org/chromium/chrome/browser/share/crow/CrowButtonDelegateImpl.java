@@ -29,6 +29,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     private static final String DEBUG_SERVER_URL_PARAM = "DebugServerURL";
     private static final String DOMAIN_LIST_URL_PARAM = "DomainList";
     private static final String DOMAIN_ID_NONE = "0";
+    private static final String DEFAULT_BUTTON_TEXT = "Thank\u00A0creator";
 
     private static final String TAG = "CrowButton";
 
@@ -108,8 +109,13 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
 
     @Override
     public String getButtonText() {
-        return ChromeFeatureList.getFieldTrialParamByFeature(
+        String param = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.SHARE_CROW_BUTTON, APP_MENU_BUTTON_TEXT_PARAM);
+        // Provide a default with non-breaking space. String is en-us only.
+        if (param.isEmpty()) {
+            return DEFAULT_BUTTON_TEXT;
+        }
+        return param;
     }
 
     @Override
