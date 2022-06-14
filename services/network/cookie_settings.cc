@@ -207,6 +207,9 @@ CookieSettings::GetCookieSettingWithMetadata(
   if (block_third_party_cookies_ && is_third_party_request &&
       !base::Contains(third_party_cookies_allowed_schemes_,
                       first_party_url.scheme())) {
+    // We'll set `cookie_setting` to `CONTENT_SETTING_BLOCK`
+    // below iff there's no Storage Access permission grant
+    // that can allow access.
     third_party_blocking_outcome =
         ThirdPartyBlockingOutcome::kAllStateDisallowed;
   }
@@ -220,45 +223,47 @@ CookieSettings::GetCookieSettingWithMetadata(
     }
   }
 
-  if (third_party_blocking_outcome ==
-      ThirdPartyBlockingOutcome::kAllStateDisallowed) {
-    if (const ContentSettingPatternSource* match =
-            FindMatchingSetting(url, first_party_url, storage_access_grants_);
-        match) {
-      if (match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+  switch (third_party_blocking_outcome) {
+    case ThirdPartyBlockingOutcome::kAllStateDisallowed:
+      if (const ContentSettingPatternSource* match =
+              FindMatchingSetting(url, first_party_url, storage_access_grants_);
+          match && match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
         third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
         FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                        ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
+      } else {
+        cookie_setting = CONTENT_SETTING_BLOCK;
+        FireStorageAccessHistogram(
+            net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
       }
-    }
-
-    if (third_party_blocking_outcome ==
-        ThirdPartyBlockingOutcome::kAllStateDisallowed) {
-      // If the third-party cookie blocking setting is enabled, we check if the
-      // user has any content settings for the first-party URL as the primary
-      // pattern. If cookies are allowed for the first-party URL then we allow
-      // partitioned cross-site cookies.
-      if (const ContentSettingPatternSource* match = FindMatchingSetting(
-              first_party_url, first_party_url, content_settings_);
-          !match || match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
-        third_party_blocking_outcome =
-            ThirdPartyBlockingOutcome::kPartitionedStateAllowed;
-      }
-    }
-  } else {
-    // Cookies aren't blocked solely due to the third-party-cookie blocking
-    // setting, but they still may be blocked due to a global default. So we
-    // have to check what the setting is here.
-    FireStorageAccessHistogram(
-        cookie_setting == CONTENT_SETTING_BLOCK
-            ? net::cookie_util::StorageAccessResult::ACCESS_BLOCKED
-            : net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
+      break;
+    case ThirdPartyBlockingOutcome::kIrrelevant:
+      // Cookies aren't blocked solely due to the third-party-cookie blocking
+      // setting, but they still may be blocked due to a global default. So we
+      // have to check what the setting is here.
+      FireStorageAccessHistogram(
+          cookie_setting == CONTENT_SETTING_BLOCK
+              ? net::cookie_util::StorageAccessResult::ACCESS_BLOCKED
+              : net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
+      break;
+    case ThirdPartyBlockingOutcome::kPartitionedStateAllowed:
+      NOTREACHED();
+      break;
   }
 
-  if (third_party_blocking_outcome != ThirdPartyBlockingOutcome::kIrrelevant) {
-    cookie_setting = CONTENT_SETTING_BLOCK;
-    FireStorageAccessHistogram(
-        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
+  if (third_party_blocking_outcome ==
+      ThirdPartyBlockingOutcome::kAllStateDisallowed) {
+    // If the third-party cookie blocking setting is enabled and will block
+    // access to unpartitioned cookies, we check if the user has any content
+    // settings for the first-party URL as the primary pattern. If cookies are
+    // allowed for the first-party URL then we allow partitioned cross-site
+    // cookies.
+    if (const ContentSettingPatternSource* match = FindMatchingSetting(
+            first_party_url, first_party_url, content_settings_);
+        !match || match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+      third_party_blocking_outcome =
+          ThirdPartyBlockingOutcome::kPartitionedStateAllowed;
+    }
   }
 
   return {cookie_setting, third_party_blocking_outcome};
