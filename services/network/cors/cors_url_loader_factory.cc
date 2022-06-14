@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -250,6 +251,9 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   debug::ScopedResourceRequestCrashKeys request_crash_keys(resource_request);
+  SCOPED_CRASH_KEY_NUMBER("net", "traffic_annotation_hash",
+                          traffic_annotation.unique_id_hash_code);
+  SCOPED_CRASH_KEY_STRING64("network", "factory_debug_tag", debug_tag_);
 
   if (!IsValidRequest(resource_request, options)) {
     mojo::Remote<mojom::URLLoaderClient>(std::move(client))
