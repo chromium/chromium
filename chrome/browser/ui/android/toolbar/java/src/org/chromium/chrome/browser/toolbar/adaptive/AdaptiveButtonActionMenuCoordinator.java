@@ -80,7 +80,7 @@ public class AdaptiveButtonActionMenuCoordinator {
             }
         };
 
-        anchorView.setDelegate(delegate);
+        anchorView.setDelegate(delegate, /* overrideOnClickListener= */ false);
         anchorView.showMenu();
         RecordUserAction.record("MobileAdaptiveMenuShown");
     }
