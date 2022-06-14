@@ -549,6 +549,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionSplitTitleCompletion", "true"},
             {"RichAutocompletionSplitUrlCompletion", "true"},
         });
+    RichAutocompletionParams::ClearParamsForTesting();
 
     // Prefer autocompleting primary text prefix. Should not set
     // |rich_autocompletion_triggered|.
@@ -617,6 +618,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
             {"RichAutocompletionSplitCompletionMinChar", "2"},
         });
+    RichAutocompletionParams::ClearParamsForTesting();
 
     // Do autocomplete URL non-prefix if input is greater than limits.
     {
@@ -646,6 +648,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
 
   // Don't autocomplete if IsRichAutocompletionEnabled is disabled
   {
+    RichAutocompletionParams::ClearParamsForTesting();
     SCOPED_TRACE("feature disabled");
     test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
          AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
@@ -666,6 +669,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionSplitCompletionMinChar", "2"},
             {"RichAutocompletionCounterfactual", "true"},
         });
+    RichAutocompletionParams::ClearParamsForTesting();
 
     // Do trigger if input is greater than limits.
     {
@@ -703,6 +707,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompletePreferUrlsOverPrefixes", "true"},
         });
+    RichAutocompletionParams::ClearParamsForTesting();
 
     {
       SCOPED_TRACE("prefer URLs over prefixes");
@@ -725,6 +730,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
              "true"},
         });
+    RichAutocompletionParams::ClearParamsForTesting();
     // Trigger if the suggestion is from the shortcut provider and the input
     // contains no spaces.
     {
@@ -761,6 +767,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
              "false"},
         });
+    RichAutocompletionParams::ClearParamsForTesting();
     {
       SCOPED_TRACE("input with spaces");
       test("x x", false, "primary x x", "secondary x x", true, true,
@@ -804,6 +811,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionSplit) {
           {"RichAutocompletionSplitTitleCompletion", "true"},
           {"RichAutocompletionSplitUrlCompletion", "true"},
       });
+  RichAutocompletionParams::ClearParamsForTesting();
 
   // Prefer primary text, match the first word break occurrence, match the
   // delimiter, and match trailing delimiters.
@@ -882,6 +890,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
           {"RichAutocompletionAutocompleteTitles", "true"},
           {"RichAutocompletionAutocompleteShortcutText", "true"},
       });
+  RichAutocompletionParams::ClearParamsForTesting();
 
   // Prefer URL prefix AC when the input prefix matches the URL, title, and
   // shortcut text.

@@ -56,6 +56,34 @@ const char kACMatchPropertyContentsStartIndex[] = "match contents start index";
 // scoring non-default match.
 const char kACMatchPropertyScoreBoostedFrom[] = "score_boosted_from";
 
+// `RichAutocompletionParams` is a cache for the params used by
+// `TryRichAutocompletion()`. `TryRichAutocompletion()` is called about 80 times
+// per keystroke; fetching all 16 params each time causes measurable timing
+// regressions. Using `static const` local variables instead wouldn't be
+// testable.
+struct RichAutocompletionParams {
+  RichAutocompletionParams();
+  static RichAutocompletionParams& GetParams();
+  static void ClearParamsForTesting();
+  bool enabled;
+  bool autocomplete_titles;
+  bool autocomplete_titles_shortcut_provider;
+  bool autocomplete_titles_no_inputs_with_spaces;
+  int autocomplete_titles_min_char;
+  bool autocomplete_non_prefix_all;
+  bool autocomplete_non_prefix_shortcut_provider;
+  bool autocomplete_non_prefix_no_inputs_with_spaces;
+  int autocomplete_non_prefix_min_char;
+  bool split_title_completion;
+  bool split_url_completion;
+  int split_completion_min_char;
+  bool autocomplete_shortcut_text;
+  bool autocomplete_shortcut_text_no_inputs_with_spaces;
+  int autocomplete_shortcut_text_min_char;
+  bool counterfactual;
+  bool autocomplete_prefer_urls_over_prefixes;
+};
+
 // |SplitAutocompletion| helps track the autocompleted portions of a match's
 // text displayed when it is the default suggestion. It is used when the
 // autocompletions are between the user text; i.e. the user text is split. E.g.
