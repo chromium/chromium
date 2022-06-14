@@ -6943,6 +6943,12 @@
           'SIM_IPAD_AIR_3RD_GEN_16_0',
         ],
       },
+      'ios_crash_xcuitests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_X_16_0',
+        ]
+      },
     },
 
     'ios16_sdk_simulator_tests': {
@@ -6957,6 +6963,14 @@
         'variants': [
           'SIM_IPHONE_8_16_0',
         ],
+      },
+      'ios_crash_xcuitests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_X_16_0',
+          'SIM_IPHONE_6S_15_5',
+          'SIM_IPHONE_6S_14_5',
+        ]
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
