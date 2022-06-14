@@ -11,7 +11,7 @@ enum GPUFeatureName {
     "texture-compression-astc",
     "timestamp-query",
     "shader-float16",
-    "depth-clamping",
+    "depth-clip-control",
     "depth32float-stencil8",
     "indirect-first-instance",
     "chromium-experimental-dp4a",

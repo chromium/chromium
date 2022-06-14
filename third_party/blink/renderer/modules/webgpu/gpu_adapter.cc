@@ -59,8 +59,8 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
       case WGPUFeatureName_IndirectFirstInstance:
         features->AddFeatureName("indirect-first-instance");
         break;
-      case WGPUFeatureName_DepthClamping:
-        features->AddFeatureName("depth-clamping");
+      case WGPUFeatureName_DepthClipControl:
+        features->AddFeatureName("depth-clip-control");
         break;
       case WGPUFeatureName_DawnShaderFloat16:
         features->AddFeatureName("shader-float16");
