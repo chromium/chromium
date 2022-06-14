@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/oauth2/http_exchange.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
@@ -42,13 +43,12 @@ std::string ToString(ContentFormat format) {
 
 HttpExchange::HttpExchange(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory),
-      content_(base::Value::Type::DICTIONARY) {}
+    : url_loader_factory_(url_loader_factory) {}
 
 HttpExchange::~HttpExchange() {}
 
 void HttpExchange::Clear() {
-  content_ = base::Value(base::Value::Type::DICTIONARY);
+  content_.clear();
   error_msg_.clear();
   url_loader_.reset();
 }
@@ -56,17 +56,17 @@ void HttpExchange::Clear() {
 void HttpExchange::AddParamString(const std::string& name,
                                   const std::string& value) {
   DCHECK(!name.empty());
-  content_.SetStringKey(name, value);
+  content_.Set(name, value);
 }
 
 void HttpExchange::AddParamArrayString(const std::string& name,
                                        const std::vector<std::string>& value) {
   DCHECK(!name.empty());
-  base::Value* list_node =
-      content_.SetKey(name, base::Value(base::Value::Type::LIST));
-  for (auto& value_element : value) {
-    list_node->Append(value_element);
+  base::Value::List list_node;
+  for (const auto& value_element : value) {
+    list_node.Append(value_element);
   }
+  content_.Set(name, std::move(list_node));
 }
 
 void HttpExchange::Exchange(
@@ -86,7 +86,7 @@ void HttpExchange::Exchange(
       return;
     }
   } else if (request_format == ContentFormat::kXWwwFormUrlencoded) {
-    for (const auto kv : content_.DictItems()) {
+    for (const auto kv : content_) {
       if (!data.empty()) {
         data += "&";
       }
@@ -221,7 +221,7 @@ void HttpExchange::OnURLLoaderCompleted(
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  content_ = std::move(parsed.value());
+  content_ = std::move(parsed->GetDict());
 
   // Exits if success.
   if (http_status == success_http_status) {
@@ -406,7 +406,7 @@ const std::string& HttpExchange::GetErrorMessage() const {
 }
 
 base::Value* HttpExchange::FindNode(const std::string& name, bool required) {
-  base::Value* value = content_.FindKey(name);
+  base::Value* value = content_.Find(name);
   if (required && !value) {
     error_msg_ = "Field " + name + " is missing";
   }

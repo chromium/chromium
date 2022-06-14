@@ -17,10 +17,17 @@
 namespace base {
 
 void ExpectDictBooleanValue(bool expected_value,
+                            const Value::Dict& dict,
+                            StringPiece path) {
+  EXPECT_EQ(dict.FindBoolByDottedPath(path),
+            absl::make_optional(expected_value))
+      << path;
+}
+
+void ExpectDictBooleanValue(bool expected_value,
                             const Value& value,
                             const std::string& key) {
-  EXPECT_EQ(value.FindBoolPath(key), absl::optional<bool>(expected_value))
-      << key;
+  ExpectDictBooleanValue(expected_value, value.GetDict(), key);
 }
 
 void ExpectDictIntegerValue(int expected_value,
@@ -29,12 +36,18 @@ void ExpectDictIntegerValue(int expected_value,
   EXPECT_EQ(value.FindIntPath(key), absl::optional<int>(expected_value)) << key;
 }
 
+void ExpectDictStringValue(StringPiece expected_value,
+                           const Value::Dict& dict,
+                           StringPiece path) {
+  EXPECT_EQ(OptionalFromPtr(dict.FindStringByDottedPath(path)),
+            absl::make_optional(expected_value))
+      << path;
+}
+
 void ExpectDictStringValue(const std::string& expected_value,
                            const Value& value,
                            const std::string& key) {
-  EXPECT_EQ(OptionalFromPtr(value.FindStringPath(key)),
-            absl::optional<std::string>(expected_value))
-      << key;
+  ExpectDictStringValue(expected_value, value.GetDict(), key);
 }
 
 void ExpectDictValue(const Value& expected_value,

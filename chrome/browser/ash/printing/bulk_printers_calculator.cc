@@ -79,14 +79,12 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
   auto parsed_printers = std::make_unique<PrinterCache>();
   parsed_printers->reserve(printer_list.size());
   for (const base::Value& val : printer_list) {
-    // TODO(skau): Convert to the new Value APIs.
-    const base::DictionaryValue* printer_dict;
-    if (!val.GetAsDictionary(&printer_dict)) {
+    if (!val.is_dict()) {
       LOG(WARNING) << "Entry in printers policy skipped.  Not a dictionary.";
       continue;
     }
 
-    auto printer = chromeos::RecommendedPrinterToPrinter(*printer_dict);
+    auto printer = chromeos::RecommendedPrinterToPrinter(val.GetDict());
     if (!printer) {
       LOG(WARNING) << "Failed to parse printer configuration.  Skipped.";
       continue;
