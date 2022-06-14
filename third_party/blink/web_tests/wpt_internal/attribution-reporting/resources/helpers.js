@@ -63,3 +63,11 @@ const pollEventLevelReports = interval =>
     pollAttributionReports(eventLevelReportsUrl, interval);
 const pollAggregatableReports = interval =>
     pollAttributionReports(aggregatableReportsUrl, interval);
+
+const validateReportHeaders = headers => {
+  assert_array_equals(headers['content-type'], ['application/json']);
+  assert_array_equals(headers['cache-control'], ['no-cache']);
+  assert_own_property(headers, 'user-agent');
+  assert_not_own_property(headers, 'cookie');
+  assert_not_own_property(headers, 'referer');
+}

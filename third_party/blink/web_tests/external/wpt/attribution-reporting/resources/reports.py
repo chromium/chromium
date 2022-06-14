@@ -16,6 +16,22 @@ Response = Tuple[Status, List[Header], str]
 CLEAR_STASH = isomorphic_encode("clear_stash")
 
 
+def decode_headers(headers: dict) -> dict:
+  """Decodes the headers from wptserve.
+
+  wptserve headers are encoded like
+  {
+    encoded(key): [encoded(value1), encoded(value2),...]
+  }
+  This method decodes the above using the wptserve.utils.isomorphic_decode
+  method
+  """
+  return {
+      isomorphic_decode(key): [isomorphic_decode(el) for el in value
+                              ] for key, value in headers.items()
+  }
+
+
 def handle_post_report(request: Request, headers: List[Header]) -> Response:
   """Handles POST request for reports.
 
@@ -28,7 +44,11 @@ def handle_post_report(request: Request, headers: List[Header]) -> Response:
         "code": 200,
         "message": "Stash successfully cleared.",
     })
-  store_report(request.server.stash, request.body.decode("utf-8"))
+  store_report(
+      request.server.stash, {
+          "body": request.body.decode("utf-8"),
+          "headers": decode_headers(request.headers)
+      })
   return (201, "OK"), headers, json.dumps({
       "code": 201,
       "message": "Report successfully stored."

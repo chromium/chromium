@@ -38,7 +38,8 @@ promise_test(async t => {
   registerAttributionSrc('Attribution-Reporting-Register-Trigger', trigger);
   const payload = await pollAggregatableReports(interval);
   assert_equals(payload.reports.length, 1);
-  const report = JSON.parse(payload.reports[0]);
+  const report = JSON.parse(payload.reports[0].body);
+  const headers = payload.reports[0].headers;
   assert_own_property(report, 'shared_info');
   const shared_info = JSON.parse(report.shared_info);
   assert_own_property(shared_info, 'api');
@@ -57,5 +58,6 @@ promise_test(async t => {
   assert_own_property(aggregation_service_payload, 'payload');
   assert_own_property(aggregation_service_payload, 'key_id');
   assert_not_own_property(aggregation_service_payload, 'debug_cleartext_payload');
+  validateReportHeaders(headers);
 }, 'Ensure aggregatable attribution report is received.');
 </script>

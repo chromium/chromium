@@ -20,7 +20,8 @@ promise_test(async t => {
       'Attribution-Reporting-Register-Trigger', trigger);
   const payload = await pollEventLevelReports(interval);
   assert_equals(payload.reports.length, 1);
-  const report = JSON.parse(payload.reports[0]);
+  const report = JSON.parse(payload.reports[0].body);
+  const headers = payload.reports[0].headers;
   // The trigger data is sanitized to "0" because event sources are limited to 1
   // bit.
   assert_equals(report.trigger_data, '0');
@@ -33,5 +34,6 @@ promise_test(async t => {
   assert_equals(typeof report.report_id, 'string');
   assert_not_own_property(report, 'source_debug_key');
   assert_not_own_property(report, 'trigger_debug_key');
+  validateReportHeaders(headers);
 }, 'Ensure attribution report is received.');
 </script>
