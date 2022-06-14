@@ -7,6 +7,7 @@ import logging
 import multiprocessing
 import os
 import queue
+import re
 import subprocess
 import sys
 import tempfile
@@ -47,6 +48,9 @@ _MIN_CLASSES_PER_SHARD = 8
 # Running the largest test suite with a single shard takes about 22 minutes.
 _SHARD_TIMEOUT = 30 * 60
 
+# RegExp to detect logcat lines, e.g., 'I/AssetManager: not found'.
+_LOGCAT_RE = re.compile(r'[A-Z]/[\w\d_-]+:')
+
 
 class LocalMachineJunitTestRun(test_run.TestRun):
   # override
@@ -84,9 +88,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         self._test_instance.robolectric_runtime_deps_dir,
         '-Ddir.source.root=%s' % constants.DIR_SOURCE_ROOT,
         '-Drobolectric.resourcesMode=binary',
+        '-Drobolectric.logging=stdout',
     ]
-    if logging.getLogger().isEnabledFor(logging.INFO):
-      jvm_args += ['-Drobolectric.logging=stdout']
     if self._test_instance.debug_socket:
       jvm_args += [
           '-agentlib:jdwp=transport=dt_socket'
@@ -118,7 +121,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     return jvm_args
 
   # override
-  def RunTests(self, results):
+  def RunTests(self, results, raw_logs_fh=None):
     wrapper_path = os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
                                 self._test_instance.suite)
 
@@ -154,9 +157,21 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       AddPropertiesJar(cmd_list, temp_dir, self._test_instance.resource_apk)
 
+      show_logcat = logging.getLogger().isEnabledFor(logging.INFO)
+      num_omitted_lines = 0
       for line in _RunCommandsAndSerializeOutput(cmd_list):
-        sys.stdout.write(line)
+        if raw_logs_fh:
+          raw_logs_fh.write(line)
+        if show_logcat or not _LOGCAT_RE.match(line):
+          sys.stdout.write(line)
+        else:
+          num_omitted_lines += 1
+
+      if num_omitted_lines > 0:
+        logging.critical('%d log lines omitted.', num_omitted_lines)
       sys.stdout.flush()
+      if raw_logs_fh:
+        raw_logs_fh.flush()
 
       results_list = []
       try:

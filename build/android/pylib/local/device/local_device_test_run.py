@@ -60,7 +60,7 @@ class LocalDeviceTestRun(test_run.TestRun):
     env.SetPreferredAbis(test_instance.GetPreferredAbis())
 
   #override
-  def RunTests(self, results):
+  def RunTests(self, results, raw_logs_fh=None):
     tests = self._GetTests()
 
     exit_now = threading.Event()
