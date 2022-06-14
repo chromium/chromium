@@ -170,6 +170,7 @@ struct OpenURLParams {
   network.mojom.URLRequestBody? post_body;
   string extra_headers;
   blink.mojom.Referrer referrer;
+  bool is_form_submission;
 
   // The window position to open the URL.
   ui.mojom.WindowOpenDisposition disposition;

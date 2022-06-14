@@ -2622,6 +2622,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     const std::string& extra_headers,
     network::mojom::SourceLocationPtr source_location,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+    bool is_form_submission,
     const absl::optional<blink::Impression>& impression,
     base::TimeTicks navigation_start_time,
     absl::optional<bool> is_fenced_frame_opaque_url) {
@@ -2753,6 +2754,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   /* params.reload_type: skip */
   params.impression = impression;
   params.download_policy = std::move(download_policy);
+  params.is_form_submission = is_form_submission;
 
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
@@ -3762,9 +3764,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           blink::StorageKey(), network::mojom::WebSandboxFlags(),
           override_user_agent, params.redirect_chain,
           std::vector<network::mojom::URLResponseHeadPtr>(),
-          std::vector<net::RedirectInfo>(),
-          std::string() /* post_content_type */, common_params->url,
-          common_params->method, params.can_load_local_resources,
+          std::vector<net::RedirectInfo>(), params.post_content_type,
+          common_params->url, common_params->method,
+          params.can_load_local_resources,
           frame_entry->page_state().ToEncodedData(), entry->GetUniqueID(),
           entry->GetSubframeUniqueNames(node), true /* intended_as_new_entry */,
           -1 /* pending_history_list_offset */,
@@ -3806,10 +3808,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   commit_params->was_activated = params.was_activated;
 
-  // A form submission may happen here if the navigation is a renderer-initiated
-  // form submission that took the OpenURL path.
-  scoped_refptr<network::ResourceRequestBody> request_body = params.post_data;
-
   // extra_headers in params are \n separated; NavigationRequests want \r\n.
   std::string extra_headers_crlf;
   base::ReplaceChars(params.extra_headers, "\n", "\r\n", &extra_headers_crlf);
@@ -3821,7 +3819,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           ? &(params.initiator_frame_token.value())
           : nullptr,
       params.initiator_process_id, extra_headers_crlf, frame_entry, entry,
-      request_body,
+      params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression, params.is_pdf, is_fenced_frame_opaque_url);
   navigation_request->set_from_download_cross_origin_redirect(
@@ -3911,11 +3909,16 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // back/forward/reload navigation that does a form resubmission.
   scoped_refptr<network::ResourceRequestBody> request_body;
   std::string post_content_type;
+  // TODO(https://crbug.com/931209) Store |is_form_submission| in the history
+  // entry. This way, it could be directly retrieved here. Right now, it is only
+  // partially recovered when request.method == "POST" and request.body exists.
+  bool is_form_submission = false;
   if (frame_entry->method() == "POST") {
     request_body = frame_entry->GetPostData(&post_content_type);
     // Might have a LF at end.
     post_content_type = std::string(
         base::TrimWhitespaceASCII(post_content_type, base::TRIM_ALL));
+    is_form_submission = !!request_body;
   }
 
   // Create the NavigationParams based on |entry| and |frame_entry|.
@@ -3947,7 +3950,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       is_browser_initiated, false /* was_opener_suppressed */,
       nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      entry->extra_headers(), frame_entry, entry, request_body,
+      entry->extra_headers(), frame_entry, entry, is_form_submission,
       nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
       false /* is_pdf */);
 }
@@ -4082,7 +4085,7 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
           nullptr /* initiator_frame_token */,
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           "" /* extra_headers */, nullptr /* frame_entry */,
-          nullptr /* entry */, nullptr /* post_body */,
+          nullptr /* entry */, false /* is_form_submission */,
           nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
           false /* is_pdf */);
   navigation_request->set_post_commit_error_page_html(error_page_html);

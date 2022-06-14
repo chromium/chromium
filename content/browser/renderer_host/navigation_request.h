@@ -80,7 +80,6 @@ class TracedValue;
 }  // namespace base
 
 namespace network {
-class ResourceRequestBody;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
@@ -219,7 +218,7 @@ class CONTENT_EXPORT NavigationRequest
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
       NavigationEntryImpl* entry,
-      const scoped_refptr<network::ResourceRequestBody>& post_body,
+      bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       const absl::optional<blink::Impression>& impression,
       bool is_pdf,

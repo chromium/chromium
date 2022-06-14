@@ -1047,15 +1047,12 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     const std::string& extra_headers,
     FrameNavigationEntry* frame_entry,
     NavigationEntryImpl* entry,
-    const scoped_refptr<network::ResourceRequestBody>& post_body,
+    bool is_form_submission,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     const absl::optional<blink::Impression>& impression,
     bool is_pdf,
     absl::optional<bool> is_fenced_frame_opaque_url) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateBrowserInitiated");
-  // TODO(arthursonzogni): Form submission with the "GET" method is possible.
-  // This is not currently handled here.
-  bool is_form_submission = !!post_body;
 
   common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);

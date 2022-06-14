@@ -265,6 +265,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       blink::GetWebURLRequestHeadersAsString(WrappedResourceRequest(request));
   params->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), request.ReferrerString()), request.GetReferrerPolicy());
+  params->is_form_submission = !!frame_request.Form();
   params->disposition = ui::mojom::blink::WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry =
       frame_load_type == WebFrameLoadType::kReplaceCurrentItem;

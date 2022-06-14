@@ -400,11 +400,13 @@ class RenderFrameHostManagerTest
                             : blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
     scoped_refptr<network::ResourceRequestBody> request_body;
     std::string post_content_type;
+    bool is_form_submission = false;
     if (frame_entry->method() == "POST") {
       request_body = frame_entry->GetPostData(&post_content_type);
       // Might have a LF at end.
       post_content_type = std::string(
           base::TrimWhitespaceASCII(post_content_type, base::TRIM_ALL));
+      is_form_submission = !!request_body;
     }
 
     auto& referrer = frame_entry->referrer();
@@ -430,7 +432,7 @@ class RenderFrameHostManagerTest
             !entry->is_renderer_initiated(), false /* was_opener_suppressed */,
             nullptr /* initiator_frame_token */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-            entry->extra_headers(), frame_entry, entry, request_body,
+            entry->extra_headers(), frame_entry, entry, is_form_submission,
             nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
             false /* is_pdf */);
 
@@ -3141,8 +3143,9 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           nullptr /* initiator_frame_token */,
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           entry.extra_headers(), frame_entry, &entry,
-          nullptr /* request_body */, nullptr /* navigation_ui_data */,
-          absl::nullopt /* impression */, false /* is_pdf */);
+          false /* is_form_submission */, nullptr /* navigation_ui_data */,
+          absl::nullopt /* impression */, false /* is_pdf */
+      );
   manager->DidCreateNavigationRequest(navigation_request.get());
 
   // As the initial RenderFrame was not live, the new RenderFrameHost should be

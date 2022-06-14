@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -307,6 +308,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   }
   resource_request->SetHasUserGesture(
       LocalFrame::HasTransientUserActivation(form->GetDocument().GetFrame()));
+  resource_request->SetFormSubmission(true);
 
   mojom::blink::TriggeringEventInfo triggering_event_info;
   if (event) {
@@ -326,6 +328,24 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   frame_request.SetClientRedirectReason(reason);
   frame_request.SetForm(form);
   frame_request.SetTriggeringEventInfo(triggering_event_info);
+
+  if (RuntimeEnabledFeatures::FormRelAttributeEnabled() &&
+      form->HasRel(HTMLFormElement::kNoReferrer)) {
+    frame_request.SetNoReferrer();
+    frame_request.SetNoOpener();
+  }
+  if (RuntimeEnabledFeatures::FormRelAttributeEnabled() &&
+      (form->HasRel(HTMLFormElement::kNoOpener) ||
+       (EqualIgnoringASCIICase(target_or_base_target, "_blank") &&
+        !form->HasRel(HTMLFormElement::kOpener) &&
+        form->GetDocument()
+            .domWindow()
+            ->GetFrame()
+            ->GetSettings()
+            ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved()))) {
+    frame_request.SetNoOpener();
+  }
+
   Frame* target_frame =
       form->GetDocument()
           .GetFrame()

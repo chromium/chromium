@@ -31,7 +31,8 @@ if (window.location.hostname == "127.0.0.1") {
         var f = document.createElement('form');
         f.action = "https://" + ORIGINAL_HOST + ":8443/cookies/resources/post-cookies-to-opener.php";
         f.method = "POST";
-        f.target = "_blank"
+        f.target = "_blank";
+        f.rel = "opener";
         window.onload = t.step_func(f.submit.bind(f));
         document.body.appendChild(f);
     }, "'" + ORIGINAL_HOST + "' is not same-site with '" + TEST_HOST + "', so samesite cookies are not sent via POST.");

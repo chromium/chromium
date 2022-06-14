@@ -4044,6 +4044,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       load_params->is_renderer_initiated = true;
       load_params->was_opener_suppressed = true;
       load_params->has_user_gesture = has_user_gesture;
+      load_params->is_form_submission = params.is_form_submission;
+      if (params.form_submission_post_data) {
+        load_params->load_type = NavigationController::LOAD_TYPE_HTTP_POST;
+        load_params->post_data = params.form_submission_post_data;
+        load_params->post_content_type =
+            params.form_submission_post_content_type;
+      }
       load_params->impression = params.impression;
       load_params->override_user_agent =
           new_contents_impl->should_override_user_agent_in_new_tabs_

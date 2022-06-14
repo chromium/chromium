@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
+#include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -99,7 +100,8 @@ HTMLFormElement::HTMLFormElement(Document& document)
       has_elements_associated_by_parser_(false),
       has_elements_associated_by_form_attribute_(false),
       did_finish_parsing_children_(false),
-      is_in_reset_function_(false) {
+      is_in_reset_function_(false),
+      rel_list_(MakeGarbageCollected<RelList>(this)) {
   static uint64_t next_unique_renderer_form_id = 1;
   unique_renderer_form_id_ = next_unique_renderer_form_id++;
 
@@ -114,6 +116,7 @@ void HTMLFormElement::Trace(Visitor* visitor) const {
   visitor->Trace(listed_elements_);
   visitor->Trace(listed_elements_including_shadow_trees_);
   visitor->Trace(image_elements_);
+  visitor->Trace(rel_list_);
   HTMLElement::Trace(visitor);
 }
 
@@ -660,6 +663,17 @@ void HTMLFormElement::ParseAttribute(
     attributes_.SetAcceptCharset(params.new_value);
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kFormDisabledAttributePresent);
+  } else if (name == html_names::kRelAttr &&
+             RuntimeEnabledFeatures::FormRelAttributeEnabled()) {
+    rel_attribute_ = RelAttribute::kNone;
+    rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
+    if (rel_list_->contains(AtomicString("noreferrer")))
+      rel_attribute_ |= RelAttribute::kNoReferrer;
+    if (rel_list_->contains(AtomicString("noopener")))
+      rel_attribute_ |= RelAttribute::kNoOpener;
+    if (rel_list_->contains(AtomicString("opener")))
+      rel_attribute_ |= RelAttribute::kOpener;
+
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -941,6 +955,14 @@ void HTMLFormElement::GetNamedElements(
 bool HTMLFormElement::ShouldAutocomplete() const {
   return !EqualIgnoringASCIICase(
       FastGetAttribute(html_names::kAutocompleteAttr), "off");
+}
+
+DOMTokenList& HTMLFormElement::relList() const {
+  return static_cast<DOMTokenList&>(*rel_list_);
+}
+
+bool HTMLFormElement::HasRel(RelAttribute relation) const {
+  return rel_attribute_ & relation;
 }
 
 void HTMLFormElement::FinishParsingChildren() {

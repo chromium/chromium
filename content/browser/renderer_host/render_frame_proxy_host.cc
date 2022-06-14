@@ -709,7 +709,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
-      params->impression, navigation_start_time);
+      params->is_form_submission, params->impression, navigation_start_time);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

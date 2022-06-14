@@ -6985,7 +6985,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         /*post_body=*/nullptr, params->extra_headers,
         /*blob_url_loader_factory=*/nullptr,
         network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
-        params->impression, base::TimeTicks::Now());
+        params->is_form_submission, params->impression, base::TimeTicks::Now());
     return;
   }
 

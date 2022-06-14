@@ -144,6 +144,7 @@ void FencedFrame::Navigate(const GURL& url,
       /*post_body=*/nullptr, /*extra_headers=*/"",
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
+      /*is_form_submission=*/false,
       /*impression=*/absl::nullopt, navigation_start_time,
       blink::IsValidUrnUuidURL(url));
 }

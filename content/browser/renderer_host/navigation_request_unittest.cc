@@ -210,7 +210,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         false /* was_opener_suppressed */, nullptr /* initiator_frame_token */,
         ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
-        nullptr /* entry */, nullptr /* post_body */,
+        nullptr /* entry */, false /* is_form_submission */,
         nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
         false /* is_pdf */);
     main_test_rfh()->frame_tree_node()->CreatedNavigationRequest(

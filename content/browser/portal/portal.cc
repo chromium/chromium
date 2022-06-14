@@ -270,6 +270,7 @@ void Portal::Navigate(const GURL& url,
       mojo::ConvertTo<Referrer>(referrer), ui::PAGE_TRANSITION_LINK,
       should_replace_entry, download_policy, "GET", nullptr, "", nullptr,
       network::mojom::SourceLocation::New(), false,
+      /*is_form_submission=*/false,
       /*impression=*/absl::nullopt, navigation_start_time);
 
   std::move(callback).Run();

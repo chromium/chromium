@@ -217,6 +217,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const std::string& extra_headers,
       network::mojom::SourceLocationPtr source_location,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+      bool is_form_submission,
       const absl::optional<blink::Impression>& impression,
       base::TimeTicks navigation_start_time,
       absl::optional<bool> is_fenced_frame_opaque_url = absl::nullopt);

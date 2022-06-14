@@ -546,6 +546,15 @@ struct CreateNewWindowParams {
   // scripting the new window is not allowed.
   bool opener_suppressed;
 
+  // Whether new window is created for a form submission.
+  bool is_form_submission;
+
+  // Body of HTTP POST request for form submission.
+  network.mojom.URLRequestBody? form_submission_post_data;
+
+  // The content type from the request headers for POST requests.
+  string form_submission_post_content_type;
+
   // Whether the window should be opened in the foreground, background, etc.
   ui.mojom.WindowOpenDisposition disposition;
 

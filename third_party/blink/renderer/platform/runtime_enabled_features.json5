@@ -1155,6 +1155,10 @@
       status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
     },
     {
+      name: "FormRelAttribute",
+      status: "stable",
+    },
+    {
       name: "FractionalScrollOffsets",
       status: "experimental",
     },
