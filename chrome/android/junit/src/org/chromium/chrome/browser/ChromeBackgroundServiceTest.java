@@ -23,9 +23,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 /**
  * Tests {@link ChromeBackgroundService}.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ChromeBackgroundServiceTest {
     private MockTaskService mTaskService;
 
