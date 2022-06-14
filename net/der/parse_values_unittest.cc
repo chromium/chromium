@@ -8,9 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
 namespace {
 
@@ -468,6 +466,4 @@ TEST(ParseValuesTest, ParseUniversalString) {
   EXPECT_FALSE(ParseUniversalString(invalid_non_4_multiple_der, &s));
 }
 
-}  // namespace test
-}  // namespace der
-}  // namespace net
+}  // namespace net::der::test

@@ -15,11 +15,7 @@
 #include "net/nqe/network_quality_observation_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 // Records observations of network quality metrics (such as round trip time
 // or throughput), along with the time the observation was made. Observations
@@ -77,10 +73,6 @@ class NET_EXPORT_PRIVATE Observation {
   absl::optional<IPHash> host_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_NETWORK_QUALITY_OBSERVATION_H_

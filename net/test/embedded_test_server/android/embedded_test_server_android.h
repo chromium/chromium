@@ -15,8 +15,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // The C++ side of the Java EmbeddedTestServer.
 class EmbeddedTestServerAndroid {
@@ -101,7 +100,6 @@ class EmbeddedTestServerAndroid {
   ConnectionListener connection_listener_;
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_ANDROID_EMBEDDED_TEST_SERVER_ANDROID_H_

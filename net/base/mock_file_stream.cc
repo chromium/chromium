@@ -11,9 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace net {
-
-namespace testing {
+namespace net::testing {
 
 MockFileStream::MockFileStream(
     const scoped_refptr<base::TaskRunner>& task_runner)
@@ -126,6 +124,4 @@ int64_t MockFileStream::ErrorCallback64(Int64CompletionOnceCallback callback) {
   return ret;
 }
 
-}  // namespace testing
-
-}  // namespace net
+}  // namespace net::testing

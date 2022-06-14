@@ -10,9 +10,7 @@
 #include "net/base/net_export.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 // This Tag type represents the identifier for an ASN.1 tag as encoded with
 // DER. It matches the BoringSSL CBS and CBB in-memory representation for a
@@ -74,8 +72,6 @@ NET_EXPORT Tag ContextSpecificPrimitive(uint8_t base);
 
 NET_EXPORT bool IsConstructed(Tag tag);
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_TAG_H_

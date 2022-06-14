@@ -16,9 +16,7 @@
 #include "net/test/ct_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 TEST(CTLogResponseParserTest, ParsesValidJsonSTH) {
   absl::optional<base::Value> sample_sth_json =
@@ -154,6 +152,4 @@ TEST(CTLogResponseParserTest, ParsesProofJsonWithExtraFields) {
   EXPECT_TRUE(FillConsistencyProof(*badly_encoded, &output));
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

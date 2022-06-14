@@ -23,9 +23,7 @@ using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -721,6 +719,4 @@ TEST_F(UDPSocketPosixTest, WriteAsyncPostBlocks) {
   EXPECT_EQ(rv_, kWriteAsyncMaxBuffersThreshold * lengths_[0]);
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

@@ -20,9 +20,7 @@ typedef struct CERTNameStr CERTName;
 typedef struct PK11SlotInfoStr PK11SlotInfo;
 typedef struct SECItemStr SECItem;
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 // Returns true if two certificate handles refer to identical certificates.
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, CERTCertificate* b);
@@ -159,8 +157,6 @@ NET_EXPORT bool GetValidityTimes(CERTCertificate* cert,
 // (all zero) fingerprint on failure.
 NET_EXPORT SHA256HashValue CalculateFingerprint256(CERTCertificate* cert);
 
-} // namespace x509_util
-
-} // namespace net
+}  // namespace net::x509_util
 
 #endif  // NET_CERT_X509_UTIL_NSS_H_

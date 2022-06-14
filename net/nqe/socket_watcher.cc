@@ -12,11 +12,7 @@
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
@@ -129,8 +125,4 @@ void SocketWatcher::OnConnectionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

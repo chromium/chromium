@@ -10,9 +10,7 @@
 #include "net/test/ct_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -60,6 +58,4 @@ TEST_F(SignedCertificateTimestampTest, SCTsWithDifferentOriginsNotEqual) {
 
 }  // namespace
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

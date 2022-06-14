@@ -6,9 +6,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 
-namespace net {
-
-namespace extras {
+namespace net::extras {
 
 PreloadDecoder::BitReader::BitReader(const uint8_t* bytes, size_t num_bits)
     : bytes_(bytes), num_bits_(num_bits), num_bytes_((num_bits + 7) / 8) {}
@@ -308,6 +306,4 @@ bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
   NOTREACHED();
 }
 
-}  // namespace extras
-
-}  // namespace net
+}  // namespace net::extras

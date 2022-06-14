@@ -41,8 +41,7 @@
 
 using net::test::IsOk;
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // Gets notified by the EmbeddedTestServer on incoming connections being
 // accepted, read from, or closed.
@@ -718,5 +717,4 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool(),
                      testing::ValuesIn(EmbeddedTestServerConfigs())));
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

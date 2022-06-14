@@ -14,8 +14,7 @@
 #include "net/http/http_chunked_decoder.h"
 #include "url/gurl.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 namespace {
 
@@ -247,5 +246,4 @@ HttpMethod HttpRequestParser::GetMethodType(const std::string& token) {
   return METHOD_GET;
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

@@ -7,8 +7,7 @@
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // This file is only meant for compatibility with testserver.py. No
 // additional handlers should be added here that don't affect multiple
@@ -17,7 +16,6 @@ namespace test_server {
 // Registers default handlers for use in tests.
 void RegisterDefaultHandlers(EmbeddedTestServer* server);
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_DEFAULT_HANDLERS_H_

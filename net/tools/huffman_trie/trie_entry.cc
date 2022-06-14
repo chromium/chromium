@@ -4,14 +4,10 @@
 
 #include "net/tools/huffman_trie/trie_entry.h"
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 TrieEntry::TrieEntry() = default;
 
 TrieEntry::~TrieEntry() = default;
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie

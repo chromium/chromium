@@ -16,8 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_interfaces.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 typedef char* (*GetInterfaceNameFunction)(int interface_index, char* ifname);
 
@@ -42,7 +41,6 @@ NET_EXPORT std::string GetWifiSSIDFromInterfaceListInternal(
 // Returns a socket useful for performing ioctl()s.
 base::ScopedFD GetSocketForIoctl();
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // NET_BASE_NETWORK_INTERFACES_LINUX_H_

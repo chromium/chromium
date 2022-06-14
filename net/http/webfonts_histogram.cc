@@ -37,8 +37,7 @@ void RecordCacheEvent(net::HttpResponseInfo::CacheEntryStatus cache_status,
 
 }  // namespace
 
-namespace net {
-namespace web_fonts_histogram {
+namespace net::web_fonts_histogram {
 
 // Check if |key| is a URL for a font resource of Google Fonts.
 // If so, record the WebFont.HttpCacheStatus histogram suffixed by "roboto",
@@ -61,5 +60,4 @@ void MaybeRecordCacheStatus(HttpResponseInfo::CacheEntryStatus cache_status,
   }
 }
 
-}  // namespace web_fonts_histogram
-}  // namespace net
+}  // namespace net::web_fonts_histogram

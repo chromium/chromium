@@ -4,9 +4,7 @@
 
 #include "net/cert/sct_status_flags.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 bool IsValidSCTStatus(uint32_t status) {
   switch (status) {
@@ -22,6 +20,4 @@ bool IsValidSCTStatus(uint32_t status) {
   return false;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

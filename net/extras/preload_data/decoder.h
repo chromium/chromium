@@ -9,9 +9,7 @@
 
 #include <string>
 
-namespace net {
-
-namespace extras {
+namespace net::extras {
 
 // Decodes an entry from preloaded data.
 // Clients must implement ReadEntry() method to read the specific type of data
@@ -159,8 +157,6 @@ class PreloadDecoder {
   const size_t trie_root_position_;
 };
 
-}  // namespace extras
-
-}  // namespace net
+}  // namespace net::extras
 
 #endif  // NET_EXTRAS_PRELOAD_DATA_DECODER_H_

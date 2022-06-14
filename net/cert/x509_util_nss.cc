@@ -22,9 +22,7 @@
 #include "crypto/scoped_nss_types.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 namespace {
 
@@ -438,6 +436,4 @@ SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
   return sha256;
 }
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util

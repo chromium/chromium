@@ -35,8 +35,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace net {
-namespace cookie_util {
+namespace net::cookie_util {
 
 namespace {
 
@@ -891,5 +890,4 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
       base::ranges::is_sorted(included_cookies, CookieWithAccessResultSorter));
 }
 
-}  // namespace cookie_util
-}  // namespace net
+}  // namespace net::cookie_util

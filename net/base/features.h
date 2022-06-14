@@ -15,8 +15,7 @@
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
 
-namespace net {
-namespace features {
+namespace net::features {
 
 // Toggles the `Accept-Language` HTTP request header, which
 // https://github.com/WICG/lang-client-hint proposes that we deprecate.
@@ -432,7 +431,6 @@ NET_EXPORT extern const base::Feature kStaticKeyPinningEnforcement;
 // When enabled, cookies with a non-ASCII domain attribute will be rejected.
 NET_EXPORT extern const base::Feature kCookieDomainRejectNonASCII;
 
-}  // namespace features
-}  // namespace net
+}  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

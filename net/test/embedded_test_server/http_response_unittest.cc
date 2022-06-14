@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 TEST(HttpResponseTest, GenerateResponse) {
   BasicHttpResponse response;
@@ -27,5 +26,4 @@ TEST(HttpResponseTest, GenerateResponse) {
   EXPECT_EQ(kExpectedResponseString, response.ToResponseString());
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

@@ -7,9 +7,7 @@
 #include "base/time/time.h"
 #include "net/der/parse_values.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 namespace {
 
@@ -114,6 +112,4 @@ bool EncodeUTCTime(const GeneralizedTime& time, uint8_t out[kUTCTimeLength]) {
   return true;
 }
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der

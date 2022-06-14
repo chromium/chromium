@@ -7,8 +7,7 @@
 
 #include <Security/Security.h>
 
-namespace net {
-namespace x509_util {
+namespace net::x509_util {
 
 // CSSM functions are deprecated as of OSX 10.7, but have no replacement.
 // https://bugs.chromium.org/p/chromium/issues/detail?id=590914#c1
@@ -100,7 +99,6 @@ inline bool CSSMOIDEqual(const CSSM_OID* oid1, const CSSM_OID* oid2) {
 
 #pragma clang diagnostic pop  // "-Wdeprecated-declarations"
 
-}  // namespace x509_util
-}  // namespace net
+}  // namespace net::x509_util
 
 #endif  // NET_CERT_X509_UTIL_MAC_H_

@@ -39,9 +39,7 @@ typedef base::RepeatingCallback<bool(base::TimeTicks)> ShouldNotifyRTTCallback;
 
 }  // namespace
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // SocketWatcher implements SocketPerformanceWatcher, and is not thread-safe.
 class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
@@ -112,9 +110,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   const absl::optional<IPHash> host_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

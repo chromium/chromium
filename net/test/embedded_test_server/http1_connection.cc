@@ -18,8 +18,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 Http1Connection::Http1Connection(
     std::unique_ptr<StreamSocket> socket,
@@ -186,5 +185,4 @@ void Http1Connection::OnSendInternalDone(base::OnceClosure callback,
   SendInternal(std::move(callback), buf);
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

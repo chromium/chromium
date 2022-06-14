@@ -12,8 +12,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace net {
-namespace tld_cleanup {
+namespace net::tld_cleanup {
 
 struct Rule {
   bool exception;
@@ -42,7 +41,6 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
 NormalizeResult NormalizeDataToRuleMap(const std::string data,
                                        RuleMap* rules);
 
-}  // namespace tld_cleanup
-}  // namespace net
+}  // namespace net::tld_cleanup
 
 #endif  // NET_TOOLS_TLD_CLEANUP_TLD_CLEANUP_UTIL_H_

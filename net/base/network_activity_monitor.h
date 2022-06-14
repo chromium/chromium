@@ -9,8 +9,7 @@
 
 #include "net/base/net_export.h"
 
-namespace net {
-namespace activity_monitor {
+namespace net::activity_monitor {
 
 // These functions are used to track bytes received from the network across all
 // sockets. They are thread-safe.
@@ -27,7 +26,6 @@ void NET_EXPORT_PRIVATE IncrementBytesReceived(uint64_t bytes_received);
 uint64_t NET_EXPORT_PRIVATE GetBytesReceived();
 void NET_EXPORT_PRIVATE ResetBytesReceivedForTesting();
 
-}  // namespace activity_monitor
-}  // namespace net
+}  // namespace net::activity_monitor
 
 #endif  // NET_BASE_NETWORK_ACTIVITY_MONITOR_H_

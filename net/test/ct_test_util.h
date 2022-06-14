@@ -15,9 +15,7 @@
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 struct DigitallySigned;
 struct MerkleTreeLeaf;
@@ -128,8 +126,6 @@ bool CheckForSingleVerifiedSCTInResult(
 bool CheckForSCTOrigin(const SignedCertificateTimestampAndStatusList& scts,
                        SignedCertificateTimestamp::Origin origin);
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_TEST_CT_TEST_UTIL_H_

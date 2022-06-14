@@ -10,8 +10,7 @@
 #include "base/path_service.h"
 #include "net/test/test_data_directory.h"
 
-namespace quiche {
-namespace test {
+namespace quiche::test {
 
 std::string QuicheGetCommonSourcePathImpl() {
   base::FilePath net_path = net::GetTestNetDirectory();
@@ -19,8 +18,7 @@ std::string QuicheGetCommonSourcePathImpl() {
       .MaybeAsASCII();
 }
 
-}  // namespace test
-}  // namespace quiche
+}  // namespace quiche::test
 
 std::string QuicheGetTestMemoryCachePathImpl() {
   base::FilePath path;

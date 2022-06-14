@@ -87,8 +87,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 const char kUploadData[] = "Really nifty data!";
@@ -2801,5 +2800,4 @@ TEST_P(QuicHttpStreamTest, GetAcceptChViaAlps) {
   histogram_tester.ExpectTotalCount("Net.QuicSession.AcceptChForOrigin", 1);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

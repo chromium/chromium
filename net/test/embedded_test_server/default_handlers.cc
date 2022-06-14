@@ -38,8 +38,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 namespace {
 
 const char kDefaultRealm[] = "testrealm";
@@ -1031,5 +1030,4 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
 
 #undef PREFIXED_HANDLER
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

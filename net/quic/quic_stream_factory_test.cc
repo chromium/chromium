@@ -89,9 +89,7 @@
 
 using std::string;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 class QuicHttpStreamPeer {
  public:
@@ -14998,5 +14996,4 @@ TEST_P(QuicStreamFactoryDnsAliasPoolingTest, IPPooling) {
   EXPECT_EQ(expected_dns_aliases2_, stream2->GetDnsAliases());
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

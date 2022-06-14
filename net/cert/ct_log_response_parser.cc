@@ -15,9 +15,7 @@
 #include "net/cert/ct_serialization.h"
 #include "net/cert/signed_tree_head.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -128,6 +126,4 @@ bool FillConsistencyProof(const base::Value& json_consistency_proof,
   return true;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

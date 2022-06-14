@@ -17,8 +17,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 // Keeps track of incoming connections being accepted or read from and exposes
 // that info to the tests.
@@ -110,7 +109,6 @@ class ConnectionTracker {
   raw_ptr<base::RunLoop> num_accepted_connections_loop_ = nullptr;
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_TRACKER_H_

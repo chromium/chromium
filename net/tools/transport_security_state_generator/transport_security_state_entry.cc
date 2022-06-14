@@ -5,9 +5,7 @@
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 #include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 namespace {
 
@@ -106,6 +104,4 @@ bool TransportSecurityStateTrieEntry::WriteEntry(
   return true;
 }
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

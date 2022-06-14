@@ -44,11 +44,9 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_job_factory.h"
 
-namespace base {
-namespace android {
+namespace base::android {
 class ApplicationStatusListener;
-}
-}  // namespace base
+}  // namespace base::android
 
 namespace net {
 

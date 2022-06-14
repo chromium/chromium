@@ -28,8 +28,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 using ::quic::test::MemSliceFromString;
@@ -263,5 +262,4 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

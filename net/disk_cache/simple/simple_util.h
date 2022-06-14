@@ -17,9 +17,7 @@ namespace base {
 class FilePath;
 }
 
-namespace disk_cache {
-
-namespace simple_util {
+namespace disk_cache::simple_util {
 
 NET_EXPORT_PRIVATE std::string ConvertEntryHashKeyToHexString(
     uint64_t hash_key);
@@ -83,8 +81,6 @@ uint32_t Crc32(const char* data, int length);
 
 uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length);
 
-}  // namespace simple_util
-
-}  // namespace disk_cache
+}  // namespace disk_cache::simple_util
 
 #endif  // NET_DISK_CACHE_SIMPLE_SIMPLE_UTIL_H_

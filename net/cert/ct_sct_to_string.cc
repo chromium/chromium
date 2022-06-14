@@ -7,9 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 const std::string HashAlgorithmToString(
     DigitallySigned::HashAlgorithm hashAlgorithm) {
@@ -77,6 +75,4 @@ const std::string StatusToString(SCTVerifyStatus status) {
   return "Unknown";
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

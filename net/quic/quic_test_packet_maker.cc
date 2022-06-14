@@ -20,8 +20,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
@@ -1714,5 +1713,4 @@ void QuicTestPacketMaker::MaybeAddHttp3SettingsFrames() {
   AddQuicStreamFrame(stream_id, false, data);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

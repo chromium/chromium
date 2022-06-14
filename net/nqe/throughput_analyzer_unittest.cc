@@ -45,9 +45,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace net {
-
-namespace nqe {
+namespace net::nqe {
 
 namespace {
 
@@ -956,6 +954,4 @@ TEST_F(ThroughputAnalyzerTest, TestHangingWindow) {
 
 }  // namespace
 
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe

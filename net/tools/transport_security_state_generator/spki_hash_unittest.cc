@@ -7,9 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 namespace {
 
@@ -59,6 +57,4 @@ TEST(SPKIHashTest, FromString) {
 
 }  // namespace
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

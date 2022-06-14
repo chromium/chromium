@@ -11,9 +11,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace net {
-
-namespace test_server {
+namespace net::test_server {
 
 class ControllableHttpResponse::Interceptor : public HttpResponse {
  public:
@@ -155,6 +153,4 @@ std::unique_ptr<HttpResponse> ControllableHttpResponse::RequestHandler(
   return nullptr;
 }
 
-}  // namespace test_server
-
-}  // namespace net
+}  // namespace net::test_server

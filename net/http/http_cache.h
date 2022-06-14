@@ -39,11 +39,9 @@
 
 class GURL;
 
-namespace base {
-namespace android {
+namespace base::android {
 class ApplicationStatusListener;
-}  // namespace android
-}  // namespace base
+}  // namespace base::android
 
 namespace disk_cache {
 class Backend;

@@ -21,8 +21,7 @@
 
 using std::string;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 const quic::QuicConfig* QuicStreamFactoryPeer::GetConfig(
     QuicStreamFactory* factory) {
@@ -196,5 +195,4 @@ void QuicStreamFactoryPeer::SetAlarmFactory(
   factory->alarm_factory_ = std::move(alarm_factory);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

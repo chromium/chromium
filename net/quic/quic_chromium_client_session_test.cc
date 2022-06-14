@@ -76,8 +76,7 @@
 
 using testing::_;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 const IPEndPoint kIpEndPoint = IPEndPoint(IPAddress::IPv4AllZeros(), 0);
@@ -2666,5 +2665,4 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

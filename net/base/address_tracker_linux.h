@@ -29,8 +29,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 // Keeps track of network interface addresses using rtnetlink. Used by
 // NetworkChangeNotifier to provide signals to registered IPAddressObservers.
@@ -191,7 +190,6 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   base::ThreadChecker thread_checker_;
 };
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // NET_BASE_ADDRESS_TRACKER_LINUX_H_

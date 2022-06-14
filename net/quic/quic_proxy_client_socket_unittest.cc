@@ -68,8 +68,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -2089,5 +2088,4 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

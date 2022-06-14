@@ -15,11 +15,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_with_source.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
@@ -114,8 +110,4 @@ void EventCreator::MaybeAddNetworkQualityChangedEventToNetLog(
   });
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

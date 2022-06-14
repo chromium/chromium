@@ -38,9 +38,7 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 namespace {
 
@@ -530,6 +528,4 @@ bool HasSHA1Signature(const CRYPTO_BUFFER* cert_buffer) {
   return signature_algorithm->digest() == net::DigestAlgorithm::Sha1;
 }
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util

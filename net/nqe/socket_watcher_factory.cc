@@ -7,11 +7,7 @@
 #include "base/time/time.h"
 #include "net/nqe/socket_watcher.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 SocketWatcherFactory::SocketWatcherFactory(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -45,8 +41,4 @@ void SocketWatcherFactory::SetTickClockForTesting(
   tick_clock_ = tick_clock;
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

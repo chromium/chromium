@@ -19,8 +19,7 @@ namespace url {
 class GURL;
 }
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 struct HttpRequest;
 
 // The extension that is used to find a file containing mock headers to use
@@ -66,7 +65,6 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
     const base::FilePath& server_root,
     const HttpRequest& request);
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_REQUEST_HANDLER_UTIL_H_

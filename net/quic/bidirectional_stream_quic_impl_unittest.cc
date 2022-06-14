@@ -66,9 +66,7 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -2461,6 +2459,4 @@ TEST_P(BidirectionalStreamQuicImplTest, ReleaseStreamFails) {
   EXPECT_THAT(delegate->error(), IsError(ERR_CONNECTION_CLOSED));
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

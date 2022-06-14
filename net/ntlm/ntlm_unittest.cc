@@ -21,8 +21,7 @@
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 namespace {
 
@@ -420,5 +419,4 @@ TEST(NtlmTest, GenerateNtlmProofWithClientTimestampV2) {
                       proof, kNtlmProofLenV2));
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

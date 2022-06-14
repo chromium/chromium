@@ -16,9 +16,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/signed_certificate_timestamp.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 static const uint8_t kSthRootHashLength = 32;
 
@@ -57,8 +55,6 @@ NET_EXPORT bool operator==(const SignedTreeHead& lhs,
 NET_EXPORT bool operator!=(const SignedTreeHead& lhs,
                            const SignedTreeHead& rhs);
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_SIGNED_TREE_HEAD_H_

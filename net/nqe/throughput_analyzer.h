@@ -33,9 +33,7 @@ class NetworkQualityEstimatorParams;
 class NetworkQualityEstimator;
 class URLRequest;
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // Makes throughput observations. Polls NetworkActivityMonitor
 // (TrafficStats on Android) to count number of bits received over throughput
@@ -254,9 +252,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   NetLogWithSource net_log_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

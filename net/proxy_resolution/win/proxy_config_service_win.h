@@ -18,11 +18,9 @@
 #include "net/proxy_resolution/polling_proxy_config_service.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 class RegKey;
-}
-}  // namespace base.
+}  // namespace base::win
 
 namespace net {
 

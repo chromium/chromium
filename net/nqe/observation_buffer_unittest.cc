@@ -18,11 +18,7 @@
 #include "net/nqe/network_quality_observation_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
@@ -366,8 +362,4 @@ TEST(NetworkQualityObservationBufferTest, TestGetMedianRTTSince) {
 
 }  // namespace
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

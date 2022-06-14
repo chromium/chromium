@@ -129,8 +129,7 @@ class Origin;
 
 struct DomainRule;
 
-namespace net {
-namespace registry_controlled_domains {
+namespace net::registry_controlled_domains {
 
 // This enum is a required parameter to all public methods declared for this
 // service. The Public Suffix List (http://publicsuffix.org/) this service
@@ -304,7 +303,6 @@ NET_EXPORT_PRIVATE void SetFindDomainGraphForTesting(
     const unsigned char* domains,
     size_t length);
 
-}  // namespace registry_controlled_domains
-}  // namespace net
+}  // namespace net::registry_controlled_domains
 
 #endif  // NET_BASE_REGISTRY_CONTROLLED_DOMAINS_REGISTRY_CONTROLLED_DOMAIN_H_

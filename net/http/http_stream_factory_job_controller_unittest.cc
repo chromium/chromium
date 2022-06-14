@@ -73,9 +73,7 @@ using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::SizeIs;
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -3781,6 +3779,4 @@ TEST_F(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
   EXPECT_EQ(0u, alt_svc_info.advertised_versions().size());
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

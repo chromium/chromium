@@ -4,9 +4,7 @@
 
 #include "net/tools/transport_security_state_generator/pinset.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 Pinset::Pinset(std::string name, std::string report_uri)
     : name_(name), report_uri_(report_uri) {}
@@ -21,6 +19,4 @@ void Pinset::AddBadStaticSPKIHash(const std::string& hash_name) {
   bad_static_spki_hashes_.push_back(hash_name);
 }
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

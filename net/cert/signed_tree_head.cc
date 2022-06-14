@@ -10,8 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 
-namespace net {
-namespace ct {
+namespace net::ct {
 
 SignedTreeHead::SignedTreeHead() = default;
 
@@ -59,5 +58,4 @@ bool operator!=(const SignedTreeHead& lhs, const SignedTreeHead& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace ct
-}  // namespace net
+}  // namespace net::ct

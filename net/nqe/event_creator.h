@@ -17,9 +17,7 @@ namespace net {
 
 class NetLogWithSource;
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // Class that adds net log events for network quality estimator.
 class NET_EXPORT_PRIVATE EventCreator {
@@ -53,9 +51,7 @@ class NET_EXPORT_PRIVATE EventCreator {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

@@ -24,11 +24,9 @@ template <class P>
 struct ParamTraits;
 }  // namespace IPC
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class SchemefulSiteDataView;
-}  // namespace mojom
-}  // namespace network
+}  // namespace network::mojom
 
 namespace mojo {
 template <typename DataViewType, typename T>

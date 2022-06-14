@@ -41,8 +41,7 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -998,5 +997,4 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

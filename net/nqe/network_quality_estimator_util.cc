@@ -18,9 +18,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 
-namespace net {
-
-namespace nqe {
+namespace net::nqe {
 
 namespace {
 
@@ -72,6 +70,4 @@ bool IsPrivateHostForTesting(HostResolver* host_resolver,
 
 }  // namespace internal
 
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe

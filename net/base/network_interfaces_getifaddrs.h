@@ -19,8 +19,7 @@
 
 struct ifaddrs;
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 class NET_EXPORT_PRIVATE IPAttributesGetter {
  public:
@@ -60,7 +59,6 @@ bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks,
                                    bool use_alternative_getifaddrs);
 #endif
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // NET_BASE_NETWORK_INTERFACES_GETIFADDRS_H_

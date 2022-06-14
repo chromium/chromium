@@ -9,8 +9,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class QuicClockSkewDetectorTest : public ::testing::Test {
@@ -66,5 +65,4 @@ TEST_F(QuicClockSkewDetectorTest, LargeOffsetThenSmallOffset) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -14,9 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 // An opaque class that represents a fixed buffer of data of a fixed length,
 // to be used as an input to other operations. An Input object does not own
@@ -153,8 +151,6 @@ class NET_EXPORT_PRIVATE ByteReader {
   size_t len_;
 };
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_INPUT_H_

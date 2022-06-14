@@ -8,8 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 TEST(HttpRequestTest, ParseRequest) {
   HttpRequestParser parser;
@@ -159,5 +158,4 @@ TEST(HttpRequestTest, GetURLFallback) {
   EXPECT_EQ("http://localhost/foobar.html?q=foo", request.GetURL().spec());
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

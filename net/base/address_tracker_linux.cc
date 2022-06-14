@@ -25,8 +25,7 @@
 #include "base/android/build_info.h"
 #endif
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 namespace {
 
@@ -550,5 +549,4 @@ AddressTrackerLinux::AddressTrackerAutoLock::~AddressTrackerAutoLock() {
   }
 }
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal

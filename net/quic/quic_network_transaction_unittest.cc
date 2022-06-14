@@ -94,8 +94,7 @@
 using ::testing::ElementsAre;
 using ::testing::Key;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -9775,5 +9774,4 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
 
 // TODO(yoichio):  Add the TCP job reuse case. See crrev.com/c/2174099.
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

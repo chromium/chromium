@@ -8,8 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace web_fonts_histogram {
+namespace net::web_fonts_histogram {
 
 namespace {
 
@@ -134,5 +133,4 @@ TEST(WebfontsHistogramTest, TwoRobotoSameBucket_TwoOpenSansDifferentBucket) {
   histograms.ExpectTotalCount(kOthersHistogramName, 0);
 }
 
-}  // namespace web_fonts_histogram
-}  // namespace net
+}  // namespace net::web_fonts_histogram

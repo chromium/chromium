@@ -5,8 +5,7 @@
 #include "net/quic/mock_quic_data.h"
 #include "net/base/hex_utils.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 MockQuicData::MockQuicData(quic::ParsedQuicVersion version)
     : printer_(version) {}
@@ -74,5 +73,4 @@ SequencedSocketData* MockQuicData::GetSequencedSocketData() {
   return socket_data_.get();
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

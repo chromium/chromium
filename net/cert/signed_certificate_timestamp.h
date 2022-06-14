@@ -18,10 +18,8 @@ class Pickle;
 class PickleIterator;
 }
 
-namespace net {
-
 // Structures related to Certificate Transparency (RFC6962).
-namespace ct {
+namespace net::ct {
 
 // Contains the data necessary to reconstruct the signed_entry of a
 // SignedCertificateTimestamp, from RFC 6962, Section 3.2.
@@ -148,8 +146,6 @@ struct NET_EXPORT SignedCertificateTimestamp
 
 using SCTList = std::vector<scoped_refptr<ct::SignedCertificateTimestamp>>;
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct
 
 #endif  // NET_CERT_SIGNED_CERTIFICATE_TIMESTAMP_H_

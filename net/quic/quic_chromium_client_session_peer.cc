@@ -8,8 +8,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 // static
 void QuicChromiumClientSessionPeer::SetHostname(
     QuicChromiumClientSession* session,
@@ -49,5 +48,4 @@ bool QuicChromiumClientSessionPeer::GetSessionGoingAway(
   return session->going_away_;
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

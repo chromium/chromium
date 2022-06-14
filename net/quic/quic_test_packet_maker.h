@@ -29,8 +29,7 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 class QuicTestPacketMaker {
  public:
@@ -623,7 +622,6 @@ class QuicTestPacketMaker {
   std::unique_ptr<quic::test::SimpleDataProducer> data_producer_;
 };
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_QUIC_QUIC_TEST_PACKET_MAKER_H_

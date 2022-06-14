@@ -15,9 +15,7 @@
 #include "base/third_party/icu/icu_utf.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 namespace {
 
@@ -484,6 +482,4 @@ bool ParseBmpString(Input in, std::string* out) {
   return true;
 }
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der

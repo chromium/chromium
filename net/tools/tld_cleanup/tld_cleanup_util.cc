@@ -21,8 +21,7 @@ const int kWildcardRule = 2;
 const int kPrivateRule = 4;
 }
 
-namespace net {
-namespace tld_cleanup {
+namespace net::tld_cleanup {
 
 // Writes the list of domain rules contained in the 'rules' set to the
 // 'outfile', with each rule terminated by a LF.  The file must already have
@@ -250,6 +249,4 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
   return result;
 }
 
-
-}  // namespace tld_cleanup
-}  // namespace net
+}  // namespace net::tld_cleanup

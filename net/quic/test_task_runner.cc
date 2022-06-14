@@ -11,8 +11,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -107,5 +106,4 @@ std::vector<PostedTask>::iterator TestTaskRunner::FindNextTask() {
                           ShouldRunBeforeLessThan());
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

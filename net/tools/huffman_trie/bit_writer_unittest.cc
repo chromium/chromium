@@ -6,9 +6,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 namespace {
 
@@ -112,6 +110,4 @@ TEST(BitWriterTest, WriteBoth) {
 
 }  // namespace
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie

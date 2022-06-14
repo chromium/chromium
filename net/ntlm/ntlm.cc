@@ -18,8 +18,7 @@
 #include "third_party/boringssl/src/include/openssl/md4.h"
 #include "third_party/boringssl/src/include/openssl/md5.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 namespace {
 
@@ -407,5 +406,4 @@ NET_EXPORT_PRIVATE std::vector<uint8_t> GenerateUpdatedTargetInfo(
   return WriteUpdatedTargetInfo(updated_av_pairs, updated_target_info_len);
 }
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm

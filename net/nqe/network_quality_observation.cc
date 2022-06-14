@@ -7,11 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
@@ -71,8 +67,4 @@ std::vector<ObservationCategory> Observation::GetObservationCategories() const {
   return observation_categories;
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

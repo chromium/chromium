@@ -8,8 +8,7 @@
 #include "net/test/embedded_test_server/http1_connection.h"
 #include "net/test/embedded_test_server/http2_connection.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 std::unique_ptr<HttpConnection> HttpConnection::Create(
     std::unique_ptr<StreamSocket> socket,
@@ -26,5 +25,4 @@ std::unique_ptr<HttpConnection> HttpConnection::Create(
   }
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

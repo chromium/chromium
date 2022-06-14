@@ -10,9 +10,7 @@
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 namespace {
 
@@ -449,6 +447,4 @@ TEST(InputFileParsersTest, ParseCertificatesFileInvalidTimestamp) {
 
 }  // namespace
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state

@@ -47,11 +47,9 @@ namespace net {
 
 class NetLog;
 
-namespace nqe {
-namespace internal {
+namespace nqe::internal {
 class ThroughputAnalyzer;
-}  // namespace internal
-}  // namespace nqe
+}  // namespace nqe::internal
 
 class URLRequest;
 

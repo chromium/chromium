@@ -4,8 +4,7 @@
 
 #include "quiche_platform_impl/quiche_test_helpers_impl.h"
 
-namespace http2 {
-namespace test {
+namespace http2::test {
 
 // This is a copy of the same named method in ::testing::internal.
 // TODO(jamessynge): See about getting something like VERIFY_* adopted by
@@ -25,5 +24,4 @@ std::string GetBoolAssertionFailureMessage(
   return msg.GetString();
 }
 
-}  // namespace test
-}  // namespace http2
+}  // namespace http2::test

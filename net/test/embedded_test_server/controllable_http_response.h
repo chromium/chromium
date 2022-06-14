@@ -19,9 +19,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace net {
-
-namespace test_server {
+namespace net::test_server {
 
 // A response that can be manually controlled on the current test thread. It is
 // used for waiting for a connection, sending data and closing it. It will
@@ -96,8 +94,6 @@ class ControllableHttpResponse {
   base::WeakPtrFactory<ControllableHttpResponse> weak_ptr_factory_{this};
 };
 
-}  // namespace test_server
-
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  //  NET_TEST_EMBEDDED_TEST_SERVER_CONTROLLABLE_HTTP_RESPONSE_H_

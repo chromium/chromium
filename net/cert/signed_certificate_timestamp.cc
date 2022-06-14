@@ -6,9 +6,7 @@
 
 #include "base/pickle.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 bool SignedCertificateTimestamp::LessThan::operator()(
     const scoped_refptr<SignedCertificateTimestamp>& lhs,
@@ -97,6 +95,4 @@ bool DigitallySigned::SignatureParametersMatch(
   return (hash_algorithm == other_hash_algorithm) &&
          (signature_algorithm == other_signature_algorithm);
 }
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

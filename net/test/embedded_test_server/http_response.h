@@ -19,8 +19,7 @@
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 class HttpResponse;
 
@@ -195,7 +194,6 @@ class HungAfterHeadersHttpResponse : public HttpResponse {
   base::StringPairs headers_;
 };
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_HTTP_RESPONSE_H_

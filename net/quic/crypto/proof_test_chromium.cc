@@ -22,8 +22,7 @@
 
 using std::string;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 // TestProofVerifierCallback is a simple callback for a quic::ProofVerifier that
@@ -311,5 +310,4 @@ TEST_P(ProofTest, UseAfterFree) {
   }
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

@@ -17,8 +17,7 @@
 using ::testing::ElementsAre;
 using ::testing::Pair;
 
-namespace net {
-namespace test {
+namespace net::test {
 
 class HeaderCoalescerTest : public ::testing::Test {
  public:
@@ -157,6 +156,4 @@ TEST_F(HeaderCoalescerTest, HeaderValueContains0x7f) {
   ExpectEntry("foo", "bar\x7F baz", "Invalid character 0x7F in header value.");
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

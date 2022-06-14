@@ -7,9 +7,7 @@
 #include "base/check.h"
 #include "net/der/parse_values.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 Parser::Parser() {
   CBS_init(&cbs_, nullptr, 0);
@@ -155,6 +153,4 @@ bool Parser::ReadGeneralizedTime(GeneralizedTime* out) {
   return ParseGeneralizedTime(value, out);
 }
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der

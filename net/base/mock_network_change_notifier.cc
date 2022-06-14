@@ -11,8 +11,7 @@
 #include "net/dns/dns_config_service.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 // static
 std::unique_ptr<MockNetworkChangeNotifier> MockNetworkChangeNotifier::Create() {
@@ -118,5 +117,4 @@ ScopedMockNetworkChangeNotifier::mock_network_change_notifier() {
   return mock_network_change_notifier_.get();
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

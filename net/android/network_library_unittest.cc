@@ -17,9 +17,7 @@
 #include "net/socket/udp_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace android {
+namespace net::android {
 
 TEST(NetworkLibraryTest, CaptivePortal) {
   EXPECT_FALSE(android::GetIsCaptivePortal());
@@ -151,6 +149,4 @@ TEST(NetworkLibraryTest, BindToNetwork) {
   }
 }
 
-}  // namespace android
-
-}  // namespace net
+}  // namespace net::android

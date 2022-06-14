@@ -15,11 +15,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class IsolationInfoDataView;
-}  // namespace mojom
-}  // namespace network
+}  // namespace network::mojom
 
 namespace mojo {
 template <typename DataViewType, typename T>

@@ -6,11 +6,9 @@
 
 #include "net/socket/stream_socket.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 void EmbeddedTestServerConnectionListener::OnResponseCompletedSuccessfully(
     std::unique_ptr<StreamSocket> socket) {}
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

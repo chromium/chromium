@@ -18,9 +18,7 @@
 #include "net/spdy/spdy_read_queue.h"
 #include "net/spdy/spdy_stream.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 // Delegate that calls Close() on |stream_| on OnClose. Used by tests
 // to make sure that such an action is harmless.
@@ -181,8 +179,6 @@ class StreamDelegateDetectEOF : public StreamDelegateBase {
   bool eof_detected_ = false;
 };
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_SPDY_SPDY_STREAM_TEST_UTIL_H_

@@ -16,8 +16,7 @@
 
 using std::string;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class IntervalTest : public ::testing::Test {
@@ -275,5 +274,4 @@ TEST_F(IntervalTest, IntervalOfTypeWithNoOperatorMinus) {
 }
 
 }  // unnamed namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

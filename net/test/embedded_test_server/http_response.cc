@@ -24,8 +24,7 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 HttpResponseDelegate::HttpResponseDelegate() = default;
 HttpResponseDelegate::~HttpResponseDelegate() = default;
@@ -125,5 +124,4 @@ void HungAfterHeadersHttpResponse::SendResponse(
   delegate->SendResponseHeaders(HTTP_OK, "OK", headers_);
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

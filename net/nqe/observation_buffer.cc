@@ -16,11 +16,7 @@
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/nqe/weighted_observation.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 ObservationBuffer::ObservationBuffer(
     const NetworkQualityEstimatorParams* params,
@@ -173,8 +169,4 @@ size_t ObservationBuffer::Capacity() const {
   return params_->observation_buffer_size();
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

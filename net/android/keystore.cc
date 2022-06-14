@@ -21,8 +21,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
-namespace net {
-namespace android {
+namespace net::android {
 
 std::string GetPrivateKeyClassName(const JavaRef<jobject>& key) {
   JNIEnv* env = AttachCurrentThread();
@@ -111,5 +110,4 @@ bool EncryptWithPrivateKey(const JavaRef<jobject>& private_key_ref,
   return true;
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

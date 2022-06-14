@@ -10,9 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
-namespace net {
-namespace nqe {
-namespace internal {
+namespace net::nqe::internal {
 
 // NetworkID is used to uniquely identify a network.
 // For the purpose of network quality estimation and caching, a network is
@@ -62,8 +60,6 @@ struct NET_EXPORT_PRIVATE NetworkID {
   int32_t signal_strength;
 };
 
-}  // namespace internal
-}  // namespace nqe
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_NETWORK_ID_H_

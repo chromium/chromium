@@ -11,9 +11,7 @@
 
 #include "net/tools/huffman_trie/huffman/huffman_builder.h"
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 class BitWriter;
 
@@ -83,8 +81,6 @@ class TrieBitBuffer {
   std::vector<BitsOrPosition> elements_;
 };
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie
 
 #endif  // NET_TOOLS_HUFFMAN_TRIE_TRIE_TRIE_BIT_BUFFER_H_

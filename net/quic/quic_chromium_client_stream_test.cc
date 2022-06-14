@@ -34,8 +34,7 @@
 using testing::_;
 using testing::Return;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
@@ -1179,5 +1178,4 @@ TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

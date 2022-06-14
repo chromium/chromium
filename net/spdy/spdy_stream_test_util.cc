@@ -11,9 +11,7 @@
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 ClosingDelegate::ClosingDelegate(
     const base::WeakPtr<SpdyStream>& stream) : stream_(stream) {
@@ -202,6 +200,4 @@ void StreamDelegateDetectEOF::OnDataReceived(
     eof_detected_ = true;
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

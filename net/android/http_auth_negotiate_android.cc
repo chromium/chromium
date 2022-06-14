@@ -26,8 +26,7 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
-namespace net {
-namespace android {
+namespace net::android {
 
 JavaNegotiateResultWrapper::JavaNegotiateResultWrapper(
     const scoped_refptr<base::TaskRunner>& callback_task_runner,
@@ -170,5 +169,4 @@ void HttpAuthNegotiateAndroid::SetResultInternal(int result,
   std::move(completion_callback_).Run(result);
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

@@ -9,9 +9,7 @@
 
 #include "base/check.h"
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 namespace {
 
@@ -161,6 +159,4 @@ std::unique_ptr<HuffmanNode> HuffmanBuilder::BuildTree() {
   return std::move(nodes[0]);
 }
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie

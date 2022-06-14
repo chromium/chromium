@@ -9,8 +9,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
-namespace net {
-namespace features {
+namespace net::features {
 
 const base::Feature kAcceptLanguageHeader{"AcceptLanguageHeader",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -303,5 +302,4 @@ const base::Feature kStaticKeyPinningEnforcement(
 const base::Feature kCookieDomainRejectNonASCII{
     "CookieDomainRejectNonASCII", base::FEATURE_DISABLED_BY_DEFAULT};
 
-}  // namespace features
-}  // namespace net
+}  // namespace net::features

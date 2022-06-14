@@ -38,9 +38,7 @@ typedef base::RepeatingCallback<bool(base::TimeTicks)> ShouldNotifyRTTCallback;
 
 }  // namespace
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // SocketWatcherFactory implements SocketPerformanceWatcherFactory.
 // SocketWatcherFactory is thread safe.
@@ -99,9 +97,7 @@ class SocketWatcherFactory : public SocketPerformanceWatcherFactory {
   raw_ptr<const base::TickClock> tick_clock_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

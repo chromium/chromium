@@ -10,11 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/network_change_notifier.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 NetworkQualityStore::NetworkQualityStore() {
   static_assert(kMaximumNetworkQualityCacheSize > 0,
@@ -197,8 +193,4 @@ void NetworkQualityStore::NotifyCacheObserverIfPresent(
     observer->OnChangeInCachedNetworkQuality(it.first, it.second);
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

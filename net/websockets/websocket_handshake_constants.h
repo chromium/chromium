@@ -18,8 +18,7 @@
 
 // This file plases constants inside the ::net::websockets namespace to avoid
 // risk of collisions with other symbols in libnet.
-namespace net {
-namespace websockets {
+namespace net::websockets {
 
 // "HTTP/1.1"
 // RFC6455 only requires HTTP/1.1 "or better" but in practice an HTTP version
@@ -60,7 +59,6 @@ extern const char NET_EXPORT kWebSocketGuid[];
 // (except in obsolete versions of the protocol).
 extern const char kWebSocketLowercase[];
 
-}  // namespace websockets
-}  // namespace net
+}  // namespace net::websockets
 
 #endif  // NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_CONSTANTS_H_

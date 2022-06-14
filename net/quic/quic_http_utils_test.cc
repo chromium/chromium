@@ -11,8 +11,7 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 TEST(QuicHttpUtilsTest, ConvertRequestPriorityToQuicPriority) {
   EXPECT_EQ(0u, ConvertRequestPriorityToQuicPriority(HIGHEST));
@@ -36,5 +35,4 @@ TEST(QuicHttpUtilsTest, ConvertQuicPriorityToRequestPriority) {
   }
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

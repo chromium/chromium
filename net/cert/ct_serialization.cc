@@ -12,9 +12,7 @@
 #include "net/cert/signed_tree_head.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -401,6 +399,4 @@ bool EncodeSCTListForTesting(const base::StringPiece& sct,
   return true;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

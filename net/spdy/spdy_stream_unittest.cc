@@ -44,9 +44,7 @@
 
 // TODO(ukai): factor out common part with spdy_http_stream_unittest.cc
 //
-namespace net {
-
-namespace test {
+namespace net::test {
 
 namespace {
 
@@ -2076,6 +2074,4 @@ TEST_F(SpdyStreamTestWithMockClock, FlowControlSlowReads) {
   EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_CONNECTION_CLOSED));
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

@@ -12,8 +12,7 @@
 
 #include "net/base/net_export.h"
 
-namespace net {
-namespace ntlm {
+namespace net::ntlm {
 
 // A security buffer is a structure within an NTLM message that indicates
 // the offset from the beginning of the message and the length of a payload
@@ -181,7 +180,6 @@ static constexpr NegotiateFlags kNegotiateMessageFlags =
     NegotiateFlags::kRequestTarget | NegotiateFlags::kNtlm |
     NegotiateFlags::kAlwaysSign | NegotiateFlags::kExtendedSessionSecurity;
 
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm
 
 #endif  // NET_NTLM_NTLM_CONSTANTS_H_

@@ -9,8 +9,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 
 // Helper class to encapsulate MockReads and MockWrites for QUIC.
 // Simplify ownership issues and the interaction with the MockSocketFactory.
@@ -73,7 +72,6 @@ class MockQuicData {
   QuicPacketPrinter printer_;
 };
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test
 
 #endif  // NET_QUIC_MOCK_QUIC_DATA_H_

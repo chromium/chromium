@@ -11,8 +11,7 @@
 
 #include <ifaddrs.h>
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 // Implementation of getifaddrs for Android.
 // Fills out a list of ifaddr structs (see below) which contain information
@@ -24,8 +23,7 @@ namespace internal {
 int Getifaddrs(struct ifaddrs** result);
 void Freeifaddrs(struct ifaddrs* addrs);
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

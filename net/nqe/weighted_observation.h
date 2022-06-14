@@ -7,11 +7,7 @@
 
 #include "net/base/net_export.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 // Holds an observation and its weight.
 struct NET_EXPORT_PRIVATE WeightedObservation {
@@ -40,10 +36,6 @@ struct NET_EXPORT_PRIVATE WeightedObservation {
   double weight;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal
 
 #endif  // NET_NQE_WEIGHTED_OBSERVATION_H_

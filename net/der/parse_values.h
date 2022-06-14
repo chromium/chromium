@@ -11,9 +11,7 @@
 #include "net/der/input.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 // Reads a DER-encoded ASN.1 BOOLEAN value from |in| and puts the resulting
 // value in |out|. Returns whether the encoded value could successfully be
@@ -155,8 +153,6 @@ NET_EXPORT_PRIVATE bool operator>=(const GeneralizedTime& lhs,
 // result in |out| as UTF-8, returning true if successful.
 [[nodiscard]] NET_EXPORT bool ParseBmpString(Input in, std::string* out);
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_PARSE_VALUES_H_

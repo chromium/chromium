@@ -38,9 +38,7 @@ bool ShouldDiscardRequest(const URLRequest& request) {
 
 }  // namespace
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 // The default content size of a HTML response body. It is set to the median
 // HTML response content size, i.e. 1.8kB.
 constexpr int64_t kDefaultContentSizeBytes = 1800;
@@ -486,8 +484,6 @@ void ThroughputAnalyzer::EraseHangingRequests(const URLRequest& request) {
   }
 }
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net

@@ -15,8 +15,7 @@ namespace base {
 class FilePath;
 }
 
-namespace disk_cache {
-namespace simple_util {
+namespace disk_cache::simple_util {
 
 // Immutable array with compile-time bound-checking.
 template <typename T, size_t Size>
@@ -55,7 +54,6 @@ bool CorruptKeySHA256FromEntry(const std::string& key,
 bool CorruptStream0LengthFromEntry(const std::string& key,
                                    const base::FilePath& cache_path);
 
-}  // namespace simple_util
-}  // namespace disk_cache
+}  // namespace disk_cache::simple_util
 
 #endif  // NET_DISK_CACHE_SIMPLE_SIMPLE_TEST_UTIL_H_

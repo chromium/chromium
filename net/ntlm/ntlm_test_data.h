@@ -18,9 +18,7 @@
 
 #include "net/ntlm/ntlm_constants.h"
 
-namespace net {
-namespace ntlm {
-namespace test {
+namespace net::ntlm::test {
 
 // Common input values defined in [MS-NLMP] Section 4.2.1.
 constexpr char16_t kPassword[] = {'P', 'a', 's', 's', 'w', 'o', 'r', 'd', '\0'};
@@ -566,8 +564,6 @@ constexpr uint8_t kExpectedAuthenticateMsgEmptyChannelBindingsV2[] = {
     'P',  0x00, 'U',  0x00, 'T',  0x00, 'E',  0x00, 'R',  0x00,
 };
 
-}  // namespace test
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm::test
 
 #endif  // NET_NTLM_NTLM_TEST_DATA_H_

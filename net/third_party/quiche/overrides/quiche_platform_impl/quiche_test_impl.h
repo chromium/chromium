@@ -14,8 +14,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"  // IWYU pragma: export
 #include "testing/gtest/include/gtest/gtest.h"      // IWYU pragma: export
 
-namespace quiche {
-namespace test {
+namespace quiche::test {
 
 class QuicheTestImpl : public ::testing::Test {
  private:
@@ -41,8 +40,7 @@ class ScopedEnvironmentForThreadsImpl {
 
 std::string QuicheGetCommonSourcePathImpl();
 
-}  // namespace test
-}  // namespace quiche
+}  // namespace quiche::test
 
 #if GTEST_HAS_DEATH_TEST && !defined(NDEBUG)
 #define EXPECT_QUICHE_DEBUG_DEATH_IMPL(condition, message) \
