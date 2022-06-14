@@ -168,6 +168,28 @@ HWND CreateForegroundParentWindowForUAC() {
   return foreground_parent.Detach();
 }
 
+// Compares the OS, service pack, and build numbers using `::VerifyVersionInfo`,
+// in accordance with `type_mask` and `oper`.
+bool CompareOSVersionsInternal(const OSVERSIONINFOEX& os,
+                               DWORD type_mask,
+                               BYTE oper) {
+  DCHECK(type_mask);
+  DCHECK(oper);
+
+  ULONGLONG cond_mask = 0;
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_MAJORVERSION, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_MINORVERSION, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_SERVICEPACKMAJOR, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_SERVICEPACKMINOR, oper);
+  cond_mask = ::VerSetConditionMask(cond_mask, VER_BUILDNUMBER, oper);
+
+  // `::VerifyVersionInfo` could return `FALSE` due to an error other than
+  // `ERROR_OLD_WIN_VERSION`. We do not handle that case here.
+  // https://msdn.microsoft.com/ms725492.
+  OSVERSIONINFOEX os_in = os;
+  return !!::VerifyVersionInfo(&os_in, type_mask, cond_mask);
+}
+
 }  // namespace
 
 NamedObjectAttributes::NamedObjectAttributes() = default;
@@ -770,6 +792,20 @@ absl::optional<OSVERSIONINFOEX> GetOSVersion() {
     return absl::nullopt;
 
   return os_out;
+}
+
+bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
+  DCHECK(oper);
+
+  const DWORD os_sp_type_mask = VER_MAJORVERSION | VER_MINORVERSION |
+                                VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR;
+  const DWORD build_number_type_mask = VER_BUILDNUMBER;
+
+  // If the OS and the service pack match, return the build number comparison.
+  return CompareOSVersionsInternal(os_version, os_sp_type_mask, VER_EQUAL)
+             ? CompareOSVersionsInternal(os_version, build_number_type_mask,
+                                         oper)
+             : CompareOSVersionsInternal(os_version, os_sp_type_mask, oper);
 }
 
 }  // namespace updater

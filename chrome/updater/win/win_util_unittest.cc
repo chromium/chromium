@@ -159,4 +159,100 @@ TEST(WinUtil, GetOSVersion) {
   EXPECT_EQ(rtl_os_version->wReserved, os.wReserved);
 }
 
+TEST(WinUtil, CompareOSVersions_SameAsCurrent) {
+  absl::optional<OSVERSIONINFOEX> this_os = GetOSVersion();
+  ASSERT_NE(this_os, absl::nullopt);
+
+  EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_GREATER_EQUAL));
+  EXPECT_FALSE(CompareOSVersions(this_os.value(), VER_GREATER));
+  EXPECT_FALSE(CompareOSVersions(this_os.value(), VER_LESS));
+  EXPECT_TRUE(CompareOSVersions(this_os.value(), VER_LESS_EQUAL));
+}
+
+TEST(WinUtil, CompareOSVersions_NewBuildNumber) {
+  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, absl::nullopt);
+  ASSERT_GT(prior_os->dwBuildNumber, 0UL);
+  --prior_os->dwBuildNumber;
+
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS_EQUAL));
+}
+
+TEST(WinUtil, CompareOSVersions_NewMajor) {
+  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, absl::nullopt);
+  ASSERT_GT(prior_os->dwMajorVersion, 0UL);
+  --prior_os->dwMajorVersion;
+
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS_EQUAL));
+}
+
+TEST(WinUtil, CompareOSVersions_NewMinor) {
+  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, absl::nullopt);
+
+  // This test only runs if the current OS has a minor version.
+  if (prior_os->dwMinorVersion >= 1) {
+    --prior_os->dwMinorVersion;
+
+    EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
+    EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER_EQUAL));
+    EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER));
+    EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS));
+    EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS_EQUAL));
+  }
+}
+
+TEST(WinUtil, CompareOSVersions_NewMajorWithLowerMinor) {
+  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, absl::nullopt);
+  ASSERT_GT(prior_os->dwMajorVersion, 0UL);
+  --prior_os->dwMajorVersion;
+  ++prior_os->dwMinorVersion;
+
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER_EQUAL));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_GREATER));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_LESS_EQUAL));
+}
+
+TEST(WinUtil, CompareOSVersions_OldMajor) {
+  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, absl::nullopt);
+  ++prior_os->dwMajorVersion;
+
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_GREATER_EQUAL));
+  EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_GREATER));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_LESS));
+  EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_LESS_EQUAL));
+}
+
+TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
+  absl::optional<OSVERSIONINFOEX> prior_os = GetOSVersion();
+  ASSERT_NE(prior_os, absl::nullopt);
+
+  // This test only runs if the current OS has a minor version.
+  if (prior_os->dwMinorVersion >= 1) {
+    ++prior_os->dwMajorVersion;
+    --prior_os->dwMinorVersion;
+
+    EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_EQUAL));
+    EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_GREATER_EQUAL));
+    EXPECT_FALSE(CompareOSVersions(prior_os.value(), VER_GREATER));
+    EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_LESS));
+    EXPECT_TRUE(CompareOSVersions(prior_os.value(), VER_LESS_EQUAL));
+  }
+}
+
 }  // namespace updater

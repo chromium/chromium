@@ -259,6 +259,12 @@ HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope);
 // Returns an OSVERSIONINFOEX for the current OS version.
 absl::optional<OSVERSIONINFOEX> GetOSVersion();
 
+// Compares the current OS to the supplied version.  The value of `oper` should
+// be one of the predicate values from `::VerSetConditionMask()`, for example,
+// `VER_GREATER` or `VER_GREATER_EQUAL`. `os_version` is usually from a prior
+// call to `::GetVersionEx` or `::RtlGetVersion`.
+bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_
