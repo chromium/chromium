@@ -642,6 +642,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 public void didAddTab(
                         Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
                     if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                            || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                             || type == TabLaunchType.FROM_RECENT_TABS
                                     && !DeviceClassManager.enableAnimations()) {
                         Toast.makeText(ChromeTabbedActivity.this, R.string.open_in_new_tab_toast,
@@ -2335,6 +2336,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND
                 || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO
                 || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                 || type == TabLaunchType.FROM_RECENT_TABS
                 || (type == TabLaunchType.FROM_RESTORE
                         && CriticalPersistedTabData.from(tab).getParentId() != Tab.INVALID_TAB_ID);
