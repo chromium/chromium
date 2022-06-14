@@ -14,6 +14,8 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -134,7 +136,10 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     }
 
     private boolean areMetricsEnabled() {
-        return PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
+        // Require UMA and "Make searches and browsing better" to be enabled.
+        return (PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()
+                && UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                        Profile.getLastUsedRegularProfile()));
     }
 
     @VisibleForTesting
