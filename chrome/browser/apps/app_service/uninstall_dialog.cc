@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "extensions/browser/uninstall_reason.h"
 
@@ -64,25 +63,12 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
       return;
   }
 
-  constexpr bool kAllowPlaceholderIcon = false;
   // Currently ARC apps only support 48*48 native icon.
-  int32_t size_hint_in_dip = kUninstallIconSize;
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    auto icon_type = IconType::kStandard;
-    icon_loader->LoadIconFromIconKey(
-        app_type_, app_id_, icon_key, icon_type, size_hint_in_dip,
-        kAllowPlaceholderIcon,
-        base::BindOnce(&UninstallDialog::OnLoadIcon,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    auto mojom_icon_type = apps::mojom::IconType::kStandard;
-    icon_loader->LoadIconFromIconKey(
-        ConvertAppTypeToMojomAppType(app_type_), app_id_,
-        ConvertIconKeyToMojomIconKey(icon_key), mojom_icon_type,
-        size_hint_in_dip, kAllowPlaceholderIcon,
-        MojomIconValueToIconValueCallback(base::BindOnce(
-            &UninstallDialog::OnLoadIcon, weak_ptr_factory_.GetWeakPtr())));
-  }
+  icon_loader->LoadIconFromIconKey(
+      app_type_, app_id_, icon_key, IconType::kStandard, kUninstallIconSize,
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&UninstallDialog::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 views::Widget* UninstallDialog::GetWidget() {

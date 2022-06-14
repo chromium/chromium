@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 
@@ -261,22 +260,12 @@ void AppServiceAppItem::Launch(int event_flags,
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
-  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-        app_type_, id(), apps::IconType::kStandard,
-        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-        allow_placeholder_icon,
-        base::BindOnce(&AppServiceAppItem::OnLoadIcon,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-        apps::ConvertAppTypeToMojomAppType(app_type_), id(),
-        apps::mojom::IconType::kStandard,
-        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-        allow_placeholder_icon,
-        apps::MojomIconValueToIconValueCallback(base::BindOnce(
-            &AppServiceAppItem::OnLoadIcon, weak_ptr_factory_.GetWeakPtr())));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
+      app_type_, id(), apps::IconType::kStandard,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      allow_placeholder_icon,
+      base::BindOnce(&AppServiceAppItem::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppServiceAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {
