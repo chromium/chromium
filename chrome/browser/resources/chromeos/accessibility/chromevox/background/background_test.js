@@ -1614,7 +1614,8 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationEscapesEdit', async function() {
 });
 
 TEST_F(
-    'ChromeVoxBackgroundTest', 'SelectDoesNotSyncNavigation', async function() {
+    'ChromeVoxBackgroundTest', 'DISABLED_SelectDoesNotSyncNavigation',
+    async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <select>
