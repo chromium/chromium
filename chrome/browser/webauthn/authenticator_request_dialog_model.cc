@@ -365,6 +365,11 @@ void AuthenticatorRequestDialogModel::ShowCable() {
 
 void AuthenticatorRequestDialogModel::Cancel() {
   if (is_request_complete()) {
+    if (use_location_bar_bubble_) {
+      // Conditional UI requests are never cancelled, they restart silently.
+      StartOver();
+      return;
+    }
     SetCurrentStep(Step::kClosed);
   }
 
@@ -447,7 +452,7 @@ void AuthenticatorRequestDialogModel::OnAuthenticatorStorageFull() {
 void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
   if (use_location_bar_bubble_) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
-    // their platform authenticator while displaying the location bar bubble UI.
+    // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
     StartOver();
     return;
@@ -457,6 +462,14 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
 
 bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
 #if BUILDFLAG(IS_WIN)
+  if (use_location_bar_bubble_) {
+    // Do not show a page-modal retry error sheet if the user cancelled out of
+    // their platform authenticator during a conditional UI request.
+    // Instead, retry silently.
+    StartOver();
+    return true;
+  }
+
   // If the native Windows API was triggered immediately (i.e. before any Chrome
   // dialog) then start the request over (once) if the user cancels the Windows
   // UI and there are other options in Chrome's UI.

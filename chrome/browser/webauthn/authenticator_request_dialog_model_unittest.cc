@@ -58,6 +58,7 @@ class MockDialogModelObserver
   MockDialogModelObserver(const MockDialogModelObserver&) = delete;
   MockDialogModelObserver& operator=(const MockDialogModelObserver&) = delete;
 
+  MOCK_METHOD0(OnStartOver, void());
   MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogModel*));
   MOCK_METHOD0(OnStepTransition, void());
   MOCK_METHOD0(OnCancelRequest, void());
@@ -788,3 +789,64 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
 }
+
+// Tests that cancelling a Conditional UI request that has completed restarts
+// it.
+TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
+  testing::StrictMock<MockDialogModelObserver> mock_observer;
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  model.AddObserver(&mock_observer);
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+
+  EXPECT_CALL(mock_observer, OnStepTransition());
+  model.StartFlow(std::move(TransportAvailabilityInfo()),
+                  /*is_location_bar_bubble_ui==*/true,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Cancel an ongoing request. It should inform the observers to e.g. stop
+  // discoveries.
+  EXPECT_CALL(mock_observer, OnCancelRequest());
+  model.Cancel();
+  EXPECT_NE(model.current_step(), Step::kClosed);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Complete the request and then "cancel" it again (as if e.g. the user
+  // clicked the accept button). The request should be restarted.
+  EXPECT_CALL(mock_observer, OnStartOver());
+  EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
+  model.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
+  model.Cancel();
+  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  model.RemoveObserver(&mock_observer);
+}
+
+#if BUILDFLAG(IS_WIN)
+// Tests that cancelling the Windows Platform authenticator during a Conditional
+// UI request restarts it.
+TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
+  testing::StrictMock<MockDialogModelObserver> mock_observer;
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  model.AddObserver(&mock_observer);
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+
+  EXPECT_CALL(mock_observer, OnStepTransition());
+  model.StartFlow(std::move(TransportAvailabilityInfo()),
+                  /*is_location_bar_bubble_ui==*/true,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Simulate the Windows authenticator cancelling.
+  EXPECT_CALL(mock_observer, OnStepTransition());
+  EXPECT_CALL(mock_observer, OnStartOver());
+  model.OnWinUserCancelled();
+  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  model.RemoveObserver(&mock_observer);
+}
+#endif  // BUILDFLAG(IS_WIN)
