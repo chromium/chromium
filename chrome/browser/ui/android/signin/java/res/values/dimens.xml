@@ -10,4 +10,5 @@
     <dimen name="signin_promo_padding_bottom">12dp</dimen>
     <!-- Signin fre uma dialog dimensions -->
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
+    <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>
 </resources>
