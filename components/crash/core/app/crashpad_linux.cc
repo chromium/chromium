@@ -191,11 +191,8 @@ bool PlatformCrashpadInitialization(
     }
 #endif
 
-    bool result =
-        client.StartHandler(handler_path, *database_path, metrics_path, url,
-                            annotations, arguments, false, false);
-    DCHECK(result);
-
+    CHECK(client.StartHandler(handler_path, *database_path, metrics_path, url,
+                              annotations, arguments, false, false));
   } else {
     int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
 
