@@ -723,7 +723,7 @@
       'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Win x64 Builder Code Coverage': 'gpu_tests_release_bot_minimal_symbols_code_coverage',
-      'Windows deterministic': 'release_bot_x86_minimal_symbols',
+      'Windows deterministic': 'release_bot_x86_minimal_symbols_reclient',
     },
 
     'client.devtools-frontend.integration': {
@@ -3286,6 +3286,10 @@
 
     'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs': [
       'release_bot', 'x86', 'minimal_symbols', 'no_com_init_hooks', 'chrome_with_codecs'
+    ],
+
+    'release_bot_x86_minimal_symbols_reclient': [
+      'release_bot_reclient', 'x86', 'minimal_symbols',
     ],
 
     'release_fuchsia_arm64': [
