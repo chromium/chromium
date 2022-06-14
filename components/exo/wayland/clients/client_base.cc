@@ -556,8 +556,9 @@ bool ClientBase::Init(const InitParams& params) {
     ui::OzonePlatform::InitParams ozone_params;
     ozone_params.single_process = true;
     ui::OzonePlatform::InitializeForGPU(ozone_params);
-    bool gl_initialized = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
-    DCHECK(gl_initialized);
+    gl::GLDisplayEGL* display = static_cast<gl::GLDisplayEGL*>(
+        gl::init::InitializeGLOneOff(/*system_device_id=*/0));
+    DCHECK(display);
     gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
@@ -566,14 +567,11 @@ bool ClientBase::Init(const InitParams& params) {
     make_current_ = std::make_unique<ui::ScopedMakeCurrent>(gl_context_.get(),
                                                             gl_surface_.get());
 
-    if (gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-            "EGL_EXT_image_flush_external") ||
-        gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-            "EGL_ARM_implicit_external_sync")) {
+    if (display->ext->b_EGL_EXT_image_flush_external ||
+        display->ext->b_EGL_ARM_implicit_external_sync) {
       egl_sync_type_ = EGL_SYNC_FENCE_KHR;
     }
-    if (gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-            "EGL_ANDROID_native_fence_sync")) {
+    if (display->ext->b_EGL_ANDROID_native_fence_sync) {
       egl_sync_type_ = EGL_SYNC_NATIVE_FENCE_ANDROID;
     }
 

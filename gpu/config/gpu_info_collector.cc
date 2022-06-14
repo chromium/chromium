@@ -386,13 +386,11 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
   base::UmaHistogramSparse("GPU.MaxMSAASampleCount", max_samples);
 
 #if BUILDFLAG(IS_ANDROID)
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   gpu_info->can_support_threaded_texture_mailbox =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-          "EGL_KHR_fence_sync") &&
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-          "EGL_KHR_image_base") &&
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
-          "EGL_KHR_gl_texture_2D_image") &&
+      display->ext->b_EGL_KHR_fence_sync &&
+      display->ext->b_EGL_KHR_image_base &&
+      display->ext->b_EGL_KHR_gl_texture_2D_image &&
       gfx::HasExtension(extension_set, "GL_OES_EGL_image");
 #else
   gl::GLWindowSystemBindingInfo window_system_binding_info;
@@ -566,7 +564,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
                          const GpuPreferences& prefs) {
   // Populate the list of ANGLE features by querying the functions exposed by
   // EGL_ANGLE_feature_control if it's available.
-  if (gl::GLSurfaceEGL::GetGLDisplayEGL()->IsANGLEFeatureControlSupported()) {
+  if (gl::g_driver_egl.client_ext.b_EGL_ANGLE_feature_control) {
     EGLDisplay display =
         gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
     EGLAttrib feature_count = 0;
