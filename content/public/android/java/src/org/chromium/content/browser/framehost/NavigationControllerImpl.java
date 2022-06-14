@@ -172,7 +172,7 @@ import org.chromium.url.Origin;
                     ? params.getIntentReceivedTimestamp()
                     : params.getInputStartTimestamp();
             RecordHistogram.recordTimesHistogram("Android.Omnibox.InputToNavigationControllerStart",
-                    SystemClock.elapsedRealtime() - inputStart);
+                    SystemClock.uptimeMillis() - inputStart);
             NavigationControllerImplJni.get().loadUrl(mNativeNavigationControllerAndroid,
                     NavigationControllerImpl.this, params.getUrl(), params.getLoadUrlType(),
                     params.getTransitionType(),
