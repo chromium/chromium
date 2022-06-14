@@ -61,15 +61,15 @@ suite('SettingsSchedulerSlider', function() {
   test.skip('pref value update time string', function() {
     // Test that the slider time string is updated after the pref is
     // saved.
-    assertTrue(!!slider.$$('#startLabel'));
-    assertTrue(!!slider.$$('#endLabel'));
+    assertTrue(!!slider.shadowRoot.querySelector('#startLabel'));
+    assertTrue(!!slider.shadowRoot.querySelector('#endLabel'));
 
     const getStartTimeString = () => {
-      return slider.$$('#startLabel').innerHTML.trim();
+      return slider.shadowRoot.querySelector('#startLabel').innerHTML.trim();
     };
 
     const getEndTimeString = () => {
-      return slider.$$('#endLabel').innerHTML.trim();
+      return slider.shadowRoot.querySelector('#endLabel').innerHTML.trim();
     };
 
     assertEquals('1:00 AM', getStartTimeString());
@@ -109,15 +109,15 @@ suite('SettingsSchedulerSlider', function() {
   // daylight savings is active.
   test.skip('pref value update aria label', function() {
     // Test that the aria label is updated after the pref is saved.
-    assertTrue(!!slider.$$('#startKnob'));
-    assertTrue(!!slider.$$('#endKnob'));
+    assertTrue(!!slider.shadowRoot.querySelector('#startKnob'));
+    assertTrue(!!slider.shadowRoot.querySelector('#endKnob'));
 
     const getStartTimeAriaLabel = () => {
-      return slider.$$('#startKnob').ariaLabel.trim();
+      return slider.shadowRoot.querySelector('#startKnob').ariaLabel.trim();
     };
 
     const getEndTimeAriaLabel = () => {
-      return slider.$$('#endKnob').ariaLabel.trim();
+      return slider.shadowRoot.querySelector('#endKnob').ariaLabel.trim();
     };
 
     assertEquals(slider.i18n('startTime', '1:00 AM'), getStartTimeAriaLabel());
