@@ -392,6 +392,9 @@ class X11Window : public PlatformWindow,
   // True if the window should stay on top of most other windows.
   bool is_always_on_top_ = false;
 
+  // True if the window is security-sensitive. Implies |is_always_on_top_|.
+  bool is_security_surface_ = false;
+
   // True if the window is fully obscured by another window.
   bool is_occluded_ = false;
 

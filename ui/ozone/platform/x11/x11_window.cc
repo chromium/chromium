@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/x11/x11_window.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -183,6 +184,11 @@ std::vector<x11::Window> GetParentsList(x11::Connection* connection,
   return result;
 }
 
+std::vector<x11::Window>& GetSecuritySurfaces() {
+  static base::NoDestructor<std::vector<x11::Window>> security_surfaces;
+  return *security_surfaces;
+}
+
 }  // namespace
 
 X11Window::X11Window(PlatformWindowDelegate* platform_window_delegate)
@@ -325,6 +331,17 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   is_always_on_top_ = properties.keep_on_top;
   if (is_always_on_top_)
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_ABOVE"));
+
+  is_security_surface_ = properties.is_security_surface;
+  if (is_security_surface_) {
+    GetSecuritySurfaces().push_back(xwindow_);
+  } else {
+    // Newly created windows appear at the top of the stacking order, so raise
+    // any security surfaces since the WM will not do it if the window is
+    // override-redirect.
+    for (x11::Window window : GetSecuritySurfaces())
+      RaiseWindow(window);
+  }
 
   workspace_ = absl::nullopt;
   if (properties.visible_on_all_workspaces) {
@@ -1773,6 +1790,13 @@ void X11Window::CloseXWindow() {
 
   CancelResize();
   UnconfineCursor();
+  // Unregister from the global security surface list if necessary.
+  if (is_security_surface_) {
+    auto& security_surfaces = GetSecuritySurfaces();
+    security_surfaces.erase(
+        std::find(security_surfaces.begin(), security_surfaces.end(), xwindow_),
+        security_surfaces.end());
+  }
 
   connection_->DestroyWindow({xwindow_});
   xwindow_ = x11::Window::None;

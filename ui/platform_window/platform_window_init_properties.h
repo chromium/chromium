@@ -106,6 +106,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   bool activatable = true;
   bool force_show_in_taskbar;
   bool keep_on_top = false;
+  bool is_security_surface = false;
   bool visible_on_all_workspaces = false;
   bool remove_standard_frame = false;
   std::string workspace;

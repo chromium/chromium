@@ -125,8 +125,9 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
   properties.activatable =
       params.activatable == Widget::InitParams::Activatable::kYes;
   properties.force_show_in_taskbar = params.force_show_in_taskbar;
-  properties.keep_on_top =
-      params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal;
+  auto z_order = params.EffectiveZOrderLevel();
+  properties.keep_on_top = z_order != ui::ZOrderLevel::kNormal;
+  properties.is_security_surface = z_order == ui::ZOrderLevel::kSecuritySurface;
   properties.visible_on_all_workspaces = params.visible_on_all_workspaces;
   properties.remove_standard_frame = params.remove_standard_frame;
   properties.workspace = params.workspace;
