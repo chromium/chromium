@@ -162,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
   EXPECT_EQ(0u, views::test::WidgetTest::GetAllWidgets().size());
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1336247): Flaky on Chrome OS.
 // TODO(crbug.com/1324444): For Mac builders, the test fails after activating
 // the browser and cannot spot the widget. Needs investigation and fix.
 #define MAYBE_SwitchTabs DISABLED_SwitchTabs
