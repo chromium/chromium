@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 
 #include "base/ios/ios_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -154,9 +157,41 @@ NSString* const kContextMenuEllipsis = @"…";
 
       if (!isOffTheRecord) {
         // Open in Incognito Tab.
-        UIAction* openIncognitoTab =
-            [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
-                                                     completion:nil];
+        UIAction* openIncognitoTab;
+        if (base::FeatureList::IsEnabled(
+                url_param_filter::features::kIncognitoParamFilterEnabled)) {
+          // Experimental filter guarded by the kIncognitoParamFilterEnabled
+          // flag.
+          url_param_filter::FilterResult result =
+              url_param_filter::FilterUrl(lastCommittedURL, linkURL);
+          if (result.experimental_status ==
+              url_param_filter::ClassificationExperimentStatus::EXPERIMENTAL) {
+            base::UmaHistogramCounts100(
+                "Navigation.UrlParamFilter.FilteredParamCountExperimental",
+                result.filtered_param_count);
+          } else {
+            base::UmaHistogramCounts100(
+                "Navigation.UrlParamFilter.FilteredParamCount",
+                result.filtered_param_count);
+          }
+          GURL targetURL =
+              result.filtered_param_count > 0 ? result.filtered_url : linkURL;
+          loadParams = UrlLoadParams::InNewTab(targetURL);
+          loadParams.in_incognito = YES;
+          loadParams.filtered_param_count = result.filtered_param_count;
+          openIncognitoTab =
+              [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+                ContextMenuConfigurationProvider* strongSelf = weakSelf;
+                if (!strongSelf)
+                  return;
+                UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
+                    ->Load(loadParams);
+              }];
+        } else {
+          openIncognitoTab =
+              [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
+                                                       completion:nil];
+        }
         [menuElements addObject:openIncognitoTab];
       }
 

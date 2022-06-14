@@ -129,7 +129,8 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   insertion_agent->InsertWebState(
       params, nullptr, /*opened_by_dom=*/false,
       TabInsertion::kPositionAutomatically, /*in_background=*/false,
-      /*inherit_opener=*/false, /*should_show_start_surface=*/true);
+      /*inherit_opener=*/false, /*should_show_start_surface=*/true,
+      /*filtered_param_count=*/0);
 }
 
 // Removes duplicate NTP tabs in `browser`'s WebStateList.
