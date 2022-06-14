@@ -19,11 +19,17 @@
       }
     </script>
   </head>
-  <body onload="reportEmbeddingSuccess();">
+  <body onload="onLoad();">
     <div id="div">
       <!-- This DIV is just a convenient target for cropTargetFromElement. -->
-      <h1>Region Capture Test - Page 1 (Embedded)</h1>
+      <p id="p_id">0</p>
     </div>
-    <iframe id="mailman_frame"></iframe>
+    <iframe id="mailman_frame" hidden></iframe>
+    <script>
+      function onLoad() {
+        animate(document.getElementById('p_id'));
+        reportEmbeddingSuccess();
+      }
+    </script>
   </body>
 </html>

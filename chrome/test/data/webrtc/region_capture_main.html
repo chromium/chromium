@@ -54,13 +54,18 @@
       }
     </script>
   </head>
-  <body>
+  <body onload="onLoad();">
     <div id="div">
       <!-- This DIV is just a convenient target for cropTargetFromElement. -->
-      <h1>Region Capture Test - Page 1 (Main)</h1>
-      <br/>
+      <p id="p_id">0</p>
     </div>
+    <br />
     <iframe id="embedded_frame" allow="display-capture *"></iframe>
-    <iframe id="mailman_frame"></iframe>
+    <iframe id="mailman_frame" hidden></iframe>
+    <script>
+      function onLoad() {
+        animate(document.getElementById('p_id'));
+      }
+    </script>
   </body>
 </html>

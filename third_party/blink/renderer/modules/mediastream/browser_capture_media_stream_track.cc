@@ -183,34 +183,54 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
     return promise;
   }
 
+  MediaStreamComponent* const component = Component();
+  DCHECK(component);
+
+  MediaStreamSource* const source = component->Source();
+  DCHECK(component->Source());
   // We don't currently instantiate BrowserCaptureMediaStreamTrack for audio
   // tracks. If we do in the future, we'll have to raise an exception if
   // cropTo() is called on a non-video track.
-  DCHECK(Component());
-  DCHECK(Component()->Source());
-  MediaStreamSource* const source = Component()->Source();
   DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+
   MediaStreamVideoSource* const native_source =
       MediaStreamVideoSource::GetVideoSource(source);
-  DCHECK(native_source);
+  MediaStreamTrackPlatform* const native_track =
+      MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component));
+  if (!native_source || !native_track) {
+    // TODO(crbug.com/1266378): Use dedicate UMA values.
+    RecordUma(CropToResult::kRejectedWithErrorGeneric);
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError, "Native/platform track missing."));
+    return promise;
+  }
 
   // TODO(crbug.com/1332628): Instead of using GetNextCropVersion(), move the
   // ownership of the Promises from this->pending_promises_ into native_source.
-  const absl::optional<uint32_t> crop_version =
+  const absl::optional<uint32_t> optional_crop_version =
       native_source->GetNextCropVersion();
-  if (!crop_version.has_value()) {
+  if (!optional_crop_version.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kOperationError,
         "Can't change crop-target while clones exist."));
     return promise;
   }
+  const uint32_t crop_version = optional_crop_version.value();
 
-  pending_promises_.Set(crop_version.value(), resolver);
+  pending_promises_.Set(crop_version,
+                        MakeGarbageCollected<CropPromiseInfo>(resolver));
+
+  // Register for a one-off notification when the first frame cropped
+  // to the new crop-target is observed.
+  native_track->AddCropVersionCallback(
+      crop_version,
+      WTF::Bind(&BrowserCaptureMediaStreamTrack::OnCropVersionObserved,
+                WrapWeakPersistent(this), crop_version));
 
   native_source->Crop(
-      crop_id_token.value(), crop_version.value(),
-      WTF::Bind(&BrowserCaptureMediaStreamTrack::ResolveCropPromise,
-                WrapPersistent(this), crop_version.value()));
+      crop_id_token.value(), crop_version,
+      WTF::Bind(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
+                WrapWeakPersistent(this), crop_version));
 
   return promise;
 #endif
@@ -232,15 +252,74 @@ BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void BrowserCaptureMediaStreamTrack::ResolveCropPromise(
+void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
     uint32_t crop_version,
     media::mojom::CropRequestResult result) {
-  const auto promise_it = pending_promises_.find(crop_version);
-  if (promise_it == pending_promises_.end()) {
+  DCHECK(IsMainThread());
+  DCHECK_GT(crop_version, 0u);
+
+  const auto iter = pending_promises_.find(crop_version);
+  if (iter == pending_promises_.end()) {
     return;
   }
-  ScriptPromiseResolver* const resolver = promise_it->value;
-  pending_promises_.erase(promise_it);
+  CropPromiseInfo* const info = iter->value;
+
+  DCHECK(!info->crop_result.has_value()) << "Invoked twice.";
+  info->crop_result = result;
+
+  MaybeFinalizeCropPromise(iter);
+}
+
+void BrowserCaptureMediaStreamTrack::OnCropVersionObserved(
+    uint32_t crop_version) {
+  DCHECK(IsMainThread());
+  DCHECK_GT(crop_version, 0u);
+
+  const auto iter = pending_promises_.find(crop_version);
+  if (iter == pending_promises_.end()) {
+    return;
+  }
+  CropPromiseInfo* const info = iter->value;
+
+  DCHECK(!info->crop_version_observed) << "Invoked twice.";
+  info->crop_version_observed = true;
+
+  MaybeFinalizeCropPromise(iter);
+}
+
+void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
+    BrowserCaptureMediaStreamTrack::PromiseMapIterator iter) {
+  DCHECK(IsMainThread());
+  DCHECK_NE(iter, pending_promises_.end());
+
+  CropPromiseInfo* const info = iter->value;
+
+  if (!info->crop_result.has_value()) {
+    return;
+  }
+
+  const media::mojom::CropRequestResult result = info->crop_result.value();
+
+  // Failure can be reported immediately, but success is only reported once
+  // the new crop-version is observed.
+  if (result == media::mojom::CropRequestResult::kSuccess &&
+      !info->crop_version_observed) {
+    return;
+  }
+
+  // When `result == kSuccess`, the callback will be removed by the track
+  // itself as it invokes it. For failure, we remove the callback immediately,
+  // since there's no need to wait.
+  if (result != media::mojom::CropRequestResult::kSuccess) {
+    MediaStreamTrackPlatform* const native_track =
+        MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(Component()));
+    if (native_track) {
+      native_track->RemoveCropVersionCallback(iter->key);
+    }
+  }
+
+  ScriptPromiseResolver* const resolver = info->promise_resolver;
+  pending_promises_.erase(iter);
   ResolveCropPromiseHelper(resolver, result);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
