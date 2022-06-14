@@ -798,11 +798,17 @@ void CalendarView::RestoreMonthStatus() {
 }
 
 void CalendarView::ScrollToToday() {
-  {
-    base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   PositionOfCurrentMonth());
+  base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+
+  if (event_list_view_) {
+    scroll_view_->ScrollToPosition(
+        scroll_view_->vertical_scroll_bar(),
+        PositionOfToday() + kExpandedCalendarPadding);
+    return;
   }
+
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 PositionOfCurrentMonth());
 
   // If the screen does not have enough height which makes today's cell not in
   // the visible rect, we auto scroll to today's row instead of scrolling to the
@@ -810,10 +816,8 @@ void CalendarView::ScrollToToday() {
   if (PositionOfCurrentMonth() +
           calendar_view_controller_->GetTodayRowBottomHeight() >
       scroll_view_->GetVisibleRect().bottom()) {
-    base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-    scroll_view_->ScrollToPosition(
-        scroll_view_->vertical_scroll_bar(),
-        PositionOfToday() + (event_list_view_ ? kExpandedCalendarPadding : 0));
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   PositionOfToday());
   }
 }
 
