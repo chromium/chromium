@@ -1326,6 +1326,7 @@ android_library("chrome_unit_test_java") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/android/features/autofill_assistant:unit_test_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
