@@ -704,4 +704,12 @@ void ChromeExtensionsBrowserClient::GetFavicon(
                                               tracker, std::move(callback));
 }
 
+std::vector<content::BrowserContext*>
+ChromeExtensionsBrowserClient::GetRelatedContextsForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) const {
+  return util::GetAllRelatedProfiles(
+      Profile::FromBrowserContext(browser_context), extension);
+}
+
 }  // namespace extensions

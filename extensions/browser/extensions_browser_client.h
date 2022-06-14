@@ -433,6 +433,16 @@ class ExtensionsBrowserClient {
       base::OnceCallback<void(
           scoped_refptr<base::RefCountedMemory> bitmap_data)> callback) const;
 
+  // Returns all BrowserContexts related to the given extension. For an
+  // extension limited to a signal context, this will be a vector of the single
+  // passed-in context. For extensions allowed to run in incognito contexts
+  // associated with `browser_context`, this will include all those contexts.
+  // Note: It may not be appropriate to treat these the same depending on
+  // whether the extension runs in "split" or "spanning" mode.
+  virtual std::vector<content::BrowserContext*> GetRelatedContextsForExtension(
+      content::BrowserContext* browser_context,
+      const Extension& extension) const;
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

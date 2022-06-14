@@ -454,6 +454,8 @@ source_set("browser_sources") {
     "media_capture_util.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
+    "network_permissions_updater.cc",
+    "network_permissions_updater.h",
     "notification_types.h",
     "null_app_sorting.cc",
     "null_app_sorting.h",
