@@ -62,31 +62,3 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess, callback) {
   });
 }
 
-function run_coop_test_iframe (documentTitle, iframe_origin, popup_origin, popup_coop, expects_opener, expects_name) {
-  for (const popup_via of ["window_open", "anchor", "form_GET", "form_POST"]) {
-    const name = iframe_origin.name + "_iframe_opening_" + popup_origin.name + "_popup_via_" + popup_via + "_with_coop_" + popup_coop;
-    async_test(t => {
-        const frame = document.createElement("iframe");
-
-        // Close the popup and remove the frame once the test is
-        // complete. The browsing context might be closed hence use the
-        // broadcast channel to trigger the closure.
-        t.add_cleanup(() => {
-          frame.remove();
-          bc.postMessage("close");
-        });
-
-        const origin = CROSS_ORIGIN.origin;
-        const path = new URL("resources/iframe-popup.sub.html", window.location).pathname;
-        const bc = new BroadcastChannel(name);
-        frame.src = `${iframe_origin.origin}${path}?popup_origin=${popup_origin.origin}&popup_coop=${popup_coop}&channel=${name}&popup_via=${popup_via}`;
-
-        bc.onmessage = t.step_func_done(event => {
-                const payload = event.data;
-                assert_equals(payload.opener, expects_opener, 'opener');
-                assert_equals(payload.name, expects_name? name:"", 'name');
-        });
-        document.body.append(frame);
-    }, `${documentTitle} with ${iframe_origin.name} iframe opening popup via ${popup_via} a ${popup_origin.name} with COOP: ${format_value(popup_coop)}`);
-  }
-}
