@@ -4,11 +4,17 @@
 
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources_map.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/files/file_util.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/task/thread_pool.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
@@ -17,15 +23,17 @@
 
 namespace ash {
 
-DemoModeAppUIConfig::DemoModeAppUIConfig()
-    : content::WebUIConfig(content::kChromeUIScheme, kChromeUIDemoModeAppHost) {
-}
+DemoModeAppUIConfig::DemoModeAppUIConfig(
+    base::RepeatingCallback<base::FilePath()> component_path_producer)
+    : content::WebUIConfig(content::kChromeUIScheme, kChromeUIDemoModeAppHost),
+      component_path_producer_(std::move(component_path_producer)) {}
 
 DemoModeAppUIConfig::~DemoModeAppUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
 DemoModeAppUIConfig::CreateWebUIController(content::WebUI* web_ui) {
-  return std::make_unique<DemoModeAppUI>(web_ui);
+  return std::make_unique<DemoModeAppUI>(web_ui,
+                                         component_path_producer_.Run());
 }
 
 bool DemoModeAppUIConfig::IsWebUIEnabled(
@@ -33,20 +41,68 @@ bool DemoModeAppUIConfig::IsWebUIEnabled(
   return ash::features::IsDemoModeSWAEnabled();
 }
 
-DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui)
+scoped_refptr<base::RefCountedMemory> ReadFile(
+    const base::FilePath& absolute_resource_path) {
+  std::string data;
+  base::ReadFileToString(absolute_resource_path, &data);
+  return base::RefCountedString::TakeString(&data);
+}
+
+bool ShouldSourceFromComponent(
+    const base::flat_set<std::string>& webui_resource_paths,
+    const std::string& path) {
+  // TODO(b/232945108): Consider changing this logic to check if the absolute
+  // path exists in the component. This would still allow us show the default
+  // WebUI resource if the requested path isn't found.
+  return !webui_resource_paths.contains(path);
+}
+
+void DemoModeAppUI::SourceDataFromComponent(
+    const base::FilePath& component_path,
+    const std::string& resource_path,
+    content::WebUIDataSource::GotDataCallback callback) {
+  // Convert to GURL to strip out query params and URL fragments
+  //
+  // TODO (b/234170189): Verify that query params won't be used in the prod Demo
+  // App, or add support for them here instead of ignoring them.
+  GURL full_url = GURL(kChromeUIDemoModeAppURL + resource_path);
+  // Trim leading slash from path
+  std::string path = full_url.path().substr(1);
+
+  base::FilePath absolute_resource_path = component_path.AppendASCII(path);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ReadFile, absolute_resource_path), std::move(callback));
+}
+
+DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui,
+                             base::FilePath component_path)
     : ui::MojoWebUIController(web_ui) {
-  content::WebUIDataSource* html_source =
+  // We tack the resource path onto this component path, so CHECK that it's
+  // absolute so ".." parent references can't be used as an exploit
+  DCHECK(component_path.IsAbsolute());
+  content::WebUIDataSource* data_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUIDemoModeAppHost);
 
+  base::flat_set<std::string> webui_resource_paths;
   // Add required resources.
   for (size_t i = 0; i < kAshDemoModeAppResourcesSize; ++i) {
-    html_source->AddResourcePath(kAshDemoModeAppResources[i].path,
+    data_source->AddResourcePath(kAshDemoModeAppResources[i].path,
                                  kAshDemoModeAppResources[i].id);
+    webui_resource_paths.insert(kAshDemoModeAppResources[i].path);
   }
 
-  html_source->SetDefaultResource(IDR_ASH_DEMO_MODE_APP_DEMO_MODE_APP_HTML);
+  data_source->SetDefaultResource(IDR_ASH_DEMO_MODE_APP_DEMO_MODE_APP_HTML);
+  // Add empty string so default resource is still shown for
+  // chrome://demo-mode-app
+  webui_resource_paths.insert("");
+
+  data_source->SetRequestFilter(
+      base::BindRepeating(&ShouldSourceFromComponent, webui_resource_paths),
+      base::BindRepeating(&SourceDataFromComponent, component_path));
 }
 
 DemoModeAppUI::~DemoModeAppUI() = default;

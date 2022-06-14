@@ -6,6 +6,8 @@
 #define ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
 
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
+#include "base/files/file_path.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,20 +18,32 @@ namespace ash {
 
 class DemoModeAppUIConfig : public content::WebUIConfig {
  public:
-  DemoModeAppUIConfig();
+  explicit DemoModeAppUIConfig(
+      base::RepeatingCallback<base::FilePath()> component_path_producer);
   ~DemoModeAppUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui) override;
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+
+ private:
+  // Callback that provides the demo app component path to the WebUI controller.
+  // The path can't be passed directly into the DemoModeAppUIConfig constructor
+  // because the config is created during startup, whereas the component isn't
+  // loaded until the active demo session has started
+  //
+  // TODO(b/234174220): Consider creating a Delegate class that provides the
+  // component path instead
+  base::RepeatingCallback<base::FilePath()> component_path_producer_;
 };
 
 // The WebUI for chrome://demo-mode-app
 class DemoModeAppUI : public ui::MojoWebUIController,
                       public mojom::demo_mode::PageHandlerFactory {
  public:
-  explicit DemoModeAppUI(content::WebUI* web_ui);
+  explicit DemoModeAppUI(content::WebUI* web_ui,
+                         base::FilePath component_base_path);
   ~DemoModeAppUI() override;
 
   DemoModeAppUI(const DemoModeAppUI&) = delete;
@@ -37,6 +51,12 @@ class DemoModeAppUI : public ui::MojoWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<mojom::demo_mode::PageHandlerFactory> factory);
+
+  // Visible for testing
+  static void SourceDataFromComponent(
+      const base::FilePath& component_path,
+      const std::string& resource_path,
+      content::WebUIDataSource::GotDataCallback callback);
 
  private:
   // mojom::DemoModePageHandlerFactory

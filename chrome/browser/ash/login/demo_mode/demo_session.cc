@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/tpm/install_attributes.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "base/bind.h"
@@ -550,12 +551,35 @@ void DemoSession::OnSessionStateChanged() {
 
       InstallAppFromUpdateUrl(GetHighlightsAppId());
 
+      // Download/update the Demo app component during session startup
+      if (features::IsDemoModeSWAEnabled()) {
+        g_browser_process->platform_part()->cros_component_manager()->Load(
+            "demo-mode-app",
+            component_updater::CrOSComponentManager::MountPolicy::kMount,
+            component_updater::CrOSComponentManager::UpdatePolicy::kForce,
+            base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
+
       EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
                                            weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
       break;
   }
+}
+
+// TODO(b/231761044): Launch the Demo Mode SWA after the component has
+// been successfully loaded
+void DemoSession::OnDemoAppComponentLoaded(
+    component_updater::CrOSComponentManager::Error error,
+    const base::FilePath& path) {
+  if (error != component_updater::CrOSComponentManager::Error::NONE) {
+    LOG(WARNING) << "Error loading demo mode app component: "
+                 << static_cast<int>(error);
+    return;
+  }
+  demo_app_component_path_ = path;
 }
 
 void DemoSession::ShowSplashScreen() {
