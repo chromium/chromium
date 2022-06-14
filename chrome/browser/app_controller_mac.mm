@@ -1814,7 +1814,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // a profile for app controller, so `_lastProfile` will be nullptr.
   if (_lastProfile) {
     Browser* browser = chrome::FindBrowserWithProfile(_lastProfile);
-    _lastActiveColorProvider = browser->window()->GetColorProvider();
+    if (browser && browser->window())
+      _lastActiveColorProvider = browser->window()->GetColorProvider();
   }
 }
 
