@@ -185,13 +185,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Hotrod requisition for telemetry.
-     */
-    static remoraRequisitionForTesting() {
-      chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
-    }
-
-    /**
      * Begin enterprise enrollment for telemetry.
      */
     static switchToEnterpriseEnrollmentForTesting() {
