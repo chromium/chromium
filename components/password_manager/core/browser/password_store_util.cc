@@ -31,10 +31,10 @@ LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
   return std::move(absl::get<LoginsResult>(result));
 }
 
-PasswordChanges GetPasswordChangesOrNulloptOnFailure(
+PasswordChanges GetPasswordChangesOrEmptyListOnFailure(
     PasswordChangesOrError result) {
   if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
-    return absl::nullopt;
+    return PasswordStoreChangeList();
   }
   return std::move(absl::get<PasswordChanges>(result));
 }
