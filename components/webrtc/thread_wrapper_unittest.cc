@@ -13,7 +13,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -319,7 +318,6 @@ TEST_F(ThreadWrapperTest, Dispose) {
 class ThreadWrapperProvider : public blink::MetronomeLikeTaskQueueProvider {
  public:
   void Initialize() override {
-    scoped_feature_list_.InitAndEnableFeature(kThreadWrapperUsesMetronome);
     ThreadWrapper::EnsureForCurrentMessageLoop();
     thread_ = rtc::Thread::Current();
   }
@@ -334,7 +332,6 @@ class ThreadWrapperProvider : public blink::MetronomeLikeTaskQueueProvider {
   webrtc::TaskQueueBase* TaskQueue() const override { return thread_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   // ThreadWrapper destroys itself when |message_loop_| is destroyed.
   raw_ptr<rtc::Thread> thread_;
 };

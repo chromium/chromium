@@ -99,16 +99,3 @@ source_set("unit_tests") {
     "//third_party/webrtc_overrides:metronome_like_task_queue_test",
   ]
 }
-
-if (is_android) {
-  java_cpp_features("java_features_srcjar") {
-    # External code should depend on ":components_webrtc_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "//components/webrtc/thread_wrapper.cc" ]
-    template =
-        "//components/webrtc/java_templates/ComponentsWebRtcFeatures.java.tmpl"
-  }
-  android_library("components_webrtc_java") {
-    srcjar_deps = [ ":java_features_srcjar" ]
-  }
-}
