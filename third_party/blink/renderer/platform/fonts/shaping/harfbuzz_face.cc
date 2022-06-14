@@ -37,12 +37,13 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face_from_typeface.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -60,12 +61,12 @@
 
 namespace blink {
 
-scoped_refptr<HarfBuzzFace> HarfBuzzFace::Create(
+std::unique_ptr<HarfBuzzFace> HarfBuzzFace::Create(
     FontPlatformData* platform_data) {
   auto harfbuzz_font_data =
       FontGlobalContext::GetHarfBuzzFontCache().GetOrCreateFontData(
           platform_data);
-  return base::AdoptRef(new HarfBuzzFace(platform_data, harfbuzz_font_data));
+  return base::WrapUnique(new HarfBuzzFace(platform_data, harfbuzz_font_data));
 }
 
 HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data,

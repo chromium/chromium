@@ -50,9 +50,11 @@ struct HarfBuzzFontData;
 
 // |HarfBuzzFace| is a thread specific data associated to |FontPlatformData|,
 // hold by |HarfBuzzFontCache|.
-class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
+class HarfBuzzFace final {
+  USING_FAST_MALLOC(HarfBuzzFace);
+
  public:
-  static scoped_refptr<HarfBuzzFace> Create(FontPlatformData* platform_data);
+  static std::unique_ptr<HarfBuzzFace> Create(FontPlatformData* platform_data);
 
   HarfBuzzFace(const HarfBuzzFace&) = delete;
   HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
