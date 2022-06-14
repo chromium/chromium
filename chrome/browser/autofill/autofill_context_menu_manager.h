@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "content/public/browser/context_menu_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -23,6 +24,28 @@ class AutofillProfile;
 class CreditCard;
 class PersonalDataManager;
 
+// Determines the type of the item added to the context menu.
+enum SubMenuType {
+  // Addresses
+  SUB_MENU_TYPE_ADDRESS = 0,
+  // Credit Cards
+  SUB_MENU_TYPE_CREDIT_CARD = 1,
+  // Passwords
+  SUB_MENU_TYPE_PASSWORD = 2,
+  NUM_SUBMENU_TYPES
+};
+
+// Stores data about an item added to the  context menu.
+struct ContextMenuItem {
+  // Represents the string value that is displayed in a row in the context menu.
+  // If selected, should result in filling.
+  std::u16string fill_value;
+
+  // Represents the type that this item belongs to out of address, credit cards
+  // and passwords.
+  SubMenuType sub_menu_type;
+};
+
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
 // related context menu items. `RenderViewContextMenu` is intended to own and
 // control the lifetime of `AutofillContextMenuManager`.
@@ -34,10 +57,6 @@ class AutofillContextMenuManager {
   // `IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST` to
   // `IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST`.
   using CommandId = base::StrongAlias<class CommandIdTag, int>;
-
-  // Represents the string value that is displayed in a row in the context menu.
-  using ContextMenuItemValue =
-      base::StrongAlias<class ContextMenuItemValueTag, std::u16string>;
 
   // Convert a command ID so that it fits within the range for
   // autofill context menu. `offset` is the count of the items added to the
@@ -64,12 +83,13 @@ class AutofillContextMenuManager {
   bool IsCommandIdVisible(CommandId command_id) const;
   bool IsCommandIdEnabled(CommandId command_id) const;
   void ExecuteCommand(CommandId command_id,
-                      content::RenderFrameHost* render_frame_host);
+                      content::RenderFrameHost* render_frame_host,
+                      const content::ContextMenuParams& params);
 
 #if defined(UNIT_TEST)
   // Getter for `command_id_to_menu_item_value_mapper_` used for testing
   // purposes.
-  const base::flat_map<CommandId, ContextMenuItemValue>&
+  const base::flat_map<CommandId, ContextMenuItem>&
   command_id_to_menu_item_value_mapper_for_testing() const {
     return command_id_to_menu_item_value_mapper_;
   }
@@ -77,24 +97,23 @@ class AutofillContextMenuManager {
 
  private:
   // Adds address items to the context menu.
-  void AppendAddressItems(
-      std::vector<std::pair<CommandId, ContextMenuItemValue>>&
-          item_details_added_to_context_menu);
+  void AppendAddressItems(std::vector<std::pair<CommandId, ContextMenuItem>>&
+                              item_details_added_to_context_menu);
 
   // Adds credit card items to the context menu.
-  void AppendCreditCardItems(
-      std::vector<std::pair<CommandId, ContextMenuItemValue>>&
-          item_details_added_to_context_menu);
+  void AppendCreditCardItems(std::vector<std::pair<CommandId, ContextMenuItem>>&
+                                 item_details_added_to_context_menu);
 
   // Fetches value from `profile_or_credit_card` based on the type from
   // `field_types_to_show` and adds them to the `menu_model`.
-  void CreateSubMenuWithData(
+  bool CreateSubMenuWithData(
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       base::span<const ServerFieldType> field_types_to_show,
       ui::SimpleMenuModel* menu_model,
-      std::vector<std::pair<CommandId, ContextMenuItemValue>>&
-          item_details_added_to_context_menu);
+      std::vector<std::pair<CommandId, ContextMenuItem>>&
+          item_details_added_to_context_menu,
+      SubMenuType sub_menu_type);
 
   // Returns a description for the given `profile`.
   std::u16string GetProfileDescription(const AutofillProfile& profile);
@@ -116,7 +135,7 @@ class AutofillContextMenuManager {
   // Stores the mapping of command ids with the item values added to the context
   // menu.
   // Only items that contain the address or credit card details are stored.
-  base::flat_map<CommandId, ContextMenuItemValue>
+  base::flat_map<CommandId, ContextMenuItem>
       command_id_to_menu_item_value_mapper_;
 };
 

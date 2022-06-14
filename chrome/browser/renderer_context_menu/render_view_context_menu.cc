@@ -2509,7 +2509,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     if (render_frame_host) {
       autofill_context_menu_manager_.ExecuteCommand(
           autofill::AutofillContextMenuManager::CommandId(id),
-          render_frame_host);
+          render_frame_host, params_);
     }
     return;
   }

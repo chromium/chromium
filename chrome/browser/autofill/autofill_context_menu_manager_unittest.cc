@@ -129,7 +129,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
                     ->command_id_to_menu_item_value_mapper_for_testing();
   base::ranges::sort(all_added_strings);
   EXPECT_TRUE(base::ranges::all_of(mapper, [&](const auto& p) {
-    return base::Contains(all_added_strings, p.second.value());
+    return base::Contains(all_added_strings, p.second.fill_value);
   }));
 }
 
