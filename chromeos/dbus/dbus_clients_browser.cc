@@ -71,8 +71,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       use_real_clients ? REAL_DBUS_CLIENT_IMPLEMENTATION
                        : FAKE_DBUS_CLIENT_IMPLEMENTATION;
 
-  arc_appfuse_provider_client_ =
-      CREATE_DBUS_CLIENT(ArcAppfuseProviderClient, use_real_clients);
   arc_data_snapshotd_client_ =
       CREATE_DBUS_CLIENT(ArcDataSnapshotdClient, use_real_clients);
   arc_keymaster_client_ =
@@ -117,7 +115,6 @@ DBusClientsBrowser::~DBusClientsBrowser() = default;
 void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   DCHECK(DBusThreadManager::IsInitialized());
 
-  arc_appfuse_provider_client_->Init(system_bus);
   arc_data_snapshotd_client_->Init(system_bus);
   arc_keymaster_client_->Init(system_bus);
   arc_midis_client_->Init(system_bus);

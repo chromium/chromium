@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chromeos/dbus/arc/arc_appfuse_provider_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
@@ -83,16 +82,16 @@ ArcAppfuseBridge::~ArcAppfuseBridge() {
 void ArcAppfuseBridge::Mount(uint32_t uid,
                              int32_t mount_id,
                              MountCallback callback) {
-  // This is always safe because DBusThreadManager outlives ArcServiceLauncher.
-  chromeos::DBusThreadManager::Get()->GetArcAppfuseProviderClient()->Mount(
+  // This is safe because ArcAppfuseProviderClient outlives ArcServiceLauncher.
+  chromeos::ArcAppfuseProviderClient::Get()->Mount(
       uid, mount_id, base::BindOnce(&RunWithScopedHandle, std::move(callback)));
 }
 
 void ArcAppfuseBridge::Unmount(uint32_t uid,
                                int32_t mount_id,
                                UnmountCallback callback) {
-  chromeos::DBusThreadManager::Get()->GetArcAppfuseProviderClient()->Unmount(
-      uid, mount_id, std::move(callback));
+  chromeos::ArcAppfuseProviderClient::Get()->Unmount(uid, mount_id,
+                                                     std::move(callback));
 }
 
 void ArcAppfuseBridge::OpenFile(uint32_t uid,
@@ -100,7 +99,7 @@ void ArcAppfuseBridge::OpenFile(uint32_t uid,
                                 int32_t file_id,
                                 int32_t flags,
                                 OpenFileCallback callback) {
-  chromeos::DBusThreadManager::Get()->GetArcAppfuseProviderClient()->OpenFile(
+  chromeos::ArcAppfuseProviderClient::Get()->OpenFile(
       uid, mount_id, file_id, flags,
       base::BindOnce(&RunWithScopedHandle, std::move(callback)));
 }

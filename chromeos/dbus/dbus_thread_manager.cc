@@ -51,11 +51,6 @@ DBusThreadManager::~DBusThreadManager() {
              ? g_setter->name.get()   \
              : (clients_browser_ ? clients_browser_->name.get() : nullptr)
 
-ArcAppfuseProviderClient* DBusThreadManager::GetArcAppfuseProviderClient() {
-  return clients_browser_ ? clients_browser_->arc_appfuse_provider_client_.get()
-                          : nullptr;
-}
-
 ArcDataSnapshotdClient* DBusThreadManager::GetArcDataSnapshotdClient() {
   return clients_browser_ ? clients_browser_->arc_data_snapshotd_client_.get()
                           : nullptr;

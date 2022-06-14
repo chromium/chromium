@@ -7,13 +7,10 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/component_export.h"
+#include "base/files/scoped_file.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-
-#include "base/files/scoped_file.h"
 
 namespace chromeos {
 
@@ -24,12 +21,17 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcAppfuseProviderClient
     : public DBusClient {
  public:
-  ArcAppfuseProviderClient();
-  ~ArcAppfuseProviderClient() override;
+  // Returns the global instance if initialized. May return null.
+  static ArcAppfuseProviderClient* Get();
 
-  // Factory function, creates a new instance.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<ArcAppfuseProviderClient> Create();
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
 
   // Mounts a new appfuse file system and returns a filtered /dev/fuse FD
   // associated with the mounted file system.
@@ -48,6 +50,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcAppfuseProviderClient
                         int32_t file_id,
                         int32_t flags,
                         DBusMethodCallback<base::ScopedFD> callback) = 0;
+
+ protected:
+  ArcAppfuseProviderClient();
+  ~ArcAppfuseProviderClient() override;
 };
 
 }  // namespace chromeos
