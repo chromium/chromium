@@ -69,7 +69,9 @@ class CORE_EXPORT CSSPropertyParser {
   bool ParseValueStart(CSSPropertyID unresolved_property,
                        StyleRule::RuleType rule_type,
                        bool important);
-  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property, bool important);
+  bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
+                             bool important,
+                             StyleRule::RuleType rule_type);
 
   bool ParseViewportDescriptor(CSSPropertyID prop_id, bool important);
   bool ParseFontFaceDescriptor(CSSPropertyID);

@@ -139,7 +139,7 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
 bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
                                         StyleRule::RuleType rule_type,
                                         bool important) {
-  if (ConsumeCSSWideKeyword(unresolved_property, important))
+  if (ConsumeCSSWideKeyword(unresolved_property, important, rule_type))
     return true;
 
   CSSParserTokenRange original_range = range_;
@@ -286,12 +286,19 @@ CSSValueID CssValueKeywordID(StringView string) {
 }
 
 bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                                              bool important) {
+                                              bool important,
+                                              StyleRule::RuleType rule_type) {
   CSSParserTokenRange range_copy = range_;
 
   const CSSValue* value = MaybeConsumeCSSWideKeyword(range_copy);
   if (!value)
     return false;
+
+  if (value->IsRevertValue() || value->IsRevertLayerValue()) {
+    // Declarations in @try are not cascaded and cannot be reverted.
+    if (rule_type == StyleRule::kTry)
+      return false;
+  }
 
   CSSPropertyID property = ResolveCSSPropertyID(unresolved_property);
   const StylePropertyShorthand& shorthand = shorthandForProperty(property);
