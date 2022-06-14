@@ -1014,22 +1014,18 @@ TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
   EXPECT_EQ("Has Battery: true", log_contents[9]);
 }
 
-TEST_F(SystemDataProviderTest, ResetReceiverOnDisconnect) {
-  ASSERT_FALSE(system_data_provider_->ReceiverIsBound());
+TEST_F(SystemDataProviderTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
   mojo::Remote<mojom::SystemDataProvider> remote;
   system_data_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(system_data_provider_->ReceiverIsBound());
-
-  // Unbind remote to trigger disconnect and disconnect handler.
-  remote.reset();
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(system_data_provider_->ReceiverIsBound());
 
-  // Test intent is to ensure interface can be rebound when application is
-  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
-  // will reset the receiver to its unbound state.
+  remote.reset();
+
   system_data_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(system_data_provider_->ReceiverIsBound());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(SystemDataProviderTest, BatteryInfoPtrDataValidation) {

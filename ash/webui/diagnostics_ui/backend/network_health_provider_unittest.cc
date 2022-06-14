@@ -1387,25 +1387,20 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   EXPECT_FALSE(log.GetNetworkInfo().empty());
 }
 
-TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {
-  // Ensure required features are enabled before binding to avoid DCHECK.
+TEST_F(NetworkHealthProviderTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kEnableNetworkingInDiagnosticsApp);
-  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
   mojo::Remote<mojom::NetworkHealthProvider> remote;
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
-
-  // Unbind remote to trigger disconnect and disconnect handler.
-  remote.reset();
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
 
-  // Test intent is to ensure interface can be rebound when application is
-  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
-  // will reset the receiver to its unbound state.
+  remote.reset();
+
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace diagnostics

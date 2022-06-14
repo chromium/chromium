@@ -55,9 +55,6 @@ class NetworkHealthProvider
 
   void BindInterface(
       mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver);
-  // Handler for when remote attached to |receiver_| disconnects.
-  void OnBoundInterfaceDisconnect();
-  bool ReceiverIsBound();
 
   // CrosNetworkConfigObserver
   void OnNetworkStateListChanged() override {}
