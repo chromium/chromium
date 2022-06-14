@@ -5317,6 +5317,14 @@
     "expiry_milestone": 96
   },
   {
+    "name": "rounded-display",
+    "owners": [
+      "zoraiznaeem",
+      "chromeos-foundations@google.com"
+    ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak", "herre" ],
     "expiry_milestone": 110

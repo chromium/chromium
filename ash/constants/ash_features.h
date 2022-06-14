@@ -517,6 +517,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kReverseScrollGestures;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kScalableStatusArea;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kRoundedDisplay;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSecondaryGoogleAccountUsage;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSemanticColorsDebugOverride;
@@ -796,6 +798,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSamlReauthenticationOnLockscreenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSavedDesksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsScalableStatusAreaEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsRoundedDisplayEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSeparateNetworkIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSettingsAppNotificationSettingsEnabled();

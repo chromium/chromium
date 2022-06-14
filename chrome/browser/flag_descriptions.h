@@ -1270,6 +1270,9 @@ extern const char kReduceUserAgentDescription[];
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 
+extern const char kRoundedDisplay[];
+extern const char kRoundedDisplayDescription[];
+
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 

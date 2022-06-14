@@ -2260,6 +2260,10 @@ const char kRestrictGamepadAccessDescription[] =
     "Enables Permissions Policy and Secure Context restrictions on the Gamepad "
     "API";
 
+const char kRoundedDisplay[] = "Rounded display";
+const char kRoundedDisplayDescription[] =
+    "Enables rounded corners for the display";
+
 const char kMBIModeName[] = "MBI Scheduling Mode";
 const char kMBIModeDescription[] =
     "Enables independent agent cluster scheduling, via the "

@@ -56460,6 +56460,7 @@ from previous Chrome versions.
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
   <int value="-1089665395" label="HTMLParamElementUrlSupport:enabled"/>
   <int value="-1088804127" label="DuetTabStripIntegrationAndroid:disabled"/>
+  <int value="-1087409065" label="RoundedDisplay:enabled"/>
   <int value="-1086987072" label="NearbySharingSelfShareAutoAccept:enabled"/>
   <int value="-1086728979" label="kids-management-url-classification:enabled"/>
   <int value="-1086656172"
@@ -56703,6 +56704,7 @@ from previous Chrome versions.
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
+  <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>

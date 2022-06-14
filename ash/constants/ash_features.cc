@@ -1298,6 +1298,10 @@ const base::Feature kRgbKeyboard = {"RgbKeyboard",
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the rounded corners for the internal display.
+const base::Feature kRoundedDisplay{"RoundedDisplay",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable kSecondaryGoogleAccountUsage policy.
 const base::Feature kSecondaryGoogleAccountUsage{
     "SecondaryGoogleAccountUsage", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2236,6 +2240,10 @@ bool IsSavedDesksEnabled() {
 
 bool IsScalableStatusAreaEnabled() {
   return base::FeatureList::IsEnabled(kScalableStatusArea);
+}
+
+bool IsRoundedDisplayEnabled() {
+  return base::FeatureList::IsEnabled(kRoundedDisplay);
 }
 
 bool IsSeparateNetworkIconsEnabled() {
