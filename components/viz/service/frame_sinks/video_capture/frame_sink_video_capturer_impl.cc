@@ -250,6 +250,7 @@ void FrameSinkVideoCapturerImpl::SetResolvedTarget(
     resolved_target_->AttachCaptureClient(this);
     RefreshEntireSourceNow();
   } else {
+    MaybeInformConsumerOfEmptyRegion();
     // The capturer will remain idle until either: 1) the requested target is
     // re-resolved by the |frame_sink_manager_|, or 2) a new target is set via a
     // call to ChangeTarget().
