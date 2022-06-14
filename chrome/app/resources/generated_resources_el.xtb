@@ -2635,6 +2635,7 @@
 <translation id="3482719661246593752">Το <ph name="ORIGIN" /> μπορεί να προβάλλει τα παρακάτω αρχεία.</translation>
 <translation id="3484273680291419129">Κατάργηση επιβλαβούς λογισμικού…</translation>
 <translation id="3484869148456018791">Λήψη νέου πιστοποιητικού</translation>
+<translation id="3486950712960783074">Το δρομολόγιό σας</translation>
 <translation id="3487007233252413104">ανώνυμη λειτουργία</translation>
 <translation id="3490695139702884919">Λήψη… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Ο λογαριασμός του παιδιού σας δεν έχει ρυθμιστεί για τους γονικούς ελέγχους του Family Link. Μπορείτε να προσθέσετε γονικούς ελέγχους όταν ολοκληρώσετε τη ρύθμιση. Μπορείτε να βρείτε πληροφορίες για τους γονικούς ελέγχους στην εφαρμογή Εξερεύνηση.</translation>
@@ -2945,6 +2946,7 @@
 <translation id="3797739167230984533">Η συσκευή <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> είναι διαχειριζόμενη<ph name="END_LINK" /> από τον οργανισμό σας</translation>
 <translation id="3797900183766075808">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Έκδοση</translation>
+<translation id="3798632811625902122">Η συσκευή Bluetooth <ph name="DEVICE" /> ζητά άδεια σύζευξης.</translation>
 <translation id="3799128412641261490">Ρυθμίσεις Πρόσβασης με διακόπτη</translation>
 <translation id="3800806661949714323">Εμφάνιση όλων (συνιστάται)</translation>
 <translation id="3800828618615365228">Πρόσθετοι Όροι Google Chrome και ChromeOS</translation>
@@ -4933,6 +4935,7 @@
 <translation id="5792295754950501287">Περισσότερες ενέργειες για <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Πατήστε το κουμπί λειτουργίας</translation>
 <translation id="5793339252089865437">Εάν κατεβάσετε την ενημέρωση μέσω του δικτύου κινητής τηλεφωνίας σας, αυτό μπορεί να έχει ως αποτέλεσμα χρεώσεις κάλυψης.</translation>
+<translation id="5793420564274426163">Επιβεβαίωση σύζευξης</translation>
 <translation id="5794034487966529952">Το γραφείο <ph name="DESK_TITLE" /> έχει <ph name="NUM_BROWSERS" /> ανοιχτά παράθυρα προγράμματος περιήγησης.</translation>
 <translation id="5794414402486823030">Άνοιγμα πάντα με πρόγραμμα προβολής συστήματος</translation>
 <translation id="5794700615121138172">Κοινόχρηστοι φάκελοι Linux</translation>
@@ -7429,6 +7432,7 @@
 <translation id="8242426110754782860">Συνέχεια</translation>
 <translation id="8243948765190375130">Η ποιότητα μέσων ενδέχεται να είναι μειωμένη</translation>
 <translation id="8244514732452879619">Πλησιάζει η ώρα για ύπνο</translation>
+<translation id="8245361042748627813">Αυτή η συντόμευση έχει αλλάξει. Χρησιμοποιήστε το <ph name="NEW_SHORTCUT_KEY" /> για να εκτυπώσετε με χρήση του παραθύρου διαλόγου του συστήματος.</translation>
 <translation id="8246776524656196770">Προστατεύστε το κλειδί ασφαλείας με ένα PIN (προσωπικός αριθμός ταυτοποίησης)</translation>
 <translation id="8248050856337841185">&amp;Επικόλληση</translation>
 <translation id="8248381369318572865">Πρόσβαση στο μικρόφωνό σας και ανάλυση της ομιλίας σας</translation>
@@ -7733,6 +7737,7 @@
 <translation id="8561565784790166472">Συνεχίστε με προσοχή</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Έγινε προσπάθεια υποβάθμισης της εφαρμογής.</translation>
+<translation id="8569673829373920831">Περισσότερα για την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Δεν βρέθηκαν προορισμοί</translation>
 <translation id="8571213806525832805">Τελευταίες 4 εβδομάδες</translation>
 <translation id="8571687764447439720">Προσθήκη εισιτηρίου Kerberos</translation>

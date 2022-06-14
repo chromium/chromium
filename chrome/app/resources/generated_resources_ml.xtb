@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">ബുക്ക്‌മാർക്കുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="1008557486741366299">ഇപ്പോഴല്ല</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> ലൊക്കേഷൻ</translation>
+<translation id="1009663062402466586">ഗെയിം നിയന്ത്രണങ്ങൾ ഇപ്പോൾ ലഭ്യമാണ്</translation>
 <translation id="1010498023906173788">ഈ ടാബ് ഒരു സീരിയൽ പോർട്ടുമായി കണക്റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{പേജ് പ്രതികരിക്കുന്നില്ല}other{പേജുകൾ പ്രതികരിക്കുന്നില്ല}}</translation>
 <translation id="1011355516189274711">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് ശബ്‌ദം</translation>
@@ -845,6 +846,7 @@
 <translation id="1795214765651529549">ക്ലാസിക് ഉപയോഗിക്കുക</translation>
 <translation id="1796105431091975902">ചേർക്കാൻ Ansible പ്ലേബുക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1796588414813960292">ശബ്ദം ആവശ്യമായ ഫീച്ചറുകൾ പ്രവർത്തിക്കില്ല</translation>
+<translation id="1797117170091578105">നിങ്ങളുടെ Chromebook കീബോർഡ് ഉപയോഗിച്ച് കളിക്കുക. നിർദ്ദിഷ്ട പ്രവർത്തനങ്ങൾക്കുള്ള കീകൾ നിങ്ങൾക്ക് ഇഷ്ടാനുസൃതമാക്കാം.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> വായിക്കാനും അതിൽ മാറ്റം വരുത്താനും ഒരു വിപുലീകരണവും അഭ്യർത്ഥിച്ചിട്ടില്ല</translation>
 <translation id="1802624026913571222">കവർ അടയ്‌ക്കുമ്പോൾ ഉറക്ക മോഡിലേക്ക് മാറുന്നു</translation>
 <translation id="1802687198411089702">പേജ് പ്രതികരിക്കുന്നില്ല. പ്രതികരണത്തിനായി കാത്തിരിക്കുകയോ പുറത്ത് കടക്കുകയോ ചെയ്യാം.</translation>
@@ -1006,6 +1008,7 @@
 <translation id="1940546824932169984">കണക്‌റ്റുചെയ്ത ഉപകരണം</translation>
 <translation id="1941410638996203291">ആരംഭിക്കുന്ന സമയം <ph name="TIME" /></translation>
 <translation id="1941553344801134989">പതിപ്പ്: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">കീ മാപ്പിംഗ് കാണിക്കുക</translation>
 <translation id="1942128823046546853">എല്ലാ വെബ്സൈറ്റുകളിലെയും നിങ്ങളുടെ എല്ലാ ഡാറ്റയും വായിക്കുക, മാറ്റുക</translation>
 <translation id="1942600407708803723">കവർ അടയ്‌ക്കുമ്പോൾ ഷട്ട് ഡൗൺ ചെയ്യുന്നു</translation>
 <translation id="1944528062465413897">Bluetooth ജോടിയാക്കൽ കോഡ്:</translation>
@@ -2619,6 +2622,7 @@
 <translation id="3482719661246593752">ചുവടെയുള്ള ഫയലുകൾ <ph name="ORIGIN" />-ന് കാണാനാവും</translation>
 <translation id="3484273680291419129">ദോഷകരമായ സോഫ്‌റ്റ്‌വയർ നീക്കംചെയ്യുന്നു...</translation>
 <translation id="3484869148456018791">പുതിയ സർട്ടിഫിക്കറ്റ് ലഭ്യമാക്കുക</translation>
+<translation id="3486950712960783074">നിങ്ങളുടെ യാത്ര</translation>
 <translation id="3487007233252413104">അജ്ഞാത പ്രവർത്തനം</translation>
 <translation id="3490695139702884919">ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">നിങ്ങളുടെ കുട്ടിയുടെ അക്കൗണ്ടിൽ Family Link-ന്റെ രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ സജ്ജീകരിച്ചിട്ടില്ല. സജ്ജീകരണം പൂർത്തിയാക്കിക്കഴിഞ്ഞാൽ നിങ്ങൾക്ക് രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ ചേർക്കാൻ കഴിയും. Explore ആപ്പിൽ രക്ഷാകർതൃ നിയന്ത്രണങ്ങളെ കുറിച്ചുള്ള വിവരങ്ങൾ നിങ്ങൾക്ക് കാണാം.</translation>
@@ -2929,6 +2933,7 @@
 <translation id="3797739167230984533">നിങ്ങളുടെ സ്ഥാപനമാണ് <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;'<ph name="SEARCH_TERMS" />' എന്നതിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="3798449238516105146">പതിപ്പ്</translation>
+<translation id="3798632811625902122"><ph name="DEVICE" /> എന്ന Bluetooth ഉപകരണം ജോടിയാക്കാനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="3799128412641261490">സ്വിച്ച് ആക്‌സസ് ക്രമീകരണം</translation>
 <translation id="3800806661949714323">എല്ലാം കാണിക്കുക (ശുപാർശ ചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="3800828618615365228">Google Chrome, ChromeOS അധിക നിബന്ധനകൾ</translation>
@@ -4573,6 +4578,7 @@
 <translation id="5449716055534515760">വി&amp;ന്‍ഡോ അടയ്ക്കുക</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> എന്നതിനൊപ്പം</translation>
+<translation id="545484289444831485">കൂടുതൽ തിരയൽ ഫലങ്ങൾ കാണുക</translation>
 <translation id="5455603387986949153">ChromeOS Flex ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും വായിക്കുക.</translation>
 <translation id="5457113250005438886">അസാധുവാണ്</translation>
 <translation id="5457459357461771897">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് ഫോട്ടോകളും സംഗീതവും മറ്റ് മീഡിയയും വായിക്കുക, ഇല്ലാതാക്കുക</translation>
@@ -4915,6 +4921,7 @@
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="5792728279623964091">നിങ്ങളുടെ പവർ ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5793339252089865437">മൊബൈൽ നെറ്റ്‌വർക്ക് ഉപയോഗിച്ച് അ‌പ്‌ഡേറ്റ് ഡൗൺലോഡ് ചെയ്‌താൽ, അത് അധിക നിരക്കുകൾക്കിടയാക്കും.</translation>
+<translation id="5793420564274426163">ജോടിയാക്കൽ സ്ഥിരീകരണം</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> എന്ന ഡെസ്ക്കിൽ <ph name="NUM_BROWSERS" /> ബ്രൗസർ വിൻഡോകൾ തുറന്നിരിക്കുന്നു</translation>
 <translation id="5794414402486823030">എപ്പോഴും സിസ്‌റ്റം വ്യൂവറിൽ തുറക്കുക</translation>
 <translation id="5794700615121138172">Linux-ൽ നിന്ന് പങ്കിട്ട ഫോൾഡറുകൾ</translation>
@@ -7050,6 +7057,7 @@
 <translation id="7901405293566323524">ഫോൺ ഹബ്</translation>
 <translation id="7903290522161827520">ബ്രൗസർ കമ്പോണന്റുകൾ തിരയുകയാണോ? ഇവിടെ സന്ദർശിക്കൂ</translation>
 <translation id="7903345046358933331">പേജ് പ്രതികരിക്കുന്നില്ല. അത് പ്രതികരിക്കുന്നതുവരെ നിങ്ങൾക്ക് കാത്തിരിക്കാം അല്ലെങ്കിൽ അത് അടയ്‌ക്കുക.</translation>
+<translation id="7903429136755645827">നിങ്ങളുടെ ഗെയിം നിയന്ത്രണങ്ങൾ ഇഷ്ടാനുസൃതമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="7903742244674067440">ഈ സർട്ടിഫിക്കറ്റ് അതോറിറ്റികളെ തിരിച്ചറിയുന്ന സർട്ടിഫിക്കറ്റുകൾ നിങ്ങളുടെ ഫയലിലുണ്ട്</translation>
 <translation id="7903925330883316394">ഉപയുക്തത: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">നിങ്ങളുടെ നെറ്റ്‌വർക്കിലെ മറ്റ് ഉപകരണങ്ങളിൽ Linux പോർട്ടുകൾ ലഭ്യമാക്കുക.</translation>
@@ -7411,6 +7419,7 @@
 <translation id="8242426110754782860">തുടരുക</translation>
 <translation id="8243948765190375130">മീഡിയ നിലവാരം കുറഞ്ഞേക്കാം</translation>
 <translation id="8244514732452879619">ലൈറ്റ് ഉടൻ ഓഫാകുന്നു</translation>
+<translation id="8245361042748627813">ഈ കുറുക്കുവഴി മാറ്റി. സിസ്റ്റം ഡയലോഗ് ഉപയോഗിച്ച് പ്രിന്റ് ചെയ്യാൻ <ph name="NEW_SHORTCUT_KEY" /> ഉപയോഗിക്കുക.</translation>
 <translation id="8246776524656196770">പിൻ (വ്യക്തിഗത തിരിച്ചറിയൽ നമ്പർ) ഉപയോഗിച്ച് നിങ്ങളുടെ സുരക്ഷാ കീ പരിരക്ഷിക്കുക</translation>
 <translation id="8248050856337841185">&amp;ഒട്ടിക്കുക</translation>
 <translation id="8248381369318572865">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാനും സംഭാഷണം വിശകലനം ചെയ്യാനും</translation>
@@ -7715,6 +7724,7 @@
 <translation id="8561565784790166472">ജാഗ്രതയോടെ തുടരുക</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">ആപ്പ് ഡൗൺഗ്രേഡ് ചെയ്യാൻ ശ്രമിച്ചു.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> എന്നതിനെ കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ</translation>
 <translation id="8569682776816196752">ലക്ഷ്യസ്ഥാനങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8571213806525832805">കഴിഞ്ഞ 4 ആഴ്ച</translation>
 <translation id="8571687764447439720">Kerberos ടിക്കറ്റ് ചേർക്കുക</translation>
@@ -8240,6 +8250,7 @@
 <translation id="9078316009970372699">തൽക്ഷണ ടെതറിംഗ് പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="9078842827190780028">കൂടുതൽ തിരയൽ ഫലങ്ങൾ സൈഡ് പാനലിൽ കാണുക</translation>
 <translation id="9079267182985899251">ഈ ഓപ്‌ഷന് ഉടൻ തന്നെ പിന്തുണയില്ലാതാകും. ഒരു ടാബ് ദൃശ്യമാക്കാൻ, <ph name="GOOGLE_MEET" /> ഉപയോഗിക്കുക.</translation>
+<translation id="9080971985541434310">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ കണക്കാക്കുന്നു - Chrome-ന് നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ കണക്കാക്കാൻ കഴിയും</translation>
 <translation id="9081543426177426948">നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകൾ അദൃശ്യ മോഡിൽ സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="9084064520949870008">വിന്‍ഡോ ആയി തുറക്കുക</translation>
 <translation id="9085256200913095638">തിരഞ്ഞെടുത്ത ടാബിന്റെ ഡ്യൂപ്ലിക്കേറ്റ്</translation>

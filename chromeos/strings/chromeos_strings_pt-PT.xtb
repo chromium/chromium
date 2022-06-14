@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Portal cativo</translation>
 <translation id="2006864819935886708">Conectividade</translation>
 <translation id="2008685064673031089">Pesquisa Prime</translation>
+<translation id="2011174342667534258">Versão do SDK:</translation>
 <translation id="2016697457005847575">Experimente passos de resolução de problemas</translation>
 <translation id="2016848882344942759">--sem etiqueta de autorizações--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Estado da ativação</translation>
 <translation id="2271469253353559191">Horário do modo escuro</translation>
 <translation id="2275586345903859204">A reparação está concluída</translation>
+<translation id="2276999893457278469">Conteúdo de ajuda principal</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, aceda a <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Insira o armazenamento externo, como uma unidade USB ou um cartão SD, com a imagem do Utilitário de recuperação do Chromebook transferida</translation>
 <translation id="2307344026739914387">Utilizar par de chaves atual</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Digitalizar</translation>
 <translation id="2526590354069164005">Ambiente de trabalho</translation>
 <translation id="253029298928638905">A reiniciar…</translation>
+<translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
 <translation id="2536159006530886390">Não é possível estabelecer ligação à Internet.</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para configurar, aceda às Definições</translation>
@@ -860,6 +863,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="885701979325669005">Armazenamento</translation>
 <translation id="8863170912498892583">Ativar tema escuro</translation>
 <translation id="8863888432376731307">Obtenha a intenção <ph name="INTENT" /> para a consulta "<ph name="QUERY" />" e muito mais</translation>
+<translation id="8864415976656252616">Nenhum conteúdo sugerido. Veja o conteúdo de ajuda principal.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é um tablet.</translation>
 <translation id="8881098542468797602">Teste com êxito</translation>

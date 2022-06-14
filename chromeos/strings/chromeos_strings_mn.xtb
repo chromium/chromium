@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Дамжих портал</translation>
 <translation id="2006864819935886708">Холболт</translation>
 <translation id="2008685064673031089">Үндсэн хайлт</translation>
+<translation id="2011174342667534258">SDK хувилбар:</translation>
 <translation id="2016697457005847575">Асуудал шийдэх алхмуудыг турших</translation>
 <translation id="2016848882344942759">--цагаан-шошго байхгүй--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
 <translation id="2271469253353559191">Бараан горимын хуваарь</translation>
 <translation id="2275586345903859204">Засаж дууслаа</translation>
+<translation id="2276999893457278469">Шилдэг тусламжийн контент</translation>
 <translation id="2287186687001756809">Боломжтой зураг байхгүй. Зураг нэмэхийн тулд <ph name="LINK" /> руу очно уу</translation>
 <translation id="2294753434210277304">Chromebook Нөхөн сэргээх хэрэгслийн татсан системийн хуулбартай USB драйв эсвэл SD карт зэрэг гадаад хадгалах сан оруулна уу</translation>
 <translation id="2307344026739914387">Одоогийн хос түлхүүрийг ашиглах</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Шалгах</translation>
 <translation id="2526590354069164005">Десктоп</translation>
 <translation id="253029298928638905">Дахин эхлүүлж байна...</translation>
+<translation id="2533048460510040082">Санал болгосон тусламжийн контент</translation>
 <translation id="2536159006530886390">Интернэтэд холбогдох боломжгүй байна.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
@@ -860,6 +863,7 @@
 <translation id="885701979325669005">Хадгалалт</translation>
 <translation id="8863170912498892583">Бараан загварыг идэвхжүүлэх</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" болон бусад зүйлд <ph name="INTENT" />-г авах</translation>
+<translation id="8864415976656252616">Санал болгосон контент байхгүй. Шилдэг тусламжийн контентыг харна уу.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Төхөөрөмж нь таблет байна.</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>

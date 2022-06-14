@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">キャプティブ ポータル</translation>
 <translation id="2006864819935886708">接続</translation>
 <translation id="2008685064673031089">Prime サーチ</translation>
+<translation id="2011174342667534258">SDK のバージョン:</translation>
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="2016848882344942759">--ホワイトラベルなし--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2271469253353559191">ダークモードのスケジュールを設定する</translation>
 <translation id="2275586345903859204">修復が完了しました</translation>
+<translation id="2276999893457278469">関連するヘルプ コンテンツ</translation>
 <translation id="2287186687001756809">画像がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
 <translation id="2294753434210277304">Chromebook リカバリ ユーティリティ イメージをダウンロードした USB ドライブや SD カードなどの外部ストレージを接続してください</translation>
 <translation id="2307344026739914387">現在の鍵ペアを使用</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">スキャン</translation>
 <translation id="2526590354069164005">デスクトップ</translation>
 <translation id="253029298928638905">再起動中…</translation>
+<translation id="2533048460510040082">ヘルプ コンテンツの候補</translation>
 <translation id="2536159006530886390">インターネットに接続できません。</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
@@ -858,6 +861,7 @@
 <translation id="885701979325669005">ストレージ</translation>
 <translation id="8863170912498892583">ダークモードを有効にする</translation>
 <translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
+<translation id="8864415976656252616">コンテンツの候補はありません。関連するヘルプ コンテンツをご覧ください。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>

@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Хавчуургыг экспортлох</translation>
 <translation id="1008557486741366299">Боломжгүй байна</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" />-н байршил</translation>
+<translation id="1009663062402466586">Тоглоомын тохиргоо одоо боломжтой боллоо</translation>
 <translation id="1010498023906173788">Энэ таб цуваа портод холбогдсон байна.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Хуудас хариу өгөхгүй байна}other{Хуудас хариу өгөхгүй байна}}</translation>
 <translation id="1011355516189274711">Бичвэрийг-ярианд-хувиргах дууны түвшин</translation>
@@ -853,6 +854,7 @@
 <translation id="1795214765651529549">Сонгодог загварыг ашиглах</translation>
 <translation id="1796105431091975902">Нэмэх Ansible гарын авлагыг сонгоно уу</translation>
 <translation id="1796588414813960292">Дуу чимээ шаардлагатай онцлогууд ажиллахгүй</translation>
+<translation id="1797117170091578105">Chromebook-н гараа ашиглан тоглоно уу. Та тодорхой үйлдлүүдийн товчийг өөрчлөх боломжтой.</translation>
 <translation id="1800502858278951817">Ямар ч өргөтгөл <ph name="SITE_NAME" />-г унших болон өөрчлөх хүсэлт тавиагүй</translation>
 <translation id="1802624026913571222">Хавтас хаалттай үед идэвхгүй болгох</translation>
 <translation id="1802687198411089702">Хуудас хариу өгөхгүй байна. Та хариу өгтөл нь хүлээх эсвэл гарах боломжтой.</translation>
@@ -1015,6 +1017,7 @@
 <translation id="1940546824932169984">Холбогдсон төхөөрөмж</translation>
 <translation id="1941410638996203291">Эхлэх цаг <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Хувилбар: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Товч харгалзуулалтыг харуулах</translation>
 <translation id="1942128823046546853">Таны бүх вебсайт дээрх өгөгдлийг унших болон өөрчлөх</translation>
 <translation id="1942600407708803723">Хавтас хаалттай үед унтраах</translation>
 <translation id="1944528062465413897">Bluetooth хослуулах код:</translation>
@@ -4588,6 +4591,7 @@
 <translation id="5449716055534515760">Цонхыг хаах</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (офлайн үед ажиллана)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-тэй</translation>
+<translation id="545484289444831485">Бусад хайлтын илэрцийг харах</translation>
 <translation id="5455603387986949153">ChromeOS Flex төхөөрөмж болон бүрэлдэхүүн хэсгийн серийн дугаарыг унших.</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5457459357461771897">Компьютероосоо зураг, хөгжим болон бусад медиаг уншуулах эсвэл устгах</translation>
@@ -7064,6 +7068,7 @@
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7903290522161827520">Хөтчийн бүрэлдэхүүн хэсгүүдийг хайж байна уу? Зочлох</translation>
 <translation id="7903345046358933331">Энэ хуудас хариу мэдэгдэхгүй байна. Та энэ хуудсыг хариу мэдэгдтэл хүлээх, эсвэл хаах боломжтой.</translation>
+<translation id="7903429136755645827">Тоглоомын тохиргоогоо өөрчлөхийн тулд товшино уу</translation>
 <translation id="7903742244674067440">Танд эдгээр сертификатын эрхийг тодорхойлох файлын сертификат байна</translation>
 <translation id="7903925330883316394">Хэрэгсэл: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Linux портыг сүлжээнийхээ бусад төхөөрөмжид боломжтой болгоно уу.</translation>
@@ -8253,6 +8258,7 @@
 <translation id="9078316009970372699">Шуурхай модем болгохыг идэвхгүй болгох</translation>
 <translation id="9078842827190780028">Хажуугийн самбарт бусад хайлтын илэрцийг харна уу</translation>
 <translation id="9079267182985899251">Энэ сонголтыг удахгүй дэмжихээ болино. Табыг үзүүлэхийн тулд <ph name="GOOGLE_MEET" />-г ашиглана уу.</translation>
+<translation id="9080971985541434310">таны сонирхлыг тооцоолно - Chrome таны сонирхлыг тооцоолох боломжтой</translation>
 <translation id="9081543426177426948">Таны зочилсон сайтуудыг Нууцлалын горимд хадгалдаггүй</translation>
 <translation id="9084064520949870008">Цонх хэлбэрээр нээх</translation>
 <translation id="9085256200913095638">Сонгосон табыг хуулбарлах</translation>

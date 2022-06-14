@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Извезување обележувачи</translation>
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="1009476156254802388">Локација на <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Сега се достапни контроли за игри</translation>
 <translation id="1010498023906173788">Картичкава е поврзана со сериска порта.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Страница не реагира}one{Страница не реагира}other{Страници не реагираат}}</translation>
 <translation id="1011355516189274711">Јачина на звук за „Од текст во говор“</translation>
@@ -858,6 +859,7 @@
 <translation id="1795214765651529549">Користи „Класичен“</translation>
 <translation id="1796105431091975902">Изберете Ansible Playbook за да се додаде</translation>
 <translation id="1796588414813960292">Функциите на коишто им требаат звуци нема да работат</translation>
+<translation id="1797117170091578105">Играјте со вашата тастатура Chromebook. Можете да ги приспособите копчињата на конкретни дејства.</translation>
 <translation id="1800502858278951817">Ниту една екстензија не побарала да го чита или измени <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Режим во мирување кога капакот е затворен</translation>
 <translation id="1802687198411089702">Страницава не реагира. Може да почекате или да излезете.</translation>
@@ -1020,6 +1022,7 @@
 <translation id="1940546824932169984">Поврзани уреди</translation>
 <translation id="1941410638996203291">Време на започнување: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Верзија: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Прикажете го мапирањето копчиња</translation>
 <translation id="1942128823046546853">да ги чита и менува ги сите ваши податоци на сите веб-сајтови</translation>
 <translation id="1942600407708803723">Исклучи кога капакот е затворен</translation>
 <translation id="1944528062465413897">Код за спарување преку Bluetooth:</translation>
@@ -4592,6 +4595,7 @@
 <translation id="5449716055534515760">Затвори го про&amp;зорецот</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (работи офлајн)</translation>
 <translation id="5454166040603940656">со <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Гледајте повеќе резултати од пребарувањето</translation>
 <translation id="5455603387986949153">да ги чита сериските броеви на уредот со ChromeOS Flex и на компонентите</translation>
 <translation id="5457113250005438886">Неважечки</translation>
 <translation id="5457459357461771897">Читајте и бришете фотографии, музика и други медиуми од компјутерот</translation>
@@ -7070,6 +7074,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Барате компоненти на прелистувач? Оди</translation>
 <translation id="7903345046358933331">Страницата не реагира. Може да почекате да реагира или да ја затворите.</translation>
+<translation id="7903429136755645827">Кликнете за да ги приспособите контролите за игри</translation>
 <translation id="7903742244674067440">Имате сертификати што ги идентификуваат овие органи за сертификати</translation>
 <translation id="7903925330883316394">Услужна програма: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Направете ги портите за Linux достапни на други уреди на вашата мрежа.</translation>
@@ -8264,6 +8269,7 @@
 <translation id="9078316009970372699">Оневозможување инстант врзување</translation>
 <translation id="9078842827190780028">Гледајте повеќе резултати од пребарување на страничната табла</translation>
 <translation id="9079267182985899251">Наскоро опцијава веќе нема да се поддржува. Користете <ph name="GOOGLE_MEET" /> за презентација на картичка.</translation>
+<translation id="9080971985541434310">ги проценува вашите интереси - Chrome може да ги процени вашите интереси</translation>
 <translation id="9081543426177426948">Сајтовите што ги посетувате не се зачувуваат во режимот „Инкогнито“</translation>
 <translation id="9084064520949870008">Отвори како прозорец</translation>
 <translation id="9085256200913095638">Направи дупликат од избраната картичка</translation>
