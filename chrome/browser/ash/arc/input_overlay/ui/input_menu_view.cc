@@ -223,8 +223,10 @@ void InputMenuView::Init() {
                           kCloseButtonSide)));
     close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-    close_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA));
+    const auto button_name =
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA);
+    close_button->SetAccessibleName(button_name);
+    close_button->SetTooltipText(button_name);
     close_button_ = header_view->AddChildView(std::move(close_button));
     menu_title->SetBorder(
         views::CreateEmptyBorder(gfx::Insets::TLBR(0, kSideInset, 0, 0)));
