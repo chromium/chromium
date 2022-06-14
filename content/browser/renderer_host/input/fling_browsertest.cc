@@ -351,9 +351,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetWidgetHost()->GetView()->view_stopped_flinging_for_test());
 }
 
-// Flaky on Linux ASAN and TSAN. https://crbug.com/1269960
-#if BUILDFLAG(IS_LINUX) && \
-    (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER))
+// Flaky on Linux ASAN, TSAN and MSAN. https://crbug.com/1269960
+#if BUILDFLAG(IS_LINUX) &&                                      \
+    (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+     defined(MEMORY_SANITIZER))
 #define MAYBE_FlingingStopsAfterNavigation DISABLED_FlingingStopsAfterNavigation
 #else
 #define MAYBE_FlingingStopsAfterNavigation FlingingStopsAfterNavigation
