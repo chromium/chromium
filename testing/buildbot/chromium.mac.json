@@ -1483,6 +1483,7 @@
           "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
@@ -3239,6 +3240,7 @@
           "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
@@ -5003,6 +5005,7 @@
           "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
@@ -6843,6 +6846,7 @@
           "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
         "merge": {
@@ -8643,6 +8647,7 @@
           "--git-revision=${got_revision}",
           "--debug"
         ],
+        "check_flakiness_for_new_tests": false,
         "experiment_percentage": 100,
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -20872,6 +20877,7 @@
           "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -22661,6 +22667,7 @@
           "--fuzzy-diff",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "ci_only": true,
         "isolate_name": "blink_web_tests",
         "merge": {

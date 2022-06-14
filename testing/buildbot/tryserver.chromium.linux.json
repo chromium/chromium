@@ -18,6 +18,7 @@
           "--git-revision=${got_revision}",
           "--flag-specific=enable-editing-ng"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
@@ -85,6 +86,7 @@
           "--git-revision=${got_revision}",
           "--flag-specific=disable-layout-ng"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [

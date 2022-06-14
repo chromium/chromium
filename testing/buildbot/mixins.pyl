@@ -389,6 +389,9 @@
       ],
     },
   },
+  'disable_check_flakiness_web_tests': {
+     'check_flakiness_for_new_tests': False,
+  },
   'disable_field_trial_config_for_earl_grey': {
     '$mixin_append': {
       'args': [

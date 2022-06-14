@@ -222,6 +222,7 @@
           "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -546,6 +547,7 @@
           "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -907,6 +909,7 @@
           "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -1231,6 +1234,7 @@
           "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -1611,6 +1615,7 @@
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -1942,6 +1947,7 @@
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -2331,6 +2337,7 @@
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -2714,6 +2721,7 @@
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -3099,6 +3107,7 @@
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -3430,6 +3439,7 @@
           "--platform=mac-mac11",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -3797,6 +3807,7 @@
           "--git-revision=${got_revision}",
           "--timeout-ms=48000"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -4088,6 +4099,7 @@
           "--target=Release_x64",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -4404,6 +4416,7 @@
           "--target=Release_x64",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -4757,6 +4770,7 @@
           "--target=Release_x64",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -5073,6 +5087,7 @@
           "--target=Release_x64",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -5400,6 +5415,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -5714,6 +5730,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -6038,6 +6055,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [
@@ -6352,6 +6370,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--git-revision=${got_revision}"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
           "args": [

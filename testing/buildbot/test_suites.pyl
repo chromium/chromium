@@ -602,10 +602,12 @@
         'args': [
           '--test-type=integration',
         ],
-        'check_flakiness_for_new_tests': False,
         'resultdb': {
           'enable': True,
         },
+        'mixins': [
+          'disable_check_flakiness_web_tests',
+        ],
       },
       'chromedriver_replay_unittests': {},
     },
@@ -1245,6 +1247,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+           # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1290,6 +1294,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1319,6 +1325,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1541,6 +1549,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -1633,6 +1643,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -3721,6 +3733,8 @@
           '--flag-specific=webgpu',
         ],
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'webgpu_cts',
           'skia_gold_test',
         ],
@@ -4206,6 +4220,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
@@ -4878,11 +4894,13 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'check_flakiness_for_new_tests': False,
         'isolate_name': 'telemetry_perf_unittests_android_chrome',
         'resultdb': {
           'enable': True,
         },
+        'mixins': [
+          'disable_check_flakiness_web_tests',
+        ],
       },
       'telemetry_monochrome_minidump_unittests': {
         'args': [
@@ -4908,11 +4926,13 @@
           '--passthrough',
           '--retry-limit=2',
         ],
-        'check_flakiness_for_new_tests': False,
         'isolate_name': 'telemetry_perf_unittests',
         'resultdb': {
           'enable': True,
         },
+        'mixins': [
+          'disable_check_flakiness_web_tests',
+        ],
       },
     },
 
@@ -5102,6 +5122,8 @@
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
         'mixins': [
+          # TODO(crbug.com/1327314): Enable for blink web tests.
+          'disable_check_flakiness_web_tests',
           'skia_gold_test',
         ],
         'resultdb': {
