@@ -89,8 +89,7 @@ constexpr std::array<ScanProtocol, 4> kPrioritizedProtocols = {
 // Returns a pointer to LorgnetteManagerClient, which is used to detect and
 // interact with scanners via the lorgnette D-Bus service.
 chromeos::LorgnetteManagerClient* GetLorgnetteManagerClient() {
-  DCHECK(DBusThreadManager::IsInitialized());
-  return DBusThreadManager::Get()->GetLorgnetteManagerClient();
+  return chromeos::LorgnetteManagerClient::Get();
 }
 
 // Creates a base name by concatenating the manufacturer and model, if the

@@ -23,6 +23,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
+#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -166,6 +167,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   LorgnetteScannerManagerTest() {
     run_loop_ = std::make_unique<base::RunLoop>();
     DBusThreadManager::Initialize();
+    chromeos::LorgnetteManagerClient::InitializeFake();
     auto fake_zeroconf_scanner_detector =
         std::make_unique<FakeZeroconfScannerDetector>();
     fake_zeroconf_scanner_detector_ = fake_zeroconf_scanner_detector.get();
@@ -176,13 +178,16 @@ class LorgnetteScannerManagerTest : public testing::Test {
     GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(capabilities);
   }
 
-  ~LorgnetteScannerManagerTest() override { DBusThreadManager::Shutdown(); }
+  ~LorgnetteScannerManagerTest() override {
+    chromeos::LorgnetteManagerClient::Shutdown();
+    DBusThreadManager::Shutdown();
+  }
 
   // Returns a FakeLorgnetteManagerClient with an empty but successful
   // GetCapabilities response by default.
   FakeLorgnetteManagerClient* GetLorgnetteManagerClient() {
     return static_cast<FakeLorgnetteManagerClient*>(
-        DBusThreadManager::Get()->GetLorgnetteManagerClient());
+        chromeos::LorgnetteManagerClient::Get());
   }
 
   // Calls LorgnetteScannerManager::GetScannerNames() and binds a callback to

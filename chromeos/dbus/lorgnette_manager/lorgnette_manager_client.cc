@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/common/pipe_reader.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -29,6 +30,9 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
+namespace {
+
+LorgnetteManagerClient* g_instance = nullptr;
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -105,7 +109,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                                   std::move(cancel_callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     lorgnette_daemon_proxy_ =
         bus->GetObjectProxy(lorgnette::kManagerServiceName,
@@ -524,13 +527,38 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   base::WeakPtrFactory<LorgnetteManagerClientImpl> weak_ptr_factory_{this};
 };
 
-LorgnetteManagerClient::LorgnetteManagerClient() = default;
-
-LorgnetteManagerClient::~LorgnetteManagerClient() = default;
+}  // namespace
 
 // static
-std::unique_ptr<LorgnetteManagerClient> LorgnetteManagerClient::Create() {
-  return std::make_unique<LorgnetteManagerClientImpl>();
+void LorgnetteManagerClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new LorgnetteManagerClientImpl())->Init(bus);
+}
+
+// static
+void LorgnetteManagerClient::InitializeFake() {
+  new FakeLorgnetteManagerClient();
+}
+
+// static
+void LorgnetteManagerClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+// static
+LorgnetteManagerClient* LorgnetteManagerClient::Get() {
+  return g_instance;
+}
+
+LorgnetteManagerClient::LorgnetteManagerClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+LorgnetteManagerClient::~LorgnetteManagerClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

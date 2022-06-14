@@ -24,7 +24,6 @@
 #include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -102,11 +101,6 @@ ImageBurnerClient* DBusThreadManager::GetImageBurnerClient() {
 
 ImageLoaderClient* DBusThreadManager::GetImageLoaderClient() {
   RETURN_DBUS_CLIENT(image_loader_client_);
-}
-
-LorgnetteManagerClient* DBusThreadManager::GetLorgnetteManagerClient() {
-  return clients_browser_ ? clients_browser_->lorgnette_manager_client_.get()
-                          : nullptr;
 }
 
 OobeConfigurationClient* DBusThreadManager::GetOobeConfigurationClient() {

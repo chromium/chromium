@@ -35,8 +35,6 @@
 #include "chromeos/dbus/image_burner/image_burner_client.h"
 #include "chromeos/dbus/image_loader/fake_image_loader_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
-#include "chromeos/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
-#include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/dbus/runtime_probe/fake_runtime_probe_client.h"
@@ -90,8 +88,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       CREATE_DBUS_CLIENT(ImageBurnerClient, use_real_clients);
   image_loader_client_ =
       CREATE_DBUS_CLIENT(ImageLoaderClient, use_real_clients);
-  lorgnette_manager_client_ =
-      CREATE_DBUS_CLIENT(LorgnetteManagerClient, use_real_clients);
   oobe_configuration_client_ =
       CREATE_DBUS_CLIENT(OobeConfigurationClient, use_real_clients);
   runtime_probe_client_ =
@@ -128,7 +124,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   gnubby_client_->Init(system_bus);
   image_burner_client_->Init(system_bus);
   image_loader_client_->Init(system_bus);
-  lorgnette_manager_client_->Init(system_bus);
   oobe_configuration_client_->Init(system_bus);
   runtime_probe_client_->Init(system_bus);
   smb_provider_client_->Init(system_bus);

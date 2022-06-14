@@ -28,7 +28,6 @@ class FwupdClient;
 class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
-class LorgnetteManagerClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
 class SmbProviderClient;
@@ -70,7 +69,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<GnubbyClient> gnubby_client_;
   std::unique_ptr<ImageBurnerClient> image_burner_client_;
   std::unique_ptr<ImageLoaderClient> image_loader_client_;
-  std::unique_ptr<LorgnetteManagerClient> lorgnette_manager_client_;
   std::unique_ptr<OobeConfigurationClient> oobe_configuration_client_;
   std::unique_ptr<RuntimeProbeClient> runtime_probe_client_;
   std::unique_ptr<SmbProviderClient> smb_provider_client_;

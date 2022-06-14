@@ -29,7 +29,6 @@ class EasyUnlockClient;
 class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
-class LorgnetteManagerClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
 class SmbProviderClient;
@@ -84,7 +83,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   GnubbyClient* GetGnubbyClient();
   ImageBurnerClient* GetImageBurnerClient();
   ImageLoaderClient* GetImageLoaderClient();
-  LorgnetteManagerClient* GetLorgnetteManagerClient();
   OobeConfigurationClient* GetOobeConfigurationClient();
   RuntimeProbeClient* GetRuntimeProbeClient();
   SmbProviderClient* GetSmbProviderClient();

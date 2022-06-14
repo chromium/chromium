@@ -29,9 +29,20 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
     int resolution_dpi = 0;
   };
 
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
+  // Returns the global instance if initialized. May return null.
+  static LorgnetteManagerClient* Get();
+
   LorgnetteManagerClient(const LorgnetteManagerClient&) = delete;
   LorgnetteManagerClient& operator=(const LorgnetteManagerClient&) = delete;
-  ~LorgnetteManagerClient() override;
 
   // Gets a list of scanners from the lorgnette manager.
   virtual void ListScanners(
@@ -70,15 +81,12 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   // scan running at a time.
   virtual void CancelScan(VoidDBusMethodCallback cancel_callback) = 0;
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<LorgnetteManagerClient> Create();
-
  protected:
   friend class LorgnetteManagerClientTest;
 
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   LorgnetteManagerClient();
+  ~LorgnetteManagerClient() override;
 };
 
 }  // namespace chromeos
