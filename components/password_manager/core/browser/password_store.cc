@@ -112,7 +112,7 @@ void PasswordStore::AddLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->AddLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+      form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
                 .Then(base::BindOnce(
                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                     LoginsChangedTrigger::Addition)));
@@ -123,7 +123,7 @@ void PasswordStore::UpdateLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->UpdateLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+      form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
                 .Then(base::BindOnce(
                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                     LoginsChangedTrigger::Update)));
@@ -168,7 +168,7 @@ void PasswordStore::RemoveLogin(const PasswordForm& form) {
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   backend_->RemoveLoginAsync(
-      form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+      form, base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
                 .Then(base::BindOnce(
                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                     LoginsChangedTrigger::Deletion)));
@@ -187,7 +187,7 @@ void PasswordStore::RemoveLoginsByURLAndTime(
   }
   backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
-      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+      base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
           .Then(
               base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence,
                              this, LoginsChangedTrigger::BatchDeletion))
@@ -208,7 +208,7 @@ void PasswordStore::RemoveLoginsCreatedBetween(
                      LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
-      base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
+      base::BindOnce(&GetPasswordChangesOrEmptyListOnFailure)
           .Then(base::BindOnce(&InvokeCallbacksForSuspectedChanges,
                                std::move(callback), std::move(completion))));
 }
