@@ -201,7 +201,7 @@ void TestLookup(const char* name, KeyboardLayoutEngine* engine) {
     KeyboardCode keycode;
     SCOPED_TRACE(base::StringPrintf(
         "%s(%s, 0x%X)", name,
-        KeycodeConverter::DomCodeToCodeString(t.input_dom_code),
+        KeycodeConverter::DomCodeToCodeString(t.input_dom_code).c_str(),
         t.input_flags));
     EXPECT_TRUE(
         engine->Lookup(t.input_dom_code, t.input_flags, &dom_key, &keycode));

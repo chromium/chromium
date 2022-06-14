@@ -160,13 +160,12 @@ absl::optional<ui::KeyEvent> KeyboardClient::ConvertKeystrokeEvent(
 
   // TODO(https://crbug.com/1187257): Use input3.KeyMeaning instead of US layout
   // as the default.
-  DomCode dom_code =
-      KeycodeConverter::UsbKeycodeToDomCode(static_cast<int>(key_event.key()));
+  DomCode dom_code = KeycodeConverter::UsbKeycodeToDomCode(key_event.key());
   DomKey dom_key;
   KeyboardCode key_code;
   if (!DomCodeToUsLayoutDomKey(dom_code, event_flags, &dom_key, &key_code)) {
     LOG(ERROR) << "DomCodeToUsLayoutDomKey() failed for key: "
-               << static_cast<uint32_t>(key_event.key());
+               << key_event.key();
   }
 
   return ui::KeyEvent(*event_type, key_code, dom_code, event_flags, dom_key,
