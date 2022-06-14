@@ -58,6 +58,12 @@ message BasePromptSpecification {
 
   // List of available choices in a prompt.
   repeated Choice choices = 3;
+
+  // Result message for the base prompt.
+  message Result {
+    // The tag corresponding to the selected `Choice`.
+    optional string selected_tag = 1;
+  }
 }
 
 // Prompts the user to accept a generated password and shows that password
@@ -77,6 +83,12 @@ message GeneratedPasswordPromptSpecification {
 
   // The choice for the generated password.
   optional Choice generated_password_choice = 5;
+
+  // Result message for the generated password prompt.
+  message Result {
+    // Indicates whether the user accepted the generated password.
+    optional bool generated_password_accepted = 1;
+  }
 }
 
 // Updates the side panel rendered in desktop during APC runs.
