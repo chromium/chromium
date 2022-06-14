@@ -2864,6 +2864,13 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
 
   current_page_index_ = 0;
   pages_to_render_ = PageNumber::GetPages(pages, total_page_count_);
+  // If preview settings along with specified ranges resulted in 0 pages,
+  // (e.g. page "2" with a document of a single page), print the entire
+  // document. This is a legacy behavior that only makes sense for preview,
+  // where the client expects that and will adjust page ranges based on
+  // actual document returned.
+  if (pages_to_render_.empty())
+    pages_to_render_ = PageNumber::GetPages({}, total_page_count_);
   print_ready_metafile_page_count_ = pages_to_render_.size();
 
   document_render_time_ = base::TimeDelta();
