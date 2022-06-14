@@ -39,8 +39,7 @@ export interface CertificateProvisioningBrowserProxy {
    * provisioning process identified by |certProfileId|.
    * This is Chrome OS specific, but always present for simplicity.
    */
-  triggerCertificateProvisioningProcessUpdate(
-      certProfileId: string, isDeviceWide: boolean): void;
+  triggerCertificateProvisioningProcessUpdate(certProfileId: string): void;
 }
 
 export class CertificateProvisioningBrowserProxyImpl implements
@@ -49,11 +48,8 @@ export class CertificateProvisioningBrowserProxyImpl implements
     chrome.send('refreshCertificateProvisioningProcessses');
   }
 
-  triggerCertificateProvisioningProcessUpdate(
-      certProfileId: string, isDeviceWide: boolean) {
-    chrome.send(
-        'triggerCertificateProvisioningProcessUpdate',
-        [certProfileId, isDeviceWide]);
+  triggerCertificateProvisioningProcessUpdate(certProfileId: string) {
+    chrome.send('triggerCertificateProvisioningProcessUpdate', [certProfileId]);
   }
 
   static getInstance(): CertificateProvisioningBrowserProxy {

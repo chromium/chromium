@@ -330,12 +330,17 @@ void CertProvisioningSchedulerImpl::InitiateRenewal(
   UpdateOneCertImpl(cert_profile_id);
 }
 
-void CertProvisioningSchedulerImpl::UpdateOneCert(
+bool CertProvisioningSchedulerImpl::UpdateOneCert(
     const CertProfileId& cert_profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (!base::Contains(workers_, cert_profile_id)) {
+    return false;
+  }
+
   RecordEvent(cert_scope_, CertProvisioningEvent::kWorkerRetryManual);
   UpdateOneCertImpl(cert_profile_id);
+  return true;
 }
 
 void CertProvisioningSchedulerImpl::UpdateOneCertImpl(
@@ -601,14 +606,9 @@ CertProvisioningSchedulerImpl::GetFailedCertProfileIds() const {
   return failed_cert_profiles_;
 }
 
-void CertProvisioningSchedulerImpl::AddObserver(
-    CertProvisioningSchedulerObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void CertProvisioningSchedulerImpl::RemoveObserver(
-    CertProvisioningSchedulerObserver* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription CertProvisioningSchedulerImpl::AddObserver(
+    base::RepeatingClosure callback) {
+  return observers_.Add(std::move(callback));
 }
 
 bool CertProvisioningSchedulerImpl::MaybeWaitForInternetConnection() {
@@ -771,9 +771,7 @@ void CertProvisioningSchedulerImpl::OnHoldBackUpdatesTimerExpired() {
 void CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   notify_observers_pending_ = false;
-  for (auto& observer : observers_) {
-    observer.OnVisibleStateChanged();
-  }
+  observers_.Notify();
 }
 
 }  // namespace cert_provisioning

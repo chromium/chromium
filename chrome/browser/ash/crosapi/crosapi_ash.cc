@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
+#include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_window_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_ash.h"
@@ -154,6 +155,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       browser_version_service_ash_(std::make_unique<BrowserVersionServiceAsh>(
           g_browser_process->component_updater())),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
+      cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chrome_app_window_tracker_ash_(
           std::make_unique<ChromeAppWindowTrackerAsh>()),
       clipboard_ash_(std::make_unique<ClipboardAsh>()),
@@ -490,6 +492,11 @@ void CrosapiAsh::BindMediaSessionAudioFocusDebug(
 void CrosapiAsh::BindCertDatabase(
     mojo::PendingReceiver<mojom::CertDatabase> receiver) {
   cert_database_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindCertProvisioning(
+    mojo::PendingReceiver<mojom::CertProvisioning> receiver) {
+  cert_provisioning_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSearchControllerRegistry(

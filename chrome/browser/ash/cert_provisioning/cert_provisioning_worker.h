@@ -270,6 +270,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   // Calculates retry timeout for network related failures.
   net::BackoffEntry request_backoff_;
 
+  // Public key - represented as DER-encoded X.509 SubjectPublicKeyInfo
+  // (binary).
   std::string public_key_;
   std::string invalidation_topic_;
 

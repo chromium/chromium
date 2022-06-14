@@ -54,8 +54,7 @@ export class CertificateProvisioningDetailsDialogElement extends
 
   private onRefresh_() {
     CertificateProvisioningBrowserProxyImpl.getInstance()
-        .triggerCertificateProvisioningProcessUpdate(
-            this.model.certProfileId, this.model.isDeviceWide);
+        .triggerCertificateProvisioningProcessUpdate(this.model.certProfileId);
   }
 
   private shouldHideLastFailedStatus_(): boolean {

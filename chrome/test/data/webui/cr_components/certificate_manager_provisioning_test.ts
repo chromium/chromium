@@ -36,11 +36,9 @@ class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy
     this.methodCalled('refreshCertificateProvisioningProcesses');
   }
 
-  triggerCertificateProvisioningProcessUpdate(
-      certProfileId: string, isDeviceWide: boolean) {
+  triggerCertificateProvisioningProcessUpdate(certProfileId: string) {
     this.methodCalled(
-        'triggerCertificateProvisioningProcessUpdate',
-        {certProfileId, isDeviceWide});
+        'triggerCertificateProvisioningProcessUpdate', certProfileId);
   }
 }
 
@@ -237,11 +235,10 @@ suite('DetailsDialogTests', function() {
     // Simulate clicking 'Refresh'.
     dialog.$.refresh.click();
 
-    const {certProfileId, isDeviceWide} = await browserProxy.whenCalled(
+    const certProfileId = await browserProxy.whenCalled(
         'triggerCertificateProvisioningProcessUpdate');
     // Check if the parameters received by function are correct.
     assertEquals(dialog.model.certProfileId, certProfileId);
-    assertEquals(dialog.model.isDeviceWide, isDeviceWide);
     // Check that the dialog is still open.
     assertTrue(dialog.$.dialog.open);
   });

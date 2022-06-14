@@ -44,6 +44,7 @@
 #include "chromeos/crosapi/mojom/automation.mojom.h"
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
+#include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
@@ -211,7 +212,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 82,
+static_assert(crosapi::mojom::Crosapi::Version_ == 83,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -232,6 +233,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserVersionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::CertProvisioning>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ChromeAppKioskService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Clipboard>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ClipboardHistory>(),

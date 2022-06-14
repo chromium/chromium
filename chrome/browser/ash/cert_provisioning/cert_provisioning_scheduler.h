@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
@@ -58,18 +59,6 @@ struct FailedWorkerInfo {
   base::Time last_update_time;
 };
 
-// An observer that gets notified about state changes of the
-// CertProvisioningScheduler.
-class CertProvisioningSchedulerObserver : public base::CheckedObserver {
- public:
-  // Called when the "visible state" of the observerd CertProvisioningScheduler
-  // has changed, i.e. when:
-  // (*) the list of active workers changed,
-  // (*) the list of recently failed workers changed,
-  // (*) the state of a worker changed.
-  virtual void OnVisibleStateChanged() = 0;
-};
-
 // Interface for the scheduler for client certificate provisioning using device
 // management.
 class CertProvisioningScheduler {
@@ -77,8 +66,9 @@ class CertProvisioningScheduler {
   virtual ~CertProvisioningScheduler() = default;
 
   // Intended to be called when a user presses a button in certificate manager
-  // UI. Retries provisioning of a specific certificate.
-  virtual void UpdateOneCert(const CertProfileId& cert_profile_id) = 0;
+  // UI. Retries provisioning of a specific certificate. Returns "false" if
+  // `cert_profile_id` is not found and "true" otherwise.
+  virtual bool UpdateOneCert(const CertProfileId& cert_profile_id) = 0;
   virtual void UpdateAllCerts() = 0;
 
   // Returns all certificate provisioning workers that are currently active.
@@ -89,11 +79,14 @@ class CertProvisioningScheduler {
   virtual const base::flat_map<CertProfileId, FailedWorkerInfo>&
   GetFailedCertProfileIds() const = 0;
 
-  // Adds |observer| which will observer this CertProvisioningScheduler.
-  virtual void AddObserver(CertProvisioningSchedulerObserver* observer) = 0;
-
-  // Removes a previously added |observer|.
-  virtual void RemoveObserver(CertProvisioningSchedulerObserver* observer) = 0;
+  // Saves the |callback| to call it when the "visible state" of the scheduler
+  // changes, i.e.
+  // (*) the list of active workers changes,
+  // (*) the list of recently failed workers changes,
+  // (*) the state of a worker changes.
+  // (As long as the returned subscription is alive.)
+  virtual base::CallbackListSubscription AddObserver(
+      base::RepeatingClosure callback) = 0;
 };
 
 // This class is a part of certificate provisioning feature. It tracks updates
@@ -130,13 +123,13 @@ class CertProvisioningSchedulerImpl
       const CertProvisioningSchedulerImpl&) = delete;
 
   // CertProvisioningScheduler:
-  void UpdateOneCert(const CertProfileId& cert_profile_id) override;
+  bool UpdateOneCert(const CertProfileId& cert_profile_id) override;
   void UpdateAllCerts() override;
   const WorkerMap& GetWorkers() const override;
   const base::flat_map<CertProfileId, FailedWorkerInfo>&
   GetFailedCertProfileIds() const override;
-  void AddObserver(CertProvisioningSchedulerObserver* observer) override;
-  void RemoveObserver(CertProvisioningSchedulerObserver* observer) override;
+  base::CallbackListSubscription AddObserver(
+      base::RepeatingClosure callback) override;
 
   // Invoked when the CertProvisioningWorker corresponding to |profile| reached
   // its final state.
@@ -250,7 +243,7 @@ class CertProvisioningSchedulerImpl
   std::unique_ptr<CertProvisioningInvalidatorFactory> invalidator_factory_;
 
   // Observers that are observing this CertProvisioningSchedulerImpl.
-  base::ObserverList<CertProvisioningSchedulerObserver> observers_;
+  base::RepeatingClosureList observers_;
   // True when a task for notifying observers about a state change has been
   // scheduled but not executed yet.
   bool notify_observers_pending_ = false;

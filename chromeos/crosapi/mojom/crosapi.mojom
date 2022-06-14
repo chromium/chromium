@@ -16,6 +16,7 @@ import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/browser_app_instance_registry.mojom";
 import "chromeos/crosapi/mojom/browser_version.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
+import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
@@ -113,8 +114,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 83
-// Next method id: 86
+// Next version: 84
+// Next method id: 87
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -188,6 +189,12 @@ interface Crosapi {
   // client applications.
   // Added in M89.
   [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
+
+  // Binds the CertProvisioning interface for implementing certificate
+  // provisioning UI.
+  // Added in M102.
+  [MinVersion=83]
+  BindCertProvisioning@86(pending_receiver<CertProvisioning> receiver);
 
   // Binds the chrome app publisher service, which allows Lacros to connect its
   // Chrome apps to the app service.

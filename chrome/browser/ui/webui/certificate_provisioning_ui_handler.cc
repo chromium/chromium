@@ -11,11 +11,6 @@
 #include "base/containers/span.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/net/x509_certificate_model.h"
@@ -23,76 +18,69 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+using crosapi::mojom::CertProvisioningProcessState;
 
 namespace chromeos {
 namespace cert_provisioning {
 
 namespace {
 
-// Returns the per-user CertProvisioningScheduler for |user_profile|, if it has
-// any.
-ash::cert_provisioning::CertProvisioningScheduler*
-GetCertProvisioningSchedulerForUser(Profile* user_profile) {
-  ash::cert_provisioning::CertProvisioningSchedulerUserService* user_service =
-      ash::cert_provisioning::CertProvisioningSchedulerUserServiceFactory::
-          GetForProfile(user_profile);
-  if (!user_service)
+crosapi::mojom::CertProvisioning* GetCertProvisioningInterface(
+    Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
-  return user_service->scheduler();
-}
-
-// Returns the per-device CertProvisioningScheduler, if it exists. No
-// affiliation check is done here.
-ash::cert_provisioning::CertProvisioningScheduler*
-GetCertProvisioningSchedulerForDevice() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetDeviceCertProvisioningScheduler();
+  }
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->cert_provisioning_ash();
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Returns localized representation for the state of a certificate provisioning
 // process.
-std::u16string GetProvisioningProcessStatus(
-    ash::cert_provisioning::CertProvisioningWorkerState state) {
-  using CertProvisioningWorkerState =
-      ash::cert_provisioning::CertProvisioningWorkerState;
+std::u16string StateToText(CertProvisioningProcessState state) {
   switch (state) {
-    case CertProvisioningWorkerState ::kInitState:
+    case CertProvisioningProcessState ::kInitState:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR);
-    case CertProvisioningWorkerState ::kKeypairGenerated:
+    case CertProvisioningProcessState ::kKeypairGenerated:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING);
-    case CertProvisioningWorkerState::kStartCsrResponseReceived:
+    case CertProvisioningProcessState::kStartCsrResponseReceived:
       // Intentional fall-through.
-    case CertProvisioningWorkerState::kVaChallengeFinished:
+    case CertProvisioningProcessState::kVaChallengeFinished:
       // Intentional fall-through.
-    case CertProvisioningWorkerState::kKeyRegistered:
+    case CertProvisioningProcessState::kKeyRegistered:
       // Intentional fall-through.
-    case CertProvisioningWorkerState::kKeypairMarked:
+    case CertProvisioningProcessState::kKeypairMarked:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR);
-    case CertProvisioningWorkerState::kSignCsrFinished:
+    case CertProvisioningProcessState::kSignCsrFinished:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING);
-    case CertProvisioningWorkerState::kFinishCsrResponseReceived:
+    case CertProvisioningProcessState::kFinishCsrResponseReceived:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_WAITING_FOR_CA);
-    case CertProvisioningWorkerState::kSucceeded:
+    case CertProvisioningProcessState::kSucceeded:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_SUCCESS);
-    case CertProvisioningWorkerState::kFailed:
+    case CertProvisioningProcessState::kFailed:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_FAILURE);
-    case CertProvisioningWorkerState::kInconsistentDataError:
+    case CertProvisioningProcessState::kInconsistentDataError:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING);
-    case CertProvisioningWorkerState::kCanceled:
+    case CertProvisioningProcessState::kCanceled:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_CANCELED);
   }
@@ -111,70 +99,19 @@ std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
 }
 
 std::u16string GetMessageFromBackendError(
-    const absl::optional<ash::cert_provisioning::BackendServerError>&
-        call_info) {
-  if (!call_info.has_value())
+    const crosapi::mojom::CertProvisioningBackendServerErrorPtr& call_info) {
+  if (!call_info)
     return std::u16string();
 
   std::u16string time_u16 =
       base::UTF8ToUTF16(base::TimeFormatHTTP(call_info->time));
+  // FormatDeviceManagementStatus will return "Unknown error" if the value after
+  // cast is not actually an existing enum value.
+  auto status =
+      static_cast<policy::DeviceManagementStatus>(call_info->status_code);
   return l10n_util::GetStringFUTF16(
       IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DMSERVER_ERROR_MESSAGE,
-      policy::FormatDeviceManagementStatus(call_info->status), time_u16);
-}
-
-base::Value CreateProvisioningProcessEntry(
-    const std::string& cert_profile_id,
-    const std::string& cert_profile_name,
-    bool is_device_wide,
-    ash::cert_provisioning::CertProvisioningWorkerState state,
-    base::Time time_since_last_update,
-    const std::string& public_key_spki_der,
-    const absl::optional<ash::cert_provisioning::BackendServerError>&
-        last_unsuccessful_attempt) {
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetStringKey("certProfileId", cert_profile_id);
-  entry.SetStringKey("certProfileName", cert_profile_name);
-  entry.SetBoolKey("isDeviceWide", is_device_wide);
-  entry.SetStringKey("status", GetProvisioningProcessStatus(state));
-  entry.SetIntKey("stateId", static_cast<int>(state));
-  entry.SetStringKey("timeSinceLastUpdate",
-                     GetTimeSinceLastUpdate(time_since_last_update));
-  entry.SetStringKey("lastUnsuccessfulMessage",
-                     GetMessageFromBackendError(last_unsuccessful_attempt));
-
-  auto spki_der_bytes = base::as_bytes(base::make_span(public_key_spki_der));
-  entry.SetStringKey(
-      "publicKey",
-      x509_certificate_model::ProcessRawSubjectPublicKeyInfo(spki_der_bytes));
-
-  return entry;
-}
-
-// Collects information about certificate provisioning processes from
-// |cert_provisioning_scheduler| and appends them to |list_to_append_to|.
-void CollectProvisioningProcesses(
-    base::Value* list_to_append_to,
-    ash::cert_provisioning::CertProvisioningScheduler*
-        cert_provisioning_scheduler,
-    bool is_device_wide) {
-  for (const auto& worker_entry : cert_provisioning_scheduler->GetWorkers()) {
-    ash::cert_provisioning::CertProvisioningWorker* worker =
-        worker_entry.second.get();
-    list_to_append_to->Append(CreateProvisioningProcessEntry(
-        worker_entry.first, worker->GetCertProfile().name, is_device_wide,
-        worker->GetState(), worker->GetLastUpdateTime(), worker->GetPublicKey(),
-        worker->GetLastBackendServerError()));
-  }
-  for (const auto& failed_worker_entry :
-       cert_provisioning_scheduler->GetFailedCertProfileIds()) {
-    const ash::cert_provisioning::FailedWorkerInfo& worker =
-        failed_worker_entry.second;
-    list_to_append_to->Append(CreateProvisioningProcessEntry(
-        failed_worker_entry.first, worker.cert_profile_name, is_device_wide,
-        ash::cert_provisioning::CertProvisioningWorkerState::kFailed,
-        worker.last_update_time, worker.public_key, absl::nullopt));
-  }
+      policy::FormatDeviceManagementStatus(status), time_u16);
 }
 
 }  // namespace
@@ -183,22 +120,16 @@ void CollectProvisioningProcesses(
 std::unique_ptr<CertificateProvisioningUiHandler>
 CertificateProvisioningUiHandler::CreateForProfile(Profile* user_profile) {
   return std::make_unique<CertificateProvisioningUiHandler>(
-      user_profile, GetCertProvisioningSchedulerForUser(user_profile),
-      GetCertProvisioningSchedulerForDevice());
+      GetCertProvisioningInterface(user_profile));
 }
 
 CertificateProvisioningUiHandler::CertificateProvisioningUiHandler(
-    Profile* user_profile,
-    ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_user,
-    ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_device)
-    : scheduler_for_user_(scheduler_for_user),
-      scheduler_for_device_(ShouldUseDeviceWideProcesses(user_profile)
-                                ? scheduler_for_device
-                                : nullptr) {
-  if (scheduler_for_user_)
-    observed_schedulers_.AddObservation(scheduler_for_user_);
-  if (scheduler_for_device_)
-    observed_schedulers_.AddObservation(scheduler_for_device_);
+    crosapi::mojom::CertProvisioning* cert_provisioning_interface)
+    : cert_provisioning_interface_(cert_provisioning_interface) {
+  if (cert_provisioning_interface_) {
+    cert_provisioning_interface->AddObserver(
+        receiver_.BindNewPipeAndPassRemote());
+  }
 }
 
 CertificateProvisioningUiHandler::~CertificateProvisioningUiHandler() = default;
@@ -220,7 +151,7 @@ void CertificateProvisioningUiHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void CertificateProvisioningUiHandler::OnVisibleStateChanged() {
+void CertificateProvisioningUiHandler::OnStateChanged() {
   // If Javascript is not allowed yet, the UI will request a refresh during its
   // first message to the handler.
   if (!IsJavascriptAllowed())
@@ -246,51 +177,65 @@ void CertificateProvisioningUiHandler::
 void CertificateProvisioningUiHandler::
     HandleTriggerCertificateProvisioningProcessUpdate(
         const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
-  if (!args->is_list())
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  if (!args->is_list()) {
     return;
+  }
   const base::Value& cert_profile_id = args->GetListDeprecated()[0];
-  if (!cert_profile_id.is_string())
+  if (!cert_profile_id.is_string()) {
     return;
-  const base::Value& device_wide = args->GetListDeprecated()[1];
-  if (!device_wide.is_bool())
-    return;
+  }
 
-  if (device_wide.GetBool() && !scheduler_for_device_)
-    return;
-
-  ash::cert_provisioning::CertProvisioningScheduler* scheduler =
-      device_wide.GetBool() ? scheduler_for_device_ : scheduler_for_user_;
-  if (!scheduler)
-    return;
-
-  scheduler->UpdateOneCert(cert_profile_id.GetString());
+  if (cert_provisioning_interface_) {
+    cert_provisioning_interface_->UpdateOneProcess(cert_profile_id.GetString());
+  }
 }
 
 void CertificateProvisioningUiHandler::
     RefreshCertificateProvisioningProcesses() {
-  base::ListValue all_processes;
-  if (scheduler_for_user_) {
-    CollectProvisioningProcesses(&all_processes, scheduler_for_user_,
-                                 /*is_device_wide=*/false);
+  if (cert_provisioning_interface_) {
+    cert_provisioning_interface_->GetStatus(
+        base::BindOnce(&CertificateProvisioningUiHandler::GotStatus,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
+}
 
-  if (scheduler_for_device_) {
-    CollectProvisioningProcesses(&all_processes, scheduler_for_device_,
-                                 /*is_device_wide=*/true);
+void CertificateProvisioningUiHandler::GotStatus(
+    std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status) {
+  base::ListValue all_processes;
+
+  for (auto& process : status) {
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey("certProfileId", std::move(process->cert_profile_id));
+    entry.SetStringKey("certProfileName",
+                       std::move(process->cert_profile_name));
+    entry.SetBoolKey("isDeviceWide", process->is_device_wide);
+    entry.SetStringKey("timeSinceLastUpdate",
+                       GetTimeSinceLastUpdate(process->last_update_time));
+    entry.SetStringKey(
+        "lastUnsuccessfulMessage",
+        GetMessageFromBackendError(process->last_backend_server_error));
+    entry.SetIntKey("stateId", static_cast<int>(process->state));
+
+    if (process->did_fail) {
+      // For failed processes `state` contains the last good state. Show an
+      // error as a text and keep the detailed information in the stateId.
+      entry.SetStringKey("status",
+                         StateToText(CertProvisioningProcessState::kFailed));
+    } else {
+      entry.SetStringKey("status", StateToText(process->state));
+    }
+
+    entry.SetStringKey("publicKey",
+                       x509_certificate_model::ProcessRawSubjectPublicKeyInfo(
+                           process->public_key));
+
+    all_processes.Append(std::move(entry));
   }
 
   ++ui_refresh_count_for_testing_;
   FireWebUIListener("certificate-provisioning-processes-changed",
                     std::move(all_processes));
-}
-
-// static
-bool CertificateProvisioningUiHandler::ShouldUseDeviceWideProcesses(
-    Profile* user_profile) {
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(user_profile);
-  return user && user->IsAffiliated();
 }
 
 }  // namespace cert_provisioning

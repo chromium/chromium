@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
+#include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
 
@@ -20,28 +20,22 @@ namespace cert_provisioning {
 
 class CertificateProvisioningUiHandler
     : public content::WebUIMessageHandler,
-      public ash::cert_provisioning::CertProvisioningSchedulerObserver {
+      public crosapi::mojom::CertProvisioningObserver {
  public:
-  // Creates a CertificateProvisioningUiHandler for |user_profile|, which uses:
-  // (*) The CertProvisioningScheduler associated with |user_profile|, if any.
-  // (*) The device-wide CertProvisioningScheduler, if it exists and the
-  //     |user_profile| is affiliated.
+  // Creates a CertificateProvisioningUiHandler for |profile|.
+  // If the |profile| should be able to see and control cert provisioning
+  // processes, CertificateProvisioningUiHandler will be created with a correct
+  // |cert_provisioning_interface|. Otherwise |cert_provisioning_interface| will
+  // be nullptr and the related UI elements will show and do nothing.
   static std::unique_ptr<CertificateProvisioningUiHandler> CreateForProfile(
-      Profile* user_profile);
+      Profile* profile);
 
-  // The constructed CertificateProvisioningUiHandler will use
-  // |scheduler_for_user| to list certificate provisioning processes that belong
-  // to the user, and |scheduler_for_device|, to list certificatge provisioning
-  // processes that are device-wide. Both can be nullptr. Note: Intended to be
-  // called directly for testing. Use CreateForProfile in production code
-  // instead.
-  // |user_profile| is used to determine if the current user is affiliated and
-  // decide if |scheduler_for_device| should be used based on that. This pattern
-  // is useful for unit-testing the affiliation detection logic.
+  // |cert_provisioning_interface| is the mojo interface to communicate with the
+  // cert provisioning component, can be nullptr.
+  // The constructor is public for testing, prefer using CreateForProfile when
+  // possible.
   CertificateProvisioningUiHandler(
-      Profile* user_profile,
-      ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_user,
-      ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_device);
+      crosapi::mojom::CertProvisioning* cert_provisioning_interface);
 
   CertificateProvisioningUiHandler(
       const CertificateProvisioningUiHandler& other) = delete;
@@ -50,11 +44,11 @@ class CertificateProvisioningUiHandler
 
   ~CertificateProvisioningUiHandler() override;
 
-  // content::WebUIMessageHandler.
+  // content::WebUIMessageHandler
   void RegisterMessages() override;
 
-  // CertProvisioningSchedulerObserver:
-  void OnVisibleStateChanged() override;
+  // crosapi::mojom::CertProvisioningObserver
+  void OnStateChanged() override;
 
   // For testing: Reads the count of UI refreshes sent to the WebUI (since
   // instantiation or the last call to this function) and resets it to 0.
@@ -79,31 +73,19 @@ class CertificateProvisioningUiHandler
   // Send the list of certificate provisioning processes to the UI.
   void RefreshCertificateProvisioningProcesses();
 
-  // Called when the |hold_back_updates_timer_| expires.
-  void OnHoldBackUpdatesTimerExpired();
+  // Called when the status of cert provisioning processes is received.
+  void GotStatus(
+      std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status);
 
-  // Returns true if device-wide certificate provisioning processes should be
-  // displayed, i.e. if the |user_profile| is affiliated.
-  static bool ShouldUseDeviceWideProcesses(Profile* user_profile);
-
-  // The user-specific CertProvisioningScheduler. Can be nullptr.
-  // Unowned.
-  ash::cert_provisioning::CertProvisioningScheduler* const scheduler_for_user_;
-
-  // The device-wide CertProvisioningScheduler. Can be nullptr.
-  // Unowned.
-  ash::cert_provisioning::CertProvisioningScheduler* const
-      scheduler_for_device_;
+  // The interface to communicate with the cert provisioning component.
+  // Can be null (e.g. for non-primary / non-main profiles), in which case this
+  // part of the UI should show and do nothing.
+  crosapi::mojom::CertProvisioning* const cert_provisioning_interface_;
+  // Receives mojo messages about cert provisioning updates.
+  mojo::Receiver<crosapi::mojom::CertProvisioningObserver> receiver_{this};
 
   // Keeps track of the count of UI refreshes sent to the WebUI.
   unsigned int ui_refresh_count_for_testing_ = 0;
-
-  // Keeps track of the CertProvisioningSchedulers that this UI handler
-  // observes.
-  base::ScopedMultiSourceObservation<
-      ash::cert_provisioning::CertProvisioningScheduler,
-      ash::cert_provisioning::CertProvisioningSchedulerObserver>
-      observed_schedulers_{this};
 
   base::WeakPtrFactory<CertificateProvisioningUiHandler> weak_ptr_factory_{
       this};

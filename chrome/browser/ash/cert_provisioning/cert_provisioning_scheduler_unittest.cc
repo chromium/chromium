@@ -72,19 +72,23 @@ void ExpectDeleteKeysByPrefixNeverCalled() {
 
 //=============== TestCertProvisioningSchedulerObserver ========================
 
-class TestCertProvisioningSchedulerObserver
-    : public CertProvisioningSchedulerObserver {
+class TestCertProvisioningSchedulerObserver {
  public:
   TestCertProvisioningSchedulerObserver() = default;
-  ~TestCertProvisioningSchedulerObserver() override = default;
+  ~TestCertProvisioningSchedulerObserver() = default;
 
   TestCertProvisioningSchedulerObserver(
       const TestCertProvisioningSchedulerObserver& other) = delete;
   TestCertProvisioningSchedulerObserver& operator=(
       const TestCertProvisioningSchedulerObserver& other) = delete;
 
-  // CertProvisioningSchedulerObserver:
-  void OnVisibleStateChanged() override {
+  base::RepeatingClosure GetCallback() {
+    return base::BindRepeating(
+        &TestCertProvisioningSchedulerObserver::OnVisibleStateChanged,
+        base::Unretained(this));
+  }
+
+  void OnVisibleStateChanged() {
     ++notifications_received_;
     run_loop_->Quit();
   }
@@ -1020,7 +1024,7 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
       MakeFakeInvalidationFactory());
 
   TestCertProvisioningSchedulerObserver observer;
-  scheduler.AddObserver(&observer);
+  auto subscription = scheduler.AddObserver(observer.GetCallback());
 
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(base::Seconds(1));
@@ -1096,8 +1100,6 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
   EXPECT_TRUE(
       base::Contains(scheduler.GetFailedCertProfileIds(), kCertProfileId1));
-
-  scheduler.RemoveObserver(&observer);
 }
 
 TEST_F(CertProvisioningSchedulerTest, HoldBackNotifications) {
@@ -1108,7 +1110,7 @@ TEST_F(CertProvisioningSchedulerTest, HoldBackNotifications) {
       MakeFakeInvalidationFactory());
 
   TestCertProvisioningSchedulerObserver observer;
-  scheduler.AddObserver(&observer);
+  auto subscription = scheduler.AddObserver(observer.GetCallback());
 
   // Ensure initial 0.
   EXPECT_EQ(0u, observer.ReadAndResetCallCount());
