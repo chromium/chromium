@@ -16,7 +16,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -1795,13 +1794,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @DisabledTest(message = "https://crbug.com/1144666")
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @DisabledTest(message = "https://crbug.com/1333098")
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testTabGroupManualSelection_DisabledForSingleTab() {
-        // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -1815,9 +1812,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         menuButton.getLocationOnScreen(location);
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
                 .click(location[0], location[1]);
-        onView(withText("Group tabs"))
+        // Even if we can tell the group option is disabled by looking at the device when the test
+        // is running, the espresso view matcher says it is enabled and all view parameters are the
+        // same with the one when we have two tabs. Thus, we check the item's click response here to
+        // tell if it is enabled.
+        onViewWaiting(withText("Group tabs"))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                .check(matches(not(isEnabled())));
+                .perform(click());
+        robot.resultRobot.verifyTabSelectionEditorIsHidden();
 
         // Group option should be enabled when there is more than one single tab.
         createTabs(cta, false, 2);
@@ -1825,9 +1827,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
                 .click(location[0], location[1]);
-        onView(withText("Group tabs"))
+        onViewWaiting(withText("Group tabs"))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                .check(matches(isEnabled()));
+                .perform(click());
+        robot.resultRobot.verifyTabSelectionEditorIsVisible();
     }
 
     @Test
