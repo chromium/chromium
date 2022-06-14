@@ -202,6 +202,7 @@ void PrintingManager::NotifyPrintJobObservers(base::WeakPtr<CupsPrintJob> job) {
 void PrintingManager::BindInterface(
     mojo::PendingReceiver<printing_manager::mojom::PrintingMetadataProvider>
         pending_receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(pending_receiver));
 }
 

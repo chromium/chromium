@@ -302,6 +302,19 @@ TEST_F(PrintingManagerTest, PolicyPreventsDeletingBrowserHistoryDeletingJobs) {
   EXPECT_EQ(1u, entries_.size());
 }
 
+TEST_F(PrintingManagerTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user refreshing the WebUI page. The receiver should
+  // be reset before binding the new receiver. Otherwise we would get a DCHECK
+  // error from mojo::Receiver
+  mojo::Remote<printing_manager::mojom::PrintingMetadataProvider> remote;
+  printing_manager_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  remote.reset();
+
+  printing_manager_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+}
 }  // namespace print_management
 }  // namespace printing
 }  // namespace ash
