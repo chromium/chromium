@@ -1298,6 +1298,10 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
 }
 
+RenderFrameHostImpl* WebContentsImpl::GetMainFrame() {
+  return GetPrimaryMainFrame();
+}
+
 RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() {
   return primary_frame_tree_.root()->current_frame_host();
 }
