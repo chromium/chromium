@@ -121,7 +121,7 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
         NavigateToURL(shell(), embedded_test_server()->GetURL(html_file_path)));
     // TODO(https://crbug.com/1332468): Investigate why this does not return
     // true.
-    std::ignore = waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   BrowserAccessibilityManager* GetManager() const {

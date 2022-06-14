@@ -262,7 +262,7 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
 
   // Ensure we get an accessibility update reflecting the new scale factor.
   // TODO(https://crbug.com/1332468): Investigate why this does not return true.
-  std::ignore = accessibility_waiter.WaitForNotification();
+  ASSERT_TRUE(accessibility_waiter.WaitForNotification());
 }
 
 std::string
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   SynchronizeThreads();
   // TODO(https://crbug.com/1332468): Investigate why this does not return
   // true.
-  std::ignore = waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "rectA");
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   SynchronizeThreads();
   // TODO(https://crbug.com/1332468): Investigate why this does not return
   // true.
-  std::ignore = waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "rectA");
@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
   SynchronizeThreads();
   // TODO(https://crbug.com/1332468): Investigate why this does not return true.
-  std::ignore = waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Dial");

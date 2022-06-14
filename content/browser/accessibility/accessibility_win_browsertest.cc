@@ -944,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
   // TODO(https://crbug.com/1332468): Investigate why this does not return
   // true.
-  std::ignore = waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   // Check that at least the root of the page has indeed loaded and that it is
   // focused.
@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, FocusEventOnPageLoad) {
   WaitForAccessibilityFocusChange();
   // TODO(https://crbug.com/1332468): Investigate why this does not return
   // true.
-  std::ignore = waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
   ASSERT_TRUE(document);

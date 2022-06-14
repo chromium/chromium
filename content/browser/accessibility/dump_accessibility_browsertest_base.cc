@@ -347,7 +347,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     EXPECT_TRUE(NavigateToURL(shell(), url));
     // TODO(https://crbug.com/1332468): Investigate why this does not return
     // true.
-    std::ignore = accessibility_waiter.WaitForNotification();
+    ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 
   WaitForAllFramesLoaded();
@@ -551,7 +551,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // when |event_recorder| records a platform event.
   // TODO(https://crbug.com/1332468): Investigate why this does not return
   // true.
-  std::ignore = waiter.WaitForNotification();
+  EXPECT_TRUE(waiter.WaitForNotification());
 
   // More than one accessibility event could have been generated.
   // To make sure we've received all accessibility events, add a

@@ -49,7 +49,7 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell(), url));
     // TODO(https://crbug.com/1332468): Investigate why this does not return
     // true.
-    std::ignore = waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   void SendTouchExplorationEvent(int x, int y) {

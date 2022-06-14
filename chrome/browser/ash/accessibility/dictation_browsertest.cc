@@ -348,7 +348,7 @@ class DictationTest
     SendFinalResultAndWait(result);
     // TODO(https://crbug.com/1333354): Investigate why this does not always
     // return true.
-    std::ignore = waiter.WaitForNotification();
+    ASSERT_TRUE(waiter.WaitForNotification());
     WaitForTextAreaValue(value);
   }
 
@@ -363,7 +363,7 @@ class DictationTest
     bounding_box_waiter.Wait();
     // TODO(https://crbug.com/1333354): Investigate why this does not always
     // return true.
-    std::ignore = selection_waiter.WaitForNotification();
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
   void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
@@ -376,7 +376,7 @@ class DictationTest
     caret_waiter.Wait();
     // TODO(https://crbug.com/1333354): Investigate why this does not always
     // return true.
-    std::ignore = selection_waiter.WaitForNotification();
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
   void SendFinalResultAndWaitForClipboardChanged(const std::string& result) {
@@ -1197,7 +1197,7 @@ class DictationHiddenMacrosTest : public DictationTest {
         browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
     RunHiddenMacro(macro);
     caret_waiter.Wait();
-    std::ignore = selection_waiter.WaitForNotification();
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
   void RunSmartSelectMacroAndWaitForSelectionChanged(

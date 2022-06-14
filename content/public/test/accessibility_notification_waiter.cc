@@ -115,14 +115,17 @@ void AccessibilityNotificationWaiter::ListenToFrame(
 }
 
 bool AccessibilityNotificationWaiter::WaitForNotification() {
-  notification_received_ = false;
   loop_runner_->Run();
 
+  bool notification_received = notification_received_;
+  // Reset everything to allow reuse.
   // Each loop runner can only be called once. Create a new one in case
   // the caller wants to call this again to wait for the next notification.
   loop_runner_ = std::make_unique<base::RunLoop>();
   loop_runner_quit_closure_ = loop_runner_->QuitClosure();
-  return notification_received_;
+  notification_received_ = false;
+
+  return notification_received;
 }
 
 bool AccessibilityNotificationWaiter::WaitForNotificationWithTimeout(
