@@ -26,7 +26,10 @@ chromeos::ArcTermsOfServiceScreenView* GetScreenView() {
 
   auto* host = ash::LoginDisplayHost::default_host();
   DCHECK(host);
-  DCHECK(host->GetOobeUI());
+
+  // Ensure WebUI is loaded
+  host->GetWizardController();
+
   return host->GetOobeUI()->GetView<chromeos::ArcTermsOfServiceScreenHandler>();
 }
 
