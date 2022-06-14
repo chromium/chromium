@@ -107,26 +107,33 @@ int main(int argc, char** argv) {
       cmd->GetSwitchValueASCII("output_path_prefix");
 
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
-  if (video_path.empty())
-    LOG(FATAL) << "No input video path provided to decode.\n" << kUsageMsg;
+  if (video_path.empty()) {
+    LOG(ERROR) << "No input video path provided to decode.\n" << kUsageMsg;
+    return EXIT_FAILURE;
+  }
 
   const std::string frames = cmd->GetSwitchValueASCII("frames");
   int n_frames;
   if (frames.empty()) {
     n_frames = 0;
   } else if (!base::StringToInt(frames, &n_frames) || n_frames <= 0) {
-    LOG(FATAL) << "Number of frames to decode must be positive integer, got "
+    LOG(ERROR) << "Number of frames to decode must be positive integer, got "
                << frames;
+    return EXIT_FAILURE;
   }
 
   // Set up video stream.
   base::MemoryMappedFile stream;
-  if (!stream.Initialize(video_path))
-    LOG(FATAL) << "Couldn't open file: " << video_path;
+  if (!stream.Initialize(video_path)) {
+    LOG(ERROR) << "Couldn't open file: " << video_path;
+    return EXIT_FAILURE;
+  }
 
   const std::unique_ptr<VideoDecoder> dec = CreateVideoDecoder(stream);
-  if (!dec)
-    LOG(FATAL) << "Failed to create decoder for file: " << video_path;
+  if (!dec) {
+    LOG(ERROR) << "Failed to create decoder for file: " << video_path;
+    return EXIT_FAILURE;
+  }
 
   dec->Initialize();
 
