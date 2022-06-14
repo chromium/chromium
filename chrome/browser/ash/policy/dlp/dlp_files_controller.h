@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace storage {
@@ -29,6 +30,8 @@ class DlpFilesController {
   using GetDisallowedTransfersCallback =
       base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
   using GetFilesRestrictedByAnyRuleCallback = GetDisallowedTransfersCallback;
+  using FilterDisallowedUploadsCallback = base::OnceCallback<void(
+      std::vector<blink::mojom::FileChooserFileInfoPtr>)>;
 
   DlpFilesController();
 
@@ -48,6 +51,12 @@ class DlpFilesController {
       std::vector<storage::FileSystemURL> files,
       GetFilesRestrictedByAnyRuleCallback result_callback);
 
+  // Filters files disallowed to be uploaded to `destination`.
+  void FilterDisallowedUploads(
+      std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
+      const GURL& destination,
+      FilterDisallowedUploadsCallback result_callback);
+
   // Returns a list of `files_sources` from from which files aren't allowed to
   // be transferred to `destination`.
   static std::vector<GURL> IsFilesTransferRestricted(
@@ -56,10 +65,15 @@ class DlpFilesController {
       std::string destination);
 
  private:
-  void OnCheckFilesTransferReply(
+  void ReturnDisallowedTransfers(
       base::flat_map<std::string, storage::FileSystemURL> files_map,
       GetDisallowedTransfersCallback result_callback,
-      const dlp::CheckFilesTransferResponse response);
+      dlp::CheckFilesTransferResponse response);
+
+  void ReturnAllowedUploads(
+      std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
+      FilterDisallowedUploadsCallback result_callback,
+      dlp::CheckFilesTransferResponse response);
 
   base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};
 };

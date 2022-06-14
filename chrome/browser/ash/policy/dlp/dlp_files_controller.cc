@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -22,6 +23,7 @@
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -93,7 +95,7 @@ void DlpFilesController::GetDisallowedTransfers(
 
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request,
-      base::BindOnce(&DlpFilesController::OnCheckFilesTransferReply,
+      base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
                      weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
                      std::move(result_callback)));
 }
@@ -108,6 +110,39 @@ void DlpFilesController::GetFilesRestrictedByAnyRule(
   // TODO(aidazolic): Implement getting the restricted files by calling DLP
   // daemon to check restrictions.
   NOTIMPLEMENTED();
+}
+
+void DlpFilesController::FilterDisallowedUploads(
+    std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
+    const GURL& destination,
+    FilterDisallowedUploadsCallback result_callback) {
+  if (uploaded_files.empty()) {
+    std::move(result_callback).Run(std::move(uploaded_files));
+    return;
+  }
+
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback).Run(std::move(uploaded_files));
+    return;
+  }
+
+  dlp::CheckFilesTransferRequest request;
+  for (const auto& file : uploaded_files) {
+    if (file && file->is_native_file())
+      request.add_files_paths(file->get_native_file()->file_path.value());
+  }
+  if (request.files_paths().empty()) {
+    std::move(result_callback).Run(std::move(uploaded_files));
+    return;
+  }
+
+  request.set_destination_url(destination.spec());
+
+  chromeos::DlpClient::Get()->CheckFilesTransfer(
+      request,
+      base::BindOnce(&DlpFilesController::ReturnAllowedUploads,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(uploaded_files),
+                     std::move(result_callback)));
 }
 
 // static
@@ -144,10 +179,10 @@ std::vector<GURL> DlpFilesController::IsFilesTransferRestricted(
   return restricted_files_sources;
 }
 
-void DlpFilesController::OnCheckFilesTransferReply(
+void DlpFilesController::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,
-    const dlp::CheckFilesTransferResponse response) {
+    dlp::CheckFilesTransferResponse response) {
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
@@ -159,6 +194,28 @@ void DlpFilesController::OnCheckFilesTransferReply(
     restricted_files.push_back(files_map.at(file));
   }
   std::move(result_callback).Run(std::move(restricted_files));
+}
+
+void DlpFilesController::ReturnAllowedUploads(
+    std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
+    FilterDisallowedUploadsCallback result_callback,
+    dlp::CheckFilesTransferResponse response) {
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to get check files transfer, error: "
+               << response.error_message();
+  }
+  std::set<std::string> restricted_files(response.files_paths().begin(),
+                                         response.files_paths().end());
+  std::vector<blink::mojom::FileChooserFileInfoPtr> filtered_files;
+  for (auto& file : uploaded_files) {
+    if (file && file->is_native_file() &&
+        base::Contains(restricted_files,
+                       file->get_native_file()->file_path.value())) {
+      continue;
+    }
+    filtered_files.push_back(std::move(file));
+  }
+  std::move(result_callback).Run(std::move(filtered_files));
 }
 
 }  // namespace policy

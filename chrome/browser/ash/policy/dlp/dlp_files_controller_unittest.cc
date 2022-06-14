@@ -44,7 +44,12 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 
+using blink::mojom::FileChooserFileInfo;
+using blink::mojom::FileChooserFileInfoPtr;
+using blink::mojom::FileSystemFileInfo;
+using blink::mojom::NativeFileInfo;
 using testing::_;
 
 namespace policy {
@@ -235,6 +240,91 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_SameFileSystem) {
                                            CreateFileSystemURL("Downloads"),
                                            future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
+}
+
+TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
+  AddFilesToDlpClient();
+
+  std::vector<FileChooserFileInfoPtr> uploaded_files;
+
+  dlp::CheckFilesTransferResponse check_files_transfer_response;
+
+  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  files_controller_.FilterDisallowedUploads(std::move(uploaded_files),
+                                            GURL("https://example.com"),
+                                            future.GetCallback());
+
+  std::vector<FileChooserFileInfoPtr> filtered_uploads;
+
+  ASSERT_EQ(0u, future.Get().size());
+  EXPECT_EQ(filtered_uploads, future.Take());
+}
+
+TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_NonNativeFiles) {
+  AddFilesToDlpClient();
+
+  std::vector<FileChooserFileInfoPtr> uploaded_files;
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+
+  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  files_controller_.FilterDisallowedUploads(std::move(uploaded_files),
+                                            GURL("https://example.com"),
+                                            future.GetCallback());
+
+  std::vector<FileChooserFileInfoPtr> filtered_uploads;
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+
+  ASSERT_EQ(3u, future.Get().size());
+  EXPECT_EQ(filtered_uploads, future.Take());
+}
+
+TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
+  AddFilesToDlpClient();
+
+  std::vector<FileChooserFileInfoPtr> uploaded_files;
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url1_.path(), std::u16string())));
+  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url2_.path(), std::u16string())));
+  uploaded_files.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url3_.path(), std::u16string())));
+  uploaded_files.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+
+  dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_url1_.path().value());
+  check_files_transfer_response.add_files_paths(file_url3_.path().value());
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
+  files_controller_.FilterDisallowedUploads(std::move(uploaded_files),
+                                            GURL("https://example.com"),
+                                            future.GetCallback());
+
+  std::vector<FileChooserFileInfoPtr> filtered_uploads;
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+  filtered_uploads.push_back(FileChooserFileInfo::NewNativeFile(
+      NativeFileInfo::New(file_url2_.path(), std::u16string())));
+  filtered_uploads.push_back(
+      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
+
+  ASSERT_EQ(3u, future.Get().size());
+  EXPECT_EQ(filtered_uploads, future.Take());
 }
 
 class DlpFilesExternalDestinationTest
