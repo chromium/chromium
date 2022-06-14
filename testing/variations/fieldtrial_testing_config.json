@@ -2691,33 +2691,6 @@
             ]
         }
     ],
-    "ContentLanguagesInLanguagePicker": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithoutObservers",
-                    "params": {
-                        "disable_observers": "true"
-                    },
-                    "enable_features": [
-                        "ContentLanguagesInLanguagePicker"
-                    ]
-                },
-                {
-                    "name": "EnabledWithObservers",
-                    "params": {
-                        "disable_observers": "false"
-                    },
-                    "enable_features": [
-                        "ContentLanguagesInLanguagePicker"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextMenuGoogleLensChip": [
         {
             "platforms": [
@@ -8170,6 +8143,22 @@
                     "name": "RegularLaunch_20220426",
                     "enable_features": [
                         "TouchToFillPasswordSubmission"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TranslateMessageUI": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContentLanguagesInLanguagePicker",
+                        "TranslateMessageUI"
                     ]
                 }
             ]
