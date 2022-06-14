@@ -158,7 +158,7 @@
   {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 107
   },
   {
     "name": "android-picture-in-picture-api",
