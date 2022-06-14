@@ -863,7 +863,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MAYBE_DataIsRemoved) {
   EXPECT_EQ("Anne", *value);
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LoginScreen) {
+// Test is flaky: https://crbug.com/1334470
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_LoginScreen) {
   AddPublicSessionToDevicePolicy(kAccountId1);
   AddPublicSessionToDevicePolicy(kAccountId2);
 
