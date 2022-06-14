@@ -589,12 +589,6 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
     return WebInputEventResult::kNotHandled;
   }
 
-  Node* node = scroll_gesture_handling_node_.Get();
-  if (!node || !node->GetLayoutObject()) {
-    TRACE_EVENT_INSTANT0("input", "Lost scroll_gesture_handling_node",
-                         TRACE_EVENT_SCOPE_THREAD);
-    return WebInputEventResult::kNotHandled;
-  }
   if (snap_fling_controller_) {
     if (snap_fling_controller_->HandleGestureScrollUpdate(
             GetGestureScrollUpdateInfo(gesture_event))) {
@@ -615,7 +609,10 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   if (delta.IsZero())
     return WebInputEventResult::kNotHandled;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
+  LayoutObject* layout_object =
+      scroll_gesture_handling_node_
+          ? scroll_gesture_handling_node_->GetLayoutObject()
+          : nullptr;
 
   // Try to send the event to the correct view.
   WebInputEventResult result =
