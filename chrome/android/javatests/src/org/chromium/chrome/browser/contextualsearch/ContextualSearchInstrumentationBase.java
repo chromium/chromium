@@ -1388,7 +1388,7 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void expandPanelAndAssert() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.setVisibilityStateForTesting(true);
+            mPanel.notifyBarTouched(0);
             mFakeServer.getContentsObserver().wasShown();
             mPanel.animatePanelToState(PanelState.EXPANDED, StateChangeReason.UNKNOWN,
                     PANEL_INTERACTION_RETRY_DELAY_MS);
