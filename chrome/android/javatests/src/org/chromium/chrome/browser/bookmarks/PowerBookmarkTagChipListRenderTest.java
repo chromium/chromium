@@ -38,7 +38,7 @@ import java.io.IOException;
  * Tests for the power bookmark experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PowerBookmarkTagChipListTest extends BlankUiTestActivityTestCase {
+public class PowerBookmarkTagChipListRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
