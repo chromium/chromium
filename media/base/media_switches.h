@@ -104,6 +104,7 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
+MEDIA_EXPORT extern const char kMaxChromeOSDecoderThreads[];
 #endif
 
 }  // namespace switches

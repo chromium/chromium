@@ -4,20 +4,26 @@
 
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
+#include <atomic>
 #include <memory>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
@@ -72,6 +78,94 @@ absl::optional<Fourcc> PickRenderableFourcc(
   }
   return absl::nullopt;
 }
+
+class DecoderThreadPool {
+ public:
+  DecoderThreadPool(const DecoderThreadPool&) = delete;
+  DecoderThreadPool& operator=(const DecoderThreadPool&) = delete;
+
+  static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {
+    static base::NoDestructor<DecoderThreadPool> decoder_thread_pool;
+    return decoder_thread_pool->GetTaskRunner();
+  }
+
+ private:
+  friend class base::NoDestructor<DecoderThreadPool>;
+
+  DecoderThreadPool() {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (!command_line->HasSwitch(switches::kMaxChromeOSDecoderThreads))
+      return;
+
+    const std::string& num_threads_switch =
+        command_line->GetSwitchValueASCII(switches::kMaxChromeOSDecoderThreads);
+    if (num_threads_switch.empty()) {
+      LOG(ERROR) << "Failed to read the value of "
+                 << switches::kMaxChromeOSDecoderThreads;
+      return;
+    }
+    size_t num_threads = 0;
+    if (!base::StringToSizeT(num_threads_switch, &num_threads)) {
+      LOG(ERROR) << "Failed to convert the value of "
+                 << switches::kMaxChromeOSDecoderThreads << ", "
+                 << num_threads_switch << ", to integer";
+      return;
+    }
+
+    for (size_t i = 0; i < num_threads; i++) {
+      const std::string thread_name =
+          "VDecThread" +
+          base::NumberToString(base::checked_cast<unsigned int>(i));
+      decoder_threads_.emplace_back(
+          std::make_unique<base::Thread>(thread_name));
+      auto& thread = decoder_threads_.back();
+      if (!thread->Start()) {
+        LOG(ERROR) << "Failed to start thread: " << thread->thread_name();
+        decoder_threads_.clear();
+        task_runners_.clear();
+        return;
+      }
+
+      CHECK(thread->task_runner());
+      task_runners_.emplace_back(thread->task_runner());
+    }
+    VLOGF(2) << decoder_threads_.size() << " VideoDecoder Threads are created";
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
+    if (task_runners_.empty()) {
+      // Note that the decoder thread is created with base::MayBlock(). This is
+      // because the underlying |decoder_| may need to allocate a dummy buffer
+      // to discover the most native modifier accepted by the hardware video
+      // decoder; this in turn may need to open the render node, and this is the
+      // operation that may block.
+      return base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
+           base::MayBlock()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    }
+
+    // atomic unsigned integer may have undefined behavior on overflow.
+    // Use atomic signed integer, which is stated in the C++ specification;
+    // "Signed integer arithmetic is defined to use two's complement; there are
+    // no undefined results."
+    int atomic_index = counter_.fetch_add(1, std::memory_order_relaxed);
+    size_t index = 0;
+    if (atomic_index == INT_MIN) {
+      // Negating INT_MIN would cause an overflow, so just wrap around to
+      // INT_MAX.
+      atomic_index = INT_MAX;
+    }
+    index = base::checked_cast<size_t>(atomic_index >= 0 ? atomic_index
+                                                         : -atomic_index);
+    index %= task_runners_.size();
+    return task_runners_[index];
+  }
+
+  std::vector<std::unique_ptr<base::Thread>> decoder_threads_;
+  std::vector<scoped_refptr<base::SingleThreadTaskRunner>> task_runners_;
+  std::atomic_int counter_{0};
+};
 
 }  //  namespace
 
@@ -168,15 +262,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb)
     : client_task_runner_(std::move(client_task_runner)),
-      // Note that the decoder thread is created with base::MayBlock(). This is
-      // because the underlying |decoder_| may need to allocate a dummy buffer
-      // to discover the most native modifier accepted by the hardware video
-      // decoder; this in turn may need to open the render node, and this is the
-      // operation that may block.
-      decoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
-           base::MayBlock()},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
+      decoder_task_runner_(DecoderThreadPool::CreateTaskRunner()),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
       media_log_(std::move(media_log)),
