@@ -1651,7 +1651,6 @@ android_library("chrome_test_java") {
     "//components/send_tab_to_self:send_tab_to_self_java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
-    "//components/signin/public/android:javatests",
     "//components/signin/public/android:signin_java_test_support",
     "//components/site_engagement/content/android:java",
     "//components/sync/android:sync_java",
@@ -3157,6 +3156,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//chrome/browser/ui/messages/android:unit_device_javatests",
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
+    "//components/signin/public/android:javatests",
   ]
 
   data_deps = [
