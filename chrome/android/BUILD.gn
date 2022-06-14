@@ -3153,14 +3153,18 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//build/config/android/test/resource_overlay:javatests",
     "//chrome/browser/back_press/android:javatests",
     "//chrome/browser/partnercustomizations:javatests",
+    "//chrome/browser/ui/android/appmenu/internal:unit_device_javatests",
     "//chrome/browser/ui/messages/android:unit_device_javatests",
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
     "//components/paint_preview/player/android:javatests",
     "//components/signin/public/android:javatests",
   ]
-  data_deps =
-      [ "//testing/buildbot/filters:chrome_public_unit_test_apk_filters" ]
+
+  data_deps = [
+    "//testing/buildbot/filters:chrome_public_unit_test_apk_filters",
+    "//ui/base:goldctl",
+  ]
 
   # Required by //build/config/android/test/resource_overlay:javatests
   enforce_resource_overlays_in_tests = true
@@ -3187,7 +3191,6 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/browser/password_check/android:test_java",
     "//chrome/browser/subresource_filter:subresource_filter_javatests",
     "//chrome/browser/touch_to_fill/android:test_java",
-    "//chrome/browser/ui/android/appmenu/internal:javatests",
     "//chrome/browser/ui/android/omnibox:javatests",
     "//chrome/browser/ui/android/webid/internal:javatests",
   ]
