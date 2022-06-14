@@ -1531,10 +1531,8 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   }
 
   if (unresolved_property == CSSPropertyID::kVariable) {
-    if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kKeyframe &&
-        rule_type != StyleRule::kTry) {
+    if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kKeyframe)
       return;
-    }
     AtomicString variable_name = lhs.Value().ToAtomicString();
     bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
     ConsumeVariableValue(tokenized_value, variable_name, important,

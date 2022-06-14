@@ -68,8 +68,8 @@ test_allowed_property('align-items', 'normal');
 test_allowed_property('justify-self', 'normal');
 test_allowed_property('align-self', 'normal');
 
-// Custom properties are allowed
-test_allowed_property('--custom');
+// Custom properties are disallowed
+test_disallowed_property('--custom');
 
 // Margin properties are disallowed
 test_disallowed_property('margin-left');
