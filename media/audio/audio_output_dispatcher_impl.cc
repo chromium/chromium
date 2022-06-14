@@ -75,8 +75,7 @@ bool AudioOutputDispatcherImpl::StartStream(
     AudioOutputStream::AudioSourceCallback* callback,
     AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(proxy_to_physical_map_.find(stream_proxy) ==
-         proxy_to_physical_map_.end());
+  DCHECK(!proxy_to_physical_map_.contains(stream_proxy));
 
   if (idle_streams_.empty() && !CreateAndOpenStream())
     return false;

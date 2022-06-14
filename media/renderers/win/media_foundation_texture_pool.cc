@@ -122,8 +122,9 @@ ComPtr<ID3D11Texture2D> MediaFoundationTexturePool::AcquireTexture(
 
 void MediaFoundationTexturePool::ReleaseTexture(
     const base::UnguessableToken& texture_token) {
-  if (texture_pool_.count(texture_token) > 0) {
-    texture_pool_.at(texture_token).texture_in_use_ = false;
+  auto it = texture_pool_.find(texture_token);
+  if (it != texture_pool_.end()) {
+    it->second.texture_in_use_ = false;
   }
 }
 

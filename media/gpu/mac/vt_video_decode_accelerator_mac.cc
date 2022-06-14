@@ -1086,8 +1086,8 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
           }
 
           // Record the configuration.
-          DCHECK(seen_pps_.count(slice_hdr.pic_parameter_set_id));
-          DCHECK(seen_sps_.count(pps->seq_parameter_set_id));
+          DCHECK(seen_pps_.contains(slice_hdr.pic_parameter_set_id));
+          DCHECK(seen_sps_.contains(pps->seq_parameter_set_id));
           active_sps_ = seen_sps_[pps->seq_parameter_set_id];
           // Note: SPS extension lookup may create an empty entry.
           active_spsext_ = seen_spsext_[pps->seq_parameter_set_id];
@@ -1481,9 +1481,9 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
         }
 
         // Record the configuration.
-        DCHECK(seen_pps_.count(curr_slice_hdr->slice_pic_parameter_set_id));
-        DCHECK(seen_sps_.count(pps->pps_seq_parameter_set_id));
-        DCHECK(seen_vps_.count(sps->sps_video_parameter_set_id));
+        DCHECK(seen_pps_.contains(curr_slice_hdr->slice_pic_parameter_set_id));
+        DCHECK(seen_sps_.contains(pps->pps_seq_parameter_set_id));
+        DCHECK(seen_vps_.contains(sps->sps_video_parameter_set_id));
         active_vps_ = seen_vps_[sps->sps_video_parameter_set_id];
         active_sps_ = seen_sps_[pps->pps_seq_parameter_set_id];
         active_pps_ = seen_pps_[curr_slice_hdr->slice_pic_parameter_set_id];
@@ -1696,7 +1696,7 @@ void VTVideoDecodeAccelerator::DecodeDone(Frame* frame) {
 
   // pending_frames_.erase() will delete |frame|.
   int32_t bitstream_id = frame->bitstream_id;
-  DCHECK_EQ(1u, pending_frames_.count(bitstream_id));
+  DCHECK(pending_frames_.contains(bitstream_id));
 
   if (state_ == STATE_ERROR || state_ == STATE_DESTROYING) {
     // Destroy() handles NotifyEndOfBitstreamBuffer().
@@ -1809,7 +1809,7 @@ void VTVideoDecodeAccelerator::AssignPictureBuffers(
 
   for (const PictureBuffer& picture : pictures) {
     DVLOG(3) << "AssignPictureBuffer(" << picture.id() << ")";
-    DCHECK(!picture_info_map_.count(picture.id()));
+    DCHECK(!picture_info_map_.contains(picture.id()));
     assigned_picture_ids_.insert(picture.id());
     available_picture_ids_.push_back(picture.id());
     if (picture.client_texture_ids().empty() &&
