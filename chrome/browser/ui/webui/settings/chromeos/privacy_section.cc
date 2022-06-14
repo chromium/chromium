@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/privacy_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
@@ -281,6 +282,9 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
           profile(), g_browser_process->metrics_service(),
           user_manager::UserManager::Get()));
 
+  if (base::FeatureList::IsEnabled(::features::kCrosPrivacyHub))
+    web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());
+
   if (IsSecureDnsAvailable())
     web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
 }
@@ -322,6 +326,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS},
       {"privacyHubTitle", IDS_OS_SETTINGS_PRIVACY_HUB_TITLE},
       {"cameraToggleTitle", IDS_OS_SETTINGS_CAMERA_TOGGLE_TITLE},
+      {"cameraToggleSublabelActive",
+       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

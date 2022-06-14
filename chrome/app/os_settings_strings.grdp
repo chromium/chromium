@@ -4253,6 +4253,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_TITLE" desc="Text on the privacy page that opens up the privacy hub section.">
     Privacy Hub
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT" desc="Sub-label on the privacy page that indicates that the hardware camera toggle is active.">
+    Internal camera deactivated by hardware switch
+  </message>
   <message name="IDS_OS_SETTINGS_CAMERA_TOGGLE_TITLE" desc="The title of the toggle to enable/disable camera from the privacy hub.">
     Camera
   </message>

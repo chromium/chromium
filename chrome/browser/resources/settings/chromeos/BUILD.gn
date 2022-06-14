@@ -291,6 +291,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/global_scroll_target_behavior.js",
     "chromeos/google_assistant_page/google_assistant_browser_proxy.js",
     "chromeos/guest_os/guest_os_browser_proxy.js",
+    "chromeos/os_privacy_page/privacy_hub_browser_proxy.js",
     "chromeos/internet_page/cellular_setup_settings_delegate.js",
     "chromeos/internet_page/internet_page_browser_proxy.js",
     "chromeos/kerberos_page/kerberos_accounts_browser_proxy.js",

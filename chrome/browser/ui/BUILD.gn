@@ -2965,6 +2965,8 @@ static_library("ui") {
       "webui/settings/chromeos/pref_names.h",
       "webui/settings/chromeos/printing_section.cc",
       "webui/settings/chromeos/printing_section.h",
+      "webui/settings/chromeos/privacy_hub_handler.cc",
+      "webui/settings/chromeos/privacy_hub_handler.h",
       "webui/settings/chromeos/privacy_section.cc",
       "webui/settings/chromeos/privacy_section.h",
       "webui/settings/chromeos/quick_unlock_handler.cc",
