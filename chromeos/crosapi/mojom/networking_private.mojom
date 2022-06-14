@@ -54,6 +54,11 @@ interface NetworkingPrivateDelegateObserver {
   // Notifies observers that the list of networks changed. |network_guids|
   // contains the complete list of network guids.
   OnNetworkListChangedEvent@1(array<string> network_guids);
+
+  // Fired when the list of devices has changed or any device state properties
+  // have changed.
+  [MinVersion=1]
+  OnDeviceStateListChanged@2();
 };
 
 // This interface mirrors the NetworkingPrivateDelegate from Lacros to Ash to

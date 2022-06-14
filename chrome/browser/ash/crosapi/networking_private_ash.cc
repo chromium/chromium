@@ -14,6 +14,7 @@
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using chromeos::NetworkHandler;
 using chromeos::NetworkStateHandler;
@@ -402,6 +403,30 @@ void NetworkingPrivateAsh::AddObserver(
   if (!is_listening_network_state) {
     network_state_observation_.Observe(
         NetworkHandler::Get()->network_state_handler());
+  }
+}
+
+void NetworkingPrivateAsh::DeviceListChanged() {
+  for (auto& observer : observers_) {
+    observer->OnDeviceStateListChanged();
+  }
+}
+
+void NetworkingPrivateAsh::DevicePropertiesUpdated(
+    const chromeos::DeviceState* device) {
+  // networkingPrivate uses a single event for device changes.
+  DeviceListChanged();
+
+  // DeviceState changes may affect Cellular networks.
+  if (device->type() != shill::kTypeCellular)
+    return;
+
+  NetworkStateHandler::NetworkStateList cellular_networks;
+  NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+      chromeos::NetworkTypePattern::Cellular(), false /* configured_only */,
+      true /* visible_only */, -1 /* default limit */, &cellular_networks);
+  for (const chromeos::NetworkState* network : cellular_networks) {
+    NetworkPropertiesUpdated(network);
   }
 }
 

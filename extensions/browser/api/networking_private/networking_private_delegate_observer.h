@@ -28,6 +28,10 @@ class NetworkingPrivateDelegateObserver {
   virtual void OnNetworkListChangedEvent(
       const std::vector<std::string>& network_guids) = 0;
 
+  // Notifies observers that the list of devices has changed or any device
+  // state properties have changed.
+  virtual void OnDeviceStateListChanged() = 0;
+
  protected:
   virtual ~NetworkingPrivateDelegateObserver() {}
 };

@@ -43,6 +43,12 @@ void LacrosNetworkingPrivateObserver::OnNetworkListChangedEvent(
   }
 }
 
+void LacrosNetworkingPrivateObserver::OnDeviceStateListChanged() {
+  for (auto& observer : lacros_observers_) {
+    observer.OnDeviceStateListChanged();
+  }
+}
+
 void LacrosNetworkingPrivateObserver::AddObserver(
     extensions::NetworkingPrivateDelegateObserver* observer) {
   lacros_observers_.AddObserver(observer);

@@ -83,7 +83,15 @@ class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
   void AddObserver(mojo::PendingRemote<mojom::NetworkingPrivateDelegateObserver>
                        observer) override;
 
-  // NetworkStateHandlerObserver overrides:
+  // NetworkStateHandlerObserver overrides.
+  //
+  // Note that their implementation are essentially a copy of
+  // the corresponding methods of NetworkingPrivateEventRouterImpl in
+  // extensions/browser/api/networking_private/networking_private_event_router_chromeos.cc
+  // so that the behavior is consistent between networkingPrivate extensions
+  // running in ash and lacros.
+  void DeviceListChanged() override;
+  void DevicePropertiesUpdated(const chromeos::DeviceState* device) override;
   void NetworkListChanged() override;
   void NetworkPropertiesUpdated(const chromeos::NetworkState* network) override;
 
