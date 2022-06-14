@@ -61,7 +61,8 @@ ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
   EventMatcher* matcher = event_filter_.GetEventMatcher(filter_id);
   DCHECK(matcher);
   std::unique_ptr<base::DictionaryValue> filter_copy =
-      matcher->value()->CreateDeepCopy();
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(matcher->value()->Clone()));
 
   FilteredEventListenerKey key(context_owner_id, event_name);
   FilteredListeners::const_iterator counts = filtered_listeners_.find(key);
