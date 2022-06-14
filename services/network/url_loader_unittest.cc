@@ -7324,6 +7324,8 @@ TEST_F(URLLoaderTest, HasPartitionedCookie) {
   EXPECT_TRUE(client_.response_head()->has_partitioned_cookie);
 }
 
+using ExtraHeaders = std::vector<std::pair<std::string, std::string>>;
+
 class URLLoaderCacheTransparencyTest : public URLLoaderTest {
  public:
   void SetUp() override {
@@ -7365,7 +7367,9 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
     ResourceRequest request =
         CreateResourceRequest(method_.c_str(), test_server()->GetURL(path));
     request.load_flags = load_flags_;
-    request.headers.AddHeadersFromString(headers_);
+    for (const auto& [key, value] : headers_) {
+      request.headers.SetHeader(key, value);
+    }
 
     base::RunLoop delete_run_loop;
     mojo::Remote<mojom::URLLoader> loader;
@@ -7426,9 +7430,7 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
 
   void set_load_flags(int flags) { load_flags_ = flags; }
 
-  // Headers are in the format accepted by
-  // HttpRequestHeaders::AddHeadersFromString(), ie. "\r\n" delimited.
-  void set_headers(std::string headers) { headers_ = std::move(headers); }
+  void set_headers(ExtraHeaders headers) { headers_ = std::move(headers); }
 
  private:
   static constexpr char kPervasivePayload[] = "/pervasive.js";
@@ -7443,7 +7445,7 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
   bool third_party_cookies_enabled_ = true;
   std::string method_ = "GET";
   int load_flags_ = net::LOAD_NORMAL;
-  std::string headers_;
+  ExtraHeaders headers_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -7484,7 +7486,8 @@ TEST_F(URLLoaderCacheTransparencyTest, IncompatibleLoadFlags) {
 }
 
 TEST_F(URLLoaderCacheTransparencyTest, IncompatibleHeaders) {
-  set_headers("Range: bytes=0-5\r\n");
+  ExtraHeaders headers = {{"Range", "bytes=0-5"}};
+  set_headers(headers);
   SendTwoRequestsWithDifferentOrigins();
   EXPECT_EQ(2, network_request_count());
   ExpectNotUsedReason(
