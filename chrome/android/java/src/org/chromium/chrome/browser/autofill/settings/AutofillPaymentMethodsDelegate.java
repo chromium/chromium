@@ -54,14 +54,17 @@ class AutofillPaymentMethodsDelegate {
      * Note: This should only be called after the OfferVirtualCardEnrollment is triggered. This is
      * because the VirtualCardEnrollmentManager stores some state when offerVirtualCardEnrollment is
      * called, which is then reused for enrolling into the virtual cards feature.
+     * @param virtualCardEnrollmentUpdateResponseCallback The callback to be triggered when the
+     *         server response is received regarding enrollment success.
      */
-    public void enrollOfferedVirtualCard() {
+    public void enrollOfferedVirtualCard(
+            Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback) {
         if (mNativeAutofillPaymentMethodsDelegate == 0) {
             throw new IllegalStateException(
                     "The native delegate was cleaned up or not initialized.");
         }
         AutofillPaymentMethodsDelegateJni.get().enrollOfferedVirtualCard(
-                mNativeAutofillPaymentMethodsDelegate);
+                mNativeAutofillPaymentMethodsDelegate, virtualCardEnrollmentUpdateResponseCallback);
     }
 
     /**
@@ -69,16 +72,20 @@ class AutofillPaymentMethodsDelegate {
      * process.
      * @param instrumentId The instrument ID of the {@link
      *         org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard} to unenroll.
+     * @param virtualCardEnrollmentUpdateResponseCallback The callback to be triggered when the
+     *         server response is received regarding unenrollment success.
      * @throws IllegalStateException when called after the native delegate has been cleaned up, or
      *         if an error occurred during initialization.
      */
-    public void unenrollVirtualCard(long instrumentId) {
+    public void unenrollVirtualCard(
+            long instrumentId, Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback) {
         if (mNativeAutofillPaymentMethodsDelegate == 0) {
             throw new IllegalStateException(
                     "The native delegate was cleaned up or not initialized.");
         }
         AutofillPaymentMethodsDelegateJni.get().unenrollVirtualCard(
-                mNativeAutofillPaymentMethodsDelegate, instrumentId);
+                mNativeAutofillPaymentMethodsDelegate, instrumentId,
+                virtualCardEnrollmentUpdateResponseCallback);
     }
 
     /**
@@ -99,7 +106,9 @@ class AutofillPaymentMethodsDelegate {
         void offerVirtualCardEnrollment(long nativeAutofillPaymentMethodsDelegate,
                 long instrumentId,
                 Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback);
-        void enrollOfferedVirtualCard(long nativeAutofillPaymentMethodsDelegate);
-        void unenrollVirtualCard(long nativeAutofillPaymentMethodsDelegate, long instrumentId);
+        void enrollOfferedVirtualCard(long nativeAutofillPaymentMethodsDelegate,
+                Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback);
+        void unenrollVirtualCard(long nativeAutofillPaymentMethodsDelegate, long instrumentId,
+                Callback<Boolean> virtualCardEnrollmentUpdateResponseCallback);
     }
 }

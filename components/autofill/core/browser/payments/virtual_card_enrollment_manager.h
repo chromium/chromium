@@ -109,6 +109,9 @@ class VirtualCardEnrollmentManager {
   using VirtualCardEnrollmentFieldsLoadedCallback = base::OnceCallback<void(
       VirtualCardEnrollmentFields* virtual_card_enrollment_fields)>;
 
+  using VirtualCardEnrollmentUpdateResponseCallback =
+      base::OnceCallback<void(bool)>;
+
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
@@ -142,10 +145,16 @@ class VirtualCardEnrollmentManager {
   // |vcn_context_token_|, which should be set when we receive the
   // GetDetailsForEnrollResponse, is used in the
   // UpdateVirtualCardEnrollmentRequest to enroll the correct card.
-  void Enroll();
+  void Enroll(
+      // The callback lets the Android Settings page know whether
+      // (un)enrollment was successful.
+      absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+          virtual_card_enrollment_update_response_callback);
 
   // Unenrolls the card mapped to the given |instrument_id|.
-  void Unenroll(int64_t instrument_id);
+  void Unenroll(int64_t instrument_id,
+                absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+                    virtual_card_enrollment_update_response_callback);
 
   // Returns true if a credit card identified by its |instrument_id| should be
   // blocked for virtual card enrollment and is not attempting to enroll from
@@ -228,6 +237,11 @@ class VirtualCardEnrollmentManager {
   // is not available.
   VirtualCardEnrollmentFieldsLoadedCallback
       virtual_card_enrollment_fields_loaded_callback_;
+
+  // Callback triggered after getting server response about the success of
+  // virtual card (un)enrollment.
+  absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+      virtual_card_enrollment_update_response_callback_;
 
  private:
   friend class VirtualCardEnrollmentManagerTest;

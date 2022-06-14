@@ -689,7 +689,9 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
           ->GetFormDataImporter()
           ->GetVirtualCardEnrollmentManager();
 
-  virtual_card_enrollment_manager->Unenroll(card->instrument_id());
+  virtual_card_enrollment_manager->Unenroll(
+      card->instrument_id(),
+      /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
   return RespondNow(NoArguments());
 }
 

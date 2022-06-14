@@ -78,13 +78,20 @@ void AutofillPaymentMethodsDelegate::OfferVirtualCardEnrollment(
                      ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
-void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(JNIEnv* env) {
-  virtual_card_enrollment_manager_->Enroll();
+void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcallback) {
+  virtual_card_enrollment_manager_->Enroll(
+      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                     ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(
     JNIEnv* env,
-    int64_t instrument_id) {
-  virtual_card_enrollment_manager_->Unenroll(instrument_id);
+    int64_t instrument_id,
+    const JavaParamRef<jobject>& jcallback) {
+  virtual_card_enrollment_manager_->Unenroll(
+      instrument_id, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                                    ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 }  // namespace autofill
