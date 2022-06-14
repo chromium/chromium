@@ -130,6 +130,13 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
       case 'explore':
         this.feedbackServiceProvider_.openExploreApp();
         break;
+      case 'chromebookCommunity':
+        // If app locale is not available, default to en.
+        window.open(
+            `https://support.google.com/chromebook/?hl=${
+                this.i18n('language') || 'en'}#topic=3399709`,
+            '_blank');
+        break;
       default:
         console.warn('unexpected caller id: ', e.target.id);
     }

@@ -237,4 +237,32 @@ export function confirmationPageTest() {
 
     assertEquals(1, feedbackServiceProvider.getOpenExploreAppCallCount());
   });
+
+  // Test clicking openChromebookHelp link.
+  test('openChromebookHelp', async () => {
+    await initializePage();
+    const resolver = new PromiseResolver();
+    let windowOpenCalled = 0;
+    let url = '';
+    let target = '';
+
+    const openMock = (urlArg, targetArg) => {
+      windowOpenCalled++;
+      url = urlArg;
+      target = targetArg;
+      return resolver.promise;
+    };
+
+    window.open = /** @type {!function()} */ (openMock);
+
+    const link = getElement(page, '#chromebookCommunity');
+    link.click();
+
+    await flushTasks();
+
+    assertEquals(1, windowOpenCalled);
+    assertEquals(target, '_blank');
+    assertEquals(
+        url, 'https://support.google.com/chromebook/?hl=en#topic=3399709');
+  });
 }
