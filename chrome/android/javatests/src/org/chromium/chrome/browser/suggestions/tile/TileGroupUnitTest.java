@@ -43,6 +43,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -201,6 +202,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testReceiveNewTilesWithDataChanges_TrackLoad() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true, URLS);
 
@@ -294,6 +296,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testRenderTileView() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mImageFetcher);
@@ -390,6 +393,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoadingForInit() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
         Tile tile = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED).get(0);
@@ -426,6 +430,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoading_Sync() {
         TileGroup tileGroup = initialiseTileGroup();
         mImageFetcher.fulfillLargeIconRequests();
@@ -445,6 +450,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoading_AsyncNoTrack() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true);
         mImageFetcher.fulfillLargeIconRequests();
@@ -465,6 +471,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoading_AsyncTrack() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true);
         mImageFetcher.fulfillLargeIconRequests();
