@@ -10,10 +10,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 
-import androidx.collection.ArrayMap;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -24,39 +22,45 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties.SuggestionIcon;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Tests for {@link BasicSuggestionProcessor}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowUrlBarData.class})
 public class BasicSuggestionProcessorUnitTest {
-    private static final ArrayMap<Integer, String> ICON_TYPE_NAMES =
-            new ArrayMap<Integer, String>(SuggestionIcon.TOTAL_COUNT) {
+    private static final GURL EXTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL INTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+
+    private static final Map<Integer, String> ICON_TYPE_NAMES =
+            new HashMap<Integer, String>(SuggestionIcon.TOTAL_COUNT) {
                 {
                     put(SuggestionIcon.UNSET, "UNSET");
                     put(SuggestionIcon.BOOKMARK, "BOOKMARK");
@@ -68,43 +72,39 @@ public class BasicSuggestionProcessorUnitTest {
                 }
             };
 
-    private static final ArrayMap<Integer, String> SUGGESTION_TYPE_NAMES =
-            new ArrayMap<Integer, String>(OmniboxSuggestionType.NUM_TYPES) {
-                {
-                    put(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "URL_WHAT_YOU_TYPED");
-                    put(OmniboxSuggestionType.HISTORY_URL, "HISTORY_URL");
-                    put(OmniboxSuggestionType.HISTORY_TITLE, "HISTORY_TITLE");
-                    put(OmniboxSuggestionType.HISTORY_BODY, "HISTORY_BODY");
-                    put(OmniboxSuggestionType.HISTORY_KEYWORD, "HISTORY_KEYWORD");
-                    put(OmniboxSuggestionType.NAVSUGGEST, "NAVSUGGEST");
-                    put(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "SEARCH_WHAT_YOU_TYPED");
-                    put(OmniboxSuggestionType.SEARCH_HISTORY, "SEARCH_HISTORY");
-                    put(OmniboxSuggestionType.SEARCH_SUGGEST, "SEARCH_SUGGEST");
-                    put(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, "SEARCH_SUGGEST_ENTITY");
-                    put(OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, "SEARCH_SUGGEST_TAIL");
-                    put(OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED,
-                            "SEARCH_SUGGEST_PERSONALIZED");
-                    put(OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, "SEARCH_SUGGEST_PROFILE");
-                    put(OmniboxSuggestionType.SEARCH_OTHER_ENGINE, "SEARCH_OTHER_ENGINE");
-                    put(OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, "NAVSUGGEST_PERSONALIZED");
-                    put(OmniboxSuggestionType.VOICE_SUGGEST, "VOICE_SUGGEST");
-                    put(OmniboxSuggestionType.DOCUMENT_SUGGESTION, "DOCUMENT_SUGGESTION");
-                    // Note: CALCULATOR suggestions are not handled by basic suggestion processor.
-                    // These suggestions are now processed by AnswerSuggestionProcessor instead.
-                }
-            };
+    private static final Map<Integer, String> SUGGESTION_TYPE_NAMES = new HashMap<Integer, String>(
+            OmniboxSuggestionType.NUM_TYPES) {
+        {
+            put(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "URL_WHAT_YOU_TYPED");
+            put(OmniboxSuggestionType.HISTORY_URL, "HISTORY_URL");
+            put(OmniboxSuggestionType.HISTORY_TITLE, "HISTORY_TITLE");
+            put(OmniboxSuggestionType.HISTORY_BODY, "HISTORY_BODY");
+            put(OmniboxSuggestionType.HISTORY_KEYWORD, "HISTORY_KEYWORD");
+            put(OmniboxSuggestionType.NAVSUGGEST, "NAVSUGGEST");
+            put(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "SEARCH_WHAT_YOU_TYPED");
+            put(OmniboxSuggestionType.SEARCH_HISTORY, "SEARCH_HISTORY");
+            put(OmniboxSuggestionType.SEARCH_SUGGEST, "SEARCH_SUGGEST");
+            put(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, "SEARCH_SUGGEST_ENTITY");
+            put(OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, "SEARCH_SUGGEST_TAIL");
+            put(OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, "SEARCH_SUGGEST_PERSONALIZED");
+            put(OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, "SEARCH_SUGGEST_PROFILE");
+            put(OmniboxSuggestionType.SEARCH_OTHER_ENGINE, "SEARCH_OTHER_ENGINE");
+            put(OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, "NAVSUGGEST_PERSONALIZED");
+            put(OmniboxSuggestionType.VOICE_SUGGEST, "VOICE_SUGGEST");
+            put(OmniboxSuggestionType.DOCUMENT_SUGGESTION, "DOCUMENT_SUGGESTION");
+            // Note: CALCULATOR suggestions are not handled by basic suggestion processor.
+            // These suggestions are now processed by AnswerSuggestionProcessor instead.
+        }
+    };
 
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    public @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    SuggestionHost mSuggestionHost;
-    @Mock
-    LargeIconBridge mIconBridge;
-    @Mock
-    UrlBarEditingTextStateProvider mUrlBarText;
+    private @Mock SuggestionHost mSuggestionHost;
+    private @Mock LargeIconBridge mIconBridge;
+    private @Mock UrlBarEditingTextStateProvider mUrlBarText;
+    private @Mock Bitmap mBitmap;
 
-    private Bitmap mBitmap;
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
@@ -122,10 +122,7 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
-        mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
                 mSuggestionHost, mUrlBarText, () -> mIconBridge, mIsBookmarked);
     }
@@ -175,7 +172,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void getSuggestionIconTypeForSearch_Default() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.MAGNIFIER},
@@ -207,7 +203,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void getSuggestionIconTypeForUrl_Default() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.GLOBE},
@@ -239,7 +234,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void getSuggestionIconTypeForBookmarks_Default() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.BOOKMARK},
@@ -273,7 +267,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void getSuggestionIconTypeForTrendingQueries() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.TRENDS},
@@ -296,7 +289,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void refineIconNotShownForWhatYouTypedSuggestions() {
         final String typed = "Typed content";
         doReturn(typed).when(mUrlBarText).getTextWithoutAutocomplete();
@@ -312,7 +304,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void refineIconShownForRefineSuggestions() {
         final String typed = "Typed conte";
         final String refined = "Typed content";
@@ -335,7 +326,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchTabIconShownForSwitchToTabSuggestions() {
         final String tabMatch = "tab match";
         createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, tabMatch);
@@ -352,7 +342,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
@@ -373,7 +362,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
@@ -393,7 +381,6 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchSuggestions_searchQueriesCanWrapAroundWithFeatureEnabled() {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
@@ -405,17 +392,12 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void internalUrlSuggestions_doNotPresentInternalScheme() {
         mProcessor.onNativeInitialized();
-        // chrome://newtab and such should have no URL in the suggestions list.
-        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "",
-                new GURL(UrlConstants.NTP_NON_NATIVE_URL));
-        Assert.assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
-
-        // Similarly, internal (eg. chrome-intenal://) URLs should not be shown.
+        // URLs that are rejected by UrlBarData should not be presented to the User.
+        ShadowUrlBarData.sShouldShowNextUrl = false;
         createUrlSuggestion(
-                OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", new GURL(UrlConstants.DOWNLOADS_URL));
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", new GURL(JUnitTestGURLs.URL_1));
         Assert.assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
     }
 }

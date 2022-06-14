@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,8 @@ public class AutocompleteMatchBuilder {
                 .setIsSearch(true)
                 .setDisplayText("Dummy Suggestion")
                 .setDescription("Dummy Description")
-                .setUrl(new GURL("http://dummy-website.com/test"));
+                // Use either JUnitTest or actual GURL (depends on whether ShadowGURL is applied).
+                .setUrl(new GURL(JUnitTestGURLs.SEARCH_URL));
     }
 
     public AutocompleteMatchBuilder(@OmniboxSuggestionType int type) {

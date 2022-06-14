@@ -356,6 +356,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/SearchEngineLogoUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/ShadowUrlBarData.java",
     "java/src/org/chromium/chrome/browser/omnibox/SpannableAutocompleteEditTextModelUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarDataTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarMediatorUnitTest.java",
@@ -371,6 +372,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/SimpleHorizontalLayoutViewTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/SimpleVerticalLayoutViewTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/SuggestionSpannableUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/basic/BasicSuggestionProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/carousel/BaseCarouselSuggestionSelectionManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/carousel/BaseCarouselSuggestionViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderViewBinderUnitTest.java",
@@ -430,6 +432,7 @@ robolectric_library("junit") {
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
     "//url:gurl_java",
+    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

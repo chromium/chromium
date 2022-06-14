@@ -466,6 +466,7 @@ if (is_android) {
       "//components/query_tiles:query_tile_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//url:gurl_java",
+      "//url:gurl_junit_test_support",
     ]
   }
 
