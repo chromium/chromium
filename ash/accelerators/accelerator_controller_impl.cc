@@ -816,7 +816,7 @@ bool CanHandleToggleAppList(
     // toggle the AppList in that case. Check for VKEY_SHIFT because this is
     // used to show fullscreen app list.
     if (key != ui::VKEY_LWIN && key != ui::VKEY_SHIFT &&
-        key != ui::VKEY_BROWSER_SEARCH) {
+        key != ui::VKEY_BROWSER_SEARCH && key != ui::VKEY_ALL_APPLICATIONS) {
       return false;
     }
   }

@@ -1394,20 +1394,41 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
   EXPECT_FALSE(tray->IsBubbleShown());
 }
 
-TEST_F(AcceleratorControllerTest,
-       GlobalAcceleratorsToggleProductivityLauncher) {
+class GlobalAcceleratorsToggleProductivityLauncher
+    : public AcceleratorControllerTest,
+      public testing::WithParamInterface<
+          std::pair<ui::KeyboardCode, ui::Accelerator::KeyState>> {
+ public:
+  GlobalAcceleratorsToggleProductivityLauncher() {
+    std::tie(key_, key_state_) = GetParam();
+  }
+
+ protected:
+  ui::KeyboardCode key_;
+  ui::Accelerator::KeyState key_state_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlobalAcceleratorsToggleProductivityLauncher,
+    testing::Values(std::make_pair(ui::VKEY_LWIN,
+                                   ui::Accelerator::KeyState::RELEASED),
+                    std::make_pair(ui::VKEY_BROWSER_SEARCH,
+                                   ui::Accelerator::KeyState::PRESSED),
+                    std::make_pair(ui::VKEY_ALL_APPLICATIONS,
+                                   ui::Accelerator::KeyState::PRESSED)));
+
+TEST_P(GlobalAcceleratorsToggleProductivityLauncher, ToggleLauncher) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kProductivityLauncher);
 
-  // Search key opens the launcher.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
 
-  // Search key again closes the launcher.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
 }
