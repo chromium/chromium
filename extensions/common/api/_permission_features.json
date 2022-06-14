@@ -446,7 +446,7 @@
   "networking.onc": [{
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "session_types": ["kiosk.autolaunched"]
   }, {
     "channel": "stable",
@@ -493,7 +493,7 @@
   "networkingPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "mac", "win", "linux", "fuchsia"],
+    "platforms": ["chromeos", "lacros", "mac", "win", "linux", "fuchsia"],
     "allowlist": [
       // DO NOT ADD ANY MORE ENTRIES HERE.
       // networkingPrivate is being migrated to networking.onc.
