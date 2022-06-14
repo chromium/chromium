@@ -463,13 +463,12 @@ bool MessagePumpCFRunLoopBase::RunWork() {
   if (next_work_info.is_immediate()) {
     CFRunLoopSourceSignal(work_source_);
     return true;
+  } else {
+    // This adjusts the next delayed wake up time (potentially cancels an
+    // already scheduled wake up if there is no delayed work).
+    ScheduleDelayedWork(next_work_info);
+    return false;
   }
-
-  // This adjusts the next delayed wake up time (potentially cancels an already
-  // scheduled wake up if there is no delayed work).
-  ScheduleDelayedWork(next_work_info);
-
-  return false;
 }
 
 // Called from the run loop.
