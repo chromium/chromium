@@ -49,7 +49,6 @@ class EcheAppNotificationController {
  protected:
   // Exposed for testing.
   virtual void LaunchSettings();
-  virtual void LaunchLearnMore();
   virtual void LaunchTryAgain();
 
  private:

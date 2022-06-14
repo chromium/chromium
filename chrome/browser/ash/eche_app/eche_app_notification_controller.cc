@@ -53,13 +53,6 @@ void EcheAppNotificationController::LaunchSettings() {
       profile_, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
 }
 
-void EcheAppNotificationController::LaunchLearnMore() {
-  // TODO(crbug.com/1241352): Wait for UX confirm.
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kEcheAppLearnMoreUrl),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
-}
-
 void EcheAppNotificationController::LaunchTryAgain() {
   relaunch_callback_.Run(profile_);
 }
@@ -75,9 +68,6 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
     if (web_type == mojom::WebNotificationType::CONNECTION_FAILED ||
         web_type == mojom::WebNotificationType::CONNECTION_LOST) {
       message_center::RichNotificationData rich_notification_data;
-      rich_notification_data.buttons.push_back(
-          message_center::ButtonInfo(l10n_util::GetStringUTF16(
-              IDS_ECHE_APP_NOTIFICATION_LEARN_MORE_BUTTON)));
       rich_notification_data.buttons.push_back(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON)));
@@ -117,8 +107,6 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
 void EcheAppNotificationController::ShowScreenLockNotification(
     const std::u16string& title) {
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE)));
   rich_notification_data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON)));
   ShowNotification(CreateNotification(
@@ -171,16 +159,10 @@ void EcheAppNotificationController::NotificationDelegate::Click(
 
   if (notification_id_ == kEcheAppScreenLockNotifierId) {
     if (*button_index == 0) {
-      notification_controller_->LaunchLearnMore();
-    } else {
-      DCHECK_EQ(1, *button_index);
       notification_controller_->LaunchSettings();
     }
   } else if (notification_id_ == kEcheAppRetryConnectionNotifierId) {
     if (*button_index == 0) {
-      notification_controller_->LaunchLearnMore();
-    } else {
-      DCHECK_EQ(1, *button_index);
       notification_controller_->LaunchTryAgain();
     }
   } else if (notification_id_ == kEcheAppInactivityNotifierId) {
