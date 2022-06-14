@@ -263,9 +263,11 @@ class WidgetActivationWaiter : public WidgetObserver {
   // views::WidgetObserver override:
   void OnWidgetActivationChanged(Widget* widget, bool active) override;
 
-  base::RunLoop run_loop_;
   bool observed_;
   bool active_;
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Use in tests to wait for a widget to be destroyed.
@@ -286,8 +288,8 @@ class WidgetDestroyedWaiter : public WidgetObserver {
   // views::WidgetObserver
   void OnWidgetDestroyed(Widget* widget) override;
 
-  raw_ptr<Widget> widget_;
   base::RunLoop run_loop_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Helper class to wait for a Widget to become visible. This will add a failure

@@ -217,7 +217,7 @@ WidgetActivationWaiter::WidgetActivationWaiter(Widget* widget, bool active)
     observed_ = true;
     return;
   }
-  widget->AddObserver(this);
+  widget_observation_.Observe(widget);
 }
 
 WidgetActivationWaiter::~WidgetActivationWaiter() = default;
@@ -233,27 +233,23 @@ void WidgetActivationWaiter::OnWidgetActivationChanged(Widget* widget,
     return;
 
   observed_ = true;
-  widget->RemoveObserver(this);
+  widget_observation_.Reset();
   if (run_loop_.running())
     run_loop_.Quit();
 }
 
-WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) : widget_(widget) {
-  widget->AddObserver(this);
+WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) {
+  widget_observation_.Observe(widget);
 }
 
-WidgetDestroyedWaiter::~WidgetDestroyedWaiter() {
-  if (widget_)
-    widget_->RemoveObserver(this);
-}
+WidgetDestroyedWaiter::~WidgetDestroyedWaiter() = default;
 
 void WidgetDestroyedWaiter::Wait() {
   run_loop_.Run();
 }
 
 void WidgetDestroyedWaiter::OnWidgetDestroyed(Widget* widget) {
-  widget->RemoveObserver(this);
-  widget_ = nullptr;
+  widget_observation_.Reset();
   run_loop_.Quit();
 }
 
