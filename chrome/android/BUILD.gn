@@ -1630,7 +1630,6 @@ android_library("chrome_test_java") {
     "//components/page_info/android:page_info_action_enum_java",
     "//components/page_info/core:proto_java",
     "//components/paint_preview/player/android:java",
-    "//components/paint_preview/player/android:javatests",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/payments/content/android:java",
     "//components/payments/content/android:javatests",
@@ -3157,6 +3156,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//chrome/browser/ui/messages/android:unit_device_javatests",
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
+    "//components/paint_preview/player/android:javatests",
     "//components/signin/public/android:javatests",
   ]
   data_deps =
