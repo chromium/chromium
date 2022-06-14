@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -329,7 +330,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             NativePageHost nativePageHost, Tab tab, String url,
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
-            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier) {
+            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier,
+            CrowButtonDelegate crowButtonDelegate) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -407,7 +409,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
-                bottomSheetController, shareDelegateSupplier, url);
+                bottomSheetController, shareDelegateSupplier, crowButtonDelegate, url);
 
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -459,14 +461,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, NewTabPageUma uma, boolean isInNightMode,
             BottomSheetController bottomSheetController,
-            Supplier<ShareDelegate> shareDelegateSupplier, String url) {
+            Supplier<ShareDelegate> shareDelegateSupplier, CrowButtonDelegate crowButtonDelegate,
+            String url) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
         LayoutInflater inflater = LayoutInflater.from(activity);
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
         FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
-                mNewTabPageManager.getNavigationDelegate(), new BookmarkBridge(profile)) {
+                mNewTabPageManager.getNavigationDelegate(), new BookmarkBridge(profile),
+                crowButtonDelegate) {
             @Override
             public void openHelpPage() {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);

@@ -146,8 +146,10 @@ enum class FeedUserActionType {
   kShowUnfollowFailedSnackbar = 51,
   // User tapped to go to feed using the snackbar 'go to feed' option.
   kTappedGoToFeedOnSnackbar = 52,
+  // User tapped the Crow button in the context menu.
+  kTappedCrowButton = 53,
 
-  kMaxValue = kTappedGoToFeedOnSnackbar,
+  kMaxValue = kTappedCrowButton,
 };
 
 // For testing and debugging only.

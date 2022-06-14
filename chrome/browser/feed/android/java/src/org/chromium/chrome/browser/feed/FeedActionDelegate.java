@@ -44,6 +44,11 @@ public interface FeedActionDelegate {
      */
     void addToReadingList(String title, String url);
 
+    /**
+     * Opens the Crow page for the url.
+     */
+    void openCrow(String url);
+
     //
     // Optional methods for handing events.
     //
