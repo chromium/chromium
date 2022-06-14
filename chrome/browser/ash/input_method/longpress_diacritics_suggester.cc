@@ -119,6 +119,7 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
         new_index =
             (code == kNextDomCode) ? 0 : GetCurrentShownDiacritics().size() - 1;
       } else {
+        SetButtonHighlighted(*highlighted_index_, false);
         if (code == kNextDomCode) {
           new_index =
               (*highlighted_index_ + 1) % GetCurrentShownDiacritics().size();
@@ -128,7 +129,8 @@ SuggestionStatus LongpressDiacriticsSuggester::HandleKeyEvent(
                           : GetCurrentShownDiacritics().size() - 1;
         }
       }
-      SetButtonHighlighted(new_index);
+      SetButtonHighlighted(new_index, true);
+      highlighted_index_ = new_index;
       return SuggestionStatus::kBrowsing;
     default:
       return SuggestionStatus::kNotHandled;
@@ -214,7 +216,8 @@ LongpressDiacriticsSuggester::GetSuggestions() {
   return {};
 }
 
-void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index) {
+void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index,
+                                                        bool highlighted) {
   if (!focused_context_id_.has_value()) {
     LOG(ERROR) << "suggest: Failed to set button highlighted. No context id.";
     return;
@@ -223,13 +226,11 @@ void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index) {
   suggestion_handler_->SetButtonHighlighted(
       *focused_context_id_,
       CreateButtonFor(index, GetCurrentShownDiacritics()[index]),
-      /* highlighted=*/true, &error);
+      /* highlighted=*/highlighted, &error);
 
   if (!error.empty()) {
     LOG(ERROR) << "suggest: Failed to set button highlighted. " << error;
   }
-
-  highlighted_index_ = index;
 }
 
 std::vector<std::u16string>

@@ -72,7 +72,7 @@ class LongpressDiacriticsSuggester : public Suggester {
   std::vector<ime::TextSuggestion> GetSuggestions() override;
 
  private:
-  void SetButtonHighlighted(size_t index);
+  void SetButtonHighlighted(size_t index, bool highlighted);
   void Reset();
   std::vector<std::u16string> GetCurrentShownDiacritics();
   SuggestionHandlerInterface* const suggestion_handler_;
