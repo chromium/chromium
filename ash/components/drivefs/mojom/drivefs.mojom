@@ -302,7 +302,7 @@ struct DialogReason {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -359,7 +359,13 @@ struct FileMetadata {
     kDisabled,
   };
 
+  // Is it currently possible to pin this item.
   [MinVersion=4] CanPinStatus can_pin;
+
+  // Id of the associated Cello item. Useful for interacting with Drive API
+  // methods which require the server side file id, such as
+  // DriveAPIService::UpdateResource.
+  [MinVersion=5] string? item_id;
 };
 
 struct ImageMetadata {
