@@ -299,6 +299,9 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         // Ensure in any case we don't crop beyond the bounds of the screenshot.
         startY = Math.max(startY, 0);
         endY = Math.min(endY, mFullBitmap.getHeight() - 1);
+        if (endY <= startY) {
+            return null;
+        }
 
         Bitmap cropped =
                 Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);
