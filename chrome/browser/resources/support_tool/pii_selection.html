@@ -38,7 +38,12 @@
   }
 
   cr-expand-button {
+    background-color: var(--cr-card-background-color);
     height: var(--cr-expand-button-icon-size, 20px);
+  }
+
+  cr-checkbox {
+    background-color: var(--cr-card-background-color);
   }
 
   .pii-item-collapse {
@@ -49,7 +54,6 @@
   }
 
   .pii-details {
-    background-color: var(--cr-card-background-color);
     border: none;
     border-radius: var(--cr-card-border-radius, 4px);
     padding-bottom: 2px;
@@ -75,10 +79,13 @@
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]">
       Automatically remove most personal information
     </cr-radio-button>
-    <div id="privacy-disclaimer">
-      Some personal information may still be included in the data. Make sure to
-      review the exported files. 
-    </div>
+    <iron-collapse id="privacy-disclaimer"
+        opened$="[[showDisclaimer_(selectedRadioButton_)]]">
+      <div>
+        Some personal information may still be included in the data. Make sure
+        to review the exported files. 
+      </div>
+    </iron-collapse>
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]">
       Manually review personal information
     </cr-radio-button>

@@ -103,6 +103,10 @@ export class PIISelectionElement extends PolymerElement {
       this.showPIISelection_ = true;
     }
   }
+
+  private showDisclaimer_(selectedButton: PiiRadioButtons): boolean {
+    return (selectedButton === PiiRadioButtons.INCLUDE_NONE);
+  }
 }
 
 declare global {
