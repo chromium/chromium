@@ -23,6 +23,7 @@
 namespace apps {
 
 class AppServiceMojomImpl;
+class AppServiceProxyPreferredAppsTest;
 
 // The implementation of the preferred apps to manage the PreferredAppsList.
 class PreferredAppsImpl {
@@ -85,6 +86,7 @@ class PreferredAppsImpl {
 
  private:
   friend AppServiceMojomImpl;
+  friend class AppServiceProxyPreferredAppsTest;
 
   // Initialize the preferred apps from disk.
   void InitializePreferredApps();
