@@ -1034,7 +1034,6 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
     case WGPUFeatureName_ChromiumExperimentalDp4a:
     case WGPUFeatureName_DawnMultiPlanarFormats:
       return allow_unsafe_apis_;
-    case WGPUFeatureName_Depth24UnormStencil8:
     case WGPUFeatureName_Depth32FloatStencil8:
     case WGPUFeatureName_TextureCompressionBC:
     case WGPUFeatureName_TextureCompressionETC2:

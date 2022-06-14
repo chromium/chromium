@@ -168,7 +168,6 @@ TexelBlockInfo GetTexelBlockInfoForCopy(WGPUTextureFormat format,
 
     case WGPUTextureAspect_StencilOnly:
       switch (format) {
-        case WGPUTextureFormat_Depth24UnormStencil8:
         case WGPUTextureFormat_Depth24PlusStencil8:
         case WGPUTextureFormat_Depth32FloatStencil8:
           return {1u, 1u, 1u};

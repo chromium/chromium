@@ -38,9 +38,6 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
 
   for (WGPUFeatureName f : feature_names) {
     switch (f) {
-      case WGPUFeatureName_Depth24UnormStencil8:
-        features->AddFeatureName("depth24unorm-stencil8");
-        break;
       case WGPUFeatureName_Depth32FloatStencil8:
         features->AddFeatureName("depth32float-stencil8");
         break;

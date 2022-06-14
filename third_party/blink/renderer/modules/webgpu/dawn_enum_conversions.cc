@@ -237,8 +237,6 @@ WGPUTextureFormat AsDawnEnum(const V8GPUTextureFormat& webgpu_enum) {
       return WGPUTextureFormat_Depth24Plus;
     case V8GPUTextureFormat::Enum::kDepth24PlusStencil8:
       return WGPUTextureFormat_Depth24PlusStencil8;
-    case V8GPUTextureFormat::Enum::kDepth24UnormStencil8:
-      return WGPUTextureFormat_Depth24UnormStencil8;
     case V8GPUTextureFormat::Enum::kDepth16Unorm:
       return WGPUTextureFormat_Depth16Unorm;
     case V8GPUTextureFormat::Enum::kStencil8:
@@ -449,8 +447,6 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_DawnShaderFloat16;
     case V8GPUFeatureName::Enum::kDepthClamping:
       return WGPUFeatureName_DepthClamping;
-    case V8GPUFeatureName::Enum::kDepth24UnormStencil8:
-      return WGPUFeatureName_Depth24UnormStencil8;
     case V8GPUFeatureName::Enum::kDepth32FloatStencil8:
       return WGPUFeatureName_Depth32FloatStencil8;
     case V8GPUFeatureName::Enum::kIndirectFirstInstance:
