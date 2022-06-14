@@ -142,6 +142,9 @@ int main(int argc, char** argv) {
     if (res == VideoDecoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;
+    } else if (res == VideoDecoder::kError) {
+      LOG(ERROR) << "Unable to decode next frame.";
+      break;
     }
 
     if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
