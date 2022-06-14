@@ -33,7 +33,9 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -2811,6 +2813,57 @@ TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange) {
 
     EXPECT_FALSE(target->StyleForPositionFallback(1));
   }
+}
+
+TEST_F(StyleResolverTest,
+       PseudoElementWithAnimationAndOriginatingElementStyleChange) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          width:100px;
+          height:100px;
+          background:red;
+        }
+        div:before {
+          content:"blahblahblah";
+          background:blue;
+          transition:all 1s;
+        }
+        .content:before {
+          content:"blahblah";
+        }
+        .color:before {
+          background:red;
+        }
+      </style>
+      <div class="content color" id="target"></div>
+    )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* element = GetDocument().getElementById("target");
+  ASSERT_TRUE(element);
+  auto* before = element->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+
+  // Remove the color class to start an animation.
+  NonThrowableExceptionState exception_state;
+  element->classList().remove({"color"}, exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(before->GetElementAnimations());
+
+  // Trigger a style invalidation for the transition animation and remove the
+  // class from the originating element. The latter should reset the animation
+  // bit.
+  before->SetNeedsAnimationStyleRecalc();
+  EXPECT_TRUE(before->GetElementAnimations()->IsAnimationStyleChange());
+  element->classList().remove({"content"}, exception_state);
+  EXPECT_TRUE(element->NeedsStyleRecalc());
+
+  // Element::RecalcOwnStyle should detect that the style change on the
+  // "target" ancestor node requires re-computing the base style for the
+  // pseudo element and skip the optimization for animation style change.
+  UpdateAllLifecyclePhasesForTest();
 }
 
 }  // namespace blink
