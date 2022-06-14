@@ -517,6 +517,32 @@ void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
   }
 }
 
+void MigratePinyinAndZhuyinSettings(PrefService* prefs,
+                                    const std::string& engine_id) {
+  // We are using legacy pref keys for pinyin and zhuyin. To get rid of them, we
+  // need to write existing settings under the correct pref keys as the first
+  // step.
+  // TODO(b/175085612): Remove this function once we have migrated from the
+  // legacy pref keys.
+  if (engine_id != "zh-t-i0-pinyin" && engine_id != "zh-hant-t-i0-und")
+    return;
+
+  const base::Value& all_input_method_pref =
+      *prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
+
+  // Check if the settings are already migrated.
+  if (all_input_method_pref.FindDictKey(engine_id))
+    return;
+
+  const base::Value* existing_pref_or_null = all_input_method_pref.FindDictKey(
+      engine_id == "zh-t-i0-pinyin" ? "pinyin" : "zhuyin");
+  if (existing_pref_or_null) {
+    DictionaryPrefUpdate update(prefs,
+                                ::prefs::kLanguageInputMethodSpecificSettings);
+    update->SetPath(engine_id, existing_pref_or_null->Clone());
+  }
+}
+
 }  // namespace
 
 bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
@@ -603,6 +629,9 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
 
   ime::mojom::InputMethodSettingsPtr settings =
       CreateSettingsFromPrefs(*prefs_, engine_id);
+
+  MigratePinyinAndZhuyinSettings(prefs_, engine_id);
+
   connection_factory_->ConnectToInputMethod(
       engine_id, input_method_.BindNewEndpointAndPassReceiver(),
       std::move(input_method_host), std::move(settings),
