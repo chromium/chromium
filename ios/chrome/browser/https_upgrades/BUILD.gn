@@ -64,8 +64,8 @@ source_set("eg_test_support+eg2") {
   testonly = true
 
   sources = [
-    "https_only_mode_app_interface.h",
-    "https_only_mode_app_interface_stub.mm",
+    "https_upgrade_app_interface.h",
+    "https_upgrade_app_interface_stub.mm",
   ]
 
   deps = [
@@ -82,8 +82,8 @@ source_set("eg_app_support+eg2") {
   testonly = true
 
   sources = [
-    "https_only_mode_app_interface.h",
-    "https_only_mode_app_interface.mm",
+    "https_upgrade_app_interface.h",
+    "https_upgrade_app_interface.mm",
   ]
 
   deps = [
@@ -109,7 +109,11 @@ source_set("eg2_tests") {
   ]
   testonly = true
 
-  sources = [ "https_only_mode_egtest.mm" ]
+  sources = [
+    "https_only_mode_egtest.mm",
+    "https_upgrade_test_helper.h",
+    "https_upgrade_test_helper.mm",
+  ]
 
   deps = [
     ":eg_test_support+eg2",

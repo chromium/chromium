@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_ONLY_MODE_APP_INTERFACE_H_
-#define IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_ONLY_MODE_APP_INTERFACE_H_
+#ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_APP_INTERFACE_H_
+#define IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_APP_INTERFACE_H_
 
 #import <Foundation/Foundation.h>
 
-// The app interface for HTTPS-Only mode tests.
-@interface HttpsOnlyModeAppInterface : NSObject
+// The app interface for HTTPS upgrade tests.
+@interface HttpsUpgradeAppInterface : NSObject
 
 + (void)setHTTPSPortForTesting:(int)HTTPSPort useFakeHTTPS:(bool)useFakeHTTPS;
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds;
@@ -17,4 +17,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_ONLY_MODE_APP_INTERFACE_H_
+#endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_APP_INTERFACE_H_
