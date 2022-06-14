@@ -221,7 +221,9 @@ enum class DownloadShelfContextMenuAction {
   kDeepScanClicked = 31,
   kBypassDeepScanningEnabled = 32,
   kBypassDeepScanningClicked = 33,
-  kMaxValue = kBypassDeepScanningClicked
+  kReviewEnabled = 34,
+  kReviewClicked = 35,
+  kMaxValue = kReviewClicked
 };
 
 DownloadShelfContextMenuAction DownloadCommandToShelfAction(

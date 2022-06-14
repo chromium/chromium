@@ -51,8 +51,7 @@ void DownloadShelfContextMenu::RecordCommandsEnabled(
     return;
   }
 
-  for (int command_int = 1;
-       command_int < DownloadCommands::Command::BYPASS_DEEP_SCANNING;
+  for (int command_int = 1; command_int < DownloadCommands::Command::REVIEW;
        command_int++) {
     if (model->GetIndexOfCommandId(command_int) != -1 &&
         IsCommandIdEnabled(command_int)) {
@@ -205,6 +204,9 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
       break;
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       id = IDS_OPEN_DOWNLOAD_NOW;
+      break;
+    case DownloadCommands::REVIEW:
+      id = IDS_REVIEW_DOWNLOAD;
       break;
     case DownloadCommands::MAX:
       NOTREACHED();

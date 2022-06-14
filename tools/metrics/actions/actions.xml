@@ -7675,6 +7675,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DownloadNotification.Button_Review">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User pushes &quot;Review&quot; button on download notification to trigger
+    the enterprise download review dialog.
+  </description>
+</action>
+
 <action name="DownloadNotification.Button_ShowInFolder">
   <owner>yoshiki@chromium.org</owner>
   <description>

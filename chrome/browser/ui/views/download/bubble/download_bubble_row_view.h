@@ -112,6 +112,7 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<views::MdTextButton> scan_button_ = nullptr;
   raw_ptr<views::MdTextButton> open_now_button_ = nullptr;
   raw_ptr<views::MdTextButton> resume_button_ = nullptr;
+  raw_ptr<views::MdTextButton> review_button_ = nullptr;
   raw_ptr<views::FlexLayoutView> main_button_holder_ = nullptr;
 
   // The progress bar for in-progress downloads.

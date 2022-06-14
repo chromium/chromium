@@ -35,6 +35,7 @@ class DownloadCommands {
     COPY_TO_CLIPBOARD,         // Copy the contents to the clipboard.
     DEEP_SCAN,                 // Send file to Safe Browsing for deep scanning.
     BYPASS_DEEP_SCANNING,      // Bypass the prompt to deep scan.
+    REVIEW,                    // Show enterprise download review dialog.
     MAX
   };
 

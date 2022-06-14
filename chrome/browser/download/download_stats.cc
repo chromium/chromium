@@ -165,5 +165,8 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
       return clicked
                  ? DownloadShelfContextMenuAction::kBypassDeepScanningClicked
                  : DownloadShelfContextMenuAction::kBypassDeepScanningEnabled;
+    case DownloadCommands::Command::REVIEW:
+      return clicked ? DownloadShelfContextMenuAction::kReviewClicked
+                     : DownloadShelfContextMenuAction::kReviewEnabled;
   }
 }

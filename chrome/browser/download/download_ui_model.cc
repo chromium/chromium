@@ -582,6 +582,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::LEARN_MORE_MIXED_CONTENT:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
       return true;
   }
   NOTREACHED();
@@ -611,6 +612,7 @@ bool DownloadUIModel::IsCommandChecked(
     case DownloadCommands::COPY_TO_CLIPBOARD:
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
       return false;
   }
   return false;
@@ -662,6 +664,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::DEEP_SCAN:
       break;
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::REVIEW:
       break;
   }
 }
@@ -729,11 +732,20 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
                  l10n_util::GetStringUTF16(
                      IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG))
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity);
-    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
-      return DownloadUIModel::BubbleUIInfo(
-                 l10n_util::GetStringUTF16(
-                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK))
-          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity);
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
+      if (enterprise_connectors::ShouldPromptReviewForDownload(
+              profile(), GetDangerType())) {
+        return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorAlertHighSeverity)
+            .AddPrimaryButton(DownloadCommands::Command::REVIEW);
+      } else {
+        return DownloadUIModel::BubbleUIInfo(
+                   l10n_util::GetStringUTF16(
+                       IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_BLOCK))
+            .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity);
+      }
+    }
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
@@ -843,6 +855,28 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
     case download::DownloadItem::MixedContentStatus::VALIDATED:
     case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
       break;
+  }
+
+  if (enterprise_connectors::ShouldPromptReviewForDownload(profile(),
+                                                           GetDangerType())) {
+    switch (GetDangerType()) {
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+        return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorAlertHighSeverity)
+            .AddPrimaryButton(DownloadCommands::Command::REVIEW);
+      case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+        return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorAlertMediumSeverity)
+            .AddPrimaryButton(DownloadCommands::Command::REVIEW);
+      case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+        return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
+            .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+            .AddPrimaryButton(DownloadCommands::Command::REVIEW);
+      default:
+        break;
+    }
   }
 
   switch (GetDangerType()) {

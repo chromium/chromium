@@ -27923,6 +27923,8 @@ Called by update_document_policy_enum.py.-->
   <int value="31" label="Deep scan clicked"/>
   <int value="32" label="Bypass deep scanning enabled"/>
   <int value="33" label="Bypass deep scanning clicked"/>
+  <int value="34" label="Review enabled"/>
+  <int value="35" label="Review clicked"/>
 </enum>
 
 <enum name="DownloadSource">

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
@@ -407,6 +408,10 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::KEEP:
     case DownloadCommands::DISCARD:
       ProcessDownloadWarningButtonPress(model, command);
+      break;
+    case DownloadCommands::REVIEW:
+      model->ReviewScanningVerdict(
+          browser_->tab_strip_model()->GetActiveWebContents());
       break;
     case DownloadCommands::CANCEL:
       RemoveContentIdFromPartialView(model->GetContentId());
