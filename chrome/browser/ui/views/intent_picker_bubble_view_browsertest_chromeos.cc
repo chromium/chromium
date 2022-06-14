@@ -105,22 +105,6 @@ class FakeIconLoader : public apps::IconLoader {
     std::move(callback).Run(std::move(iv));
     return nullptr;
   }
-
-  std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr mojom_icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override {
-    auto icon_key = apps::ConvertMojomIconKeyToIconKey(mojom_icon_key);
-    return LoadIconFromIconKey(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id, *icon_key,
-        apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-        allow_placeholder_icon,
-        apps::IconValueToMojomIconValueCallback(std::move(callback)));
-  }
 };
 
 // Waits for a particular widget to be destroyed.

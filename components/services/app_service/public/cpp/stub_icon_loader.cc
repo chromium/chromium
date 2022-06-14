@@ -46,28 +46,6 @@ std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
   return nullptr;
 }
 
-std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::IconKeyPtr icon_key,
-    apps::mojom::IconType icon_type,
-    int32_t size_hint_in_dip,
-    bool allow_placeholder_icon,
-    apps::mojom::Publisher::LoadIconCallback callback) {
-  num_load_calls_++;
-  auto iter = timelines_by_app_id_.find(app_id);
-  if (iter != timelines_by_app_id_.end()) {
-    auto icon_value = apps::mojom::IconValue::New();
-    icon_value->icon_type = icon_type;
-    icon_value->uncompressed =
-        gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
-    std::move(callback).Run(std::move(icon_value));
-  } else {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-  }
-  return nullptr;
-}
-
 int StubIconLoader::NumLoadIconFromIconKeyCalls() {
   return num_load_calls_;
 }

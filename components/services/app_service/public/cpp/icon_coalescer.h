@@ -63,16 +63,6 @@ class IconCoalescer : public IconLoader {
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
 
-  // TODO(crbug.com/1253250): Will be removed soon.
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override;
-
  private:
   class RefCountedReleaser;
 
@@ -82,10 +72,6 @@ class IconCoalescer : public IconLoader {
   void OnLoadIcon(IconLoader::Key key,
                   uint64_t sequence_number,
                   IconValuePtr icon_value);
-
-  void OnLoadMojomIcon(IconLoader::Key key,
-                       uint64_t sequence_number,
-                       apps::mojom::IconValuePtr mojom_icon_value);
 
   raw_ptr<IconLoader> wrapped_loader_;
 

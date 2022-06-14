@@ -15,8 +15,6 @@
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -99,16 +97,6 @@ class IconCache : public IconLoader {
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
 
-  // TODO(crbug.com/1253250): Will be removed soon.
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override;
-
   // A hint that now is a good time to garbage-collect any icons that are not
   // actively held.
   void SweepReleasedIcons();
@@ -125,7 +113,6 @@ class IconCache : public IconLoader {
     Value();
 
     IconValuePtr AsIconValue(IconType icon_type);
-    apps::mojom::IconValuePtr AsIconValue(apps::mojom::IconType icon_type);
   };
 
   void Update(const IconLoader::Key& key, const IconValue& icon_value);
@@ -133,10 +120,6 @@ class IconCache : public IconLoader {
                   apps::LoadIconCallback callback,
                   IconValuePtr icon_value);
 
-  // TODO(crbug.com/1253250): Will be removed soon.
-  void OnLoadMojomIcon(IconLoader::Key,
-                       apps::mojom::Publisher::LoadIconCallback,
-                       apps::mojom::IconValuePtr);
   void OnRelease(IconLoader::Key);
 
   std::map<IconLoader::Key, Value> map_;
