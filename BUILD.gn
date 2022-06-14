@@ -1687,9 +1687,6 @@ if (enable_js_type_check) {
         "ui/file_manager:closure_compile",
       ]
     }
-    if (is_android) {
-      data_deps += [ "components/offline_pages/resources:closure_compile" ]
-    }
   }
 }
 
