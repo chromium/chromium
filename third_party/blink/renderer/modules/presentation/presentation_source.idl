@@ -8,7 +8,8 @@
 // Indicates the preferred tradeoff between low latency and smooth streaming.
 // The actual behavior is implementation specific. Only applies to mirroring
 // sources.
-[RuntimeEnabled=SiteInitiatedMirroring]
+// TODO(crbug.com/600726): Set RuntimeEnabled here if support is ever added for
+// enums (currently it is a no-op).
 enum CaptureLatency {
   "default",
   // Having a smooth stream is prioritized over having a low latency.
@@ -19,7 +20,8 @@ enum CaptureLatency {
 
 // Indicates where the audio playback should occur. Only applies to mirroring
 // sources.
-[RuntimeEnabled=SiteInitiatedMirroring]
+// TODO(crbug.com/600726): Set RuntimeEnabled here if support is ever added for
+// enums (currently it is a no-op).
 enum AudioPlaybackDestination {
   "receiver",
   "controller",
