@@ -3806,8 +3806,10 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
     const ComputedStyle& new_style) {
   if (!new_style.IsContainerForSizeContainerQueries())
     return nullptr;
-  if (new_style.InsideFragmentationContextWithNondeterministicEngine())
+  if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
+      element.GetDocument().Printing()) {
     return nullptr;
+  }
   // If we're switching to display:contents, any existing results cached on
   // ContainerQueryEvaluator are no longer valid, since any style recalc
   // based on that information would *not* be corrected by a subsequent
@@ -5716,9 +5718,13 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
   // block of the table is on the outside of the fragmentation context, we're
   // still going to fall back to legacy.
 
+  Element* container_recalc_root =
+      GetDocument().GetStyleEngine().GetContainerForContainerStyleRecalc();
+
   Element* parent;
   Element* legacy_root;
-  for (legacy_root = this;; legacy_root = parent) {
+  for (legacy_root = this; legacy_root != container_recalc_root;
+       legacy_root = parent) {
     parent =
         DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*legacy_root));
 
