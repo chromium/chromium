@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -25,8 +24,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/vm_shutdown_observer.h"
 #include "chrome/browser/ash/vm_starting_observer.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -35,7 +32,6 @@
 #include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

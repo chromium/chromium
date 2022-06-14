@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 class Profile;
 

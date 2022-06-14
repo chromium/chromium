@@ -70,6 +70,8 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_device_handler.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
