@@ -180,7 +180,13 @@ class BFCachePolicyBrowserTest
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
+// TODO(https://crbug.com/1335514): Flaky.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CacheFlushed DISABLED_CacheFlushed
+#else
+#define MAYBE_CacheFlushed CacheFlushed
+#endif
+IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, MAYBE_CacheFlushed) {
   memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
   const std::vector<std::string> hostnames{"a.com", "b.com", "c.com", "d.com"};
   std::vector<content::RenderFrameHostWrapper> render_frame_hosts;
