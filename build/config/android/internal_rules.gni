@@ -3531,6 +3531,7 @@ if (enable_java_templates) {
                                "input_jars_paths",
                                "low_classpath_priority",
                                "main_class",
+                               "mergeable_android_manifests",
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",
