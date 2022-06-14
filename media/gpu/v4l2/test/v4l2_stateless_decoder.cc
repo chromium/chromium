@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
       break;
     } else if (res == VideoDecoder::kError) {
       LOG(ERROR) << "Unable to decode next frame.";
-      break;
+      return EXIT_FAILURE;
     }
 
     if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
