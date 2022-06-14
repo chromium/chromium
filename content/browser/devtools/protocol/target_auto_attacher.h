@@ -18,7 +18,6 @@ class DevToolsRendererChannel;
 class NavigationHandle;
 class NavigationRequest;
 class NavigationThrottle;
-class RenderFrameDevToolsAgentHost;
 
 namespace protocol {
 
@@ -62,9 +61,8 @@ class TargetAutoAttacher {
       NavigationHandle* navigation_handle,
       std::vector<std::unique_ptr<NavigationThrottle>>* throttles);
 
-  scoped_refptr<RenderFrameDevToolsAgentHost> HandleNavigation(
-      NavigationRequest* navigation_request,
-      bool wait_for_debugger_on_start);
+  DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
+                                       bool wait_for_debugger_on_start);
 
  protected:
   using Hosts = base::flat_set<scoped_refptr<DevToolsAgentHost>>;
@@ -76,7 +74,7 @@ class TargetAutoAttacher {
 
   virtual void UpdateAutoAttach(base::OnceClosure callback);
 
-  void DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
+  bool DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
   void DispatchAutoDetach(DevToolsAgentHost* host);
   void DispatchSetAttachedTargetsOfType(
       const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,

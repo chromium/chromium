@@ -343,19 +343,11 @@ class TargetHandler::ResponseThrottle : public TargetHandler::Throttle {
   ThrottleCheckResult MaybeThrottle() {
     if (target_handler_ && auto_attacher()) {
       NavigationRequest* request = NavigationRequest::From(navigation_handle());
-      const bool wait_for_debugger_on_start =
+      bool wait_for_debugger_on_start =
           target_handler_->ShouldWaitForDebuggerOnStart(request);
-      scoped_refptr<RenderFrameDevToolsAgentHost> new_host =
-          auto_attacher()->HandleNavigation(request,
-                                            wait_for_debugger_on_start);
-      if (new_host &&
-          target_handler_->AutoAttach(auto_attacher(), new_host.get(),
-                                      wait_for_debugger_on_start) &&
-          wait_for_debugger_on_start) {
-        SetThrottledAgentHost(new_host.get());
-      } else {
-        SetThrottledAgentHost(nullptr);
-      }
+      DevToolsAgentHost* new_host = auto_attacher()->AutoAttachToFrame(
+          request, wait_for_debugger_on_start);
+      SetThrottledAgentHost(wait_for_debugger_on_start ? new_host : nullptr);
     }
     is_deferring_ = !!agent_host_;
     return is_deferring_ ? DEFER : PROCEED;
