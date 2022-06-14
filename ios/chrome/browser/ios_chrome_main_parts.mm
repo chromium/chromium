@@ -28,6 +28,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_service.h"
@@ -255,9 +256,9 @@ void IOSChromeMainParts::PreCreateThreads() {
     if (malloc_intercepted) {
       // Start heap profiling as early as possible so it can start recording
       // memory allocations. Requires the allocator shim to be enabled.
-      heap_profiler_controller_ =
-          std::make_unique<HeapProfilerController>(channel);
-      heap_profiler_controller_->Start();
+      heap_profiler_controller_ = std::make_unique<HeapProfilerController>(
+          channel, metrics::CallStackProfileParams::Process::kBrowser);
+      heap_profiler_controller_->StartIfEnabled();
     }
   }
 #endif

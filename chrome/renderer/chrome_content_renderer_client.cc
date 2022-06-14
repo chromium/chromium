@@ -83,8 +83,10 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/feed/buildflags.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history_clusters/core/config.h"
 #include "components/metrics/call_stack_profile_builder.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
@@ -500,7 +502,9 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
     // This doesn't work in single-process mode.
-    if (ThreadProfiler::ShouldCollectProfilesForChildProcess()) {
+    if (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
+        HeapProfilerController::IsProfilingEnabled(
+            metrics::CallStackProfileParams::Process::kRenderer)) {
       ThreadProfiler::SetMainThreadTaskRunner(
           base::ThreadTaskRunnerHandle::Get());
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;

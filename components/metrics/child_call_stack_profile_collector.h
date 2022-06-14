@@ -40,13 +40,9 @@ class SampledProfile;
 // at the time the profiler is created. Otherwise the CallStackProfileCollector
 // can be used directly.
 //
-// To use, create as a leaky lazy instance:
-//
-//   base::LazyInstance<metrics::ChildCallStackProfileCollector>::Leaky
-//       g_call_stack_profile_collector = LAZY_INSTANCE_INITIALIZER;
-//
-// Then, invoke Collect() in CallStackProfileBuilder::OnProfileCompleted() to
-// collect a profile.
+// CallStackProfileBuilder owns and manages a ChildCallStackProfileCollector. It
+// invokes Collect() in CallStackProfileBuilder::OnProfileCompleted() to collect
+// a profile.
 //
 // When the mojo InterfaceProvider becomes available, provide it via
 // SetParentProfileCollector().

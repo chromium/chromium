@@ -10,6 +10,7 @@ static_library("gpu") {
   deps = [
     "//build:chromeos_buildflags",
     "//chrome/common/profiler",
+    "//components/heap_profiling/in_process",
     "//components/metrics:child_call_stack_profile_builder",
     "//content/public/child",
     "//content/public/common",

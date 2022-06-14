@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/components/cdm_factory_daemon",
   "+components/arc/mojom",
   "+components/metrics",
+  "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+content/public/child",
   "+content/public/gpu",
   "+media/cdm",

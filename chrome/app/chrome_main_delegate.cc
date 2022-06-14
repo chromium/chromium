@@ -54,6 +54,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
@@ -749,11 +750,12 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 
   // Start heap profiling as early as possible so it can start recording
   // memory allocations.
-  if (is_browser_process) {
-    heap_profiler_controller_ =
-        std::make_unique<HeapProfilerController>(channel);
-    heap_profiler_controller_->Start();
+  heap_profiler_controller_ = std::make_unique<HeapProfilerController>(
+      channel,
+      GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
+  heap_profiler_controller_->StartIfEnabled();
 
+  if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::ConfigureSwap();
     ash::InitializeKstaled();

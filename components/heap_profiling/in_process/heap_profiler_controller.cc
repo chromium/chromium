@@ -6,9 +6,13 @@
 
 #include <cmath>
 #include <limits>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,15 +22,19 @@
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_builder.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
 #include "components/version_info/channel.h"
 
 namespace {
+
+using ProcessType = metrics::CallStackProfileParams::Process;
 
 // Platform-specific parameter defaults.
 
@@ -45,10 +53,12 @@ constexpr int kDefaultSamplingRateBytes = 10'000'000;
 constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-// DecideIfCollectionIsEnabled is stubbed out so kStableProbability and
-// kNonStableProbability are never referenced.
-#else
+// Semicolon-separated list of process names to support. (More convenient than
+// commas, which must be url-escaped in the --enable-features command line.)
+[[maybe_unused]] constexpr base::FeatureParam<std::string> kSupportedProcesses{
+    &HeapProfilerController::kHeapProfilerReporting, "supported-processes",
+    "browser"};
+
 // Sets the chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.
 constexpr base::FeatureParam<double> kStableProbability{
@@ -68,7 +78,6 @@ constexpr base::FeatureParam<double> kStableProbability{
 constexpr base::FeatureParam<double> kNonStableProbability{
     &HeapProfilerController::kHeapProfilerReporting, "nonstable-probability",
     0.5};
-#endif
 
 // Sets heap sampling interval in bytes.
 constexpr base::FeatureParam<int> kSamplingRateBytes{
@@ -92,24 +101,35 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
   return -std::log(rnd) * mean;
 }
 
-bool DecideIfCollectionIsEnabled(version_info::Channel channel) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/1297724): The POSIX implementation of
-  // ModuleCache::CreateModuleForAddress is stubbed out on ARM64, so all samples
-  // would lack module information (see base/profiler/module_cache_posix.cc).
-  // Without this the reports cannot be symbolized so no point in collecting
-  // them. If this is fixed, also re-enable the tests in
-  // heap_profiler_controller_unittests.cc.
-  return false;
-#else
-  if (!base::FeatureList::IsEnabled(
-          HeapProfilerController::kHeapProfilerReporting))
+// Returns the string to use in the kSupportedProcesses feature for
+// `process_type`, or nullptr if the process is not supported..
+[[maybe_unused]] const char* ProcessParamString(ProcessType process_type) {
+  switch (process_type) {
+    case ProcessType::kBrowser:
+      return "browser";
+    case ProcessType::kRenderer:
+      return "renderer";
+    case ProcessType::kGpu:
+      return "gpu";
+    case ProcessType::kUtility:
+      return "utility";
+    case ProcessType::kNetworkService:
+      return "networkService";
+    case ProcessType::kUnknown:
+    default:
+      // Profiler hasn't been tested in these process types.
+      return nullptr;
+  }
+}
+
+bool DecideIfCollectionIsEnabled(version_info::Channel channel,
+                                 ProcessType process_type) {
+  if (!HeapProfilerController::IsProfilingEnabled(process_type))
     return false;
   const double probability = (channel == version_info::Channel::STABLE)
                                  ? kStableProbability.Get()
                                  : kNonStableProbability.Get();
   return base::RandDouble() < probability;
-#endif
 }
 
 // Records a time histogram for the `interval` between snapshots, using the
@@ -144,10 +164,12 @@ constexpr base::Feature HeapProfilerController::kHeapProfilerReporting{
 HeapProfilerController::SnapshotParams::SnapshotParams(
     base::TimeDelta mean_interval,
     bool use_random_interval,
-    scoped_refptr<StoppedFlag> stopped)
+    scoped_refptr<StoppedFlag> stopped,
+    ProcessType process_type)
     : mean_interval(mean_interval),
       use_random_interval(use_random_interval),
-      stopped(std::move(stopped)) {}
+      stopped(std::move(stopped)),
+      process_type(process_type) {}
 
 HeapProfilerController::SnapshotParams::~SnapshotParams() = default;
 
@@ -158,15 +180,44 @@ HeapProfilerController::SnapshotParams&
 HeapProfilerController::SnapshotParams::operator=(SnapshotParams&& other) =
     default;
 
-HeapProfilerController::HeapProfilerController(version_info::Channel channel)
-    : profiling_enabled_(DecideIfCollectionIsEnabled(channel)),
+// static
+bool HeapProfilerController::IsProfilingEnabled(ProcessType process_type) {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
+  // TODO(crbug.com/1297724): The POSIX implementation of
+  // ModuleCache::CreateModuleForAddress is stubbed out on ARM64, so all samples
+  // would lack module information (see base/profiler/module_cache_posix.cc).
+  // Without this the reports cannot be symbolized so no point in collecting
+  // them. If this is fixed, also re-enable the tests in
+  // heap_profiler_controller_unittests.cc.
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(
+          HeapProfilerController::kHeapProfilerReporting)) {
+    return false;
+  }
+  const char* process_string = ProcessParamString(process_type);
+  if (!process_string) {
+    // This process type is never supported.
+    return false;
+  }
+  const std::vector<std::string> supported_processes =
+      base::SplitString(kSupportedProcesses.Get(), ";", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  return base::Contains(supported_processes, process_string);
+#endif
+}
+
+HeapProfilerController::HeapProfilerController(version_info::Channel channel,
+                                               ProcessType process_type)
+    : profiling_enabled_(DecideIfCollectionIsEnabled(channel, process_type)),
+      process_type_(process_type),
       stopped_(base::MakeRefCounted<StoppedFlag>()) {}
 
 HeapProfilerController::~HeapProfilerController() {
   stopped_->data.Set();
 }
 
-void HeapProfilerController::Start() {
+void HeapProfilerController::StartIfEnabled() {
   base::UmaHistogramBoolean("HeapProfiling.InProcess.Enabled",
                             profiling_enabled_);
   if (!profiling_enabled_)
@@ -179,7 +230,8 @@ void HeapProfilerController::Start() {
   DCHECK_GT(interval, 0);
   SnapshotParams params(
       /*mean_interval=*/base::Minutes(interval),
-      /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_);
+      /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
+      process_type_);
   ScheduleNextSnapshot(std::move(params));
 }
 
@@ -206,14 +258,15 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params,
   if (params.stopped->data.IsSet())
     return;
   RecordUmaSnapshotInterval(previous_interval, "Taken");
-  RetrieveAndSendSnapshot();
+  RetrieveAndSendSnapshot(params.process_type);
   ScheduleNextSnapshot(std::move(params));
 }
 
 // static
-void HeapProfilerController::RetrieveAndSendSnapshot() {
+void HeapProfilerController::RetrieveAndSendSnapshot(ProcessType process_type) {
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
+  // TODO(crbug.com/1327069): Split uma by process type.
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
   if (samples.empty())
@@ -221,8 +274,7 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
 
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(
-      metrics::CallStackProfileParams::Process::kBrowser,
-      metrics::CallStackProfileParams::Thread::kUnknown,
+      process_type, metrics::CallStackProfileParams::Thread::kUnknown,
       metrics::CallStackProfileParams::Trigger::kPeriodicHeapCollection);
   metrics::CallStackProfileBuilder profile_builder(params);
 

@@ -93,10 +93,18 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
           callback);
 
   // Sets the CallStackProfileCollector interface from |browser_interface|.
-  // This function must be called within child processes.
+  // This function must be called within child processes, and must only be
+  // called once.
   static void SetParentProfileCollectorForChildProcess(
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>
           browser_interface);
+
+  // Resets the ChildCallStackProfileCollector to its default state. This will
+  // discard all collected profiles, remove any CallStackProfileCollector
+  // interface set through SetParentProfileCollectorForChildProcess, and allow
+  // SetParentProfileCollectorForChildProcess to be called multiple times during
+  // tests.
+  static void ResetChildCallStackProfileCollectorForTesting();
 
  protected:
   // Test seam.

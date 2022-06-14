@@ -13,23 +13,35 @@
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.
 class HeapProfilerController {
  public:
-  // `channel` is used to determine the probability that this client will be
-  // opted in to profiling.
-  explicit HeapProfilerController(version_info::Channel channel);
+  // Returns true if heap profiling is enabled for the given `process_type`.
+  static bool IsProfilingEnabled(
+      metrics::CallStackProfileParams::Process process_type);
+
+  // Checks if heap profiling should be enabled for this process. If so, starts
+  // sampling heap allocations immediately but does not schedule snapshots of
+  // the samples until Start() is called. `channel` is used to determine the
+  // probability that this client will be opted in to profiling. `process_type`
+  // is the current process, which can be retrieved with GetProfileParamsProcess
+  // in chrome/common/profiler/process_type.h.
+  explicit HeapProfilerController(
+      version_info::Channel channel,
+      metrics::CallStackProfileParams::Process process_type);
 
   HeapProfilerController(const HeapProfilerController&) = delete;
   HeapProfilerController& operator=(const HeapProfilerController&) = delete;
 
   ~HeapProfilerController();
 
-  // Starts periodic heap snapshot collection.
-  void Start();
+  // Starts periodic heap snapshot collection. Does nothing except record a
+  // metric if heap profiling is disabled.
+  void StartIfEnabled();
 
   // Public for testing.
   using Sample = base::SamplingHeapProfiler::Sample;
@@ -68,6 +80,7 @@ class HeapProfilerController {
   void SuppressRandomnessForTesting();
 
  private:
+  using ProcessType = metrics::CallStackProfileParams::Process;
   using StoppedFlag = base::RefCountedData<base::AtomicFlag>;
 
   // Parameters to control the snapshot sampling and reporting. This is
@@ -76,7 +89,8 @@ class HeapProfilerController {
   struct SnapshotParams {
     SnapshotParams(base::TimeDelta mean_interval,
                    bool use_random_interval,
-                   scoped_refptr<StoppedFlag> stopped);
+                   scoped_refptr<StoppedFlag> stopped,
+                   ProcessType process_type);
     ~SnapshotParams();
 
     // Move-only.
@@ -94,6 +108,9 @@ class HeapProfilerController {
 
     // Atomic flag to signal that no more snapshots should be taken.
     scoped_refptr<StoppedFlag> stopped;
+
+    // Process being sampled.
+    ProcessType process_type = ProcessType::kUnknown;
   };
 
   static void ScheduleNextSnapshot(SnapshotParams params);
@@ -104,11 +121,13 @@ class HeapProfilerController {
   static void TakeSnapshot(SnapshotParams params,
                            base::TimeDelta previous_interval);
 
-  static void RetrieveAndSendSnapshot();
+  static void RetrieveAndSendSnapshot(ProcessType process_type);
 
   // On startup this will be determined randomly based on the current channel
   // and the probability parameters of the HeapProfilerReporting feature.
   const bool profiling_enabled_;
+
+  const ProcessType process_type_;
 
   // This flag is set when the HeapProfilerController is torn down, to stop
   // profiling. It is the only member that should be referenced by the static

@@ -14,10 +14,12 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
 #include "chrome/utility/services.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
@@ -71,7 +73,9 @@ void ChromeContentUtilityClient::UtilityThreadStarted() {
           switches::kUtilityProcess &&  // An in-process utility thread may run
                                         // in other processes, only set up
                                         // collector in a utility process.
-      ThreadProfiler::ShouldCollectProfilesForChildProcess()) {
+      (ThreadProfiler::ShouldCollectProfilesForChildProcess() ||
+       HeapProfilerController::IsProfilingEnabled(
+           GetProfileParamsProcess(*command_line)))) {
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
     content::ChildThread::Get()->BindHostReceiver(
         collector.InitWithNewPipeAndPassReceiver());
