@@ -93,7 +93,7 @@ void WontCompile() {
   method_to_const_cb.Run();
 }
 
-#elif defined(NCTEST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static_assert failed due to requirement '!std::is_pointer_v<base::NoRef *> || IsRefCountedType<base::NoRef, void>::value' \"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained() and document why it's safe.\""]
+#elif defined(NCTEST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static_assert failed due to requirement '!IsPointerV<base::NoRef \*> \|\| IsRefCountedType<base::NoRef, void>::value' \"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe.\""]
 
 
 // Method bound to non-refcounted object.
@@ -106,7 +106,7 @@ void WontCompile() {
   no_ref_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_METHOD_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static_assert failed due to requirement '!std::is_pointer_v<base::NoRef *> || IsRefCountedType<base::NoRef, void>::value' \"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained() and document why it's safe.\""]
+#elif defined(NCTEST_CONST_METHOD_BIND_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static_assert failed due to requirement '!IsPointerV<base::NoRef \*> \|\| IsRefCountedType<base::NoRef, void>::value' \"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe.\""]
 
 // Const Method bound to non-refcounted object.
 //
@@ -115,6 +115,33 @@ void WontCompile() {
   NoRef no_ref;
   RepeatingCallback<void()> no_ref_const_cb =
       BindRepeating(&NoRef::VoidConstMethod0, &no_ref);
+  no_ref_const_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static_assert failed due to requirement '!IsPointerV<base::raw_ptr<base::NoRef, [^>]+>> \|\| IsRefCountedType<base::NoRef, void>::value' \"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe.\""]
+
+
+// Method bound to non-refcounted object.
+//
+// We require refcounts unless you have Unretained().
+void WontCompile() {
+  NoRef no_ref;
+  raw_ptr<NoRef> rawptr(&no_ref);
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, rawptr);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_CONST_METHOD_BIND_RAW_PTR_RECEIVER_NEEDS_REFCOUNTED_OBJECT)  // [r"fatal error: static_assert failed due to requirement '!IsPointerV<base::raw_ptr<base::NoRef, [^>]+>> \|\| IsRefCountedType<base::NoRef, void>::value' \"Receivers may not be raw pointers. If using a raw pointer here is safe and has no lifetime concerns, use base::Unretained\(\) and document why it's safe.\""]
+
+// Const Method bound to non-refcounted object.
+//
+// We require refcounts unless you have Unretained().
+void WontCompile() {
+  NoRef no_ref;
+  raw_ptr<NoRef> rawptr(&no_ref);
+  RepeatingCallback<void()> no_ref_const_cb =
+      BindRepeating(&NoRef::VoidConstMethod0, rawptr);
   no_ref_const_cb.Run();
 }
 

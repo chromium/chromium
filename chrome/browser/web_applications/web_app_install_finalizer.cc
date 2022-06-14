@@ -517,10 +517,6 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
       web_app_info.shortcuts_menu_icon_bitmaps;
   IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
 
-  auto write_icons_callback = base::BindOnce(
-      &WebAppIconManager::WriteData, icon_manager_, app_id,
-      std::move(icon_bitmaps), std::move(shortcuts_menu_icon_bitmaps),
-      std::move(other_icon_bitmaps));
   auto write_translations_callback = base::BindOnce(
       &WebAppInstallFinalizer::WriteTranslations,
       weak_ptr_factory_.GetWeakPtr(), app_id, std::move(web_app_info));
@@ -528,11 +524,12 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
       base::BindOnce(&WebAppInstallFinalizer::CommitToSyncBridge,
                      weak_ptr_factory_.GetWeakPtr(), std::move(web_app));
 
-  std::move(write_icons_callback)
-      .Run(base::BindOnce(
-          std::move(write_translations_callback),
-          base::BindOnce(std::move(commit_to_sync_bridge_callback),
-                         std::move(commit_callback))));
+  icon_manager_->WriteData(
+      app_id, std::move(icon_bitmaps), std::move(shortcuts_menu_icon_bitmaps),
+      std::move(other_icon_bitmaps),
+      base::BindOnce(std::move(write_translations_callback),
+                     base::BindOnce(std::move(commit_to_sync_bridge_callback),
+                                    std::move(commit_callback))));
 }
 
 void WebAppInstallFinalizer::WriteTranslations(
