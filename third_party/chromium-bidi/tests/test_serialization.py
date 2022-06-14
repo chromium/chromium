@@ -27,7 +27,7 @@ async def assertSerialization(websocket, context_id, js_str_object,
             "awaitPromise": False, }})
 
     # Compare ignoring `handle`.
-    recursiveCompare(expected_serialized_object, result["result"], ["handle"])
+    recursive_compare(expected_serialized_object, result["result"])
 
 
 # Testing serialization.
@@ -47,7 +47,7 @@ async def assertDeserializationAndSerialization(websocket, context_id,
             "awaitPromise": False,
             "target": {"context": context_id}}})
     # Compare ignoring `handle`.
-    recursiveCompare(expected_serialized_object, result["result"], ["handle"])
+    recursive_compare(expected_serialized_object, result["result"])
 
 
 @pytest.mark.asyncio
@@ -122,7 +122,7 @@ async def test_serialization_function(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "function(){}", {
                                   "type": "function",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -131,7 +131,7 @@ async def test_serialization_promise(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "Promise.resolve(1)", {
                                   "type": "promise",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -140,7 +140,7 @@ async def test_serialization_weakMap(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new WeakMap()", {
                                   "type": "weakmap",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -149,7 +149,7 @@ async def test_serialization_weakSet(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new WeakSet()", {
                                   "type": "weakset",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -159,7 +159,7 @@ async def test_serialization_proxy(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new Proxy({}, {})", {
                                   "type": "proxy",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -168,7 +168,7 @@ async def test_serialization_typedarray(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new Int32Array()", {
                                   "type": "typedarray",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -177,7 +177,7 @@ async def test_serialization_object(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
                                   "type": "object",
-                                  "handle": "__any_value__",
+                                  "handle": any_string,
                                   "value": [[
                                       "foo", {
                                           "type": "object"}], [
@@ -203,7 +203,7 @@ async def test_deserialization_serialization_object(websocket, context_id):
                                                         "value": "quux"}]]},
                                                 {
                                                     "type": "object",
-                                                    "handle": "__any_value__",
+                                                    "handle": any_string,
                                                     "value": [[
                                                         "foo", {
                                                             "type": "object"}
@@ -230,7 +230,7 @@ async def test_deserialization_serialization_map(websocket, context_id):
                                                         "value": "quux"}]]},
                                                 {
                                                     "type": "map",
-                                                    "handle": "__any_value__",
+                                                    "handle": any_string,
                                                     "value": [[
                                                         "foo", {
                                                             "type": "object"}
@@ -253,7 +253,7 @@ async def test_deserialization_serialization_array(websocket, context_id):
                                                         "value": "a"
                                                     }]}, {
                                                     "type": "array",
-                                                    "handle": "__any_value__",
+                                                    "handle": any_string,
                                                     "value": [{
                                                         "type": "number",
                                                         "value": 1
@@ -268,7 +268,7 @@ async def test_serialization_array(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
                                   "type": "array",
-                                  "handle": "__any_value__",
+                                  "handle": any_string,
                                   "value": [{
                                       "type": "number",
                                       "value": 1
@@ -294,7 +294,7 @@ async def test_deserialization_serialization_set(websocket, context_id):
                                                         "value": "a"
                                                     }]}, {
                                                     "type": "set",
-                                                    "handle": "__any_value__",
+                                                    "handle": any_string,
                                                     "value": [{
                                                         "type": "number",
                                                         "value": 1
@@ -309,7 +309,7 @@ async def test_serialization_set(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
                                   "type": "set",
-                                  "handle": "__any_value__",
+                                  "handle": any_string,
                                   "value": [{
                                       "type": "number",
                                       "value": 1
@@ -336,7 +336,7 @@ async def test_serialization_symbol(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "Symbol('foo')", {
                                   "type": "symbol",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -351,7 +351,7 @@ async def test_deserialization_serialization_regExp(websocket, context_id):
                                                     }
                                                 }, {
                                                     "type": "regexp",
-                                                    "handle": "__any_value__",
+                                                    "handle": any_string,
                                                     "value": {
                                                         "pattern": "ab+c",
                                                         "flags": "i"
@@ -386,7 +386,7 @@ async def test_serialization_windowProxy(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "this.window", {
                                   "type": "window",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -395,7 +395,7 @@ async def test_serialization_error(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "new Error('Woops!')", {
                                   "type": "error",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -411,36 +411,35 @@ async def test_serialization_node(websocket, context_id):
             "selector": "body > div",
             "context": context_id}})
 
-    recursiveCompare({
-        "result": {
-            "type": "node",
-            "value": {
-                "nodeType": 1,
-                "nodeValue": "",
-                "nodeName": "",
-                "localName": "div",
-                "namespaceURI": "http://www.w3.org/1999/xhtml",
-                "childNodeCount": 2,
-                "attributes": {
-                    "some_attr_name": "some_attr_value"},
-                "children": [{
-                    "type": "node",
-                    "value": {
-                        "nodeType": 3,
-                        "nodeValue": "some text",
-                        "nodeName": "some text"}
-                }, {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "nodeValue": "",
-                        "nodeName": "",
-                        "localName": "h2",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "childNodeCount": 1,
-                        "attributes": {}}}]},
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+    recursive_compare({
+        "type": "node",
+        "handle": any_string,
+        "value": {
+            "nodeType": 1,
+            "nodeValue": "",
+            "nodeName": "",
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "childNodeCount": 2,
+            "attributes": {
+                "some_attr_name": "some_attr_value"},
+            "children": [{
+                "type": "node",
+                "value": {
+                    "nodeType": 3,
+                    "nodeValue": "some text",
+                    "nodeName": "some text"}
+            }, {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "nodeValue": "",
+                    "nodeName": "",
+                    "localName": "h2",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "childNodeCount": 1,
+                    "attributes": {}}}]}},
+        result["result"])
 
 
 @pytest.mark.asyncio
@@ -449,7 +448,7 @@ async def _ignore_test_serialization_iterator(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "[].entries()", {
                                   "type": "iterator",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })
 
 
@@ -459,5 +458,5 @@ async def _ignore_test_serialization_generator(websocket, context_id):
     await assertSerialization(websocket, context_id,
                               "function* (){}", {
                                   "type": "generator",
-                                  "handle": "__any_value__"
+                                  "handle": any_string
                               })

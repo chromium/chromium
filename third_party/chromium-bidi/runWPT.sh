@@ -12,3 +12,4 @@ npm run build && \
   --log-wptreport wptreport.json \
   chromium \
   $1
+#  --timeout-multiplier 4 \

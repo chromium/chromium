@@ -123,10 +123,14 @@ export class ScriptEvaluator {
           cdpCallFunctionResult.exceptionDetails,
           this.#callFunctionStacktraceLineOffset
         ),
+        realm: 'TODO: ADD',
       };
     }
 
-    return { result: ScriptEvaluator.#cdpToBidiValue(cdpCallFunctionResult) };
+    return {
+      result: ScriptEvaluator.#cdpToBidiValue(cdpCallFunctionResult),
+      realm: 'TODO: ADD',
+    };
   }
 
   async #serializeCdpExceptionDetails(
@@ -199,6 +203,7 @@ export class ScriptEvaluator {
             cdpEvaluateResult.exceptionDetails,
             this.#evaluateStacktraceLineOffset
           ),
+          realm: 'TODO: ADD',
         },
       };
     }
@@ -206,6 +211,7 @@ export class ScriptEvaluator {
     return {
       result: {
         result: ScriptEvaluator.#cdpToBidiValue(cdpEvaluateResult),
+        realm: 'TODO: ADD',
       },
     };
   }

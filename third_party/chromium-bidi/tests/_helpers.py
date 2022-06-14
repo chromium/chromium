@@ -72,13 +72,14 @@ async def subscribe(websocket, event_names, context_ids=None):
     await execute_command(websocket, command)
 
 
-# Compares 2 objects recursively ignoring values of specific attributes.
-def recursiveCompare(expected, actual, ignore_attributes=[]):
+# Compares 2 objects recursively.
+# Expected value can be a callable delegate, asserting the value.
+def recursive_compare(expected, actual):
     assert type(expected) == type(actual)
     if type(expected) is list:
         assert len(expected) == len(actual)
         for index, val in enumerate(expected):
-            recursiveCompare(expected[index], actual[index], ignore_attributes)
+            recursive_compare(expected[index], actual[index])
         return
 
     if type(expected) is dict:
@@ -87,11 +88,30 @@ def recursiveCompare(expected, actual, ignore_attributes=[]):
             f"\nNot present: {set(expected.keys()) - set(actual.keys())}" \
             f"\nUnexpected: {set(actual.keys()) - set(expected.keys())}"
         for index, val in enumerate(expected):
-            if val not in ignore_attributes:
-                recursiveCompare(expected[val], actual[val], ignore_attributes)
+            if callable(expected[val]):
+                expected[val](actual[val])
+            else:
+                recursive_compare(expected[val], actual[val])
         return
 
     assert expected == actual
+
+
+def any_string(expected):
+    assert isinstance(expected, str), \
+        f"'{expected}' should be string, " \
+        f"but is {type(expected)} instead."
+
+
+def any_timestamp(expected):
+    assert isinstance(expected, float), \
+        f"'{expected}' should be a float, " \
+        f"but is {type(expected)} instead."
+
+
+# noinspection PyUnusedLocal
+def any_value(expected):
+    return
 
 
 # Returns an id of an open context.

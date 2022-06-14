@@ -386,10 +386,12 @@ export namespace Script {
   export type ScriptResult = ScriptResultSuccess | ScriptResultException;
   export type ScriptResultSuccess = {
     result: CommonDataTypes.RemoteValue;
+    realm: string;
   };
 
   export type ScriptResultException = {
     exceptionDetails: ExceptionDetails;
+    realm: string;
   };
 
   export type ExceptionDetails = {
@@ -428,6 +430,8 @@ export namespace Script {
   const TargetSchema = zod.union([ContextTargetSchema, RealmTargetSchema]);
   export type Target = zod.infer<typeof TargetSchema>;
 
+  const OwnershipModelSchema = zod.enum(['root', 'none']);
+
   // ScriptEvaluateParameters = {
   //   expression: text;
   //   target: Target;
@@ -438,6 +442,7 @@ export namespace Script {
     expression: zod.string(),
     awaitPromise: zod.boolean().optional(),
     target: TargetSchema,
+    resultOwnership: OwnershipModelSchema.optional(),
   });
 
   export type EvaluateParameters = zod.infer<
@@ -463,15 +468,13 @@ export namespace Script {
   ]);
   export type ArgumentValue = zod.infer<typeof ArgumentValueSchema>;
 
-  const OwnershipModelSchema = zod.enum(['root', 'none']);
-
   const ScriptCallFunctionParametersSchema = zod.object({
     functionDeclaration: zod.string(),
     target: TargetSchema,
     arguments: zod.array(ArgumentValueSchema).optional(),
     this: ArgumentValueSchema.optional(),
     awaitPromise: zod.boolean().optional(),
-    ownership: OwnershipModelSchema.optional(),
+    resultOwnership: OwnershipModelSchema.optional(),
   });
 
   export type CallFunctionParameters = zod.infer<

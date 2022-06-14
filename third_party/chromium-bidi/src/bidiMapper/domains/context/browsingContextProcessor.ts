@@ -84,7 +84,7 @@ export class BrowsingContextProcessor {
 
   private _getKnownContext(contextId: string): Context {
     if (!this._hasKnownContext(contextId)) {
-      throw new Error('context not found');
+      throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
     return this._contexts.get(contextId)!;
   }

@@ -25,7 +25,8 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
             "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "exceptionDetails": {
             "text": "1",
             "columnNumber": 19,
@@ -58,8 +59,8 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
                     "url": "",
                     "functionName": "",
                     "lineNumber": 1,
-                    "columnNumber": 25}]}
-        }}, result, ["handle"])
+                    "columnNumber": 25}]}}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -71,14 +72,15 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
             "expression": "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "exceptionDetails": {
             "text": "Error: foo",
             "columnNumber": 19,
             "lineNumber": 0,
             "exception": {
                 "type": "error",
-                "handle": "__any_value__"
+                "handle": any_string
             },
             "stackTrace": {
                 "callFrames": [{
@@ -105,8 +107,8 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
                     "url": "",
                     "functionName": "",
                     "lineNumber": 1,
-                    "columnNumber": 25}]}
-        }}, exception_details, ["handle"])
+                    "columnNumber": 25}]}}},
+        exception_details)
 
 
 @pytest.mark.asyncio
@@ -120,11 +122,12 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
             "target": {"context": context_id}}})
 
     # Compare ignoring `handle`.
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "promise",
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
 
 # Uncomment after behaviour is clarified:
@@ -160,11 +163,12 @@ async def test_script_evaluateWaitPromise_resultReturned(websocket, context_id):
             "target": {"context": context_id}}})
 
     # Compare ignoring `handle`.
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "SOME_RESULT"
-        }}, result, ["handle"])
+            "value": "SOME_RESULT"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -189,7 +193,8 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
             "target": {"context": context_id}}})
 
     # Verify the object wasn't changed.
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "object",
             "value": [[
@@ -197,8 +202,8 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
                     "type": "number",
                     "value": 0
                 }]],
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -211,10 +216,12 @@ async def test_script_evaluateInteractsWithDom_resultReceived(websocket,
             "expression": "'!!@@##, ' + window.location.href",
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "!!@@##, about:blank"}}
+            "value": "!!@@##, about:blank"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -232,7 +239,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
             }],
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "array",
             "value": [{
@@ -241,8 +249,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
             }, {
                 "type": 'number',
                 "value": 42}],
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
 
 # Uncomment after behaviour is clarified:
@@ -265,7 +273,7 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
 #             "target": {"context": context_id}}})
 #
 #     recursiveCompare({
-#         "handle": "__any_value__",
+#         "handle": any_string,
 #         "type": "object",
 #         "value": [[
 #             "then", {
@@ -290,11 +298,12 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "promise",
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -318,10 +327,12 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
             }],
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "SOME_VALUE"}}
+            "value": "SOME_VALUE"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -338,10 +349,12 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "SOME_VALUE"}}
+            "value": "SOME_VALUE"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -358,11 +371,12 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "promise",
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -379,10 +393,12 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "SOME_VALUE"}}
+            "value": "SOME_VALUE"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -399,11 +415,12 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "promise",
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -419,10 +436,12 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
             },
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "Window"}}
+            "value": "Window"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -438,10 +457,12 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
             },
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "Number"}}
+            "value": "Number"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -458,10 +479,12 @@ async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_th
             },
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "number",
-            "value": 42}}
+            "value": 42}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -490,10 +513,12 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
                 "handle": handle}],
             "target": {"context": context_id}}})
 
-    assert result == {
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "string",
-            "value": "!!@@##, test"}}
+            "value": "!!@@##, test"}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -505,11 +530,12 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
             "expression": "window.open()",
             "target": {"context": context_id}}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "window",
-            "handle": "__any_value__"
-        }}, result, ["handle"])
+            "handle": any_string}},
+        result)
 
     result = await execute_command(websocket,
                                    {"method": "browsingContext.getTree",

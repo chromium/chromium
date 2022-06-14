@@ -24,10 +24,9 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
             "cdpMethod": "Target.getTargets",
             "cdpParams": {}}})
 
-    recursiveCompare(
-        {"targetInfos": "__any_value_here__"},
-        command_result,
-        ["targetInfos"])
+    recursive_compare({
+        "targetInfos": any_value},
+        command_result)
 
 
 @pytest.mark.asyncio
@@ -51,7 +50,7 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
 
-    recursiveCompare({
+    recursive_compare({
         "method": "PROTO.cdp.eventReceived",
         "params": {
             "cdpMethod": "Runtime.consoleAPICalled",
@@ -61,8 +60,8 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
                     "type": "number",
                     "value": 1,
                     "description": "1"}],
-                "executionContextId": "__any_value__",
-                "timestamp": "__any_value__",
-                "stackTrace": "__any_value__"},
+                "executionContextId": any_value,
+                "timestamp": any_value,
+                "stackTrace": any_value},
             "session": session_id}},
-        resp, ["timestamp", "executionContextId", "stackTrace"])
+        resp)

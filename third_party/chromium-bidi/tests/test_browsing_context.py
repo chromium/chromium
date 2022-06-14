@@ -261,10 +261,9 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
             "url": url_with_hash_1,
             "wait": "none",
             "context": context_id}})
-    recursiveCompare({
-        'navigation': '__any_value__',
-        'url': url_with_hash_1},
-        resp, "navigation")
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_1}
 
     resp = await execute_command(websocket, {
         "method": "browsingContext.navigate",
@@ -272,10 +271,9 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
             "url": url_with_hash_2,
             "wait": "none",
             "context": context_id}})
-    recursiveCompare({
-        'navigation': '__any_value__',
-        'url': url_with_hash_2},
-        resp, "navigation")
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_2}
 
     # Navigate back and forth in the same document with `wait:interactive`.
     resp = await execute_command(websocket, {
@@ -284,10 +282,9 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
             "url": url_with_hash_1,
             "wait": "interactive",
             "context": context_id}})
-    recursiveCompare({
-        'navigation': '__any_value__',
-        'url': url_with_hash_1},
-        resp, "navigation")
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_1}
 
     resp = await execute_command(websocket, {
         "method": "browsingContext.navigate",
@@ -295,10 +292,9 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
             "url": url_with_hash_2,
             "wait": "interactive",
             "context": context_id}})
-    recursiveCompare({
-        'navigation': '__any_value__',
-        'url': url_with_hash_2},
-        resp, "navigation")
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_2}
 
     # Navigate back and forth in the same document with `wait:complete`.
     resp = await execute_command(websocket, {
@@ -307,10 +303,9 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
             "url": url_with_hash_1,
             "wait": "complete",
             "context": context_id}})
-    recursiveCompare({
-        'navigation': '__any_value__',
-        'url': url_with_hash_1},
-        resp, "navigation")
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_1}
 
     resp = await execute_command(websocket, {
         "method": "browsingContext.navigate",
@@ -318,10 +313,9 @@ async def test_browsingContext_navigateSameDocumentNavigation_navigated(
             "url": url_with_hash_2,
             "wait": "complete",
             "context": context_id}})
-    recursiveCompare({
-        'navigation': '__any_value__',
-        'url': url_with_hash_2},
-        resp, "navigation")
+    assert resp == {
+        'navigation': None,
+        'url': url_with_hash_2}
 
 
 @pytest.mark.asyncio
@@ -340,9 +334,11 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket,
             "selector": "body > .container",
             "context": context_id}})
 
-    recursiveCompare({
+    recursive_compare({
+        "realm": any_string,
         "result": {
             "type": "node",
+            "handle": any_string,
             "value": {
                 "nodeType": 1,
                 "nodeValue": "",
@@ -379,10 +375,8 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket,
                         "namespaceURI": "http://www.w3.org/1999/xhtml",
                         "childNodeCount": 1,
                         "attributes": {
-                            "class": "child_2"}}
-                }]
-            }, "handle": "__SOME_handle_1__"
-        }}, result, ["handle"])
+                            "class": "child_2"}}}]}}},
+        result)
 
 
 @pytest.mark.asyncio
@@ -397,7 +391,11 @@ async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
             "selector": "body > h3",
             "context": context_id}})
 
-    assert result == {"result": {"type": "null"}}
+    recursive_compare({
+        "realm": any_string,
+        "result": {
+            "type": "null"}},
+        result)
 
 
 @pytest.mark.asyncio

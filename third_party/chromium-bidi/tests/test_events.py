@@ -30,13 +30,13 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert "log.entryAdded" event emitted.
-    recursiveCompare({
+    recursive_compare({
         "method": "log.entryAdded",
         "params": {
             # BaseLogEntry
             "level": "info",
             "text": "some log message\u0020line 2",
-            "timestamp": "__any_value__",
+            "timestamp": any_timestamp,
             "stackTrace": {
                 "callFrames": [{
                     "url": "",
@@ -52,8 +52,7 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
                 "value": "some log message"}, {
                 "type": "string",
                 "value": "line 2"}]}},
-        event_response,
-        ["timestamp"])
+        event_response)
 
 
 @pytest.mark.asyncio
@@ -71,13 +70,13 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert "log.entryAdded" event emitted.
-    recursiveCompare({
+    recursive_compare({
         "method": "log.entryAdded",
         "params": {
             # BaseLogEntry
             "level": "info",
             "text": "null\u0020undefined",
-            "timestamp": "__any_value__",
+            "timestamp": any_timestamp,
             "stackTrace": {
                 "callFrames": [{
                     "url": "",
@@ -91,8 +90,7 @@ async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
             "args": [
                 {"type": "null"},
                 {"type": "undefined"}]}},
-        event_response,
-        ["timestamp"])
+        event_response)
 
 
 @pytest.mark.asyncio
@@ -149,7 +147,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert "log.entryAdded" event emitted.
-    recursiveCompare({
+    recursive_compare({
         "method": "log.entryAdded",
         "params": {
             # BaseLogEntry
@@ -157,7 +155,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
             "text": "format specificier, string: line 2, integer: 1, integer: "
                     "-2, float: 1.234, \"abc\", {\"id\": 1}, {\"font-size\": "
                     "\"20px\"}",
-            "timestamp": "__any_value__",
+            "timestamp": any_timestamp,
             "stackTrace": {
                 "callFrames": [{
                     "url": "",
@@ -188,7 +186,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                 "type": "string",
                 "value": "abc"
             }, {
-                "handle": "__any_value__",
+                "handle": any_string,
                 "type": "object",
                 "value": [
                     ["id", {
@@ -196,15 +194,14 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                         "value": 1
                     }]]
             }, {
-                "handle": "__any_value__",
+                "handle": any_string,
                 "type": "object",
                 "value": [[
                     "font-size", {
                         "type": "string",
                         "value": "20px"
                     }]]}]}},
-        event_response,
-        ("timestamp", "handle"))
+        event_response)
 
 
 @pytest.mark.asyncio
@@ -223,14 +220,14 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert "log.entryAdded" event emitted.
-    recursiveCompare(
+    recursive_compare(
         {
             "method": "log.entryAdded",
             "params": {
                 # BaseLogEntry
                 "level": "error",
                 "text": "Error: some error",
-                "timestamp": "__any_value__",
+                "timestamp": any_timestamp,
                 "stackTrace": {
                     "callFrames": [{
                         "url": "",
@@ -240,5 +237,4 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
                 # ConsoleLogEntry
                 "type": "javascript",
                 "realm": context_id}},
-        event_response,
-        ["timestamp"])
+        event_response)
