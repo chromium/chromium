@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
 
 namespace arc {
@@ -64,6 +66,9 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
       auto bounds = action_label->GetBoundsInScreen();
       if (!bounds.Contains(event_location)) {
         action_label->ClearFocus();
+        display_overlay_controller_->AddEditMessage(
+            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS),
+            MessageType::kInfo);
         break;
       }
     }

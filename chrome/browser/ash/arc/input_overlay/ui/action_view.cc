@@ -100,15 +100,13 @@ void ActionView::RemoveEditMenu() {
 
 void ActionView::ShowErrorMsg(const base::StringPiece& message,
                               ActionLabel* editing_label) {
-  display_overlay_controller_->AddEditMessage(this, message,
-                                              MessageType::kError);
+  display_overlay_controller_->AddEditMessage(message, MessageType::kError);
   SetDisplayMode(DisplayMode::kEditedError, editing_label);
 }
 
 void ActionView::ShowInfoMsg(const base::StringPiece& message,
                              ActionLabel* editing_label) {
-  display_overlay_controller_->AddEditMessage(this, message,
-                                              MessageType::kInfo);
+  display_overlay_controller_->AddEditMessage(message, MessageType::kInfo);
 }
 
 void ActionView::RemoveMessage() {
@@ -161,8 +159,7 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
   if ((!action_->support_modifier_key() &&
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {
-    ShowErrorMsg(base::StringPiece(l10n_util::GetStringUTF8(
-                     IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS)),
+    ShowErrorMsg(l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS),
                  editing_label);
     return true;
   }

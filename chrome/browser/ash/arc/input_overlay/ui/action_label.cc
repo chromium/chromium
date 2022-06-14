@@ -7,7 +7,6 @@
 #include <set>
 
 #include "ash/style/style_util.h"
-#include "base/strings/string_piece.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
@@ -198,6 +197,8 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kEdit:
       SetToEditMode();
       SetFocusBehavior(FocusBehavior::ALWAYS);
+      static_cast<ActionView*>(parent())->ShowInfoMsg(
+          l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS), this);
       break;
     case DisplayMode::kEditedSuccess:
       SetToEditFocus();
@@ -265,14 +266,10 @@ void ActionLabel::OnFocus() {
   LabelButton::OnFocus();
   if (IsUnbound()) {
     static_cast<ActionView*>(parent())->ShowErrorMsg(
-        base::StringPiece(
-            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)),
-        this);
+        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this);
   } else {
     static_cast<ActionView*>(parent())->ShowInfoMsg(
-        base::StringPiece(
-            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY)),
-        this);
+        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY), this);
   }
 }
 

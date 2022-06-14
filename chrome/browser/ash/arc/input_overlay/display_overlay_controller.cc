@@ -416,8 +416,7 @@ void DisplayOverlayController::RemoveActionEditMenu() {
   action_edit_menu_ = nullptr;
 }
 
-void DisplayOverlayController::AddEditMessage(ActionView* action_view,
-                                              const base::StringPiece& message,
+void DisplayOverlayController::AddEditMessage(const base::StringPiece& message,
                                               MessageType message_type) {
   RemoveEditMessage();
   auto* overlay_widget = GetOverlayWidget();

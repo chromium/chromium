@@ -55,8 +55,7 @@ class DisplayOverlayController : public ui::EventHandler {
   void AddActionEditMenu(ActionView* anchor, ActionType action_type);
   void RemoveActionEditMenu();
 
-  void AddEditMessage(ActionView* action_view,
-                      const base::StringPiece& message,
+  void AddEditMessage(const base::StringPiece& message,
                       MessageType message_type);
   void RemoveEditMessage();
 
