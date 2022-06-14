@@ -40,7 +40,7 @@ defaults = args.defaults(
 _CONSOLE_VIEW_ORDERING = nodes.create_unscoped_node_type("console_view_ordering")
 _OVERVIEW_CONSOLE_ORDERING = nodes.create_unscoped_node_type("overview_console_ordering")
 
-def _console_view_ordering_impl(ctx, *, console_name, ordering):
+def _console_view_ordering_impl(_ctx, *, console_name, ordering):
     key = _CONSOLE_VIEW_ORDERING.add(console_name, props = {
         "ordering": ordering,
     })
@@ -49,7 +49,7 @@ def _console_view_ordering_impl(ctx, *, console_name, ordering):
 
 _console_view_ordering = lucicfg.rule(impl = _console_view_ordering_impl)
 
-def _overview_console_view_ordering_impl(ctx, *, console_name, top_level_ordering):
+def _overview_console_view_ordering_impl(_ctx, *, console_name, top_level_ordering):
     key = _OVERVIEW_CONSOLE_ORDERING.add(console_name, props = {
         "top_level_ordering": top_level_ordering,
     })
@@ -266,7 +266,7 @@ def console_view(*, name, branch_selector = branches.MAIN, ordering = None, **kw
         ordering = ordering or {},
     )
 
-def overview_console_view(*, name, top_level_ordering, branch_selector = branches.MAIN, **kwargs):
+def overview_console_view(*, name, top_level_ordering, **kwargs):
     """Create an overview console view.
 
     An overview console view is a console view that contains a subset of
@@ -285,9 +285,6 @@ def overview_console_view(*, name, top_level_ordering, branch_selector = branche
         name does not appear in the list will be sorted lexicographically
         by the console name and appear after entries whose console does
         appear in the list.
-      branch_selector - A branch selector value controlling whether the
-        console view definition is executed. See branches.star for
-        more information.
       kwargs - Additional keyword arguments to forward on to
         `luci.console_view`. The header and repo arguments support
          module-level defaults.
@@ -351,7 +348,7 @@ def _get_list_view_key_fn(console_name):
         return None
     return lambda b: b.name
 
-def _sorted_list_view_impl(ctx, *, console_name):
+def _sorted_list_view_impl(_ctx, *, console_name):
     key = _sorted_list_view_graph_key(console_name)
     graph.add_node(key)
     graph.add_edge(keys.project(), key)
