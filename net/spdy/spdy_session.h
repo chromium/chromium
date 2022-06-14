@@ -335,7 +335,7 @@ class NET_EXPORT SpdySession
       public Http2PushPromiseIndex::Delegate {
  public:
   // TODO(akalin): Use base::TickClock when it becomes available.
-  typedef base::TimeTicks (*TimeFunc)(void);
+  typedef base::TimeTicks (*TimeFunc)();
 
   // Returns true if |new_hostname| can be pooled into an existing connection to
   // |old_hostname| associated with |ssl_info|.

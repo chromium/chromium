@@ -52,7 +52,7 @@ class NET_EXPORT SpdySessionPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
-  typedef base::TimeTicks (*TimeFunc)(void);
+  typedef base::TimeTicks (*TimeFunc)();
 
   // Struct to hold randomly generated frame parameters to be used for sending
   // frames on the wire to "grease" frame type.  Frame type has to be one of

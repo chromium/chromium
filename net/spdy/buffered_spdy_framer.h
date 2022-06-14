@@ -129,7 +129,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
 class NET_EXPORT_PRIVATE BufferedSpdyFramer
     : public spdy::SpdyFramerVisitorInterface {
  public:
-  using TimeFunc = base::TimeTicks (*)(void);
+  using TimeFunc = base::TimeTicks (*)();
 
   BufferedSpdyFramer(uint32_t max_header_list_size,
                      const NetLogWithSource& net_log,
