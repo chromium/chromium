@@ -18,8 +18,6 @@ source_set("encoder") {
     "webrtc_video_encoder.cc",
     "webrtc_video_encoder_av1.cc",
     "webrtc_video_encoder_av1.h",
-    "webrtc_video_encoder_proxy.cc",
-    "webrtc_video_encoder_proxy.h",
     "webrtc_video_encoder_vpx.cc",
     "webrtc_video_encoder_vpx.h",
   ]
