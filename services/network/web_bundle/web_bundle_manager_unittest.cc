@@ -241,16 +241,19 @@ TEST_F(WebBundleManagerTest,
   //
   // For example, given that we have the following main document:
   //
-  // <link rel=webbundle href="https://example.com/bundle.wbn"
-  // resources="https://example.com/a.txt">
-  // <img src="https://example.com/a.txt">  # Please ignore that a.txt is weird
-  // for <img>.
+  // <script type=webbundle>
+  //   {
+  //     "source": "bundle.wbn",
+  //     "resources": ["a.png", ...]
+  //   }
+  // </script>
+  // <img src="a.png">
   //
   // In this case, a network service should receive the following two resource
   // requests:
   //
   // 1. A request for a bundle, "bundle.wbn"
-  // 2. A request for a subresource, "a.txt".
+  // 2. A request for a subresource, "a.png".
   //
   // Usually, the request 1 arrives earlier than the request 2,
   // however, the arrival order is not guaranteed. The subresource should be

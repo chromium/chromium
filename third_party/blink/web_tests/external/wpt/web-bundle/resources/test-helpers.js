@@ -54,48 +54,6 @@ function isValidCrossOriginAttribute(crossorigin) {
          (lower_crossorigin  === 'use-credentials');
 }
 
-function addLinkAndWaitForLoad(url, resources, crossorigin) {
-  return new Promise((resolve, reject) => {
-    if (!isValidCrossOriginAttribute(crossorigin)) {
-      reject('invalid crossorigin attribute: ' + crossorigin);
-      return;
-    }
-    const link = document.createElement("link");
-    link.rel = "webbundle";
-    link.href = url;
-    if (crossorigin) {
-      link.crossOrigin = crossorigin;
-    }
-    for (const resource of resources) {
-      link.resources.add(resource);
-    }
-    link.onload = () => resolve(link);
-    link.onerror = () => reject(link);
-    document.body.appendChild(link);
-  });
-}
-
-function addLinkAndWaitForError(url, resources, crossorigin) {
-  return new Promise((resolve, reject) => {
-    if (!isValidCrossOriginAttribute(crossorigin)) {
-      reject('invalid crossorigin attribute: ' + crossorigin);
-      return;
-    }
-    const link = document.createElement("link");
-    link.rel = "webbundle";
-    link.href = url;
-    if (crossorigin) {
-      link.crossOrigin = crossorigin;
-    }
-    for (const resource of resources) {
-      link.resources.add(resource);
-    }
-    link.onload = () => reject(link);
-    link.onerror = () => resolve(link);
-    document.body.appendChild(link);
-  });
-}
-
 function addScriptAndWaitForError(url) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");

@@ -482,7 +482,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapMojoRemote<mojom::blink::BlobRegistry> blob_registry_remote_;
 
-  // Lazily initialized when the first <link rel=webbundle> is inserted.
+  // Lazily initialized when the first <script type=webbundle> is inserted.
   Member<SubresourceWebBundleList> subresource_web_bundles_;
 
   // This is not in the bit field below because we want to use AutoReset.
