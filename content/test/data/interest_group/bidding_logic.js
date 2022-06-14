@@ -23,4 +23,7 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
 function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                    browserSignals) {
   sendReportTo(browserSignals.interestGroupOwner + '/echoall?report_bidder');
+  registerAdBeacon({'auctionwinner':
+   browserSignals.interestGroupOwner.replace('a.test','d.test') +
+                                             '/echoall?report_win_beacon'});
 }

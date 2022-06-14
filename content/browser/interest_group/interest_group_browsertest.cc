@@ -7623,6 +7623,57 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, InvalidURN) {
   EXPECT_EQ(absl::nullopt, ConvertFencedFrameURNToURLInJS(invalid_urn));
 }
 
+// Runs auction like Just like
+// InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
+// an ad beacon that is sent by the render URL.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithWinnerRegisterAdBeaconBuyer) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/fenced_frames/ad_with_fenced_frame_reporting.html");
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+          /*ad_components=*/absl::nullopt)));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url, JsReplace(
+                  R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1],
+                  })",
+                  test_origin,
+                  https_server_->GetURL("a.test",
+                                        "/interest_group/decision_logic.js"))));
+
+  absl::optional<network::ResourceRequest> request =
+      url_loader_monitor.GetRequestInfo(
+          https_server_->GetURL("d.test", "/echoall?report_win_beacon"));
+  ASSERT_TRUE(request);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
+}
+
 class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
  public:
   InterestGroupAuctionLimitBrowserTest() {
