@@ -32,6 +32,7 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -97,6 +98,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -120,13 +122,18 @@
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
+#include "chrome/installer/util/shell_util.h"
 #endif
 
 namespace web_app::integration_tests {
@@ -293,6 +300,23 @@ Browser* GetBrowserForAppId(const AppId& app_id) {
 }
 
 #if BUILDFLAG(IS_WIN)
+std::vector<std::wstring> GetFileExtensionsForProgId(
+    const std::wstring& file_handler_prog_id) {
+  const std::wstring prog_id_path =
+      base::StrCat({ShellUtil::kRegClasses, L"\\", file_handler_prog_id});
+
+  // Get list of handled file extensions from value FileExtensions at
+  // HKEY_CURRENT_USER\Software\Classes\<file_handler_prog_id>.
+  base::win::RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
+                                        KEY_QUERY_VALUE);
+  std::wstring handled_file_extensions;
+  EXPECT_EQ(file_extensions_key.ReadValue(L"FileExtensions",
+                                          &handled_file_extensions),
+            ERROR_SUCCESS);
+  return base::SplitString(handled_file_extensions, std::wstring(L";"),
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+
 base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
   base::FilePath shortcut_profile;
   std::wstring cmd_line_string;
@@ -544,7 +568,7 @@ void WebAppIntegrationTestDriver::SetUp() {
 }
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
-  shortcut_override_ = OverrideShortcutsForTesting();
+  shortcut_override_ = OverrideShortcutsForTesting(base::GetHomeDir());
 
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.
@@ -1831,6 +1855,26 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(Site site) {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
+    Site site,
+    std::string file_extension) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  BeforeStateCheckAction(__FUNCTION__);
+  ASSERT_TRUE(IsFileHandledBySite(site, file_extension));
+  AfterStateCheckAction();
+#endif
+}
+
+void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
+    Site site,
+    std::string file_extension) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  BeforeStateCheckAction(__FUNCTION__);
+  ASSERT_FALSE(IsFileHandledBySite(site, file_extension));
+  AfterStateCheckAction();
+#endif
+}
+
 void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateCheckAction(__FUNCTION__);
@@ -2468,6 +2512,49 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
   return is_shortcut_and_icon_correct;
 }
 
+bool WebAppIntegrationTestDriver::IsFileHandledBySite(
+    Site site,
+    std::string file_extension) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  bool is_file_handled = false;
+#if BUILDFLAG(IS_WIN)
+  AppId app_id = GetAppIdBySiteMode(site);
+  const std::wstring prog_id =
+      GetProgIdForApp(browser()->profile()->GetPath(), app_id);
+  const std::vector<std::wstring> file_handler_prog_ids =
+      ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
+
+  base::win::RegKey key;
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  for (const auto& file_handler_prog_id : file_handler_prog_ids) {
+    const std::vector<std::wstring> supported_file_extensions =
+        GetFileExtensionsForProgId(file_handler_prog_id);
+    std::wstring extension = converter.from_bytes("." + file_extension);
+    if (std::find(supported_file_extensions.begin(),
+                  supported_file_extensions.end(),
+                  extension) != supported_file_extensions.end()) {
+      const std::wstring reg_key =
+          L"Software\\Classes\\" + extension + L"\\OpenWithProgids";
+      EXPECT_EQ(ERROR_SUCCESS,
+                key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
+      return key.HasValue(file_handler_prog_id.data());
+    }
+  }
+#elif BUILDFLAG(IS_MAC)
+  std::string app_name = g_site_to_app_name.find(site)->second;
+  const base::FilePath test_file_path =
+      shortcut_override_->chrome_apps_folder.GetPath().AppendASCII(
+          "test." + file_extension);
+  const base::File test_file(
+      test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  const GURL test_file_url = net::FilePathToFileURL(test_file_path);
+  is_file_handled =
+      (base::UTF8ToUTF16(app_name) ==
+       shell_integration::GetApplicationNameForProtocol(test_file_url));
+#endif
+  return is_file_handled;
+}
+
 void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
     Site site,
     apps::RunOnOsLoginMode login_mode) {
@@ -2542,6 +2629,7 @@ WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {
   enabled_features.push_back(features::kPwaUpdateDialogForName);
   enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
   enabled_features.push_back(features::kWebAppWindowControlsOverlay);
+  enabled_features.push_back(blink::features::kFileHandlingAPI);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
   disabled_features.push_back(chromeos::features::kLacrosPrimary);

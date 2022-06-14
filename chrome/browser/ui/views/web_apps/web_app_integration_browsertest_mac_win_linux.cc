@@ -65,6 +65,20 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
   helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckSiteHandlesFile) {
+  helper_.InstallCreateShortcutWindowed(Site::kSiteB);
+  helper_.CheckSiteHandlesFile(Site::kSiteB, "qux");
+  helper_.CheckSiteHandlesFile(Site::kSiteB, "quux");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckSiteNotHandlesFile) {
+  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CheckSiteNotHandlesFile(Site::kSiteA, "qux");
+  helper_.CheckSiteNotHandlesFile(Site::kSiteA, "quux");
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(
