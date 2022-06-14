@@ -37,17 +37,18 @@
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <label id="addFileLabel" class="file-input"
-      on-click="handleOpenFileInputClick_">
+      on-click="handleOpenFileInputClick_" tabindex="0">
     <iron-icon icon="attachment:add-file"></iron-icon>Add file
   </label>
 </div>
-<input id="selectFileDialog" type="file" on-change="handleFileSelectChange_">
+<input id="selectFileDialog" type="file" on-change="handleFileSelectChange_"
+    tabindex="-1">
 <div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
   <input type="checkbox" id="selectFileCheckbox">
   <div>
     <div id="selectedFileName"></div>
     <label id="replaceFileLabel" class="file-input"
-        on-click="handleOpenFileInputClick_">
+        on-click="handleOpenFileInputClick_" tabindex="0">
       [[i18n('replaceFileLabel')]]
     </label>
   </div>
