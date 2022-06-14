@@ -31,6 +31,10 @@ class WindowTreeHostTestApi {
 
   void disable_ime() { host_->dispatcher_->set_skip_ime(true); }
 
+  void OnHostResizedInPixels(const gfx::Size& size_in_pixels) {
+    host_->OnHostResizedInPixels(size_in_pixels);
+  }
+
   static const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
     return WindowTreeHost::GetThrottledHostsForTesting();
   }
@@ -60,6 +64,12 @@ void DisableNativeWindowOcclusionTracking(WindowTreeHost* host) {
 
 const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
   return WindowTreeHostTestApi::GetThrottledHosts();
+}
+
+void CallOnHostResizedInPixels(WindowTreeHost* host,
+                               const gfx::Size& size_in_pixels) {
+  WindowTreeHostTestApi host_test_api(host);
+  host_test_api.OnHostResizedInPixels(size_in_pixels);
 }
 
 }  // namespace test
