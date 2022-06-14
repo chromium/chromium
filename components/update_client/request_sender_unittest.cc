@@ -149,7 +149,6 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
   EXPECT_EQ(0, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  // Sanity check the request.
   EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
 
   // Check the response post conditions.

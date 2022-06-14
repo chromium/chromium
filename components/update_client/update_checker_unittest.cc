@@ -248,7 +248,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_EQ(1, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  // Sanity check the request.
+  // Check the request.
   const auto root =
       base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
   ASSERT_TRUE(root);
@@ -315,7 +315,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // IS_WIN
 
-  // Sanity check the arguments of the callback after parsing.
+  // Check the arguments of the callback after parsing.
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
   EXPECT_EQ(0, error_);
   EXPECT_TRUE(results_);
@@ -527,7 +527,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
   ASSERT_EQ(1, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  // Sanity check the request.
+  // Check the request.
   const auto& request = post_interceptor_->GetRequestBody(0);
   const auto root = base::JSONReader::Read(request);
   ASSERT_TRUE(root);
@@ -1085,7 +1085,7 @@ TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
   ASSERT_EQ(1, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  // Sanity check the arguments of the callback after parsing.
+  // Check the arguments of the callback after parsing.
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
   EXPECT_EQ(0, error_);
   EXPECT_TRUE(results_);
