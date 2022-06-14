@@ -84,7 +84,9 @@ bool ShouldHideScrim(const ThemeService* theme_service) {
   DCHECK(theme_service);
   const auto* theme_supplier = theme_service->GetThemeSupplier();
   if (!theme_supplier ||
-      theme_supplier->get_theme_type() != CustomThemeSupplier::EXTENSION) {
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
     return false;
   }
 
@@ -121,7 +123,9 @@ bool ShouldForceDarkForegroundColorsForLogoAndOGB(
     const ThemeService* theme_service) {
   const auto* theme_supplier = theme_service->GetThemeSupplier();
   if (!theme_supplier ||
-      theme_supplier->get_theme_type() != CustomThemeSupplier::EXTENSION) {
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
     return false;
   }
   static constexpr auto kPrideThemeExtensionIdsDarkForeground =

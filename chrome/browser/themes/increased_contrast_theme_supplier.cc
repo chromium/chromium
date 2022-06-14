@@ -8,7 +8,7 @@
 
 IncreasedContrastThemeSupplier::IncreasedContrastThemeSupplier(
     ui::NativeTheme* native_theme)
-    : CustomThemeSupplier(INCREASED_CONTRAST),
+    : CustomThemeSupplier(ThemeType::kIncreasedContrast),
       native_theme_(native_theme),
       is_dark_mode_(native_theme->ShouldUseDarkColors()) {
   native_theme->AddObserver(this);
