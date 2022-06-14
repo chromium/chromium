@@ -7,14 +7,79 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/network/network_connect.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+using chromeos::network_config::mojom::ActivationStateType;
+using chromeos::network_config::mojom::ConnectionStateType;
+using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using chromeos::network_config::mojom::NetworkType;
+
+const std::string kCellular = "cellular";
+constexpr char kWifi[] = "WifiGuid";
+
+const int kSignalStrength = 50;
+constexpr char kUser1Email[] = "user1@quicksettings.com";
+
+const char kNetworkConnectConfigured[] = "StatusArea_Network_ConnectConfigured";
+const char kNetworkConnectionDetails[] = "StatusArea_Network_ConnectionDetails";
+
+class NetworkConnectTestDelegate : public chromeos::NetworkConnect::Delegate {
+ public:
+  NetworkConnectTestDelegate() {}
+
+  NetworkConnectTestDelegate(const NetworkConnectTestDelegate&) = delete;
+  NetworkConnectTestDelegate& operator=(const NetworkConnectTestDelegate&) =
+      delete;
+
+  ~NetworkConnectTestDelegate() override {}
+
+  void ShowNetworkConfigure(const std::string& network_id) override {}
+  void ShowNetworkSettings(const std::string& network_id) override {}
+  bool ShowEnrollNetwork(const std::string& network_id) override {
+    return false;
+  }
+  void ShowMobileSetupDialog(const std::string& network_id) override {}
+  void ShowCarrierAccountDetail(const std::string& network_id) override {}
+  void ShowNetworkConnectError(const std::string& error_name,
+                               const std::string& network_id) override {}
+  void ShowMobileActivationError(const std::string& network_id) override {}
+};
 
 class NetworkDetailedViewControllerTest : public AshTestBase {
  public:
   void SetUp() override {
+    // Initialize CrosNetworkConfigTestHelper here, so we can initialize
+    // a unique network handler and also use NetworkConnectTestDelegate to
+    // initialize NetworkConnect.
+    network_config_helper_ = std::make_unique<
+        chromeos::network_config::CrosNetworkConfigTestHelper>();
+
+    chromeos::NetworkHandler::Initialize();
+    base::RunLoop().RunUntilIdle();
+
+    // Creating a service here, since we would be testing that wifi,
+    // networks which can be connected to are actually connected to. This
+    // checks that chromeos::NetworkConnect eventually connects us to the
+    // network.
+    wifi_service_path_ =
+        network_state_helper()->ConfigureService(base::StringPrintf(
+            R"({"GUID": "%s", "Type": "wifi",
+            "State": "idle", "Strength": 100,
+            "Connectable": true})",
+            kWifi));
+
+    network_connect_delegate_ = std::make_unique<NetworkConnectTestDelegate>();
+    chromeos::NetworkConnect::Initialize(network_connect_delegate_.get());
     AshTestBase::SetUp();
 
     feature_list_.InitAndEnableFeature(features::kQuickSettingsNetworkRevamp);
@@ -26,18 +91,201 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
 
   void TearDown() override {
     network_detailed_view_controller_.reset();
-
     AshTestBase::TearDown();
+    chromeos::NetworkConnect::Shutdown();
+    chromeos::NetworkHandler::Shutdown();
+    network_connect_delegate_.reset();
+  }
+
+  void SelectNetworkListItem(const NetworkStatePropertiesPtr& network) {
+    (static_cast<NetworkDetailedView::Delegate*>(
+         network_detailed_view_controller_.get()))
+        ->OnNetworkListItemSelected(mojo::Clone(network));
+  }
+
+  NetworkStatePropertiesPtr CreateStandaloneNetworkProperties(
+      const std::string& id,
+      NetworkType type,
+      ConnectionStateType connection_state) {
+    return network_config_helper_->CreateStandaloneNetworkProperties(
+        id, type, connection_state, kSignalStrength);
+  }
+
+  std::string GetWifiNetworkState() {
+    return network_state_helper()->GetServiceStringProperty(
+        wifi_service_path_, shill::kStateProperty);
+  }
+
+  void DisconnectWifiNetwork() {
+    network_state_helper()->SetServiceProperty(
+        wifi_service_path_, std::string(shill::kStateProperty),
+        base::Value(shill::kStateIdle));
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
+  chromeos::NetworkStateTestHelper* network_state_helper() {
+    return &network_config_helper_->network_state_helper();
+  }
+
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+      network_config_helper_;
+  std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   std::unique_ptr<NetworkDetailedViewController>
       network_detailed_view_controller_;
+  std::string wifi_service_path_;
 };
 
-TEST_F(NetworkDetailedViewControllerTest, CanConstruct) {
-  EXPECT_TRUE(true);
+TEST_F(NetworkDetailedViewControllerTest,
+       NetworkListItemSelectedWithLockedScreen) {
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+
+  NetworkStatePropertiesPtr cellular_network =
+      CreateStandaloneNetworkProperties(kCellular, NetworkType::kCellular,
+                                        ConnectionStateType::kConnected);
+
+  EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
+
+  // Set login status to locked.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  SelectNetworkListItem(cellular_network);
+  EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+
+  // Show network details page for a connected cellular network.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SelectNetworkListItem(cellular_network);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+}
+
+TEST_F(NetworkDetailedViewControllerTest, EmptyNetworkListItemSelected) {
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+
+  SelectNetworkListItem(/*network=*/nullptr);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+}
+
+TEST_F(NetworkDetailedViewControllerTest, CellularNetworkListItemSelected) {
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+
+  NetworkStatePropertiesPtr cellular_network =
+      CreateStandaloneNetworkProperties(kCellular, NetworkType::kCellular,
+                                        ConnectionStateType::kConnected);
+
+  // When cellular eSIM network is not activated open network details page.
+  cellular_network->connection_state = ConnectionStateType::kNotConnected;
+  cellular_network->type_state->get_cellular()->activation_state =
+      ActivationStateType::kNotActivated;
+  cellular_network->type_state->get_cellular()->eid = "eid";
+  SelectNetworkListItem(cellular_network);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+
+  // When cellular network is SIM locked, we show the SIM unlock settings page.
+  cellular_network->type_state->get_cellular()->sim_locked = true;
+  SelectNetworkListItem(cellular_network);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(1, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+}
+
+TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+
+  // Clicking on an already connected network opens settings page.
+  // Since this network is already connected, selecting this network
+  // in network list vew should result in no change in NetworkState of
+  // the network service.
+  NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
+      kWifi, NetworkType::kWiFi, ConnectionStateType::kOnline);
+
+  SelectNetworkListItem(wifi_network);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
+
+  // Set to be connectable and make sure network is connected to.
+  wifi_network->connection_state = ConnectionStateType::kNotConnected;
+  wifi_network->connectable = true;
+  SelectNetworkListItem(wifi_network);
+
+  // Wait for Network to be connected to.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(shill::kStateOnline, GetWifiNetworkState());
+
+  // Reset network state to idle.
+  DisconnectWifiNetwork();
+  EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
+
+  /// Network can be connected to since active user is primary and the
+  // network is configurable.
+  wifi_network->connection_state = ConnectionStateType::kNotConnected;
+  wifi_network->connectable = false;
+
+  SelectNetworkListItem(wifi_network);
+
+  // Wait for network to be connected to.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(shill::kStateOnline, GetWifiNetworkState());
+
+  // Reset network to idle.
+  DisconnectWifiNetwork();
+  EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
+
+  // Login as secondary user, and make sure network is not connected to,
+  // but settings page is opened.
+  GetSessionControllerClient()->AddUserSession(kUser1Email);
+  SimulateUserLogin(kUser1Email);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_SECONDARY);
+  base::RunLoop().RunUntilIdle();
+
+  SelectNetworkListItem(wifi_network);
+  EXPECT_EQ(2, GetSystemTrayClient()->show_network_settings_count());
+  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectionDetails));
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectConfigured));
+  EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
 }
 
 }  // namespace ash
