@@ -26885,6 +26885,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingDesktopScreenshot.ScreenshotEdited">
+  <owner>skare@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    User chose to edit a screenshot in the capture bubble.
+  </description>
+</action>
+
 <action name="SharingDesktopScreenshot.ScreenshotSavedViaBubble">
   <owner>skare@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
