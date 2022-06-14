@@ -225,4 +225,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         return mCustomTabHeightStrategy.changeBackgroundColorForResizing();
     }
+
+    /**
+     * Perform slide-down animation on closing.
+     * @param finishRunnable Runnable finishing the activity after the animation.
+     */
+    void handleCloseAnimation(Runnable finishRunnable) {
+        mCustomTabHeightStrategy.handleCloseAnimation(finishRunnable);
+    }
 }
