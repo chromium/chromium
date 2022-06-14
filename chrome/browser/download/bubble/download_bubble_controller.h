@@ -49,13 +49,22 @@ class DownloadBubbleUIController
   std::vector<DownloadUIModelPtr> GetPartialView();
 
   // Get all entries that should be displayed in the UI, including downloads and
-  // offline items.
+  // offline items, but allow destruction right away. Use this only if you are
+  // certain that the objects are short lived, for example used to compute
+  // progress.
+  std::vector<std::unique_ptr<DownloadUIModel>>
+  GetAllItemsToDisplayWithoutTaskRunnerDeletion();
+
+  // Get all entries that should be displayed in the UI, including downloads and
+  // offline items, with destruction through the task sequencer. This should be
+  // the default method.
   std::vector<DownloadUIModelPtr> GetAllItemsToDisplay();
 
-  // The list is needed by DownloadDisplayController to check a few things,
-  // for example in progress download count, last completed time, and getting
-  // progress for animation.
+  // The list is needed to populate GetAllItemsToDisplay.
   virtual const OfflineItemList& GetOfflineItems();
+
+  // The list is needed to populate GetAllItemsToDisplay.
+  virtual const std::vector<download::DownloadItem*> GetDownloadItems();
 
   // This function makes sure that the offline items field is
   // populated, and then calls the given callback. After this, GetOfflineItems

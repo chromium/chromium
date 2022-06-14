@@ -32,6 +32,7 @@ DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
   return model;
 }
 
+// static
 DownloadUIModel::DownloadUIModelPtr OfflineItemModel::Wrap(
     OfflineItemModelManager* manager,
     const OfflineItem& offline_item,

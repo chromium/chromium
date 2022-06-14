@@ -188,6 +188,14 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   return item;
 }
 
+offline_items_collection::ContentId OfflineItemUtils::GetContentIdForDownload(
+    download::DownloadItem* download) {
+  bool off_the_record =
+      content::DownloadItemUtils::GetBrowserContext(download)->IsOffTheRecord();
+  return ContentId(OfflineItemUtils::GetDownloadNamespacePrefix(off_the_record),
+                   download->GetGuid());
+}
+
 std::string OfflineItemUtils::GetDownloadNamespacePrefix(
     bool is_off_the_record) {
   return is_off_the_record ? kDownloadIncognitoNamespace : kDownloadNamespace;

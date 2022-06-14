@@ -170,10 +170,7 @@ DownloadItemModel::~DownloadItemModel() {
 }
 
 ContentId DownloadItemModel::GetContentId() const {
-  bool off_the_record = content::DownloadItemUtils::GetBrowserContext(download_)
-                            ->IsOffTheRecord();
-  return ContentId(OfflineItemUtils::GetDownloadNamespacePrefix(off_the_record),
-                   download_->GetGuid());
+  return OfflineItemUtils::GetContentIdForDownload(download_);
 }
 
 Profile* DownloadItemModel::profile() const {

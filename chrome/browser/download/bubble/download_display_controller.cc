@@ -29,7 +29,7 @@ constexpr base::TimeDelta kToolbarIconActiveTimeInterval = base::Minutes(1);
 
 // From the button UI's perspective, whether the download is considered in
 // progress.
-bool IsModelInProgress(const DownloadUIModelPtr& model) {
+bool IsModelInProgress(const DownloadUIModel* model) {
   // Consider dangerous downloads as completed, because we don't want to
   // encourage users to interact with them. However, consider downloads pending
   // scanning as in progress, because we do want users to scan potential
@@ -78,8 +78,8 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
 }
 
 void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
-  std::vector<DownloadUIModelPtr> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
+      bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion();
   // Hide the button if there is only one download item left and that item is
   // about to be removed.
   if (all_models.size() == 1 && all_models[0]->GetContentId() == id) {
@@ -122,8 +122,8 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
   int in_progress_count = 0;
   bool has_deep_scanning_download = false;
 
-  std::vector<DownloadUIModelPtr> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
+      bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion();
   if (all_models.empty()) {
     HideToolbarButton();
     return;
@@ -134,7 +134,7 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
         model->GetState() != download::DownloadItem::CANCELLED) {
       has_deep_scanning_download = true;
     }
-    if (IsModelInProgress(model)) {
+    if (IsModelInProgress(model.get())) {
       in_progress_count++;
     }
   }
@@ -200,7 +200,8 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
                                  last_complete_time)) {
     return;
   }
-  if (bubble_controller_->GetAllItemsToDisplay().empty()) {
+  if (bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion()
+          .empty()) {
     return;
   }
   // If the last download complete time is less than
@@ -238,10 +239,10 @@ DownloadDisplayController::GetProgress() {
   int64_t received_bytes = 0;
   int64_t total_bytes = 0;
 
-  std::vector<DownloadUIModelPtr> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
+      bubble_controller_->GetAllItemsToDisplayWithoutTaskRunnerDeletion();
   for (const auto& model : all_models) {
-    if (IsModelInProgress(model)) {
+    if (IsModelInProgress(model.get())) {
       ++progress_info.download_count;
       if (model->GetTotalBytes() <= 0) {
         // There may or may not be more data coming down this pipe.
