@@ -567,11 +567,8 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                                     const MediaQuerySet* media_queries) {
   if (!media_queries)
     return true;
-  bool match_media = evaluator.Eval(
-      *media_queries, MediaQueryEvaluator::Results{
-                          &features_.ViewportDependentMediaQueryResults(),
-                          &features_.DeviceDependentMediaQueryResults(),
-                          &features_.MediaQueryUnitFlags()});
+  bool match_media =
+      evaluator.Eval(*media_queries, &features_.MutableMediaQueryResultFlags());
   media_query_set_results_.push_back(
       MediaQuerySetResult(*media_queries, match_media));
   return match_media;
@@ -845,7 +842,6 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
   visitor->Trace(selector_fragment_anchor_rules_);
-  visitor->Trace(features_);
   visitor->Trace(focus_visible_pseudo_class_rules_);
   visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);

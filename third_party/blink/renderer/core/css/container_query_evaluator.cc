@@ -97,26 +97,25 @@ double ContainerQueryEvaluator::Height() const {
 
 bool ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
-  return Eval(container_query, MediaQueryEvaluator::Results());
+  return Eval(container_query, nullptr /* result_flags */);
 }
 
 bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
-                                   MediaQueryEvaluator::Results results) const {
+                                   MediaQueryResultFlags* result_flags) const {
   if (!media_query_evaluator_)
     return false;
-  return media_query_evaluator_->Eval(*container_query.query_, results) ==
+  return media_query_evaluator_->Eval(*container_query.query_, result_flags) ==
          KleeneValue::kTrue;
 }
 
 bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                                          Change change,
                                          MatchResult& match_result) {
-  MediaQueryResultList viewport_dependent;
-  unsigned unit_flags = MediaQueryExpValue::UnitFlags::kNone;
-
-  bool result = Eval(query, {&viewport_dependent, nullptr, &unit_flags});
-  if (!viewport_dependent.IsEmpty())
+  MediaQueryResultFlags result_flags;
+  bool result = Eval(query, &result_flags);
+  if (result_flags.is_viewport_dependent)
     match_result.SetDependsOnViewportContainerQueries();
+  unsigned unit_flags = result_flags.unit_flags;
   if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
     match_result.SetDependsOnRemContainerQueries();
   if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)

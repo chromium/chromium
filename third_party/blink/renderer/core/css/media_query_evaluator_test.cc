@@ -987,95 +987,71 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
           "color",
           MediaQueryExpBounds(MediaQueryExpComparison(MediaQueryExpValue()))));
 
-  MediaQueryResultList viewport_dependent;
-  MediaQueryResultList device_dependent;
-
-  MediaQueryEvaluator::Results results;
-  results.viewport_dependent = &viewport_dependent;
-  results.device_dependent = &device_dependent;
-
   // "(color)" should not be dependent on anything.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*color, results);
+    media_query_evaluator.Eval(*color, &result_flags);
 
-    EXPECT_TRUE(viewport_dependent.IsEmpty());
-    EXPECT_TRUE(device_dependent.IsEmpty());
+    EXPECT_FALSE(result_flags.is_viewport_dependent);
+    EXPECT_FALSE(result_flags.is_device_dependent);
   }
 
   // "(width < 400px)" should be viewport-dependent.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*width_lt_400, results);
+    media_query_evaluator.Eval(*width_lt_400, &result_flags);
 
-    ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
-
-    EXPECT_TRUE(device_dependent.IsEmpty());
+    EXPECT_TRUE(result_flags.is_viewport_dependent);
+    EXPECT_FALSE(result_flags.is_device_dependent);
   }
 
   // "(device-width < 600px)" should be device-dependent.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*device_width_lt_600, results);
+    media_query_evaluator.Eval(*device_width_lt_600, &result_flags);
 
-    ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
-
-    EXPECT_TRUE(viewport_dependent.IsEmpty());
+    EXPECT_TRUE(result_flags.is_device_dependent);
+    EXPECT_FALSE(result_flags.is_viewport_dependent);
   }
 
   // "((device-width < 600px))" should be device-dependent.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
     media_query_evaluator.Eval(
         *MakeGarbageCollected<MediaQueryNestedExpNode>(device_width_lt_600),
-        results);
+        &result_flags);
 
-    ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
-
-    EXPECT_TRUE(viewport_dependent.IsEmpty());
+    EXPECT_FALSE(result_flags.is_viewport_dependent);
+    EXPECT_TRUE(result_flags.is_device_dependent);
   }
 
   // "not (device-width < 600px)" should be device-dependent.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
     media_query_evaluator.Eval(
         *MakeGarbageCollected<MediaQueryNotExpNode>(device_width_lt_600),
-        results);
+        &result_flags);
 
-    ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
-
-    EXPECT_TRUE(viewport_dependent.IsEmpty());
+    EXPECT_FALSE(result_flags.is_viewport_dependent);
+    EXPECT_TRUE(result_flags.is_device_dependent);
   }
 
   // "(width < 400px) and (device-width < 600px)" should be both viewport- and
   // device-dependent.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
     media_query_evaluator.Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
                                    width_lt_400, device_width_lt_600),
-                               results);
+                               &result_flags);
 
-    ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
-
-    ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
+    EXPECT_TRUE(result_flags.is_viewport_dependent);
+    EXPECT_TRUE(result_flags.is_device_dependent);
   }
 
   // "not (width < 400px) and (device-width < 600px)" should be
@@ -1084,19 +1060,16 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   // Note that the evaluation short-circuits on the first condition, making the
   // the second condition irrelevant.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
     media_query_evaluator.Eval(
         *MakeGarbageCollected<MediaQueryAndExpNode>(
             MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
             device_width_lt_600),
-        results);
+        &result_flags);
 
-    ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
-
-    EXPECT_EQ(0u, device_dependent.size());
+    EXPECT_TRUE(result_flags.is_viewport_dependent);
+    EXPECT_FALSE(result_flags.is_device_dependent);
   }
 
   // "(width < 400px) or (device-width < 600px)" should be viewport-dependent
@@ -1105,36 +1078,29 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   // Note that the evaluation short-circuits on the first condition, making the
   // the second condition irrelevant.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
     media_query_evaluator.Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
                                    width_lt_400, device_width_lt_600),
-                               results);
+                               &result_flags);
 
-    ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
-
-    EXPECT_EQ(0u, device_dependent.size());
+    EXPECT_TRUE(result_flags.is_viewport_dependent);
+    EXPECT_FALSE(result_flags.is_device_dependent);
   }
 
   // "not (width < 400px) or (device-width < 600px)" should be both viewport-
   //  and device-dependent.
   {
-    viewport_dependent.clear();
-    device_dependent.clear();
+    MediaQueryResultFlags result_flags;
 
     media_query_evaluator.Eval(
         *MakeGarbageCollected<MediaQueryOrExpNode>(
             MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
             device_width_lt_600),
-        results);
+        &result_flags);
 
-    ASSERT_EQ(1u, viewport_dependent.size());
-    EXPECT_EQ(width_lt_400, &viewport_dependent[0].Feature());
-
-    ASSERT_EQ(1u, device_dependent.size());
-    EXPECT_EQ(device_width_lt_600, &device_dependent[0].Feature());
+    EXPECT_TRUE(result_flags.is_viewport_dependent);
+    EXPECT_TRUE(result_flags.is_device_dependent);
   }
 }
 

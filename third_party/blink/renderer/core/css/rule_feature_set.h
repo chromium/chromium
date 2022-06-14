@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_flags.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -53,7 +54,6 @@ class CORE_EXPORT RuleFeatureSet {
   RuleFeatureSet(const RuleFeatureSet&) = delete;
   RuleFeatureSet& operator=(const RuleFeatureSet&) = delete;
   ~RuleFeatureSet();
-  void Trace(Visitor*) const;
 
   bool operator==(const RuleFeatureSet&) const;
   bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }
@@ -94,23 +94,14 @@ class CORE_EXPORT RuleFeatureSet {
     return id_invalidation_sets_.Contains(id_value);
   }
 
-  const MediaQueryResultList& ViewportDependentMediaQueryResults() const {
-    return viewport_dependent_media_query_results_;
+  MediaQueryResultFlags& MutableMediaQueryResultFlags() {
+    return media_query_result_flags_;
   }
-  const MediaQueryResultList& DeviceDependentMediaQueryResults() const {
-    return device_dependent_media_query_results_;
-  }
-  MediaQueryResultList& ViewportDependentMediaQueryResults() {
-    return viewport_dependent_media_query_results_;
-  }
-  MediaQueryResultList& DeviceDependentMediaQueryResults() {
-    return device_dependent_media_query_results_;
-  }
-  unsigned& MediaQueryUnitFlags() { return media_query_unit_flags_; }
   bool HasMediaQueryResults() const {
-    return !viewport_dependent_media_query_results_.IsEmpty() ||
-           !device_dependent_media_query_results_.IsEmpty();
+    return media_query_result_flags_.is_viewport_dependent ||
+           media_query_result_flags_.is_device_dependent;
   }
+  bool HasViewportDependentMediaQueries() const;
   bool HasDynamicViewportDependentMediaQueries() const;
 
   // Collect descendant and sibling invalidation sets.
@@ -723,9 +714,7 @@ class CORE_EXPORT RuleFeatureSet {
   scoped_refptr<SiblingInvalidationSet> universal_sibling_invalidation_set_;
   scoped_refptr<NthSiblingInvalidationSet> nth_invalidation_set_;
   scoped_refptr<DescendantInvalidationSet> type_rule_invalidation_set_;
-  MediaQueryResultList viewport_dependent_media_query_results_;
-  MediaQueryResultList device_dependent_media_query_results_;
-  unsigned media_query_unit_flags_{0};
+  MediaQueryResultFlags media_query_result_flags_;
   ValuesInHasArgument classes_in_has_argument_;
   ValuesInHasArgument attributes_in_has_argument_;
   ValuesInHasArgument ids_in_has_argument_;

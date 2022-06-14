@@ -815,10 +815,8 @@ CSSStyleSheet* StyleEngine::ParseSheet(
 void StyleEngine::CollectUserStyleFeaturesTo(RuleFeatureSet& features) const {
   for (unsigned i = 0; i < active_user_style_sheets_.size(); ++i) {
     CSSStyleSheet* sheet = active_user_style_sheets_[i].first;
-    features.ViewportDependentMediaQueryResults().AppendVector(
-        sheet->ViewportDependentMediaQueryResults());
-    features.DeviceDependentMediaQueryResults().AppendVector(
-        sheet->DeviceDependentMediaQueryResults());
+    features.MutableMediaQueryResultFlags().Add(
+        sheet->GetMediaQueryResultFlags());
     DCHECK(sheet->Contents()->HasRuleSet());
     features.Add(sheet->Contents()->GetRuleSet().Features());
   }

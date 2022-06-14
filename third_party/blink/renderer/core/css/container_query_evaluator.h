@@ -78,7 +78,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void ClearResults();
   Change ComputeChange() const;
   bool Eval(const ContainerQuery&) const;
-  bool Eval(const ContainerQuery&, MediaQueryEvaluator::Results) const;
+  bool Eval(const ContainerQuery&, MediaQueryResultFlags*) const;
 
   struct Result {
     // Main evaluation result.

@@ -112,10 +112,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
   for (auto* active_iterator = active_sheets.begin() + index;
        active_iterator != active_sheets.end(); active_iterator++) {
     CSSStyleSheet* sheet = active_iterator->first;
-    viewport_dependent_media_query_results_.AppendVector(
-        sheet->ViewportDependentMediaQueryResults());
-    device_dependent_media_query_results_.AppendVector(
-        sheet->DeviceDependentMediaQueryResults());
+    media_query_result_flags_.Add(sheet->GetMediaQueryResultFlags());
     if (!active_iterator->second)
       continue;
     const RuleSet& rule_set = *active_iterator->second;
@@ -131,10 +128,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
     RuleFeatureSet& features,
     HeapHashSet<Member<const StyleSheetContents>>&
         visited_shared_style_sheet_contents) const {
-  features.ViewportDependentMediaQueryResults().AppendVector(
-      viewport_dependent_media_query_results_);
-  features.DeviceDependentMediaQueryResults().AppendVector(
-      device_dependent_media_query_results_);
+  features.MutableMediaQueryResultFlags().Add(media_query_result_flags_);
 
   for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
@@ -147,8 +141,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
 
 void ScopedStyleResolver::ResetStyle() {
   style_sheets_.clear();
-  viewport_dependent_media_query_results_.clear();
-  device_dependent_media_query_results_.clear();
+  media_query_result_flags_.Clear();
   keyframes_rule_map_.clear();
   position_fallback_rule_map_.clear();
   if (counter_style_map_)
@@ -322,8 +315,6 @@ StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(style_sheets_);
-  visitor->Trace(viewport_dependent_media_query_results_);
-  visitor->Trace(device_dependent_media_query_results_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(position_fallback_rule_map_);
   visitor->Trace(counter_style_map_);

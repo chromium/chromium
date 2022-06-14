@@ -114,8 +114,7 @@ class CORE_EXPORT ScopedStyleResolver final
   Member<TreeScope> scope_;
 
   HeapVector<Member<CSSStyleSheet>> style_sheets_;
-  MediaQueryResultList viewport_dependent_media_query_results_;
-  MediaQueryResultList device_dependent_media_query_results_;
+  MediaQueryResultFlags media_query_result_flags_;
 
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;

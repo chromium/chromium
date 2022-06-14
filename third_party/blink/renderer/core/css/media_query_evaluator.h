@@ -40,12 +40,10 @@ class LocalFrame;
 class MediaQuery;
 class MediaQueryExpNode;
 class MediaQueryFeatureExpNode;
-class MediaQueryResult;
 class MediaQuerySet;
 class MediaQuerySetResult;
 class MediaValues;
-
-using MediaQueryResultList = HeapVector<MediaQueryResult>;
+struct MediaQueryResultFlags;
 
 // See Kleene 3-valued logic
 //
@@ -92,28 +90,17 @@ class CORE_EXPORT MediaQueryEvaluator final
 
   bool MediaTypeMatch(const String& media_type_to_match) const;
 
-  // Output from Eval functions:
-  struct Results {
-    STACK_ALLOCATED();
-
-   public:
-    MediaQueryResultList* viewport_dependent = nullptr;
-    MediaQueryResultList* device_dependent = nullptr;
-    // Or'ed MediaQueryExpValue::UnitFlags.
-    unsigned* unit_flags = nullptr;
-  };
-
   // Evaluates a list of media queries.
   bool Eval(const MediaQuerySet&) const;
-  bool Eval(const MediaQuerySet&, Results) const;
+  bool Eval(const MediaQuerySet&, MediaQueryResultFlags*) const;
 
   // Evaluates media query.
   bool Eval(const MediaQuery&) const;
-  bool Eval(const MediaQuery&, Results) const;
+  bool Eval(const MediaQuery&, MediaQueryResultFlags*) const;
 
   // https://drafts.csswg.org/mediaqueries-4/#evaluating
   KleeneValue Eval(const MediaQueryExpNode&) const;
-  KleeneValue Eval(const MediaQueryExpNode&, Results) const;
+  KleeneValue Eval(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
 
   // Returns true if any of the media queries in the results lists changed its
   // evaluation.
@@ -122,14 +109,15 @@ class CORE_EXPORT MediaQueryEvaluator final
   void Trace(Visitor*) const;
 
  private:
-  KleeneValue EvalNot(const MediaQueryExpNode&, Results) const;
+  KleeneValue EvalNot(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
   KleeneValue EvalAnd(const MediaQueryExpNode&,
                       const MediaQueryExpNode&,
-                      Results) const;
+                      MediaQueryResultFlags*) const;
   KleeneValue EvalOr(const MediaQueryExpNode&,
                      const MediaQueryExpNode&,
-                     Results) const;
-  KleeneValue EvalFeature(const MediaQueryFeatureExpNode&, Results) const;
+                     MediaQueryResultFlags*) const;
+  KleeneValue EvalFeature(const MediaQueryFeatureExpNode&,
+                          MediaQueryResultFlags*) const;
 
   const String MediaType() const;
 

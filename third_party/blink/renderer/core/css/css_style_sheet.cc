@@ -289,17 +289,11 @@ void CSSStyleSheet::setDisabled(bool disabled) {
 }
 
 bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
-  viewport_dependent_media_query_results_.clear();
-  device_dependent_media_query_results_.clear();
-  media_query_unit_flags_ = 0;
+  media_query_result_flags_.Clear();
 
   if (!media_queries_)
     return true;
-  return evaluator.Eval(
-      *media_queries_,
-      MediaQueryEvaluator::Results{&viewport_dependent_media_query_results_,
-                                   &device_dependent_media_query_results_,
-                                   &media_query_unit_flags_});
+  return evaluator.Eval(*media_queries_, &media_query_result_flags_);
 }
 
 void CSSStyleSheet::AddedAdoptedToTreeScope(TreeScope& tree_scope) {
@@ -310,8 +304,12 @@ void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
   adopted_tree_scopes_.erase(&tree_scope);
 }
 
+bool CSSStyleSheet::HasViewportDependentMediaQueries() const {
+  return media_query_result_flags_.is_viewport_dependent;
+}
+
 bool CSSStyleSheet::HasDynamicViewportDependentMediaQueries() const {
-  return media_query_unit_flags_ &
+  return media_query_result_flags_.unit_flags &
          MediaQueryExpValue::UnitFlags::kDynamicViewport;
 }
 
@@ -623,8 +621,6 @@ bool CSSStyleSheet::CanBeActivated(
 void CSSStyleSheet::Trace(Visitor* visitor) const {
   visitor->Trace(contents_);
   visitor->Trace(media_queries_);
-  visitor->Trace(viewport_dependent_media_query_results_);
-  visitor->Trace(device_dependent_media_query_results_);
   visitor->Trace(owner_node_);
   visitor->Trace(owner_rule_);
   visitor->Trace(media_cssom_wrapper_);

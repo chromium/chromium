@@ -25,35 +25,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MEDIA_QUERY_RESULT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
-
-class CORE_EXPORT MediaQueryResult {
-  DISALLOW_NEW();
-
- public:
-  MediaQueryResult(const MediaQueryFeatureExpNode& feature, bool result)
-      : feature_(&feature), result_(result) {}
-  void Trace(Visitor* visitor) const { visitor->Trace(feature_); }
-
-  bool operator==(const MediaQueryResult& other) const {
-    return feature_ == other.feature_ && result_ == other.result_;
-  }
-  bool operator!=(const MediaQueryResult& other) const {
-    return !(*this == other);
-  }
-
-  const MediaQueryFeatureExpNode& Feature() const { return *feature_; }
-
-  bool Result() const { return result_; }
-
- private:
-  Member<const MediaQueryFeatureExpNode> feature_;
-  bool result_;
-};
 
 class MediaQuerySetResult {
   DISALLOW_NEW();
@@ -72,9 +49,43 @@ class MediaQuerySetResult {
   bool result_;
 };
 
+struct MediaQueryResultFlags {
+  DISALLOW_NEW();
+
+ public:
+  bool operator==(const MediaQueryResultFlags& o) const {
+    return (unit_flags == o.unit_flags) &&
+           (is_viewport_dependent == o.is_viewport_dependent) &&
+           (is_device_dependent == o.is_device_dependent);
+  }
+  bool operator!=(const MediaQueryResultFlags& o) const {
+    return !(*this == o);
+  }
+
+  void Add(const MediaQueryResultFlags& o) {
+    unit_flags |= o.unit_flags;
+    is_viewport_dependent |= o.is_viewport_dependent;
+    is_device_dependent |= o.is_device_dependent;
+  }
+
+  void Clear() {
+    unit_flags = 0;
+    is_viewport_dependent = false;
+    is_device_dependent = false;
+  }
+
+  // Or'ed MediaQueryExpValue::UnitFlags.
+  unsigned unit_flags = 0;
+  // True if the result is viewport dependent, for example if the 'width'
+  // media feature was used in the evaluation.
+  bool is_viewport_dependent = false;
+  // True if the result is device dependent, for example if the 'device-width'
+  // media feature was used in the evaluation.
+  bool is_device_dependent = false;
+};
+
 }  // namespace blink
 
-WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MediaQueryResult)
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MediaQuerySetResult)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MEDIA_QUERY_RESULT_H_

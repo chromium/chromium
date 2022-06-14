@@ -58,7 +58,6 @@ void CSSGlobalRuleSet::Dispose() {
 
 void CSSGlobalRuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(watched_selectors_rule_set_);
-  visitor->Trace(features_);
 }
 
 }  // namespace blink

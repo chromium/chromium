@@ -29,8 +29,6 @@ class RuleFeatureSetTest : public testing::Test {
  public:
   RuleFeatureSetTest() = default;
 
-  void Trace(Visitor* visitor) const { visitor->Trace(rule_feature_set_); }
-
   void SetUp() override {
     document_ = HTMLDocument::CreateForTest();
     auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document_);
@@ -38,18 +36,6 @@ class RuleFeatureSetTest : public testing::Test {
     document_->AppendChild(html);
 
     document_->body()->setInnerHTML("<b><i></i></b>");
-  }
-
-  HeapVector<Member<const MediaQueryFeatureExpNode>> FeaturesFrom(
-      const MediaQuery& query) {
-    HeapVector<MediaQueryExp> expressions;
-    if (query.ExpNode())
-      query.ExpNode()->CollectExpressions(expressions);
-    HeapVector<Member<const MediaQueryFeatureExpNode>> features;
-    for (const MediaQueryExp& exp : expressions) {
-      features.push_back(MakeGarbageCollected<MediaQueryFeatureExpNode>(exp));
-    }
-    return features;
   }
 
   RuleFeatureSet::SelectorPreMatch CollectFeatures(
@@ -1486,93 +1472,33 @@ TEST_F(RuleFeatureSetTest, invalidatesNonTerminalHas) {
   }
 }
 
-TEST_F(RuleFeatureSetTest, MediaQueryResultListEquality) {
-  MediaQuerySet* min_width1 =
-      MediaQueryParser::ParseMediaQuerySet("(min-width: 1000px)", nullptr);
-  MediaQuerySet* min_width2 =
-      MediaQueryParser::ParseMediaQuerySet("(min-width: 2000px)", nullptr);
-  MediaQuerySet* min_resolution1 =
-      MediaQueryParser::ParseMediaQuerySet("(min-resolution: 72dpi)", nullptr);
-  MediaQuerySet* min_resolution2 =
-      MediaQueryParser::ParseMediaQuerySet("(min-resolution: 300dpi)", nullptr);
+TEST_F(RuleFeatureSetTest, MediaQueryResultFlagsEquality) {
+  RuleFeatureSet empty;
 
-  {
-    RuleFeatureSet set1;
-    RuleFeatureSet set2;
-    RuleFeatureSet set3;
-    for (const auto& query : min_width1->QueryVector()) {
-      for (const auto& feature : FeaturesFrom(*query)) {
-        set1.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-        set2.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-        set3.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, false));
-      }
-    }
-    EXPECT_EQ(set1, set2);
-    EXPECT_NE(set1, set3);
-    EXPECT_NE(set3, set2);
-  }
+  RuleFeatureSet viewport_dependent;
+  viewport_dependent.MutableMediaQueryResultFlags().is_viewport_dependent =
+      true;
 
-  {
-    RuleFeatureSet set1;
-    for (const auto& query : min_width1->QueryVector()) {
-      for (const auto& feature : FeaturesFrom(*query)) {
-        set1.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-      }
-    }
+  RuleFeatureSet device_dependent;
+  device_dependent.MutableMediaQueryResultFlags().is_device_dependent = true;
 
-    RuleFeatureSet set2;
-    for (const auto& query : min_width2->QueryVector()) {
-      for (const auto& feature : FeaturesFrom(*query)) {
-        set1.ViewportDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-      }
-    }
+  RuleFeatureSet font_unit;
+  font_unit.MutableMediaQueryResultFlags().unit_flags =
+      MediaQueryExpValue::kFontRelative;
 
-    EXPECT_NE(set1, set2);
-  }
+  RuleFeatureSet dynamic_viewport_unit;
+  dynamic_viewport_unit.MutableMediaQueryResultFlags().unit_flags =
+      MediaQueryExpValue::kDynamicViewport;
 
-  {
-    RuleFeatureSet set1;
-    RuleFeatureSet set2;
-    RuleFeatureSet set3;
-    for (const auto& query : min_resolution1->QueryVector()) {
-      for (const auto& feature : FeaturesFrom(*query)) {
-        set1.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-        set2.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-        set3.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, false));
-      }
-    }
-    EXPECT_EQ(set1, set2);
-    EXPECT_NE(set1, set3);
-    EXPECT_NE(set3, set2);
-  }
+  EXPECT_EQ(empty, empty);
+  EXPECT_EQ(viewport_dependent, viewport_dependent);
+  EXPECT_EQ(device_dependent, device_dependent);
+  EXPECT_EQ(font_unit, font_unit);
 
-  {
-    RuleFeatureSet set1;
-    for (const auto& query : min_resolution1->QueryVector()) {
-      for (const auto& feature : FeaturesFrom(*query)) {
-        set1.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-      }
-    }
-
-    RuleFeatureSet set2;
-    for (const auto& query : min_resolution2->QueryVector()) {
-      for (const auto& feature : FeaturesFrom(*query)) {
-        set2.DeviceDependentMediaQueryResults().push_back(
-            MediaQueryResult(*feature, true));
-      }
-    }
-
-    EXPECT_NE(set1, set2);
-  }
+  EXPECT_NE(viewport_dependent, device_dependent);
+  EXPECT_NE(empty, device_dependent);
+  EXPECT_NE(font_unit, viewport_dependent);
+  EXPECT_NE(font_unit, dynamic_viewport_unit);
 }
 
 struct RefTestData {

@@ -304,9 +304,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool HasViewportDependentMediaQueries() {
     DCHECK(global_rule_set_);
     UpdateActiveStyle();
-    return !global_rule_set_->GetRuleFeatureSet()
-                .ViewportDependentMediaQueryResults()
-                .IsEmpty();
+    return global_rule_set_->GetRuleFeatureSet()
+        .HasViewportDependentMediaQueries();
   }
 
   class InApplyAnimationUpdateScope {

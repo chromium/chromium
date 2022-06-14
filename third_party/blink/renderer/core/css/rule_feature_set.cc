@@ -421,11 +421,6 @@ RuleFeatureSet::~RuleFeatureSet() {
   is_alive_ = false;
 }
 
-void RuleFeatureSet::Trace(Visitor* visitor) const {
-  visitor->Trace(viewport_dependent_media_query_results_);
-  visitor->Trace(device_dependent_media_query_results_);
-}
-
 bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
   return metadata_ == other.metadata_ &&
          InvalidationSetMapsEqual<AtomicString>(
@@ -445,10 +440,7 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
                                 other.universal_sibling_invalidation_set_) &&
          base::ValuesEquivalent(type_rule_invalidation_set_,
                                 other.type_rule_invalidation_set_) &&
-         viewport_dependent_media_query_results_ ==
-             other.viewport_dependent_media_query_results_ &&
-         device_dependent_media_query_results_ ==
-             other.device_dependent_media_query_results_ &&
+         media_query_result_flags_ == other.media_query_result_flags_ &&
          classes_in_has_argument_ == other.classes_in_has_argument_ &&
          attributes_in_has_argument_ == other.attributes_in_has_argument_ &&
          ids_in_has_argument_ == other.ids_in_has_argument_ &&
@@ -1686,11 +1678,7 @@ void RuleFeatureSet::Add(const RuleFeatureSet& other) {
     metadata_.invalidates_parts = true;
 
   metadata_.Add(other.metadata_);
-
-  viewport_dependent_media_query_results_.AppendVector(
-      other.viewport_dependent_media_query_results_);
-  device_dependent_media_query_results_.AppendVector(
-      other.device_dependent_media_query_results_);
+  media_query_result_flags_.Add(other.media_query_result_flags_);
 
   for (const auto& class_name : other.classes_in_has_argument_)
     classes_in_has_argument_.insert(class_name);
@@ -1716,9 +1704,7 @@ void RuleFeatureSet::Clear() {
   universal_sibling_invalidation_set_ = nullptr;
   nth_invalidation_set_ = nullptr;
   type_rule_invalidation_set_ = nullptr;
-  viewport_dependent_media_query_results_.clear();
-  device_dependent_media_query_results_.clear();
-  media_query_unit_flags_ = 0;
+  media_query_result_flags_.Clear();
   classes_in_has_argument_.clear();
   attributes_in_has_argument_.clear();
   ids_in_has_argument_.clear();
@@ -1728,8 +1714,12 @@ void RuleFeatureSet::Clear() {
   pseudos_in_has_argument_.clear();
 }
 
+bool RuleFeatureSet::HasViewportDependentMediaQueries() const {
+  return media_query_result_flags_.is_viewport_dependent;
+}
+
 bool RuleFeatureSet::HasDynamicViewportDependentMediaQueries() const {
-  return media_query_unit_flags_ &
+  return media_query_result_flags_.unit_flags &
          MediaQueryExpValue::UnitFlags::kDynamicViewport;
 }
 
