@@ -193,7 +193,6 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
         "/home_button_on_grid_tab_switcher/false"})
-    @DisabledTest(message = "https://crbug.com/1291957")
     public void testShow_SingleAsHomepage() {
         // clang-format on
         if (!mImmediateReturn) {
@@ -205,9 +204,9 @@ public class StartSurfaceTest {
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tab_switcher_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.carousel_tab_switcher_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_switcher_title)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.carousel_tab_switcher_container)).check(matches(isDisplayed()));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
 
         StartSurfaceTestUtils.clickMoreTabs(cta);
