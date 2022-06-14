@@ -53,6 +53,11 @@ wtf_size_t NGGridTrackList::RepeatCount(const wtf_size_t index,
   return repeaters_[index].repeat_count;
 }
 
+wtf_size_t NGGridTrackList::RepeatIndex(const wtf_size_t index) const {
+  DCHECK_LT(index, RepeaterCount());
+  return repeaters_[index].repeat_index;
+}
+
 wtf_size_t NGGridTrackList::RepeatSize(const wtf_size_t index) const {
   DCHECK_LT(index, RepeaterCount());
   return repeaters_[index].repeat_size;
@@ -94,9 +99,9 @@ bool NGGridTrackList::AddRepeater(
   if (repeat_count == 0u || repeater_track_sizes.IsEmpty())
     return false;
 
-  // If the repeater is auto, the repeat_count should be 1.
-  DCHECK(repeat_type == NGGridTrackRepeater::RepeatType::kNoRepeat ||
-         repeat_type == NGGridTrackRepeater::RepeatType::kInteger ||
+  // If the repeater is auto or there isn't a repeater, the repeat_count should
+  // be 1.
+  DCHECK(repeat_type == NGGridTrackRepeater::RepeatType::kInteger ||
          repeat_count == 1u);
 
   // Ensure adding tracks will not overflow the total in this track list and
@@ -192,6 +197,11 @@ NGGridTrackList& GridTrackList::NGTrackList() {
 const NGGridTrackList& GridTrackList::NGTrackList() const {
   DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
   return ng_track_list_;
+}
+
+void GridTrackList::SetNGGridTrackList(const NGGridTrackList& other) {
+  DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
+  ng_track_list_ = other;
 }
 
 void GridTrackList::operator=(const GridTrackList& other) {

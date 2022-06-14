@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/animation/css_font_stretch_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_variation_settings_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_weight_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_grid_template_property_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_image_slice_interpolation_type.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -187,6 +189,15 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kAspectRatio:
         applicable_types->push_back(
             std::make_unique<CSSAspectRatioInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kGridTemplateColumns:
+      case CSSPropertyID::kGridTemplateRows:
+        if (RuntimeEnabledFeatures::
+                CSSGridTemplatePropertyInterpolationEnabled()) {
+          applicable_types->push_back(
+              std::make_unique<CSSGridTemplatePropertyInterpolationType>(
+                  used_property));
+        }
         break;
       case CSSPropertyID::kContainIntrinsicWidth:
       case CSSPropertyID::kContainIntrinsicHeight:
