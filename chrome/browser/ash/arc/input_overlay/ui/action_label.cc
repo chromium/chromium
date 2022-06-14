@@ -283,6 +283,10 @@ void ActionLabel::OnBlur() {
 }
 
 void ActionLabel::SetToViewMode() {
+  if (IsUnbound()) {
+    SetVisible(false);
+    return;
+  }
   ClearFocus();
   SetInstallFocusRingOnFocus(false);
   label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
@@ -309,6 +313,9 @@ void ActionLabel::SetToViewMode() {
 }
 
 void ActionLabel::SetToEditMode() {
+  if (IsUnbound())
+    SetVisible(true);
+
   SetInstallFocusRingOnFocus(true);
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetHaloInset(kHaloInset);

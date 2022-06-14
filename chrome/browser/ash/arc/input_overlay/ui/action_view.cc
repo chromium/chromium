@@ -14,11 +14,6 @@ namespace input_overlay {
 namespace {
 constexpr int kMenuEntryOffset = 4;
 
-// UI strings.
-// TODO(cuicuiruan): Remove string and related code.
-constexpr base::StringPiece kEditErrorDuplicatedKey(
-    "Duplicated key in the same action");
-
 // For the keys that are caught by display overlay, check if they are reserved
 // for special use.
 bool IsReservedDomCode(ui::DomCode code) {
@@ -163,18 +158,6 @@ void ActionView::RemoveEditButton() {
 
 bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
                                     ActionLabel* editing_label) {
-  // Check if |code| is duplicated with the keys in its action. For example,
-  // there are four keys involved in the key-bound |ActionMove|.
-  auto& binding = action_->GetCurrentDisplayedBinding();
-  if (IsKeyboardBound(binding)) {
-    for (const auto& key : binding.keys()) {
-      if (key != code)
-        continue;
-      ShowErrorMsg(kEditErrorDuplicatedKey, editing_label);
-      return true;
-    }
-  }
-
   if ((!action_->support_modifier_key() &&
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {

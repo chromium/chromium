@@ -166,11 +166,19 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (ShouldShowErrorMsg(code, action_label))
       return;
 
-    auto& binding = action_->GetCurrentDisplayedBinding();
+    const auto& binding = action_->GetCurrentDisplayedBinding();
     DCHECK(binding.keys().size() == kActionMoveKeysSize);
-    const int index = it - labels_.begin();
     std::vector<ui::DomCode> new_keys = binding.keys();
-    new_keys[index] = code;
+    new_keys[it - labels_.begin()] = code;
+
+    // If there is duplicate key in its own action, take the key away from
+    // previous index.
+    const int unassigned_index = binding.GetIndexOfKey(code);
+    if (unassigned_index != -1) {
+      new_keys[unassigned_index] = ui::DomCode::NONE;
+      labels_[unassigned_index]->SetDisplayMode(DisplayMode::kEditedUnbound);
+    }
+
     auto input_element = InputElement::CreateActionMoveKeyElement(new_keys);
     ChangeBinding(action_, action_label, std::move(input_element));
   }

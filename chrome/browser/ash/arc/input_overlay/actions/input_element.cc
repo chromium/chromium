@@ -181,6 +181,11 @@ void InputElement::SetKeys(std::vector<ui::DomCode>& keys) {
   std::copy(keys.begin(), keys.end(), std::back_inserter(keys_));
 }
 
+int InputElement::GetIndexOfKey(ui::DomCode key) const {
+  auto it = std::find(keys_.begin(), keys_.end(), key);
+  return it == keys_.end() ? -1 : it - keys_.begin();
+}
+
 std::unique_ptr<InputElementProto> InputElement::ConvertToProto() {
   auto proto = std::make_unique<InputElementProto>();
   proto->set_input_sources(input_sources_);
