@@ -234,9 +234,8 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
-// TODO(crbug.com/1324437): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
-                       DISABLED_PermissionContextBase) {
+                       PermissionContextBase) {
   // HTTPS needed for GEOLOCATION permission
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
