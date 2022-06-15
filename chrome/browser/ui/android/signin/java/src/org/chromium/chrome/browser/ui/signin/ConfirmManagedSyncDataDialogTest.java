@@ -32,6 +32,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -101,6 +102,7 @@ public class ConfirmManagedSyncDataDialogTest {
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_is_greater_than = 25, message = "https://crbug.com/1336718 - failing on O")
     public void testDialogIsDismissedWhenRecreated() throws Exception {
         showManagedSyncDataDialog();
         onView(withText(R.string.sign_in_managed_account))
