@@ -6397,6 +6397,17 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
+      'win11-blink-rel': {
+        'mixins': [
+            'win11',
+        ],
+        'swarming': {
+          'hard_timeout': 900,
+        },
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
     },
   },
   {

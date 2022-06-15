@@ -494,6 +494,15 @@
           'hard_timeout': 1200,
         },
       },
+      'win11-blink-rel': {
+        'swarming': {
+          'hard_timeout': 1200,
+        },
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
       'win11-blink-rel-dummy': {
         'swarming': {
           'hard_timeout': 1200,

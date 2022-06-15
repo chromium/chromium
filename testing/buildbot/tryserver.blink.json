@@ -143,5 +143,48 @@
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
     ]
+  },
+  "win11-blink-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--num-retries=3",
+          "--fuzzy-diff",
+          "--git-revision=${got_revision}",
+          "--target",
+          "Release_x64"
+        ],
+        "check_flakiness_for_new_tests": false,
+        "isolate_name": "blink_web_tests",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-11-22000"
+            }
+          ],
+          "hard_timeout": 1200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
+        },
+        "test_id_prefix": "ninja://:blink_web_tests/"
+      }
+    ]
   }
 }
