@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_MESSAGE_PORT_H_
-#define FUCHSIA_BASE_MESSAGE_PORT_H_
+#ifndef FUCHSIA_WEB_WEBENGINE_BROWSER_MESSAGE_PORT_H_
+#define FUCHSIA_WEB_WEBENGINE_BROWSER_MESSAGE_PORT_H_
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_handle.h>
@@ -46,4 +46,4 @@ absl::optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_MESSAGE_PORT_H_
+#endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_MESSAGE_PORT_H_

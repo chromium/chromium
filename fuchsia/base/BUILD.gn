@@ -31,25 +31,6 @@ source_set("modular") {
   ]
 }
 
-# FIDL/Mojo adapters for MessagePorts.
-source_set("message_port") {
-  visibility = [ "//fuchsia_web/webengine/*" ]
-  sources = [ "message_port.cc" ]
-  public = [ "message_port.h" ]
-  public_deps = [
-    "//third_party/abseil-cpp:absl",
-    "//third_party/blink/public/common:headers",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
-  ]
-  deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//third_party/blink/public/common",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
-    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
-  ]
-}
-
 static_library("run_all_integration_tests") {
   testonly = true
   visibility = [
