@@ -169,14 +169,6 @@ cr.define('cr.ui', function() {
     }  // loginForTesting
 
     /**
-     * Gaia login screen for telemetry.
-     */
-    static addUserForTesting() {
-      this.skipToLoginForTesting();
-      chrome.send('addUser');
-    }
-
-    /**
      * Shows the add user dialog. Used in browser tests.
      */
     static showAddUserForTesting() {
