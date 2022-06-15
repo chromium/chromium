@@ -6,17 +6,19 @@
  * Known file extension and mime type mapping.
  *
  * 1. Fields "type/translationKey/subtype/extensions" are mandatory, "mime/icon"
- * are optional, if "mime" is missing, we won't generate a mapping for that type
- * in backend.
+ *    are optional, if "mime" is missing, we won't generate a mapping for that
+ *    type in backend.
  * 2. The extensions must be an array where each extension starts with a dot.
  * 3. One extension can be mapped to multiple mime types, this is mainly used
- * for scenarios when two mime types are equivalent. E.g. "video/ogg" and
- * "application/ogg", so when we use mime type to find the corresponding
- * extensions, both mime types can return the correct extensions.
- * 4. Order matters! If one extension includes another extension, the longer
- * extension should come first in the array. E.g. ".gz" and ".tar.gz", the
- * definition of ".tar.gz" should come first because we use extension to find
- * the corresponding mime type, ".tar.gz" should match the more specific one.
+ *    for scenarios when two mime types are equivalent. E.g. "video/ogg" and
+ *    "application/ogg", so when we use mime type to find the corresponding
+ *    extensions, both mime types can return the correct extensions.
+ * 4. The "subtype" field represents the subtype of archive, image, audio or
+ *    video file type.
+ * 5. Order matters! If one extension includes another extension, the longer
+ *    extension should come first in the array. E.g. ".gz" and ".tar.gz", the
+ *    definition of ".tar.gz" should come first because we use extension to find
+ *    the corresponding mime type, ".tar.gz" should match the more specific one.
  *
  * Note: the above rules are being validated in PRESUBMIT.py, remember to update
  * the validation logic there if any of the rules above change.
@@ -302,100 +304,100 @@
   // Archive
   {
     "type": "archive",
-    "translationKey": "ZIP_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "ZIP",
     "extensions": [".zip"],
     "mime": "application/zip"
   },
   {
     "type": "archive",
-    "translationKey": "RAR_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "RAR",
     "extensions": [".rar"],
     "mime": "application/x-rar-compressed"
   },
   {
     "type": "archive",
-    "translationKey": "ISO_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "ISO",
     "extensions": [".iso"],
     "mime": "application/x-iso9660-image"
   },
   {
     "type": "archive",
-    "translationKey": "7Z_ARCHIVE_FILE_TYPE",
-    "subtype": "7ZIP",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "7-Zip",
     "extensions": [".7z"],
     "mime": "application/x-7z-compressed"
   },
   {
     "type": "archive",
-    "translationKey": "CRX_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "CRX",
     "extensions": [".crx"],
     "mime": "application/x-chrome-extension"
   },
   {
     "type": "archive",
-    "translationKey": "TAR_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "TAR",
     "extensions": [".tar"],
     "mime": "application/x-tar"
   },
   {
     "type": "archive",
-    "translationKey": "BZIP2_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "BZIP2",
     "extensions": [".bz2", ".bz", ".tbz", ".tbz2", ".tz2", ".tb2"],
     "mime": "application/x-bzip2"
   },
   {
     "type": "archive",
-    "translationKey": "GZIP_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "GZIP",
     "extensions": [".gz", ".tgz"],
     "mime": "application/x-gzip"
   },
   {
     "type": "archive",
-    "translationKey": "LZIP_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "LZIP",
     "extensions": [".lz"],
     "mime": "application/x-lzip"
   },
   {
     "type": "archive",
-    "translationKey": "LZOP_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "LZOP",
     "extensions": [".lzo"],
     "mime": "application/x-lzop"
   },
   {
     "type": "archive",
-    "translationKey": "LZMA_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "LZMA",
     "extensions": [".lzma", ".tlzma", ".tlz"],
     "mime": "application/x-lzma"
   },
   {
     "type": "archive",
-    "translationKey": "XZ_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "XZ",
     "extensions": [".xz", ".txz"],
     "mime": "application/x-xz"
   },
   {
     "type": "archive",
-    "translationKey": "Z_ARCHIVE_FILE_TYPE",
+    "translationKey": "ARCHIVE_FILE_TYPE",
     "subtype": "Z",
     "extensions": [".z", ".taz", ".tz"],
     "mime": "application/x-compress"
   },
   {
     "type": "archive",
-    "translationKey": "ZSTD_ARCHIVE_FILE_TYPE",
-    "subtype": "ZSTD",
-    "extensions": [".tar.zst", ".tzst", ".zst"],
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "Zstandard",
+    "extensions": [".zst", ".tzst"],
     "mime": "application/zstd"
   },
 

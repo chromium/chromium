@@ -62,7 +62,7 @@ export function testGetTypeForName() {
     {name: '/wav/dir/foo.ogg', want: {type: 'audio', subtype: 'OGG'}},
     {name: '/mp3/amr/foo.opus', want: {type: 'audio', subtype: 'OGG'}},
     // Archive types.
-    {name: '/dir/foo.7z', want: {type: 'archive', subtype: '7ZIP'}},
+    {name: '/dir/foo.7z', want: {type: 'archive', subtype: '7-Zip'}},
     {name: '/dir/foo.crx', want: {type: 'archive', subtype: 'CRX'}},
     {name: '/dir/foo.iso', want: {type: 'archive', subtype: 'ISO'}},
     {name: '/dir/foo.rar', want: {type: 'archive', subtype: 'RAR'}},
@@ -94,9 +94,9 @@ export function testGetTypeForName() {
     {name: '/dir/foo.tar.Z', want: {type: 'archive', subtype: 'Z'}},
     {name: '/dir/foo.taZ', want: {type: 'archive', subtype: 'Z'}},
     {name: '/dir/foo.tZ', want: {type: 'archive', subtype: 'Z'}},
-    {name: '/dir/foo.zst', want: {type: 'archive', subtype: 'ZSTD'}},
-    {name: '/dir/foo.tar.zst', want: {type: 'archive', subtype: 'ZSTD'}},
-    {name: '/dir/foo.tzst', want: {type: 'archive', subtype: 'ZSTD'}},
+    {name: '/dir/foo.zst', want: {type: 'archive', subtype: 'Zstandard'}},
+    {name: '/dir/foo.tar.zst', want: {type: 'archive', subtype: 'Zstandard'}},
+    {name: '/dir/foo.tzst', want: {type: 'archive', subtype: 'Zstandard'}},
     // Support upper case file name.
     {name: '/dir/foo.JPG', want: {type: 'image', subtype: 'JPEG'}},
     // Unknown files.
