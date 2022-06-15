@@ -98095,6 +98095,7 @@ others/histograms.xml -->
   <int value="1804492839" label="Colors"/>
   <int value="1894705443" label="Leisure"/>
   <int value="1914850019" label="Heritage"/>
+  <int value="2026958207" label="LGBTQ Artists"/>
   <int value="2084467495" label="Dessert time"/>
   <int value="2094027636" label="Solid colors"/>
 </enum>
@@ -98143,6 +98144,8 @@ others/histograms.xml -->
   <int value="-1971674273" label="Leisure - 18438465517979870047"/>
   <int value="-1953555516" label="Floral - 18439301194079738820"/>
   <int value="-1938230489" label="Element - 18440708087942279975"/>
+  <int value="-1934316364" label="LGBTQ Artists - 3223345251527860"/>
+  <int value="-1927352346" label="LGBTQ Artists - 18438382509191262182"/>
   <int value="-1916450445" label="Art - 18446537445211457907"/>
   <int value="-1910580223" label="Solid Colors - 18444350009783540737"/>
   <int value="-1890583571" label="Heritage - 8492875030461421"/>
@@ -98190,6 +98193,7 @@ others/histograms.xml -->
   <int value="-1389216897" label="Landscapes - 3716322142862207"/>
   <int value="-1382225891" label="Landscapes - 7848789358209053"/>
   <int value="-1379111552" label="Heritage - 6939063748423040"/>
+  <int value="-1349646083" label="LGBTQ Artists - 18440020408432199933"/>
   <int value="-1346329828" label="Collage - 302823912809244"/>
   <int value="-1315221908" label="Cityscapes - 18438039904557157996"/>
   <int value="-1308168417" label="Solid Colors - 737212648320799"/>
@@ -98237,10 +98241,14 @@ others/histograms.xml -->
   <int value="-755562342" label="Art - 18442108141089261722"/>
   <int value="-753216621" label="Colors - 6786829258511251"/>
   <int value="-732111196" label="Solid Colors - 6325085935558308"/>
+  <int value="-692767506" label="LGBTQ Artists - 18440369104598938862"/>
   <int value="-671868169" label="Art - 18441859488336321271"/>
   <int value="-663382773" label="Landscapes - 543123721000203"/>
+  <int value="-651763227" label="LGBTQ Artists - 18444260070132212197"/>
   <int value="-650608223" label="Composition - 1914403712172449"/>
+  <int value="-648909746" label="LGBTQ Artists - 18445559868972756046"/>
   <int value="-646744548" label="Togetherness - 4852535008654876"/>
+  <int value="-629215657" label="LGBTQ Artists - 8024729151532631"/>
   <int value="-628255755" label="Dessert Time - 18439774784268899317"/>
   <int value="-620910477" label="Cityscapes - 18441185517824223347"/>
   <int value="-610816140" label="Landscapes - 8626157735358324"/>
@@ -98260,6 +98268,7 @@ others/histograms.xml -->
   <int value="-435188694" label="Art - 18444631610789694506"/>
   <int value="-387775828" label="Cityscapes - 18438479018645979820"/>
   <int value="-359510740" label="Solid Colors - 18440625901026823468"/>
+  <int value="-353243221" label="LGBTQ Artists - 18439187396226576299"/>
   <int value="-347674537" label="Heritage - 6951507300116567"/>
   <int value="-344702098" label="Landscapes - 18446494149217895278"/>
   <int value="-335909288" label="Art - 6686963096251992"/>
@@ -98336,7 +98345,9 @@ others/histograms.xml -->
   <int value="519669485" label="Made by Canvas - 1162381878724333"/>
   <int value="519705872" label="Cityscapes - 5269745003271440"/>
   <int value="523171359" label="Landscapes - 456362273207839"/>
+  <int value="542400471" label="LGBTQ Artists - 8628186113138647"/>
   <int value="582571507" label="Cityscapes - 18437958065853126131"/>
+  <int value="602985801" label="LGBTQ Artists - 18442751988110251337"/>
   <int value="627281636" label="Cityscapes - 18443580607585029860"/>
   <int value="632498960" label="Element - 18442926110408911632"/>
   <int value="636241240" label="Imaginary - 18446507769540134232"/>
@@ -98382,6 +98393,7 @@ others/histograms.xml -->
   <int value="1040676664" label="Landscapes - 858440449095480"/>
   <int value="1123537047" label="Composition - 18445642548865650839"/>
   <int value="1141632188" label="Cityscapes - 18443148044763131068"/>
+  <int value="1165024101" label="LGBTQ Artists - 91127486143333"/>
   <int value="1173629942" label="Colors - 6465464552401910"/>
   <int value="1192252038" label="Cityscapes - 6488081868804742"/>
   <int value="1206215167" label="Art - 18445129029773517311"/>
@@ -98396,8 +98408,10 @@ others/histograms.xml -->
   <int value="1354190091" label="Landscapes - 8257179059965195"/>
   <int value="1358808705" label="Cityscapes - 18438573333579417217"/>
   <int value="1361171564" label="Collage - 18446268433212494956"/>
+  <int value="1398130163" label="LGBTQ Artists - 18438014764531959283"/>
   <int value="1404576511" label="Collage - 1050009239298815"/>
   <int value="1414735641" label="Solid Colors - 2615791116822297"/>
+  <int value="1446838327" label="LGBTQ Artists - 18441755303138361399"/>
   <int value="1447770551" label="Composition - 18441221902560868791"/>
   <int value="1456247150" label="Togetherness - 18444641211933036910"/>
   <int value="1457778021" label="Cityscapes - 18438203687318056293"/>
@@ -98411,6 +98425,7 @@ others/histograms.xml -->
   <int value="1520811358" label="Colors - 273157145869662"/>
   <int value="1535000622" label="Imaginary - 1900923995439150"/>
   <int value="1551836957" label="Heritage - 990184787093277"/>
+  <int value="1559927711" label="LGBTQ Artists - 18441607573556337567"/>
   <int value="1561201240" label="Solid Colors - 18440201375495096920"/>
   <int value="1567507477" label="Art - 2184344624841749"/>
   <int value="1573305199" label="Collage - 18445466155008572271"/>
@@ -98426,6 +98441,7 @@ others/histograms.xml -->
   <int value="1650555304" label="Cityscapes - 8018267505523112"/>
   <int value="1679563589" label="Colors - 3148839772756805"/>
   <int value="1693366509" label="Cityscapes - 18440922723974559981"/>
+  <int value="1694862057" label="LGBTQ Artists - 4207995903118057"/>
   <int value="1696499200" label="Collage - 8802726148212224"/>
   <int value="1697916989" label="Floral - 4641671638951997"/>
   <int value="1708825347" label="Leisure - 2442472300649219"/>
