@@ -412,7 +412,8 @@ void ExtensionServiceTestBase::CreateExtensionService(
                                 service_->shared_module_service());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  InstallLimiter::Get(profile())->DisableForTest();
+  if (!params.enable_install_limiter)
+    InstallLimiter::Get(profile())->DisableForTest();
 #endif
 }
 

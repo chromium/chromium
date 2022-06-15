@@ -20,11 +20,6 @@
 
 namespace extensions {
 
-// TODO(hendrich, https://crbug.com/1046302)
-// Add a test for the InstallLimiter, which checks that small extensions are
-// installed before large extensions and that we don't have to wait the entire
-// 5s when the OnAllExternalProvidersReady() signal was called.
-
 // InstallLimiter defers big app installs after all small app installs and then
 // runs big app installs one by one. This improves first-time login experience.
 // See http://crbug.com/166296
