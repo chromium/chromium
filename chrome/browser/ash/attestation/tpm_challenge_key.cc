@@ -75,7 +75,7 @@ void TpmChallengeKeyImpl::BuildResponse(
     const std::string& challenge,
     bool register_key,
     const std::string& key_name,
-    const absl::optional<::attestation::DeviceTrustSignals>& signals) {
+    const absl::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
   DCHECK(!callback.is_null());

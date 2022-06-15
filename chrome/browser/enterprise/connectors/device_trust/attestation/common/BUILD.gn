@@ -45,16 +45,3 @@ source_set("test_support") {
     "//testing/gmock",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "attestation_utils_unittest.cc" ]
-
-  public = [ "attestation_utils.h" ]
-
-  public_deps = [
-    ":common",
-    ":types",
-    "//testing/gtest",
-  ]
-}

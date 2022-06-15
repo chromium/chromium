@@ -32,15 +32,14 @@ class TpmChallengeKeyWithTimeout final {
 
   // Tries to build a response for the |challenge|. Returns either timeout
   // error or result from |TpmChallengeKey::BuildResponse| via |callback|.
-  void BuildResponse(
-      base::TimeDelta timeout,
-      AttestationKeyType key_type,
-      Profile* profile,
-      TpmChallengeKeyCallback callback,
-      const std::string& challenge,
-      bool register_key,
-      const std::string& key_name_for_spkac,
-      const absl::optional<::attestation::DeviceTrustSignals>& signals);
+  void BuildResponse(base::TimeDelta timeout,
+                     AttestationKeyType key_type,
+                     Profile* profile,
+                     TpmChallengeKeyCallback callback,
+                     const std::string& challenge,
+                     bool register_key,
+                     const std::string& key_name_for_spkac,
+                     const absl::optional<std::string>& signals);
 
  private:
   void ResolveCallback(const TpmChallengeKeyResult& result);
