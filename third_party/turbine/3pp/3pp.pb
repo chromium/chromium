@@ -5,6 +5,7 @@ create {
   }
 
   build {
+    tool: "chromium/third_party/maven"
     dep: "chromium/third_party/jdk"
   }
 }
