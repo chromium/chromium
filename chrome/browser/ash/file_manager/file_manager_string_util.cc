@@ -4,13 +4,19 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 
+#include <cmath>
+#include <string>
+
 #include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
+#include "ash/system/time/date_helper.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -949,6 +956,28 @@ base::Value::Dict GetFileManagerStrings() {
   return dict;
 }
 
+int GetLocaleBasedWeekStart() {
+  // Use a fix date here to derive the localized day_of_week.
+  base::Time fixed_date;
+  // May 26 2022 12:00pm Thursday Local time.
+  DCHECK(base::Time::FromLocalExploded({2022, 5, 4, 26, 12, 0, 0, 0},
+                                       &fixed_date));
+  // Use day_of_week_formatter built in DateHelper to get the localized day of
+  // week.
+  icu::SimpleDateFormat day_of_week_formatter =
+      ash::DateHelper::GetInstance()->day_of_week_formatter();
+  std::u16string localized_day_of_week =
+      ash::DateHelper::GetInstance()->GetFormattedTime(&day_of_week_formatter,
+                                                       fixed_date);
+  int day_of_week_int;
+  base::StringToInt(localized_day_of_week, &day_of_week_int);
+  // We know the fixed date is Thursday, day_of_week is between 1 and 7.
+  // * if day_of_week is 4, then Monday is the start of the week, so return 1;
+  // * if day_of_week is 5, then Sunday is the start of the week, so return 0;
+  // * if day_of_week is 6, then Saturday is the start of the week, so return 6;
+  return fmod(4 - (day_of_week_int - 1) + 7, 7);
+}
+
 void AddFileManagerFeatureStrings(const std::string& locale,
                                   Profile* profile,
                                   base::Value::Dict* dict) {
@@ -993,4 +1022,5 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));
 
   dict->Set("UI_LOCALE", locale);
+  dict->Set("WEEK_START_FROM", GetLocaleBasedWeekStart());
 }

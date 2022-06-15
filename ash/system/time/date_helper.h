@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/components/settings/timezone_settings.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -17,6 +18,10 @@
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+
+// FileManagerStringUtilTest is in the global namespace, need to forward
+// declare it before using FRIEND_TEST_ALL_PREFIXES below.
+FORWARD_DECLARE_TEST(FileManagerStringUtilTest, GetLocaleBasedWeekStart);
 
 namespace ash {
 
@@ -31,7 +36,8 @@ class DateHelper : public system::TimezoneSettings::Observer {
   ASH_EXPORT static DateHelper* GetInstance();
 
   // Creates a formatter object used to format dates from the given `pattern`.
-  icu::SimpleDateFormat CreateSimpleDateFormatter(const char* pattern);
+  ASH_EXPORT icu::SimpleDateFormat CreateSimpleDateFormatter(
+      const char* pattern);
 
   // Creates a date interval formatter object that formats a `DateInterval` into
   // text as compactly as possible.
@@ -45,8 +51,8 @@ class DateHelper : public system::TimezoneSettings::Observer {
       const char* pattern);
 
   // Returns a formatted string of a `time` using the given `formatter`.
-  std::u16string GetFormattedTime(const icu::DateFormat* formatter,
-                                  const base::Time& time);
+  ASH_EXPORT std::u16string GetFormattedTime(const icu::DateFormat* formatter,
+                                             const base::Time& time);
 
   // Returns a formatted interval string using the given `formatter`.
   ASH_EXPORT std::u16string GetFormattedInterval(
@@ -119,6 +125,8 @@ class DateHelper : public system::TimezoneSettings::Observer {
  private:
   friend base::DefaultSingletonTraits<DateHelper>;
   friend class DateHelperUnittest;
+  FRIEND_TEST_ALL_PREFIXES(::FileManagerStringUtilTest,
+                           GetLocaleBasedWeekStart);
   DateHelper();
 
   DateHelper(const DateHelper& other) = delete;
