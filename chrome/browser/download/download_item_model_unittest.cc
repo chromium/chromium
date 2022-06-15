@@ -117,6 +117,11 @@ class DownloadItemModelTest : public testing::Test {
         .WillByDefault(
             Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
     ON_CALL(item_, IsPaused()).WillByDefault(Return(false));
+    ON_CALL(item_, GetMixedContentStatus())
+        .WillByDefault(
+            Return(download::DownloadItem::MixedContentStatus::SAFE));
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
   }
 
   void SetupInterruptedDownloadItem(download::DownloadInterruptReason reason) {
@@ -387,11 +392,6 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
       // For GetReceivedBytes()/GetTotalBytes(), we only check whether each is
       // non-zero. In addition, if |total_bytes| is zero, then
       // |time_remaining_known| is also false.
-      //
-      //         .-- .TimeRemaining() is known.
-      //        |       .-- .GetOpenWhenComplete()
-      //        |      |      .---- .IsPaused()
-      //        |      |     |     .---- .GetRerouteInfo()
       {0,
        0,
        false,
@@ -556,6 +556,7 @@ TEST_F(DownloadItemModelTest, InProgressStatus) {
        {},
        "1/2 B, Paused",
        "1/2 B \xE2\x80\xA2 Paused"},
+      {5, 5, false, false, false, {}, "", "5 B \xE2\x80\xA2 Done"},
       {5, 5, true, true, false, kTestRerouteInfo, reroute_status,
        base::StrCat({"5 B \xE2\x80\xA2 ", reroute_status})}};
 
@@ -636,6 +637,63 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
       base::StringPrintf("Show in %s", kTestProviderDisplayName);
   EXPECT_EQ(expected_show_in_folder_text,
             base::UTF16ToUTF8(model().GetShowInFolderText()));
+}
+
+TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetStatusTextBuilder(/*for_bubble=*/true);
+
+  const struct MixedContentStatusTestCase {
+    download::DownloadItem::MixedContentStatus mixed_content_status;
+    std::string expected_bubble_status_msg;
+  } kMixedContentStatusTestCases[] = {
+      {download::DownloadItem::MixedContentStatus::BLOCK,
+       "Blocked \xE2\x80\xA2 Insecure download"},
+      {download::DownloadItem::MixedContentStatus::WARN,
+       "Blocked \xE2\x80\xA2 Insecure download"},
+  };
+  for (const auto& test_case : kMixedContentStatusTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetMixedContentStatus())
+        .WillByDefault(Return(test_case.mixed_content_status));
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
+
+  const struct DangerTypeTestCase {
+    download::DownloadDangerType danger_type;
+    std::string expected_bubble_status_msg;
+  } kDangerTypeTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       "Blocked \xE2\x80\xA2 Dangerous"},
+      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED,
+       "Blocked \xE2\x80\xA2 Encrypted"},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       "Blocked \xE2\x80\xA2 Malware"},
+      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE,
+       "Blocked \xE2\x80\xA2 Too big"},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
+       "Sensitive content"},
+      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK,
+       "Blocked by your organization"},
+      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+       "Scan before opening"},
+  };
+  for (const auto& test_case : kDangerTypeTestCases) {
+    SetupDownloadItemDefaults();
+    ON_CALL(item(), GetDangerType())
+        .WillByDefault(Return(test_case.danger_type));
+    EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
+              test_case.expected_bubble_status_msg);
+  }
 }
 
 TEST_F(DownloadItemModelTest, ShouldShowInShelf) {
