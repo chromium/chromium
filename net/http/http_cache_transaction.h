@@ -610,6 +610,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   State next_state_{STATE_NONE};
 
+  // Used for tracing.
+  const uint64_t trace_id_;
+
   // Initial request with which Start() was invoked.
   raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;
 
