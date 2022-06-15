@@ -71,15 +71,19 @@ public class ToolbarTablet
         extends ToolbarLayout implements OnClickListener, View.OnLongClickListener {
     private ObjectAnimator mTabSwitcherModeAnimation;
 
-    /** Downloads page for offline access. */
+    /**
+     * Downloads page for offline access.
+     */
     public interface OfflineDownloader {
         /**
          * Trigger the download of a page.
+         *
          * @param context Context to pull resources from.
          * @param tab Tab containing the page to download.
          */
         void downloadPage(Context context, Tab tab);
     }
+
     private HomeButton mHomeButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
@@ -113,6 +117,7 @@ public class ToolbarTablet
 
     /**
      * Constructs a ToolbarTablet object.
+     *
      * @param context The Context in which this View object is created.
      * @param attrs The AttributeSet that was specified with this View.
      */
@@ -172,8 +177,8 @@ public class ToolbarTablet
     }
 
     /**
-     * Sets up key listeners after native initialization is complete, so that we can invoke
-     * native functions.
+     * Sets up key listeners after native initialization is complete, so that we can invoke native
+     * functions.
      */
     @Override
     public void onNativeLibraryReady() {
@@ -600,6 +605,11 @@ public class ToolbarTablet
 
     @Override
     void onAccessibilityStatusChanged(boolean enabled) {
+        enableTabStackButton(enabled);
+    }
+
+    @VisibleForTesting
+    void enableTabStackButton(boolean enabled) {
         mShowTabStack = (enabled && isAccessibilityTabSwitcherPreferenceEnabled())
                 || isGridTabSwitcherEnabled();
         updateSwitcherButtonVisibility(mShowTabStack);
@@ -714,6 +724,7 @@ public class ToolbarTablet
 
     /**
      * Sets the toolbar start padding based on whether the buttons are visible.
+     *
      * @param buttonsVisible Whether the toolbar buttons are visible.
      */
     private void setStartPaddingBasedOnButtonVisibility(boolean buttonsVisible) {
@@ -726,7 +737,7 @@ public class ToolbarTablet
 
     /**
      * @return The difference in start padding when the buttons are visible and when they are not
-     *         visible.
+     * visible.
      */
     public int getStartPaddingDifferenceForButtonVisibilityAnimation() {
         // If the home button is visible then the padding doesn't change.
@@ -827,5 +838,25 @@ public class ToolbarTablet
     private boolean isTabletGridTabSwitcherPolishEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, "enable_launch_polish", false);
+    }
+
+    @VisibleForTesting
+    ImageButton[] getToolbarButtons() {
+        return mToolbarButtons;
+    }
+
+    @VisibleForTesting
+    ObjectAnimator getTabSwitcherModeAnimation() {
+        return mTabSwitcherModeAnimation;
+    }
+
+    @VisibleForTesting
+    void enableButtonVisibilityChangeAnimationForTesting() {
+        mShouldAnimateButtonVisibilityChange = true;
+    }
+
+    @VisibleForTesting
+    void setToolbarButtonsVisibleForTesting(boolean value) {
+        mToolbarButtonsVisible = value;
     }
 }

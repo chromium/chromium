@@ -65,9 +65,9 @@ import java.util.List;
  * <p>The coordinator creates and owns elements within this component.
  */
 
-public final class LocationBarCoordinator implements LocationBar, NativeInitObserver,
-                                                     OmniboxSuggestionsDropdownEmbedder,
-                                                     AutocompleteDelegate {
+public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
+                                               OmniboxSuggestionsDropdownEmbedder,
+                                               AutocompleteDelegate {
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator {
         /** Destroys SubCoordinator. */
