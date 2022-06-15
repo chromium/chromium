@@ -70,6 +70,8 @@ viz_component("service") {
     "display/output_surface_frame.h",
     "display/overlay_candidate.cc",
     "display/overlay_candidate.h",
+    "display/overlay_candidate_factory.cc",
+    "display/overlay_candidate_factory.h",
     "display/overlay_candidate_temporal_tracker.cc",
     "display/overlay_candidate_temporal_tracker.h",
     "display/overlay_processor_interface.cc",
