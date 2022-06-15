@@ -619,25 +619,23 @@ TEST_F(ExtensionAppTest, LoadCompressedIcon) {
   apps::IconEffects icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   base::RunLoop run_loop;
-  apps::mojom::IconValuePtr dst_icon;
+  apps::IconValuePtr dst_icon;
   apps::LoadIconFromExtension(
       apps::IconType::kCompressed,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       profile(), kPackagedApp1Id, icon_effects,
-      apps::IconValueToMojomIconValueCallback(
-          base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon) {
-            dst_icon = std::move(icon);
-            run_loop.Quit();
-          })));
+      base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
+        dst_icon = std::move(icon);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
-  ASSERT_FALSE(dst_icon.is_null());
-  ASSERT_EQ(apps::mojom::IconType::kCompressed, dst_icon->icon_type);
+  ASSERT_TRUE(dst_icon);
+  ASSERT_EQ(apps::IconType::kCompressed, dst_icon->icon_type);
   ASSERT_FALSE(dst_icon->is_placeholder_icon);
-  ASSERT_TRUE(dst_icon->compressed.has_value());
-  ASSERT_FALSE(dst_icon->compressed.value().empty());
+  ASSERT_FALSE(dst_icon->compressed.empty());
 
-  ASSERT_EQ(src_data, dst_icon->compressed.value());
+  ASSERT_EQ(src_data, dst_icon->compressed);
 }
 
 // This test adds a web app to the app list.

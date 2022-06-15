@@ -188,13 +188,6 @@ void AppServiceAppIconLoader::OnLoadIcon(const std::string& app_id,
   }
 }
 
-void AppServiceAppIconLoader::OnLoadMojomIcon(
-    const std::string& app_id,
-    apps::mojom::IconValuePtr icon_value) {
-  OnLoadIcon(app_id,
-             apps::ConvertMojomIconValueToIconValue(std::move(icon_value)));
-}
-
 bool AppServiceAppIconLoader::Exist(const std::string& app_id) {
   if (!base::Contains(shelf_app_id_map_, app_id)) {
     return false;

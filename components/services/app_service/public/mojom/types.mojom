@@ -249,13 +249,6 @@ enum IconType {
   kStandard,
 };
 
-struct IconValue {
-  IconType icon_type;
-  gfx.mojom.ImageSkia? uncompressed;
-  array<uint8>? compressed;
-  bool is_placeholder_icon;
-};
-
 // Enumeration of possible app launch sources.
 // This should be kept in sync with metadata/apps/histograms.xml, and
 // LaunchSource in enums.xml.
