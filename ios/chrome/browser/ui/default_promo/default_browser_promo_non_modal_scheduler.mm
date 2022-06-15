@@ -37,7 +37,7 @@ const int64_t kShowPromoWebpageLoadWaitTime = 3;
 const int64_t kShowPromoPostShareWaitTime = 1;
 
 // Number of times to show the promo to a user.
-const int kPromoShownTimesLimit = 2;
+const int kPromoShownTimesLimit = 3;
 
 // Timeout before the promo is dismissed.
 const double kPromoTimeout = 45;
