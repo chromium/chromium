@@ -161,6 +161,7 @@
             aria-disabled="true"
             class="photo-inner-container photo-loading-failure">
           <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
                   aria-hidden="true" clear-src>
@@ -185,6 +186,7 @@
             on-click="onCollectionSelected_"
             on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
             <img is="cr-auto-img" auto-src="[[getImageUrlForEmptyTile_(item)]]"
                 aria-hidden="true" clear-src>
           </div>
@@ -208,6 +210,7 @@
             on-keypress="onCollectionSelected_"
             tabindex$="[[tabIndex]]">
           <div class$="[[getClassForImagesContainer_(item)]]">
+            <div class="photo-images-border"></div>
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
                   class$="[[getClassForImg_(index, item)]]"

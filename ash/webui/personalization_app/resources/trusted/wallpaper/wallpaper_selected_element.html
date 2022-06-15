@@ -61,6 +61,7 @@
   </template>
   <template is="dom-if" if="[[showImage_]]">
     <div id="imageContainer" class="preview-image-container">
+      <div class="preview-image-border"></div>
       <img class="preview-image" src$="[[getImageSrc_(image_)]]" aria-hidden="true">
     </div>
     <h2 id="textContainer" class="preview-text-container" aria-live="polite" aria-label$="[[getAriaLabel_(image_, dailyRefreshState_)]]">
