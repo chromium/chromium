@@ -14,6 +14,8 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -97,6 +99,17 @@ class ExtensionPreferenceApiLacrosBrowserTest
     return true;
   }
 
+  bool DoesAshSupportObservers() {
+    // Versions of ash without this capability cannot create observers for prefs
+    // writing to the ash standalone browser prefstore.
+    constexpr char kExtensionControlledPrefObserversCapability[] =
+        "crbug/1334964";
+    return chromeos::BrowserInitParams::Get()->ash_capabilities.has_value() &&
+           base::Contains(
+               chromeos::BrowserInitParams::Get()->ash_capabilities.value(),
+               kExtensionControlledPrefObserversCapability);
+  }
+
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
@@ -146,4 +159,28 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
     listener.Reply("");
   }
   CheckPreferencesCleared();
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, OnChange) {
+  if (!IsServiceAvailable()) {
+    return;
+  }
+  if (!DoesAshSupportObservers()) {
+    LOG(WARNING) << "Ash does not support observers, skipping the test.";
+    return;
+  }
+  EXPECT_TRUE(RunExtensionTest("preference/onchange_lacros", {},
+                               {.allow_in_incognito = false}))
+      << message_;
+}
+
+// The extension controlled pref observers are only instantiated when a listener
+// is actually attached. The purpose of running this test is to ensure that they
+// are instantiated as we use the prefs api to create the observer. See also
+// crbug/1334985.
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest,
+                       CreateObservers) {
+  EXPECT_TRUE(
+      RunExtensionTest("preference/onchange", {}, {.allow_in_incognito = true}))
+      << message_;
 }
