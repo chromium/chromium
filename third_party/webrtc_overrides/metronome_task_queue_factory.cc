@@ -17,12 +17,8 @@
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace blink {
-
-const base::Feature kWebRtcMetronomeTaskQueue{"WebRtcMetronomeTaskQueue",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
  public:
@@ -154,6 +150,31 @@ void WebRtcMetronomeTaskQueue::PostDelayedHighPrecisionTask(
 
 namespace {
 
+base::TaskTraits TaskQueuePriority2Traits(
+    webrtc::TaskQueueFactory::Priority priority) {
+  // The content/renderer/media/webrtc/rtc_video_encoder.* code
+  // employs a PostTask/Wait pattern that uses TQ in a way that makes it
+  // blocking and synchronous, which is why we allow WithBaseSyncPrimitives()
+  // for OS_ANDROID.
+  switch (priority) {
+    case webrtc::TaskQueueFactory::Priority::HIGH:
+#if defined(OS_ANDROID)
+      return {base::WithBaseSyncPrimitives(), base::TaskPriority::HIGHEST};
+#else
+      return {base::TaskPriority::HIGHEST};
+#endif
+    case webrtc::TaskQueueFactory::Priority::LOW:
+      return {base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+    case webrtc::TaskQueueFactory::Priority::NORMAL:
+    default:
+#if defined(OS_ANDROID)
+      return {base::WithBaseSyncPrimitives()};
+#else
+      return {};
+#endif
+  }
+}
+
 class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
@@ -171,4 +192,11 @@ std::unique_ptr<webrtc::TaskQueueFactory>
 CreateWebRtcMetronomeTaskQueueFactory() {
   return std::unique_ptr<webrtc::TaskQueueFactory>(
       new blink::WebrtcMetronomeTaskQueueFactory());
+}
+
+std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
+CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority priority) {
+  return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
+      new blink::WebRtcMetronomeTaskQueue(
+          blink::TaskQueuePriority2Traits(priority)));
 }

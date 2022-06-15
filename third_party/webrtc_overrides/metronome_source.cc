@@ -21,7 +21,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "third_party/webrtc/api/metronome/metronome.h"
 #include "third_party/webrtc/rtc_base/task_utils/to_queued_task.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace blink {
 

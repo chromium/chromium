@@ -12,17 +12,13 @@
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
-namespace blink {
-
-// Whether WebRTC should use a metronome-backed task queue. Default: disabled.
-RTC_EXPORT extern const base::Feature kWebRtcMetronomeTaskQueue;
-
-}  // namespace blink
-
 // Creates a factory for webrtc::TaskQueueBase that is backed by a
 // blink::MetronomeSource. Tested by
 // /third_party/blink/renderer/platform/peerconnection/metronome_task_queue_factory_test.cc
 RTC_EXPORT std::unique_ptr<webrtc::TaskQueueFactory>
 CreateWebRtcMetronomeTaskQueueFactory();
+
+RTC_EXPORT std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
+CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority priority);
 
 #endif  // THIRD_PARTY_WEBRTC_OVERRIDES_METRONOME_TASK_QUEUE_FACTORY_H_

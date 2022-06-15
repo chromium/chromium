@@ -44,7 +44,7 @@
 #include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
 #include "third_party/webrtc/media/engine/webrtc_media_engine.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
@@ -278,7 +278,7 @@ class WebrtcTransport::PeerConnectionWrapper
     pcf_deps.network_thread = worker_thread;
     pcf_deps.worker_thread = worker_thread;
     pcf_deps.signaling_thread = rtc::Thread::Current();
-    pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
+    pcf_deps.task_queue_factory = CreateWebRtcMetronomeTaskQueueFactory();
     pcf_deps.call_factory = webrtc::CreateCallFactory();
     pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
         pcf_deps.task_queue_factory.get());

@@ -2117,7 +2117,6 @@ source_set("blink_platform_unittests_sources") {
     "peerconnection/stats_collecting_decoder_test.cc",
     "peerconnection/stats_collecting_encoder_test.cc",
     "peerconnection/stats_collector_test.cc",
-    "peerconnection/task_queue_factory_test.cc",
     "peerconnection/two_keys_adapter_map_unittest.cc",
     "peerconnection/webrtc_audio_sink_test.cc",
     "peerconnection/webrtc_decoding_info_handler_test.cc",

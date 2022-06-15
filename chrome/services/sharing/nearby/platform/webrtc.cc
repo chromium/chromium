@@ -19,7 +19,7 @@
 #include "third_party/nearby/src/internal/platform/logging.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
 #include "unicode/locid.h"
 
 namespace location {
@@ -415,7 +415,8 @@ void WebRtcMedium::InitPeerConnectionFactory() {
   DCHECK(rtc_worker_thread_);
 
   webrtc::PeerConnectionFactoryDependencies factory_dependencies;
-  factory_dependencies.task_queue_factory = CreateWebRtcTaskQueueFactory();
+  factory_dependencies.task_queue_factory =
+      CreateWebRtcMetronomeTaskQueueFactory();
   factory_dependencies.network_thread = rtc_network_thread_;
   factory_dependencies.worker_thread = rtc_worker_thread_;
   factory_dependencies.signaling_thread = rtc_signaling_thread_;

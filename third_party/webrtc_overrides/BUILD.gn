@@ -213,11 +213,6 @@ source_set("task_queue_factory") {
     "metronome_task_queue_factory.h",
 
     # Tested in
-    # third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc
-    "task_queue_factory.cc",
-    "task_queue_factory.h",
-
-    # Tested in
     # third_party/blink/renderer/platform/peerconnection/webrtc_timer_test.cc
     "webrtc_timer.cc",
     "webrtc_timer.h",
@@ -261,10 +256,7 @@ if (is_android) {
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":webrtc_overrides_java" instead.
     visibility = [ ":*" ]
-    sources = [
-      "//third_party/webrtc_overrides/metronome_task_queue_factory.cc",
-      "//third_party/webrtc_overrides/webrtc_timer.cc",
-    ]
+    sources = [ "//third_party/webrtc_overrides/webrtc_timer.cc" ]
     template = "//third_party/webrtc_overrides/java_templates/WebRtcOverridesFeatures.java.tmpl"
   }
   android_library("webrtc_overrides_java") {
