@@ -4,12 +4,13 @@
 
 #include "media/formats/hls/media_segment.h"
 
+#include "base/time/time.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
 
-MediaSegment::MediaSegment(types::DecimalFloatingPoint duration,
+MediaSegment::MediaSegment(base::TimeDelta duration,
                            types::DecimalInteger media_sequence_number,
                            types::DecimalInteger discontinuity_sequence_number,
                            GURL uri,

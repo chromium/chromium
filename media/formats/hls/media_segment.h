@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_MEDIA_SEGMENT_H_
 #define MEDIA_FORMATS_HLS_MEDIA_SEGMENT_H_
 
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -13,7 +14,7 @@ namespace media::hls {
 
 class MEDIA_EXPORT MediaSegment {
  public:
-  MediaSegment(types::DecimalFloatingPoint duration,
+  MediaSegment(base::TimeDelta duration,
                types::DecimalInteger media_sequence_number,
                types::DecimalInteger discontinuity_sequence_number,
                GURL uri,
@@ -27,8 +28,8 @@ class MEDIA_EXPORT MediaSegment {
   MediaSegment& operator=(const MediaSegment&);
   MediaSegment& operator=(MediaSegment&&);
 
-  // The approximate duration of this media segment in seconds.
-  types::DecimalFloatingPoint GetDuration() const { return duration_; }
+  // The approximate duration of this media segment.
+  base::TimeDelta GetDuration() const { return duration_; }
 
   // Returns the media sequence number of this media segment.
   types::DecimalInteger GetMediaSequenceNumber() const {
@@ -62,7 +63,7 @@ class MEDIA_EXPORT MediaSegment {
   absl::optional<types::DecimalInteger> GetBitRate() const { return bitrate_; }
 
  private:
-  types::DecimalFloatingPoint duration_;
+  base::TimeDelta duration_;
   types::DecimalInteger media_sequence_number_;
   types::DecimalInteger discontinuity_sequence_number_;
   GURL uri_;

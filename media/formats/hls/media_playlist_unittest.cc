@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "media/formats/hls/media_playlist_test_builder.h"
 #include "media/formats/hls/multivariant_playlist.h"
@@ -132,7 +133,7 @@ TEST(HlsMediaPlaylistTest, Segments) {
   builder.AppendLine("video.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasDiscontinuity, false);
-  builder.ExpectSegment(HasDuration, 9.2);
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
   builder.ExpectSegment(HasUri, GURL("http://localhost/video.ts"));
   builder.ExpectSegment(IsGap, false);
   builder.ExpectSegment(HasMediaSequenceNumber, 0);
@@ -149,7 +150,7 @@ TEST(HlsMediaPlaylistTest, Segments) {
   builder.AppendLine("foo.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasDiscontinuity, true);
-  builder.ExpectSegment(HasDuration, 9.3);
+  builder.ExpectSegment(HasDuration, base::Seconds(9.3));
   builder.ExpectSegment(IsGap, false);
   builder.ExpectSegment(HasUri, GURL("http://localhost/foo.ts"));
   builder.ExpectSegment(HasMediaSequenceNumber, 1);
@@ -158,7 +159,7 @@ TEST(HlsMediaPlaylistTest, Segments) {
   builder.AppendLine("http://foo/bar.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasDiscontinuity, false);
-  builder.ExpectSegment(HasDuration, 9.2);
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
   builder.ExpectSegment(IsGap, false);
   builder.ExpectSegment(HasUri, GURL("http://foo/bar.ts"));
   builder.ExpectSegment(HasMediaSequenceNumber, 2);
@@ -178,6 +179,41 @@ TEST(HlsMediaPlaylistTest, Segments) {
   }
 
   builder.ExpectOk();
+}
+
+TEST(HlsMediaPlaylistTest, TotalDuration) {
+  constexpr types::DecimalInteger kLargeDuration =
+      (base::TimeDelta::FiniteMax() / 2.5).InSeconds();
+
+  // Ensure that if we have a playlist large enough where the total duration
+  // overflows `base::TimeDelta`, this is caught.
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:" +
+                     base::NumberToString(kLargeDuration));
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(kLargeDuration));
+
+  builder.AppendLine("#EXTINF:" + base::NumberToString(kLargeDuration) + ",\t");
+  builder.AppendLine("segment0.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(kLargeDuration));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment0.ts"));
+
+  builder.AppendLine("#EXTINF:" + base::NumberToString(kLargeDuration) + ",\t");
+  builder.AppendLine("segment1.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(kLargeDuration));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+
+  // These two shouldn't overflow base::TimeDelta
+  builder.ExpectPlaylist(HasComputedDuration,
+                         base::Seconds(kLargeDuration * 2));
+  builder.ExpectOk();
+
+  // But an additional segment would
+  builder.AppendLine("#EXTINF:" + base::NumberToString(kLargeDuration) + ",\t");
+  builder.AppendLine("segment3.ts");
+  builder.ExpectError(ParseStatusCode::kPlaylistOverflowsTimeDelta);
 }
 
 // This test is similar to the `HlsMultivariantPlaylistTest` test of the same
@@ -525,12 +561,12 @@ TEST(HlsMediaPlaylistTest, XIFramesOnlyTag) {
   builder.AppendLine("#EXTINF:10,\t");
   builder.AppendLine("segment0.ts");
   builder.ExpectAdditionalSegment();
-  builder.ExpectSegment(HasDuration, 10);
+  builder.ExpectSegment(HasDuration, base::Seconds(10));
 
   builder.AppendLine("#EXTINF:10,\t");
   builder.AppendLine("segment1.ts");
   builder.ExpectAdditionalSegment();
-  builder.ExpectSegment(HasDuration, 10);
+  builder.ExpectSegment(HasDuration, base::Seconds(10));
 
   builder.ExpectPlaylist(HasComputedDuration, base::Seconds(20));
   builder.ExpectOk();
@@ -1070,26 +1106,30 @@ TEST(HlsMediaPlaylistTest, XPartInfTag) {
 
   auto fork = builder;
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0");
-  fork.ExpectPlaylist(HasPartialSegmentInfo,
-                      MediaPlaylist::PartialSegmentInfo{.target_duration = 0});
+  fork.ExpectPlaylist(
+      HasPartialSegmentInfo,
+      MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(0)});
   fork.ExpectOk();
 
   fork = builder;
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=1");
-  fork.ExpectPlaylist(HasPartialSegmentInfo,
-                      MediaPlaylist::PartialSegmentInfo{.target_duration = 1});
+  fork.ExpectPlaylist(
+      HasPartialSegmentInfo,
+      MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(1)});
   fork.ExpectOk();
 
   fork = builder;
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=1.2");
-  fork.ExpectPlaylist(HasPartialSegmentInfo, MediaPlaylist::PartialSegmentInfo{
-                                                 .target_duration = 1.2});
+  fork.ExpectPlaylist(
+      HasPartialSegmentInfo,
+      MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(1.2)});
   fork.ExpectOk();
 
   fork = builder;
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=99.99");
-  fork.ExpectPlaylist(HasPartialSegmentInfo, MediaPlaylist::PartialSegmentInfo{
-                                                 .target_duration = 99.99});
+  fork.ExpectPlaylist(HasPartialSegmentInfo,
+                      MediaPlaylist::PartialSegmentInfo{
+                          .target_duration = base::Seconds(99.99)});
   fork.ExpectOk();
 
   // The EXT-X-PART-INF tag may not appear twice

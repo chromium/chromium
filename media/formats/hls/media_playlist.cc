@@ -34,6 +34,7 @@ struct MediaPlaylist::CtorArgs {
   base::TimeDelta target_duration;
   absl::optional<PartialSegmentInfo> partial_segment_info;
   std::vector<MediaSegment> segments;
+  base::TimeDelta total_duration;
   absl::optional<PlaylistType> playlist_type;
   bool end_list;
   bool i_frames_only;
@@ -324,6 +325,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   if (!target_duration_tag.has_value()) {
     return ParseStatusCode::kMediaPlaylistMissingTargetDuration;
   }
+  const auto target_duration = target_duration_tag->duration;
 
   absl::optional<PartialSegmentInfo> partial_segment_info;
   if (part_inf_tag.has_value()) {
@@ -332,12 +334,19 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   }
 
   // Ensure that no segment exceeds the target duration
+  base::TimeDelta total_duration;
   for (const auto& segment : segments) {
-    const auto duration =
-        static_cast<types::DecimalInteger>(std::round(segment.GetDuration()));
-    if (duration > target_duration_tag->duration) {
+    const auto rounded_duration =
+        std::round(segment.GetDuration().InSecondsF());
+    if (rounded_duration > target_duration.InSecondsF()) {
       return ParseStatusCode::kMediaSegmentExceedsTargetDuration;
     }
+
+    total_duration += segment.GetDuration();
+  }
+
+  if (total_duration.is_max()) {
+    return ParseStatusCode::kPlaylistOverflowsTimeDelta;
   }
 
   // Multivariant playlists may use the `EXT-X-INDEPENDENT-SEGMENTS` tag to
@@ -358,9 +367,10 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
       CtorArgs{.uri = std::move(uri),
                .version = common_state.GetVersion(),
                .independent_segments = independent_segments,
-               .target_duration = base::Seconds(target_duration_tag->duration),
+               .target_duration = target_duration,
                .partial_segment_info = std::move(partial_segment_info),
                .segments = std::move(segments),
+               .total_duration = total_duration,
                .playlist_type = playlist_type,
                .end_list = end_list_tag.has_value(),
                .i_frames_only = i_frames_only_tag.has_value(),
@@ -372,16 +382,10 @@ MediaPlaylist::MediaPlaylist(CtorArgs args)
       target_duration_(args.target_duration),
       partial_segment_info_(std::move(args.partial_segment_info)),
       segments_(std::move(args.segments)),
+      computed_duration_(args.total_duration),
       playlist_type_(args.playlist_type),
       end_list_(args.end_list),
       i_frames_only_(args.i_frames_only),
-      has_media_sequence_tag_(args.has_media_sequence_tag) {
-  base::TimeDelta duration;
-  for (const auto& segment : segments_) {
-    duration += base::Seconds(segment.GetDuration());
-  }
-
-  computed_duration_ = duration;
-}
+      has_media_sequence_tag_(args.has_media_sequence_tag) {}
 
 }  // namespace media::hls

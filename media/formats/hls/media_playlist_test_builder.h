@@ -13,7 +13,9 @@
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/media_segment.h"
 #include "media/formats/hls/playlist_test_builder.h"
+#include "media/formats/hls/test_util.h"
 #include "media/formats/hls/types.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -90,14 +92,16 @@ inline void HasType(absl::optional<PlaylistType> type,
 inline void HasTargetDuration(base::TimeDelta value,
                               const base::Location& from,
                               const MediaPlaylist& playlist) {
-  EXPECT_EQ(playlist.GetTargetDuration(), value) << from.ToString();
+  EXPECT_TRUE(RoughlyEqual(playlist.GetTargetDuration(), value))
+      << from.ToString();
 }
 
 // Checks that the value of `GetComputedDuration()` matches the given value.
 inline void HasComputedDuration(base::TimeDelta value,
                                 const base::Location& from,
                                 const MediaPlaylist& playlist) {
-  EXPECT_EQ(playlist.GetComputedDuration(), value) << from.ToString();
+  EXPECT_TRUE(RoughlyEqual(playlist.GetComputedDuration(), value))
+      << from.ToString();
 }
 
 // Checks that the value of `GetPartialSegmentInfo()` matches the given value.
@@ -109,8 +113,8 @@ inline void HasPartialSegmentInfo(
             playlist.GetPartialSegmentInfo().has_value())
       << from.ToString();
   if (partial_segment_info.has_value()) {
-    ASSERT_DOUBLE_EQ(partial_segment_info->target_duration,
-                     playlist.GetPartialSegmentInfo()->target_duration)
+    EXPECT_TRUE(RoughlyEqual(partial_segment_info->target_duration,
+                             playlist.GetPartialSegmentInfo()->target_duration))
         << from.ToString();
   }
 }
@@ -124,10 +128,10 @@ inline void HasMediaSequenceTag(bool value,
 }
 
 // Checks that the latest media segment has the given duration.
-inline void HasDuration(types::DecimalFloatingPoint duration,
+inline void HasDuration(base::TimeDelta duration,
                         const base::Location& from,
                         const MediaSegment& segment) {
-  EXPECT_DOUBLE_EQ(segment.GetDuration(), duration) << from.ToString();
+  EXPECT_TRUE(RoughlyEqual(segment.GetDuration(), duration)) << from.ToString();
 }
 
 // Checks that the latest media segment has the given media sequence number.

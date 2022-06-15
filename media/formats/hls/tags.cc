@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/variable_dictionary.h"
@@ -224,13 +225,18 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   // Extract duration
   // TODO(crbug.com/1284763): Below version 3 this should be rounded to an
   // integer
-  auto duration = types::ParseDecimalFloatingPoint(duration_str);
-  if (duration.has_error()) {
+  auto duration_result = types::ParseDecimalFloatingPoint(duration_str);
+  if (duration_result.has_error()) {
     return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(duration).error());
+        .AddCause(std::move(duration_result).error());
+  }
+  const auto duration = base::Seconds(std::move(duration_result).value());
+
+  if (duration.is_max()) {
+    return ParseStatusCode::kValueOverflowsTimeDelta;
   }
 
-  return InfTag{.duration = std::move(duration).value(), .title = title_str};
+  return InfTag{.duration = duration, .title = title_str};
 }
 
 ParseStatus::Or<XIndependentSegmentsTag> XIndependentSegmentsTag::Parse(
@@ -459,7 +465,23 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
 }
 
 ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
-  return ParseDecimalIntegerTag(tag, &XTargetDurationTag::duration);
+  DCHECK(tag.GetName() == ToTagName(XTargetDurationTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  auto duration_result = types::ParseDecimalInteger(tag.GetContent().value());
+  if (duration_result.has_error()) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(duration_result).error());
+  }
+
+  auto duration = base::Seconds(std::move(duration_result).value());
+  if (duration.is_max()) {
+    return ParseStatusCode::kValueOverflowsTimeDelta;
+  }
+
+  return XTargetDurationTag{.duration = duration};
 }
 
 ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
@@ -478,22 +500,27 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
         .AddCause(std::move(map_result));
   }
 
-  XPartInfTag out;
-
   // Extract the 'PART-TARGET' attribute
+  base::TimeDelta part_target;
   if (map.HasValue(XPartInfTagAttribute::kPartTarget)) {
-    auto target_duration = types::ParseDecimalFloatingPoint(
+    auto result = types::ParseDecimalFloatingPoint(
         map.GetValue(XPartInfTagAttribute::kPartTarget));
-    if (target_duration.has_error()) {
+
+    if (result.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(target_duration).error());
+          .AddCause(std::move(result).error());
     }
-    out.target_duration = std::move(target_duration).value();
+
+    part_target = base::Seconds(std::move(result).value());
+
+    if (part_target.is_max()) {
+      return ParseStatusCode::kValueOverflowsTimeDelta;
+    }
   } else {
     return ParseStatusCode::kMalformedTag;
   }
 
-  return out;
+  return XPartInfTag{.target_duration = part_target};
 }
 
 ParseStatus::Or<XMediaSequenceTag> XMediaSequenceTag::Parse(TagItem tag) {

@@ -26,11 +26,11 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // This structure describes information about partial segments in the
   // playlist.
   struct PartialSegmentInfo {
-    // The maximum duration (in seconds) of any partial segment. Each partial
+    // The maximum duration of any partial segment. Each partial
     // segment must be at least 85% of this, except for any where
     // `HasDiscontinuity() == true` or the final partial segment of a parent
     // segment.
-    types::DecimalFloatingPoint target_duration;
+    base::TimeDelta target_duration;
   };
 
   MediaPlaylist(const MediaPlaylist&) = delete;

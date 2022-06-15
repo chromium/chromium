@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
@@ -19,6 +20,12 @@
 namespace media::hls {
 
 namespace {
+
+// Returns the maximum whole quantity of seconds that can be represented by this
+// implementation.
+types::DecimalInteger MaxSeconds() {
+  return base::TimeDelta::FiniteMax().InSeconds();
+}
 
 template <typename T>
 void ErrorTest(absl::optional<base::StringPiece> content,
@@ -125,7 +132,6 @@ void RunDecimalIntegerTagTest(types::DecimalInteger T::*field) {
   ErrorTest<T>("-.5", ParseStatusCode::kMalformedTag);
   ErrorTest<T>(".5", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("0.5", ParseStatusCode::kMalformedTag);
-  ErrorTest<T>("9999999999999999999999", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("one", ParseStatusCode::kMalformedTag);
   ErrorTest<T>(" 1 ", ParseStatusCode::kMalformedTag);
   ErrorTest<T>("1,", ParseStatusCode::kMalformedTag);
@@ -139,8 +145,6 @@ void RunDecimalIntegerTagTest(types::DecimalInteger T::*field) {
   EXPECT_EQ(tag.*field, 10u);
   tag = OkTest<T>("14");
   EXPECT_EQ(tag.*field, 14u);
-  tag = OkTest<T>("999999999999999999");
-  EXPECT_EQ(tag.*field, 999999999999999999u);
 }
 
 VariableDictionary CreateBasicDictionary(
@@ -219,26 +223,26 @@ TEST(HlsTagsTest, ParseInfTag) {
   RunTagIdenficationTest<InfTag>("#EXTINF:123,\t\n", "123,\t");
 
   // Test some valid tags
-  auto tag = OkTest<InfTag>("1234,");
-  EXPECT_EQ(tag.duration, 1234.0);
+  auto tag = OkTest<InfTag>("123,");
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(123.0)));
   EXPECT_EQ(tag.title.Str(), "");
 
-  tag = OkTest<InfTag>("1.234,");
-  EXPECT_EQ(tag.duration, 1.234);
+  tag = OkTest<InfTag>("1.23,");
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(1.23)));
   EXPECT_EQ(tag.title.Str(), "");
 
   // The spec implies that whitespace characters like this usually aren't
   // permitted, but "\t" is a common occurrence for the title value.
   tag = OkTest<InfTag>("99.5,\t");
-  EXPECT_EQ(tag.duration, 99.5);
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(99.5)));
   EXPECT_EQ(tag.title.Str(), "\t");
 
   tag = OkTest<InfTag>("9.5,,,,");
-  EXPECT_EQ(tag.duration, 9.5);
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(9.5)));
   EXPECT_EQ(tag.title.Str(), ",,,");
 
   tag = OkTest<InfTag>("12,asdfsdf   ");
-  EXPECT_EQ(tag.duration, 12.0);
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(12.0)));
   EXPECT_EQ(tag.title.Str(), "asdfsdf   ");
 
   // Test some invalid tags
@@ -248,6 +252,12 @@ TEST(HlsTagsTest, ParseInfTag) {
   ErrorTest<InfTag>("-123,", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("123", ParseStatusCode::kMalformedTag);
   ErrorTest<InfTag>("asdf,", ParseStatusCode::kMalformedTag);
+
+  // Test max value
+  tag = OkTest<InfTag>(base::NumberToString(MaxSeconds()) + ",\t");
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(MaxSeconds())));
+  ErrorTest<InfTag>(base::NumberToString(MaxSeconds() + 1) + ",\t",
+                    ParseStatusCode::kValueOverflowsTimeDelta);
 }
 
 TEST(HlsTagsTest, ParseXIndependentSegmentsTag) {
@@ -461,7 +471,32 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
 TEST(HlsTagsTest, ParseXTargetDurationTag) {
   RunTagIdenficationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
                                              "10");
-  RunDecimalIntegerTagTest(&XTargetDurationTag::duration);
+
+  // Content must be a valid decimal-integer
+  ErrorTest<XTargetDurationTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("-1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1.5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>(" 1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1 ", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("one", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("{$ONE}", ParseStatusCode::kMalformedTag);
+  ErrorTest<XTargetDurationTag>("1,", ParseStatusCode::kMalformedTag);
+
+  auto tag = OkTest<XTargetDurationTag>("0");
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(0)));
+
+  tag = OkTest<XTargetDurationTag>("1");
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(1)));
+
+  tag = OkTest<XTargetDurationTag>("99");
+  EXPECT_TRUE(RoughlyEqual(tag.duration, base::Seconds(99)));
+
+  // Test max value
+  tag = OkTest<XTargetDurationTag>(base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(tag.duration, base::Seconds(MaxSeconds()));
+  ErrorTest<XTargetDurationTag>(base::NumberToString(MaxSeconds() + 1),
+                                ParseStatusCode::kValueOverflowsTimeDelta);
 }
 
 TEST(HlsTagsTest, ParseXMediaSequenceTag) {
@@ -518,15 +553,21 @@ TEST(HlsTagsTest, ParseXPartInfTag) {
                          ParseStatusCode::kMalformedTag);
 
   auto tag = OkTest<XPartInfTag>("PART-TARGET=1.2");
-  EXPECT_DOUBLE_EQ(tag.target_duration, 1.2);
+  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(1.2)));
   tag = OkTest<XPartInfTag>("PART-TARGET=1");
-  EXPECT_DOUBLE_EQ(tag.target_duration, 1);
+  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(1)));
   tag = OkTest<XPartInfTag>("PART-TARGET=0");
-  EXPECT_DOUBLE_EQ(tag.target_duration, 0);
-  tag = OkTest<XPartInfTag>("PART-TARGET=99999999.99");
-  EXPECT_DOUBLE_EQ(tag.target_duration, 99999999.99);
+  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(0)));
   tag = OkTest<XPartInfTag>("FOO=BAR,PART-TARGET=100,BAR=BAZ");
-  EXPECT_DOUBLE_EQ(tag.target_duration, 100);
+  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(100)));
+
+  // Test the max value
+  tag =
+      OkTest<XPartInfTag>("PART-TARGET=" + base::NumberToString(MaxSeconds()));
+  EXPECT_TRUE(RoughlyEqual(tag.target_duration, base::Seconds(MaxSeconds())));
+  ErrorTest<XPartInfTag>(
+      "PART-TARGET=" + base::NumberToString(MaxSeconds() + 1),
+      ParseStatusCode::kValueOverflowsTimeDelta);
 }
 
 }  // namespace media::hls

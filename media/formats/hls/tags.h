@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_HLS_TAGS_H_
 #define MEDIA_FORMATS_HLS_TAGS_H_
 
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tag_name.h"
@@ -61,8 +62,8 @@ struct MEDIA_EXPORT InfTag {
   static constexpr auto kName = MediaPlaylistTagName::kInf;
   static ParseStatus::Or<InfTag> Parse(TagItem);
 
-  // Target duration of the media segment, in seconds.
-  types::DecimalFloatingPoint duration;
+  // Target duration of the media segment.
+  base::TimeDelta duration;
 
   // Human-readable title of the media segment.
   SourceString title;
@@ -159,11 +160,11 @@ struct MEDIA_EXPORT XTargetDurationTag {
   static constexpr auto kName = MediaPlaylistTagName::kXTargetDuration;
   static ParseStatus::Or<XTargetDurationTag> Parse(TagItem);
 
-  // The upper bound on the duration (in seconds) of all media segments in the
+  // The upper bound on the duration of all media segments in the
   // media playlist. The EXTINF duration of each Media Segment in a Playlist
   // file, when rounded to the nearest integer, MUST be less than or equal to
   // this duration.
-  types::DecimalInteger duration;
+  base::TimeDelta duration;
 };
 
 // Represents the contents of the #EXT-PART-INF tag.
@@ -172,7 +173,7 @@ struct MEDIA_EXPORT XPartInfTag {
   static ParseStatus::Or<XPartInfTag> Parse(TagItem);
 
   // This value indicates the target duration for partial media segments.
-  types::DecimalFloatingPoint target_duration;
+  base::TimeDelta target_duration;
 };
 
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
