@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -261,8 +263,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
 }
 
 // TODO(crbug.com/1335822): Deflake this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TouchSelectionBounds DISABLED_TouchSelectionBounds
+#else
+#define MAYBE_TouchSelectionBounds TouchSelectionBounds
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
-                       DISABLED_TouchSelectionBounds) {
+                       MAYBE_TouchSelectionBounds) {
   // Use test.pdf here because it has embedded font metrics. With a fixed zoom,
   // coordinates should be consistent across platforms.
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf#zoom=100");
