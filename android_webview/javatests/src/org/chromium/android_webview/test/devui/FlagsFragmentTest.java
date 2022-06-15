@@ -85,9 +85,30 @@ public class FlagsFragmentTest {
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
 
+    private static final Flag[] sMockFlagList = {
+            Flag.commandLine("first-switch-for-testing",
+                    "Fake switch for testing. This is at the start of the mock flag list."),
+            Flag.commandLine(AwSwitches.HIGHLIGHT_ALL_WEBVIEWS,
+                    "Highlight the contents (including web contents) of all WebViews with a yellow "
+                            + "tint. This is useful for identifying WebViews in an Android "
+                            + "application."),
+            Flag.commandLine(AwSwitches.WEBVIEW_VERBOSE_LOGGING,
+                    "WebView will log additional debugging information to logcat, such as "
+                            + "variations and commandline state."),
+            Flag.baseFeature("FakeWebViewFeatureForTesting", "Fake base::Feature for testing."),
+            Flag.commandLine("last-switch-for-testing",
+                    "Fake switch for testing. This is at the end of the mock flag list."),
+            // Add new commandline switches and features above. The final entry should have a
+            // trailing comma for cleaner diffs.
+    };
+
     @Before
     public void setUp() throws Exception {
         Intent intent = new Intent(ContextUtils.getApplicationContext(), MainActivity.class);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FlagsFragment.setFlagListForTesting(sMockFlagList);
+            DeveloperUiService.setFlagListForTesting(sMockFlagList);
+        });
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
         // Always close the soft keyboard when the activity is launched which is sometimes shown
@@ -104,7 +125,7 @@ public class FlagsFragmentTest {
 
     private CallbackHelper getFlagUiSearchBarListener() {
         final CallbackHelper helper = new CallbackHelper();
-        FlagsFragment.setFilterListener(() -> { helper.notifyCalled(); });
+        FlagsFragment.setFilterListenerForTesting(() -> { helper.notifyCalled(); });
         return helper;
     }
 

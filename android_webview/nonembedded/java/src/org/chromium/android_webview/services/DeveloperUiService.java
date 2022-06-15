@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -72,6 +73,9 @@ public final class DeveloperUiService extends Service {
 
     @GuardedBy("sLock")
     private boolean mDeveloperModeEnabled;
+
+    @GuardedBy("sLock")
+    private static @NonNull Flag[] sFlagList = ProductionSupportedFlagList.sFlagList;
 
     private final IDeveloperUiService.Stub mBinder = new IDeveloperUiService.Stub() {
         @Override
@@ -147,8 +151,9 @@ public final class DeveloperUiService extends Service {
         }
     }
 
+    @GuardedBy("sLock")
     private static boolean isFlagAllowed(String name) {
-        for (Flag flag : ProductionSupportedFlagList.sFlagList) {
+        for (Flag flag : sFlagList) {
             if (flag.getName().equals(name)) return true;
         }
         return false;
@@ -165,7 +170,8 @@ public final class DeveloperUiService extends Service {
             for (Map.Entry<String, ?> entry : allPreferences.entrySet()) {
                 String flagName = entry.getKey();
                 // Since flags may be persisted by a previous version, we need to filter by the
-                // current version's ProductionSupportedFlagList (in case flags get removed).
+                // current version's sFlagList (in case flags get removed from
+                // ProductionSupportedFlagList).
                 if (!isFlagAllowed(flagName)) {
                     Log.w(TAG, "Toggling '" + flagName + "' is no longer supported");
                     continue;
@@ -315,6 +321,7 @@ public final class DeveloperUiService extends Service {
      *
      * <p><b>Note:</b> {@code newFlags} are not applied atomically.
      */
+    @GuardedBy("sLock")
     private void applyFlagsToCommandLine(
             Map<String, Boolean> oldFlags, Map<String, Boolean> newFlags) {
         // Best-effort attempt to undo oldFlags back to the initial CommandLine.
@@ -331,7 +338,7 @@ public final class DeveloperUiService extends Service {
         }
 
         // Apply newFlags
-        FlagOverrideHelper helper = new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
+        FlagOverrideHelper helper = new FlagOverrideHelper(sFlagList);
         helper.applyFlagOverrides(newFlags);
     }
 
@@ -342,6 +349,13 @@ public final class DeveloperUiService extends Service {
                     .edit()
                     .clear()
                     .apply();
+        }
+    }
+
+    @VisibleForTesting
+    public static void setFlagListForTesting(@NonNull Flag[] flagList) {
+        synchronized (sLock) {
+            sFlagList = flagList;
         }
     }
 }

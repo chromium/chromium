@@ -49,6 +49,7 @@ import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.ArrayList;
@@ -89,6 +90,9 @@ public class FlagsFragment extends DevUiBaseFragment {
 
     private static volatile @Nullable Runnable sFilterListener;
 
+    // Must only be accessed on UI thread.
+    private static @NonNull Flag[] sFlagList = ProductionSupportedFlagList.sFlagList;
+
     public FlagsFragment(boolean enabled) {
         mEnabled = enabled;
     }
@@ -118,10 +122,10 @@ public class FlagsFragment extends DevUiBaseFragment {
             mOverriddenFlags = DeveloperModeUtils.getFlagOverrides(mContext.getPackageName());
         }
 
-        Flag[] sortedFlags = sortFlagList(ProductionSupportedFlagList.sFlagList);
-        Flag[] flagsAndWarningText = new Flag[ProductionSupportedFlagList.sFlagList.length + 1];
+        Flag[] sortedFlags = sortFlagList(sFlagList);
+        Flag[] flagsAndWarningText = new Flag[sFlagList.length + 1];
         flagsAndWarningText[0] = null; // the first entry is the warning text
-        for (int i = 0; i < ProductionSupportedFlagList.sFlagList.length; i++) {
+        for (int i = 0; i < sFlagList.length; i++) {
             flagsAndWarningText[i + 1] = sortedFlags[i];
         }
         mListAdapter = new FlagsListAdapter(flagsAndWarningText);
@@ -202,8 +206,14 @@ public class FlagsFragment extends DevUiBaseFragment {
      * {@code R.id.flag_search_bar}.
      */
     @VisibleForTesting
-    public static void setFilterListener(@Nullable Runnable listener) {
+    public static void setFilterListenerForTesting(@Nullable Runnable listener) {
         sFilterListener = listener;
+    }
+
+    @VisibleForTesting
+    public static void setFlagListForTesting(@NonNull Flag[] flagList) {
+        ThreadUtils.assertOnUiThread();
+        sFlagList = flagList;
     }
 
     private void onFilterDone() {
