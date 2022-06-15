@@ -47,16 +47,6 @@
     min-width: 252px;
   }
 
-  #shelf {
-    background-color: var(--cros-separator-color);
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    bottom: 0;
-    height: 24px;
-    position: absolute;
-    width: 100%;
-  }
-
   ::slotted(personalization-theme) {
     grid-area: theme;
   }
@@ -94,7 +84,6 @@
         <div class="photo-images-border"></div>
         <img src$="[[getImageSrc_(image_)]]"
             alt$="[[getImageAltDescription_(image_)]]">
-        <div id="shelf"></div>
       </div>
     </template>
     <template is="dom-if" if="[[isPolicyControlled_(image_)]]">
@@ -103,7 +92,6 @@
         <img src$="[[getImageSrc_(image_)]]"
             aria-description="$i18n{managedSetting}"
             alt$="[[getImageAltDescription_(image_)]]">
-        <div id="shelf"></div>
       </div>
     </template>
   </template>
