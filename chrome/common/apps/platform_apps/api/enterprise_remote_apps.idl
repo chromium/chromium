@@ -1,0 +1,61 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.enterprise.remoteApps</code> API to add remote apps to
+// the ChromeOS launcher.
+[platforms=("chromeos", "lacros")]
+namespace enterprise.remoteApps {
+  callback VoidCallback = void ();
+  callback StringCallback = void (DOMString result);
+
+  // Options for $(ref:addFolder).
+  // |name|: Name of the folder
+  // |addToFront|: When true, the folder is added to the front of the launcher.
+  //               Defaults to false.
+  dictionary AddFolderOptions {
+    DOMString name;
+    boolean? addToFront;
+  };
+
+  // Options for $(ref:addApp).
+  // |name|: Name of the app
+  // |folderId|: The ID of the app's parent folder. Has to be an ID of a folder
+  //             added by $(ref:addFolder). If undefined or empty, the app
+  //             will be added to the top-level.
+  // |iconUrl|: A URL pointing to an image which represents the app's icon.
+  // |addToFront|: When true, the app is added to the front of the launcher.
+  //               Defaults to false.
+  dictionary AddAppOptions {
+    DOMString name;
+    boolean? addToFront;
+    DOMString? folderId;
+    DOMString iconUrl;
+  };
+
+  interface Functions {
+    // Adds a Remote Apps folder to the launcher. Empty folders are not shown
+    // in the launcher.
+    // |callback|: Called with the ID of the newly added folder.
+    static void addFolder(
+        AddFolderOptions options,
+        optional StringCallback callback);
+
+    // Adds a Remote App to the launcher.
+    // |callback|: Called with the ID of the newly added app.
+    static void addApp(
+        AddAppOptions options,
+        optional StringCallback callback);
+
+    // Deletes a Remote App added by $(ref:addApp).
+    static void deleteApp(
+        DOMString appId,
+        optional VoidCallback callback);
+  };
+
+  interface Events {
+    // Invoked when a remote app is launched. |appId| is the ID of the app
+    // which was launched.
+    static void onRemoteAppLaunched(DOMString appId);
+  };
+};

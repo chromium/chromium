@@ -21,6 +21,18 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
+  "enterprise.remoteApps": [{
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"]
+  }, {
+    "channel": "stable",
+    "dependencies": ["behavior:imprivata_extension"],
+    "extension_types": ["extension"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"]
+  }],
   "firstRunPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],

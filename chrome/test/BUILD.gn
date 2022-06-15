@@ -3066,6 +3066,7 @@ if (!is_android) {
       if (is_chromeos_ash) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
+          "../browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
           "../browser/chromeos/extensions/accessibility_features_apitest.cc",
           "../browser/chromeos/extensions/action_handlers/action_handlers_apitest.cc",
           "../browser/chromeos/extensions/autotest_private/autotest_private_apitest.cc",
@@ -3753,7 +3754,6 @@ if (!is_android) {
         "../browser/ash/printing/history/test_print_job_history_service_observer.cc",
         "../browser/ash/printing/history/test_print_job_history_service_observer.h",
         "../browser/ash/profiles/profile_helper_browsertest.cc",
-        "../browser/ash/remote_apps/remote_apps_impl_browsertest.cc",
         "../browser/ash/remote_apps/remote_apps_manager_browsertest.cc",
         "../browser/ash/scoped_test_system_nss_key_slot_mixin.cc",
         "../browser/ash/scoped_test_system_nss_key_slot_mixin.h",

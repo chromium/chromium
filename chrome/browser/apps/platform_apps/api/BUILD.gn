@@ -64,6 +64,15 @@ source_set("api") {
     "//extensions/browser",
   ]
 
+  if (is_chromeos) {
+    sources += [
+      "enterprise_remote_apps/enterprise_remote_apps_api.cc",
+      "enterprise_remote_apps/enterprise_remote_apps_api.h",
+    ]
+
+    deps += [ "//chromeos/components/remote_apps/mojom" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
@@ -78,6 +87,7 @@ source_set("api") {
       "//ash/components/multidevice/logging",
       "//ash/components/proximity_auth",
       "//chrome:strings",
+      "//chrome/browser/ash/crosapi",
       "//components/account_id",
       "//components/strings:components_strings_grit",
       "//components/user_manager",

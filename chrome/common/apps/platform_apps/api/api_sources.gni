@@ -22,6 +22,10 @@ if (is_chromeos_ash) {
   chrome_apps_api_schema_files_ += [ "arc_apps_private.idl" ]
 }
 
+if (is_chromeos) {
+  chrome_apps_api_schema_files_ += [ "enterprise_remote_apps.idl" ]
+}
+
 chrome_apps_api_schema_files =
     get_path_info(chrome_apps_api_schema_files_, "abspath")
 

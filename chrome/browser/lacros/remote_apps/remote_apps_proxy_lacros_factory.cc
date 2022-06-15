@@ -5,10 +5,12 @@
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
 
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router_factory.h"
 
 namespace chromeos {
 
@@ -29,7 +31,9 @@ RemoteAppsProxyLacrosFactory* RemoteAppsProxyLacrosFactory::GetInstance() {
 RemoteAppsProxyLacrosFactory::RemoteAppsProxyLacrosFactory()
     : BrowserContextKeyedServiceFactory(
           "RemoteAppsProxyLacros",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(extensions::EventRouterFactory::GetInstance());
+}
 
 RemoteAppsProxyLacrosFactory::~RemoteAppsProxyLacrosFactory() = default;
 
@@ -41,7 +45,8 @@ KeyedService* RemoteAppsProxyLacrosFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new RemoteAppsProxyLacros();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return new RemoteAppsProxyLacros(profile);
 }
 
 bool RemoteAppsProxyLacrosFactory::ServiceIsNULLWhileTesting() const {

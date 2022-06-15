@@ -10,8 +10,12 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/test_event_router.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -97,15 +101,29 @@ constexpr char kIconUrl[] = "icon_url";
 
 class RemoteAppsProxyLacrosUnittest : public testing::Test {
  public:
-  RemoteAppsProxyLacrosUnittest() = default;
+  RemoteAppsProxyLacrosUnittest()
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    CHECK(testing_profile_manager_.SetUp());
+  }
 
   ~RemoteAppsProxyLacrosUnittest() override {}
 
   void SetUp() override {
-    bridge_remote_.Bind(bridge_receiver_.BindNewPipeAndPassRemote());
-    proxy_ = RemoteAppsProxyLacros::CreateForTesting(bridge_remote_);
+    testing::Test::SetUp();
 
+    testing_profile_ = testing_profile_manager_.CreateTestingProfile("test");
+    event_router_ = extensions::CreateAndUseTestEventRouter(testing_profile_);
+
+    bridge_remote_.Bind(bridge_receiver_.BindNewPipeAndPassRemote());
+    proxy_ = RemoteAppsProxyLacros::CreateForTesting(testing_profile_,
+                                                     bridge_remote_);
+    // Wait for Mojo endpoints to connect.
     base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    testing_profile_manager_.DeleteAllTestingProfiles();
+    testing::Test::TearDown();
   }
 
   void SetExpectationForAddAppSuccess(const std::string& app_id,
@@ -179,6 +197,9 @@ class RemoteAppsProxyLacrosUnittest : public testing::Test {
   }
 
  protected:
+  TestingProfileManager testing_profile_manager_;
+  TestingProfile* testing_profile_ = nullptr;
+  extensions::TestEventRouter* event_router_ = nullptr;  // Created in SetUp().
   testing::StrictMock<TestRemoteAppsLacrosBridge> remote_apps_bridge_;
   mojo::Receiver<RemoteAppsLacrosBridge> bridge_receiver_{&remote_apps_bridge_};
   mojo::Remote<RemoteAppsLacrosBridge> bridge_remote_;

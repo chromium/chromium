@@ -1,5 +1,5 @@
 {
-  "name": "Remote Apps",
+  "name": "Remote Apps Mojo",
   "version": "0.1",
   "manifest_version": 2,
   "description": "Browser test for Remote Apps Mojo Private API",

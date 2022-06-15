@@ -17,6 +17,12 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class Profile;
+
+namespace extensions {
+class EventRouter;
+}  // namespace extensions
+
 namespace chromeos {
 
 // A KeyedService which provides a Mojo proxy for `RemoteAppsFactory` and
@@ -35,10 +41,11 @@ class RemoteAppsProxyLacros
       public KeyedService {
  public:
   static std::unique_ptr<RemoteAppsProxyLacros> CreateForTesting(
+      Profile* profile,
       mojo::Remote<remote_apps::mojom::RemoteAppsLacrosBridge>&
           remote_apps_lacros_bridge);
 
-  RemoteAppsProxyLacros();
+  explicit RemoteAppsProxyLacros(Profile* profile);
 
   RemoteAppsProxyLacros(const RemoteAppsProxyLacros&) = delete;
   RemoteAppsProxyLacros& operator=(const RemoteAppsProxyLacros&) = delete;
@@ -77,6 +84,7 @@ class RemoteAppsProxyLacros
   // Private constructor which allows setting of the `RemoteAppsLacrosBridge`
   // remote for testing. Called by `CreateForTesting()`.
   explicit RemoteAppsProxyLacros(
+      Profile* profile,
       mojo::Remote<remote_apps::mojom::RemoteAppsLacrosBridge>&
           remote_apps_lacros_bridge);
 
@@ -95,6 +103,7 @@ class RemoteAppsProxyLacros
   mojo::Receiver<remote_apps::mojom::RemoteAppLaunchObserver>
       ash_observer_receiver_{this};
 
+  extensions::EventRouter* event_router_ = nullptr;
   std::map<std::string, mojo::RemoteSetElementId> source_id_to_remote_id_map_;
 };
 

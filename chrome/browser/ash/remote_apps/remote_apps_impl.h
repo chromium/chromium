@@ -33,6 +33,8 @@ class RemoteAppsManager;
 // Forwards calls to `RemoteAppsManager` via mojo. `RemoteAppsImpl` is also in
 // charge of managing the mapping between apps and extensions so app launch
 // events are dispatched only to the extension which added the app.
+// The Mojo API is tested under
+// //chrome/browser/chromeos/extensions/remote_apps_apitest.cc
 class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
  public:
   static bool IsAllowed(content::RenderFrameHost* render_frame_host,

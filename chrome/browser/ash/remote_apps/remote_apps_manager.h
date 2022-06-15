@@ -34,6 +34,10 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+namespace extensions {
+class EventRouter;
+}  // namespace extensions
+
 namespace ash {
 
 class RemoteAppsImpl;
@@ -150,7 +154,7 @@ class RemoteAppsManager
 
   // apps::RemoteApps::Delegate:
   const std::map<std::string, RemoteAppsModel::AppInfo>& GetApps() override;
-  void LaunchApp(const std::string& id) override;
+  void LaunchApp(const std::string& app_id) override;
   gfx::ImageSkia GetIcon(const std::string& id) override;
   gfx::ImageSkia GetPlaceholderIcon(const std::string& id,
                                     int32_t size_hint_in_dip) override;
@@ -166,6 +170,8 @@ class RemoteAppsManager
       std::unique_ptr<ImageDownloader> image_downloader);
 
   RemoteAppsModel* GetModelForTesting();
+
+  RemoteAppsImpl& GetRemoteAppsImpl() { return remote_apps_impl_; }
 
   void SetIsInitializedForTesting(bool is_initialized);
 
@@ -184,6 +190,7 @@ class RemoteAppsManager
   bool is_initialized_ = false;
   app_list::AppListSyncableService* app_list_syncable_service_ = nullptr;
   AppListModelUpdater* model_updater_ = nullptr;
+  extensions::EventRouter* event_router_ = nullptr;
   std::unique_ptr<apps::RemoteApps> remote_apps_;
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;

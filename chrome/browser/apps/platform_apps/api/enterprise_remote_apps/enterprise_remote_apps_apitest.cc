@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_api.h"
 
 #include <string>
 #include <vector>
@@ -42,11 +42,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chrome_apps {
+namespace api {
 
 namespace {
 
-// ID of extension found at chrome/test/data/remote_apps.
+constexpr char kApiExtensionRelativePath[] =
+    "extensions/remote_apps/extension_api";
+constexpr char kMojoExtensionRelativePath[] =
+    "extensions/remote_apps/extension_mojo";
+constexpr char kExtensionPemRelativePath[] =
+    "extensions/remote_apps/remote_apps.pem";
+// ID associated with the .pem.
 constexpr char kExtensionId[] = "ceddkihciiemhnpnhbndbinppokgoidh";
 
 constexpr char kId1[] = "Id 1";
@@ -55,25 +62,31 @@ constexpr char kId3[] = "Id 3";
 
 }  // namespace
 
-class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
+// Tests both the Remote Apps Extension API and the Remote Apps private Mojo
+// API. The test extensions are found at
+// //chrome/test/data/remote_apps/extension_api and extension_mojo
+// respectively. Both test extensions implement the same test cases, only
+// differing in which API is used.
+class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
+                          public testing::WithParamInterface<std::string> {
  public:
-  RemoteAppsImplBrowsertest() : policy::DevicePolicyCrosBrowserTest() {}
+  RemoteAppsApitest() = default;
 
   // DevicePolicyCrosBrowserTest:
   void SetUp() override {
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
-    RemoteAppsImpl::SetBypassChecksForTesting(true);
+    ash::RemoteAppsImpl::SetBypassChecksForTesting(true);
     DevicePolicyCrosBrowserTest::SetUp();
   }
 
   // DevicePolicyCrosBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kLoginManager);
-    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     command_line->AppendSwitchASCII(
         extensions::switches::kAllowlistedExtensionID, kExtensionId);
-    command_line->AppendSwitch(switches::kOobeSkipPostLogin);
+    command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
   }
 
   // DevicePolicyCrosBrowserTest:
@@ -81,7 +94,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
 
     SetUpDeviceLocalAccountPolicy();
-    SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
+    ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
   }
 
   void SetUpDeviceLocalAccountPolicy() {
@@ -104,19 +117,18 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
 
     base::FilePath test_dir_path;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_path);
-    base::FilePath extension_path =
-        test_dir_path.AppendASCII("extensions/remote_apps/extension");
+    base::FilePath extension_path = test_dir_path.AppendASCII(GetParam());
     base::FilePath pem_path =
-        test_dir_path.AppendASCII("extensions/remote_apps/remote_apps.pem");
+        test_dir_path.AppendASCII(kExtensionPemRelativePath);
 
     user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
-    Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
 
-    std::unique_ptr<FakeIdGenerator> id_generator =
-        std::make_unique<FakeIdGenerator>(
+    std::unique_ptr<ash::FakeIdGenerator> id_generator =
+        std::make_unique<ash::FakeIdGenerator>(
             std::vector<std::string>{kId1, kId2, kId3});
-    RemoteAppsManagerFactory::GetForProfile(profile)
+    ash::RemoteAppsManagerFactory::GetForProfile(profile)
         ->GetModelForTesting()
         ->SetIdGeneratorForTesting(std::move(id_generator));
 
@@ -131,13 +143,13 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     ASSERT_TRUE(loader.LoadExtension(extension_path));
   }
 
-  AppListItem* GetAppListItem(const std::string& id) {
-    return AppListModelProvider::Get()->model()->FindItem(id);
+  ash::AppListItem* GetAppListItem(const std::string& id) {
+    return ash::AppListModelProvider::Get()->model()->FindItem(id);
   }
 
   int GetAppListItemIndex(const std::string& id) {
-    AppListModel* const model = AppListModelProvider::Get()->model();
-    AppListItemList* const item_list = model->top_level_item_list();
+    ash::AppListModel* const model = ash::AppListModelProvider::Get()->model();
+    ash::AppListItemList* const item_list = model->top_level_item_list();
 
     size_t index;
     if (!item_list->FindItemIndex(id, &index))
@@ -154,7 +166,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
   bool IsAppListItemLast(const std::string& id) {
     const int index = GetAppListItemIndex(id);
     DCHECK_GE(index, 0);
-    const int model_size = AppListModelProvider::Get()
+    const int model_size = ash::AppListModelProvider::Get()
                                ->model()
                                ->top_level_item_list()
                                ->item_count();
@@ -163,10 +175,10 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
 
  private:
   base::DictionaryValue config_;
-  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddApp) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("AddApp");
   ASSERT_TRUE(catcher.GetNextResult());
@@ -180,7 +192,17 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {
   EXPECT_TRUE(IsAppListItemLast(kId1));
 }
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddAppToFront) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddAppBadIconUrl) {
+  if (GetParam() != kApiExtensionRelativePath)
+    GTEST_SKIP() << "iconUrl validation not done for Mojo API";
+
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("AddAppBadIconUrl");
+
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddAppToFront) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("AddAppToFront");
   ASSERT_TRUE(catcher.GetNextResult());
@@ -189,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddAppToFront) {
   EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddFolderAndApps) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("AddFolderAndApps");
   ASSERT_TRUE(catcher.GetNextResult());
@@ -213,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
   EXPECT_TRUE(IsAppListItemLast(kId1));
 }
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, AddFolderToFront) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("AddFolderToFront");
   ASSERT_TRUE(catcher.GetNextResult());
@@ -222,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {
   EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteApp) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, DeleteApp) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("DeleteApp");
   ASSERT_TRUE(catcher.GetNextResult());
@@ -231,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteApp) {
   EXPECT_FALSE(GetAppListItem(kId1));
 }
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteAppInFolder) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, DeleteAppInFolder) {
   extensions::ResultCatcher catcher;
   LoadExtensionAndRunTest("DeleteAppInFolder");
   ASSERT_TRUE(catcher.GetNextResult());
@@ -241,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteAppInFolder) {
   EXPECT_FALSE(GetAppListItem(kId2));
 }
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, OnRemoteAppLaunched) {
   extensions::ResultCatcher catcher;
   ExtensionTestMessageListener listener("Remote app added");
   listener.set_extension_id(kExtensionId);
@@ -254,4 +276,10 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
-}  // namespace ash
+INSTANTIATE_TEST_SUITE_P(,
+                         RemoteAppsApitest,
+                         testing::Values(kApiExtensionRelativePath,
+                                         kMojoExtensionRelativePath));
+
+}  // namespace api
+}  // namespace chrome_apps

@@ -15,6 +15,10 @@
     "dependencies": ["permission:browser"],
     "contexts": ["blessed_extension"]
   },
+  "enterprise.remoteApps": {
+    "dependencies": ["permission:enterprise.remoteApps"],
+    "contexts": ["blessed_extension"]
+  },
   "firstRunPrivate": {
     "dependencies": ["permission:firstRunPrivate"],
     "contexts": ["blessed_extension"]

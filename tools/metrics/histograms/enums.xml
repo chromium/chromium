@@ -33000,6 +33000,7 @@ Called by update_extension_histograms.py.-->
   <int value="492" label="LOGIN_ON_REQUEST_EXTERNAL_LOGOUT"/>
   <int value="493" label="LOGIN_ON_EXTERNAL_LOGOUT_DONE"/>
   <int value="494" label="ACCESSIBILITY_PRIVATE_ON_PUMPKIN_INSTALLED"/>
+  <int value="495" label="REMOTE_APPS_ON_REMOTE_APP_LAUNCHED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -34746,6 +34747,9 @@ Called by update_extension_histograms.py.-->
   <int value="1666" label="OS_TELEMETRY_GETSTATEFULPARTITIONINFO"/>
   <int value="1667" label="OS_DIAGNOSTICS_RUNACPOWERROUTINE"/>
   <int value="1668" label="OS_TELEMETRY_GETOSVERSIONINFO"/>
+  <int value="1669" label="ENTERPRISE_REMOTEAPPS_ADDFOLDER"/>
+  <int value="1670" label="ENTERPRISE_REMOTEAPPS_ADDAPP"/>
+  <int value="1671" label="ENTERPRISE_REMOTEAPPS_DELETEAPP"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -35374,6 +35378,7 @@ Called by update_extension_permission.py.-->
   <int value="236" label="kChromeOSDiagnostics"/>
   <int value="237" label="kChromeOSTelemetrySerialNumber"/>
   <int value="238" label="kSharedStoragePrivate"/>
+  <int value="239" label="kEnterpriseRemoteApps"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

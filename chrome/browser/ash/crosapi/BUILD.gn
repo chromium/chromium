@@ -232,6 +232,7 @@ source_set("crosapi") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/cpp:crosapi_constants",

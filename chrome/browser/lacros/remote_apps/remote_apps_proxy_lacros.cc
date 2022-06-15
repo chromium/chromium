@@ -8,8 +8,12 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/apps/platform_apps/api/enterprise_remote_apps.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -22,22 +26,27 @@ constexpr char kErrorNoAshRemoteConnected[] = "No Ash remote connected";
 
 // static
 std::unique_ptr<RemoteAppsProxyLacros> RemoteAppsProxyLacros::CreateForTesting(
+    Profile* profile,
     mojo::Remote<remote_apps::mojom::RemoteAppsLacrosBridge>&
         remote_apps_lacros_bridge) {
   // Using `new` to access non-public constructor.
-  return base::WrapUnique(new RemoteAppsProxyLacros(remote_apps_lacros_bridge));
+  return base::WrapUnique(
+      new RemoteAppsProxyLacros(profile, remote_apps_lacros_bridge));
 }
 
 // Availability of the `RemoteAppsFactory` remote is checked in
 // `RemoteAppsProxyLacrosFactory`.
-RemoteAppsProxyLacros::RemoteAppsProxyLacros()
+RemoteAppsProxyLacros::RemoteAppsProxyLacros(Profile* profile)
     : RemoteAppsProxyLacros(
+          profile,
           LacrosService::Get()
               ->GetRemote<remote_apps::mojom::RemoteAppsLacrosBridge>()) {}
 
 RemoteAppsProxyLacros::RemoteAppsProxyLacros(
+    Profile* profile,
     mojo::Remote<remote_apps::mojom::RemoteAppsLacrosBridge>&
-        remote_apps_lacros_bridge) {
+        remote_apps_lacros_bridge)
+    : event_router_(extensions::EventRouter::Get(profile)) {
   remote_apps_lacros_bridge->BindRemoteAppsAndAppLaunchObserverForLacros(
       ash_remote_apps_remote_.BindNewPipeAndPassReceiver(),
       ash_observer_receiver_.BindNewPipeAndPassRemoteWithVersion());
@@ -111,6 +120,15 @@ void RemoteAppsProxyLacros::DeleteApp(const std::string& app_id,
 
 void RemoteAppsProxyLacros::OnRemoteAppLaunched(const std::string& app_id,
                                                 const std::string& source_id) {
+  std::unique_ptr<extensions::Event> event = std::make_unique<
+      extensions::Event>(
+      extensions::events::ENTERPRISE_REMOTE_APPS_ON_REMOTE_APP_LAUNCHED,
+      chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::kEventName,
+      chrome_apps::api::enterprise_remote_apps::OnRemoteAppLaunched::Create(
+          app_id));
+
+  event_router_->DispatchEventToExtension(source_id, std::move(event));
+
   auto it = source_id_to_remote_id_map_.find(source_id);
   if (it == source_id_to_remote_id_map_.end())
     return;

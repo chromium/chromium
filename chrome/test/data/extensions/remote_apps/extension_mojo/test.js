@@ -4,6 +4,7 @@
 
 let api;
 
+// Keep in sync with ../extension_api/test.js when changing the test cases.
 const testCases = [
   async function AddApp() {
     // |add_to_front| omitted.
