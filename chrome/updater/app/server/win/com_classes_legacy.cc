@@ -700,7 +700,8 @@ HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
 
   if (const base::win::RegKey command_key(
           root,
-          base::StrCat({app_key_name, L"\\", kRegKeyCommands, command_id})
+          base::StrCat(
+              {app_key_name, L"\\", kRegKeyCommands, L"\\", command_id})
               .c_str(),
           Wow6432(KEY_QUERY_VALUE));
       !command_key.Valid()) {

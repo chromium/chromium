@@ -14,19 +14,19 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_variant.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
-#include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,54 +35,28 @@
 namespace updater {
 namespace {
 
-const wchar_t kAppId1[] = L"{3B1A3CCA-0525-4418-93E6-A0DB3398EC9B}";
+constexpr wchar_t kAppId1[] = L"{3B1A3CCA-0525-4418-93E6-A0DB3398EC9B}";
 
-const wchar_t kCmdExe[] = L"cmd.exe";
-const wchar_t kBadCmdLine[] = L"\"c:\\Program Files\\cmd.exe\"";
-const wchar_t kCmdLineValid[] =
+constexpr wchar_t kBadCmdLine[] = L"\"c:\\Program Files\\cmd.exe\"";
+constexpr wchar_t kCmdLineValid[] =
     L"\"C:\\Program Files\\Windows Media Player\\wmpnscfg.exe\" /Close";
 
-const wchar_t kCmdId1[] = L"command 1";
-const wchar_t kCmdId2[] = L"command 2";
+constexpr wchar_t kCmdId1[] = L"command 1";
+constexpr wchar_t kCmdId2[] = L"command 2";
 
 }  // namespace
 
 class LegacyAppCommandWebImplTest : public testing::Test {
  protected:
   LegacyAppCommandWebImplTest()
-      : test_process_command_line_(base::CommandLine::NO_PROGRAM) {}
+      : cmd_exe_command_line_(base::CommandLine::NO_PROGRAM) {}
   ~LegacyAppCommandWebImplTest() override = default;
 
   void SetUp() override {
-    base::FilePath system_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
-
-    const base::FilePath from_test_process = system_path.Append(kCmdExe);
-    if (GetTestScope() == UpdaterScope::kUser) {
-      test_process_command_line_ = base::CommandLine(from_test_process);
-      return;
-    }
-
-    base::FilePath programfiles_path;
-    ASSERT_TRUE(
-        base::PathService::Get(base::DIR_PROGRAM_FILES, &programfiles_path));
-    ASSERT_TRUE(base::CreateTemporaryDirInDir(
-        programfiles_path, L"com_classes_legacy_unittest", &temp_directory_));
-    base::FilePath test_process_path;
-    test_process_path = temp_directory_.Append(kCmdExe);
-
-    ASSERT_TRUE(base::CopyFile(from_test_process, test_process_path));
-    test_process_command_line_ = base::CommandLine(test_process_path);
+    SetupCmdExe(cmd_exe_command_line_, temp_programfiles_dir_);
   }
 
-  void TearDown() override {
-    base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()), L"",
-                      Wow6432(DELETE))
-        .DeleteKey(GetClientKeyName(kAppId1).c_str());
-
-    if (!temp_directory_.empty())
-      base::DeletePathRecursively(temp_directory_);
-  }
+  void TearDown() override { DeleteAppClientKey(kAppId1); }
 
   template <typename T>
   absl::optional<std::wstring> MakeCommandLine(
@@ -118,7 +92,7 @@ class LegacyAppCommandWebImplTest : public testing::Test {
       const std::wstring& command_line_format,
       const std::vector<std::wstring>& parameters) {
     CreateAppClientKey(app_id);
-    CreateCommand(app_id, command_id, command_line_format);
+    CreateAppCommandRegistry(app_id, command_id, command_line_format);
 
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
     if (HRESULT hr = LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
@@ -136,7 +110,7 @@ class LegacyAppCommandWebImplTest : public testing::Test {
       const std::wstring& command_line_format,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
     CreateAppClientKey(app_id);
-    CreateCommand(app_id, command_id, command_line_format);
+    CreateAppCommandRegistry(app_id, command_id, command_line_format);
 
     return LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
         GetTestScope(), app_id, command_id, app_command_web);
@@ -152,41 +126,11 @@ class LegacyAppCommandWebImplTest : public testing::Test {
   void NoCmdTest() {
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
     CreateAppClientKey(kAppId1);
-    CreateCommand(kAppId1, kCmdId1, kCmdLineValid);
+    CreateAppCommandRegistry(kAppId1, kCmdId1, kCmdLineValid);
 
     EXPECT_HRESULT_FAILED(
         LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
             GetTestScope(), kAppId1, kCmdId2, app_command_web));
-  }
-
-  std::wstring GetClientKeyName(const std::wstring& app_id) {
-    return base::StrCat({CLIENTS_KEY, app_id});
-  }
-
-  std::wstring GetCommandKeyName(const std::wstring& app_id,
-                                 const std::wstring& command_id) {
-    return base::StrCat(
-        {CLIENTS_KEY, app_id, L"\\", kRegKeyCommands, command_id});
-  }
-
-  void CreateAppClientKey(const std::wstring& app_id) {
-    base::win::RegKey client_key;
-    EXPECT_EQ(
-        client_key.Create(UpdaterScopeToHKeyRoot(GetTestScope()),
-                          GetClientKeyName(app_id).c_str(), Wow6432(KEY_WRITE)),
-        ERROR_SUCCESS);
-  }
-
-  void CreateCommand(const std::wstring& app_id,
-                     const std::wstring& cmd_id,
-                     const std::wstring& cmd_line) {
-    base::win::RegKey command_key;
-    EXPECT_EQ(command_key.Create(UpdaterScopeToHKeyRoot(GetTestScope()),
-                                 GetCommandKeyName(app_id, cmd_id).c_str(),
-                                 Wow6432(KEY_WRITE)),
-              ERROR_SUCCESS);
-    EXPECT_EQ(command_key.WriteValue(kRegValueCommandLine, cmd_line.c_str()),
-              ERROR_SUCCESS);
   }
 
   void WaitForUpdateCompletion(
@@ -211,8 +155,8 @@ class LegacyAppCommandWebImplTest : public testing::Test {
         .GetCommandLineString();
   }
 
-  base::CommandLine test_process_command_line_;
-  base::FilePath temp_directory_;
+  base::CommandLine cmd_exe_command_line_;
+  base::ScopedTempDir temp_programfiles_dir_;
 };
 
 TEST_F(LegacyAppCommandWebImplTest, InvalidPaths) {
@@ -413,8 +357,8 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
       kAppId1, kCmdId1,
-      base::StrCat({test_process_command_line_.GetCommandLineString(),
-                    L" /c \"exit 7\""}),
+      base::StrCat(
+          {cmd_exe_command_line_.GetCommandLineString(), L" /c \"exit 7\""}),
       app_command_web));
 
   UINT status = 0;
@@ -446,8 +390,8 @@ TEST_F(LegacyAppCommandWebImplTest, ExecuteParameterizedCommand) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
       kAppId1, kCmdId1,
-      base::StrCat({test_process_command_line_.GetCommandLineString(),
-                    L" /c \"exit %1\""}),
+      base::StrCat(
+          {cmd_exe_command_line_.GetCommandLineString(), L" /c \"exit %1\""}),
       app_command_web));
 
   ASSERT_HRESULT_SUCCEEDED(

@@ -638,6 +638,8 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/com_classes_legacy_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
+        "unittest_util_win.cc",
+        "unittest_util_win.h",
         "util_win_unittest.cc",
         "win/installer_api_unittest.cc",
         "win/manifest_util_unittest.cc",
