@@ -82,6 +82,7 @@ void QuickAnswersState::InitializeObserver(
   if (prefs_initialized_) {
     observer->OnSettingsEnabled(settings_enabled_);
     observer->OnApplicationLocaleReady(resolved_application_locale_);
+    observer->OnPreferredLanguagesChanged(preferred_languages_);
     observer->OnEligibilityChanged(is_eligible_);
   }
 }

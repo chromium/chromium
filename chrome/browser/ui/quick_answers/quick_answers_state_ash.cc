@@ -237,6 +237,9 @@ void QuickAnswersStateAsh::UpdatePreferredLanguages() {
       language::prefs::kPreferredLanguages);
 
   preferred_languages_ = preferred_languages;
+
+  for (auto& observer : observers_)
+    observer.OnPreferredLanguagesChanged(preferred_languages);
 }
 
 void QuickAnswersStateAsh::UpdateSpokenFeedbackEnabled() {

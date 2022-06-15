@@ -34,6 +34,8 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
   virtual void OnSettingsEnabled(bool enabled) {}
   virtual void OnApplicationLocaleReady(const std::string& locale) {}
+  virtual void OnPreferredLanguagesChanged(
+      const std::string& preferred_languages) {}
   virtual void OnEligibilityChanged(bool eligible) {}
 };
 
