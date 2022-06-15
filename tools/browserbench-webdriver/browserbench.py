@@ -7,6 +7,7 @@ from selenium import webdriver
 
 import json
 import logging
+import platform
 import selenium
 import subprocess
 import sys
@@ -170,6 +171,13 @@ class BrowserBench(object):
 
     logging.info('Script starting')
 
+    caffeinate_process = None
+    if platform.system() == 'Darwin':
+      logging.info('Starting caffeinate')
+      # Caffeinate ensures the machine is not sleeping/idle.
+      caffeinate_process = subprocess.Popen(
+          ['/usr/bin/caffeinate', '-uims', '-t', '300'])
+
     parser = OptionParser()
     parser.add_option('-b',
                       '--browser',
@@ -235,6 +243,8 @@ class BrowserBench(object):
         else:
           logging.critical('Got exception running, retried too many times, '
                            'giving up')
+          if caffeinate_process:
+            caffeinate_process.kill()
           raise e
       # When rerunning, first try killing the browser in hopes of state
       # resetting.
@@ -242,6 +252,8 @@ class BrowserBench(object):
 
     logging.info('Test completed')
     self._ProduceOutput(measurements, extra_key_values)
+    if caffeinate_process:
+      caffeinate_process.kill()
 
   def AddExtraParserOptions(self, parser):
     pass
