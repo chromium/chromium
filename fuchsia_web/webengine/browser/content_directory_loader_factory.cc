@@ -23,7 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "fuchsia/base/fuchsia_dir_scheme.h"
+#include "fuchsia_web/common/fuchsia_dir_scheme.h"
 #include "fuchsia_web/webengine/common/web_engine_content_client.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "mojo/public/cpp/bindings/remote.h"

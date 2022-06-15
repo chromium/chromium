@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "fuchsia_dir_scheme\.cc": [
+    "+url",
+  ],
+  "init_logging\.cc": [
+    "+components/version_info",
+  ],
+}

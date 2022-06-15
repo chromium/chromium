@@ -18,7 +18,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "fuchsia/base/string_util.h"
+#include "fuchsia_web/common/string_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"

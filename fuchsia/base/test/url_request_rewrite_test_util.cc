@@ -5,7 +5,7 @@
 #include "fuchsia/base/test/url_request_rewrite_test_util.h"
 
 #include "base/strings/string_piece.h"
-#include "fuchsia/base/string_util.h"
+#include "fuchsia_web/common/string_util.h"
 
 namespace cr_fuchsia {
 

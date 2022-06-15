@@ -7,7 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "fuchsia/base/string_util.h"
+#include "fuchsia_web/common/string_util.h"
 #include "net/base/url_util.h"
 
 namespace {

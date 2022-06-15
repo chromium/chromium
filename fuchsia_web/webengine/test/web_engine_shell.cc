@@ -28,7 +28,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "fuchsia/base/init_logging.h"
+#include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "url/gurl.h"
 

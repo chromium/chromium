@@ -27,7 +27,7 @@ source_set("webinstance_host") {
     "//base:base_static",
     "//components/fuchsia_component_support",
     "//content/public/common",
-    "//fuchsia/base",
+    "//fuchsia_web/common",
     "//fuchsia_web/webengine:switches",
     "//gpu/command_buffer/service",
     "//media",

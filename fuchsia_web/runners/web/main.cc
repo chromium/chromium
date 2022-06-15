@@ -14,8 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/fuchsia_component_support/inspect.h"
-#include "fuchsia/base/fuchsia_dir_scheme.h"
-#include "fuchsia/base/init_logging.h"
+#include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
@@ -69,8 +68,6 @@ int main(int argc, char** argv) {
       << "Failed to initialize logging.";
 
   cr_fuchsia::LogComponentStartWithVersion("web_runner");
-
-  cr_fuchsia::RegisterFuchsiaDirScheme();
 
   cr_fuchsia::WebInstanceHost web_instance_host;
   WebContentRunner runner(&web_instance_host,

@@ -1,4 +1,7 @@
 include_rules = [
   # Require explicit include rules for sub-directories.
   "-fuchsia_web",
+
+  # Everything can access the common directory.
+  "+fuchsia_web/common",
 ]

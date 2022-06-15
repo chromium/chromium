@@ -119,9 +119,9 @@ component("web_engine_core") {
     "//content/public/child",
     "//content/public/common",
     "//content/public/renderer",
-    "//fuchsia/base",
     "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
+    "//fuchsia_web/common",
     "//fuchsia_web/webengine/mojom",
 
     # TODO(crbug.com/1081525): Move context_provider to its own target and move
@@ -493,8 +493,8 @@ test("web_engine_browsertests") {
     "//components/version_info",
     "//content/public/browser",
     "//content/test:test_support",
-    "//fuchsia/base",
     "//fuchsia/base/test:test_support",
+    "//fuchsia_web/common",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -612,7 +612,6 @@ test("web_engine_integration_tests") {
     "//base",
     "//base:test_log_listener_safe",
     "//components/version_info",
-    "//fuchsia/base",
     "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base/test:test_support",
     "//fuchsia_web/webinstance_host",
@@ -675,7 +674,7 @@ executable("web_engine_shell_exec") {
 
   deps = [
     "//base",
-    "//fuchsia/base",
+    "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",

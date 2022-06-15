@@ -24,8 +24,8 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
-    "//fuchsia/base:base",
     "//fuchsia/base:modular",
+    "//fuchsia_web/common",
     "//net",
     "//net:test_support",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",

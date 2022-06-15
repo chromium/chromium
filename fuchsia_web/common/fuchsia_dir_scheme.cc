@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/fuchsia_dir_scheme.h"
+#include "fuchsia_web/common/fuchsia_dir_scheme.h"
 
 #include "url/url_util.h"
 

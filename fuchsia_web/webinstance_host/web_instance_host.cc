@@ -39,7 +39,7 @@
 #include "components/fuchsia_component_support/config_reader.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
 #include "content/public/common/content_switches.h"
-#include "fuchsia/base/string_util.h"
+#include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/webengine/features.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"

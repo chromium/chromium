@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_INIT_LOGGING_H_
-#define FUCHSIA_BASE_INIT_LOGGING_H_
+#ifndef FUCHSIA_WEB_COMMON_INIT_LOGGING_H_
+#define FUCHSIA_WEB_COMMON_INIT_LOGGING_H_
 
 #include "base/strings/string_piece_forward.h"
 
@@ -11,6 +11,7 @@ namespace base {
 class CommandLine;
 }
 
+// TODO(crbug/1081525): Remove the cr_fuchsia namespace from all files.
 namespace cr_fuchsia {
 
 // Configures logging for the current process based on the supplied
@@ -30,4 +31,4 @@ void LogComponentStartWithVersion(base::StringPiece component_name);
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_INIT_LOGGING_H_
+#endif  // FUCHSIA_WEB_COMMON_INIT_LOGGING_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/string_util.h"
+#include "fuchsia_web/common/string_util.h"
 
 namespace cr_fuchsia {
 

@@ -17,7 +17,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
 #include "components/fuchsia_component_support/inspect.h"
-#include "fuchsia/base/init_logging.h"
+#include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/webengine/context_provider_impl.h"
 
 namespace {
