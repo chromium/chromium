@@ -100,8 +100,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     // Returns true if associated `CSSSegmentedFontFace` is empty.
     bool RemoveFontFace(FontFace* font_face);
 
-    void Trace(Visitor*) const;
-
    private:
     Map map_;
   };
@@ -120,8 +118,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
         const FontSelectionRequest& request,
         const CapabilitiesSet& family_faces);
 
-    void Trace(Visitor*) const;
-
    private:
     Map map_;
   };
@@ -139,8 +135,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
         const AtomicString& family,
         scoped_refptr<CapabilitiesSet> family_faces) LOCKS_EXCLUDED(lock_);
     void Remove(const AtomicString& family) LOCKS_EXCLUDED(lock_);
-
-    void Trace(Visitor*) const LOCKS_EXCLUDED(lock_);
 
    private:
     mutable LockForParallelTextShaping lock_;
@@ -161,8 +155,6 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     bool RemoveFontFace(FontFace* font_face);
 
     size_t GetNumSegmentedFacesForTesting() const;
-
-    void Trace(Visitor*) const;
 
    private:
     Map map_;

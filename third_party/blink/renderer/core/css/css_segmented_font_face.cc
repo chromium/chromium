@@ -61,6 +61,7 @@ CSSSegmentedFontFace::CSSSegmentedFontFace(
     FontSelectionCapabilities font_selection_capabilities)
     : font_selection_capabilities_(font_selection_capabilities),
       font_data_table_(kFontDataTableMaxSize),
+      font_faces_(MakeGarbageCollected<FontFaceList>()),
       approximate_character_count_(0) {
   DCHECK(ThreadState::Current()->GetIsolate());
 }
@@ -79,7 +80,7 @@ void CSSSegmentedFontFace::PruneTable() {
 bool CSSSegmentedFontFace::IsValid() const {
   lock_.AssertAcquired();
   // Valid if at least one font face is valid.
-  return font_faces_.ForEachUntilTrue(
+  return font_faces_->ForEachUntilTrue(
       WTF::BindRepeating([](Member<FontFace> font_face) -> bool {
         if (font_face->CssFontFace()->IsValid())
           return true;
@@ -97,12 +98,12 @@ void CSSSegmentedFontFace::AddFontFace(FontFace* font_face,
   AutoLockForParallelTextShaping guard(lock_);
   PruneTable();
   font_face->CssFontFace()->AddSegmentedFontFace(this);
-  font_faces_.Insert(font_face, css_connected);
+  font_faces_->Insert(font_face, css_connected);
 }
 
 void CSSSegmentedFontFace::RemoveFontFace(FontFace* font_face) {
   AutoLockForParallelTextShaping guard(lock_);
-  if (!font_faces_.Erase(font_face))
+  if (!font_faces_->Erase(font_face))
     return;
 
   PruneTable();
@@ -152,7 +153,7 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
       font_selection_request.slope >= ItalicSlopeValue() &&
       font_description.SyntheticItalicAllowed());
 
-  font_faces_.ForEachReverse(WTF::BindRepeating(
+  font_faces_->ForEachReverse(WTF::BindRepeating(
       [](const FontDescription& requested_font_description,
          scoped_refptr<SegmentedFontData> created_font_data,
          Member<FontFace> font_face) {
@@ -193,7 +194,7 @@ void CSSSegmentedFontFace::WillUseFontData(
   // This function is called from main thread or worker thread.
   AutoLockForParallelTextShaping guard(lock_);
   approximate_character_count_ += text.length();
-  font_faces_.ForEachReverseUntilTrue(WTF::BindRepeating(
+  font_faces_->ForEachReverseUntilTrue(WTF::BindRepeating(
       [](const FontDescription& font_description, const StringView& text,
          Member<FontFace> font_face) -> bool {
         if (font_face->LoadStatus() != FontFace::kUnloaded)
@@ -212,7 +213,7 @@ void CSSSegmentedFontFace::WillUseRange(
   // Iterating backwards since later defined unicode-range faces override
   // previously defined ones, according to the CSS3 fonts module.
   // https://drafts.csswg.org/css-fonts/#composite-fonts
-  font_faces_.ForEachReverseUntilTrue(WTF::BindRepeating(
+  font_faces_->ForEachReverseUntilTrue(WTF::BindRepeating(
       [](const blink::FontDescription& font_description,
          const blink::FontDataForRangeSet& range_set,
          Member<FontFace> font_face) -> bool {
@@ -226,7 +227,7 @@ void CSSSegmentedFontFace::WillUseRange(
 
 bool CSSSegmentedFontFace::CheckFont(const String& text) const {
   AutoLockForParallelTextShaping guard(lock_);
-  return font_faces_.ForEachUntilFalse(WTF::BindRepeating(
+  return font_faces_->ForEachUntilFalse(WTF::BindRepeating(
       [](const String& text, Member<FontFace> font_face) -> bool {
         if (font_face->LoadStatus() != FontFace::kLoaded &&
             font_face->CssFontFace()->Ranges()->IntersectsWith(text))
@@ -241,18 +242,13 @@ void CSSSegmentedFontFace::Match(const String& text,
   AutoLockForParallelTextShaping guard(lock_);
   // WTF::BindRepeating requires WrapPersistent around |faces|, which is fine,
   // because the wrap's lifetime is contained to this function.
-  font_faces_.ForEach(WTF::BindRepeating(
+  font_faces_->ForEach(WTF::BindRepeating(
       [](const String& text, HeapVector<Member<FontFace>>* faces,
          Member<FontFace> font_face) {
         if (font_face->CssFontFace()->Ranges()->IntersectsWith(text))
           faces->push_back(font_face);
       },
       text, WrapPersistent(faces)));
-}
-
-void CSSSegmentedFontFace::Trace(Visitor* visitor) const {
-  AutoLockForParallelTextShaping guard(lock_);
-  visitor->Trace(font_faces_);
 }
 
 bool FontFaceList::IsEmpty() const {

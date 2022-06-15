@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -54,18 +55,8 @@ class SegmentedFontData;
 // Note however, |Insert| has to be instructed which sub-list to insert it to.
 // Iterating over the combined set, behaves as if all non-CSS-connected
 // FontFaces were stored after the CSS-connected ones.
-class FontFaceList final {
-  DISALLOW_NEW();
-
-  // TODO(yosin): Once Oilpan allowed mixed thread heap, we should make
-  // |FontFaceList| as |HeapLinkedHashSet<T>|.
-  class FontFaceListPart : public LinkedHashSet<Member<FontFace>> {
-   public:
-    void Trace(Visitor* visitor) const {
-      for (auto& entry : *this)
-        visitor->Trace(*entry);
-    }
-  };
+class FontFaceList final : public GarbageCollected<FontFaceList> {
+  using FontFaceListPart = HeapLinkedHashSet<Member<FontFace>>;
 
  public:
   bool IsEmpty() const;
@@ -120,7 +111,7 @@ class CORE_EXPORT CSSSegmentedFontFace final
   void RemoveFontFace(FontFace*) LOCKS_EXCLUDED(lock_);
   bool IsEmpty() const LOCKS_EXCLUDED(lock_) {
     AutoLockForParallelTextShaping guard(lock_);
-    return font_faces_.IsEmpty();
+    return font_faces_->IsEmpty();
   }
 
   scoped_refptr<FontData> GetFontData(const FontDescription&)
@@ -137,8 +128,6 @@ class CORE_EXPORT CSSSegmentedFontFace final
     return approximate_character_count_;
   }
 
-  void Trace(Visitor*) const;
-
  private:
   explicit CSSSegmentedFontFace(FontSelectionCapabilities);
 
@@ -152,7 +141,7 @@ class CORE_EXPORT CSSSegmentedFontFace final
       GUARDED_BY(lock_);
 
   // All non-CSS-connected FontFaces are stored after the CSS-connected ones.
-  FontFaceList font_faces_ GUARDED_BY(lock_);
+  Persistent<FontFaceList> font_faces_ GUARDED_BY(lock_);
 
   // Approximate number of characters styled with this CSSSegmentedFontFace.
   // LayoutText::StyleDidChange() increments this on the first
