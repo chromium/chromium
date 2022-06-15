@@ -373,7 +373,7 @@ void SigninInterceptFirstRunExperienceDialog::PreloadProfileCustomizationUI() {
   DCHECK(web_ui);
   web_ui->Initialize(
       base::BindOnce(&SigninInterceptFirstRunExperienceDialog::
-                         OnProfileCustomizationDoneButtonClicked,
+                         ProfileCustomizationCloseOnCompletion,
                      // Unretained is fine because `this` owns the web contents.
                      base::Unretained(this)));
 }
@@ -397,7 +397,15 @@ void SigninInterceptFirstRunExperienceDialog::OnSyncedThemeReady(
 }
 
 void SigninInterceptFirstRunExperienceDialog::
-    OnProfileCustomizationDoneButtonClicked() {
-  RecordDialogEvent(DialogEvent::kProfileCustomizationClickDone);
+    ProfileCustomizationCloseOnCompletion(
+        ProfileCustomizationHandler::CustomizationResult customization_result) {
+  switch (customization_result) {
+    case ProfileCustomizationHandler::CustomizationResult::kDone:
+      RecordDialogEvent(DialogEvent::kProfileCustomizationClickDone);
+      break;
+    case ProfileCustomizationHandler::CustomizationResult::kSkip:
+      RecordDialogEvent(DialogEvent::kProfileCustomizationClickSkip);
+      break;
+  }
   DoNextStep(Step::kProfileCustomization, Step::kProfileSwitchIPHAndCloseModal);
 }

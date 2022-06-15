@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
@@ -62,7 +63,7 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
   SetInitiallyFocusedView(web_view.get());
   DCHECK(web_ui);
   web_ui->Initialize(
-      base::BindOnce(&ProfileCustomizationBubbleView::OnDoneButtonClicked,
+      base::BindOnce(&ProfileCustomizationBubbleView::OnCompletionButtonClicked,
                      // Unretained is fine because this owns the web view.
                      base::Unretained(this)));
   AddChildView(std::move(web_view));
@@ -72,11 +73,20 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-void ProfileCustomizationBubbleView::OnDoneButtonClicked() {
+void ProfileCustomizationBubbleView::OnCompletionButtonClicked(
+    ProfileCustomizationHandler::CustomizationResult customization_result) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
       GetAnchorView()->GetWidget()->GetNativeWindow());
-  GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
+  views::Widget::ClosedReason closed_reason;
+  switch (customization_result) {
+    case ProfileCustomizationHandler::CustomizationResult::kDone:
+      closed_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+      break;
+    case ProfileCustomizationHandler::CustomizationResult::kSkip:
+      closed_reason = views::Widget::ClosedReason::kCancelButtonClicked;
+      break;
+  }
+  GetWidget()->CloseWithReason(closed_reason);
   browser_view->MaybeShowProfileSwitchIPH();
 }
 

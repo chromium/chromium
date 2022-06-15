@@ -6,9 +6,9 @@ import 'chrome://profile-customization/profile_customization_app.js';
 
 import {ProfileCustomizationAppElement} from 'chrome://profile-customization/profile_customization_app.js';
 import {ProfileCustomizationBrowserProxyImpl} from 'chrome://profile-customization/profile_customization_browser_proxy.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -126,9 +126,20 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
     });
 
     // Checks that the Skip button is present when the page is displayed in a
-    // dialog in Sync Promo
+    // dialog
     test('HasSkipButton', function() {
       assertEquals(inDialogDesign, isChildVisible(app, '#skipButton'));
     });
+
+    // Checks that clicking the Skip button triggers the correct browser proxy
+    // method.
+    if (inDialogDesign) {
+      test('ClickSkip', function() {
+        const skipButton =
+            app.shadowRoot!.querySelector<CrButtonElement>('#skipButton')!;
+        skipButton.click();
+        return browserProxy.whenCalled('skip');
+      });
+    }
   });
 });

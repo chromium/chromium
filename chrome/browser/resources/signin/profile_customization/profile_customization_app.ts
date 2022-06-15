@@ -12,6 +12,7 @@ import './strings.m.js';
 import './signin_shared.css.js';
 import './signin_vars.css.js';
 
+import {CustomizeThemesElement} from 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -27,6 +28,7 @@ export interface ProfileCustomizationAppElement {
     doneButton: CrButtonElement,
     nameInput: CrInputElement,
     title: HTMLElement,
+    themeSelector: CustomizeThemesElement,
   };
 }
 
@@ -96,6 +98,7 @@ export class ProfileCustomizationAppElement extends
    * native.
    */
   private onDoneCustomizationClicked_() {
+    this.$.themeSelector.confirmThemeChanges();
     this.profileCustomizationBrowserProxy_.done(this.profileName_);
   }
 
@@ -109,6 +112,10 @@ export class ProfileCustomizationAppElement extends
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
     this.welcomeTitle_ = profileInfo.welcomeTitle;
+  }
+
+  private onSkipCustomizationClicked_() {
+    this.profileCustomizationBrowserProxy_.skip();
   }
 
   private getDialogDesignClass_(inDialogDesign: boolean): string {

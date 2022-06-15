@@ -157,11 +157,11 @@
   </cr-input>
 
   <div id="pickThemeContainer">
-    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+    <cr-customize-themes id="themeSelector">
     </cr-customize-themes>
   </div>
 
-  <div class$="action-container 
+  <div class$="action-container
       [[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
     <cr-button id="doneButton" class="action-button"
         disabled="[[isDoneButtonDisabled_(profileName_)]]"
@@ -169,8 +169,8 @@
       $i18n{profileCustomizationDoneLabel}
     </cr-button>
     <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
-      <!-- TODO: add action on Skip -->
-      <cr-button id="skipButton" class="cancel-button">
+      <cr-button id="skipButton" class="cancel-button"
+          on-click="onSkipCustomizationClicked_">
         $i18n{profileCustomizationSkipLabel}
       </cr-button>
     </template>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -89,9 +90,11 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
 
 ProfileCustomizationUI::~ProfileCustomizationUI() = default;
 
-void ProfileCustomizationUI::Initialize(base::OnceClosure done_closure) {
-  web_ui()->AddMessageHandler(
-      std::make_unique<ProfileCustomizationHandler>(std::move(done_closure)));
+void ProfileCustomizationUI::Initialize(
+    base::OnceCallback<void(ProfileCustomizationHandler::CustomizationResult)>
+        completion_callback) {
+  web_ui()->AddMessageHandler(std::make_unique<ProfileCustomizationHandler>(
+      std::move(completion_callback)));
 }
 
 void ProfileCustomizationUI::BindInterface(

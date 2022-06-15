@@ -18,7 +18,15 @@ class ProfileAttributesEntry;
 class ProfileCustomizationHandler : public content::WebUIMessageHandler,
                                     public ProfileAttributesStorage::Observer {
  public:
-  explicit ProfileCustomizationHandler(base::OnceClosure done_closure);
+  enum class CustomizationResult {
+    // User clicked on the "Done" button.
+    kDone = 0,
+    // User clicked on the "Skip" button.
+    kSkip = 1,
+  };
+
+  explicit ProfileCustomizationHandler(
+      base::OnceCallback<void(CustomizationResult)> completion_callback);
   ~ProfileCustomizationHandler() override;
 
   ProfileCustomizationHandler(const ProfileCustomizationHandler&) = delete;
@@ -44,6 +52,7 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   // Handlers for messages from javascript.
   void HandleInitialized(const base::Value::List& args);
   void HandleDone(const base::Value::List& args);
+  void HandleSkip(const base::Value::List& args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does
@@ -61,8 +70,9 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
                           ProfileAttributesStorage::Observer>
       observed_profile_{this};
 
-  // Called when the "Done" button has been pressed.
-  base::OnceClosure done_closure_;
+  // Called when the "Done" or "Skip" button has been clicked. The callback
+  // normally closes native widget hosting Profile Customization webUI.
+  base::OnceCallback<void(CustomizationResult)> completion_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_CUSTOMIZATION_HANDLER_H_

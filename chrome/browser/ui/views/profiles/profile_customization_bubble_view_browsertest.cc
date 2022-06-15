@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
@@ -99,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
       tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
       feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
 
-  bubble->OnDoneButtonClicked();
+  bubble->OnCompletionButtonClicked(
+      ProfileCustomizationHandler::CustomizationResult::kDone);
 
   base::RunLoop loop;
   tracker->AddOnInitializedCallback(

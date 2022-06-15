@@ -10,7 +10,7 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
   private profileInfo_: ProfileInfo;
 
   constructor() {
-    super(['done', 'initialized']);
+    super(['done', 'initialized', 'skip']);
 
     this.profileInfo_ = {
       backgroundColor: '',
@@ -31,5 +31,9 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
 
   done(profileName: string) {
     this.methodCalled('done', profileName);
+  }
+
+  skip() {
+    this.methodCalled('skip');
   }
 }
