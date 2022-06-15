@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -20,10 +22,15 @@
 namespace dispatcher = vm_tools::plugin_dispatcher;
 
 namespace chromeos {
+namespace {
+
+VmPluginDispatcherClient* g_instance = nullptr;
+
+}  // namespace
 
 class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
  public:
-  VmPluginDispatcherClientImpl() {}
+  VmPluginDispatcherClientImpl() = default;
 
   VmPluginDispatcherClientImpl(const VmPluginDispatcherClientImpl&) = delete;
   VmPluginDispatcherClientImpl& operator=(const VmPluginDispatcherClientImpl&) =
@@ -76,7 +83,6 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
         std::move(callback));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     vm_plugin_dispatcher_proxy_ = bus->GetObjectProxy(
         dispatcher::kVmPluginDispatcherServiceName,
@@ -192,12 +198,36 @@ class VmPluginDispatcherClientImpl : public VmPluginDispatcherClient {
   base::WeakPtrFactory<VmPluginDispatcherClientImpl> weak_ptr_factory_{this};
 };
 
-VmPluginDispatcherClient::VmPluginDispatcherClient() = default;
+VmPluginDispatcherClient::VmPluginDispatcherClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-VmPluginDispatcherClient::~VmPluginDispatcherClient() = default;
+VmPluginDispatcherClient::~VmPluginDispatcherClient() {
+  CHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
-std::unique_ptr<VmPluginDispatcherClient> VmPluginDispatcherClient::Create() {
-  return std::make_unique<VmPluginDispatcherClientImpl>();
+// static
+void VmPluginDispatcherClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new VmPluginDispatcherClientImpl())->Init(bus);
+}
+
+// static
+void VmPluginDispatcherClient::InitializeFake() {
+  new FakeVmPluginDispatcherClient();
+}
+
+// static
+void VmPluginDispatcherClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+// static
+VmPluginDispatcherClient* VmPluginDispatcherClient::Get() {
+  return g_instance;
 }
 
 }  // namespace chromeos

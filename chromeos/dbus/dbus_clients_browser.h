@@ -33,7 +33,6 @@ class RuntimeProbeClient;
 class SmbProviderClient;
 class UpdateEngineClient;
 class VirtualFileProviderClient;
-class VmPluginDispatcherClient;
 
 // Owns D-Bus clients.
 // TODO(jamescook): Rename this class. "Browser" refers to the browser process
@@ -74,7 +73,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<SmbProviderClient> smb_provider_client_;
   std::unique_ptr<UpdateEngineClient> update_engine_client_;
   std::unique_ptr<VirtualFileProviderClient> virtual_file_provider_client_;
-  std::unique_ptr<VmPluginDispatcherClient> vm_plugin_dispatcher_client_;
 };
 
 }  // namespace chromeos

@@ -37,7 +37,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
@@ -449,9 +448,7 @@ CrosUsbDetector::CrosUsbDetector() {
   fastboot_device_filter_->protocol_code = kFastbootProtocol;
 
   ConciergeClient::Get()->AddVmObserver(this);
-  chromeos::DBusThreadManager::Get()
-      ->GetVmPluginDispatcherClient()
-      ->AddObserver(this);
+  chromeos::VmPluginDispatcherClient::Get()->AddObserver(this);
   disks::DiskMountManager::GetInstance()->AddObserver(this);
 }
 
@@ -459,9 +456,7 @@ CrosUsbDetector::~CrosUsbDetector() {
   DCHECK_EQ(this, g_cros_usb_detector);
   disks::DiskMountManager::GetInstance()->RemoveObserver(this);
   ConciergeClient::Get()->RemoveVmObserver(this);
-  chromeos::DBusThreadManager::Get()
-      ->GetVmPluginDispatcherClient()
-      ->RemoveObserver(this);
+  chromeos::VmPluginDispatcherClient::Get()->RemoveObserver(this);
   g_cros_usb_detector = nullptr;
 }
 

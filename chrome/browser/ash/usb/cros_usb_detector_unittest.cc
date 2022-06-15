@@ -134,15 +134,17 @@ class TestCrosUsbDeviceObserver : public CrosUsbDeviceObserver {
 class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
  public:
   CrosUsbDetectorTest() {
+    // Needed for ChunneldClient via GuestOsStabilityMonitor.
     chromeos::DBusThreadManager::Initialize();
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
+    chromeos::VmPluginDispatcherClient::InitializeFake();
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     fake_concierge_client_ = FakeConciergeClient::Get();
     fake_vm_plugin_dispatcher_client_ =
         static_cast<chromeos::FakeVmPluginDispatcherClient*>(
-            chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
+            chromeos::VmPluginDispatcherClient::Get());
 
     mock_disk_mount_manager_ =
         new testing::NiceMock<disks::MockDiskMountManager>;
@@ -154,6 +156,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   ~CrosUsbDetectorTest() override {
     disks::DiskMountManager::Shutdown();
+    chromeos::VmPluginDispatcherClient::Shutdown();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
@@ -288,7 +291,6 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   ash::FakeCiceroneClient* fake_cicerone_client_;
   FakeConciergeClient* fake_concierge_client_;
-  // Owned by chromeos::DBusThreadManager
   chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;

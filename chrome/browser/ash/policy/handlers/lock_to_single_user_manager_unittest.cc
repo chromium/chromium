@@ -29,6 +29,7 @@
 #include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -48,7 +49,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     // This is required before Concierge tests start calling
-    // DBusThreadManager::Get() for GetAnomalyDetectorClient.
+    // DBusThreadManager::Get() for GuestOsStabilityMonitor.
     chromeos::DBusThreadManager::Initialize();
 
     ash::CiceroneClient::InitializeFake();
@@ -59,6 +60,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
         base::CommandLine::ForCurrentProcess());
     chromeos::AnomalyDetectorClient::InitializeFake();
     chromeos::CryptohomeMiscClient::InitializeFake();
+    chromeos::VmPluginDispatcherClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
     BrowserWithTestWindowTest::SetUp();
@@ -101,6 +103,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
+    chromeos::VmPluginDispatcherClient::Shutdown();
     chromeos::CryptohomeMiscClient::Shutdown();
     chromeos::AnomalyDetectorClient::Shutdown();
     ash::SeneschalClient::Shutdown();

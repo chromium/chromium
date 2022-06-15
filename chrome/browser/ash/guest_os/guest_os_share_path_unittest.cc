@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -227,6 +228,7 @@ class GuestOsSharePathTest : public testing::Test {
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
+    chromeos::VmPluginDispatcherClient::InitializeFake();
 
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
@@ -236,6 +238,7 @@ class GuestOsSharePathTest : public testing::Test {
   GuestOsSharePathTest& operator=(const GuestOsSharePathTest&) = delete;
 
   ~GuestOsSharePathTest() override {
+    chromeos::VmPluginDispatcherClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();

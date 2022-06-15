@@ -34,7 +34,6 @@ class RuntimeProbeClient;
 class SmbProviderClient;
 class UpdateEngineClient;
 class VirtualFileProviderClient;
-class VmPluginDispatcherClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
@@ -88,7 +87,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   SmbProviderClient* GetSmbProviderClient();
   UpdateEngineClient* GetUpdateEngineClient();
   VirtualFileProviderClient* GetVirtualFileProviderClient();
-  VmPluginDispatcherClient* GetVmPluginDispatcherClient();
 
  private:
   DBusThreadManager();

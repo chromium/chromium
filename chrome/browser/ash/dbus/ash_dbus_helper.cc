@@ -67,6 +67,7 @@
 #include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -160,6 +161,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::U2FClient>(bus);
   InitializeDBusClient<chromeos::UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
+  InitializeDBusClient<chromeos::VmPluginDispatcherClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
   // signals sent from the session manager. This needs to happen before
@@ -215,6 +217,7 @@ void ShutdownDBus() {
     bluez::BluezDBusManager::Shutdown();
   }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
+  chromeos::VmPluginDispatcherClient::Shutdown();
   UpstartClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();
   chromeos::U2FClient::Shutdown();

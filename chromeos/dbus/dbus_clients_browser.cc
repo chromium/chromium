@@ -44,8 +44,6 @@
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 
 namespace chromeos {
 
@@ -102,8 +100,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
 
   virtual_file_provider_client_ =
       CREATE_DBUS_CLIENT(VirtualFileProviderClient, use_real_clients);
-  vm_plugin_dispatcher_client_ =
-      CREATE_DBUS_CLIENT(VmPluginDispatcherClient, use_real_clients);
 }
 
 DBusClientsBrowser::~DBusClientsBrowser() = default;
@@ -129,7 +125,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   smb_provider_client_->Init(system_bus);
   update_engine_client_->Init(system_bus);
   virtual_file_provider_client_->Init(system_bus);
-  vm_plugin_dispatcher_client_->Init(system_bus);
 }
 
 }  // namespace chromeos

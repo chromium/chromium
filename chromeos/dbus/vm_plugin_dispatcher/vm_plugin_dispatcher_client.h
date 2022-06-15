@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_VM_PLUGIN_DISPATCHER_CLIENT_H_
 #define CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_VM_PLUGIN_DISPATCHER_CLIENT_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/common/dbus_client.h"
@@ -73,17 +71,26 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
   virtual void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
-  // Creates an instance of VmPluginDispatcherClient.
-  static std::unique_ptr<VmPluginDispatcherClient> Create();
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
+  // Returns the global instance if initialized. May return null.
+  static VmPluginDispatcherClient* Get();
 
   VmPluginDispatcherClient(const VmPluginDispatcherClient&) = delete;
   VmPluginDispatcherClient& operator=(const VmPluginDispatcherClient&) = delete;
 
-  ~VmPluginDispatcherClient() override;
-
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   VmPluginDispatcherClient();
+
+  ~VmPluginDispatcherClient() override;
 };
 
 }  // namespace chromeos

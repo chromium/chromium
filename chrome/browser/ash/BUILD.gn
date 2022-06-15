@@ -1597,6 +1597,7 @@ source_set("ash") {
     "//chromeos/dbus/userdataauth",
     "//chromeos/dbus/util",
     "//chromeos/dbus/virtual_file_provider",
+    "//chromeos/dbus/vm_plugin_dispatcher",
     "//chromeos/ime:gencode",
     "//chromeos/login/login_state",
     "//chromeos/services/assistant/public/cpp",

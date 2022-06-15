@@ -126,11 +126,6 @@ VirtualFileProviderClient* DBusThreadManager::GetVirtualFileProviderClient() {
              : nullptr;
 }
 
-VmPluginDispatcherClient* DBusThreadManager::GetVmPluginDispatcherClient() {
-  return clients_browser_ ? clients_browser_->vm_plugin_dispatcher_client_.get()
-                          : nullptr;
-}
-
 #undef RETURN_DBUS_CLIENT
 
 void DBusThreadManager::InitializeClients() {
