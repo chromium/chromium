@@ -109,23 +109,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
         zaura_toplevel_surface_submission_in_pixel_coordinates(
             aura_toplevel_.get());
       }
-
-      if (features::IsWaylandScreenCoordinatesEnabled()) {
-        if (SupportsScreenCoordinates()) {
-          zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
-
-          static constexpr zaura_toplevel_listener aura_toplevel_listener = {
-              &ConfigureAuraTopLevel,
-              &OnOriginChange,
-          };
-
-          zaura_toplevel_add_listener(aura_toplevel_.get(),
-                                      &aura_toplevel_listener, this);
-        } else {
-          LOG(WARNING) << "Server implementation of wayland is incompatible, "
-                          "WaylandScreenCoordinatesEnabled has no effect.";
-        }
-      }
     }
   }
 
@@ -299,14 +282,6 @@ void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
     return;
-  // TODO(crbug.com/1261321): Server side decoration decoration will not work
-  // when the screen coordinate is enabled.
-  if (SupportsScreenCoordinates() &&
-      requested_mode == DecorationMode::kServerSide) {
-    LOG(WARNING) << "Server side decoration is not supported when window "
-                    "positioning is enabled";
-    return;
-  }
 
   zxdg_toplevel_decoration_v1_set_mode(zxdg_toplevel_decoration_.get(),
                                        ToInt32(requested_mode));
@@ -414,6 +389,25 @@ bool XDGToplevelWrapperImpl::SupportsScreenCoordinates() const {
   return aura_toplevel_ &&
          zaura_toplevel_get_version(aura_toplevel_.get()) >=
              ZAURA_TOPLEVEL_SET_SUPPORTS_SCREEN_COORDINATES_SINCE_VERSION;
+}
+
+void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
+  if (!features::IsWaylandScreenCoordinatesEnabled())
+    return;
+  if (!SupportsScreenCoordinates()) {
+    LOG(WARNING) << "Server implementation of wayland is incompatible, "
+                    "WaylandScreenCoordinatesEnabled has no effect.";
+    return;
+  }
+  zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
+
+  static constexpr zaura_toplevel_listener aura_toplevel_listener = {
+      &ConfigureAuraTopLevel,
+      &OnOriginChange,
+  };
+
+  zaura_toplevel_add_listener(aura_toplevel_.get(), &aura_toplevel_listener,
+                              this);
 }
 
 void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,

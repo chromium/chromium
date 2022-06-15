@@ -49,6 +49,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetRestoreInfoWithWindowIdSource(int32_t, const std::string&) override;
   void SetSystemModal(bool modal) override;
   bool SupportsScreenCoordinates() const override;
+  void EnableScreenCoordinates() override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
