@@ -30,7 +30,7 @@ const pipeHeaderPattern = /[,)]/g;
  * Registers either a source or trigger.
  */
 const registerAttributionSrc = (header, body) => {
-  const url = new URL('resources/blank.html', window.location);
+  const url = new URL('/resources/blank.html', window.location);
   // , and ) in header values must be escaped with \
   url.searchParams.set(
       'pipe',
