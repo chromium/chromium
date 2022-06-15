@@ -66,12 +66,6 @@ const base::Feature kAppProvisioningStatic{"AppProvisioningStatic",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
-// App Service related flags. See components/services/app_service/README.md.
-const base::Feature kAppServiceLoadIconWithoutMojom{
-    "AppServiceLoadIconWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_MAC)
 // Can be used to disable RemoteCocoa (hosting NSWindows for apps in the app
 // process). For debugging purposes only.
