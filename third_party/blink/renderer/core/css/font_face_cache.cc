@@ -52,9 +52,9 @@ void FontFaceCache::SegmentedFacesByFamily::AddFontFace(FontFace* font_face,
                                                         bool css_connected) {
   const auto result = map_.insert(font_face->family(), nullptr);
   if (result.is_new_entry)
-    result.stored_value->value = base::MakeRefCounted<CapabilitiesSet>();
+    result.stored_value->value = MakeGarbageCollected<CapabilitiesSet>();
 
-  scoped_refptr<CapabilitiesSet> family_faces = result.stored_value->value;
+  CapabilitiesSet* family_faces = result.stored_value->value;
   family_faces->AddFontFace(font_face, css_connected);
 }
 
@@ -73,7 +73,6 @@ void FontFaceCache::AddFontFace(FontFace* font_face, bool css_connected) {
 
 void FontFaceCache::FontSelectionQueryCache::Remove(
     const AtomicString& family) {
-  AutoLockForParallelTextShaping guard(lock_);
   map_.erase(family);
 }
 
@@ -104,7 +103,7 @@ bool FontFaceCache::SegmentedFacesByFamily::RemoveFontFace(
   if (it == map_.end())
     return false;
 
-  scoped_refptr<CapabilitiesSet> family_segmented_faces = it->value;
+  CapabilitiesSet* family_segmented_faces = it->value;
   if (family_segmented_faces->RemoveFontFace(font_face))
     map_.erase(it);
   return true;
@@ -127,7 +126,7 @@ bool FontFaceCache::CapabilitiesSet::RemoveFontFace(FontFace* font_face) {
   if (it == map_.end())
     return false;
 
-  scoped_refptr<CSSSegmentedFontFace> segmented_font_face = it->value;
+  CSSSegmentedFontFace* segmented_font_face = it->value;
   segmented_font_face->RemoveFontFace(font_face);
   if (!segmented_font_face->IsEmpty())
     return false;
@@ -156,7 +155,6 @@ void FontFaceCache::ClearAll() {
 }
 
 void FontFaceCache::FontSelectionQueryCache::Clear() {
-  AutoLockForParallelTextShaping guard(lock_);
   map_.clear();
 }
 
@@ -167,21 +165,21 @@ void FontFaceCache::IncrementVersion() {
   version_ = g_version.GetNext();
 }
 
-scoped_refptr<FontFaceCache::CapabilitiesSet>
-FontFaceCache::SegmentedFacesByFamily::Find(const AtomicString& family) const {
+FontFaceCache::CapabilitiesSet* FontFaceCache::SegmentedFacesByFamily::Find(
+    const AtomicString& family) const {
   const auto it = map_.find(family);
   if (it == map_.end() || it->value->IsEmpty())
     return nullptr;
   return it->value;
 }
 
-scoped_refptr<CSSSegmentedFontFace> FontFaceCache::Get(
+CSSSegmentedFontFace* FontFaceCache::Get(
     const FontDescription& font_description,
     const AtomicString& family) {
   if (family.IsEmpty())
     return nullptr;
 
-  scoped_refptr<CapabilitiesSet> family_faces = segmented_faces_.Find(family);
+  CapabilitiesSet* family_faces = segmented_faces_.Find(family);
   if (!family_faces)
     return nullptr;
 
@@ -189,22 +187,19 @@ scoped_refptr<CSSSegmentedFontFace> FontFaceCache::Get(
       font_description.GetFontSelectionRequest(), family, family_faces);
 }
 
-scoped_refptr<CSSSegmentedFontFace>
-FontFaceCache::FontSelectionQueryCache::GetOrCreate(
+CSSSegmentedFontFace* FontFaceCache::FontSelectionQueryCache::GetOrCreate(
     const FontSelectionRequest& request,
     const AtomicString& family,
-    scoped_refptr<CapabilitiesSet> family_faces) {
-  AutoLockForParallelTextShaping guard(lock_);
+    CapabilitiesSet* family_faces) {
   const auto result = map_.insert(family, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
-        base::MakeRefCounted<FontSelectionQueryResult>();
+        MakeGarbageCollected<FontSelectionQueryResult>();
   }
   return result.stored_value->value->GetOrCreate(request, *family_faces);
 }
 
-scoped_refptr<CSSSegmentedFontFace>
-FontFaceCache::FontSelectionQueryResult::GetOrCreate(
+CSSSegmentedFontFace* FontFaceCache::FontSelectionQueryResult::GetOrCreate(
     const FontSelectionRequest& request,
     const CapabilitiesSet& family_faces) {
   const auto face_entry = map_.insert(request, nullptr);
@@ -227,7 +222,7 @@ FontFaceCache::FontSelectionQueryResult::GetOrCreate(
                                                   all_faces_boundaries);
   for (const auto& item : family_faces) {
     const FontSelectionCapabilities& candidate_key = item.key;
-    scoped_refptr<CSSSegmentedFontFace> candidate_value = item.value;
+    CSSSegmentedFontFace* candidate_value = item.value;
     if (!face_entry.stored_value->value ||
         font_selection_algorithm.IsBetterMatchForRequest(
             candidate_key,
@@ -257,24 +252,19 @@ void FontFaceCache::Trace(Visitor* visitor) const {
 }
 
 void FontFaceCache::CapabilitiesSet::Trace(Visitor* visitor) const {
-  for (auto& entry : map_)
-    visitor->Trace(*entry.value);
+  visitor->Trace(map_);
 }
 
 void FontFaceCache::FontSelectionQueryCache::Trace(Visitor* visitor) const {
-  AutoLockForParallelTextShaping guard(lock_);
-  for (auto& entry : map_)
-    visitor->Trace(*entry.value);
+  visitor->Trace(map_);
 }
 
 void FontFaceCache::FontSelectionQueryResult::Trace(Visitor* visitor) const {
-  for (auto& entry : map_)
-    visitor->Trace(*entry.value);
+  visitor->Trace(map_);
 }
 
 void FontFaceCache::SegmentedFacesByFamily::Trace(Visitor* visitor) const {
-  for (auto& entry : map_)
-    visitor->Trace(*entry.value);
+  visitor->Trace(map_);
 }
 
 }  // namespace blink
