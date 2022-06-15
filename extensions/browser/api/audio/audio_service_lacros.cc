@@ -85,15 +85,6 @@ AudioServiceLacros::AudioServiceLacros() {
 
 AudioServiceLacros::~AudioServiceLacros() = default;
 
-bool AudioServiceLacros::GetInfo(OutputInfo* output_info_out,
-                                 InputInfo* input_info_out) {
-  // This method is used by a deprecated GetInfo method.
-  // Not implemented in lacros-chrome.
-  // TODO: remove deprecated methods (b/235198864)
-  NOTIMPLEMENTED();
-  return false;
-}
-
 bool AudioServiceLacros::GetDevices(const api::audio::DeviceFilter* filter,
                                     DeviceInfoList* devices_out) {
   // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
@@ -157,16 +148,8 @@ bool AudioServiceLacros::SetActiveDeviceLists(
   return true;
 }
 
-void AudioServiceLacros::SetActiveDevices(const DeviceIdList& device_list) {
-  // This method is used by a deprecated SetActiveDevices variant.
-  // Not implemented in lacros-chrome.
-  // TODO: remove deprecated methods (b/235198864)
-  NOTIMPLEMENTED();
-}
-
 bool AudioServiceLacros::SetDeviceSoundLevel(const std::string& device_id,
-                                             int volume,
-                                             int gain) {
+                                             int level_value) {
   // Not used in lacros-chrome, chrome.audio is asynchronous via a callback.
   NOTREACHED();
   return false;
@@ -186,11 +169,6 @@ bool AudioServiceLacros::SetDeviceSoundLevel(
   GetAudioCrosapi().SetProperties(device_id, std::move(properties),
                                   std::move(callback));
   return true;
-}
-
-bool AudioServiceLacros::SetMuteForDevice(const std::string& device_id,
-                                          bool value) {
-  return false;
 }
 
 bool AudioServiceLacros::SetMute(bool is_input, bool value) {

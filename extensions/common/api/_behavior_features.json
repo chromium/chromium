@@ -110,21 +110,6 @@
     "location": "policy",
     "platforms": ["chromeos"]
   }],
-  "allow_deprecated_audio_api": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "allowlist": [
-      "8C3741E3AF0B93B6E8E0DDD499BB0B74839EA578",
-      "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",
-      "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/335729
-      "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/335729
-      "307E96539209F95A1A8740C713E6998A73657D96",  // http://crbug.com/335729
-      "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/407693
-      "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9",  // http://crbug.com/407693
-      "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/407693
-      "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/407693
-    ]
-  },
   "allow_secondary_kiosk_app_enabled_on_launch": {
     "channel": "dev",
     "extension_types": ["platform_app"]

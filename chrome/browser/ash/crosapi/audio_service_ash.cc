@@ -14,7 +14,7 @@
 
 namespace crosapi {
 
-// TODO: Add unit tests for AudioServiceAsh (b/235565865)
+// TODO: Add unit tests for AudioServiceAsh (b/235565865).
 
 AudioServiceAsh::Observer::Observer() = default;
 AudioServiceAsh::Observer::~Observer() = default;
@@ -22,11 +22,6 @@ AudioServiceAsh::Observer::~Observer() = default;
 void AudioServiceAsh::Observer::Initialize(extensions::AudioService* service) {
   DCHECK(service);
   audio_service_observation_.Observe(service);
-}
-
-void AudioServiceAsh::Observer::OnDeviceChanged() {
-  // Not implemented, because this event is deprecated in chrome.audio API.
-  // TODO: Should have been removed in M60, see (http://crbug.com/697279).
 }
 
 void AudioServiceAsh::Observer::OnLevelChanged(const std::string& id,
@@ -64,7 +59,7 @@ AudioServiceAsh::~AudioServiceAsh() = default;
 void AudioServiceAsh::Initialize(Profile* profile) {
   DCHECK(profile);
   if (stable_id_calculator_) {
-    // TODO: investigate why crosapi ash object inits are called more than once
+    // TODO: investigate why crosapi ash object inits are called more than once.
     // (b/235203815)
     LOG(WARNING)
         << "AudioServiceAsh was already initialized. Not initializing again.";
@@ -154,9 +149,7 @@ void AudioServiceAsh::SetProperties(const std::string& id,
 
   bool success = false;
   if (properties) {
-    // reusing existing volume/gain method, thus same param passed twice
-    success =
-        service_->SetDeviceSoundLevel(id, properties->level, properties->level);
+    success = service_->SetDeviceSoundLevel(id, properties->level);
   }
   std::move(callback).Run(success);
 }

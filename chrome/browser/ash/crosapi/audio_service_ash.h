@@ -19,7 +19,7 @@ class Profile;
 
 namespace crosapi {
 
-// Implements the crosapi interface for audio service API
+// Implements the crosapi interface for audio service API.
 class AudioServiceAsh : public mojom::AudioService {
  public:
   AudioServiceAsh();
@@ -56,7 +56,6 @@ class AudioServiceAsh : public mojom::AudioService {
     void Initialize(extensions::AudioService* service);
 
     // extensions::AudioService::Observer implementation:
-    void OnDeviceChanged() override;
     void OnLevelChanged(const std::string& id, int level) override;
     void OnMuteChanged(bool is_input, bool is_muted) override;
     void OnDevicesChanged(const extensions::DeviceInfoList& devices) override;
@@ -79,7 +78,7 @@ class AudioServiceAsh : public mojom::AudioService {
   std::unique_ptr<extensions::AudioDeviceIdCalculator> stable_id_calculator_;
   std::unique_ptr<extensions::AudioService> service_;
 
-  // Observer must be defined after AudioService for a correct destruction order
+  // Observer must be defined after service for a correct destruction order.
   Observer observer_;
 };
 

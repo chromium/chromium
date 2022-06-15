@@ -34,34 +34,6 @@ namespace audio {
     OTHER
   };
 
-  [nodoc, deprecated = "Used only with the deprecated $(ref:getInfo)."]
-  dictionary OutputDeviceInfo {
-    // The unique identifier of the audio output device.
-    DOMString id;
-    // The user-friendly name (e.g. "Bose Amplifier").
-    DOMString name;
-    // True if this is the current active device.
-    boolean isActive;
-    // True if this is muted.
-    boolean isMuted;
-    // The output volume ranging from 0.0 to 100.0.
-    double volume;
-  };
-
-  [nodoc, deprecated = "Used only with the deprecated $(ref:getInfo)."]
-  dictionary InputDeviceInfo {
-    // The unique identifier of the audio input device.
-    DOMString id;
-    // The user-friendly name (e.g. "USB Microphone").
-    DOMString name;
-    // True if this is the current active device.
-    boolean isActive;
-    // True if this is muted.
-    boolean isMuted;
-    // The input gain ranging from 0.0 to 100.0.
-    double gain;
-  };
-
   dictionary AudioDeviceInfo {
     // The unique identifier of the audio device.
     DOMString id;
@@ -92,22 +64,10 @@ namespace audio {
   };
 
   dictionary DeviceProperties {
-    // True if this is muted.
-    [nodoc, deprecated="Use $(ref:setMute) to set mute state."]
-    boolean? isMuted;
-
-    // If this is an output device then this field indicates the output volume.
-    // If this is an input device then this field is ignored.
-    [nodoc, deprecated="Use |level| to set output volume."] double? volume;
-
-    // If this is an input device then this field indicates the input gain.
-    // If this is an output device then this field is ignored.
-    [nodoc, deprecated="Use |level| to set input gain."] double? gain;
- 
     // <p>
     //   The audio device's desired sound level. Defaults to the device's
     //   current sound level.
-    // </p> 
+    // </p>
     // <p>If used with audio input device, represents audio device gain.</p>
     // <p>If used with audio output device, represents audio device volume.</p>
     long? level;
@@ -142,8 +102,6 @@ namespace audio {
     long level;
   };
 
-  callback GetInfoCallback = void(OutputDeviceInfo[] outputInfo,
-                                  InputDeviceInfo[] inputInfo);
   callback GetDevicesCallback = void(AudioDeviceInfo[] devices);
   callback GetMuteCallback = void(boolean value);
   callback EmptyCallback = void();
@@ -153,7 +111,7 @@ namespace audio {
     // |filter|: Device properties by which to filter the list of returned
     //     audio devices. If the filter is not set or set to <code>{}</code>,
     //     returned device list will contain all available audio devices.
-    // |callback|: Reports the requested list of audio devices. 
+    // |callback|: Reports the requested list of audio devices.
     static void getDevices(optional DeviceFilter filter,
                            GetDevicesCallback callback);
 
@@ -163,12 +121,7 @@ namespace audio {
     //     unaffected.
     //     </p>
     //     <p>It is an error to pass in a non-existent device ID.</p>
-    //     <p><b>NOTE:</b> While the method signature allows device IDs to be
-    //     passed as a list of strings, this method of setting active devices
-    //     is deprecated and should not be relied upon to work. Please use
-    //     $(ref:DeviceIdLists) instead.
-    //     </p>
-    static void setActiveDevices((DeviceIdLists or DOMString[]) ids,
+    static void setActiveDevices(DeviceIdLists ids,
                                  EmptyCallback callback);
 
     // Sets the properties for the input or output device.
@@ -189,10 +142,6 @@ namespace audio {
     static void setMute(StreamType streamType,
                         boolean isMuted,
                         optional EmptyCallback callback);
-
-    // Gets the information of all audio output and input devices.
-    [nodoc, deprecated="Use $(ref:getDevices) instead."]
-    static void getInfo(GetInfoCallback callback);
   };
 
   interface Events {
@@ -208,10 +157,5 @@ namespace audio {
     // existing devices being removed.
     // |devices|: List of all present audio devices after the change.
     static void onDeviceListChanged(AudioDeviceInfo[] devices);
-
-    // Fired when anything changes to the audio device configuration.
-    [nodoc, deprecated="Use more granular $(ref:onLevelChanged),
-         $(ref:onMuteChanged) and $(ref:onDeviceListChanged) instead."]
-    static void onDeviceChanged();
   };
 };

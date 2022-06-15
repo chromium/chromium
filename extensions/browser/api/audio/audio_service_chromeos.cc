@@ -20,8 +20,6 @@
 namespace extensions {
 
 using api::audio::AudioDeviceInfo;
-using api::audio::InputDeviceInfo;
-using api::audio::OutputDeviceInfo;
 using ::ash::AudioDevice;
 using ::ash::AudioDeviceType;
 using ::ash::CrasAudioHandler;
@@ -87,25 +85,21 @@ class AudioServiceImpl : public AudioService,
   void RemoveObserver(AudioService::Observer* observer) override;
 
   // Start to query audio device information.
-  bool GetInfo(OutputInfo* output_info_out, InputInfo* input_info_out) override;
   bool GetDevices(const api::audio::DeviceFilter* filter,
                   DeviceInfoList* devices_out) override;
   bool GetDevices(
       const api::audio::DeviceFilter* filter,
       base::OnceCallback<void(bool, DeviceInfoList)> callback) override;
-  void SetActiveDevices(const DeviceIdList& device_list) override;
   bool SetActiveDeviceLists(const DeviceIdList* input_devices,
                             const DeviceIdList* output_devives) override;
   bool SetActiveDeviceLists(const DeviceIdList* input_devices,
                             const DeviceIdList* output_devives,
                             base::OnceCallback<void(bool)> callback) override;
   bool SetDeviceSoundLevel(const std::string& device_id,
-                           int volume,
-                           int gain) override;
+                           int level_value) override;
   bool SetDeviceSoundLevel(const std::string& device_id,
                            int level_value,
                            base::OnceCallback<void(bool)> callback) override;
-  bool SetMuteForDevice(const std::string& device_id, bool value) override;
   bool SetMute(bool is_input, bool value) override;
   bool SetMute(bool is_input,
                bool value,
@@ -125,7 +119,6 @@ class AudioServiceImpl : public AudioService,
   void OnActiveInputNodeChanged() override;
 
  private:
-  void NotifyDeviceChanged();
   void NotifyLevelChanged(uint64_t id, int level);
   void NotifyMuteChanged(bool is_input, bool is_muted);
   void NotifyDevicesChanged();
@@ -172,43 +165,6 @@ void AudioServiceImpl::RemoveObserver(AudioService::Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-bool AudioServiceImpl::GetInfo(OutputInfo* output_info_out,
-                               InputInfo* input_info_out) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(cras_audio_handler_);
-  DCHECK(output_info_out);
-  DCHECK(input_info_out);
-
-  if (!cras_audio_handler_)
-    return false;
-
-  ash::AudioDeviceList devices;
-  cras_audio_handler_->GetAudioDevices(&devices);
-  for (size_t i = 0; i < devices.size(); ++i) {
-    if (!devices[i].is_input) {
-      OutputDeviceInfo info;
-      info.id = base::NumberToString(devices[i].id);
-      info.name = devices[i].device_name + ": " + devices[i].display_name;
-      info.is_active = devices[i].active;
-      info.volume =
-          cras_audio_handler_->GetOutputVolumePercentForDevice(devices[i].id);
-      info.is_muted =
-          cras_audio_handler_->IsOutputMutedForDevice(devices[i].id);
-      output_info_out->push_back(std::move(info));
-    } else {
-      InputDeviceInfo info;
-      info.id = base::NumberToString(devices[i].id);
-      info.name = devices[i].device_name + ": " + devices[i].display_name;
-      info.is_active = devices[i].active;
-      info.gain =
-          cras_audio_handler_->GetInputGainPercentForDevice(devices[i].id);
-      info.is_muted = cras_audio_handler_->IsInputMutedForDevice(devices[i].id);
-      input_info_out->push_back(std::move(info));
-    }
-  }
-  return true;
-}
-
 bool AudioServiceImpl::GetDevices(const api::audio::DeviceFilter* filter,
                                   DeviceInfoList* devices_out) {
   if (!cras_audio_handler_)
@@ -243,21 +199,6 @@ bool AudioServiceImpl::GetDevices(
   // Not used in ash-chrome while chrome.audio API impl is synchronous.
   NOTREACHED();
   return false;
-}
-
-void AudioServiceImpl::SetActiveDevices(const DeviceIdList& device_list) {
-  DCHECK(cras_audio_handler_);
-  if (!cras_audio_handler_)
-    return;
-
-  CrasAudioHandler::NodeIdList id_list;
-  for (const auto& id : device_list) {
-    const AudioDevice* device =
-        cras_audio_handler_->GetDeviceFromId(GetIdFromStr(id));
-    if (device)
-      id_list.push_back(device->id);
-  }
-  cras_audio_handler_->ChangeActiveNodes(id_list);
 }
 
 bool AudioServiceImpl::SetActiveDeviceLists(
@@ -300,8 +241,7 @@ bool AudioServiceImpl::SetActiveDeviceLists(
 }
 
 bool AudioServiceImpl::SetDeviceSoundLevel(const std::string& device_id,
-                                           int volume,
-                                           int gain) {
+                                           int level_value) {
   DCHECK(cras_audio_handler_);
   if (!cras_audio_handler_)
     return false;
@@ -311,11 +251,8 @@ bool AudioServiceImpl::SetDeviceSoundLevel(const std::string& device_id,
   if (!device)
     return false;
 
-  if (!device->is_input && volume != -1) {
-    cras_audio_handler_->SetVolumeGainPercentForDevice(device->id, volume);
-    return true;
-  } else if (device->is_input && gain != -1) {
-    cras_audio_handler_->SetVolumeGainPercentForDevice(device->id, gain);
+  if (level_value != -1) {
+    cras_audio_handler_->SetVolumeGainPercentForDevice(device->id, level_value);
     return true;
   }
 
@@ -329,21 +266,6 @@ bool AudioServiceImpl::SetDeviceSoundLevel(
   // Not used in ash-chrome while chrome.audio API impl is synchronous.
   NOTREACHED();
   return false;
-}
-
-bool AudioServiceImpl::SetMuteForDevice(const std::string& device_id,
-                                        bool value) {
-  DCHECK(cras_audio_handler_);
-  if (!cras_audio_handler_)
-    return false;
-
-  const AudioDevice* device =
-      cras_audio_handler_->GetDeviceFromId(GetIdFromStr(device_id));
-  if (!device)
-    return false;
-
-  cras_audio_handler_->SetMuteForDevice(device->id, value);
-  return true;
 }
 
 bool AudioServiceImpl::SetMute(bool is_input, bool value) {
@@ -449,35 +371,18 @@ void AudioServiceImpl::OnAudioNodesChanged() {
   NotifyDevicesChanged();
 }
 
-void AudioServiceImpl::OnActiveOutputNodeChanged() {
-  NotifyDeviceChanged();
-}
+void AudioServiceImpl::OnActiveOutputNodeChanged() {}
 
-void AudioServiceImpl::OnActiveInputNodeChanged() {
-  NotifyDeviceChanged();
-}
-
-void AudioServiceImpl::NotifyDeviceChanged() {
-  for (auto& observer : observer_list_)
-    observer.OnDeviceChanged();
-}
+void AudioServiceImpl::OnActiveInputNodeChanged() {}
 
 void AudioServiceImpl::NotifyLevelChanged(uint64_t id, int level) {
   for (auto& observer : observer_list_)
     observer.OnLevelChanged(base::NumberToString(id), level);
-
-  // Notify DeviceChanged event for backward compatibility.
-  // TODO(jennyz): remove this code when the old version of hotrod retires.
-  NotifyDeviceChanged();
 }
 
 void AudioServiceImpl::NotifyMuteChanged(bool is_input, bool is_muted) {
   for (auto& observer : observer_list_)
     observer.OnMuteChanged(is_input, is_muted);
-
-  // Notify DeviceChanged event for backward compatibility.
-  // TODO(jennyz): remove this code when the old version of hotrod retires.
-  NotifyDeviceChanged();
 }
 
 void AudioServiceImpl::NotifyDevicesChanged() {
@@ -493,10 +398,6 @@ void AudioServiceImpl::NotifyDevicesChanged() {
 
   for (auto& observer : observer_list_)
     observer.OnDevicesChanged(device_info_list);
-
-  // Notify DeviceChanged event for backward compatibility.
-  // TODO(jennyz): remove this code when the old version of hotrod retires.
-  NotifyDeviceChanged();
 }
 
 AudioService::Ptr AudioService::CreateInstance(

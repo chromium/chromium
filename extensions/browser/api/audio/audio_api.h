@@ -39,7 +39,6 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
   static const bool kServiceRedirectedInIncognito = true;
 
   // AudioService::Observer implementation.
-  void OnDeviceChanged() override;
   void OnLevelChanged(const std::string& id, int level) override;
   void OnMuteChanged(bool is_input, bool is_muted) override;
   void OnDevicesChanged(const DeviceInfoList& devices) override;
@@ -58,15 +57,6 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
 
   base::ScopedObservation<AudioService, AudioService::Observer>
       audio_service_observation_{this};
-};
-
-class AudioGetInfoFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("audio.getInfo", AUDIO_GETINFO)
-
- protected:
-  ~AudioGetInfoFunction() override {}
-  ResponseAction Run() override;
 };
 
 class AudioGetDevicesFunction : public ExtensionFunction {

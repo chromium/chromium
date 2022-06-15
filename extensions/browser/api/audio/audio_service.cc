@@ -16,25 +16,21 @@ class AudioServiceImpl : public AudioService {
   void RemoveObserver(Observer* observer) override;
 
   // Start to query audio device information.
-  bool GetInfo(OutputInfo* output_info_out, InputInfo* input_info_out) override;
   bool GetDevices(const api::audio::DeviceFilter* filter,
                   DeviceInfoList* devices_out) override;
   bool GetDevices(
       const api::audio::DeviceFilter* filter,
       base::OnceCallback<void(bool, DeviceInfoList)> callback) override;
-  void SetActiveDevices(const DeviceIdList& device_list) override;
   bool SetActiveDeviceLists(const DeviceIdList* input_devices,
                             const DeviceIdList* output_devives) override;
   bool SetActiveDeviceLists(const DeviceIdList* input_devices,
                             const DeviceIdList* output_devives,
                             base::OnceCallback<void(bool)> callback) override;
   bool SetDeviceSoundLevel(const std::string& device_id,
-                           int volume,
-                           int gain) override;
+                           int level_value) override;
   bool SetDeviceSoundLevel(const std::string& device_id,
                            int level_value,
                            base::OnceCallback<void(bool)> callback) override;
-  bool SetMuteForDevice(const std::string& device_id, bool value) override;
   bool SetMute(bool is_input, bool value) override;
   bool SetMute(bool is_input,
                bool value,
@@ -55,12 +51,6 @@ void AudioServiceImpl::RemoveObserver(Observer* observer) {
 AudioService::Ptr AudioService::CreateInstance(
     AudioDeviceIdCalculator* id_calculator) {
   return std::make_unique<AudioServiceImpl>();
-}
-
-bool AudioServiceImpl::GetInfo(OutputInfo* output_info_out,
-                               InputInfo* input_info_out) {
-  // TODO: implement this for platforms other than Chrome OS.
-  return false;
 }
 
 bool AudioServiceImpl::GetDevices(const api::audio::DeviceFilter* filter,
@@ -87,12 +77,8 @@ bool AudioServiceImpl::SetActiveDeviceLists(
   return false;
 }
 
-void AudioServiceImpl::SetActiveDevices(const DeviceIdList& device_list) {
-}
-
 bool AudioServiceImpl::SetDeviceSoundLevel(const std::string& device_id,
-                                           int volume,
-                                           int gain) {
+                                           int level_value) {
   return false;
 }
 
@@ -100,11 +86,6 @@ bool AudioServiceImpl::SetDeviceSoundLevel(
     const std::string& device_id,
     int level_value,
     base::OnceCallback<void(bool)> callback) {
-  return false;
-}
-
-bool AudioServiceImpl::SetMuteForDevice(const std::string& device_id,
-                                        bool value) {
   return false;
 }
 

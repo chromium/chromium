@@ -15,9 +15,6 @@
 #include "extensions/browser/api/audio/pref_names.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/audio.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/features/behavior_feature.h"
-#include "extensions/common/features/feature_provider.h"
 
 namespace {
 const char* const kGetDevicesErrorMsg =
@@ -37,34 +34,6 @@ namespace {
 std::unique_ptr<AudioDeviceIdCalculator> CreateIdCalculator(
     content::BrowserContext* context) {
   return std::make_unique<AudioDeviceIdCalculator>(context);
-}
-
-// Checks if an extension is allowlisted to use deprecated version of audio API.
-// TODO(tbarzic): Retire this allowlist and remove the deprecated API methods,
-//     properties and events. This is currently targeted for M-60
-//     (http://crbug.com/697279).
-bool CanUseDeprecatedAudioApi(const Extension* extension) {
-  if (!extension)
-    return false;
-
-  const Feature* allow_deprecated_audio_api_feature =
-      FeatureProvider::GetBehaviorFeatures()->GetFeature(
-          behavior_feature::kAllowDeprecatedAudioApi);
-  if (!allow_deprecated_audio_api_feature)
-    return false;
-
-  return allow_deprecated_audio_api_feature->IsAvailableToExtension(extension)
-      .is_available();
-}
-
-bool CanReceiveDeprecatedAudioEvent(
-    content::BrowserContext* browser_context,
-    Feature::Context target_context,
-    const Extension* extension,
-    const base::DictionaryValue* filter,
-    std::unique_ptr<base::Value::List>* event_args,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
-  return CanUseDeprecatedAudioApi(extension);
 }
 
 }  // namespace
@@ -93,19 +62,6 @@ AudioAPI::~AudioAPI() {}
 
 AudioService* AudioAPI::GetService() const {
   return service_.get();
-}
-
-void AudioAPI::OnDeviceChanged() {
-  EventRouter* event_router = EventRouter::Get(browser_context_);
-  if (!event_router)
-    return;
-
-  auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICE_CHANGED,
-                                       audio::OnDeviceChanged::kEventName,
-                                       std::vector<base::Value>());
-  event->will_dispatch_callback =
-      base::BindRepeating(&CanReceiveDeprecatedAudioEvent);
-  event_router->BroadcastEvent(std::move(event));
 }
 
 void AudioAPI::OnLevelChanged(const std::string& id, int level) {
@@ -151,28 +107,6 @@ void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
                                        audio::OnDeviceListChanged::kEventName,
                                        std::move(args));
   event_router->BroadcastEvent(std::move(event));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-ExtensionFunction::ResponseAction AudioGetInfoFunction::Run() {
-  if (!CanUseDeprecatedAudioApi(extension())) {
-    return RespondNow(
-        Error("audio.getInfo is deprecated, use audio.getDevices instead."));
-  }
-
-  AudioService* service =
-      AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
-  DCHECK(service);
-  OutputInfo output_info;
-  InputInfo input_info;
-  if (!service->GetInfo(&output_info, &input_info)) {
-    return RespondNow(
-        Error("Error occurred when querying audio device information."));
-  }
-
-  return RespondNow(
-      ArgumentList(audio::GetInfo::Results::Create(output_info, input_info)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,31 +159,19 @@ ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
       AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
   DCHECK(service);
 
-  if (params->ids.as_device_id_lists) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO: deprecated string lists are not implemented in Lacros
-    if (service->SetActiveDeviceLists(
-            params->ids.as_device_id_lists->input.get(),
-            params->ids.as_device_id_lists->output.get(),
-            base::BindOnce(&AudioSetActiveDevicesFunction::OnResponse, this))) {
-      return RespondLater();
-    }
-    return RespondNow(Error(kSetActiveDevicesErrorMsg));
-#else
-    if (!service->SetActiveDeviceLists(
-            params->ids.as_device_id_lists->input.get(),
-            params->ids.as_device_id_lists->output.get())) {
-      return RespondNow(Error(kSetActiveDevicesErrorMsg));
-    }
-#endif
-  } else if (params->ids.as_strings) {
-    if (!CanUseDeprecatedAudioApi(extension())) {
-      return RespondNow(
-          Error("String list |ids| is deprecated, use DeviceIdLists type."));
-    }
-    service->SetActiveDevices(*params->ids.as_strings);
+  if (service->SetActiveDeviceLists(
+          params->ids.input.get(), params->ids.output.get(),
+          base::BindOnce(&AudioSetActiveDevicesFunction::OnResponse, this))) {
+    return RespondLater();
   }
-  return RespondNow(NoArguments());
+#else
+  if (service->SetActiveDeviceLists(params->ids.input.get(),
+                                    params->ids.output.get())) {
+    return RespondNow(NoArguments());
+  }
+#endif
+  return RespondNow(Error(kSetActiveDevicesErrorMsg));
 }
 
 void AudioSetActiveDevicesFunction::OnResponse(bool success) {
@@ -270,55 +192,22 @@ ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
       AudioAPI::GetFactoryInstance()->Get(browser_context())->GetService();
   DCHECK(service);
 
-  if (!CanUseDeprecatedAudioApi(extension())) {
-    if (params->properties.volume)
-      return RespondNow(Error("|volume| property is deprecated, use |level|."));
-
-    if (params->properties.gain)
-      return RespondNow(Error("|gain| property is deprecated, use |level|."));
-
-    if (params->properties.is_muted) {
-      return RespondNow(
-          Error("|isMuted| property is deprecated, use |audio.setMute|."));
-    }
-  }
-
   bool level_set = !!params->properties.level;
   int level_value = level_set ? *params->properties.level : -1;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // deprecated volume_value and gain_value are not implemented in lacros
-  // see (http://crbug.com/697279)
   if (level_set &&
       service->SetDeviceSoundLevel(
           params->id, level_value,
           base::BindOnce(&AudioSetPropertiesFunction::OnResponse, this))) {
     return RespondLater();
   }
-  return RespondNow(Error(kLevelPropErrorMsg));
 #else
-
-  int volume_value = params->properties.volume.get() ?
-      *params->properties.volume : -1;
-
-  int gain_value = params->properties.gain.get() ?
-      *params->properties.gain : -1;
-
-  // |volume_value| and |gain_value| are deprecated in favor of |level_value|;
-  // they are kept around only to ensure backward-compatibility and should be
-  // ignored if |level_value| is set.
-  if (!service->SetDeviceSoundLevel(params->id,
-                                    level_set ? level_value : volume_value,
-                                    level_set ? level_value : gain_value))
-    return RespondNow(Error(kLevelPropErrorMsg));
-
-  if (params->properties.is_muted.get() &&
-      !service->SetMuteForDevice(params->id, *params->properties.is_muted)) {
-    return RespondNow(Error("Could not set mute property."));
+  if (level_set && service->SetDeviceSoundLevel(params->id, level_value)) {
+    return RespondNow(NoArguments());
   }
-
-  return RespondNow(NoArguments());
 #endif
+  return RespondNow(Error(kLevelPropErrorMsg));
 }
 
 void AudioSetPropertiesFunction::OnResponse(bool success) {

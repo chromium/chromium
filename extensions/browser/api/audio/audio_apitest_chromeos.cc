@@ -278,28 +278,4 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnNodesChangedRemoveNodes) {
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-class AllowlistedAudioApiTest : public AudioApiTest {
- public:
-  AllowlistedAudioApiTest() = default;
-  ~AllowlistedAudioApiTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID,
-        "jlgnoeceollaejlkenecblnjmdcfhfgc");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AllowlistedAudioApiTest, DeprecatedApi) {
-  // Set up the audio nodes for testing.
-  AudioNodeList audio_nodes = {
-      CreateAudioNode(kJabraSpeaker1, 2), CreateAudioNode(kJabraSpeaker2, 2),
-      CreateAudioNode(kHDMIOutput, 2),    CreateAudioNode(kJabraMic1, 2),
-      CreateAudioNode(kJabraMic2, 2),     CreateAudioNode(kUSBCameraMic, 2)};
-
-  ChangeAudioNodes(audio_nodes);
-
-  EXPECT_TRUE(RunAppTest("api_test/audio/deprecated_api")) << message_;
-}
-
 }  // namespace extensions

@@ -14,8 +14,6 @@
 
 namespace extensions {
 
-using OutputInfo = std::vector<api::audio::OutputDeviceInfo>;
-using InputInfo = std::vector<api::audio::InputDeviceInfo>;
 using DeviceIdList = std::vector<std::string>;
 using DeviceInfoList = std::vector<api::audio::AudioDeviceInfo>;
 
@@ -25,9 +23,6 @@ class AudioService {
  public:
   class Observer {
    public:
-    // Called when anything changes to the audio device configuration.
-    virtual void OnDeviceChanged() = 0;
-
     // Called when the sound level of an active audio device changes.
     virtual void OnLevelChanged(const std::string& id, int level) = 0;
 
@@ -55,13 +50,6 @@ class AudioService {
   // Called by listeners to this service to add/remove themselves as observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  // Start to query audio device information. Should be called on UI thread.
-  // Populates |output_info_out| and |input_info_out| with the results.
-  // Returns true on success.
-  // DEPRECATED: Use |GetDevices| instead.
-  virtual bool GetInfo(OutputInfo* output_info_out,
-                       InputInfo* input_info_out) = 0;
 
   // Retrieves list of audio devices that satisfy |filter|. Populates
   // |devices_out| with retrieved devices.
@@ -100,28 +88,14 @@ class AudioService {
       const DeviceIdList* output_devives,
       base::OnceCallback<void(bool)> callback) = 0;
 
-  // Sets the active devices to the devices specified by |device_list|.
-  // It can pass in the "complete" active device list of either input
-  // devices, or output devices, or both. If only input devices are passed in,
-  // it will only change the input devices' active status, output devices will
-  // NOT be changed; similarly for the case if only output devices are passed.
-  // If the devices specified in |new_active_ids| are already active, they will
-  // remain active. Otherwise, the old active devices will be de-activated
-  // before we activate the new devices with the same type(input/output).
-  virtual void SetActiveDevices(const DeviceIdList& device_list) = 0;
-
   // Set the sound level properties (volume or gain) of a device.
   virtual bool SetDeviceSoundLevel(const std::string& device_id,
-                                   int volume,
-                                   int gain) = 0;
+                                   int level_value) = 0;
 
   // Same as above, but also passes if operation succeeded into a |callback|.
   virtual bool SetDeviceSoundLevel(const std::string& device_id,
                                    int level_value,
                                    base::OnceCallback<void(bool)> callback) = 0;
-
-  // Sets the mute property of a device.
-  virtual bool SetMuteForDevice(const std::string& device_id, bool value) = 0;
 
   // Sets mute property for audio input (if |is_input| is true) or output (if
   // |is_input| is false).

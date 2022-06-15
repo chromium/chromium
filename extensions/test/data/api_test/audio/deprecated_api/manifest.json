@@ -1,8 +1,0 @@
-{
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4Gb8dd92HGWI64TMqr7Qr+A0WwG2kMhoNYR6bYO/0klVnNdZ5q8u46wvqu3aNkzhbe5r7Zf4utKenC6dPMm22b/4+Qge1ng+NHRbCSiwcy3JMhrO93gGQLueP5KRQhy+fXTeAJugAj4vR8nkfYOJaeauosh1f7I4D3Gy2XI+E5mo3/TUVxxRgOYMZIYsXlPStdhUuPe3QltZZxPCNv98UX30F1NhrNoeKIHyf83++Egxb/CwMtX9Dog15V56qBbiuXLECWu7+GY/GCKt9LAX5ieyEziV6Uq8/ISB1hwOThQWPFRd7NbHVisPGwyoMPX4DL57eYfKAwl1U2KbP+KdAQIDAQAB",
-  "app": { "background": { "scripts": ["test.js"] } },
-  "manifest_version": 2,
-  "name": "Audio API Test Extension",
-  "permissions": ["audio"],
-  "version": "1.0"
-}
