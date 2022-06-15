@@ -15,8 +15,8 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "media/base/bitrate.h"
 #include "media/base/media_switches.h"
-#include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
@@ -174,18 +174,24 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   combined_enabled_features.push_back(media::kVaapiVideoEncodeLinux);
 #endif
 
-  const bool use_vbr = bitrate_mode == Bitrate::Mode::kVariable;
-  const uint32_t bitrate = encode_bitrate.value_or(
+  const uint32_t target_bitrate = encode_bitrate.value_or(
       GetDefaultTargetBitrate(video->Resolution(), video->FrameRate()));
-  if (use_vbr && VideoCodecProfileToVideoCodec(profile) != VideoCodec::kH264) {
+  // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.
+  const media::Bitrate bitrate =
+      bitrate_mode == media::Bitrate::Mode::kVariable
+          ? media::Bitrate::VariableBitrate(target_bitrate,
+                                            /*peak_bps=*/target_bitrate * 2)
+          : media::Bitrate::ConstantBitrate(target_bitrate);
+  if (bitrate.mode() == media::Bitrate::Mode::kVariable &&
+      VideoCodecProfileToVideoCodec(profile) != VideoCodec::kH264) {
     LOG(ERROR) << "VBR is only supported for H264 encoding";
     return nullptr;
   }
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
-      num_temporal_layers, num_spatial_layers, bitrate, use_vbr,
-      save_output_bitstream, reverse, frame_output_config,
-      combined_enabled_features, combined_disabled_features);
+      num_temporal_layers, num_spatial_layers, bitrate, save_output_bitstream,
+      reverse, frame_output_config, combined_enabled_features,
+      combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -195,8 +201,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     VideoCodecProfile profile,
     size_t num_temporal_layers,
     size_t num_spatial_layers,
-    uint32_t bitrate,
-    bool use_vbr,
+    const Bitrate& bitrate,
     bool save_output_bitstream,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
@@ -211,8 +216,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       num_spatial_layers_(num_spatial_layers),
       bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers_,
                                                 num_temporal_layers_,
-                                                bitrate,
-                                                use_vbr)),
+                                                bitrate)),
       spatial_layers_(GetDefaultSpatialLayers(bitrate_,
                                               video_.get(),
                                               num_spatial_layers_,
@@ -254,7 +258,8 @@ VideoEncoderTestEnvironment::SpatialLayers() const {
   return spatial_layers_;
 }
 
-VideoBitrateAllocation VideoEncoderTestEnvironment::Bitrate() const {
+const VideoBitrateAllocation& VideoEncoderTestEnvironment::BitrateAllocation()
+    const {
   return bitrate_;
 }
 

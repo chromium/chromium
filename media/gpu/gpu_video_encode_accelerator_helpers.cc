@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "media/base/bitrate.h"
 
 namespace media {
 namespace {
@@ -193,8 +194,7 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncoding(
 VideoBitrateAllocation AllocateDefaultBitrateForTesting(
     const size_t num_spatial_layers,
     const size_t num_temporal_layers,
-    const uint32_t bitrate,
-    const bool uses_vbr) {
+    const Bitrate& bitrate) {
   // Higher spatial layers (those to the right) get more bitrate.
   constexpr double kSpatialLayersBitrateScaleFactors[][kMaxSpatialLayers] = {
       {1.00, 0.00, 0.00},  // For one spatial layer.
@@ -210,11 +210,15 @@ VideoBitrateAllocation AllocateDefaultBitrateForTesting(
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
     const double bitrate_factor =
         kSpatialLayersBitrateScaleFactors[num_spatial_layers - 1][sid];
-    bitrates[sid] = bitrate * bitrate_factor;
+    bitrates[sid] = bitrate.target_bps() * bitrate_factor;
   }
 
-  return AllocateBitrateForDefaultEncodingWithBitrates(
-      bitrates, num_temporal_layers, uses_vbr);
+  const bool use_vbr = bitrate.mode() == Bitrate::Mode::kVariable;
+  auto allocation = AllocateBitrateForDefaultEncodingWithBitrates(
+      bitrates, num_temporal_layers, use_vbr);
+  if (use_vbr)
+    allocation.SetPeakBps(bitrate.peak_bps());
+  return allocation;
 }
 
 }  // namespace media

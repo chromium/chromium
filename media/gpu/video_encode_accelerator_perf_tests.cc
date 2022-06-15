@@ -512,7 +512,7 @@ class VideoEncoderTest : public ::testing::Test {
       bool measure_quality) {
     Video* video = g_env->GenerateNV12Video();
     VideoCodecProfile profile = g_env->Profile();
-    const media::VideoBitrateAllocation& bitrate = g_env->Bitrate();
+    const media::VideoBitrateAllocation& bitrate = g_env->BitrateAllocation();
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers = g_env->SpatialLayers();
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
@@ -707,14 +707,15 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
     uint32_t target_bitrate = 0;
     uint32_t actual_bitrate = 0;
     if (!spatial_idx && !temporal_idx) {
-      target_bitrate = g_env->Bitrate().GetSumBps();
+      target_bitrate = g_env->BitrateAllocation().GetSumBps();
       actual_bitrate = stats.Bitrate();
     } else {
       CHECK(spatial_idx && temporal_idx);
       // Target and actual bitrates in temporal layer encoding are the sum of
       // bitrates of the temporal layers in the spatial layer.
       for (size_t tid = 0; tid <= *temporal_idx; ++tid) {
-        target_bitrate += g_env->Bitrate().GetBitrateBps(*spatial_idx, tid);
+        target_bitrate +=
+            g_env->BitrateAllocation().GetBitrateBps(*spatial_idx, tid);
         actual_bitrate += stats.LayerBitrate(*spatial_idx, tid);
       }
     }

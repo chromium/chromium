@@ -132,7 +132,7 @@ class VideoEncoderTest : public ::testing::Test {
     CHECK_LE(spatial_layers.size(), 1u);
 
     return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
-                                    spatial_layers, g_env->Bitrate(),
+                                    spatial_layers, g_env->BitrateAllocation(),
                                     g_env->Reverse());
   }
 
@@ -498,11 +498,6 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
 
   auto config = GetDefaultConfig();
-  const Bitrate::Mode bitrate_mode = config.bitrate_allocation.GetMode();
-  if (bitrate_mode == Bitrate::Mode::kVariable) {
-    config.bitrate_allocation.SetPeakBps(config.bitrate_allocation.GetSumBps() *
-                                         2);
-  }
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
   // Set longer event timeout than the default (30 sec) because encoding 2160p
@@ -517,9 +512,10 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
   // TODO(b/181797390): Reconsider bitrate check for VBR encoding if this fails
   // on some boards.
-  const double tolerance = bitrate_mode == Bitrate::Mode::kConstant
-                               ? kBitrateTolerance
-                               : kVariableBitrateTolerance;
+  const double tolerance =
+      config.bitrate_allocation.GetMode() == Bitrate::Mode::kConstant
+          ? kBitrateTolerance
+          : kVariableBitrateTolerance;
   EXPECT_NEAR(encoder->GetStats().Bitrate(),
               config.bitrate_allocation.GetSumBps(),
               tolerance * config.bitrate_allocation.GetSumBps());
@@ -528,7 +524,7 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
-  if (g_env->Bitrate().GetMode() != Bitrate::Mode::kConstant) {
+  if (g_env->BitrateAllocation().GetMode() != Bitrate::Mode::kConstant) {
     GTEST_SKIP()
         << "Skip Dynamic bitrate change checks for non-CBR bitrate mode";
   }
@@ -552,9 +548,9 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   const uint32_t second_bitrate = first_bitrate * 3 / 2;
   encoder->ResetStats();
   encoder->UpdateBitrate(
-      AllocateDefaultBitrateForTesting(config.num_spatial_layers,
-                                       config.num_temporal_layers,
-                                       second_bitrate, /*uses_vbr=*/false),
+      AllocateDefaultBitrateForTesting(
+          config.num_spatial_layers, config.num_temporal_layers,
+          Bitrate::ConstantBitrate(second_bitrate)),
       config.framerate);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
@@ -569,7 +565,7 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
-  if (g_env->Bitrate().GetMode() != Bitrate::Mode::kConstant) {
+  if (g_env->BitrateAllocation().GetMode() != Bitrate::Mode::kConstant) {
     GTEST_SKIP()
         << "Skip dynamic framerate change checks for non-CBR bitrate mode";
   }
@@ -614,8 +610,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 
   Video* nv12_video = g_env->GenerateNV12Video();
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate(),
-                                  g_env->Reverse());
+                                  g_env->SpatialLayers(),
+                                  g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
@@ -652,7 +648,14 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   auto* nv12_video = g_env->GenerateNV12Video();
   // Set 1/4 of the original bitrate because the area of |output_resolution| is
   // 1/4 of the original resolution.
-  uint32_t new_bitrate = g_env->Bitrate().GetSumBps() / 4;
+  uint32_t new_target_bitrate = g_env->BitrateAllocation().GetSumBps() / 4;
+  // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.
+  const Bitrate new_bitrate =
+      g_env->BitrateAllocation().GetMode() == Bitrate::Mode::kConstant
+          ? Bitrate::ConstantBitrate(new_target_bitrate)
+          : Bitrate::VariableBitrate(new_target_bitrate,
+                                     new_target_bitrate * 2);
+
   auto spatial_layers = g_env->SpatialLayers();
   size_t num_temporal_layers = 1u;
   if (!spatial_layers.empty()) {
@@ -662,12 +665,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
     spatial_layers[0].bitrate_bps /= 4;
     num_temporal_layers = spatial_layers[0].num_of_temporal_layers;
   }
-  bool uses_vbr = g_env->Bitrate().GetMode() == Bitrate::Mode::kVariable;
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers,
       AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
-                                       num_temporal_layers, new_bitrate,
-                                       uses_vbr),
+                                       num_temporal_layers, new_bitrate),
       g_env->Reverse());
   config.output_resolution = output_resolution;
   config.input_storage_type =
@@ -709,8 +710,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate(),
-                                  g_env->Reverse());
+                                  g_env->SpatialLayers(),
+                                  g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -751,8 +752,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate(),
-                                  g_env->Reverse());
+                                  g_env->SpatialLayers(),
+                                  g_env->BitrateAllocation(), g_env->Reverse());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -785,7 +786,7 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
     return bitrate_allocation;
   };
 
-  const auto& default_allocation = g_env->Bitrate();
+  const auto& default_allocation = g_env->BitrateAllocation();
   std::vector<VideoBitrateAllocation> bitrate_allocations;
 
   // Deactivate the top layer.
@@ -812,8 +813,8 @@ TEST_F(VideoEncoderTest, DeactivateAndActivateSpatialLayers) {
   bitrate_allocations.emplace_back(bitrate_allocation);
 
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->SpatialLayers(), g_env->Bitrate(),
-                                  g_env->Reverse());
+                                  g_env->SpatialLayers(),
+                                  g_env->BitrateAllocation(), g_env->Reverse());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   std::vector<size_t> num_frames_to_encode(bitrate_allocations.size());

@@ -7,12 +7,15 @@
 
 #include <vector>
 
+#include "media/base/bitrate.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
+
+class Bitrate;
 
 // Helper functions for VideoEncodeAccelerator implementations in GPU process.
 
@@ -43,23 +46,19 @@ MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateBitrateForDefaultEncoding(const VideoEncodeAccelerator::Config& config);
 
 // Create VideoBitrateAllocation with |num_spatial_layers|,
-// |num_temporal_layers| and |bitrate|, additionally indicating if the
-// constructed bitrate should |use_vbr|. |bitrate| is the bitrate of the entire
-// stream. |num_temporal_layers| is the number of temporal layers in each
-// spatial layer. |use_vbr| indicates whether the bitrate should have
-// |Bitrate::Mode::kVariable.|
-// First, |bitrate| is distributed to spatial layers based on libwebrtc bitrate
-// division. Then the bitrate of each spatial layer is distributed to temporal
-// layers in the spatial layer based on the same bitrate division ratio as a
-// software encoder. If a variable bitrate is requested, the peak will be set
-// equal to the target.
-// TODO(crbug.com/1335250): merge |bitrate| and |uses_vbr| into a single Bitrate
-// field.
+// |num_temporal_layers| and |bitrate|. |bitrate.target_bps()| is the bitrate of
+// the entire stream. |num_temporal_layers| is the number of temporal layers in
+// each spatial layer.
+// First, |bitrate.target_bps()| is distributed to spatial layers based on
+// libwebrtc bitrate division. Then the bitrate of each spatial layer is
+// distributed to temporal layers in the spatial layer based on the same bitrate
+// division ratio as a software encoder. If a variable bitrate is requested,
+// that is, |bitrate.mode()| is Bitrate::Mode::Variable, the peak will be set
+// equal to the |bitrate.peak_bps()|.
 MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateDefaultBitrateForTesting(const size_t num_spatial_layers,
                                  const size_t num_temporal_layers,
-                                 const uint32_t bitrate,
-                                 const bool uses_vbr);
+                                 const Bitrate& bitrate);
 }  // namespace media
 
 #endif  // MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_
