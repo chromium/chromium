@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -130,6 +131,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features_);
+    vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
   }
 
   void EnableFeatureAndSetParams(base::Feature feature,
@@ -146,6 +148,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
   std::unordered_map<base::Feature,
                      std::map<std::string, std::string>,
                      FeatureHash,
