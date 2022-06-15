@@ -18,6 +18,7 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_error_element_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
@@ -272,8 +273,11 @@ TEST_F(AssistantInteractionControllerImplTest, CompactBubbleLauncher) {
   static constexpr int kStandardLayoutAshWebViewWidth = 592;
   static constexpr int kNarrowLayoutAshWebViewWidth = 496;
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      app_list_features::kCompactBubbleLauncher);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {app_list_features::kCompactBubbleLauncher,
+       features::kProductivityLauncher},
+      {});
 
   UpdateDisplay("1200x800");
   ShowAssistantUi();
