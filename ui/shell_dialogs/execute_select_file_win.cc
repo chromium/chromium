@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
@@ -50,7 +51,7 @@ bool SetDefaultPath(IFileDialog* file_dialog,
     default_folder = default_path;
   } else {
     default_folder = default_path.DirName();
-    default_file_name = default_path.BaseName();
+    default_file_name = GetSanitizedFileName(default_path.BaseName());
   }
 
   // Do not fail the file dialog operation if the specified folder is invalid.
@@ -369,6 +370,33 @@ std::wstring AppendExtensionIfNeeded(const std::wstring& filename,
     return_value.resize(index + 1);
 
   return return_value;
+}
+
+base::FilePath GetSanitizedFileName(const base::FilePath& file_name) {
+  base::StringTokenizerT<std::wstring, std::wstring::const_iterator> t(
+      file_name.value(), L"%");
+  t.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
+  std::wstring result;
+  bool token_valid = t.GetNext();
+  while (token_valid) {
+    // Append substring before the first "%".
+    result.append(t.token());
+    // Done if we are reaching the end delimiter,
+    if (!t.GetNext()) {
+      break;
+    }
+    std::wstring string_after_first_percent = t.token();
+    token_valid = t.GetNext();
+    // If there are no other "%", append the string after
+    // the first "%". Otherwise, remove the string between
+    // the "%" and continue handing the remaining string.
+    if (!token_valid) {
+      result.append(L"%");
+      result.append(string_after_first_percent);
+      break;
+    }
+  }
+  return base::FilePath(result);
 }
 
 void ExecuteSelectFile(
