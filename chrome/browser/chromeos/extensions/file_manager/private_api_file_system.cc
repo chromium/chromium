@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/zip_io_task.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
@@ -1655,6 +1656,15 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       task = std::make_unique<file_manager::io_task::DeleteIOTask>(
           std::move(source_urls), file_system_context);
       break;
+    case file_manager::io_task::OperationType::kTrash:
+      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+        task = std::make_unique<file_manager::io_task::TrashIOTask>(
+            std::move(source_urls), profile, file_system_context,
+            /*base_path=*/base::FilePath());
+        break;
+      } else {
+        return RespondNow(Error("Invalid operation type"));
+      }
     case file_manager::io_task::OperationType::kExtract:
       if (base::FeatureList::IsEnabled(
               chromeos::features::kFilesExtractArchive)) {

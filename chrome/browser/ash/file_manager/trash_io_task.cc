@@ -177,8 +177,8 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
   TrashLocation& trash_location = trash_parent_path_it->second;
   const base::FilePath trash_parent_path = trash_parent_path_it->first;
   TrashEntry& entry = trash_entries_[source_idx];
-  entry.trash_path =
-      trash_parent_path.Append(trash_location.relative_folder_path);
+  entry.trash_mount_path = trash_parent_path;
+  entry.relative_trash_path = trash_location.relative_folder_path;
 
   if (!UpdateTrashInfoContents(source_path, trash_parent_path,
                                trash_location.prefix_restore_path, entry)) {
@@ -363,8 +363,10 @@ void TrashIOTask::GenerateDestinationURL(size_t source_idx, size_t output_idx) {
   DCHECK(source_idx < progress_.sources.size());
   DCHECK(source_idx < trash_entries_.size());
 
+  const TrashEntry& entry = trash_entries_[source_idx];
   const auto trash_path = MakeRelativeFromBasePath(
-      trash_entries_[source_idx].trash_path.Append(kFilesFolderName));
+      entry.trash_mount_path.Append(entry.relative_trash_path)
+          .Append(kFilesFolderName));
 
   const storage::FileSystemURL files_location =
       CreateFileSystemURL(progress_.sources[source_idx].url, trash_path);
@@ -386,9 +388,14 @@ void TrashIOTask::WriteMetadata(
     TrashComplete(source_idx, output_idx, destination_result.error());
     return;
   }
+  const base::FilePath absolute_trash_path =
+      trash_entries_[source_idx].trash_mount_path.Append(
+          trash_entries_[source_idx].relative_trash_path);
+  const std::string file_name =
+      destination_result.value().path().BaseName().value();
+
   const base::FilePath destination_path =
-      GenerateTrashPath(trash_entries_[source_idx].trash_path, kInfoFolderName,
-                        destination_result.value().path().BaseName().value());
+      GenerateTrashPath(absolute_trash_path, kInfoFolderName, file_name);
   progress_.outputs.emplace_back(
       CreateFileSystemURL(progress_.sources[source_idx].url, destination_path),
       absl::nullopt);

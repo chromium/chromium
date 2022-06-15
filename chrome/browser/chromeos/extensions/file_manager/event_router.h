@@ -45,6 +45,8 @@
 class PrefChangeRegistrar;
 class Profile;
 
+using OutputsType =
+    extensions::api::file_manager_private::ProgressStatus::OutputsType;
 using file_manager::util::EntryDefinition;
 
 namespace file_manager {
@@ -275,6 +277,17 @@ class EventRouter
 
   // Called to refresh the list of guests and broadcast it.
   void OnMountableGuestsChanged();
+
+  // After resolving all file definitions, ensure they are available on the
+  // `event_status`.
+  void OnConvertFileDefinitionListToEntryDefinitionList(
+      file_manager_private::ProgressStatus event_status,
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list);
+
+  // Broadcast the `event_status` to all open SWA windows.
+  void BroadcastIOTask(
+      const file_manager_private::ProgressStatus& event_status);
 
   base::Time last_copy_progress_event_;
 

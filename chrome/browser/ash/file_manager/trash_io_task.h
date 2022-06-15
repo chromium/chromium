@@ -36,9 +36,13 @@ struct TrashEntry {
   TrashEntry(TrashEntry&& other);
   TrashEntry& operator=(TrashEntry&& other);
 
-  // The final location for the trashed file, this may not be the same as the
-  // `url` in the case of naming conflicts.
-  base::FilePath trash_path;
+  // The relative path (to `trash_mount_path`) where the final location of the
+  // trashed file.
+  base::FilePath relative_trash_path;
+
+  // An absolute location which contains the `relative_trash_path` and combined
+  // represents the final location of the trashed file.
+  base::FilePath trash_mount_path;
 
   // The date of deletion, stored in the metadata file to help scheduled
   // cleanup.

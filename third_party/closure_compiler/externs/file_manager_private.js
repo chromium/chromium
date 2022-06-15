@@ -713,6 +713,7 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   taskId: number,
  *   remainingSeconds: number,
  *   errorName: string,
+ *   outputs: (Array<Entry>|undefined),
  * }}
  */
 chrome.fileManagerPrivate.ProgressStatus;

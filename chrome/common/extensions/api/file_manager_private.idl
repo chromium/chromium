@@ -994,6 +994,9 @@ dictionary ProgressStatus {
 
   // The name of the last error that happened.
   DOMString errorName;
+
+  // The files affected by the IOTask. Currently only returned for TrashIOTask.
+  [instanceOf=Entry] object[]? outputs;
 };
 
 // A Guest OS that supports guest->host file sharing. This definition should
