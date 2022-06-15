@@ -186,7 +186,7 @@ const float kModuleVerticalSpacing = 16.0f;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       self.mostVisitedStackView.backgroundColor =
           ntp_home::kNTPBackgroundColor();
-      self.mostVisitedStackView.alignment = UIStackViewAlignmentCenter;
+      self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
       self.mostVisitedModuleContainer =
           [[ContentSuggestionsModuleContainer alloc]
               initWithContentView:self.mostVisitedStackView
@@ -232,7 +232,7 @@ const float kModuleVerticalSpacing = 16.0f;
     self.shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
     self.shortcutsStackView.spacing = horizontalSpacing;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      self.shortcutsStackView.alignment = UIStackViewAlignmentCenter;
+      self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
       self.shortcutsStackView.backgroundColor = ntp_home::kNTPBackgroundColor();
     } else {
       self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
