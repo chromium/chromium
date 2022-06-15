@@ -5,7 +5,6 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
 import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
@@ -29,6 +28,7 @@ import {BreadcrumbController} from './breadcrumb_controller.js';
 import {ComboButton} from './combobutton.js';
 import {DefaultTaskDialog} from './default_task_dialog.js';
 import {DialogFooter} from './dialog_footer.js';
+import {BaseDialog} from './dialogs.js';
 import {DirectoryTree} from './directory_tree.js';
 import {FileGrid} from './file_grid.js';
 import {FileTable} from './file_table.js';

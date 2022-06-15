@@ -7,7 +7,6 @@ import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome:/
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {metrics} from '../../../common/js/metrics.js';
@@ -22,6 +21,8 @@ import {FileFilter} from '../directory_contents.js';
 import {DirectoryModel} from '../directory_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {NavigationListModel, NavigationModelAndroidAppItem, NavigationModelFakeItem, NavigationModelItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from '../navigation_list_model.js';
+
+import {Tree, TreeItem} from './tree.js';
 
 // Namespace
 const directorytree = {};

@@ -41,7 +41,6 @@ preprocess_if_expr("preprocess_src") {
     "focus_outline_manager.js",
     "splitter.js",
     "store.js",
-    "tree.js",
   ]
 
   if (is_chromeos_ash) {
@@ -49,7 +48,6 @@ preprocess_if_expr("preprocess_src") {
       "array_data_model.js",
       "command.js",
       "context_menu_handler.js",
-      "dialogs.js",
       "focus_manager.js",
       "focus_row.js",
       "focus_row_behavior.js",
@@ -101,7 +99,6 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "dialogs.m.js",
       "grid.m.js",
       "list_single_selection_model.m.js",
     ]
@@ -121,7 +118,6 @@ js_type_check("ui_resources") {
     ":array_data_model",
     ":command",
     ":context_menu_handler",
-    ":dialogs",
     ":focus_manager",
     ":focus_outline_manager",
     ":focus_row",
@@ -169,13 +165,6 @@ js_library("context_menu_handler") {
     "..:event_target",
     "..:ui",
     "../..:cr",
-  ]
-}
-
-js_library("dialogs") {
-  deps = [
-    "../..:cr",
-    "../..:util",
   ]
 }
 
@@ -295,7 +284,6 @@ js_modulizer("modulize") {
     "array_data_model.js",
     "command.js",
     "context_menu_handler.js",
-    "dialogs.js",
     "focus_outline_manager.js",
     "focus_row.js",
     "focus_row_behavior.js",
@@ -321,7 +309,6 @@ js_type_check("ui_resources_modules") {
     ":array_data_model.m",
     ":command.m",
     ":context_menu_handler.m",
-    ":dialogs.m",
     ":drag_wrapper",
     ":focus_grid",
     ":focus_outline_manager.m",
@@ -342,7 +329,6 @@ js_type_check("ui_resources_modules") {
     ":splitter",
     ":store",
     ":store_client",
-    ":tree",
   ]
 }
 
@@ -384,11 +370,6 @@ js_library("context_menu_handler.m") {
     "../..:event_tracker.m",
   ]
 
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("dialogs.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/dialogs.m.js" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -564,13 +545,5 @@ js_library("store_client") {
   deps = [
     ":store",
     "../..:assert.m",
-  ]
-}
-
-js_library("tree") {
-  deps = [
-    "../:ui.m",
-    "../..:assert.m",
-    "../..:cr.m",
   ]
 }

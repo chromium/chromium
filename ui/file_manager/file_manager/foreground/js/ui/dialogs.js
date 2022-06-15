@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {isRTL} from 'chrome://resources/js/util.m.js'
+import {isRTL} from 'chrome://resources/js/util.m.js';
 
-cr.define('cr.ui.dialogs', function() {
   /**
    * @constructor
    */
-  /* #export */ function BaseDialog(parentNode) {
+  export function BaseDialog(parentNode) {
     this.parentNode_ = parentNode;
     this.document_ = parentNode.ownerDocument;
 
@@ -356,9 +355,9 @@ cr.define('cr.ui.dialogs', function() {
   /**
    * AlertDialog contains just a message and an ok button.
    * @constructor
-   * @extends {cr.ui.dialogs.BaseDialog}
+   * @extends {BaseDialog}
    */
-  /* #export */ function AlertDialog(parentNode) {
+  export function AlertDialog(parentNode) {
     BaseDialog.call(this, parentNode);
     this.cancelButton.style.display = 'none';
   }
@@ -378,19 +377,11 @@ cr.define('cr.ui.dialogs', function() {
   /**
    * ConfirmDialog contains a message, an ok button, and a cancel button.
    * @constructor
-   * @extends {cr.ui.dialogs.BaseDialog}
+   * @extends {BaseDialog}
    */
-  /* #export */ function ConfirmDialog(parentNode) {
+  export function ConfirmDialog(parentNode) {
     BaseDialog.call(this, parentNode);
   }
 
   ConfirmDialog.prototype = {__proto__: BaseDialog.prototype};
 
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {
-    BaseDialog: BaseDialog,
-    AlertDialog: AlertDialog,
-    ConfirmDialog: ConfirmDialog,
-  };
-});

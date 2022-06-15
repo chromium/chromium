@@ -471,13 +471,13 @@ js_library("navigation_uma") {
 js_library("directory_tree_naming_controller") {
   deps = [
     ":directory_model",
+    "ui:dialogs",
     "ui:directory_tree",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }
 
@@ -757,6 +757,7 @@ js_library("file_transfer_controller") {
     "ui:directory_tree",
     "ui:drag_selector",
     "ui:list_container",
+    "ui:tree",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
@@ -773,7 +774,6 @@ js_library("file_transfer_controller") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:command.m",
     "//ui/webui/resources/js/cr/ui:list.m",
-    "//ui/webui/resources/js/cr/ui:tree",
   ]
 }
 
@@ -1042,12 +1042,12 @@ js_library("naming_controller") {
     ":directory_contents",
     ":directory_model",
     ":file_selection",
+    "ui:dialogs",
     "ui:list_container",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }
 

@@ -5,7 +5,6 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {getDirectory, getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
@@ -28,6 +27,7 @@ import {MetadataModel} from './metadata/metadata_model.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';
 import {ListContainer} from './ui/list_container.js';
+import {TreeItem} from './ui/tree.js';
 
 /**
  * Global (placed in the window object) variable name to hold internal

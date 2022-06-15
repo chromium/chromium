@@ -10,9 +10,6 @@ cr_namespace_rewrites = [
   "cr.ui.Command|Command",
   "cr.ui.contextMenuHandler|contextMenuHandler",
   "cr.ui.decorate|decorate",
-  "cr.ui.dialogs.BaseDialog|BaseDialog",
-  "cr.ui.dialogs.AlertDialog|AlertDialog",
-  "cr.ui.dialogs.ConfirmDialog|ConfirmDialog",
   "cr.ui.Action|Action",
   "cr.ui.AnchorType|AnchorType",
   "cr.ui.ArrayDataModel|ArrayDataModel",
@@ -35,8 +32,5 @@ cr_namespace_rewrites = [
   "cr.ui.Size|Size",
   "cr.ui.Splitter|Splitter",
   "cr.ui.StoreObserver|StoreObserver",
-  "cr.ui.Tab|Tab",
-  "cr.ui.Tree|Tree",
-  "cr.ui.TreeItem|TreeItem",
   "cr.ui.VirtualFocusRow|VirtualFocusRow",
 ]

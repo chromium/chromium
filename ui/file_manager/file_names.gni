@@ -221,6 +221,7 @@ static_js_files = [
   "file_manager/foreground/js/ui/commandbutton.js",
   "file_manager/foreground/js/ui/default_task_dialog.js",
   "file_manager/foreground/js/ui/dialog_footer.js",
+  "file_manager/foreground/js/ui/dialogs.js",
   "file_manager/foreground/js/ui/directory_tree.js",
   "file_manager/foreground/js/ui/drag_selector.js",
   "file_manager/foreground/js/ui/file_grid.js",
@@ -250,6 +251,7 @@ static_js_files = [
   "file_manager/foreground/js/ui/table/table_header.js",
   "file_manager/foreground/js/ui/table/table_list.js",
   "file_manager/foreground/js/ui/table/table_splitter.js",
+  "file_manager/foreground/js/ui/tree.js",
 ]
 
 # END: static_js_files.
