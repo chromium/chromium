@@ -25,6 +25,7 @@
 #include "gpu/ipc/single_task_sequence.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -112,7 +113,7 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
   // an ANGLE context for the current native GL context.
   const bool is_angle =
-      !enable_vulkan_ && display->IsANGLEExternalContextAndSurfaceSupported();
+      !enable_vulkan_ && display->ext->b_EGL_ANGLE_external_context_and_surface;
 
   GLSurfaceContextPair real_context;
   if (enable_vulkan_) {

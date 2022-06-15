@@ -1554,11 +1554,11 @@ bool DXVAVideoDecodeAccelerator::InitDecoder(VideoCodecProfile profile) {
     RETURN_ON_HR_FAILURE(hr, "Failed to pass D3D manager to decoder", false);
   }
 
-  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsPixelFormatFloatSupported())
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  if (!display->ext->b_EGL_EXT_pixel_format_float)
     use_fp16_ = false;
 
-  EGLDisplay egl_display =
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetHardwareDisplay();
+  EGLDisplay egl_display = display->GetHardwareDisplay();
 
   while (true) {
     std::vector<EGLint> config_attribs = {EGL_BUFFER_SIZE,  32,
