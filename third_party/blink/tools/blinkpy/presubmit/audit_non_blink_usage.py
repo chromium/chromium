@@ -128,6 +128,9 @@ _CONFIG = [
             # //base/task/bind_post_task.h
             'base::BindPostTask',
 
+            # //base/bind.h
+            'base::IgnoreResult',
+
             # //base/bits.h
             'base::bits::.+',
 
