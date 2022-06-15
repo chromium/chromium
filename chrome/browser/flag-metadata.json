@@ -1320,9 +1320,9 @@
     "expiry_milestone": 115
   },
   {
-    "name": "dns-httpssvc",
-    "owners": [ "dmcardle", "ericorth" ],
-    "expiry_milestone": 93
+    "name": "dns-https-svcb",
+    "owners": [ "dmcardle", "ericorth", "davidben" ],
+    "expiry_milestone": 114
   },
   {
     "name": "dns-proxy-enable-doh",
@@ -3065,6 +3065,11 @@
     "name": "enable-zero-state-app-reinstall-suggestions",
     "owners": [ "robsc", "napper", "jennyz", "thanhdng" ],
     "expiry_milestone": 98
+  },
+  {
+    "name": "encrypted-client-hello",
+    "owners": [ "davidben", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 114
   },
   {
     "name": "enforce-ash-extension-keeplist",

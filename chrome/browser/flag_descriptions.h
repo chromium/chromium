@@ -389,8 +389,8 @@ extern const char kDiscountConsentV2Description[];
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 
-extern const char kDnsHttpssvcName[];
-extern const char kDnsHttpssvcDescription[];
+extern const char kDnsHttpsSvcbName[];
+extern const char kDnsHttpsSvcbDescription[];
 
 extern const char kEditContextName[];
 extern const char kEditContextDescription[];
@@ -400,6 +400,9 @@ extern const char kEnableAutomaticSnoozeDescription[];
 
 extern const char kEnableFirstPartySetsName[];
 extern const char kEnableFirstPartySetsDescription[];
+
+extern const char kEncryptedClientHelloName[];
+extern const char kEncryptedClientHelloDescription[];
 
 extern const char kIsolatedSandboxedIframesName[];
 extern const char kIsolatedSandboxedIframesDescription[];
@@ -2274,9 +2277,6 @@ extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 
 #if BUILDFLAG(IS_WIN)
 
-extern const char kAsyncDnsName[];
-extern const char kAsyncDnsDescription[];
-
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
@@ -3397,6 +3397,11 @@ extern const char kSkipUndecryptablePasswordsDescription[];
 extern const char kForce60HzName[];
 extern const char kForce60HzDescription[];
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+extern const char kAsyncDnsName[];
+extern const char kAsyncDnsDescription[];
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 // Feature flags --------------------------------------------------------------
 

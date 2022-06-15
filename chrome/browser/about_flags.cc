@@ -2650,6 +2650,18 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kUseDnsHttpsSvcbBoth[] = {
+    {"UseDnsHttpsSvcbEnableInsecure", "true"}};
+const FeatureEntry::FeatureParam kUseDnsHttpsSvcbDohOnly[] = {
+    {"UseDnsHttpsSvcbEnableInsecure", "false"}};
+
+const FeatureEntry::FeatureVariation kUseDnsHttpsSvcbVariations[] = {
+    {"for DNS-over-HTTPS and insecure DNS", kUseDnsHttpsSvcbBoth,
+     std::size(kUseDnsHttpsSvcbBoth), nullptr},
+    {"for DNS-over-HTTPS only", kUseDnsHttpsSvcbDohOnly,
+     std::size(kUseDnsHttpsSvcbDohOnly), nullptr},
+};
+
 #if BUILDFLAG(IS_ANDROID)
 // The variations of ContentLanguagesInLanguagePicker.
 const FeatureEntry::FeatureParam
@@ -5602,11 +5614,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPointerLockOptionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPointerLockOptions)},
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"enable-async-dns", flag_descriptions::kAsyncDnsName,
-     flag_descriptions::kAsyncDnsDescription, kOsWin,
+     flag_descriptions::kAsyncDnsDescription, kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kAsyncDns)},
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
     {"download-auto-resumption-native",
@@ -6564,10 +6576,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"dns-httpssvc", flag_descriptions::kDnsHttpssvcName,
-     flag_descriptions::kDnsHttpssvcDescription,
-     kOsMac | kOsWin | kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(net::features::kDnsHttpssvc)},
+    {"dns-https-svcb", flag_descriptions::kDnsHttpsSvcbName,
+     flag_descriptions::kDnsHttpsSvcbDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(net::features::kUseDnsHttpsSvcb,
+                                    kUseDnsHttpsSvcbVariations,
+                                    "UseDnsHttpsSvcb")},
+
+    {"encrypted-client-hello", flag_descriptions::kEncryptedClientHelloName,
+     flag_descriptions::kEncryptedClientHelloDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kEncryptedClientHello)},
 
     {"web-bundles", flag_descriptions::kWebBundlesName,
      flag_descriptions::kWebBundlesDescription, kOsAll,

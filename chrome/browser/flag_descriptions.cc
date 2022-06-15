@@ -250,17 +250,23 @@ const char kAndroidPictureInPictureAPIName[] =
 const char kAndroidPictureInPictureAPIDescription[] =
     "Enable Picture-in-Picture Web API for Android";
 
-const char kDnsHttpssvcName[] = "Support for HTTPSSVC records in DNS.";
-const char kDnsHttpssvcDescription[] =
-    "When enabled, Chrome may query a configured DoH server for HTTPSSVC "
-    "records. If any HTTPSSVC records are returned, Chrome may upgrade the URL "
-    "to HTTPS. If the records indicate support for QUIC, Chrome may attempt "
-    "QUIC on the first connection.";
+const char kDnsHttpsSvcbName[] = "Support for HTTPS records in DNS";
+const char kDnsHttpsSvcbDescription[] =
+    "When enabled, Chrome may query for HTTPS records in DNS. If any are "
+    "found, Chrome may upgrade the URL to HTTPS or enable Encrypted "
+    "ClientHello, depending on server support and whether those features are "
+    "enabled.";
 
 const char kEnableFirstPartySetsName[] = "Enable First-Party Sets";
 const char kEnableFirstPartySetsDescription[] =
     "When enabled, Chrome will apply First-Party Sets to features such as the "
     "SameParty cookie attribute.";
+
+extern const char kEncryptedClientHelloName[] = "Encrypted ClientHello";
+extern const char kEncryptedClientHelloDescription[] =
+    "When enabled, Chrome will enable Encrypted ClientHello support. This will "
+    "encrypt TLS ClientHello if the server enables the extension via the HTTPS "
+    "DNS record.";
 
 extern const char kIsolatedSandboxedIframesName[] =
     "Isolated sandboxed iframes";
@@ -3974,9 +3980,6 @@ const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
 
 #if BUILDFLAG(IS_WIN)
 
-const char kAsyncDnsName[] = "Async DNS resolver";
-const char kAsyncDnsDescription[] = "Enables the built-in DNS resolver.";
-
 const char kCalculateNativeWinOcclusionName[] =
     "Calculate window occlusion on Windows";
 const char kCalculateNativeWinOcclusionDescription[] =
@@ -5897,6 +5900,11 @@ const char kForce60HzName[] = "Use 60hz instead of 120hz";
 const char kForce60HzDescription[] =
     "If enabled, on devices with a refresh rate of 120hz, 60hz is used.";
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+const char kAsyncDnsName[] = "Async DNS resolver";
+const char kAsyncDnsDescription[] = "Enables the built-in DNS resolver.";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 // Feature flags --------------------------------------------------------------
 
