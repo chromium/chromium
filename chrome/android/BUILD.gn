@@ -1590,7 +1590,6 @@ android_library("chrome_test_java") {
     "//components/download/public/common:public_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:context_menu_java",
-    "//components/embedder_support/android:embedder_support_javatests",
     "//components/embedder_support/android:simple_factory_key_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
@@ -3163,6 +3162,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//chrome/browser/user_education:javatests",
     "//chrome/browser/video_tutorials/internal:javatests",
     "//components/browser_ui/widget/android:unit_device_javatests",
+    "//components/embedder_support/android:embedder_support_javatests",
     "//components/paint_preview/player/android:javatests",
     "//components/signin/public/android:javatests",
   ]
