@@ -39,23 +39,11 @@ android_library("java") {
   sources += _jni_sources
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [ "javatests/src/org/chromium/components/crash/PureJavaExceptionReporterTest.java" ]
-  deps = [
-    ":java",
-    "//base:base_java_test_support",
-    "//components/minidump_uploader:minidump_uploader_java_test_support",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-  ]
-}
-
 robolectric_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/crash/LogcatCrashExtractorTest.java",
+    "junit/src/org/chromium/components/crash/PureJavaExceptionReporterTest.java",
     "junit/src/org/chromium/components/crash/anr/AnrCollectorTest.java",
   ]
   deps = [
@@ -64,7 +52,10 @@ robolectric_library("junit") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/minidump_uploader:minidump_uploader_java_test_support",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 }
