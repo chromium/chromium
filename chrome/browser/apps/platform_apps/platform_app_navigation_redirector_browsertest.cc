@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/page_transition_types.h"
@@ -423,6 +424,55 @@ IN_PROC_BROWSER_TEST_F(PlatformAppNavigationRedirectorBrowserTest,
                        XhrInTabNotIntercepted) {
   TestNegativeXhrInTab("url_handlers/xhr_downloader/main.html", "XHR succeeded",
                        "XHR failed", "url_handlers/handlers/steal_xhr_target");
+}
+
+class PlatformAppNavigationRedirectorPrerenderingBrowserTest
+    : public PlatformAppNavigationRedirectorBrowserTest {
+ public:
+  PlatformAppNavigationRedirectorPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PlatformAppNavigationRedirectorPrerenderingBrowserTest::
+                GetWebContents,
+            base::Unretained(this))) {}
+  ~PlatformAppNavigationRedirectorPrerenderingBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Test that prerendering doesn't launch an app but aborts the navigation.
+IN_PROC_BROWSER_TEST_F(PlatformAppNavigationRedirectorPrerenderingBrowserTest,
+                       DoNotLaunchAppInPrerendering) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const char* handler = "url_handlers/handlers/simple";
+  InstallPlatformApp(handler);
+
+  const auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  EXPECT_EQ(initial_url, GetWebContents()->GetLastCommittedURL());
+
+  const auto prerender_url = embedded_test_server()->GetURL(
+      "/extensions/platform_apps/url_handlers/common/target.html");
+
+  // Loading an app URL in prerendering cancels prerendering.
+  prerender_helper().AddPrerenderAsync(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     prerender_url);
+  // Wait until PrerenderHost is destroyed by canceling prerendering.
+  host_observer.WaitForDestroyed();
+
+  // The primary page doesn't have any change.
+  EXPECT_EQ(initial_url, GetWebContents()->GetLastCommittedURL());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(0U, GetAppWindowCount());
 }
 
 }  // namespace extensions
