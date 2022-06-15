@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -54,6 +55,11 @@ class MODULES_EXPORT VideoFrameHandle
   VideoFrameHandle(const VideoFrameHandle&) = delete;
   VideoFrameHandle& operator=(const VideoFrameHandle&) = delete;
 
+  // Expire all GPUExternalTextures which are generated from
+  // importExternalTexture and using VideoFrame as source. This callback should
+  // be called when VideoFrameHandle is destroyed/Invalidate.
+  using WebGPUExternalTextureExpireCallback = CrossThreadOnceFunction<void()>;
+
   // Returns a copy of |frame_|, which should be re-used throughout the scope
   // of a function call, instead of calling frame() multiple times. Otherwise
   // the frame could be destroyed between calls.
@@ -80,12 +86,23 @@ class MODULES_EXPORT VideoFrameHandle
   // close auditor so warning messages aren't created for unclosed frames.
   scoped_refptr<VideoFrameHandle> CloneForInternalUse();
 
+  // GPUExternalTexture generated with VideoFrame source needs to listen to
+  // the VideoFrameHandle to expire themselves. Return false if the
+  // VideoFrameHandle has been destroyed.
+  bool WebGPURegisterExternalTextureExpireCallback(
+      WebGPUExternalTextureExpireCallback
+          webgpu_external_texture_expire_callback);
+
  private:
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
 
   // |mutex_| must be held before calling into this.
   void InvalidateLocked();
+
+  // Inform the GPUExternalTexture that VideoFrame is closed and expire the
+  // external texture. |mutex_| must be held before calling into this.
+  void NotifyExpiredLocked();
 
   void MaybeMonitorOpenFrame();
   void MaybeMonitorCloseFrame();
@@ -98,6 +115,8 @@ class MODULES_EXPORT VideoFrameHandle
   sk_sp<SkImage> sk_image_;
   scoped_refptr<media::VideoFrame> frame_;
   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor_;
+  Vector<WebGPUExternalTextureExpireCallback>
+      webgpu_external_texture_expire_callbacks_;
   std::string monitoring_source_id_;
 };
 

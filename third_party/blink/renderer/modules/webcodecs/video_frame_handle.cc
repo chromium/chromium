@@ -115,6 +115,7 @@ void VideoFrameHandle::InvalidateLocked() {
   frame_.reset();
   sk_image_.reset();
   close_auditor_.reset();
+  NotifyExpiredLocked();
 }
 
 void VideoFrameHandle::MaybeMonitorOpenFrame() {
@@ -128,6 +129,28 @@ void VideoFrameHandle::MaybeMonitorCloseFrame() {
   if (frame_ && !monitoring_source_id_.empty()) {
     VideoFrameMonitor::Instance().OnCloseFrame(monitoring_source_id_,
                                                frame_->unique_id());
+  }
+}
+
+bool VideoFrameHandle::WebGPURegisterExternalTextureExpireCallback(
+    WebGPUExternalTextureExpireCallback
+        webgpu_external_texture_expire_callback) {
+  WTF::MutexLocker locker(mutex_);
+  if (!frame_)
+    return false;
+  webgpu_external_texture_expire_callbacks_.push_back(
+      std::move(webgpu_external_texture_expire_callback));
+  return true;
+}
+
+void VideoFrameHandle::NotifyExpiredLocked() {
+  mutex_.AssertAcquired();
+  DCHECK(!frame_);
+  Vector<WebGPUExternalTextureExpireCallback>
+      webgpu_external_texture_expire_callbacks =
+          std::move(webgpu_external_texture_expire_callbacks_);
+  for (auto& callback : webgpu_external_texture_expire_callbacks) {
+    std::move(callback).Run();
   }
 }
 

@@ -571,53 +571,15 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
   visitor->Trace(active_external_textures_);
-  visitor->Trace(external_textures_pending_destroy_);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }
 
-void GPUDevice::EnsureExternalTextureDestroyed(
-    GPUExternalTexture* externalTexture) {
-  DCHECK(externalTexture);
-  external_textures_pending_destroy_.push_back(externalTexture);
-
-  if (has_destroy_external_texture_microtask_)
-    return;
-
-  Microtask::EnqueueMicrotask(WTF::Bind(
-      &GPUDevice::DestroyExternalTexturesMicrotask, WrapWeakPersistent(this)));
-  has_destroy_external_texture_microtask_ = true;
-}
-
-void GPUDevice::DestroyExternalTexturesMicrotask() {
-  // GPUDevice.destroy() call has destroyed all pending external textures.
-  if (!has_destroy_external_texture_microtask_)
-    return;
-
-  has_destroy_external_texture_microtask_ = false;
-
-  auto externalTextures = std::move(external_textures_pending_destroy_);
-  for (Member<GPUExternalTexture> externalTexture : externalTextures) {
-    externalTexture->Destroy();
-  }
-}
-
 void GPUDevice::DestroyAllExternalTextures() {
-  has_destroy_external_texture_microtask_ = false;
-
-  // TODO(crbug.com/1318345): u-nit: fix casing issues in all GPUExternalTexture
-  // related codes. Using a_b instead of aB.
-  for (auto& externalTexture : active_external_textures_) {
-    externalTexture->Destroy();
+  for (auto& external_texture : active_external_textures_) {
+    external_texture->Destroy();
   }
   active_external_textures_.clear();
-
-  auto externalTexturesPendingDestroy =
-      std::move(external_textures_pending_destroy_);
-  for (Member<GPUExternalTexture> externalTexture :
-       externalTexturesPendingDestroy) {
-    externalTexture->Destroy();
-  }
 }
 
 void GPUDevice::AddActiveExternalTexture(GPUExternalTexture* external_texture) {
