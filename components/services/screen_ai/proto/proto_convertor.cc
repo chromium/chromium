@@ -37,12 +37,6 @@ namespace ranges = base::ranges;
 
 namespace {
 
-// The minimum confidence level that a Screen AI annotation should have to be
-// accepted.
-// TODO(https://crbug.com/1278249): Add experiment or heuristics to better
-// adjust this threshold.
-constexpr float kScreenAIMinConfidenceThreshold = 0.1f;
-
 // Returns the next valid ID that can be used for identifying `AXNode`s in the
 // accessibility tree.
 ui::AXNodeID GetNextNodeID() {
@@ -74,15 +68,6 @@ bool SerializePredictedType(
     const chrome_screen_ai::UIComponent::PredictedType& predicted_type,
     ui::AXNodeData& out_data) {
   DCHECK_EQ(out_data.role, ax::mojom::Role::kUnknown);
-  if (predicted_type.confidence() < 0.0f ||
-      predicted_type.confidence() > 1.0f) {
-    NOTREACHED()
-        << "Unrecognized chrome_screen_ai::PredictedType::confidence value: "
-        << predicted_type.confidence();
-    return false;  // Confidence is out of bounds.
-  }
-  if (predicted_type.confidence() < kScreenAIMinConfidenceThreshold)
-    return false;
   switch (predicted_type.type_of_case()) {
     case chrome_screen_ai::UIComponent::PredictedType::kEnumType:
       // TODO(https://crbug.com/1278249): We do not actually need an enum. All
@@ -110,9 +95,7 @@ void SerializeBoundingBox(const chrome_screen_ai::Rect& bounding_box,
   out_data.relative_bounds.bounds =
       gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
                  bounding_box.height());
-  // A negative width or height will result in an empty rect.
-  if (out_data.relative_bounds.bounds.IsEmpty())
-    return;
+  DCHECK(!out_data.relative_bounds.bounds.IsEmpty());
   if (container_id != ui::kInvalidAXNodeID)
     out_data.relative_bounds.offset_container_id = container_id;
   if (bounding_box.angle()) {
@@ -123,25 +106,21 @@ void SerializeBoundingBox(const chrome_screen_ai::Rect& bounding_box,
 
 void SerializeDirection(const chrome_screen_ai::Direction& direction,
                         ui::AXNodeData& out_data) {
-  if (!chrome_screen_ai::Direction_IsValid(direction)) {
-    NOTREACHED() << "Unrecognized chrome_screen_ai::Direction value: "
-                 << direction;
-    return;
-  }
+  DCHECK(chrome_screen_ai::Direction_IsValid(direction));
   switch (direction) {
-    case chrome_screen_ai::Direction::UNSPECIFIED:
+    case chrome_screen_ai::DIRECTION_UNSPECIFIED:
     // We assume that LEFT_TO_RIGHT is the default direction.
-    case chrome_screen_ai::Direction::LEFT_TO_RIGHT:
+    case chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT:
       out_data.AddIntAttribute(
           ax::mojom::IntAttribute::kTextDirection,
           static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
       break;
-    case chrome_screen_ai::Direction::RIGHT_TO_LEFT:
+    case chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT:
       out_data.AddIntAttribute(
           ax::mojom::IntAttribute::kTextDirection,
           static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
       break;
-    case chrome_screen_ai::Direction::TOP_TO_BOTTOM:
+    case chrome_screen_ai::DIRECTION_TOP_TO_BOTTOM:
       out_data.AddIntAttribute(
           ax::mojom::IntAttribute::kTextDirection,
           static_cast<int32_t>(ax::mojom::WritingDirection::kTtb));
@@ -160,11 +139,7 @@ void SerializeDirection(const chrome_screen_ai::Direction& direction,
 
 void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
                           ui::AXNodeData& out_data) {
-  if (!chrome_screen_ai::ContentType_IsValid(content_type)) {
-    NOTREACHED() << "Unrecognized chrome_screen_ai::ContentType value: "
-                 << content_type;
-    return;
-  }
+  DCHECK(chrome_screen_ai::ContentType_IsValid(content_type));
   switch (content_type) {
     case chrome_screen_ai::CONTENT_TYPE_PRINTED_TEXT:
     case chrome_screen_ai::CONTENT_TYPE_HANDWRITTEN_TEXT:
@@ -196,13 +171,6 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
       // TODO(accessibility): Explore adding a description attribute informing
       // the user that this is a signature, e.g. via ARIA Annotations.
       out_data.role = ax::mojom::Role::kStaticText;
-      break;
-    case chrome_screen_ai::CONTENT_TYPE_UNKNOWN:
-      // This should be "Role::kPresentational" but it has been erroniously
-      // removed from the codebase.
-      // TODO(nektar): Add presentational role back to avoid confusion with the
-      // meaning of kNone vs. kUnknown.
-      out_data.role = ax::mojom::Role::kNone;  // Presentational.
       break;
     case google::protobuf::kint32min:
     case google::protobuf::kint32max:
@@ -269,10 +237,12 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
           inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName)
               .length()));
 
-  DCHECK_EQ(inline_text_box.GetStringAttribute(
-                ax ::mojom::StringAttribute::kLanguage),
-            word_box.language())
-      << "A `WordBox` has a different language than its enclosing `LineBox`.";
+  if (!word_box.language().empty()) {
+    DCHECK_EQ(inline_text_box.GetStringAttribute(
+                  ax ::mojom::StringAttribute::kLanguage),
+              word_box.language())
+        << "A `WordBox` has a different language than its enclosing `LineBox`.";
+  }
 
   if (word_box.estimate_color_success()) {
     if (!inline_text_box.HasIntAttribute(
@@ -297,9 +267,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
              "`LineBox`.";
     }
   }
-  SerializeDirection(
-      static_cast<chrome_screen_ai::Direction>(word_box.direction()),
-      inline_text_box);
+  SerializeDirection(word_box.direction(), inline_text_box);
 }
 
 // Creates an inline text box for every style span in the provided
@@ -398,9 +366,7 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
     line_box_node.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                      line_box.language());
   }
-  SerializeDirection(
-      static_cast<chrome_screen_ai::Direction>(line_box.direction()),
-      line_box_node);
+  SerializeDirection(line_box.direction(), line_box_node);
   parent_node.child_ids.push_back(line_box_node.id);
 
   if (!ui::IsText(line_box_node.role))
@@ -457,7 +423,7 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
         << "Empty lines should have been pruned in the Screen AI library.";
     for (auto iter = std::cbegin(line.words());
          std::next(iter) != std::cend(line.words()); ++iter) {
-      if (HaveIdenticalFormattingStyle(*iter, *std::next(iter)))
+      if (!HaveIdenticalFormattingStyle(*iter, *std::next(iter)))
         ++formatting_context_count;
     }
   }
@@ -490,7 +456,8 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
 
   std::vector<ui::AXNodeData> nodes(
       rootnodes_count + visual_annotation.ui_component().size() +
-      blocks_to_lines_map.size() + formatting_context_count);
+      visual_annotation.lines().size() + formatting_context_count);
+
   size_t index = 0u;
 
   if (!visual_annotation.ui_component().empty()) {
@@ -534,7 +501,7 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
   update.nodes.resize(std::distance(std::begin(update.nodes), end_node_iter));
 
   // TODO(https://crbug.com/1278249): Add UMA metrics to record the number of
-  // annotations, item types, confidence levels, etc.
+  // annotations, item types, etc.
 
   return update;
 }

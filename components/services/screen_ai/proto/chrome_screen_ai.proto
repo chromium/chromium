@@ -239,10 +239,6 @@ message UIComponent {
       Type enum_type = 1;
       string string_type = 2;
     }
-
-    // A confidence score in the range of [0, 1], indicating how confident the
-    // model is of the given type prediction. Closer to 1 means more confident.
-    float confidence = 3;
   }
 
   PredictedType predicted_type = 1;
@@ -265,10 +261,10 @@ message Rect {
 }
 
 enum Direction {
-  LEFT_TO_RIGHT = 0;
-  RIGHT_TO_LEFT = 1;
-  UNSPECIFIED = 2;
-  TOP_TO_BOTTOM = 3;
+  DIRECTION_UNSPECIFIED = 0;
+  DIRECTION_LEFT_TO_RIGHT = 1;
+  DIRECTION_RIGHT_TO_LEFT = 2;
+  DIRECTION_TOP_TO_BOTTOM = 3;
 }
 
 // Text line with associated bounding box.
@@ -283,26 +279,22 @@ message LineBox {
   // Text line in UTF8 format.
   string utf8_string = 3;
 
-  // Confidence as computed by the OCR engine.
-  float confidence = 4;
-
   // Language guess for the line. The format  is the ISO 639-1 two-letter
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
-  string language = 5;
+  string language = 4;
 
   // ID of the text block that this line belongs to.
-  int32 block_id = 6;
+  int32 block_id = 5;
 
   // Index within the block that this line belongs to.
-  int32 order_within_block = 7;
+  int32 order_within_block = 6;
 
-  // The direction of the script contained in the line. Directed by the enum
-  // Direction defined above.
-  int32 direction = 8;
+  // The direction of the script contained in the line.
+  Direction direction = 7;
 
   // Content type for this line.
-  ContentType content_type = 9;
+  ContentType content_type = 8;
 }
 
 // Word with associated bounding box.
@@ -318,52 +310,42 @@ message WordBox {
   // Word string in UTF8 format.
   string utf8_string = 3;
 
-  // Confidence as computed by the OCR engine.
-  float confidence = 4;
-
   // True if the word passes the internal beamsearch dictionary check.
-  bool dictionary_word = 5;
+  bool dictionary_word = 4;
 
   // Language guess for the word. The format  is the ISO 639-1 two-letter
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
-  string language = 6;
+  string language = 5;
 
   // This word is separated from next word by space.
-  bool has_space_after = 7;
+  bool has_space_after = 6;
 
   // If true, foreground and background colors successfully detected.
-  bool estimate_color_success = 8;
+  bool estimate_color_success = 7;
 
   // Estimated grayscale value of foreground.
-  int32 foreground_gray_value = 9;
+  int32 foreground_gray_value = 8;
 
   // Estimated grayscale value of background.
-  int32 background_gray_value = 10;
+  int32 background_gray_value = 9;
 
   // Estimated RGB of foreground. Extracting RGB channels from this
   // integer is best done using the leptonica helper extractRGBValues().
-  int32 foreground_rgb_value = 11;
+  int32 foreground_rgb_value = 10;
 
   // Estimated RGB of background. Extracting RGB channels from this
   // integer is best done using the leptonica helper extractRGBValues().
-  int32 background_rgb_value = 12;
+  int32 background_rgb_value = 11;
 
-  // The direction of the script contained in the word. Directed by the enum
-  // Direction defined above.
-  int32 direction = 13;
+  // The direction of the script contained in the word.
+  Direction direction = 12;
 
   // Content type for this word.
-  ContentType content_type = 14;
-
-  // If content_type == HANDWRITTEN, confidence on this word being handwritten.
-  float handwriting_confidence = 15;
+  ContentType content_type = 13;
 
   // Detected orientation of the text.
-  Orientation orientation = 16;
-
-  // Confidence of langid language identification.
-  float language_confidence = 17;
+  Orientation orientation = 14;
 }
 
 // Symbol with associated bounding box.
@@ -400,8 +382,6 @@ enum ContentType {
   CONTENT_TYPE_HANDWRITTEN_FORMULA = 7;
   // Signature or intitals.
   CONTENT_TYPE_SIGNATURE = 8;
-
-  CONTENT_TYPE_UNKNOWN = 100;
 }
 
 message VisualAnnotation {
