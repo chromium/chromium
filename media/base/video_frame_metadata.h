@@ -57,10 +57,6 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // If cropping was applied due to Region Capture to produce this frame,
   // then this reflects where the frame's contents originate from in the
   // original uncropped frame.
-  //
-  // NOTE: May also be nullopt if region capture is enabled but the capture rect
-  // is in a different coordinate space. For more info, see
-  // https://crbug.com/1327560.
   absl::optional<gfx::Rect> region_capture_rect;
 
   // Whenever cropTo() is called, Blink increments the crop_version and records
