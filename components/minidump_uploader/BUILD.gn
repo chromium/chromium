@@ -75,13 +75,13 @@ android_library("minidump_uploader_java_test_support") {
   ]
 }
 
-android_library("minidump_uploader_javatests") {
-  testonly = true
+robolectric_library("minidump_uploader_javatests") {
   deps = [
     ":minidump_uploader_java",
     ":minidump_uploader_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_junit_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

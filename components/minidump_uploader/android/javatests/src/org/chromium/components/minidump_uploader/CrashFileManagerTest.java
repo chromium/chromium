@@ -16,8 +16,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
 import java.io.File;
@@ -31,7 +32,8 @@ import java.util.regex.Pattern;
 /**
  * Unittests for {@link CrashFileManager}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class CrashFileManagerTest {
     @Rule
     public CrashTestRule mTestRule = new CrashTestRule();

@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 package org.chromium.components.minidump_uploader;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.HttpURLConnectionFactory;
@@ -29,10 +29,11 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Instrumentation tests for the common MinidumpUploadJob implementation within the
+ * Tests for the common MinidumpUploadJob implementation within the
  * minidump_uploader component.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class MinidumpUploadJobImplTest {
     @Rule
     public CrashTestRule mTestRule = new CrashTestRule();

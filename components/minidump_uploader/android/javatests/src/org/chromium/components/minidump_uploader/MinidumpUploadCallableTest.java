@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.components.minidump_uploader;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -11,8 +10,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
@@ -26,7 +26,8 @@ import java.io.IOException;
 /**
  * Unittests for {@link MinidumpUploadCallable}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class MinidumpUploadCallableTest {
     private static final String LOCAL_CRASH_ID = "123_log";
     private static final String LOG_FILE_NAME = "chromium_renderer-123_log.dmp224";

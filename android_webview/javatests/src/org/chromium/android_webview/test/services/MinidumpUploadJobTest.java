@@ -11,6 +11,7 @@ import android.os.ParcelFileDescriptor;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.CrashTestRule;
@@ -54,7 +56,7 @@ import java.io.IOException;
 @OnlyRunIn(SINGLE_PROCESS)
 public class MinidumpUploadJobTest {
     @Rule
-    public CrashTestRule mTestRule = new CrashTestRule(LibraryProcessType.PROCESS_WEBVIEW) {
+    public CrashTestRule mTestRule = new CrashTestRule() {
         @Override
         public File getExistingCacheDir() {
             return SystemWideCrashDirectories.getOrCreateWebViewCrashDir();
@@ -98,6 +100,12 @@ public class MinidumpUploadJobTest {
         public int getRandomSample() {
             return mRandomSampling;
         }
+    }
+
+    @Before
+    public void setUp() {
+        LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
+        LibraryLoader.getInstance().ensureInitialized();
     }
 
     // randomSampl < CRASH_DUMP_PERCENTAGE_FOR_STABLE to always sample-in crashes.
