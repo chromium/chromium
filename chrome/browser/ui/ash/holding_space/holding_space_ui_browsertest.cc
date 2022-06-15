@@ -2241,7 +2241,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Confirm download");
   EXPECT_EQ(secondary_label->GetEnabledColor(),
-            is_dark_mode_state ? gfx::kGoogleYellow300 : gfx::kGoogleYellow600);
+            is_dark_mode_state ? gfx::kGoogleYellow300 : gfx::kGoogleYellow900);
 
   // The accessible name should indicate that the download must be confirmed.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
