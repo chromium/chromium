@@ -584,6 +584,10 @@ class OobeApiProvider {
     this.loginAsGuest = function() {
       chrome.send('OobeTestApi.loginAsGuest');
     };
+
+    this.showGaiaDialog = function() {
+      chrome.send('OobeTestApi.showGaiaDialog');
+    };
   }
 }
 

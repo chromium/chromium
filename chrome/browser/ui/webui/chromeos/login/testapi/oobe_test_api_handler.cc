@@ -133,6 +133,7 @@ void OobeTestAPIHandler::LoginAsGuest() {
 void OobeTestAPIHandler::ShowGaiaDialog() {
   LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
 }
+
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
     const std::string& callback_id) {
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config;
