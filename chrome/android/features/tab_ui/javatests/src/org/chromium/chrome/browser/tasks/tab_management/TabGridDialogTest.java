@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -1272,21 +1271,21 @@ public class TabGridDialogTest {
     private void verifyBackgroundViewAccessibilityImportance(
             ChromeTabbedActivity cta, boolean isDialogShowing) {
         View controlContainer = cta.findViewById(R.id.control_container);
-        assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-                                     : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-                controlContainer.getImportantForAccessibility());
+        assertEquals(isDialogShowing,
+                IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        == controlContainer.getImportantForAccessibility());
         View bottomControls = cta.findViewById(R.id.bottom_controls);
-        assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-                                     : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-                bottomControls.getImportantForAccessibility());
+        assertEquals(isDialogShowing,
+                IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        == bottomControls.getImportantForAccessibility());
         View compositorViewHolder = cta.getCompositorViewHolderForTesting();
-        assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-                                     : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-                compositorViewHolder.getImportantForAccessibility());
+        assertEquals(isDialogShowing,
+                IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        == compositorViewHolder.getImportantForAccessibility());
         View bottomContainer = cta.findViewById(R.id.bottom_container);
-        assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-                                     : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-                bottomContainer.getImportantForAccessibility());
+        assertEquals(isDialogShowing,
+                IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                        == bottomContainer.getImportantForAccessibility());
     }
 
     private void verifyDialogUndoBarAndClick() {
