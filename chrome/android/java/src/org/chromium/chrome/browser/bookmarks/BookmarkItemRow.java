@@ -103,4 +103,8 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     protected boolean getFaviconCancelledForTesting() {
         return mFaviconCancelled;
     }
+
+    void setRoundedIconGeneratorForTesting(RoundedIconGenerator roundedIconGenerator) {
+        mIconGenerator = roundedIconGenerator;
+    }
 }

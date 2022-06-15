@@ -1313,6 +1313,7 @@ android_library("chrome_unit_test_java") {
   resources_package = "org.chromium.chrome.test"
   sources = [
     "javatests/src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
+    "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkItemRowTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRowTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtilsTest.java",
     "javatests/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulatorTest.java",
@@ -1351,9 +1352,11 @@ android_library("chrome_unit_test_java") {
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
+    "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/offline_items_collection/core:core_java",
     "//components/payments/content/android:full_java",
@@ -1378,6 +1381,7 @@ android_library("chrome_unit_test_java") {
     "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_java_unit_tests",
+    "//url:gurl_junit_test_support",
   ]
 }
 
