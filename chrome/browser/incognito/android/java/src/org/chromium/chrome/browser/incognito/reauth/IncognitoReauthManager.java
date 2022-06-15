@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.device_reauth.BiometricAuthRequester;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -82,7 +83,7 @@ public class IncognitoReauthManager {
         // The implementation relies on {@link BiometricManager} which was introduced in API
         // level 29. Android Q is not supported due to a potential bug in BiometricPrompt.
         return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                && ChromeFeatureList.isEnabled(
+                && CachedFeatureFlags.isEnabled(
                         ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
     }
 

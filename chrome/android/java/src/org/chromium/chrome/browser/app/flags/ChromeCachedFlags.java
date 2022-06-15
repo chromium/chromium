@@ -94,6 +94,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.FEED_LOADING_PLACEHOLDER);
                 add(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
+                add(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
                 add(ChromeFeatureList.INSTANT_START);
                 add(ChromeFeatureList.INSTANCE_SWITCHER);
                 add(ChromeFeatureList.INTEREST_FEED_V2);
