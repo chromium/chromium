@@ -10,7 +10,7 @@ import logging
 import os
 import sys
 
-from common import REPO_ALIAS, run_ffx_command, run_ffx_target_command
+from common import REPO_ALIAS, run_ffx_command
 
 # Contains information about the active ephemeral repository.
 _REPO_CONFIG_FILE = os.path.join('/', 'tmp', 'fuchsia-repo-config')
@@ -24,15 +24,13 @@ def _configure_ffx_serving():
         """
     config_updated = False
     repo_cmd = run_ffx_command(['config', 'get', 'ffx_repository'],
-                               capture_output=True,
-                               encoding='utf-8')
+                               capture_output=True)
     if 'true' not in repo_cmd.stdout:
         run_ffx_command(['config', 'set', 'ffx_repository', 'true'])
         config_updated = True
 
     server_cmd = run_ffx_command(['config', 'get', 'repository.server.mode'],
-                                 capture_output=True,
-                                 encoding='utf-8')
+                                 capture_output=True)
     if 'ffx' not in server_cmd.stdout:
         run_ffx_command(['config', 'set', 'repository.server.mode', 'ffx'])
         config_updated = True
@@ -48,8 +46,9 @@ def _stop_serving() -> None:
     with open(_REPO_CONFIG_FILE, 'r') as file:
         data = json.load(file)
 
-    run_ffx_target_command(
-        ['repository', 'deregister', '-r', data['repo_name']], data['target'])
+    run_ffx_command(
+        ['target', 'repository', 'deregister', '-r', data['repo_name']],
+        data['target'])
     run_ffx_command(['repository', 'remove', data['repo_name']])
     run_ffx_command(['repository', 'server', 'stop'])
     os.remove(_REPO_CONFIG_FILE)
@@ -77,9 +76,10 @@ def _start_serving(repo_dir: str, repo_name: str, target: str) -> None:
         json.dump(data, file)
     run_ffx_command(['repository', 'server', 'start'])
     run_ffx_command(['repository', 'add-from-pm', repo_dir, '-r', repo_name])
-    run_ffx_target_command(
-        ['repository', 'register', '-r', repo_name, '--alias', REPO_ALIAS],
-        target)
+    run_ffx_command([
+        'target', 'repository', 'register', '-r', repo_name, '--alias',
+        REPO_ALIAS
+    ], target)
 
 
 def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:

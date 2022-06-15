@@ -6,6 +6,8 @@
 import os
 import subprocess
 
+from argparse import Namespace
+
 from common import DIR_SRC_ROOT, resolve_packages
 from test_runner import TestRunner
 
@@ -16,8 +18,8 @@ _BLINK_TEST_SCRIPT = os.path.join(DIR_SRC_ROOT, 'third_party', 'blink',
 class BlinkTestRunner(TestRunner):
     """Test runner for running blink web tests."""
 
-    def _get_packages(self):
-        return ['content_shell']
+    def __init__(self, out_dir: str, test_args: Namespace) -> None:
+        super().__init__(out_dir, test_args, ['content_shell'])
 
     def run_test(self):
         resolve_packages(self.packages)
