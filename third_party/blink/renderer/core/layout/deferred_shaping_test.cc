@@ -423,6 +423,24 @@ TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfcByChildPositionChange) {
   EXPECT_FALSE(IsLocked("target"));
 }
 
+// crbug.com/1335731
+TEST_F(DeferredShapingTest, KeepDeferredAfterTextChange) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="target">ifc<p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  auto* target = GetElementById("target");
+  target->appendChild(GetDocument().createTextNode("ifc2 "));
+  target->appendChild(GetDocument().createTextNode("ifc3 "));
+  UpdateAllLifecyclePhasesForTest();
+  target->normalize();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+}
+
 TEST_F(DeferredShapingTest, ScrollIntoView) {
   SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
 <div><p id="prior">IFC</p></div>
