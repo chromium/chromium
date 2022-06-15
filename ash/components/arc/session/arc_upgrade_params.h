@@ -67,6 +67,10 @@ struct UpgradeParams {
   // The constructor automatically populates this from command-line.
   bool skip_gms_core_cache;
 
+  // Option to disable TTS cache.
+  // The constructor automatically populates this from command-line.
+  bool skip_tts_cache;
+
   // The supervision transition state for this account. Indicates whether
   // child account should become regular, regular account should become child
   // or neither.

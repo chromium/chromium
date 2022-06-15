@@ -36,6 +36,8 @@ UpgradeParams::UpgradeParams()
       packages_cache_mode(GetPackagesCacheMode()),
       skip_gms_core_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableGmsCoreCache)),
+      skip_tts_cache(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kArcDisableTtsCache)),
       enable_arc_nearby_share(
           base::FeatureList::IsEnabled(arc::kEnableArcNearbyShare)) {}
 
