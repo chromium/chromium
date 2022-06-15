@@ -1042,7 +1042,23 @@ chromium-metrics-reviews@google.com.
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Referrer of a navigation to the Password Check UI Settings view. Recorded
-    when the user enters the view.
+    when the user enters the view. Version 103.0.5060.22 introduced a bug in
+    which LEAK_DIALOG entries are reported as PHISHED_WARNING_DIALOG when UPM is
+    enabled. This should be removed once the total count continuity over M103
+    and M104 is no longer need.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2"
+    enum="PasswordCheckReferrerAndroid" expires_after="2022-10-16">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Referrer of a navigation to the Password Check UI Settings view. Recorded
+    when the user enters the view. Replaces
+    PasswordManager.BulkCheck.PasswordCheckReferrerAndroid histogram. Fixing the
+    bug that LEAK_DIALOG entry was reported as PHISHED_WARNING_DIALOG with UPM
+    enabled.
   </summary>
 </histogram>
 
