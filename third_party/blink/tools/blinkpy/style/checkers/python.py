@@ -30,7 +30,6 @@ from blinkpy.common.path_finder import get_blink_tools_dir
 from blinkpy.common.path_finder import get_blinkpy_thirdparty_dir
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.executive import Executive
-from blinkpy.third_party import pep8
 
 
 class PythonChecker(object):
@@ -41,29 +40,7 @@ class PythonChecker(object):
         self._handle_style_error = handle_style_error
 
     def check(self, lines_unused=None):
-        self._check_pep8()
         self._check_pylint()
-
-    def _check_pep8(self):
-        # Initialize pep8.options, which is necessary for
-        # Checker.check_all() to execute.
-        pep8.process_options(arglist=[self._file_path])
-
-        pep8_checker = pep8.Checker(self._file_path)
-
-        def _pep8_handle_error(line_number, offset, text, check):
-            # FIXME: Incorporate the character offset into the error output.
-            #        This will require updating the error handler __call__
-            #        signature to include an optional "offset" parameter.
-            pep8_code = text[:4]
-            pep8_message = text[5:]
-
-            category = 'pep8/' + pep8_code
-
-            self._handle_style_error(line_number, category, 5, pep8_message)
-
-        pep8_checker.report_error = _pep8_handle_error
-        pep8_checker.check_all()
 
     def _check_pylint(self):
         output = self.run_pylint(self._file_path)

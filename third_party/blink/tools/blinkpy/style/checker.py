@@ -82,16 +82,6 @@ _BASE_FILTER_RULES = [
     '-runtime/virtual',  # virtual dtor
     '-runtime/printf',
     '-runtime/threadsafe_fn',
-    # List Python pep8 categories last.
-    #
-    # Because much of WebKit's Python code base does not abide by the
-    # PEP8 79 character limit, we ignore the 79-character-limit category
-    # pep8/E501 for now.
-    #
-    # FIXME: Consider bringing WebKit's Python code base into conformance
-    #        with the 79 character limit, or some higher limit that is
-    #        agreeable to the WebKit project.
-    '-pep8/E501',
 
     # FIXME: Move the pylint rules from the pylintrc to here. This will
     # also require us to re-work lint_blinkpy.py to produce the equivalent
@@ -111,16 +101,12 @@ _BASE_FILTER_RULES = [
 _PATH_RULES_SPECIFIER = [
     # For third-party Python code, keep only the following checks--
     #
-    #   No tabs: to avoid having to set the SVN allow-tabs property.
-    #   No trailing white space: since this is easy to correct.
     #   No carriage-return line endings: since this is easy to correct.
     #
     (
         ['blinkpy/third_party/'],
         [
             '-',
-            '+pep8/W191',  # Tabs
-            '+pep8/W291',  # Trailing white space
             '+whitespace/carriage_return'
         ]),
     (
@@ -212,14 +198,6 @@ def _all_categories():
     categories = categories.union(JSONChecker.categories)
     categories = categories.union(TestExpectationsChecker.categories)
     categories = categories.union(PNGChecker.categories)
-
-    # FIXME: Consider adding all of the pep8 categories.  Since they
-    #        are not too meaningful for documentation purposes, for
-    #        now we add only the categories needed for the unit tests
-    #        (which validate the consistency of the configuration
-    #        settings against the known categories, etc).
-    categories = categories.union(['pep8/W191', 'pep8/W291', 'pep8/E501'])
-
     return categories
 
 
@@ -612,8 +590,6 @@ class StyleProcessor(ProcessorBase):
             dispatcher = mock_dispatcher
 
         if mock_increment_error_count is None:
-            # The following blank line is present to avoid flagging by pep8.py.
-
             def increment_error_count():
                 """Increment the total count of reported errors."""
                 self.error_count += 1
