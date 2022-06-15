@@ -701,7 +701,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1148544")
     public void testCreateNewTab() throws Exception {
         final String testUrl = mTestServer.getURL(
                 "/chrome/test/data/android/customtabs/test_window_open.html");
