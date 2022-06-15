@@ -85,7 +85,6 @@ struct ShapeResult::RunInfo final
                                        unsigned start_index,
                                        unsigned num_glyphs,
                                        unsigned num_characters) {
-    CHECK_GT(num_characters, 0u);
     return base::AdoptRef(new RunInfo(font, dir, canvas_rotation, script,
                                       start_index, num_glyphs, num_characters));
   }
