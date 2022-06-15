@@ -250,8 +250,31 @@ size_t FontFaceCache::SegmentedFacesByFamily::GetNumSegmentedFacesForTesting()
 }
 
 void FontFaceCache::Trace(Visitor* visitor) const {
+  visitor->Trace(segmented_faces_);
+  visitor->Trace(font_selection_query_cache_);
   visitor->Trace(style_rule_to_font_face_);
   visitor->Trace(css_connected_font_faces_);
+}
+
+void FontFaceCache::CapabilitiesSet::Trace(Visitor* visitor) const {
+  for (auto& entry : map_)
+    visitor->Trace(*entry.value);
+}
+
+void FontFaceCache::FontSelectionQueryCache::Trace(Visitor* visitor) const {
+  AutoLockForParallelTextShaping guard(lock_);
+  for (auto& entry : map_)
+    visitor->Trace(*entry.value);
+}
+
+void FontFaceCache::FontSelectionQueryResult::Trace(Visitor* visitor) const {
+  for (auto& entry : map_)
+    visitor->Trace(*entry.value);
+}
+
+void FontFaceCache::SegmentedFacesByFamily::Trace(Visitor* visitor) const {
+  for (auto& entry : map_)
+    visitor->Trace(*entry.value);
 }
 
 }  // namespace blink
