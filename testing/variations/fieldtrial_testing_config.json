@@ -4948,6 +4948,22 @@
             ]
         }
     ],
+    "KeyPinningAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "KeyPinningComponentUpdater",
+                        "StaticKeyPinningEnforcement"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyPinningComponentUpdater": [
         {
             "platforms": [
