@@ -82,7 +82,11 @@ try_.builder(
     ),
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
-    tryjob = try_.job(),
+    tryjob = try_.job(
+        # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
+        # out builder cache
+        cancel_stale = False,
+    ),
     builderless = False,
     cores = 16,
     ssd = True,
