@@ -12,6 +12,7 @@
 #include <cstdint>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/types/strong_alias.h"
 
 namespace base {
@@ -44,17 +45,24 @@ class BASE_EXPORT RawPtrAsanService {
 
   bool IsSupportedAllocation(void*) const;
 
-  bool is_dereference_check_enabled() const {
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_dereference_check_enabled() const {
     return is_dereference_check_enabled_;
   }
-  bool is_extraction_check_enabled() const {
+
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_extraction_check_enabled() const {
     return is_extraction_check_enabled_;
   }
-  bool is_instantiation_check_enabled() const {
+
+  NO_SANITIZE("address")
+  ALWAYS_INLINE bool is_instantiation_check_enabled() const {
     return is_instantiation_check_enabled_;
   }
 
-  static RawPtrAsanService& GetInstance() { return instance_; }
+  NO_SANITIZE("address") ALWAYS_INLINE static RawPtrAsanService& GetInstance() {
+    return instance_;
+  }
 
   static void SetPendingReport(ReportType type, const volatile void* ptr);
   static void Log(const char* format, ...);

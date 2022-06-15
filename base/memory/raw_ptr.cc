@@ -128,6 +128,7 @@ void ForceRead(void const volatile* ptr) {
 }
 }  // namespace
 
+NO_SANITIZE("address")
 void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
     void const volatile* ptr) {
   if (RawPtrAsanService::GetInstance().is_dereference_check_enabled() &&
@@ -138,6 +139,7 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
   }
 }
 
+NO_SANITIZE("address")
 void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
     void const volatile* ptr) {
   auto& service = RawPtrAsanService::GetInstance();
@@ -172,6 +174,7 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
   }
 }
 
+NO_SANITIZE("address")
 void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
     void const volatile* ptr) {
   if (RawPtrAsanService::GetInstance().is_instantiation_check_enabled() &&
