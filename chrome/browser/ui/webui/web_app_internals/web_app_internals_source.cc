@@ -268,7 +268,7 @@ void BuildDirectoryState(base::FilePath file_or_folder,
   // reference.
   if (!info.is_directory) {
     folder->Set(file_or_folder.AsUTF8Unsafe(),
-                base::StrCat({base::NumberToString(info.size / 1024), "kb"}));
+                base::StrCat({base::NumberToString(info.size), " bytes"}));
     return;
   }
 
