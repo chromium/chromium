@@ -279,6 +279,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStatePredictorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",
@@ -340,7 +341,6 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/settings/AdaptiveToolbarPreferenceFragmentTest.java",
-    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediatorTest.java",
   ]
 
   deps = [
