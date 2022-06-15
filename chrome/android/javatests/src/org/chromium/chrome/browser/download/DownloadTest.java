@@ -22,9 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -32,18 +29,15 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -51,6 +45,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -61,21 +56,14 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Tests Chrome download feature by attempting to download some files.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class DownloadTest implements CustomMainActivityStart {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams = Arrays.asList(
-            new ParameterSet().value(true).name("UseDownloadOfflineContentProviderEnabled"),
-            new ParameterSet().value(false).name("UseDownloadOfflineContentProviderDisabled"));
-
     @Rule
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
@@ -98,8 +86,6 @@ public class DownloadTest implements CustomMainActivityStart {
         FILENAME_WALLPAPER, FILENAME_TEXT, FILENAME_TEXT_1, FILENAME_TEXT_2, FILENAME_SWF,
         FILENAME_GZIP
     };
-
-    private boolean mUseDownloadOfflineContentProvider;
 
     static class DownloadManagerRequestInterceptorForTest
             implements DownloadManagerService.DownloadManagerRequestInterceptor {
@@ -180,10 +166,6 @@ public class DownloadTest implements CustomMainActivityStart {
         void resumeDownload(Intent intent) {}
     }
 
-    public DownloadTest(boolean useDownloadOfflineContentProvider) {
-        mUseDownloadOfflineContentProvider = useDownloadOfflineContentProvider;
-    }
-
     @Before
     public void setUp() {
         deleteTestFiles();
@@ -201,11 +183,6 @@ public class DownloadTest implements CustomMainActivityStart {
 
     @Override
     public void customMainActivityStart() throws InterruptedException {
-        if (mUseDownloadOfflineContentProvider) {
-            Features.getInstance().enable(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-        } else {
-            Features.getInstance().disable(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
-        }
         mDownloadTestRule.startMainActivityOnBlankPage();
     }
 
@@ -266,19 +243,15 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "crbug.com/147904")
+    @Policies.Add({ @Policies.Item(key = "PromptForDownloadLocation", string = "false") })
     public void testCloseEmptyDownloadTab() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
         final int initialTabCount = mDownloadTestRule.getActivity().getCurrentTabModel().getCount();
+        int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
         View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
-        TouchCommon.longPressView(currentView);
-
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
-        InstrumentationRegistry.getInstrumentation().invokeContextMenuAction(
-                mDownloadTestRule.getActivity(), R.id.contextmenu_open_in_new_tab, 0);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownload(FILENAME_GZIP, null));
+        TouchCommon.singleClickView(currentView);
+        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mDownloadTestRule.getActivity().getCurrentTabModel().getCount(),
