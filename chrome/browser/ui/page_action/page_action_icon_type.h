@@ -21,7 +21,6 @@ enum class PageActionIconType {
   kSaveAutofillAddress,
   kSaveCard,
   kSendTabToSelf,
-  kSharedClipboard,
   kSharingHub,
   kSideSearch,
   kSmsRemoteFetcher,

@@ -2386,9 +2386,12 @@ BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
 SharingDialog* BrowserView::ShowSharingDialog(
     content::WebContents* web_contents,
     SharingDialogData data) {
+  // TODO(https://crbug.com/1311680): Remove this altogether. This used to
+  // be hardcoded to anchor off the shared clipboard bubble, but that bubble is
+  // now gone altogether.
   auto* dialog_view =
       new SharingDialogView(toolbar_button_provider()->GetAnchorView(
-                                PageActionIconType::kSharedClipboard),
+                                PageActionIconType::kClickToCall),
                             web_contents, std::move(data));
 
   views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();

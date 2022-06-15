@@ -48,7 +48,6 @@ class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
 class Profile;
 class QuickAnswersMenuObserver;
-class SharedClipboardContextMenuObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
 
@@ -236,7 +235,6 @@ class RenderViewContextMenu
 #if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
 #endif
-  void AppendSharedClipboardItem();
   void AppendRegionSearchItem();
   bool AppendFollowUnfollowItem();
   void AppendSendTabToSelfItem(bool add_separator);
@@ -381,10 +379,6 @@ class RenderViewContextMenu
   // Click to call menu observer.
   std::unique_ptr<ClickToCallContextMenuObserver>
       click_to_call_context_menu_observer_;
-
-  // Shared clipboard menu observer.
-  std::unique_ptr<SharedClipboardContextMenuObserver>
-      shared_clipboard_context_menu_observer_;
 
   // The system app (if any) associated with the WebContents we're in.
   raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;

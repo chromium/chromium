@@ -73,8 +73,6 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/shared_clipboard/shared_clipboard_context_menu_observer.h"
-#include "chrome/browser/sharing/shared_clipboard/shared_clipboard_utils.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -2087,7 +2085,6 @@ void RenderViewContextMenu::AppendSharingItems() {
 #if !BUILDFLAG(IS_FUCHSIA)
   AppendClickToCallItem();
 #endif
-  AppendSharedClipboardItem();
 
   // Add an ending separator if there are sharing items, otherwise remove the
   // starting separator iff we added one above.
@@ -2126,18 +2123,6 @@ void RenderViewContextMenu::AppendClickToCallItem() {
                                                   entry_point);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-
-void RenderViewContextMenu::AppendSharedClipboardItem() {
-  if (!ShouldOfferSharedClipboard(browser_context_, params_.selection_text))
-    return;
-
-  if (!shared_clipboard_context_menu_observer_) {
-    shared_clipboard_context_menu_observer_ =
-        std::make_unique<SharedClipboardContextMenuObserver>(this);
-    observers_.AddObserver(shared_clipboard_context_menu_observer_.get());
-  }
-  shared_clipboard_context_menu_observer_->InitMenu(params_);
-}
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
   // IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4 is the currently launched
