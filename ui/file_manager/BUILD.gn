@@ -258,11 +258,6 @@ ts_library("build_ts") {
 
   in_files = static_js_files + generated_js_files + ts_files +
              image_loader_static_js_files + image_loader_generated_js_files
-
-  definitions = [
-    "//ui/file_manager/file_manager/definitions/file_manager.d.ts",
-    "//ui/file_manager/file_manager/definitions/volume_manager.d.ts",
-  ]
 }
 
 # GRD for test files.

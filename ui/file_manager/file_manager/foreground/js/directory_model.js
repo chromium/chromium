@@ -18,8 +18,6 @@ import {EntriesChangedEvent} from '../../externs/entries_changed_event.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {changeDirectory} from '../../state/actions.js';
-import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner} from './directory_contents.js';
@@ -131,9 +129,6 @@ export class DirectoryModel extends EventTarget {
 
     /** @private {FilesAppDirEntry} */
     this.myFilesEntry_ = null;
-
-    /** @private {!Store} */
-    this.store_ = getStore();
   }
 
   /**
@@ -1179,9 +1174,6 @@ export class DirectoryModel extends EventTarget {
       event.newDirEntry = dirEntry;
       event.volumeChanged = previousVolumeInfo !== currentVolumeInfo;
       this.dispatchEvent(event);
-      if (util.isFilesAppExperimental()) {
-        this.store_.dispatch(changeDirectory({to: dirEntry}));
-      }
     });
   }
 

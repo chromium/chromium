@@ -444,8 +444,6 @@ js_library("directory_model") {
     "//ui/webui/resources/js/cr/ui:list_selection_model.m",
     "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
   ]
-
-  externs_list = [ "//ui/file_manager/file_manager/externs/ts/store.js" ]
 }
 
 js_unittest("directory_model_unittest.m") {

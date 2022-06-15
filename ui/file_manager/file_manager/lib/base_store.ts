@@ -87,7 +87,7 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
   /**
    * Subscribe to Store changes/updates.
    * @param observer Callback called whenever the Store is updated.
-   * @returns callback to unsusbscribe the observer.
+   * @returns callback to unsusbscribe the obserer.
    */
   subscribe(observer: StoreObserver<StateType>):
       (observer: StoreObserver<StateType>) => void {
