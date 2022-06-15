@@ -63,7 +63,7 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
   waitForPanelFocus(root, callback) {
     callback = this.newCallback(callback);
     const focusCallback = () => {
-      chrome.automation.getFocus((node) => {
+      chrome.automation.getFocus(node => {
         if (!this.isNodeWithinPanel(node)) {
           return;
         }
@@ -146,7 +146,7 @@ TEST_F(
     `;
       const root = await this.runWithLoadedTree(bodyHtml);
       this.mockTts.setOnSpeechCallbacks([
-        this.newCallback((utterance) => {
+        this.newCallback(utterance => {
           // Speech for first click.
           assertTrue(this.mockTts.currentlySpeaking());
           assertEquals(this.mockTts.pendingUtterances().length, 1);
@@ -154,7 +154,7 @@ TEST_F(
               this.mockTts.pendingUtterances()[0],
               'Sentence one . Sentence two.');
 
-          this.mockTts.setOnSpeechCallbacks([this.newCallback((utterance) => {
+          this.mockTts.setOnSpeechCallbacks([this.newCallback(utterance => {
             // Speech for second click.
             assertTrue(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 1);
@@ -436,7 +436,7 @@ TEST_F(
     async function() {
       const bodyHtml =
           '<p>This is some <b>bold</b> text</p><p>Second paragraph</p>';
-      const setFocusCallback = this.newCallback((root) => {
+      const setFocusCallback = this.newCallback(root => {
         const firstNode = this.findTextNode(root, 'This is some ');
         const lastNode = this.findTextNode(root, 'Second paragraph');
         // Sets the selection from "is some" to "Second".
@@ -816,7 +816,7 @@ TEST_F(
     'SelectToSpeakNavigationControlTest', 'ResumeFromSelectionEndingInSpace',
     async function() {
       const bodyHtml = '<p>This is some text with space.</p>';
-      const setFocusCallback = this.newCallback((root) => {
+      const setFocusCallback = this.newCallback(root => {
         const node = this.findTextNode(root, 'This is some text with space.');
         // Sets the selection to "This ".
         chrome.automation.setDocumentSelection({
@@ -828,7 +828,7 @@ TEST_F(
       });
       const root = await this.runWithLoadedTree(bodyHtml);
       root.addEventListener(
-          'documentSelectionChanged', this.newCallback((event) => {
+          'documentSelectionChanged', this.newCallback(event => {
             this.triggerReadSelectedText();
 
             assertTrue(this.mockTts.currentlySpeaking());
@@ -1007,7 +1007,7 @@ TEST_F(
             {keyCode: SelectToSpeakConstants.SEARCH_KEY_CODE});
 
         // Verify focus is still on button within panel.
-        chrome.automation.getFocus(this.newCallback((focusedNode) => {
+        chrome.automation.getFocus(this.newCallback(focusedNode => {
           assertEquals(focusedNode.role, RoleType.TOGGLE_BUTTON);
           assertTrue(this.isNodeWithinPanel(focusedNode));
         }));
@@ -1029,7 +1029,7 @@ TEST_F(
       const root = await this.runWithLoadedTree(bodyHtml);
       // Expect call to updateSelectToSpeakPanel to set panel to be hidden.
       chrome.accessibilityPrivate.updateSelectToSpeakPanel =
-          this.newCallback((visible) => {
+          this.newCallback(visible => {
             assertFalse(visible);
           });
 

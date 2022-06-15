@@ -223,7 +223,7 @@ export class KeyboardRootNode extends BasicRootNode {
    * @private
    */
   static findAndSetChildren_(root) {
-    const childConstructor = (node) => new KeyboardNode(node, root);
+    const childConstructor = node => new KeyboardNode(node, root);
     const interestingChildren =
         root.automationNode.findAll({role: chrome.automation.RoleType.BUTTON});
     /** @type {!Array<!SAChildNode>} */

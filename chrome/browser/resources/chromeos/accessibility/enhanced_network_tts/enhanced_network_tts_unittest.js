@@ -242,7 +242,7 @@ SYNC_TEST_F(
           expectedBuffers.map(buffer => Object.assign({}, buffer));
       expectedBuffersWithoutLastBuffer[5].isLastBuffer = false;
 
-      let mockSendTtsAudio = (receivedBuffer) => {
+      let mockSendTtsAudio = receivedBuffer => {
         const expectedBuffer = expectedBuffers.shift();
         assertEqualsJSON(expectedBuffer, receivedBuffer);
       };
@@ -250,7 +250,7 @@ SYNC_TEST_F(
           decodedAudioData, sampleRate, bufferSize, timeInfo, mockSendTtsAudio,
           /* lastData= */ true);
 
-      mockSendTtsAudio = (receivedBuffer) => {
+      mockSendTtsAudio = receivedBuffer => {
         const expectedBuffer = expectedBuffersWithoutLastBuffer.shift();
         assertEqualsJSON(expectedBuffer, receivedBuffer);
       };

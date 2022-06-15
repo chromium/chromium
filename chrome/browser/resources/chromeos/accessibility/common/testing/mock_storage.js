@@ -19,8 +19,8 @@ const MockStorage = {
     /**
      * @param {Object<string, string>} updates Map from keys to values to store.
      */
-    set: (updates) => {
-      Object.keys(updates).forEach((key) => {
+    set: updates => {
+      Object.keys(updates).forEach(key => {
         MockStorage.local_[key] = updates[key];
       });
       MockStorage.callOnChangedListeners(this.local_);
@@ -40,7 +40,7 @@ const MockStorage = {
      * Removes the value with the given key.
      * @param {string} key The key to remove.
      */
-    remove: (key) => {
+    remove: key => {
       delete MockStorage.local_[key];
       MockStorage.callOnChangedListeners(this.local_);
     }
@@ -50,8 +50,8 @@ const MockStorage = {
     /**
      * @param {Object<string, *>} updates Map from keys to values to store.
      */
-    set: (updates) => {
-      Object.keys(updates).forEach((key) => {
+    set: updates => {
+      Object.keys(updates).forEach(key => {
         MockStorage.sync_[key] = updates[key];
       });
       MockStorage.callOnChangedListeners(this.sync_);
@@ -71,7 +71,7 @@ const MockStorage = {
      * Removes the value with the given key.
      * @param {string} key The key to remove.
      */
-    remove: (key) => {
+    remove: key => {
       delete MockStorage.sync_[key];
       MockStorage.callOnChangedListeners(this.sync_);
     }
@@ -82,7 +82,7 @@ const MockStorage = {
      * Set the onChanged callback.
      * @param {function(Object<string, *>)}
      */
-    addListener: (callback) => {
+    addListener: callback => {
       MockStorage.callbacks_.push(callback);
     },
   },
@@ -92,8 +92,8 @@ const MockStorage = {
    * This is functionality for testing and not part of the API.
    * @param {!Object<string, *>} opt_values
    */
-  callOnChangedListeners: (opt_values) => {
-    MockStorage.callbacks_.forEach((callback) => {
+  callOnChangedListeners: opt_values => {
+    MockStorage.callbacks_.forEach(callback => {
       const baseObject = opt_values || MockStorage.sync_;
       const result = {};
       for (const key in baseObject) {

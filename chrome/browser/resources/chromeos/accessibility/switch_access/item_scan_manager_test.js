@@ -34,9 +34,9 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
     const cache = new SACache();
     if (!SwitchAccessPredicate.isGroup(pageContents, null, cache)) {
       pageContents =
-          new AutomationTreeWalker(pageContents, constants.Dir.FORWARD, {
-            visit: (node) => SwitchAccessPredicate.isGroup(node, null, cache)
-          })
+          new AutomationTreeWalker(
+              pageContents, constants.Dir.FORWARD,
+              {visit: node => SwitchAccessPredicate.isGroup(node, null, cache)})
               .next()
               .node;
     }
@@ -174,7 +174,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', async function() {
 
   node.addEventListener(
       chrome.automation.EventType.CHECKED_STATE_CHANGED,
-      this.newCallback((event) => {
+      this.newCallback(event => {
         assertEquals(
             node.name, event.target.name,
             'Checked state changed on unexpected node');
@@ -383,7 +383,7 @@ TEST_F(
         // Wait for the potential value change.
         await new Promise(resolve => {
           input.automationNode.addEventListener(
-              chrome.automation.EventType.VALUE_CHANGED, (event) => {
+              chrome.automation.EventType.VALUE_CHANGED, event => {
                 if (event.target.value === 'q') {
                   resolve();
                 }
@@ -436,7 +436,7 @@ TEST_F(
       });
       await new Promise(resolve => {
         keyboard.automationNode.addEventListener(
-            chrome.automation.EventType.STATE_CHANGED, (event) => {
+            chrome.automation.EventType.STATE_CHANGED, event => {
               if (event.target.role === chrome.automation.RoleType.KEYBOARD &&
                   event.target.state.invisible) {
                 resolve();
@@ -611,7 +611,7 @@ TEST_F(
       });
 
       // The button is no longer in the tree because the screen is locked.
-      const predicate = (node) => node.name === 'kitties!' &&
+      const predicate = node => node.name === 'kitties!' &&
           node.role === chrome.automation.RoleType.BUTTON;
       assertNotNullNorUndefined(
           this.desktop_, 'this.desktop_ is null or undefined.');

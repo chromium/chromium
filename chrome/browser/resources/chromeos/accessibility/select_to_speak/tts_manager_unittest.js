@@ -13,7 +13,7 @@ class MockTtsClient {
 
   getTtsOptions() {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
-    options.onEvent = (event) => this.receivedEvent = event;
+    options.onEvent = event => this.receivedEvent = event;
     return options;
   }
 }

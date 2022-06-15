@@ -235,7 +235,7 @@ export class ActionManager {
     }
     let actions = this.actionNode_.actions;
     const possibleActions = this.actionsForType_(this.currentMenuType_);
-    actions = actions.filter((a) => possibleActions.includes(a));
+    actions = actions.filter(a => possibleActions.includes(a));
     if (this.currentMenuType_ === SAConstants.MenuType.MAIN_MENU) {
       actions = this.addGlobalActions_(actions);
     }

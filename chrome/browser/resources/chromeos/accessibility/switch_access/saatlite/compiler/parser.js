@@ -3523,7 +3523,7 @@ var parser = (function() {
   const decreaseIndent = () => indent = indent.substring(2);
 
   let buffer = '';
-  const addToBuffer = (text) => buffer += indent + text + '\n';
+  const addToBuffer = text => buffer += indent + text + '\n';
   const flushBuffer = () => {
     const result = buffer;
     buffer = '';
@@ -3549,7 +3549,7 @@ var parser = (function() {
     return flushBuffer();
   };
 
-  const finishTest = (opt_url) => {
+  const finishTest = opt_url => {
     decreaseIndent();
     if (opt_url) {
       addToBuffer(`}, {url: ${opt_url.output}});`);

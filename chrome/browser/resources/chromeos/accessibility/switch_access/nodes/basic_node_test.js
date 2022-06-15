@@ -55,7 +55,7 @@ TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', async function() {
 });
 
 TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
-  this.runWithLoadedDesktop((desktop) => {
+  this.runWithLoadedDesktop(desktop => {
     const desktopNode = DesktopNode.build(desktop);
 
     let childGroup = desktopNode.firstChild;

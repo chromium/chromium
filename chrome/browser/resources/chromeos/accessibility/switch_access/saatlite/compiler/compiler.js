@@ -48,7 +48,7 @@ stream.on('open', () => {
 
   // Read all the files in the tests/ directory.
   const filenames = fs.readdirSync(testDir);
-  filenames.forEach((filename) => {
+  filenames.forEach(filename => {
     console.log('Compiling file: ', filename);
     const contents = fs.readFileSync(testDir + filename, {encoding: 'utf8'});
     stream.write(parse(contents).output + '\n');

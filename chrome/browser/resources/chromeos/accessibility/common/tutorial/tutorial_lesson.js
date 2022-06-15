@@ -59,7 +59,7 @@ export const TutorialLesson = Polymer({
 
   /** @override */
   ready() {
-    this.$.contentTemplate.addEventListener('dom-change', (evt) => {
+    this.$.contentTemplate.addEventListener('dom-change', evt => {
       this.dispatchEvent(new CustomEvent('lessonready', {composed: true}));
     });
 
@@ -70,12 +70,12 @@ export const TutorialLesson = Polymer({
         this.$.practiceContent.addEventListener(
             evt, event => this.onPracticeEvent(event), true);
       }
-      this.$.practiceContent.addEventListener('focus', (evt) => {
+      this.$.practiceContent.addEventListener('focus', evt => {
         // The practice area has the potential to overflow, so ensure elements
         // are scrolled into view when focused.
         evt.target.scrollIntoView();
       }, true);
-      this.$.practiceContent.addEventListener('click', (evt) => {
+      this.$.practiceContent.addEventListener('click', evt => {
         // Intercept click events. For example, clicking a link will exit the
         // tutorial without this listener.
         evt.preventDefault();
@@ -139,7 +139,7 @@ export const TutorialLesson = Polymer({
     const path = '../tutorial/practice_areas/' + this.practiceFile + '.html';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', path, true);
-    xhr.onload = (evt) => {
+    xhr.onload = evt => {
       if (xhr.readyState === 4 && xhr.status === 200) {
         this.$.practiceContent.innerHTML = xhr.responseText;
         this.localizePracticeAreaContent();

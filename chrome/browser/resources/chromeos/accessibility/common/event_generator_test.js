@@ -21,7 +21,7 @@ TEST_F(
     'EventGeneratorTest', 'DISABLED_MouseEventsProcessedSequentially',
     function() {
       const mouseEventLog = [];
-      chrome.accessibilityPrivate.sendSyntheticMouseEvent = (event) =>
+      chrome.accessibilityPrivate.sendSyntheticMouseEvent = event =>
           mouseEventLog.push(event);
 
       // Set a 1ms delay so that a timeout is set between the press and release.

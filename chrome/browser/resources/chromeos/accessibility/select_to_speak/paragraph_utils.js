@@ -229,7 +229,7 @@ export class ParagraphUtils {
       }
 
       node.unclippedBoundsForRange(
-          boundQueryStartIndex, boundQueryEndIndex, (b) => {
+          boundQueryStartIndex, boundQueryEndIndex, b => {
             // If the word is entirely out of the blockparent bounds,
             // replace the word with space characters.
             if (b.left + b.width <= leftBound || b.left >= rightBound ||

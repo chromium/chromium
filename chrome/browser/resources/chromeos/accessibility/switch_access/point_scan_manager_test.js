@@ -92,7 +92,7 @@ TEST_F(
       const rootWebArea = await this.runWithLoadedTree(site);
       let setFocusRingsCallCount = 0;
       // Mock this API to track how many times it's called.
-      chrome.accessibilityPrivate.setFocusRings = (focusRings) => {
+      chrome.accessibilityPrivate.setFocusRings = focusRings => {
         setFocusRingsCallCount += 1;
       };
       assertEquals(0, setFocusRingsCallCount);

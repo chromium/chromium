@@ -71,7 +71,7 @@ SYNC_TEST_F(
       // paragraph 2.
       result = NodeNavigationUtils.getNodesForNextParagraph(
           nodeGroupForParagraph1, constants.Dir.FORWARD,
-          (nodes) => !(nodes.find(
+          nodes => !(nodes.find(
               n => n.parent ===
                   paragraph2) /* filter out nodes belong to paragraph 2 */));
       assertEquals(result.length, 0);
@@ -688,7 +688,7 @@ SYNC_TEST_F(
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
            nodeGroupForParagraph1, 8 /* currentCharIndex */,
            constants.Dir.FORWARD,
-           (nodes) => !(nodes.find(
+           nodes => !(nodes.find(
                n => n.parent ===
                    paragraph2) /* filter out nodes belong to paragraph 2 */)));
       assertEquals(nodes.length, 0);
@@ -737,7 +737,7 @@ SYNC_TEST_F(
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
            nodeGroupForParagraph2, 0 /* currentCharIndex */,
            constants.Dir.BACKWARD,
-           (nodes) => !(nodes.find(
+           nodes => !(nodes.find(
                n => n.parent ===
                    paragraph1) /* filter out nodes belong to paragraph 1 */)));
       assertEquals(nodes.length, 0);

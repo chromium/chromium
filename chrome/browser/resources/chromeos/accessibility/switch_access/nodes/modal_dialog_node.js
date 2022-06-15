@@ -22,7 +22,7 @@ export class ModalDialogRootNode extends BasicRootNode {
    */
   static buildTree(dialogNode) {
     const root = new ModalDialogRootNode(dialogNode);
-    const childConstructor = (node) => BasicNode.create(node, root);
+    const childConstructor = node => BasicNode.create(node, root);
 
     BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;

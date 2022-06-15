@@ -240,7 +240,7 @@ E2ETestBase = class extends AccessibilityTestBase {
 
       // Listener for both load complete and focus events that eventually
       // triggers the test.
-      const listener = async (event) => {
+      const listener = async event => {
         if (hasLacrosChromePath && !didNavigateForLacros) {
           // We have yet to request navigation in the Lacros tab. Do so now by
           // getting the default focus (the address bar), setting the value to
@@ -302,8 +302,8 @@ E2ETestBase = class extends AccessibilityTestBase {
    */
   runWithLoadedOptionsPage(callback, matchUrlRegExp = /options.html/) {
     callback = this.newCallback(callback);
-    chrome.automation.getDesktop((desktop) => {
-      const listener = (event) => {
+    chrome.automation.getDesktop(desktop => {
+      const listener = event => {
         if (!matchUrlRegExp.test(event.target.docUrl) ||
             !event.target.docLoaded) {
           return;

@@ -19,7 +19,7 @@ export class SwitchAccess {
   static initialize() {
     SwitchAccess.instance = new SwitchAccess();
 
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       chrome.automation.getFocus(focus => {
         // Focus is available. Finish init without waiting for further events.
         // Disallow web view nodes, which indicate a root web area is still
@@ -62,7 +62,7 @@ export class SwitchAccess {
     this.enableImprovedTextInput_ = false;
 
     chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-switch-access-text', (result) => {
+        'enable-experimental-accessibility-switch-access-text', result => {
           this.enableImprovedTextInput_ = result;
         });
 
@@ -110,7 +110,7 @@ export class SwitchAccess {
         desktop, chrome.automation.EventType.CHILDREN_CHANGED,
         null /** callback */);
 
-    const onEvent = (event) => {
+    const onEvent = event => {
       if (event.target.matches(findParams)) {
         // If the event target is the node we're looking for, we've found it.
         eventHandler.stop();

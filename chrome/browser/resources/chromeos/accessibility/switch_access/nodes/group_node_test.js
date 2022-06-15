@@ -18,7 +18,7 @@ SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {
 
 TEST_F('SwitchAccessGroupNodeTest', 'NodesRemoved', function() {
   const website = `<button></button>`;
-  this.runWithLoadedTree(website, (rootWebArea) => {
+  this.runWithLoadedTree(website, rootWebArea => {
     const button = rootWebArea.find({role: chrome.automation.RoleType.BUTTON});
     assertNotEquals(undefined, button);
 

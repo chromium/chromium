@@ -27,10 +27,10 @@ SYNC_TEST_F(
       const utterance = 'test';
       const options = {'voiceName': 'Enhanced TTS English (Australian Accent)'};
       const audioStreamOptions = {'bufferSize': 10000, 'sampleRate': 22000};
-      const sendTtsAudio = (receivedBuffer) => {
+      const sendTtsAudio = receivedBuffer => {
         throw new Error('Assertion failed: does not expect incoming buffer.');
       };
-      const sendError = (error) => {
+      const sendError = error => {
         assertEquals(error, 'Error: unable to get mojoPrivate bindings');
       };
 
@@ -51,10 +51,10 @@ SYNC_TEST_F(
       const utterance = 'test';
       const options = {'voiceName': 'Enhanced TTS English (Australian Accent)'};
       const audioStreamOptions = {'bufferSize': 10000, 'sampleRate': 22000};
-      const sendTtsAudio = (receivedBuffer) => {
+      const sendTtsAudio = receivedBuffer => {
         throw new Error('Assertion failed: does not expect incoming buffer.');
       };
-      const sendError = (error) => {
+      const sendError = error => {
         assertEquals(error, 'Error: utterance too long');
       };
 

@@ -41,7 +41,7 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
 
   async getPref(name) {
     return new Promise(resolve => {
-      chrome.settingsPrivate.getPref(name, (ret) => {
+      chrome.settingsPrivate.getPref(name, ret => {
         resolve(ret);
       });
     });

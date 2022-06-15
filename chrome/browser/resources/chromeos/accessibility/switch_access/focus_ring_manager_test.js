@@ -23,7 +23,7 @@ SwitchAccessFocusRingManagerTest = class extends SwitchAccessE2ETest {
 };
 
 TEST_F('SwitchAccessFocusRingManagerTest', 'BackButtonFocus', function() {
-  this.runWithLoadedDesktop((desktop) => {
+  this.runWithLoadedDesktop(desktop => {
     // Focus the back button.
     Navigator.byItem.moveTo_(
         desktop.find({role: chrome.automation.RoleType.TAB}));

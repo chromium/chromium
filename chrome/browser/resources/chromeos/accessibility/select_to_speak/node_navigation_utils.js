@@ -85,7 +85,7 @@ export class NodeNavigationUtils {
     if (containingRoot.role === RoleType.ROOT_WEB_AREA) {
       const ancestors = AutomationUtil.getAncestors(containingRoot);
       const topRootWebArea =
-          ancestors.find((a) => a.role === RoleType.ROOT_WEB_AREA);
+          ancestors.find(a => a.role === RoleType.ROOT_WEB_AREA);
       if (topRootWebArea) {
         containingRoot = topRootWebArea;
       }
@@ -96,7 +96,7 @@ export class NodeNavigationUtils {
     }
     const nextNode = AutomationUtil.findNextNode(
         startNode, direction, NodeUtils.isValidLeafNode, {
-          root: (n) => containingRoot === n,
+          root: n => containingRoot === n,
           skipInitialSubtree: true,
         });
     if (nextNode === null) {
@@ -239,8 +239,7 @@ export class NodeNavigationUtils {
     const nodes = AutomationUtil.findAllNodes(
         node, direction,
         /* pred= */ NodeUtils.isValidLeafNode, /* opt_restrictions= */ {
-          root: (node) =>
-              node === blockParent,  // Only traverse within the block
+          root: node => node === blockParent,  // Only traverse within the block
         });
 
     // Reverse the nodes if we were traversing backward, so the returned result

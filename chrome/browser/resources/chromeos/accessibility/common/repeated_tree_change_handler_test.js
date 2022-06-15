@@ -39,8 +39,7 @@ TEST_F('RepeatedTreeChangeHandlerTest', 'Predicate', function() {
     const handler = () => this.handlerCallCount++;
 
     const repeatedHandler = new RepeatedTreeChangeHandler(
-        'allTreeChanges', handler,
-        {predicate: (c) => c.type === 'nodeRemoved'});
+        'allTreeChanges', handler, {predicate: c => c.type === 'nodeRemoved'});
 
     // Simulate events being fired.
     repeatedHandler.onChange_({type: 'nodeAdded'});

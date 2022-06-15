@@ -17,7 +17,7 @@ SwitchAccessDesktopNodeTest = class extends SwitchAccessE2ETest {
 };
 
 TEST_F('SwitchAccessDesktopNodeTest', 'Build', function() {
-  this.runWithLoadedDesktop((desktop) => {
+  this.runWithLoadedDesktop(desktop => {
     const desktopNode = DesktopNode.build(desktop);
 
     const children = desktopNode.children;

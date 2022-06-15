@@ -15,7 +15,7 @@ export class MetricsUtils {
   static recordCancelIfSpeaking() {
     // TODO(b/1157214): Use select-to-speak's internal state instead of TTS
     // state.
-    chrome.tts.isSpeaking((speaking) => {
+    chrome.tts.isSpeaking(speaking => {
       if (speaking) {
         MetricsUtils.recordCancelEvent_();
       }

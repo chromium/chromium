@@ -81,9 +81,9 @@ export class PreferenceManager {
   /** @private */
   init_() {
     chrome.settingsPrivate.onPrefsChanged.addListener(
-        (prefs) => this.updateFromSettings_(prefs));
+        prefs => this.updateFromSettings_(prefs));
     chrome.settingsPrivate.getAllPrefs(
-        (prefs) => this.updateFromSettings_(prefs, true /* isFirstLoad */));
+        prefs => this.updateFromSettings_(prefs, true /* isFirstLoad */));
   }
 
   /**

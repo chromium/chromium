@@ -9,7 +9,7 @@ export const SwitchAccessMetrics = {
   /**
    * @param {string} menuAction
    */
-  recordMenuAction: (menuAction) => {
+  recordMenuAction: menuAction => {
     const metricName = 'Accessibility.CrosSwitchAccess.MenuAction.' +
         SwitchAccessMetrics.toUpperCamelCase(menuAction);
     chrome.metricsPrivate.recordUserAction(metricName);
@@ -19,10 +19,10 @@ export const SwitchAccessMetrics = {
    * @param {string} str
    * @return {string}
    */
-  toUpperCamelCase: (str) => {
+  toUpperCamelCase: str => {
     const wordRegex = /(?:^\w|[A-Z]|(?:\b|_)\w)/g;
     const underscoreAndWhitespaceRegex = /(\s|_)+/g;
-    return str.replace(wordRegex, (word) => word.toUpperCase())
+    return str.replace(wordRegex, word => word.toUpperCase())
         .replace(underscoreAndWhitespaceRegex, '');
   }
 };

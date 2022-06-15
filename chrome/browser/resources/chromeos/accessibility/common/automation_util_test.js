@@ -208,7 +208,7 @@ TEST_F(
       assertEquals(
           'x',
           AutomationUtil
-              .findLastNode(r, (n) => n.role === RoleType.GENERIC_CONTAINER)
+              .findLastNode(r, n => n.role === RoleType.GENERIC_CONTAINER)
               .name);
     });
 
@@ -223,8 +223,7 @@ TEST_F(
     `);
       assertEquals(
           'outer',
-          AutomationUtil.findLastNode(r, (n) => n.role === RoleType.BUTTON)
-              .name);
+          AutomationUtil.findLastNode(r, n => n.role === RoleType.BUTTON).name);
     });
 
 TEST_F(
@@ -238,6 +237,6 @@ TEST_F(
       assertEquals(
           'inner',
           AutomationUtil
-              .findLastNode(r, (n) => n.role === RoleType.GENERIC_CONTAINER)
+              .findLastNode(r, n => n.role === RoleType.GENERIC_CONTAINER)
               .name);
     });

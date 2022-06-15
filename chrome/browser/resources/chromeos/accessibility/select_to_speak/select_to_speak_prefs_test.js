@@ -71,15 +71,15 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
       // Once prefs are removed from storage, make sure the global prefs are
       // updated to the appropriate values.
       this.mockSettingsPrivate_.getPref(
-          'settings.tts.speech_rate', this.newCallback((pref) => {
+          'settings.tts.speech_rate', this.newCallback(pref => {
             assertEquals(rate, pref.value);
           }));
       this.mockSettingsPrivate_.getPref(
-          'settings.tts.speech_pitch', this.newCallback((pref) => {
+          'settings.tts.speech_pitch', this.newCallback(pref => {
             assertEquals(pitch, pref.value);
           }));
     });
-    this.mockStorage_.onChanged.addListener((prefs) => {
+    this.mockStorage_.onChanged.addListener(prefs => {
       // checks that rate and pitch are removed.
       if (prefs !== undefined && !('rate' in prefs) && !('pitch' in prefs)) {
         onPrefsRemovedFromStorage();

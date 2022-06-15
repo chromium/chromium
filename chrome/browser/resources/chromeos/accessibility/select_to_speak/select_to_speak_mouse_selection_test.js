@@ -229,7 +229,7 @@ TEST_F(
       // stylus may act as a laser pointer unless it taps on the stylus options
       // button, which always opens on a tap regardless of the stylus behavior
       // selected.
-      this.runWithLoadedDesktop((desktop) => {
+      this.runWithLoadedDesktop(desktop => {
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
           const button = desktop.find({
@@ -240,8 +240,8 @@ TEST_F(
           // sure we actually don't start speech after the hittest and focus
           // callbacks are used to check which nodes should be spoken.
           desktop.addEventListener(
-              EventType.MOUSE_RELEASED, this.newCallback((evt) => {
-                chrome.automation.getFocus(this.newCallback((node) => {
+              EventType.MOUSE_RELEASED, this.newCallback(evt => {
+                chrome.automation.getFocus(this.newCallback(node => {
                   assertEquals(
                       selectToSpeak.state_, SelectToSpeakState.INACTIVE);
                   assertFalse(this.mockTts.currentlySpeaking());

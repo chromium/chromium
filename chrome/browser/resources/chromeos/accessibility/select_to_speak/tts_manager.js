@@ -93,7 +93,7 @@ export class TtsManager {
         /** @type {!chrome.tts.TtsOptions} */ (Object.assign({}, ttsOptions));
     // Saves a copy of the ttsOptions for resume.
     Object.assign(this.clientTtsOptions_, ttsOptions);
-    modifiedOptions.onEvent = (event) => {
+    modifiedOptions.onEvent = event => {
       switch (event.type) {
         case chrome.tts.EventType.ERROR:
           if (this.isNetworkVoice_) {
@@ -178,7 +178,7 @@ export class TtsManager {
    * @return {!Promise}
    */
   pause() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.pauseCompleteCallback_ = () => {
         this.pauseCompleteCallback_ = null;
         resolve();

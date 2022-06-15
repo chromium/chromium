@@ -815,7 +815,7 @@ AutomationPredicate.listLike =
 /** @type {AutomationPredicate.Unary} */
 AutomationPredicate.simpleListItem = AutomationPredicate.match({
   anyPredicate:
-      [(node) => node.role === Role.LIST_ITEM && node.children.length === 2 &&
+      [node => node.role === Role.LIST_ITEM && node.children.length === 2 &&
            node.firstChild.role === Role.LIST_MARKER &&
            node.lastChild.role === Role.STATIC_TEXT]
 });
@@ -876,7 +876,7 @@ AutomationPredicate.structuralContainer = AutomationPredicate.roles([
 AutomationPredicate.clickable = AutomationPredicate.match({
   anyPredicate: [
     AutomationPredicate.button, AutomationPredicate.link,
-    (node) => {
+    node => {
       return node.defaultActionVerb ===
           chrome.automation.DefaultActionVerb.CLICK;
     }

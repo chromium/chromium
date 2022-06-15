@@ -106,13 +106,13 @@ export class UiManager {
     this.panelButton_ = null;
 
     // Cache desktop and listen to focus changes.
-    chrome.automation.getDesktop((desktop) => {
+    chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
       // Listen to focus changes so we can grab the floating panel when it
       // goes into focus, so it can be used later without having to search
       // through the entire tree.
-      desktop.addEventListener(EventType.FOCUS, (evt) => {
+      desktop.addEventListener(EventType.FOCUS, evt => {
         this.onFocusChange_(evt);
       }, true);
     });
@@ -303,7 +303,7 @@ export class UiManager {
         0;
     node.boundsForRange(
         currentWord.start - charIndexInParent,
-        currentWord.end - charIndexInParent, (bounds) => {
+        currentWord.end - charIndexInParent, bounds => {
           const highlights = bounds ? [bounds] : [];
           chrome.accessibilityPrivate.setHighlights(
               highlights, this.prefsManager_.highlightColor());
@@ -393,7 +393,7 @@ export class UiManager {
     if (!node) {
       return false;
     }
-    return AutomationUtil.getAncestors(node).find((n) => {
+    return AutomationUtil.getAncestors(node).find(n => {
       return n.className === SELECT_TO_SPEAK_TRAY_CLASS_NAME;
     }) !== undefined;
   }

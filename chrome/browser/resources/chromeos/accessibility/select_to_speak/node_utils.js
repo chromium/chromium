@@ -478,8 +478,7 @@ export class NodeUtils {
     return AutomationUtil.findAllNodes(
         blockParent, constants.Dir.FORWARD,
         /* pred= */ NodeUtils.isValidLeafNode, /* opt_restrictions= */ {
-          root: (node) =>
-              node === blockParent,  // Only traverse within the block
+          root: node => node === blockParent,  // Only traverse within the block
         });
   }
 

@@ -298,7 +298,7 @@ export class BasicRootNode extends SARootNode {
     super.onFocus();
     this.childrenChangedHandler_ = new RepeatedEventHandler(
         this.automationNode, chrome.automation.EventType.CHILDREN_CHANGED,
-        (event) => {
+        event => {
           const cache = new SACache();
           if (SwitchAccessPredicate.isInterestingSubtree(event.target, cache)) {
             this.refresh();
@@ -316,7 +316,7 @@ export class BasicRootNode extends SARootNode {
 
   /** @override */
   refreshChildren() {
-    const childConstructor = (node) => BasicNode.create(node, this);
+    const childConstructor = node => BasicNode.create(node, this);
     try {
       BasicRootNode.findAndSetChildren(this, childConstructor);
     } catch (e) {
@@ -371,7 +371,7 @@ export class BasicRootNode extends SARootNode {
     }
 
     const root = new BasicRootNode(rootNode);
-    const childConstructor = (node) => BasicNode.create(node, root);
+    const childConstructor = node => BasicNode.create(node, root);
 
     BasicRootNode.findAndSetChildren(root, childConstructor);
     return root;
@@ -387,7 +387,7 @@ export class BasicRootNode extends SARootNode {
   static findAndSetChildren(root, childConstructor) {
     const interestingChildren = BasicRootNode.getInterestingChildren(root);
     const children = interestingChildren.map(childConstructor)
-                         .filter((child) => child.isValidAndVisible());
+                         .filter(child => child.isValidAndVisible());
 
     if (children.length < 1) {
       throw SwitchAccess.error(

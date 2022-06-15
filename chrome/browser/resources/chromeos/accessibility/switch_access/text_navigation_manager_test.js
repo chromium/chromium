@@ -155,7 +155,7 @@ function generateWebsiteWithTextArea(id, contents, textIndex, cols, wrap) {
  * @param {!AutomationNode} inputNode
  */
 function checkNodeIsFocused(inputNode) {
-  chrome.automation.getFocus((focusedNode) => {
+  chrome.automation.getFocus(focusedNode => {
     assertEquals(focusedNode.role, inputNode.role);
   });
 }

@@ -16,7 +16,7 @@ MagnifierE2ETest = class extends E2ETestBase {
 
   async getNextMagnifierBounds() {
     return new Promise(resolve => {
-      const listener = (magnifierBounds) => {
+      const listener = magnifierBounds => {
         chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
             listener);
         resolve(magnifierBounds);
@@ -28,7 +28,7 @@ MagnifierE2ETest = class extends E2ETestBase {
 
   async getPref(name) {
     return new Promise(resolve => {
-      chrome.settingsPrivate.getPref(name, (ret) => {
+      chrome.settingsPrivate.getPref(name, ret => {
         resolve(ret);
       });
     });
@@ -183,7 +183,7 @@ TEST_F(
         const magnifier = accessibilityCommon.getMagnifierForTest();
         magnifier.setIsInitializingForTest(false);
 
-        const moveMenuSelectionAssertBounds = async (targetBounds) => {
+        const moveMenuSelectionAssertBounds = async targetBounds => {
           // Send arrow up key.
           chrome.accessibilityPrivate.sendSyntheticKeyEvent({
             type:

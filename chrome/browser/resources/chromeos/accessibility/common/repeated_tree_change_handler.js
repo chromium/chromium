@@ -26,7 +26,7 @@ class RepeatedTreeChangeHandler {
      * default to always return true.
      * @private {!function(!chrome.automation.TreeChange)}
      */
-    this.predicate_ = options.predicate || ((c) => true);
+    this.predicate_ = options.predicate || (c => true);
 
     /** @private {!function(!chrome.automation.TreeChange)} */
     this.handler_ = change => this.onChange_(change);
