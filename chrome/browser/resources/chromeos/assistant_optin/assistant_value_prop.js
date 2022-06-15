@@ -53,7 +53,7 @@ class AssistantValueProp extends AssistantValuePropBase {
        */
       urlTemplate_: {
         value:
-            'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v4_omni_$.html',
+            'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v5_omni_$.html',
       },
 
       /**

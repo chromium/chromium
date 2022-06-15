@@ -90,7 +90,7 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
      * @private {string}
      */
     this.urlTemplate_ =
-        'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html';
+        'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v5_omni_$.html';
 
     /**
      * Whether try to reload with the default url when a 404 error occurred.
@@ -231,6 +231,13 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
     if (this.consentStringLoaded_) {
       this.onPageLoaded();
     }
+
+    // The webview animation only starts playing when it is focused (in order
+    // to make sure the animation and the caption are in sync).
+    this.webview_.focus();
+    this.async(() => {
+      this.$['next-button'].focus();
+    }, 300);
   }
 
   /**
