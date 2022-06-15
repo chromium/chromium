@@ -79,6 +79,7 @@ preprocess_if_expr("preprocess_src_ts") {
   in_folder = "."
   out_folder = preprocess_folder
   in_files = [
+    "cr_splitter/cr_splitter.ts",
     "cr_tab_box/cr_tab_box.ts",
     "cr_tree/cr_tree_base.ts",
     "cr_tree/cr_tree_item.ts",
@@ -99,7 +100,6 @@ preprocess_if_expr("preprocess_src_ts") {
       "cr_search_field/cr_search_field_mixin.ts",
       "cr_search_field/cr_search_field.ts",
       "cr_slider/cr_slider.ts",
-      "cr_splitter/cr_splitter.ts",
       "cr_tabs/cr_tabs.ts",
       "cr_toast/cr_toast_manager.ts",
       "cr_toast/cr_toast.ts",

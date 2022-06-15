@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {getAllNodes} from './chrome_sync.js';
@@ -158,20 +157,12 @@ function refresh() {
 
 document.addEventListener('DOMContentLoaded', function(e) {
   $('node-browser-refresh-button').addEventListener('click', refresh);
-  const customSplitter = crUiDefine('div');
-
-  customSplitter.prototype = {
-    __proto__: Splitter.prototype,
-
-    handleSplitterDragEnd(e) {
-      Splitter.prototype.handleSplitterDragEnd.apply(this, arguments);
-      const treeElement = $('sync-node-tree-container');
-      const newWidth = parseFloat(treeElement.style.width);
-      treeElement.style.minWidth = Math.max(newWidth, 50) + 'px';
-    }
-  };
-
-  customSplitter.decorate($('sync-node-splitter'));
+  const splitter = document.querySelector('#sync-node-splitter');
+  splitter.addEventListener('resize', () => {
+    const treeElement = document.querySelector('#sync-node-tree-container');
+    const newWidth = parseFloat(treeElement.style.width);
+    treeElement.style.minWidth = Math.max(newWidth, 50) + 'px';
+  });
 
   // Automatically trigger a refresh the first time this tab is selected.
   document.querySelector('cr-tab-box')

@@ -3,21 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class CrSplitterElement extends PolymerElement {
+export class CrSplitterElement extends HTMLElement {
   static get is() {
     return 'cr-splitter';
-  }
-
-  static get template() {
-    return null;
-  }
-
-  static get properties() {
-    return {
-      resizeNextElement: Boolean,
-    };
   }
 
   private handlers_: Map<string, (e: any) => void>|null = null;
@@ -25,19 +14,17 @@ export class CrSplitterElement extends PolymerElement {
   private startWidth_: number = -1;
   resizeNextElement: boolean = false;
 
-  override ready() {
-    super.ready();
+  constructor() {
+    super();
     this.addEventListener('mousedown', e => this.onMouseDown_(e));
     this.addEventListener('touchstart', e => this.onTouchStart_(e));
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
+  connectedCallback() {
     this.handlers_ = new Map();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
+  disconnectedCallback() {
     this.removeAllHandlers_();
     this.handlers_ = null;
   }

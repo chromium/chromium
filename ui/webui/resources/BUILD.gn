@@ -310,6 +310,7 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = [
+    "cr_elements/cr_splitter/cr_splitter.ts",
     "cr_elements/cr_tab_box/cr_tab_box.ts",
     "cr_elements/cr_tab_box/cr_tab_box.html.ts",
     "cr_elements/cr_tree/cr_tree.ts",
@@ -355,7 +356,6 @@ ts_library("library") {
       "cr_elements/cr_search_field/cr_search_field.ts",
       "cr_elements/cr_slider/cr_slider.html.ts",
       "cr_elements/cr_slider/cr_slider.ts",
-      "cr_elements/cr_splitter/cr_splitter.ts",
       "cr_elements/cr_tabs/cr_tabs.html.ts",
       "cr_elements/cr_tabs/cr_tabs.ts",
       "cr_elements/cr_toast/cr_toast_manager.html.ts",
