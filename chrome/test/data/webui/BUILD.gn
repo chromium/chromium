@@ -359,6 +359,7 @@ js_library("test_plural_string_proxy") {
 }
 
 grit("resources") {
+  testonly = true
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
@@ -376,6 +377,7 @@ grit("resources") {
 }
 
 generate_grd("build_chai_grdp") {
+  testonly = true
   grd_prefix = "webui_generated_test"
   out_grd = "$target_gen_dir/chai_resources.grdp"
   input_files_base_dir = rebase_path("//third_party/chaijs", "//")
@@ -383,6 +385,7 @@ generate_grd("build_chai_grdp") {
 }
 
 generate_grd("build_web_ui_test_mojo_grdp") {
+  testonly = true
   grd_prefix = "webui_generated_test"
   out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
@@ -391,6 +394,7 @@ generate_grd("build_web_ui_test_mojo_grdp") {
 }
 
 generate_grd("build_grd") {
+  testonly = true
   grd_prefix = "webui_generated_test"
   output_files_base_dir = "test/data/grit"
   out_grd = "$target_gen_dir/resources.grd"
