@@ -750,7 +750,7 @@ void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
 void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
                                  AppType app_type,
                                  bool should_notify_initialized) {
-  if (app_service_.is_connected()) {
+  if (preferred_apps_impl_ || app_service_.is_connected()) {
     for (const auto& delta : deltas) {
       if (delta->readiness != Readiness::kUnknown &&
           !apps_util::IsInstalled(delta->readiness)) {

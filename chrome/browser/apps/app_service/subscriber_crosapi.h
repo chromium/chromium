@@ -46,7 +46,7 @@ class SubscriberCrosapi : public KeyedService,
 
   void OnApps(const std::vector<AppPtr>& deltas);
 
-  void InitializePreferredApps(PreferredApps preferred_apps);
+  virtual void InitializePreferredApps(PreferredApps preferred_apps);
   virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes);
 
  protected:

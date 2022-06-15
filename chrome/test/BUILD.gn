@@ -6858,6 +6858,8 @@ test("unit_tests") {
       "//components/send_tab_to_self:test_support",
       "//components/services/app_service:unit_tests",
       "//components/services/app_service/public/cpp:icon_loader_test_support",
+      "//components/services/app_service/public/cpp:preferred_app",
+      "//components/services/app_service/public/cpp:preferred_apps",
       "//components/services/app_service/public/cpp:publisher",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/app_service/public/cpp:unit_tests",
