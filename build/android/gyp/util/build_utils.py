@@ -14,7 +14,6 @@ import logging
 import os
 import pipes
 import re
-import shlex
 import shutil
 import stat
 import subprocess
@@ -281,26 +280,18 @@ def CheckOutput(args,
 
   has_stdout = print_stdout and stdout
   has_stderr = print_stderr and stderr
-  if has_stdout or has_stderr:
+  if fail_on_output and (has_stdout or has_stderr):
+    MSG = """\
+Command failed because it wrote to {}.
+You can often set treat_warnings_as_errors=false to not treat output as \
+failure (useful when developing locally)."""
     if has_stdout and has_stderr:
       stream_string = 'stdout and stderr'
     elif has_stdout:
       stream_string = 'stdout'
     else:
       stream_string = 'stderr'
-
-    if fail_on_output:
-      MSG = """
-Command failed because it wrote to {}.
-You can often set treat_warnings_as_errors=false to not treat output as \
-failure (useful when developing locally)."""
-      raise CalledProcessError(cwd, args, MSG.format(stream_string))
-
-    MSG = """
-The above {} output was from:
-{}
-"""
-    sys.stderr.write(MSG.format(stream_string, shlex.join(args)))
+    raise CalledProcessError(cwd, args, MSG.format(stream_string))
 
   return stdout
 
