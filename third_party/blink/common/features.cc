@@ -1519,6 +1519,9 @@ const base::Feature kSimulateClickOnAXFocus {
 #endif
 };
 
+const base::Feature kThreadedPreloadScanner{"ThreadedPreloadScanner",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allow access to WebSQL in non-secure contexts.
 const base::Feature kWebSQLNonSecureContextAccess{
     "WebSQLNonSecureContextAccess", base::FEATURE_ENABLED_BY_DEFAULT};

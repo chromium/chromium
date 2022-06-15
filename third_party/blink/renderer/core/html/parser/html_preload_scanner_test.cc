@@ -14,8 +14,10 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
+#include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_resource_preloader.h"
+#include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -98,6 +100,11 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
   explicit HTMLMockHTMLResourcePreloader(const KURL& document_url)
       : document_url_(document_url) {}
 
+  void TakePreloadData(std::unique_ptr<PendingPreloadData> preload_data) {
+    preload_data_ = std::move(preload_data);
+    TakeAndPreload(preload_data_->requests);
+  }
+
   void PreloadRequestVerification(ResourceType type,
                                   const char* url,
                                   const char* base_url,
@@ -116,7 +123,7 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
       EXPECT_EQ(width, preload_request_->ResourceWidth());
 
       ClientHintsPreferences preload_preferences;
-      for (const auto& value : accept_ch_values_) {
+      for (const auto& value : preload_data_->accept_ch_values) {
         preload_preferences.UpdateFromMetaTagAcceptCH(
             value.value, document_url_, nullptr, value.is_http_equiv,
             value.is_preload_or_sync_parser);
@@ -226,8 +233,6 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     }
   }
 
-  AcceptCHValues& accept_ch_values() { return accept_ch_values_; }
-
  protected:
   void Preload(std::unique_ptr<PreloadRequest> preload_request) override {
     preload_request_ = std::move(preload_request);
@@ -235,7 +240,7 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
 
  private:
   std::unique_ptr<PreloadRequest> preload_request_;
-  AcceptCHValues accept_ch_values_;
+  std::unique_ptr<PendingPreloadData> preload_data_;
   KURL document_url_;
 };
 
@@ -286,10 +291,10 @@ class HTMLPreloadScannerTest : public PageTestBase {
                                                           kPreloadEnabled);
     GetFrame().DomWindow()->SetReferrerPolicy(document_referrer_policy);
     scanner_ = std::make_unique<HTMLPreloadScanner>(
-        options, document_url,
+        std::make_unique<HTMLTokenizer>(options), false, document_url,
         std::make_unique<CachedDocumentParameters>(&GetDocument()),
         CreateMediaValuesData(),
-        TokenPreloadScanner::ScannerType::kMainDocument);
+        TokenPreloadScanner::ScannerType::kMainDocument, nullptr);
   }
 
   void SetUp() override {
@@ -302,9 +307,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
 
     preloader.PreloadRequestVerification(
         test_case.type, test_case.preloaded_url, test_case.output_base_url,
@@ -315,9 +319,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
     preloader.PreconnectRequestVerification(test_case.preconnected_host,
                                             test_case.cross_origin);
   }
@@ -326,9 +329,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
 
     if (test_case.expected_referrer) {
       preloader.PreloadRequestVerification(
@@ -346,9 +348,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
     preloader.CorsRequestVerification(&GetDocument(), test_case.request_mode,
                                       test_case.credentials_mode);
   }
@@ -356,20 +357,17 @@ class HTMLPreloadScannerTest : public PageTestBase {
   void Test(CSPTestCase test_case) {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
-    seen_csp_meta_tag_ = false;
     scanner_->AppendToEnd(String(test_case.input_html));
-    scanner_->Scan(base_url, preloader.accept_ch_values(), nullptr,
-                   seen_csp_meta_tag_);
-    EXPECT_EQ(test_case.should_see_csp_tag, seen_csp_meta_tag_);
+    auto data = scanner_->Scan(base_url);
+    EXPECT_EQ(test_case.should_see_csp_tag, data->has_csp_meta_tag);
   }
 
   void Test(NonceTestCase test_case) {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
     preloader.NonceRequestVerification(test_case.nonce);
   }
 
@@ -377,9 +375,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
 
     preloader.ContextVerification(test_case.is_image_set);
   }
@@ -389,9 +386,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url("http://example.test/");
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
 
     preloader.CheckNumberOfIntegrityConstraints(
         test_case.number_of_integrity_metadata_found);
@@ -402,16 +398,14 @@ class HTMLPreloadScannerTest : public PageTestBase {
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url("http://example.test/");
     scanner_->AppendToEnd(String(test_case.input_html));
-    PreloadRequestStream requests = scanner_->Scan(
-        base_url, preloader.accept_ch_values(), nullptr, seen_csp_meta_tag_);
-    preloader.TakeAndPreload(requests);
+    std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
+    preloader.TakePreloadData(std::move(preload_data));
     preloader.LazyLoadImageEnabledVerification(
         test_case.lazy_load_image_enabled);
   }
 
  private:
   std::unique_ptr<HTMLPreloadScanner> scanner_;
-  bool seen_csp_meta_tag_ = false;
 };
 
 TEST_F(HTMLPreloadScannerTest, testImages) {

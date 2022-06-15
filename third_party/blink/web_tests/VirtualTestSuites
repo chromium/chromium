@@ -1262,12 +1262,13 @@
     ]
   },
   {
-    "prefix": "precompile-inline-scripts",
+    "prefix": "threaded-preload-scanner",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/html/semantics/scripting-1",
-      "fast/dom/HTMLScriptElement"
+      "fast/dom/HTMLScriptElement",
+      "fast/preloader"
     ],
-    "args": ["--enable-features=PrecompileInlineScripts"]
+    "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts"]
   }
 ]

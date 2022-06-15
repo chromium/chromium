@@ -35,16 +35,19 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/css_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
+#include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class HTMLDocumentParser;
 class HTMLParserOptions;
 class HTMLTokenizer;
 class SegmentedString;
@@ -58,6 +61,15 @@ struct AcceptCHValue {
   bool is_preload_or_sync_parser = false;
 };
 using AcceptCHValues = Vector<AcceptCHValue>;
+
+// Encapsulates data created by HTMLPreloadScanner that needs to be processed on
+// the main thread.
+struct PendingPreloadData {
+  AcceptCHValues accept_ch_values;
+  absl::optional<ViewportDescription> viewport;
+  bool has_csp_meta_tag = false;
+  PreloadRequestStream requests;
+};
 
 bool Match(const StringImpl* impl, const QualifiedName& q_name);
 const StringImpl* TagImplFor(const HTMLToken::DataVector& data);
@@ -156,26 +168,48 @@ class CORE_EXPORT HTMLPreloadScanner {
   USING_FAST_MALLOC(HTMLPreloadScanner);
 
  public:
-  HTMLPreloadScanner(const HTMLParserOptions&,
+  // Creates a HTMLPreloadScanner which can be used on the main thread.
+  static std::unique_ptr<HTMLPreloadScanner> Create(
+      Document& document,
+      HTMLParserOptions options,
+      TokenPreloadScanner::ScannerType scanner_type);
+
+  // Creates a HTMLPreloadScanner which will be bound to |task_runner|.
+  static WTF::SequenceBound<HTMLPreloadScanner> CreateBackground(
+      HTMLDocumentParser* parser,
+      HTMLParserOptions options,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  HTMLPreloadScanner(std::unique_ptr<HTMLTokenizer>,
+                     bool priority_hints_origin_trial_enabled,
                      const KURL& document_url,
                      std::unique_ptr<CachedDocumentParameters>,
                      const MediaValuesCached::MediaValuesCachedData&,
-                     const TokenPreloadScanner::ScannerType);
+                     const TokenPreloadScanner::ScannerType,
+                     std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
+                         script_token_scanner);
   HTMLPreloadScanner(const HTMLPreloadScanner&) = delete;
   HTMLPreloadScanner& operator=(const HTMLPreloadScanner&) = delete;
   ~HTMLPreloadScanner();
 
   void AppendToEnd(const SegmentedString&);
-  PreloadRequestStream Scan(const KURL& document_base_element_url,
-                            AcceptCHValues& accept_ch_values,
-                            absl::optional<ViewportDescription>*,
-                            bool& has_csp_meta_tag);
+  std::unique_ptr<PendingPreloadData> Scan(
+      const KURL& document_base_element_url);
+
+  // Scans |source| and calls |take_preload| with the generated preload data.
+  using TakePreloadFn =
+      CrossThreadOnceFunction<void(std::unique_ptr<PendingPreloadData>)>;
+  void ScanInBackground(const String& source,
+                        const KURL& document_base_element_url,
+                        TakePreloadFn take_preload);
 
  private:
   TokenPreloadScanner scanner_;
   SegmentedString source_;
   HTMLToken token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
+  std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
+      script_token_scanner_;
 };
 
 }  // namespace blink

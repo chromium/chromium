@@ -178,6 +178,7 @@ class CORE_EXPORT PreloadRequest {
   bool from_insertion_scanner_ = false;
   const ResourceFetcher::IsImageSet is_image_set_;
   bool is_lazy_load_image_enabled_ = false;
+  base::TimeTicks creation_time_ = base::TimeTicks::Now();
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

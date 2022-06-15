@@ -1103,6 +1103,12 @@ TEST_F(WebFrameTest, ChromePageNoJavascript) {
   web_view_helper.InitializeAndLoad(chrome_url_ + "history.html");
 
   // Try to run JS against the chrome-style URL after prohibiting it.
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // This is needed because the preload scanner creates a thread when loading a
+  // page.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs("chrome");
   frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
                                 "javascript:document.body.appendChild(document."
@@ -7766,17 +7772,23 @@ TEST_F(WebFrameTest, NavigateToSameNoConditionalRequestForSubresource) {
   RegisterMockedHttpURLLoad("white-1x1.png");
   TestSameDocumentWithImageWebFrameClient client;
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "foo_with_image.html", &client,
-                                    nullptr,
-                                    &ConfigureLoadsImagesAutomatically);
+  web_view_helper.Initialize(&client, nullptr,
+                             &ConfigureLoadsImagesAutomatically);
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // Disable preload scanner so it doesn't make any requests.
+  web_view_helper.LocalMainFrame()
+      ->GetFrame()
+      ->GetDocument()
+      ->GetSettings()
+      ->SetDoHtmlPreloadScanning(false);
+  frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
+                                base_url_ + "foo_with_image.html");
+  EXPECT_EQ(client.NumOfImageRequests(), 1);
 
   WebCache::Clear();
   frame_test_helpers::LoadFrame(web_view_helper.GetWebView()->MainFrameImpl(),
                                 base_url_ + "foo_with_image.html");
-
-  // 2 images are requested, and each triggers 2 willSendRequest() calls,
-  // once for preloading and once for the real request.
-  EXPECT_EQ(client.NumOfImageRequests(), 4);
+  EXPECT_EQ(client.NumOfImageRequests(), 2);
 }
 
 TEST_F(WebFrameTest, WebNodeImageContents) {
@@ -10238,6 +10250,12 @@ TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "foo.html");
   EXPECT_TRUE(local_frame->GetDocument().SiteForCookies().IsNull());
 
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
+  // This is needed because the preload scanner creates a thread when loading a
+  // page.
+  WTF::SetIsBeforeThreadCreatedForTest();
+#endif
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
   EXPECT_TRUE(net::SiteForCookies::FromUrl(GURL(not_base_url_))
                   .IsEquivalent(local_frame->GetDocument().SiteForCookies()));

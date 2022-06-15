@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -44,8 +46,9 @@ class BackgroundHTMLScannerTest : public PageTestBase {
  protected:
   std::unique_ptr<BackgroundHTMLScanner> CreateScanner(TestParser* parser) {
     return std::make_unique<BackgroundHTMLScanner>(
-        std::make_unique<HTMLTokenizer>(HTMLParserOptions()), parser,
-        task_runner_);
+        std::make_unique<HTMLTokenizer>(HTMLParserOptions()),
+        std::make_unique<BackgroundHTMLScanner::ScriptTokenScanner>(
+            parser, task_runner_));
   }
 
   void FlushTaskRunner() {
@@ -61,6 +64,25 @@ TEST_F(BackgroundHTMLScannerTest, SimpleScript) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
   auto scanner = CreateScanner(parser);
   scanner->Scan("<script>foo</script>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, InsideHTMLPreloadScanner) {
+  GetDocument().SetURL(KURL("https://www.example.com"));
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto background_scanner = CreateScanner(parser);
+  HTMLPreloadScanner preload_scanner(
+      std::make_unique<HTMLTokenizer>(HTMLParserOptions()), false,
+      GetDocument().Url(),
+      std::make_unique<CachedDocumentParameters>(&GetDocument()),
+      MediaValuesCached::MediaValuesCachedData(GetDocument()),
+      TokenPreloadScanner::ScannerType::kMainDocument,
+      std::make_unique<BackgroundHTMLScanner::ScriptTokenScanner>(
+          parser, task_runner_));
+  preload_scanner.ScanInBackground(
+      "<script>foo</script>", GetDocument().ValidBaseElementURL(),
+      CrossThreadBindOnce([](std::unique_ptr<PendingPreloadData>) {}));
   FlushTaskRunner();
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
 }

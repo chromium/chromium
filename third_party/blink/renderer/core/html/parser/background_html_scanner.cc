@@ -86,34 +86,44 @@ WTF::SequenceBound<BackgroundHTMLScanner> BackgroundHTMLScanner::Create(
       worker_pool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}),
       std::make_unique<HTMLTokenizer>(options),
-      WrapCrossThreadWeakPersistent(parser), GetCompileTaskRunner());
+      ScriptTokenScanner::Create(parser));
 }
 
 BackgroundHTMLScanner::BackgroundHTMLScanner(
     std::unique_ptr<HTMLTokenizer> tokenizer,
-    ScriptableDocumentParser* parser,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    std::unique_ptr<ScriptTokenScanner> token_scanner)
     : tokenizer_(std::move(tokenizer)),
-      parser_(parser),
-      task_runner_(std::move(task_runner)) {}
+      token_scanner_(std::move(token_scanner)) {}
 
 BackgroundHTMLScanner::~BackgroundHTMLScanner() = default;
 
 void BackgroundHTMLScanner::Scan(const String& source) {
   TRACE_EVENT0("blink", "BackgroundHTMLScanner::Scan");
-  first_script_in_scan_ = true;
+  token_scanner_->set_first_script_in_scan(true);
   source_.Append(source);
   while (tokenizer_->NextToken(source_, token_)) {
     if (token_.GetType() == HTMLToken::kStartTag) {
       tokenizer_->UpdateStateFor(
           AttemptStaticStringCreation(token_.GetName(), kLikely8Bit));
     }
-    ScanToken(token_);
+    token_scanner_->ScanToken(token_);
     token_.Clear();
   }
 }
 
-void BackgroundHTMLScanner::ScanToken(const HTMLToken& token) {
+std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
+BackgroundHTMLScanner::ScriptTokenScanner::Create(
+    ScriptableDocumentParser* parser) {
+  return std::make_unique<ScriptTokenScanner>(parser, GetCompileTaskRunner());
+}
+
+BackgroundHTMLScanner::ScriptTokenScanner::ScriptTokenScanner(
+    ScriptableDocumentParser* parser,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : parser_(parser), task_runner_(std::move(task_runner)) {}
+
+void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
+    const HTMLToken& token) {
   switch (token.GetType()) {
     case HTMLToken::kCharacter: {
       if (in_script_) {

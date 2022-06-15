@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -85,6 +86,8 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
 
 Resource* PreloadRequest::Start(Document* document) {
   DCHECK(document->domWindow());
+  base::UmaHistogramTimes("Blink.PreloadRequestWaitTime",
+                          base::TimeTicks::Now() - creation_time_);
 
   FetchInitiatorInfo initiator_info;
   initiator_info.name = AtomicString(initiator_name_);

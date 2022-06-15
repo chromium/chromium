@@ -763,6 +763,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kPrecompileInlineScripts;
 // See https://crbug.com/1326622 for more info.
 BLINK_COMMON_EXPORT extern const base::Feature kSimulateClickOnAXFocus;
 
+// If enabled, the HTMLPreloadScanner will run on a worker thread.
+BLINK_COMMON_EXPORT extern const base::Feature kThreadedPreloadScanner;
+
 // If enabled, allows the use of WebSQL in non-secure contexts.
 BLINK_COMMON_EXPORT extern const base::Feature kWebSQLNonSecureContextAccess;
 

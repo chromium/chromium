@@ -43,12 +43,37 @@ class CORE_EXPORT BackgroundHTMLScanner {
   USING_FAST_MALLOC(BackgroundHTMLScanner);
 
  public:
+  // Class for scanning individual tokens and starting script compile jobs.
+  class CORE_EXPORT ScriptTokenScanner {
+    USING_FAST_MALLOC(BackgroundHTMLScanner);
+
+   public:
+    static std::unique_ptr<ScriptTokenScanner> Create(
+        ScriptableDocumentParser* parser);
+
+    ScriptTokenScanner(ScriptableDocumentParser* parser,
+                       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    void ScanToken(const HTMLToken& token);
+
+    void set_first_script_in_scan(bool value) { first_script_in_scan_ = value; }
+
+   private:
+    CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
+    StringBuilder script_builder_;
+
+    bool in_script_ = false;
+    bool first_script_in_scan_ = false;
+  };
+
+  // Creates a sequence bound BackgroundHTMLScanner which will live on a
+  // background thread. Methods can be called using SequenceBound::AsyncCall().
   static WTF::SequenceBound<BackgroundHTMLScanner> Create(
       const HTMLParserOptions& options,
       ScriptableDocumentParser* parser);
   BackgroundHTMLScanner(std::unique_ptr<HTMLTokenizer> tokenizer,
-                        ScriptableDocumentParser* parser,
-                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+                        std::unique_ptr<ScriptTokenScanner> token_scanner);
   ~BackgroundHTMLScanner();
 
   BackgroundHTMLScanner(const BackgroundHTMLScanner&) = delete;
@@ -57,17 +82,10 @@ class CORE_EXPORT BackgroundHTMLScanner {
   void Scan(const String& source);
 
  private:
-  void ScanToken(const HTMLToken& token);
-
   SegmentedString source_;
   HTMLToken token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
-  CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  StringBuilder script_builder_;
-
-  bool in_script_ = false;
-  bool first_script_in_scan_ = false;
+  std::unique_ptr<ScriptTokenScanner> token_scanner_;
 };
 
 }  // namespace blink
