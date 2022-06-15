@@ -25,15 +25,6 @@ interface AppService {
   // itself with the App Service.
   RegisterSubscriber(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
 
-  // App Icon Factory methods.
-  LoadIcon(
-      AppType app_type,
-      string app_id,
-      IconKey icon_key,
-      IconType icon_type,
-      int32 size_hint_in_dip,
-      bool allow_placeholder_icon) => (IconValue icon_value);
-
   // Launches an app identified by |app_id|. |event_flags| contains launch
   // options (e.g. window disposition). |launch_source| contains the source
   // of the launch. When provided, |window_info| contains the expected window
@@ -174,28 +165,6 @@ interface AppService {
 interface Publisher {
   // App Registry methods.
   Connect(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
-
-  // Requests an icon for an app identified by |app_id|. The icon is identified
-  // by |icon_key| and parameterised by |icon_type| and |size_hint_in_dp|. If
-  // |allow_placeholder_icon| is true, a default placeholder icon can be
-  // returned if no other icon is available.
-  //
-  // Publishers implementing this method should:
-  //  - provide an icon as closely sized to |size_hint_in_dp| as possible
-  //  - load from the specific resource ID if |icon_key.resource_id| is set
-  //  - may optionally use |icon_key|'s timeline property as a "version number"
-  //    for an icon. Alternatively, this may be ignored if there will only ever
-  //    be one version of an icon at any time.
-  //  - optionally return a placeholder default icon if |allow_placeholder_icon|
-  //    is true and when no icon is available for the app (or an icon for the
-  //    app cannot be efficiently provided). Otherwise, a null icon should be
-  //    returned.
-  LoadIcon(
-      string app_id,
-      IconKey icon_key,
-      IconType icon_type,
-      int32 size_hint_in_dip,
-      bool allow_placeholder_icon) => (IconValue icon_value);
 
   // Launches an app identified by |app_id|. |event_flags| contains launch
   // options (e.g. window disposition). |launch_source| contains the source

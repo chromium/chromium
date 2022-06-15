@@ -95,23 +95,6 @@ void AppServiceMojomImpl::RegisterSubscriber(
   subscribers_.Add(std::move(subscriber));
 }
 
-void AppServiceMojomImpl::LoadIcon(apps::mojom::AppType app_type,
-                                   const std::string& app_id,
-                                   apps::mojom::IconKeyPtr icon_key,
-                                   apps::mojom::IconType icon_type,
-                                   int32_t size_hint_in_dip,
-                                   bool allow_placeholder_icon,
-                                   LoadIconCallback callback) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-  iter->second->LoadIcon(app_id, std::move(icon_key), icon_type,
-                         size_hint_in_dip, allow_placeholder_icon,
-                         std::move(callback));
-}
-
 void AppServiceMojomImpl::Launch(apps::mojom::AppType app_type,
                                  const std::string& app_id,
                                  int32_t event_flags,

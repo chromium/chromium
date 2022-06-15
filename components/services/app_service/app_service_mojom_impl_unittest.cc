@@ -105,16 +105,6 @@ class FakePublisher : public apps::PublisherBase {
     subscribers_.Add(std::move(subscriber));
   }
 
-  void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
-                int32_t size_hint_in_dip,
-                bool allow_placeholder_icon,
-                LoadIconCallback callback) override {
-    load_icon_app_id = app_id;
-    std::move(callback).Run(apps::mojom::IconValue::New());
-  }
-
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
@@ -259,8 +249,6 @@ class AppServiceMojomImplTest : public testing::Test {
 };
 
 TEST_F(AppServiceMojomImplTest, PubSub) {
-  const int size_hint_in_dip = 64;
-
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   AppServiceMojomImpl impl(temp_dir_.GetPath());
 
@@ -357,37 +345,6 @@ TEST_F(AppServiceMojomImplTest, PubSub) {
   EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
   EXPECT_EQ("&", sub1.AppIdsAccessingCamera());
   EXPECT_EQ("", sub1.AppIdsAccessingMicrophone());
-
-  // Call LoadIcon on the impl twice.
-  //
-  // The first time (i == 0), it should be forwarded onto the AppType::kBuiltIn
-  // publisher (which is pub1) and no other publisher.
-  //
-  // The second time (i == 1), passing AppType::kUnknown, none of the
-  // publishers' LoadIcon's should fire, but the callback should still be run.
-  for (int i = 0; i < 2; i++) {
-    auto app_type = i == 0 ? apps::mojom::AppType::kBuiltIn
-                           : apps::mojom::AppType::kUnknown;
-
-    bool callback_ran = false;
-    pub0.load_icon_app_id = "-";
-    pub1.load_icon_app_id = "-";
-    pub2.load_icon_app_id = "-";
-    auto icon_key = apps::mojom::IconKey::New(0, 0, 0);
-    constexpr bool allow_placeholder_icon = false;
-    impl.LoadIcon(
-        app_type, "o", std::move(icon_key),
-        apps::mojom::IconType::kUncompressed, size_hint_in_dip,
-        allow_placeholder_icon,
-        base::BindOnce(
-            [](bool* ran, apps::mojom::IconValuePtr iv) { *ran = true; },
-            &callback_ran));
-    impl.FlushMojoCallsForTesting();
-    EXPECT_TRUE(callback_ran);
-    EXPECT_EQ("-", pub0.load_icon_app_id);
-    EXPECT_EQ(i == 0 ? "o" : "-", pub1.load_icon_app_id);
-    EXPECT_EQ("-", pub2.load_icon_app_id);
-  }
 }
 
 TEST_F(AppServiceMojomImplTest, PreferredApps) {

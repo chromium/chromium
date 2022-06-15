@@ -172,24 +172,6 @@ void WebApps::Connect(
                                 std::move(subscriber_remote)));
 }
 
-void WebApps::LoadIcon(const std::string& app_id,
-                       apps::mojom::IconKeyPtr icon_key,
-                       apps::mojom::IconType icon_type,
-                       int32_t size_hint_in_dip,
-                       bool allow_placeholder_icon,
-                       LoadIconCallback callback) {
-  if (!icon_key) {
-    // On failure, we still run the callback, with an empty IconValue.
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  publisher_helper().LoadIcon(
-      app_id, apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-      static_cast<IconEffects>(icon_key->icon_effects),
-      apps::IconValueToMojomIconValueCallback(std::move(callback)));
-}
-
 void WebApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::mojom::LaunchSource launch_source,

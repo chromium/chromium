@@ -163,25 +163,6 @@ void StandaloneBrowserExtensionApps::Connect(
                                true /* should_notify_initialized */);
 }
 
-void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
-                                              apps::mojom::IconKeyPtr icon_key,
-                                              apps::mojom::IconType icon_type,
-                                              int32_t size_hint_in_dip,
-                                              bool allow_placeholder_icon,
-                                              LoadIconCallback callback) {
-  // It is possible that Lacros is briefly unavailable, for example if it shuts
-  // down for an update.
-  if (!controller_.is_bound()) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  controller_->LoadIcon(app_id, ConvertMojomIconKeyToIconKey(icon_key),
-                        ConvertMojomIconTypeToIconType(icon_type),
-                        size_hint_in_dip,
-                        IconValueToMojomIconValueCallback(std::move(callback)));
-}
-
 void StandaloneBrowserExtensionApps::Launch(
     const std::string& app_id,
     int32_t event_flags,

@@ -146,25 +146,6 @@ void CrostiniApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void CrostiniApps::LoadIcon(const std::string& app_id,
-                            apps::mojom::IconKeyPtr icon_key,
-                            apps::mojom::IconType icon_type,
-                            int32_t size_hint_in_dip,
-                            bool allow_placeholder_icon,
-                            LoadIconCallback callback) {
-  if (!icon_key) {
-    // On failure, we still run the callback, with an empty IconValue.
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  std::unique_ptr<IconKey> key = ConvertMojomIconKeyToIconKey(icon_key);
-  registry_->LoadIcon(app_id, *key, ConvertMojomIconTypeToIconType(icon_type),
-                      size_hint_in_dip, allow_placeholder_icon,
-                      IDR_LOGO_CROSTINI_DEFAULT,
-                      IconValueToMojomIconValueCallback(std::move(callback)));
-}
-
 void CrostiniApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,

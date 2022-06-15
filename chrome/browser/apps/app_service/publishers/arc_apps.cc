@@ -751,50 +751,6 @@ void ArcApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void ArcApps::LoadIcon(const std::string& app_id,
-                       apps::mojom::IconKeyPtr icon_key,
-                       apps::mojom::IconType mojom_icon_type,
-                       int32_t size_hint_in_dip,
-                       bool allow_placeholder_icon,
-                       LoadIconCallback callback) {
-  if (!icon_key || mojom_icon_type == apps::mojom::IconType::kUnknown) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-  IconEffects icon_effects = static_cast<IconEffects>(icon_key->icon_effects);
-
-  apps::IconType icon_type = ConvertMojomIconTypeToIconType(mojom_icon_type);
-
-  // Treat the Play Store as a special case, loading an icon defined by a
-  // resource instead of asking the Android VM (or the cache of previous
-  // responses from the Android VM). Presumably this is for bootstrapping:
-  // the Play Store icon (the UI for enabling and installing Android apps)
-  // should be showable even before the user has installed their first
-  // Android app and before bringing up an Android VM for the first time.
-  if (app_id == arc::kPlayStoreAppId) {
-    LoadPlayStoreIcon(icon_type, size_hint_in_dip, icon_effects,
-                      IconValueToMojomIconValueCallback(std::move(callback)));
-  } else {
-    const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-    DCHECK(arc_prefs);
-
-    // If the app has been removed, immediately terminate the icon request since
-    // it can't possibly succeed.
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-        arc_prefs->GetApp(app_id);
-    if (!app_info) {
-      std::move(callback).Run(apps::mojom::IconValue::New());
-      return;
-    }
-
-    arc_icon_once_loader_.LoadIcon(
-        app_id, size_hint_in_dip, icon_type,
-        base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
-                       size_hint_in_dip, icon_effects,
-                       IconValueToMojomIconValueCallback(std::move(callback))));
-  }
-}
-
 void ArcApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::mojom::LaunchSource launch_source,
