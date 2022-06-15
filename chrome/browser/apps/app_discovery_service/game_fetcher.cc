@@ -233,7 +233,7 @@ std::u16string GameFetcher::GetLocalisedName(
     Profile* profile) {
   std::string resolved_locale;
 
-  if (!test_language_.has_value()) {
+  if (test_language_.has_value()) {
     // Use language set for testing.
     resolved_locale = test_language_.value();
   } else {
