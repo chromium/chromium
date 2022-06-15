@@ -302,14 +302,8 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
 
   encode_pending_ = true;
 
-  // Just in case the encoder runs the callback on an arbitrary thread,
-  // BindPostTask() is used here to trampoline onto the correct thread.
-  // This object is bound via a WeakPtr which must only be dereferenced
-  // on the current thread.
-  auto encode_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&WebrtcVideoEncoderWrapper::OnFrameEncoded,
-                     weak_factory_.GetWeakPtr()));
+  auto encode_callback = base::BindOnce(
+      &WebrtcVideoEncoderWrapper::OnFrameEncoded, weak_factory_.GetWeakPtr());
   encoder_->Encode(std::move(desktop_frame), frame_params,
                    std::move(encode_callback));
   return WEBRTC_VIDEO_CODEC_OK;

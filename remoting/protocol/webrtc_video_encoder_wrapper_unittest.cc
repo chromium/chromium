@@ -165,9 +165,8 @@ class MockVideoEncoder : public WebrtcVideoEncoder {
 class WebrtcVideoEncoderWrapperTest : public testing::Test {
  public:
   void SetUp() override {
-    mock_video_encoder_ = std::make_unique<NiceMock<MockVideoEncoder>>();
-
     // Configure the mock encoder's default behavior to mimic a real encoder.
+    mock_video_encoder_ = std::make_unique<NiceMock<MockVideoEncoder>>();
     ON_CALL(*mock_video_encoder_, Encode)
         .WillByDefault([](std::unique_ptr<webrtc::DesktopFrame> frame,
                           const WebrtcVideoEncoder::FrameParams& param,
@@ -176,6 +175,27 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
               std::make_unique<WebrtcVideoEncoder::EncodedFrame>();
           std::move(done).Run(WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
                               std::move(encoded_frame));
+        });
+
+    // Configure this mock encoder's behavior to mimic a real async encoder.
+    mock_video_encoder_async_ = std::make_unique<NiceMock<MockVideoEncoder>>();
+    ON_CALL(*mock_video_encoder_async_, Encode)
+        .WillByDefault([this](std::unique_ptr<webrtc::DesktopFrame> frame,
+                              const WebrtcVideoEncoder::FrameParams& param,
+                              WebrtcVideoEncoder::EncodeCallback done) {
+          auto encoded_frame =
+              std::make_unique<WebrtcVideoEncoder::EncodedFrame>();
+          encoded_frame->size = frame->size();
+          encoded_frame->data.assign(
+              frame->size().width() * frame->size().height(), 'a');
+          encoded_frame->key_frame = param.key_frame;
+          encoded_frame->quantizer = param.vpx_min_quantizer;
+          encoded_frame->codec = kVideoCodecVP9;
+          task_environment_.GetMainThreadTaskRunner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(done),
+                             WebrtcVideoEncoder::EncodeResult::SUCCEEDED,
+                             std::move(encoded_frame)));
         });
   }
 
@@ -205,6 +225,7 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
   NiceMock<MockVideoChannelStateObserver> observer_;
   MockEncodedImageCallback callback_;
   std::unique_ptr<NiceMock<MockVideoEncoder>> mock_video_encoder_;
+  std::unique_ptr<NiceMock<MockVideoEncoder>> mock_video_encoder_async_;
 };
 
 TEST_F(WebrtcVideoEncoderWrapperTest, ReturnsVP8EncodedFrames) {
@@ -257,7 +278,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest, NotifiesFrameEncodedAndReturned) {
   PostQuitAndRun();
 }
 
-TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfEncoderBusy) {
+TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfAsyncEncoderBusy) {
   EXPECT_CALL(callback_, OnEncodedImage(_, Field(&CodecSpecificInfo::codecType,
                                                  kVideoCodecVP9)))
       .WillOnce(Return(kResultOk));
@@ -265,6 +286,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfEncoderBusy) {
   auto frame1 = MakeVideoFrame();
   auto frame2 = MakeVideoFrame();
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_async_));
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
   encoder->Encode(frame1, &frame_types);
   encoder->Encode(frame2, &frame_types);
@@ -278,13 +300,21 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
     InSequence s;
 
     // Encode frame1.
-    EXPECT_CALL(*mock_video_encoder_, Encode);
+    EXPECT_CALL(*mock_video_encoder_async_, Encode);
+    EXPECT_CALL(
+        callback_,
+        OnEncodedImage(_, Field(&CodecSpecificInfo::codecType, kVideoCodecVP9)))
+        .WillOnce(Return(kResultOk));
 
     // Encode frame3. Its update-region should be the rectangle-union of frame2
     // and frame3.
     auto combined_rect = DesktopRect::MakeLTRB(100, 200, 310, 410);
-    EXPECT_CALL(*mock_video_encoder_,
+    EXPECT_CALL(*mock_video_encoder_async_,
                 Encode(Pointee(MatchesUpdateRect(combined_rect)), _, _));
+    EXPECT_CALL(
+        callback_,
+        OnEncodedImage(_, Field(&CodecSpecificInfo::codecType, kVideoCodecVP9)))
+        .WillOnce(Return(kResultOk));
   }
 
   auto frame1 = MakeVideoFrame();
@@ -296,7 +326,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
       .offset_x = 300, .offset_y = 400, .width = 10, .height = 10});
 
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
-  encoder->SetEncoderForTest(std::move(mock_video_encoder_));
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_async_));
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
 
   // frame2 should be dropped since the encoder is busy.
@@ -365,7 +395,8 @@ TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameNotDroppedIfKeyFrame) {
   PostQuitAndRun();
 }
 
-TEST_F(WebrtcVideoEncoderWrapperTest, KeyFrameRequestRememberedIfEncoderBusy) {
+TEST_F(WebrtcVideoEncoderWrapperTest,
+       KeyFrameRequestRememberedIfAsyncEncoderBusy) {
   // Three frames are used for this test:
   // Frame 1 kicks off the encoder.
   // Frame 2 is a key-frame request, which is dropped because frame 1 is still
@@ -376,10 +407,10 @@ TEST_F(WebrtcVideoEncoderWrapperTest, KeyFrameRequestRememberedIfEncoderBusy) {
   //
   // The end-result is that the encoder should see two key-frame requests (for
   // frames 1 and 3).
-  // Note that |mock_video_encoder_| does not produce any video frames. This
-  // means that no encoded frames are returned to WebRTC and so OnEncodedImage()
-  // is not EXPECT_CALL()ed by this test.
-  EXPECT_CALL(*mock_video_encoder_, Encode(_, IsKeyFrame(), _)).Times(2);
+  EXPECT_CALL(*mock_video_encoder_async_, Encode(_, IsKeyFrame(), _)).Times(2);
+  EXPECT_CALL(callback_, OnEncodedImage(_, _))
+      .Times(2)
+      .WillRepeatedly(Return(kResultOk));
 
   auto frame1 = MakeVideoFrame();
   auto frame2 = MakeVideoFrame();
@@ -388,7 +419,7 @@ TEST_F(WebrtcVideoEncoderWrapperTest, KeyFrameRequestRememberedIfEncoderBusy) {
   std::vector<VideoFrameType> frame_types2{VideoFrameType::kVideoFrameKey};
   std::vector<VideoFrameType> frame_types3{VideoFrameType::kVideoFrameDelta};
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
-  encoder->SetEncoderForTest(std::move(mock_video_encoder_));
+  encoder->SetEncoderForTest(std::move(mock_video_encoder_async_));
 
   encoder->Encode(frame1, &frame_types1);
   encoder->Encode(frame2, &frame_types2);
