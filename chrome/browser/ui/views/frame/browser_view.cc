@@ -217,7 +217,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/content_accelerators/accelerator_util.h"
@@ -454,18 +453,13 @@ class ContentsSeparator : public views::View {
   METADATA_HEADER(ContentsSeparator);
 
   ContentsSeparator() {
+    SetBackground(
+        views::CreateThemedSolidBackground(kColorToolbarContentAreaSeparator));
+
     // BrowserViewLayout will respect either the height or width of this,
     // depending on orientation, not simultaneously both.
     SetPreferredSize(
         gfx::Size(views::Separator::kThickness, views::Separator::kThickness));
-  }
-
- private:
-  // views::View:
-  void OnThemeChanged() override {
-    SetBackground(views::CreateSolidBackground(
-        GetColorProvider()->GetColor(kColorToolbarContentAreaSeparator)));
-    View::OnThemeChanged();
   }
 };
 
