@@ -26,15 +26,18 @@ class DIPSService;
 // data needed to detect stateful client-side redirects.
 class ClientBounceDetectionState {
  public:
-  ClientBounceDetectionState() = delete;
-  explicit ClientBounceDetectionState(GURL url, base::TimeTicks load_time) {
-    this->previous_url = url;
+  ClientBounceDetectionState(GURL url,
+                             std::string site,
+                             base::TimeTicks load_time) {
+    this->previous_url = std::move(url);
+    this->current_site = std::move(site);
     this->page_load_time = load_time;
   }
 
   // The NavigationHandle's previously committed URL at the time the navigation
   // finishes and commits.
   GURL previous_url;
+  std::string current_site;
   base::TimeTicks page_load_time;
   bool received_user_activation = false;
   CookieAccessType cookie_access_type = CookieAccessType::kNone;

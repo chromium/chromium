@@ -208,7 +208,8 @@ void DIPSBounceDetector::OnCookiesAccessed(
     return;
   }
 
-  if (client_detection_state_.has_value()) {
+  if (client_detection_state_ &&
+      GetSite(details.url) == client_detection_state_->current_site) {
     client_detection_state_->cookie_access_type =
         client_detection_state_->cookie_access_type |
         (details.type == Type::kChange ? CookieAccessType::kWrite
@@ -247,8 +248,9 @@ void DIPSBounceDetector::DidFinishNavigation(
   // verified by checking IsInPrimaryMainFrame, !IsSameDocument, and
   // HasCommitted. HasCommitted is the only one not previously checked here.
   if (navigation_handle->HasCommitted()) {
-    client_detection_state_ = ClientBounceDetectionState(
-        navigation_handle->GetPreviousMainFrameURL(), now);
+    client_detection_state_ =
+        ClientBounceDetectionState(navigation_handle->GetPreviousMainFrameURL(),
+                                   GetSite(navigation_handle->GetURL()), now);
   }
 
   if (server_state && !server_state->filter.is_empty()) {

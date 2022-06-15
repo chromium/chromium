@@ -30,6 +30,7 @@
 #endif
 
 using content::NavigationHandle;
+using content::WebContents;
 
 namespace {
 
@@ -178,6 +179,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
+    host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
     host_resolver()->AddRule("d.test", "127.0.0.1");
     bounce_detector_ =
@@ -197,6 +199,21 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   void SetDIPSTime(base::TimeTicks ticks) { test_clock_.SetNowTicks(ticks); }
 
   void AdvanceDIPSTime(base::TimeDelta delta) { test_clock_.Advance(delta); }
+
+  void CreateImageAndWaitForCookieAccess(const GURL& image_url) {
+    WebContents* web_contents = GetActiveWebContents();
+    CookieAccessObserver observer(web_contents, web_contents->GetMainFrame());
+    ASSERT_TRUE(content::ExecJs(web_contents,
+                                content::JsReplace(
+                                    R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);)",
+                                    image_url),
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    // The image must cause a cookie access, or else this will hang.
+    observer.Wait();
+  }
 
  private:
   base::SimpleTestTickClock test_clock_;
@@ -899,4 +916,138 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           Bucket((int)RedirectCategory::kNoCookies_NoEngagement, 1),
           // b.test
           Bucket((int)RedirectCategory::kReadCookies_HasEngagement, 1)));
+}
+
+// This test verifies that a third-party cookie access doesn't cause a client
+// bounce to be considered stateful.
+IN_PROC_BROWSER_TEST_F(
+    DIPSBounceDetectorBrowserTest,
+    DetectStatefulRedirect_Client_IgnoreThirdPartySubresource) {
+  // We host the image on an HTTPS server, because for it to read a third-party
+  // cookie, it needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  https_server.RegisterDefaultHandler(base::BindRepeating(
+      &HandleCrossSiteSameSiteNoneCookieRedirect, &https_server));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL bounce_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL final_url = embedded_test_server()->GetURL("c.test", "/title1.html");
+  GURL image_url = https_server.GetURL("d.test", "/favicon/icon.png");
+  WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+      base::BindRepeating(&AppendRedirect, &redirects));
+
+  // Start logging WebContentsObserver callbacks.
+  WCOCallbackLogger::CreateForWebContents(web_contents);
+  auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
+
+  // Set SameSite=None cookie on d.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, https_server.GetURL(
+                        "d.test", "/set-cookie?foo=bar;Secure;SameSite=None")));
+
+  // Visit initial page
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  // Navigate with a click (not a redirect).
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
+  // Cause a third-party cookie read.
+  CreateImageAndWaitForCookieAccess(image_url);
+  // Navigate without a click (i.e. by redirecting).
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
+
+  EXPECT_THAT(logger->log(),
+              testing::ElementsAre(
+                  // Set cookie on d.test
+                  ("DidStartNavigation(d.test/set-cookie)"),
+                  ("OnCookiesAccessed(NavigationHandle, "
+                   "Change: d.test/set-cookie)"),
+                  ("DidFinishNavigation(d.test/set-cookie)"),
+                  // Visit a.test
+                  ("DidStartNavigation(a.test/title1.html)"),
+                  ("DidFinishNavigation(a.test/title1.html)"),
+                  // Bounce on b.test (reading third-party d.test cookie)
+                  ("DidStartNavigation(b.test/title1.html)"),
+                  ("DidFinishNavigation(b.test/title1.html)"),
+                  ("OnCookiesAccessed(RenderFrameHost, "
+                   "Read: d.test/favicon/icon.png)"),
+                  // Land on c.test
+                  ("DidStartNavigation(c.test/title1.html)"),
+                  ("DidFinishNavigation(c.test/title1.html)")));
+
+  // b.test is not considered a stateful bounce.
+  EXPECT_THAT(redirects, testing::IsEmpty());
+}
+
+// This test verifies that a same-site cookie access DOES cause a client
+// bounce to be considered stateful.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulRedirect_Client_FirstPartySubresource) {
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL bounce_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL final_url = embedded_test_server()->GetURL("c.test", "/title1.html");
+  GURL image_url =
+      embedded_test_server()->GetURL("sub.b.test", "/favicon/icon.png");
+  WebContents* web_contents = GetActiveWebContents();
+
+  std::vector<std::string> redirects;
+  bounce_detector()->SetStatefulRedirectHandlerForTesting(
+      base::BindRepeating(&AppendRedirect, &redirects));
+
+  // Start logging WebContentsObserver callbacks.
+  WCOCallbackLogger::CreateForWebContents(web_contents);
+  auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
+
+  // Set cookie on sub.b.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("sub.b.test", "/set-cookie?foo=bar")));
+
+  // Visit initial page
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  // Navigate with a click (not a redirect).
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, bounce_url));
+
+  // Advance TimeTicks by 1 second
+  AdvanceDIPSTime(base::TimeDelta(base::Seconds(1)));
+  // Cause a same-site cookie read.
+  CreateImageAndWaitForCookieAccess(image_url);
+  // Navigate without a click (i.e. by redirecting).
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
+
+  EXPECT_THAT(logger->log(),
+              testing::ElementsAre(
+                  // Set cookie on sub.b.test
+                  ("DidStartNavigation(sub.b.test/set-cookie)"),
+                  ("OnCookiesAccessed(NavigationHandle, "
+                   "Change: sub.b.test/set-cookie)"),
+                  ("DidFinishNavigation(sub.b.test/set-cookie)"),
+                  // Visit a.test
+                  ("DidStartNavigation(a.test/title1.html)"),
+                  ("DidFinishNavigation(a.test/title1.html)"),
+                  // Bounce on b.test (reading same-site sub.b.test cookie)
+                  ("DidStartNavigation(b.test/title1.html)"),
+                  ("DidFinishNavigation(b.test/title1.html)"),
+                  ("OnCookiesAccessed(RenderFrameHost, "
+                   "Read: sub.b.test/favicon/icon.png)"),
+                  // Land on c.test
+                  ("DidStartNavigation(c.test/title1.html)"),
+                  ("DidFinishNavigation(c.test/title1.html)")));
+
+  // b.test IS considered a stateful bounce, even though the cookie was read by
+  // an image hosted on sub.b.test.
+  EXPECT_THAT(
+      redirects,
+      testing::ElementsAre(
+          ("a.test/title1.html -> b.test/title1.html -> c.test/title1.html")));
 }
