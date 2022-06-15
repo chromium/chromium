@@ -102,9 +102,12 @@ class CheckBlinkStyle(object):
     def _engage_awesome_stderr_hacks(self):
         # Change stderr to write with replacement characters so we don't die
         # if we try to print something containing non-ASCII characters.
-        stderr = codecs.StreamReaderWriter(sys.stderr,
-                                           codecs.getreader('utf8'),
-                                           codecs.getwriter('utf8'), 'replace')
+        # We use sys.stderr.buffer in Python 3, since StreamReaderWriter writes
+        # bytes to the specified stream (this fix copied from cpplint.py).
+        stderr = codecs.StreamReaderWriter(
+            getattr(sys.stderr, 'buffer', sys.stderr),
+            codecs.getreader('utf8'), codecs.getwriter('utf8'), 'replace')
+
         # Setting an "encoding" attribute on the stream is necessary to
         # prevent the logging module from raising an error.  See
         # the checker.configure_logging() function for more information.
