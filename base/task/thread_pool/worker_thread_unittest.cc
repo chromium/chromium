@@ -889,7 +889,8 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
  public:
   void WaitForWork(WaitableEvent* wake_up_event) override {
     // Fill several buckets before going to sleep.
-    for (size_t size = 8; size < ThreadCache::kDefaultSizeThreshold; size++) {
+    for (size_t size = 8;
+         size < partition_alloc::ThreadCache::kDefaultSizeThreshold; size++) {
       void* data = malloc(size);
       // A simple malloc() / free() pair can be discarded by the compiler (and
       // is), making the test fail. It is sufficient to make |FreeForTest()| a
@@ -898,9 +899,11 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
       FreeForTest(data);
     }
 
-    size_t cached_memory_before = ThreadCache::Get()->CachedMemory();
+    size_t cached_memory_before =
+        partition_alloc::ThreadCache::Get()->CachedMemory();
     WorkerThreadDefaultDelegate::WaitForWork(wake_up_event);
-    size_t cached_memory_after = ThreadCache::Get()->CachedMemory();
+    size_t cached_memory_after =
+        partition_alloc::ThreadCache::Get()->CachedMemory();
 
     if (!first_wakeup_done_) {
       // First time we sleep is a short sleep, no cache purging.

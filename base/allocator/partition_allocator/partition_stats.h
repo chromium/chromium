@@ -129,16 +129,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SimplePartitionStatsDumper
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionBucketMemoryStats;
-using ::partition_alloc::PartitionMemoryStats;
-using ::partition_alloc::PartitionStatsDumper;
-using ::partition_alloc::SimplePartitionStatsDumper;
-using ::partition_alloc::ThreadCacheStats;
-
-}  // namespace base
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_STATS_H_

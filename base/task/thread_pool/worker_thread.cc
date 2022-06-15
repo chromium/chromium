@@ -118,7 +118,7 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
 
   // Timed out.
   if (!was_signaled) {
-    ThreadCache::PurgeCurrentThread();
+    partition_alloc::ThreadCache::PurgeCurrentThread();
 
     // The thread woke up to purge before its standard reclaim time. Sleep for
     // what's remaining until then.

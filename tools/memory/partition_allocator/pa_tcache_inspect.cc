@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -365,9 +366,9 @@ void DisplayPerThreadData(
   std::cout << "Per thread:\n"
             << "Thread Name         Size\tPurge\n"
             << std::string(80, '-') << "\n";
-  base::ThreadCacheStats all_threads_stats = {0};
+  ThreadCacheStats all_threads_stats = {0};
   for (const auto& tcache : inspector.thread_caches()) {
-    base::ThreadCacheStats stats = {0};
+    ThreadCacheStats stats = {0};
     // No alloc stats, they reach into tcache->root_, which is not valid.
     tcache.get()->AccumulateStats(&stats);
     tcache.get()->AccumulateStats(&all_threads_stats);

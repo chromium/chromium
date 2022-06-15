@@ -73,7 +73,8 @@ ArrayBufferAllocator* ArrayBufferAllocator::SharedInstance() {
 
 // static
 void ArrayBufferAllocator::InitializePartition() {
-  static base::NoDestructor<base::PartitionAllocator> partition_allocator{};
+  static base::NoDestructor<partition_alloc::PartitionAllocator>
+      partition_allocator{};
 
   // These configuration options are copied from blink's ArrayBufferPartition.
   partition_allocator->init({

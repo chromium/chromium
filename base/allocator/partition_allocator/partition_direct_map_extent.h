@@ -72,13 +72,4 @@ PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::PartitionDirectMapExtent;
-using ::partition_alloc::internal::PartitionDirectMapMetadata;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_DIRECT_MAP_EXTENT_H_

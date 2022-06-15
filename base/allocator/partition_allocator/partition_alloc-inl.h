@@ -63,15 +63,4 @@ PA_ALWAYS_INLINE bool RandomPeriod() {
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::SecureMemset;
-#if !BUILDFLAG(PA_DCHECK_IS_ON)
-using ::partition_alloc::internal::RandomPeriod;
-#endif  // !BUILDFLAG(PA_DCHECK_IS_ON)
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_INL_H_

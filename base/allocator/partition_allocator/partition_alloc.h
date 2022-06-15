@@ -43,14 +43,4 @@ using PartitionAllocator = internal::PartitionAllocator<internal::ThreadSafe>;
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionAllocator;
-using ::partition_alloc::PartitionAllocGlobalInit;
-using ::partition_alloc::PartitionAllocGlobalUninitForTesting;
-
-}  // namespace base
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_

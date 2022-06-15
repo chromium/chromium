@@ -211,11 +211,12 @@ void ReportMallinfoStats(ProcessMemoryDump* pmd,
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-void ReportPartitionAllocThreadCacheStats(ProcessMemoryDump* pmd,
-                                          MemoryAllocatorDump* dump,
-                                          const ThreadCacheStats& stats,
-                                          const std::string& metrics_suffix,
-                                          bool detailed) {
+void ReportPartitionAllocThreadCacheStats(
+    ProcessMemoryDump* pmd,
+    MemoryAllocatorDump* dump,
+    const partition_alloc::ThreadCacheStats& stats,
+    const std::string& metrics_suffix,
+    bool detailed) {
   dump->AddScalar("alloc_count", MemoryAllocatorDump::kTypeScalar,
                   stats.alloc_count);
   dump->AddScalar("alloc_hits", MemoryAllocatorDump::kTypeScalar,
@@ -257,7 +258,7 @@ void ReportPartitionAllocThreadCacheStats(ProcessMemoryDump* pmd,
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
     if (detailed) {
-      base::internal::BucketIndexLookup lookup{};
+      partition_alloc::internal::BucketIndexLookup lookup{};
       std::string name = dump->absolute_name();
       for (size_t i = 0; i < partition_alloc::kNumBuckets; i++) {
         size_t bucket_size = lookup.bucket_sizes()[i];
@@ -425,7 +426,7 @@ std::string GetPartitionDumpName(const char* root_name,
 
 void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     const char* partition_name,
-    const base::PartitionMemoryStats* memory_stats) {
+    const partition_alloc::PartitionMemoryStats* memory_stats) {
   total_mmapped_bytes_ += memory_stats->total_mmapped_bytes;
   total_resident_bytes_ += memory_stats->total_resident_bytes;
   total_active_bytes_ += memory_stats->total_active_bytes;
@@ -503,7 +504,7 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
 
 void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
     const char* partition_name,
-    const base::PartitionBucketMemoryStats* memory_stats) {
+    const partition_alloc::PartitionBucketMemoryStats* memory_stats) {
   DCHECK(memory_stats->is_valid);
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   if (memory_stats->is_direct_map) {

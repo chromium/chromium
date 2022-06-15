@@ -59,7 +59,8 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   NonScannableAllocatorImpl();
   ~NonScannableAllocatorImpl();
 
-  std::unique_ptr<base::PartitionAllocator, PCScanMetadataDeleter> allocator_;
+  std::unique_ptr<partition_alloc::PartitionAllocator, PCScanMetadataDeleter>
+      allocator_;
   std::atomic_bool pcscan_enabled_{false};
 };
 

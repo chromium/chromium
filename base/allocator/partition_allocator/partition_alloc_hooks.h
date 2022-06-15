@@ -82,12 +82,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::PartitionAllocHooks;
-
-}  // namespace base
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_HOOKS_H_

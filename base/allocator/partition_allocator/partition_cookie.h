@@ -44,18 +44,4 @@ PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::kCookieSize;
-using ::partition_alloc::internal::kPartitionCookieSizeAdjustment;
-using ::partition_alloc::internal::PartitionCookieCheckValue;
-using ::partition_alloc::internal::PartitionCookieWriteValue;
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-using ::partition_alloc::internal::kCookieValue;
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_COOKIE_H_

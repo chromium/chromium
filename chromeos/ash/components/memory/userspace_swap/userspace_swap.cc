@@ -496,7 +496,7 @@ bool GetPartitionAllocSuperPagesInUse(
 
   auto& pool_manager = base::internal::AddressPoolManager::GetInstance();
 
-  for (base::internal::pool_handle ph :
+  for (partition_alloc::internal::pool_handle ph :
        {partition_alloc::internal::PartitionAddressSpace::GetRegularPool(),
         partition_alloc::internal::PartitionAddressSpace::GetBRPPool()}) {
     uintptr_t pool_base = pool_manager.GetPoolBaseAddress(ph);

@@ -53,7 +53,7 @@ void NonScannableAllocatorImpl<Quarantinable>::Free(void* ptr) {
 
 template <bool Quarantinable>
 void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
-  allocator_.reset(MakePCScanMetadata<base::PartitionAllocator>());
+  allocator_.reset(MakePCScanMetadata<partition_alloc::PartitionAllocator>());
   allocator_->init({
       PartitionOptions::AlignedAlloc::kDisallowed,
       PartitionOptions::ThreadCache::kDisabled,

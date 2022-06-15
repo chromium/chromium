@@ -724,11 +724,11 @@ SHIM_ALWAYS_EXPORT int mallopt(int cmd, int value) __THROW {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
-  base::SimplePartitionStatsDumper allocator_dumper;
+  partition_alloc::SimplePartitionStatsDumper allocator_dumper;
   Allocator()->DumpStats("malloc", true, &allocator_dumper);
   // TODO(bartekn): Dump OriginalAllocator() into "malloc" as well.
 
-  base::SimplePartitionStatsDumper aligned_allocator_dumper;
+  partition_alloc::SimplePartitionStatsDumper aligned_allocator_dumper;
   if (AlignedAllocator() != Allocator()) {
     AlignedAllocator()->DumpStats("posix_memalign", true,
                                   &aligned_allocator_dumper);
@@ -737,13 +737,13 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   // Dump stats for nonscannable and nonquarantinable allocators.
   auto& nonscannable_allocator =
       base::internal::NonScannableAllocator::Instance();
-  base::SimplePartitionStatsDumper nonscannable_allocator_dumper;
+  partition_alloc::SimplePartitionStatsDumper nonscannable_allocator_dumper;
   if (auto* nonscannable_root = nonscannable_allocator.root())
     nonscannable_root->DumpStats("malloc", true,
                                  &nonscannable_allocator_dumper);
   auto& nonquarantinable_allocator =
       base::internal::NonQuarantinableAllocator::Instance();
-  base::SimplePartitionStatsDumper nonquarantinable_allocator_dumper;
+  partition_alloc::SimplePartitionStatsDumper nonquarantinable_allocator_dumper;
   if (auto* nonquarantinable_root = nonquarantinable_allocator.root())
     nonquarantinable_root->DumpStats("malloc", true,
                                      &nonquarantinable_allocator_dumper);

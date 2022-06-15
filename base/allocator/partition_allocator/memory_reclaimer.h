@@ -71,12 +71,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::MemoryReclaimer;
-
-}  // namespace base
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_MEMORY_RECLAIMER_H_

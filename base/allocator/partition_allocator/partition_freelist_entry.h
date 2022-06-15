@@ -327,12 +327,4 @@ PA_ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::PartitionFreelistEntry;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_FREELIST_ENTRY_H_

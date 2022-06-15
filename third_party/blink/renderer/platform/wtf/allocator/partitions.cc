@@ -122,7 +122,8 @@ bool Partitions::InitializeOnce() {
 #else
         base::PartitionOptions::ThreadCache::kEnabled;
 #endif
-    static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
+    static base::NoDestructor<partition_alloc::PartitionAllocator>
+        fast_malloc_allocator{};
     fast_malloc_allocator->init({
         base::PartitionOptions::AlignedAlloc::kDisallowed,
         thread_cache,
@@ -134,9 +135,10 @@ bool Partitions::InitializeOnce() {
     fast_malloc_root_ = fast_malloc_allocator->root();
   }
 
-  base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
+  partition_alloc::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  static base::NoDestructor<base::PartitionAllocator> buffer_allocator{};
+  static base::NoDestructor<partition_alloc::PartitionAllocator>
+      buffer_allocator{};
   buffer_allocator->init({
       base::PartitionOptions::AlignedAlloc::kDisallowed,
       base::PartitionOptions::ThreadCache::kDisabled,
@@ -177,7 +179,8 @@ void Partitions::InitializeArrayBufferPartition() {
   CHECK(initialized_);
   CHECK(!ArrayBufferPartitionInitialized());
 
-  static base::NoDestructor<base::PartitionAllocator> array_buffer_allocator{};
+  static base::NoDestructor<partition_alloc::PartitionAllocator>
+      array_buffer_allocator{};
 
   // BackupRefPtr disallowed because it will prevent allocations from being 16B
   // aligned as required by ArrayBufferContents.
@@ -248,13 +251,13 @@ class LightPartitionStatsDumperImpl
 
   void PartitionDumpTotals(
       const char* partition_name,
-      const base::PartitionMemoryStats* memory_stats) override {
+      const partition_alloc::PartitionMemoryStats* memory_stats) override {
     total_active_bytes_ += memory_stats->total_active_bytes;
   }
 
   void PartitionsDumpBucketStats(
       const char* partition_name,
-      const base::PartitionBucketMemoryStats*) override {}
+      const partition_alloc::PartitionBucketMemoryStats*) override {}
 
   size_t TotalActiveBytes() const { return total_active_bytes_; }
 

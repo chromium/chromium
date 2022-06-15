@@ -83,8 +83,8 @@ void InstallPartitionAllocHooks(
   sampling_state.Init(sampling_frequency);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook
   // PDFium's PartitionAlloc fork.
-  base::PartitionAllocHooks::SetOverrideHooks(&AllocationHook, &FreeHook,
-                                              &ReallocHook);
+  partition_alloc::PartitionAllocHooks::SetOverrideHooks(
+      &AllocationHook, &FreeHook, &ReallocHook);
 }
 
 }  // namespace internal

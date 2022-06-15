@@ -68,7 +68,7 @@ class SamplingPartitionAllocShimsTest : public base::MultiProcessTest {
  public:
   static void multiprocessTestSetup() {
     crash_reporter::InitializeCrashKeys();
-    base::PartitionAllocGlobalInit(HandleOOM);
+    partition_alloc::PartitionAllocGlobalInit(HandleOOM);
     InstallPartitionAllocHooks(
         AllocatorState::kMaxMetadata, AllocatorState::kMaxMetadata,
         AllocatorState::kMaxSlots, kSamplingFrequency, base::DoNothing());
@@ -87,7 +87,7 @@ class SamplingPartitionAllocShimsTest : public base::MultiProcessTest {
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     BasicFunctionality,
     SamplingPartitionAllocShimsTest::multiprocessTestSetup) {
-  base::PartitionAllocator allocator;
+  partition_alloc::PartitionAllocator allocator;
   allocator.init(kAllocatorOptions);
   for (size_t i = 0; i < kLoopIterations; i++) {
     void* ptr = allocator.root()->Alloc(1, kFakeType);
@@ -107,7 +107,7 @@ TEST_F(SamplingPartitionAllocShimsTest, BasicFunctionality) {
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     Realloc,
     SamplingPartitionAllocShimsTest::multiprocessTestSetup) {
-  base::PartitionAllocator allocator;
+  partition_alloc::PartitionAllocator allocator;
   allocator.init(kAllocatorOptions);
 
   void* alloc = GetPartitionAllocGpaForTesting().Allocate(base::GetPageSize());
@@ -136,7 +136,7 @@ TEST_F(SamplingPartitionAllocShimsTest, Realloc) {
 MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     DifferentTypesDontOverlap,
     SamplingPartitionAllocShimsTest::multiprocessTestSetup) {
-  base::PartitionAllocator allocator;
+  partition_alloc::PartitionAllocator allocator;
   allocator.init(kAllocatorOptions);
 
   std::set<void*> type1, type2;

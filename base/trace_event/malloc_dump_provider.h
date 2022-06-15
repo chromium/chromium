@@ -71,7 +71,7 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
 // PartitionAllocMemoryDumpProvider. This implements an interface that will
 // be called with memory statistics for each bucket in the allocator.
 class BASE_EXPORT MemoryDumpPartitionStatsDumper final
-    : public base::PartitionStatsDumper {
+    : public partition_alloc::PartitionStatsDumper {
  public:
   MemoryDumpPartitionStatsDumper(const char* root_name,
                                  ProcessMemoryDump* memory_dump,
@@ -83,11 +83,12 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   static const char* kPartitionsDumpName;
 
   // PartitionStatsDumper implementation.
-  void PartitionDumpTotals(const char* partition_name,
-                           const base::PartitionMemoryStats*) override;
+  void PartitionDumpTotals(
+      const char* partition_name,
+      const partition_alloc::PartitionMemoryStats*) override;
   void PartitionsDumpBucketStats(
       const char* partition_name,
-      const base::PartitionBucketMemoryStats*) override;
+      const partition_alloc::PartitionBucketMemoryStats*) override;
 
   size_t total_mmapped_bytes() const { return total_mmapped_bytes_; }
   size_t total_resident_bytes() const { return total_resident_bytes_; }

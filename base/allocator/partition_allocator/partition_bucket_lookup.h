@@ -270,12 +270,4 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
 
 }  // namespace partition_alloc::internal
 
-namespace base::internal {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::internal::BucketIndexLookup;
-
-}  // namespace base::internal
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_LOOKUP_H_

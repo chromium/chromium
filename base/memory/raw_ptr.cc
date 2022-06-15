@@ -70,11 +70,12 @@ template struct BackupRefPtrImpl</*AllowDangling=*/true>;
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
-  if (IsManagedByDirectMap(address)) {
-    uintptr_t reservation_start = GetDirectMapReservationStart(address);
+  if (partition_alloc::internal::IsManagedByDirectMap(address)) {
+    uintptr_t reservation_start =
+        partition_alloc::internal::GetDirectMapReservationStart(address);
     CHECK(address - reservation_start >= partition_alloc::PartitionPageSize());
   } else {
-    CHECK(IsManagedByNormalBuckets(address));
+    CHECK(partition_alloc::internal::IsManagedByNormalBuckets(address));
     CHECK(address % partition_alloc::kSuperPageSize >=
           partition_alloc::PartitionPageSize());
   }
