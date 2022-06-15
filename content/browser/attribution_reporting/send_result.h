@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 
-#include "content/common/content_export.h"
-
 namespace content {
 
 // Struct that contains data about sent reports. Some info is displayed in the
@@ -14,7 +12,7 @@ namespace content {
 // TODO(apaseltiner): Consider replacing this struct with a single int that
 // contains either HTTP response code, network error, or custom values for
 // `Status::kDropped` and `Status::kFailedToAssemble`.
-struct CONTENT_EXPORT SendResult {
+struct SendResult {
   enum class Status {
     kSent,
     // The report failed without receiving response headers.

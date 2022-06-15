@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "content/browser/attribution_reporting/attribution_internals.mojom.h"
-#include "content/common/content_export.h"
+#include "content/browser/attribution_reporting/attribution_internals.mojom-forward.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -18,6 +17,8 @@ namespace content {
 
 class AttributionInternalsHandlerImpl;
 class AttributionInternalsUI;
+class RenderFrameHost;
+class WebUI;
 
 // WebUIConfig for chrome://attribution-internals page
 class AttributionInternalsUIConfig
@@ -29,14 +30,13 @@ class AttributionInternalsUIConfig
 };
 
 // WebUI which handles serving the chrome://attribution-internals page.
-class CONTENT_EXPORT AttributionInternalsUI : public WebUIController {
+class AttributionInternalsUI : public WebUIController {
  public:
   explicit AttributionInternalsUI(WebUI* web_ui);
-  AttributionInternalsUI(const AttributionInternalsUI& other) = delete;
-  AttributionInternalsUI& operator=(const AttributionInternalsUI& other) =
-      delete;
-  AttributionInternalsUI(AttributionInternalsUI&& other) = delete;
-  AttributionInternalsUI& operator=(AttributionInternalsUI&& other) = delete;
+  AttributionInternalsUI(const AttributionInternalsUI&) = delete;
+  AttributionInternalsUI& operator=(const AttributionInternalsUI&) = delete;
+  AttributionInternalsUI(AttributionInternalsUI&&) = delete;
+  AttributionInternalsUI& operator=(AttributionInternalsUI&&) = delete;
   ~AttributionInternalsUI() override;
 
   // WebUIController overrides:

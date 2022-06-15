@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -76,11 +75,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-  AttributionManagerImpl(const AttributionManagerImpl& other) = delete;
-  AttributionManagerImpl& operator=(const AttributionManagerImpl& other) =
-      delete;
-  AttributionManagerImpl(AttributionManagerImpl&& other) = delete;
-  AttributionManagerImpl& operator=(AttributionManagerImpl&& other) = delete;
+  AttributionManagerImpl(const AttributionManagerImpl&) = delete;
+  AttributionManagerImpl& operator=(const AttributionManagerImpl&) = delete;
+  AttributionManagerImpl(AttributionManagerImpl&&) = delete;
+  AttributionManagerImpl& operator=(AttributionManagerImpl&&) = delete;
   ~AttributionManagerImpl() override;
 
   // AttributionManager:
