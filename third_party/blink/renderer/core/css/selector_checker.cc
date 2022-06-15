@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
+#include "third_party/blink/renderer/core/dom/popup_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -1392,6 +1393,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoTopLayer:
       if (element.HasValidPopupAttribute()) {
         return element.popupOpen();
+      }
+      return false;
+    case CSSSelector::kPseudoPopupHidden:
+      if (element.HasValidPopupAttribute()) {
+        return element.GetPopupData()->visibilityState() ==
+               PopupVisibilityState::kHidden;
       }
       return false;
     case CSSSelector::kPseudoFullscreen:

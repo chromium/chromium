@@ -7225,38 +7225,6 @@ bool Document::HintShowing() const {
          (popup_and_hint_stack_.back()->PopupType() == PopupValueType::kHint);
 }
 
-void Document::HideTopmostPopupOrHint(HidePopupFocusBehavior focus_behavior) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (popup_and_hint_stack_.IsEmpty())
-    return;
-  popup_and_hint_stack_.back()->hidePopupInternal(focus_behavior);
-}
-
-void Document::HideAllPopupsUntil(const Element* endpoint,
-                                  HidePopupFocusBehavior focus_behavior) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  while (!popup_and_hint_stack_.IsEmpty() &&
-         popup_and_hint_stack_.back() != endpoint) {
-    popup_and_hint_stack_.back()->hidePopupInternal(focus_behavior);
-  }
-}
-
-void Document::HidePopupIfShowing(Element* popup,
-                                  HidePopupFocusBehavior focus_behavior) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  DCHECK(popup->HasValidPopupAttribute());
-  if (!popup->popupOpen())
-    return;
-  if (popup->PopupType() == PopupValueType::kAsync) {
-    popup->hidePopupInternal(focus_behavior);
-  } else {
-    HideAllPopupsUntil(popup, focus_behavior);
-    DCHECK(!popup_and_hint_stack_.IsEmpty() &&
-           popup_and_hint_stack_.back() == popup);
-    HideTopmostPopupOrHint(focus_behavior);
-  }
-}
-
 void Document::exitPointerLock() {
   if (!GetPage())
     return;
@@ -8009,6 +7977,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
   visitor->Trace(popup_and_hint_stack_);
+  visitor->Trace(popups_waiting_to_hide_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);

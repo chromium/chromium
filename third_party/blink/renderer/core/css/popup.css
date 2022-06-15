@@ -9,10 +9,7 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-[popup="" i]:not(:top-layer),
-[popup=auto i]:not(:top-layer),
-[popup=hint i]:not(:top-layer),
-[popup=async i]:not(:top-layer) {
+[popup]:-internal-popup-hidden {
   display: none;
 }
 

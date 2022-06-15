@@ -138,14 +138,20 @@ Animation* Animatable::animate(ScriptState* script_state,
 HeapVector<Member<Animation>> Animatable::getAnimations(
     GetAnimationsOptions* options) {
   bool use_subtree = options && options->subtree();
+  return GetAnimationsInternal(
+      GetAnimationsOptionsResolved{.use_subtree = use_subtree});
+}
+
+HeapVector<Member<Animation>> Animatable::GetAnimationsInternal(
+    GetAnimationsOptionsResolved options) {
   Element* element = GetAnimationTarget();
-  if (use_subtree)
+  if (options.use_subtree)
     element->GetDocument().UpdateStyleAndLayoutTreeForSubtree(element);
   else
     element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
 
   HeapVector<Member<Animation>> animations;
-  if (!use_subtree && !element->HasAnimations())
+  if (!options.use_subtree && !element->HasAnimations())
     return animations;
 
   for (const auto& animation :
@@ -154,7 +160,8 @@ HeapVector<Member<Animation>> Animatable::getAnimations(
     DCHECK(animation->effect());
     // TODO(gtsteel) make this use the idl properties
     Element* target = To<KeyframeEffect>(animation->effect())->EffectTarget();
-    if (element == target || (use_subtree && element->contains(target))) {
+    if (element == target ||
+        (options.use_subtree && element->contains(target))) {
       // DocumentAnimations::getAnimations should only give us animations that
       // are either current or in effect.
       DCHECK(animation->effect()->IsCurrent() ||

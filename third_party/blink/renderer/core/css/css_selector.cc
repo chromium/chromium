@@ -341,6 +341,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoHostHasAppearance:
     case kPseudoSlotted:
     case kPseudoTopLayer:
+    case kPseudoPopupHidden:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
     case kPseudoXrOverlay:
@@ -374,6 +375,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
      CSSSelector::kPseudoWebKitCustomElement},
     {"-internal-modal", CSSSelector::kPseudoModal},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
+    {"-internal-popup-hidden", CSSSelector::kPseudoPopupHidden},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
@@ -554,6 +556,10 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoTopLayer &&
+      !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+    return CSSSelector::kPseudoUnknown;
+
+  if (match->type == CSSSelector::kPseudoPopupHidden &&
       !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
     return CSSSelector::kPseudoUnknown;
 
@@ -749,6 +755,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopupHidden:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRelativeAnchor:

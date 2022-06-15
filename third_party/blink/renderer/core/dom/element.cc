@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/popup_data.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -2446,8 +2447,10 @@ void Element::UpdatePopupAttribute(String value) {
     if (PopupType() == type)
       return;
     // If the popup type is changing, hide it.
-    if (popupOpen())
-      hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement);
+    if (popupOpen()) {
+      hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement,
+                        HidePopupForcingLevel::kHideAfterAnimations);
+    }
   }
   if (type == PopupValueType::kNone) {
     if (HasValidPopupAttribute()) {
@@ -2479,10 +2482,11 @@ PopupValueType Element::PopupType() const {
   return GetPopupData() ? GetPopupData()->type() : PopupValueType::kNone;
 }
 
+// This should be true when :top-layer should match.
 bool Element::popupOpen() const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (auto* popup_data = GetPopupData())
-    return popup_data->open();
+    return popup_data->visibilityState() == PopupVisibilityState::kShowing;
   return false;
 }
 
@@ -2502,14 +2506,17 @@ void Element::showPopup(ExceptionState& exception_state) {
   if (PopupType() == PopupValueType::kAuto ||
       PopupType() == PopupValueType::kHint) {
     if (GetDocument().HintShowing()) {
-      GetDocument().HideTopmostPopupOrHint(HidePopupFocusBehavior::kNone);
+      GetDocument().PopupAndHintStack().back()->hidePopupInternal(
+          HidePopupFocusBehavior::kNone,
+          HidePopupForcingLevel::kHideAfterAnimations);
     }
     if (PopupType() == PopupValueType::kAuto) {
       // Only hide other popups up to this popup's ancestral popup.
-      GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this),
-                                       HidePopupFocusBehavior::kNone);
+      HideAllPopupsUntil(NearestOpenAncestralPopup(this), GetDocument(),
+                         HidePopupFocusBehavior::kNone,
+                         HidePopupForcingLevel::kHideAfterAnimations);
     }
-    // Add this popup to the stack.
+    // Add this popup to the popup stack.
     auto& stack = GetDocument().PopupAndHintStack();
     DCHECK(!stack.Contains(this));
     // We only restore focus for popup/hint, and only for the first popup in
@@ -2517,16 +2524,48 @@ void Element::showPopup(ExceptionState& exception_state) {
     should_restore_focus = stack.IsEmpty();
     stack.push_back(this);
   }
-  GetPopupData()->setOpen(true);
-  GetDocument().AddToTopLayer(this);
-  PseudoStateChanged(CSSSelector::kPseudoTopLayer);
   GetPopupData()->setPreviouslyFocusedElement(
       should_restore_focus ? GetDocument().FocusedElement() : nullptr);
+  GetDocument().AddToTopLayer(this);
+  // Remove display:none styling:
+  GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
+  PseudoStateChanged(CSSSelector::kPseudoPopupHidden);
+
+  // Force a style update. This ensures that base property values are set prior
+  // to `:top-layer` matching, so that transitions can start on the change to
+  // top layer.
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  EnsureComputedStyle();
+
+  // Make the popup match :top-layer:
+  GetPopupData()->setVisibilityState(PopupVisibilityState::kShowing);
+  PseudoStateChanged(CSSSelector::kPseudoTopLayer);
+
   SetPopupFocusOnShow();
   // Queue the show event.
   Event* event = Event::CreateBubble(event_type_names::kShow);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
+}
+
+// static
+void Element::HideAllPopupsUntil(const Element* endpoint,
+                                 Document& document,
+                                 HidePopupFocusBehavior focus_behavior,
+                                 HidePopupForcingLevel forcing_level) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  // If we're forcing a popup to hide immediately, first hide any other popups
+  // that have already started the hide process.
+  if (forcing_level == HidePopupForcingLevel::kHideImmediately) {
+    auto popups_to_hide = document.PopupsWaitingToHide();
+    for (auto popup : popups_to_hide)
+      popup->FinishPopupHideIfNeeded(forcing_level);
+  }
+  while (!document.PopupAndHintStack().IsEmpty() &&
+         document.PopupAndHintStack().back() != endpoint) {
+    document.PopupAndHintStack().back()->hidePopupInternal(focus_behavior,
+                                                           forcing_level);
+  }
 }
 
 void Element::hidePopup(ExceptionState& exception_state) {
@@ -2541,40 +2580,96 @@ void Element::hidePopup(ExceptionState& exception_state) {
         DOMExceptionCode::kInvalidStateError,
         "Invalid on already-hidden popup elements");
   }
-  hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement);
+  hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement,
+                    HidePopupForcingLevel::kHideAfterAnimations);
 }
 
-void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior) {
-  DCHECK(isConnected());
+void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior,
+                                HidePopupForcingLevel forcing_level) {
   DCHECK(HasValidPopupAttribute());
-  DCHECK(popupOpen());
+  if (!isConnected() || !popupOpen())
+    return;
   if (PopupType() == PopupValueType::kAuto ||
       PopupType() == PopupValueType::kHint) {
     // Hide any popups/hints above us in the stack.
-    GetDocument().HideAllPopupsUntil(this, focus_behavior);
+    HideAllPopupsUntil(this, GetDocument(), focus_behavior, forcing_level);
     // Then remove this popup/hint from the stack.
     auto& stack = GetDocument().PopupAndHintStack();
     DCHECK(stack.back() == this);
     stack.pop_back();
   }
-  GetPopupData()->setOpen(false);
+  GetDocument().PopupsWaitingToHide().insert(this);
+
+  // Grab already-running animations first, before removing :top-layer, so we
+  // know to ignore those. Make sure to get animations on descendant elements.
+  HeapVector<Member<Animation>> previous_animations;
+  auto animation_options = GetAnimationsOptionsResolved{.use_subtree = true};
+  if (forcing_level != HidePopupForcingLevel::kHideImmediately)
+    previous_animations = GetAnimationsInternal(animation_options);
+
   GetPopupData()->setInvoker(nullptr);
   GetPopupData()->setNeedsRepositioningForSelectMenu(false);
-  GetDocument().RemoveFromTopLayer(this);
+  GetPopupData()->setFocusBehavior(focus_behavior);
+  // Stop matching :top-layer:
+  GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
   PseudoStateChanged(CSSSelector::kPseudoTopLayer);
-  // Queue the hide event.
-  Event* event = Event::CreateBubble(event_type_names::kHide);
-  event->SetTarget(this);
-  GetDocument().EnqueueAnimationFrameEvent(event);
-  if (Element* previously_focused_element =
-          GetPopupData()->previouslyFocusedElement()) {
+
+  if (forcing_level == HidePopupForcingLevel::kHideImmediately ||
+      !HasAnimations()) {
+    // If we don't have hide animations, or we need to hide immediately, finish
+    // the hiding process now. Otherwise, this will get finished when animations
+    // complete.
+    FinishPopupHideIfNeeded(forcing_level);
+  } else {
+    // Grab all animations, so that we can "finish" the hide operation once
+    // they complete. This will *also* force a style update, ensuring property
+    // values are set after `:top-layer` stops matching, so that transitions
+    // can start.
+    HeapHashSet<Member<EventTarget>> animations;
+    for (const auto& animation : GetAnimationsInternal(animation_options)) {
+      animations.insert(animation);
+    }
+    animations.RemoveAll(previous_animations);
+    GetPopupData()->setAnimationFinishedListener(
+        MakeGarbageCollected<PopupAnimationFinishedEventListener>(
+            this, std::move(animations)));
+  }
+}
+
+void Element::FinishPopupHideIfNeeded(HidePopupForcingLevel forcing_level) {
+  if (!GetPopupData() || GetPopupData()->visibilityState() !=
+                             PopupVisibilityState::kTransitioning) {
+    return;
+  }
+  DCHECK(GetDocument().PopupsWaitingToHide().Contains(this));
+  GetDocument().PopupsWaitingToHide().erase(this);
+  GetDocument().RemoveFromTopLayer(this);
+  // Re-apply display:none.
+  GetPopupData()->setVisibilityState(PopupVisibilityState::kHidden);
+  GetPopupData()->setAnimationFinishedListener(nullptr);
+  PseudoStateChanged(CSSSelector::kPseudoPopupHidden);
+  if (forcing_level == HidePopupForcingLevel::kHideImmediately) {
+    // If we're hiding immediately, we do not fire the "hide" event, and we do
+    // not focus the previously-focused element. Either of these could cause
+    // more popups to be shown.
     GetPopupData()->setPreviouslyFocusedElement(nullptr);
-    if (focus_behavior == HidePopupFocusBehavior::kFocusPreviousElement) {
-      FocusOptions* focus_options = FocusOptions::Create();
-      focus_options->setPreventScroll(true);
-      // Call Focus() last, since it will fire a focus event which could modify
-      // this element. Focusing this element may also hide other popups.
-      previously_focused_element->Focus(focus_options);
+  } else {
+    // Queue the hide event.
+    Event* event = Event::CreateBubble(event_type_names::kHide);
+    event->SetTarget(this);
+    GetDocument().EnqueueAnimationFrameEvent(event);
+    if (Element* previously_focused_element =
+            GetPopupData()->previouslyFocusedElement()) {
+      GetPopupData()->setPreviouslyFocusedElement(nullptr);
+      if (GetPopupData()->focusBehavior() ==
+          HidePopupFocusBehavior::kFocusPreviousElement) {
+        FocusOptions* focus_options = FocusOptions::Create();
+        focus_options->setPreventScroll(true);
+        // Call Focus() last, since it will fire a focus event which could
+        // modify this element. Focusing this element may also hide other
+        // popups.
+        previously_focused_element->Focus(focus_options);
+      }
     }
   }
 }
@@ -2702,7 +2797,7 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
     if (!current_element)
       continue;
     if (current_element->HasValidPopupAttribute() &&
-        current_element->GetPopupData()->open() &&
+        current_element->popupOpen() &&
         (current_element->PopupType() == PopupValueType::kAuto ||
          current_element->PopupType() == PopupValueType::kHint)) {
       // Case #1: a showing popup.
@@ -2765,19 +2860,22 @@ void Element::HandlePopupLightDismiss(const Event& event) {
     //    1. This mirrors typical platform popups, which dismiss on mousedown.
     //    2. This allows a mouse-drag that starts on a popup and finishes off
     //       the popup, without light-dismissing the popup.
-    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node),
-                                HidePopupFocusBehavior::kNone);
+    HideAllPopupsUntil(NearestOpenAncestralPopup(target_node), document,
+                       HidePopupFocusBehavior::kNone,
+                       HidePopupForcingLevel::kHideAfterAnimations);
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {
       // Escape key just pops the topmost popup or hint off the stack.
-      document.HideTopmostPopupOrHint(
-          HidePopupFocusBehavior::kFocusPreviousElement);
+      document.PopupAndHintStack().back()->hidePopupInternal(
+          HidePopupFocusBehavior::kFocusPreviousElement,
+          HidePopupForcingLevel::kHideAfterAnimations);
     }
   } else if (event_type == event_type_names::kFocusin) {
     // If we focus an element, hide all popups that don't contain that element.
-    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node),
-                                HidePopupFocusBehavior::kNone);
+    HideAllPopupsUntil(NearestOpenAncestralPopup(target_node), document,
+                       HidePopupFocusBehavior::kNone,
+                       HidePopupForcingLevel::kHideAfterAnimations);
   }
 }
 
@@ -3183,8 +3281,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // removed from the popup element stack and the top layer.
   if (was_in_document && HasValidPopupAttribute()) {
     // We can't run focus event handlers while removing elements.
-    insertion_point.GetDocument().HidePopupIfShowing(
-        this, HidePopupFocusBehavior::kNone);
+    hidePopupInternal(HidePopupFocusBehavior::kNone,
+                      HidePopupForcingLevel::kHideImmediately);
   }
 
   if (GetDocument().GetPage())
@@ -6270,7 +6368,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
   // elements in display:none subtrees on otherwise style-clean documents. If
   // you hit this DCHECK, consider if you really need ComputedStyle for
   // display:none elements. If not, use GetComputedStyle() instead.
-  // Regardlessly, you need to UpdateStyleAndLayoutTree() before calling
+  // Regardless, you need to UpdateStyleAndLayoutTree() before calling
   // EnsureComputedStyle. In some cases you might be fine using GetComputedStyle
   // without updating the style, but in most cases you want a clean tree for
   // that as well.

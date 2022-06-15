@@ -387,7 +387,8 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
           (!Form() || !IsSuccessfulSubmitButton())) {
         if (can_hide) {
           popup.element->hidePopupInternal(
-              HidePopupFocusBehavior::kFocusPreviousElement);
+              HidePopupFocusBehavior::kFocusPreviousElement,
+              HidePopupForcingLevel::kHideAfterAnimations);
         } else if (can_show) {
           popup.element->InvokePopup(this);
         }

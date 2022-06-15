@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel=author href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<link rel=match href="popup-animated-display-ref.tentative.html">
+
+<div popup>This is a popup</div>
+<div class=topmost></div>
+
+<style>
+  [popup] {
+    width: 100px;
+    height: 100px;
+    border: 1px solid;
+    padding: 1em;
+    margin: 1em;
+    background: white;
+    color: black;
+    left: 0;
+    transition: left 20s steps(2, jump-end) -10s;
+  }
+  [popup]:top-layer {
+    left: 200px;
+  }
+  .topmost {
+    position:fixed;
+    z-index: 999999;
+    top:0;
+    left:0;
+    width:1000px;
+    height:1000px;
+    background:green;
+    margin:0;
+    padding:0;
+  }
+</style>
+
+<script>
+window.onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // This will show the popup, hide the popup, and start the transition.
+      const popup = document.querySelector('[popup]');
+      popup.showPopup();
+      popup.getAnimations()[0].finish();
+      if (getComputedStyle(popup).left != "200px")
+        popup.remove();
+      popup.hidePopup();
+      document.getAnimations()[0].ready.then(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            // Take a screenshot now.
+            document.documentElement.classList.remove('reftest-wait');
+          });
+        });
+      });
+    });
+  });
+}
+</script>

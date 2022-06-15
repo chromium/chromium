@@ -242,7 +242,6 @@ class VisitedLinkState;
 class WebMouseEvent;
 class WorkletAnimationController;
 enum class CSSPropertyID;
-enum class HidePopupFocusBehavior;
 struct AnnotatedRegionValue;
 struct FocusParams;
 struct IconURL;
@@ -1511,17 +1510,11 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapVector<Member<Element>>& PopupAndHintStack() {
     return popup_and_hint_stack_;
   }
+  HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
+    return popups_waiting_to_hide_;
+  }
   bool PopupOrHintShowing() const;
   bool HintShowing() const;
-  void HideTopmostPopupOrHint(HidePopupFocusBehavior focus_behavior);
-  // This hides all visible popups up to, but not including,
-  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
-  void HideAllPopupsUntil(const Element* endpoint,
-                          HidePopupFocusBehavior focus_behavior);
-  // This hides the provided popup, if it is showing. This will also
-  // hide all popups above |popup| in the popup stack.
-  void HidePopupIfShowing(Element* popup,
-                          HidePopupFocusBehavior focus_behavior);
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -2320,6 +2313,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack go from earliest (bottom-most) to latest (top-most). If there is a
   // hint in the stack, it is at the top.
   HeapVector<Member<Element>> popup_and_hint_stack_;
+
+  // A set of popups for which hidePopup() has been called, but animations are
+  // still running.
+  HeapHashSet<Member<Element>> popups_waiting_to_hide_;
 
   int load_event_delay_count_;
 

@@ -183,9 +183,11 @@ void HTMLDialogElement::show() {
     return;
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
-  // Showing a <dialog> should hide all open popups.
+  // Showing a <dialog> should hide all open popups, immediately.
   if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
-    GetDocument().HideAllPopupsUntil(nullptr, HidePopupFocusBehavior::kNone);
+    Element::HideAllPopupsUntil(nullptr, GetDocument(),
+                                HidePopupFocusBehavior::kNone,
+                                HidePopupForcingLevel::kHideImmediately);
   }
 
   // The layout must be updated here because setFocusForDialog calls
@@ -241,9 +243,11 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
                       WebFeature::kShowModalForElementInFullscreenStack);
   }
 
-  // Showing a <dialog> should hide all open popups.
+  // Showing a <dialog> should hide all open popups, immediately.
   if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
-    document.HideAllPopupsUntil(nullptr, HidePopupFocusBehavior::kNone);
+    Element::HideAllPopupsUntil(nullptr, document,
+                                HidePopupFocusBehavior::kNone,
+                                HidePopupForcingLevel::kHideImmediately);
   }
 
   document.AddToTopLayer(this);

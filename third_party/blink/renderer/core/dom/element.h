@@ -181,6 +181,11 @@ enum class HidePopupFocusBehavior {
   kFocusPreviousElement,
 };
 
+enum class HidePopupForcingLevel {
+  kHideAfterAnimations,
+  kHideImmediately,
+};
+
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
@@ -566,11 +571,19 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool popupOpen() const;
   void showPopup(ExceptionState& exception_state);
   void hidePopup(ExceptionState& exception_state);
-  void hidePopupInternal(HidePopupFocusBehavior focus_behavior);
+  void hidePopupInternal(HidePopupFocusBehavior focus_behavior,
+                         HidePopupForcingLevel forcing_level);
+  void FinishPopupHideIfNeeded(HidePopupForcingLevel);
   static const Element* NearestOpenAncestralPopup(Node* start_node);
   static void HandlePopupLightDismiss(const Event& event);
   void InvokePopup(Element* invoker);
   void SetPopupFocusOnShow();
+  // This hides all visible popups up to, but not including,
+  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
+  static void HideAllPopupsUntil(const Element*,
+                                 Document&,
+                                 HidePopupFocusBehavior,
+                                 HidePopupForcingLevel);
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.
