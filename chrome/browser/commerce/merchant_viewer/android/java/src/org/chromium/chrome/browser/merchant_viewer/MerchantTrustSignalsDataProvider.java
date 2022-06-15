@@ -19,6 +19,10 @@ class MerchantTrustSignalsDataProvider {
      * Fetches {@link MerchantInfo} based on {@link GURL}.
      */
     public void getDataForUrl(Profile profile, GURL url, Callback<MerchantInfo> callback) {
+        if (profile == null || profile.isOffTheRecord()) {
+            callback.onResult(null);
+            return;
+        }
         ShoppingServiceFactory.getForProfile(profile).getMerchantInfoForUrl(url,
                 (gurl, info) -> callback.onResult(isValidMerchantTrustSignals(info) ? info : null));
     }

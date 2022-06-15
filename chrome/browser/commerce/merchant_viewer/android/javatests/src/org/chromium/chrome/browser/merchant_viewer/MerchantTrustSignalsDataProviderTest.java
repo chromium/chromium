@@ -99,6 +99,35 @@ public class MerchantTrustSignalsDataProviderTest {
     }
 
     @Test
+    public void testGetDataForNullProfile() throws TimeoutException {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+
+        int callCount = callbackHelper.getCallCount();
+        mockShoppingServiceResponse(mFakeMerchantTrustSignals);
+        instance.getDataForUrl(null, mMockDestinationGurl, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+        Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
+    }
+
+    @Test
+    public void testGetDataForIncognitoProfile() throws TimeoutException {
+        doReturn(true).when(mMockProfile).isOffTheRecord();
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+
+        int callCount = callbackHelper.getCallCount();
+        mockShoppingServiceResponse(mFakeMerchantTrustSignals);
+        instance.getDataForUrl(mMockProfile, mMockDestinationGurl, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+        Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
+    }
+
+    @Test
     public void testIsValidMerchantTrustSignals() {
         MerchantTrustSignalsDataProvider instance = getDataProvider();
         Assert.assertTrue(instance.isValidMerchantTrustSignals(mFakeMerchantTrustSignals));
