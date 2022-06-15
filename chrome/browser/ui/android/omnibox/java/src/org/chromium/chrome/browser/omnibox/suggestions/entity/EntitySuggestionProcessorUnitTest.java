@@ -10,7 +10,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -20,18 +19,19 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -40,24 +40,28 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableSt
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Tests for {@link EntitySuggestionProcessor}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class EntitySuggestionProcessorUnitTest {
-    @Mock
-    SuggestionHost mSuggestionHost;
+    private static final GURL WEB_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL WEB_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL SEARCH_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
 
-    @Mock
-    ImageFetcher mImageFetcher;
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Bitmap mBitmap;
+    private @Mock SuggestionHost mSuggestionHost;
+    private @Mock ImageFetcher mImageFetcher;
+    private @Mock Bitmap mBitmap;
+
     private EntitySuggestionProcessor mProcessor;
 
     /**
@@ -103,11 +107,6 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-
-        mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
-
         mProcessor = new EntitySuggestionProcessor(
                 ContextUtils.getApplicationContext(), mSuggestionHost, () -> mImageFetcher);
     }
@@ -118,10 +117,8 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void contentTest_basicContent() {
-        SuggestionTestHelper suggHelper =
-                createSuggestion("subject", "details", null, GURL.emptyGURL());
+        SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
         Assert.assertEquals(
                 "subject", suggHelper.mModel.get(EntitySuggestionViewProperties.SUBJECT_TEXT));
@@ -131,9 +128,8 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_noColorOrImage() {
-        SuggestionTestHelper suggHelper = createSuggestion("", "", null, GURL.emptyGURL());
+        SuggestionTestHelper suggHelper = createSuggestion("", "", null, SEARCH_URL);
         processSuggestion(suggHelper);
 
         Assert.assertNotNull(suggHelper.getIcon());
@@ -142,9 +138,8 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_validHexColor() {
-        SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", GURL.emptyGURL());
+        SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
         processSuggestion(suggHelper);
 
         Assert.assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
@@ -154,9 +149,8 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_validNamedColor() {
-        SuggestionTestHelper suggHelper = createSuggestion("", "", "red", GURL.emptyGURL());
+        SuggestionTestHelper suggHelper = createSuggestion("", "", "red", SEARCH_URL);
         processSuggestion(suggHelper);
 
         Assert.assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
@@ -166,32 +160,29 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_invalidColor() {
         // Note, fallback is the bitmap drawable representing a search loupe.
-        SuggestionTestHelper suggHelper = createSuggestion("", "", "", GURL.emptyGURL());
+        SuggestionTestHelper suggHelper = createSuggestion("", "", "", SEARCH_URL);
         processSuggestion(suggHelper);
         Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
 
-        suggHelper = createSuggestion("", "", "#", GURL.emptyGURL());
+        suggHelper = createSuggestion("", "", "#", SEARCH_URL);
         processSuggestion(suggHelper);
         Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
 
-        suggHelper = createSuggestion("", "", "invalid", GURL.emptyGURL());
+        suggHelper = createSuggestion("", "", "invalid", SEARCH_URL);
         processSuggestion(suggHelper);
         Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_basicSuccessfulBitmapFetch() {
-        final GURL url = new GURL("http://site.com");
-        SuggestionTestHelper suggHelper = createSuggestion("", "", "red", url);
+        SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
 
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        verify(mImageFetcher).fetchImage(eq(createParams(url.getSpec())), callback.capture());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), callback.capture());
 
         Assert.assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         callback.getValue().onResult(mBitmap);
@@ -201,39 +192,34 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_repeatedUrlsAreFetchedOnlyOnce() {
-        final GURL url1 = new GURL("http://site1.com");
-        final GURL url2 = new GURL("http://site2.com");
-        final SuggestionTestHelper sugg1 = createSuggestion("", "", "", url1);
-        final SuggestionTestHelper sugg2 = createSuggestion("", "", "", url1);
-        final SuggestionTestHelper sugg3 = createSuggestion("", "", "", url2);
-        final SuggestionTestHelper sugg4 = createSuggestion("", "", "", url2);
+        final SuggestionTestHelper sugg1 = createSuggestion("", "", "", WEB_URL);
+        final SuggestionTestHelper sugg2 = createSuggestion("", "", "", WEB_URL);
+        final SuggestionTestHelper sugg3 = createSuggestion("", "", "", WEB_URL_2);
+        final SuggestionTestHelper sugg4 = createSuggestion("", "", "", WEB_URL_2);
 
         processSuggestion(sugg1);
         processSuggestion(sugg2);
         processSuggestion(sugg3);
         processSuggestion(sugg4);
 
-        verify(mImageFetcher).fetchImage(eq(createParams(url1.getSpec())), any());
-        verify(mImageFetcher).fetchImage(eq(createParams(url2.getSpec())), any());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), any());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL_2.getSpec())), any());
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_bitmapReplacesIconForAllSuggestionsWithSameUrl() {
-        final GURL url = new GURL("http://site.com");
-        final SuggestionTestHelper sugg1 = createSuggestion("", "", "", url);
-        final SuggestionTestHelper sugg2 = createSuggestion("", "", "", url);
-        final SuggestionTestHelper sugg3 = createSuggestion("", "", "", url);
+        final SuggestionTestHelper sugg1 = createSuggestion("", "", "", WEB_URL);
+        final SuggestionTestHelper sugg2 = createSuggestion("", "", "", WEB_URL);
+        final SuggestionTestHelper sugg3 = createSuggestion("", "", "", WEB_URL);
 
         processSuggestion(sugg1);
         processSuggestion(sugg2);
         processSuggestion(sugg3);
 
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        verify(mImageFetcher).fetchImage(eq(createParams(url.getSpec())), callback.capture());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), callback.capture());
 
         final Drawable icon1 = sugg1.getIcon();
         final Drawable icon2 = sugg2.getIcon();
@@ -259,14 +245,12 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_failedBitmapFetchDoesNotReplaceIcon() {
-        final GURL url = new GURL("http://site.com");
-        final SuggestionTestHelper suggHelper = createSuggestion("", "", null, url);
+        final SuggestionTestHelper suggHelper = createSuggestion("", "", null, WEB_URL);
         processSuggestion(suggHelper);
 
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        verify(mImageFetcher).fetchImage(eq(createParams(url.getSpec())), callback.capture());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), callback.capture());
 
         final Drawable oldIcon = suggHelper.getIcon();
         callback.getValue().onResult(null);
@@ -278,14 +262,12 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_failedBitmapFetchDoesNotReplaceColor() {
-        final GURL url = new GURL("http://site.com");
-        final SuggestionTestHelper suggHelper = createSuggestion("", "", "red", url);
+        final SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
 
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        verify(mImageFetcher).fetchImage(eq(createParams(url.getSpec())), callback.capture());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), callback.capture());
 
         final Drawable oldIcon = suggHelper.getIcon();
         callback.getValue().onResult(null);
@@ -297,17 +279,15 @@ public class EntitySuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void decorationTest_updatedModelsAreRemovedFromPendingRequestsList() {
-        final GURL url = new GURL("http://site1.com");
-        final SuggestionTestHelper sugg1 = createSuggestion("", "", "", url);
-        final SuggestionTestHelper sugg2 = createSuggestion("", "", "", url);
+        final SuggestionTestHelper sugg1 = createSuggestion("", "", "", WEB_URL);
+        final SuggestionTestHelper sugg2 = createSuggestion("", "", "", WEB_URL);
 
         processSuggestion(sugg1);
         processSuggestion(sugg2);
 
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
-        verify(mImageFetcher).fetchImage(eq(createParams(url.getSpec())), callback.capture());
+        verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), callback.capture());
         verify(mImageFetcher).fetchImage(any(), any());
 
         final Drawable icon1 = sugg1.getIcon();
