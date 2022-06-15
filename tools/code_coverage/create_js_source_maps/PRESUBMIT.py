@@ -11,7 +11,9 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckLint(input_api, output_api):
-  results = input_api.canned_checks.RunPylint(input_api, output_api)
+  results = input_api.canned_checks.RunPylint(input_api,
+                                              output_api,
+                                              version='1.5')
   results += input_api.canned_checks.CheckPatchFormatted(input_api,
                                                          output_api,
                                                          check_js=True)

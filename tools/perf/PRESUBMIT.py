@@ -32,9 +32,14 @@ def _CommonChecks(input_api, output_api, block_on_failure=False):
   results.extend(_CheckWprShaFiles(input_api, output_api))
   results.extend(_CheckShardMaps(input_api, output_api, block_on_failure))
   results.extend(_CheckVersionsInSmokeTests(input_api, output_api))
-  results.extend(input_api.RunTests(input_api.canned_checks.GetPylint(
-      input_api, output_api, extra_paths_list=_GetPathsToPrepend(input_api),
-      pylintrc='pylintrc')))
+  results.extend(
+      input_api.RunTests(
+          input_api.canned_checks.GetPylint(
+              input_api,
+              output_api,
+              extra_paths_list=_GetPathsToPrepend(input_api),
+              pylintrc='pylintrc',
+              version='1.5')))
   return results
 
 

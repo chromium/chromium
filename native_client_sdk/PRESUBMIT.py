@@ -30,7 +30,8 @@ def CommonChecks(input_api, output_api):
   canned = input_api.canned_checks
   output.extend(canned.RunPylint(input_api, output_api,
                                  files_to_skip=files_to_skip,
-                                 disabled_warnings=disabled_warnings))
+                                 disabled_warnings=disabled_warnings,
+                                 version='1.5'))
   return output
 
 
