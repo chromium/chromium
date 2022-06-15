@@ -79,6 +79,8 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -97,8 +99,35 @@
 using content::BrowsingDataFilterBuilder;
 using testing::_;
 using testing::NotNull;
+
 class ChromeContentBrowserClientTest : public testing::Test {
+ public:
+  ChromeContentBrowserClientTest()
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      : test_system_web_app_manager_creator_(base::BindRepeating(
+            &ChromeContentBrowserClientTest::CreateSystemWebAppManager,
+            base::Unretained(this)))
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  {
+  }
+
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<KeyedService> CreateSystemWebAppManager(Profile* profile) {
+    auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+    DCHECK(provider);
+
+    // Unit tests need SWAs from production. Creates real SystemWebAppManager
+    // instead of `TestSystemWebAppManager::BuildDefault()` for
+    // `TestingProfile`.
+    auto swa_manager = std::make_unique<ash::SystemWebAppManager>(profile);
+    swa_manager->ConnectSubsystems(provider);
+    return swa_manager;
+  }
+  // The custom manager creator should be constructed before `TestingProfile`.
+  web_app::TestSystemWebAppManagerCreator test_system_web_app_manager_creator_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
@@ -573,6 +602,8 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
+  // This test needs `SystemWebAppType::CAMERA` (`CameraSystemAppDelegate`)
+  // registered in `SystemWebAppManager`.
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL camera_app_url(ash::kChromeUICameraAppMainURL);
   GURL dest_url = camera_app_url;

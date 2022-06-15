@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
@@ -16,10 +15,6 @@
 
 class KeyedService;
 class Profile;
-
-namespace ash {
-class SystemWebAppManager;
-}
 
 namespace content {
 class BrowserContext;
@@ -83,8 +78,6 @@ class FakeWebAppProvider : public WebAppProvider {
       std::unique_ptr<ExternallyManagedAppManager>
           externally_managed_app_manager);
   void SetWebAppUiManager(std::unique_ptr<WebAppUiManager> ui_manager);
-  void SetSystemWebAppManager(
-      std::unique_ptr<ash::SystemWebAppManager> system_web_app_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
   void SetCommandManager(std::unique_ptr<WebAppCommandManager> command_manager);
@@ -126,12 +119,9 @@ class FakeWebAppProvider : public WebAppProvider {
 // BrowserContextKeyedService initialization pipeline.
 class FakeWebAppProviderCreator {
  public:
-  using OnceCreateWebAppProviderCallback =
-      base::OnceCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
   using CreateWebAppProviderCallback =
       base::RepeatingCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
 
-  explicit FakeWebAppProviderCreator(OnceCreateWebAppProviderCallback callback);
   explicit FakeWebAppProviderCreator(CreateWebAppProviderCallback callback);
   ~FakeWebAppProviderCreator();
 

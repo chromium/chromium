@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -232,10 +233,12 @@ class TestSystemWebAppInstallation {
       std::unique_ptr<UnittestingSystemAppDelegate> system_app_delegate);
   TestSystemWebAppInstallation();
 
-  std::unique_ptr<KeyedService> CreateWebAppProvider(
+  std::unique_ptr<KeyedService> CreateWebAppProvider(Profile* profile);
+  std::unique_ptr<KeyedService> CreateSystemWebAppManager(
       UnittestingSystemAppDelegate* system_app_delegate,
       Profile* profile);
-  std::unique_ptr<KeyedService> CreateWebAppProviderWithNoSystemWebApps(
+
+  std::unique_ptr<KeyedService> CreateSystemWebAppManagerWithNoSystemWebApps(
       Profile* profile);
 
   // Must be called in SetUp*App() methods, before WebAppProvider is created.
@@ -244,7 +247,11 @@ class TestSystemWebAppInstallation {
   raw_ptr<Profile> profile_;
   ash::SystemWebAppManager::UpdatePolicy update_policy_ =
       ash::SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
+
   std::unique_ptr<FakeWebAppProviderCreator> fake_web_app_provider_creator_;
+  std::unique_ptr<TestSystemWebAppManagerCreator>
+      test_system_web_app_manager_creator_;
+
   // nullopt if SetUpWithoutApps() was used.
   const absl::optional<ash::SystemWebAppType> type_;
   std::vector<std::unique_ptr<TestSystemWebAppWebUIControllerFactory>>

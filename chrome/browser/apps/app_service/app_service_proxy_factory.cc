@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -93,6 +94,7 @@ AppServiceProxyFactory::AppServiceProxyFactory()
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
+  DependsOn(ash::SystemWebAppManagerFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(guest_os::GuestOsRegistryServiceFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
