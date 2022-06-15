@@ -237,8 +237,12 @@ absl_source_set("cord") {
     "cord.cc",
     "cord_analysis.cc",
     "cord_analysis.h",
+    "cord_buffer.cc",
   ]
-  public = [ "cord.h" ]
+  public = [
+    "cord.h",
+    "cord_buffer.h",
+  ]
   deps = [
     ":cord_internal",
     ":cordz_functions",
@@ -507,6 +511,19 @@ absl_source_set("cordz_test_helpers") {
 #     "//third_party/googletest:gtest",
 #   ]
 # }
+
+absl_source_set("cord_buffer_test") {
+  testonly = true
+  public = [ "cord_buffer_test.cc" ]
+  deps = [
+    ":cord",
+    ":cord_internal",
+    ":cord_rep_test_util",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/types:span",
+    "//third_party/googletest:gtest",
+  ]
+}
 
 absl_source_set("cordz_test") {
   testonly = true

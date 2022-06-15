@@ -50,7 +50,7 @@ inline bool ConsumePrefix(absl::string_view* str, absl::string_view expected) {
 }
 // ConsumeSuffix()
 //
-// Strips the `expected` prefix, if found, from the end of `str`.
+// Strips the `expected` suffix, if found, from the end of `str`.
 // If the operation succeeded, `true` is returned.  If not, `false`
 // is returned and `str` is not modified.
 //

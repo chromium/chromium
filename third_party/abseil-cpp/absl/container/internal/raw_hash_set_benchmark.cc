@@ -336,27 +336,27 @@ void BM_Group_Match(benchmark::State& state) {
 }
 BENCHMARK(BM_Group_Match);
 
-void BM_Group_MatchEmpty(benchmark::State& state) {
+void BM_Group_MaskEmpty(benchmark::State& state) {
   std::array<ctrl_t, Group::kWidth> group;
   Iota(group.begin(), group.end(), -4);
   Group g{group.data()};
   for (auto _ : state) {
     ::benchmark::DoNotOptimize(g);
-    ::benchmark::DoNotOptimize(g.MatchEmpty());
+    ::benchmark::DoNotOptimize(g.MaskEmpty());
   }
 }
-BENCHMARK(BM_Group_MatchEmpty);
+BENCHMARK(BM_Group_MaskEmpty);
 
-void BM_Group_MatchEmptyOrDeleted(benchmark::State& state) {
+void BM_Group_MaskEmptyOrDeleted(benchmark::State& state) {
   std::array<ctrl_t, Group::kWidth> group;
   Iota(group.begin(), group.end(), -4);
   Group g{group.data()};
   for (auto _ : state) {
     ::benchmark::DoNotOptimize(g);
-    ::benchmark::DoNotOptimize(g.MatchEmptyOrDeleted());
+    ::benchmark::DoNotOptimize(g.MaskEmptyOrDeleted());
   }
 }
-BENCHMARK(BM_Group_MatchEmptyOrDeleted);
+BENCHMARK(BM_Group_MaskEmptyOrDeleted);
 
 void BM_Group_CountLeadingEmptyOrDeleted(benchmark::State& state) {
   std::array<ctrl_t, Group::kWidth> group;
@@ -375,7 +375,7 @@ void BM_Group_MatchFirstEmptyOrDeleted(benchmark::State& state) {
   Group g{group.data()};
   for (auto _ : state) {
     ::benchmark::DoNotOptimize(g);
-    ::benchmark::DoNotOptimize(*g.MatchEmptyOrDeleted());
+    ::benchmark::DoNotOptimize(g.MaskEmptyOrDeleted().LowestBitSet());
   }
 }
 BENCHMARK(BM_Group_MatchFirstEmptyOrDeleted);

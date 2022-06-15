@@ -14,7 +14,7 @@
 
 #include "absl/base/internal/thread_identity.h"
 
-#ifndef _WIN32
+#if !defined(_WIN32) || defined(__MINGW32__)
 #include <pthread.h>
 #include <signal.h>
 #endif

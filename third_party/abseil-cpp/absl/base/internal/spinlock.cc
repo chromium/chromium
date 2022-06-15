@@ -19,6 +19,7 @@
 #include <limits>
 
 #include "absl/base/attributes.h"
+#include "absl/base/config.h"
 #include "absl/base/internal/atomic_hook.h"
 #include "absl/base/internal/cycleclock.h"
 #include "absl/base/internal/spinlock_wait.h"
@@ -66,12 +67,14 @@ void RegisterSpinLockProfiler(void (*fn)(const void *contendedlock,
   submit_profile_data.Store(fn);
 }
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 // Static member variable definitions.
 constexpr uint32_t SpinLock::kSpinLockHeld;
 constexpr uint32_t SpinLock::kSpinLockCooperative;
 constexpr uint32_t SpinLock::kSpinLockDisabledScheduling;
 constexpr uint32_t SpinLock::kSpinLockSleeper;
 constexpr uint32_t SpinLock::kWaitTimeMask;
+#endif
 
 // Uncommon constructors.
 SpinLock::SpinLock(base_internal::SchedulingMode mode)

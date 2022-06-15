@@ -43,6 +43,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":algorithm",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )

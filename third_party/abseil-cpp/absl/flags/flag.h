@@ -67,6 +67,10 @@ ABSL_NAMESPACE_BEGIN
 //      ABSL_FLAG(int, count, 0, "Count of items to process");
 //
 // No public methods of `absl::Flag<T>` are part of the Abseil Flags API.
+//
+// For type support of Abseil Flags, see the marshalling.h header file, which
+// discusses supported standard types, optional flags, and additional Abseil
+// type support.
 #if !defined(_MSC_VER) || defined(__clang__)
 template <typename T>
 using Flag = flags_internal::Flag<T>;

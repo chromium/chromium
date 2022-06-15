@@ -489,12 +489,14 @@ class FixedArray {
   Storage storage_;
 };
 
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 template <typename T, size_t N, typename A>
 constexpr size_t FixedArray<T, N, A>::kInlineBytesDefault;
 
 template <typename T, size_t N, typename A>
 constexpr typename FixedArray<T, N, A>::size_type
     FixedArray<T, N, A>::inline_elements;
+#endif
 
 template <typename T, size_t N, typename A>
 void FixedArray<T, N, A>::NonEmptyInlinedStorage::AnnotateConstruct(

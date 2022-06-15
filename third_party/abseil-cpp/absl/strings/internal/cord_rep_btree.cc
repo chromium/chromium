@@ -33,7 +33,9 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
-constexpr size_t CordRepBtree::kMaxCapacity;  // NOLINT: needed for c++ < c++17
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+constexpr size_t CordRepBtree::kMaxCapacity;
+#endif
 
 namespace {
 

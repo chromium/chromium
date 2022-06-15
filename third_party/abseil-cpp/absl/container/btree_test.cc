@@ -3188,6 +3188,66 @@ TEST(Btree, OnlyConstructibleByAllocatorType) {
   }
 }
 
+class NotAssignable {
+ public:
+  explicit NotAssignable(int i) : i_(i) {}
+  NotAssignable(const NotAssignable &other) : i_(other.i_) {}
+  NotAssignable &operator=(NotAssignable &&other) = delete;
+  int Get() const { return i_; }
+  bool operator==(int i) const { return i_ == i; }
+  friend bool operator<(NotAssignable a, NotAssignable b) {
+    return a.i_ < b.i_;
+  }
+
+ private:
+  int i_;
+};
+
+TEST(Btree, NotAssignableType) {
+  {
+    absl::btree_set<NotAssignable> set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(NotAssignable(3));
+    set.insert(set.end(), NotAssignable(4));
+    EXPECT_THAT(set, ElementsAre(1, 2, 3, 4));
+    set.erase(set.begin());
+    EXPECT_THAT(set, ElementsAre(2, 3, 4));
+  }
+  {
+    absl::btree_multiset<NotAssignable> set;
+    set.emplace(1);
+    set.emplace_hint(set.end(), 2);
+    set.insert(NotAssignable(2));
+    set.insert(set.end(), NotAssignable(3));
+    EXPECT_THAT(set, ElementsAre(1, 2, 2, 3));
+    set.erase(set.begin());
+    EXPECT_THAT(set, ElementsAre(2, 2, 3));
+  }
+  {
+    absl::btree_map<NotAssignable, int> map;
+    map.emplace(NotAssignable(1), 1);
+    map.emplace_hint(map.end(), NotAssignable(2), 2);
+    map.insert({NotAssignable(3), 3});
+    map.insert(map.end(), {NotAssignable(4), 4});
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+    map.erase(map.begin());
+    EXPECT_THAT(map, ElementsAre(Pair(2, 2), Pair(3, 3), Pair(4, 4)));
+  }
+  {
+    absl::btree_multimap<NotAssignable, int> map;
+    map.emplace(NotAssignable(1), 1);
+    map.emplace_hint(map.end(), NotAssignable(2), 2);
+    map.insert({NotAssignable(2), 3});
+    map.insert(map.end(), {NotAssignable(3), 3});
+    EXPECT_THAT(map,
+                ElementsAre(Pair(1, 1), Pair(2, 2), Pair(2, 3), Pair(3, 3)));
+    map.erase(map.begin());
+    EXPECT_THAT(map, ElementsAre(Pair(2, 2), Pair(2, 3), Pair(3, 3)));
+  }
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

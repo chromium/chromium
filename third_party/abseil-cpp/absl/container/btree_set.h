@@ -766,17 +766,6 @@ struct set_slot_policy {
     construct(alloc, new_slot, old_slot);
     destroy(alloc, old_slot);
   }
-
-  template <typename Alloc>
-  static void swap(Alloc * /*alloc*/, slot_type *a, slot_type *b) {
-    using std::swap;
-    swap(*a, *b);
-  }
-
-  template <typename Alloc>
-  static void move(Alloc * /*alloc*/, slot_type *src, slot_type *dest) {
-    *dest = std::move(*src);
-  }
 };
 
 // A parameters structure for holding the type parameters for a btree_set.

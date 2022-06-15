@@ -56,6 +56,25 @@
 #include <cstddef>
 #endif  // __cplusplus
 
+// ABSL_INTERNAL_CPLUSPLUS_LANG
+//
+// MSVC does not set the value of __cplusplus correctly, but instead uses
+// _MSVC_LANG as a stand-in.
+// https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
+//
+// However, there are reports that MSVC even sets _MSVC_LANG incorrectly at
+// times, for example:
+// https://github.com/microsoft/vscode-cpptools/issues/1770
+// https://reviews.llvm.org/D70996
+//
+// For this reason, this symbol is considered INTERNAL and code outside of
+// Abseil must not use it.
+#if defined(_MSVC_LANG)
+#define ABSL_INTERNAL_CPLUSPLUS_LANG _MSVC_LANG
+#elif defined(__cplusplus)
+#define ABSL_INTERNAL_CPLUSPLUS_LANG __cplusplus
+#endif
+
 #if defined(__APPLE__)
 // Included for TARGET_OS_IPHONE, __IPHONE_OS_VERSION_MIN_REQUIRED,
 // __IPHONE_8_0.
@@ -183,12 +202,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_BUILTIN(x) 0
 #endif
 
-#if defined(__is_identifier)
-#define ABSL_INTERNAL_HAS_KEYWORD(x) !(__is_identifier(x))
-#else
-#define ABSL_INTERNAL_HAS_KEYWORD(x) 0
-#endif
-
 #ifdef __has_feature
 #define ABSL_HAVE_FEATURE(f) __has_feature(f)
 #else
@@ -258,21 +271,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     (defined(_MSC_VER) && !defined(__NVCC__))
 #define ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE 1
 #define ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE 1
-#endif
-
-// ABSL_HAVE_SOURCE_LOCATION_CURRENT
-//
-// Indicates whether `absl::SourceLocation::current()` will return useful
-// information in some contexts.
-#ifndef ABSL_HAVE_SOURCE_LOCATION_CURRENT
-#if ABSL_INTERNAL_HAS_KEYWORD(__builtin_LINE) && \
-    ABSL_INTERNAL_HAS_KEYWORD(__builtin_FILE)
-#define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
-#elif ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(5, 0)
-#define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
-#elif defined(_MSC_VER) && _MSC_VER >= 1926
-#define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
-#endif
 #endif
 
 // ABSL_HAVE_THREAD_LOCAL
@@ -729,8 +727,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #endif
 #endif
 
-#undef ABSL_INTERNAL_HAS_KEYWORD
-
 // ABSL_DLL
 //
 // When building Abseil as a DLL, this macro expands to `__declspec(dllexport)`
@@ -830,6 +826,29 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
 #endif
 
+// ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+//
+// Prior to C++17, static constexpr variables defined in classes required a
+// separate definition outside of the class body, for example:
+//
+// class Foo {
+//   static constexpr int kBar = 0;
+// };
+// constexpr int Foo::kBar;
+//
+// In C++17, these variables defined in classes are considered inline variables,
+// and the extra declaration is redundant. Since some compilers warn on the
+// extra declarations, ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL can be used
+// conditionally ignore them:
+//
+// #ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
+// constexpr int Foo::kBar;
+// #endif
+#if defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
+    ABSL_INTERNAL_CPLUSPLUS_LANG < 201703L
+#define ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL 1
+#endif
+
 // `ABSL_INTERNAL_HAS_RTTI` determines whether abseil is being compiled with
 // RTTI support.
 #ifdef ABSL_INTERNAL_HAS_RTTI
@@ -883,19 +902,12 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_INTERNAL_HAVE_SSSE3 1
 #endif
 
-// ABSL_INTERNAL_HAVE_ARM_ACLE is used for compile-time detection of ACLE (ARM
-// C language extensions).
-#ifdef ABSL_INTERNAL_HAVE_ARM_ACLE
-#error ABSL_INTERNAL_HAVE_ARM_ACLE cannot be directly set
-// __cls, __rbit were added quite late in clang. They are not supported
-// by GCC as well. __cls can be replaced with __builtin_clrsb but clang does
-// not recognize cls instruction in latest versions.
-// TODO(b/233604649): Relax to __builtin_clrsb and __builtin_bitreverse64 (note
-// that the latter is not supported by GCC).
-#elif defined(__ARM_ACLE) && defined(__clang__) && \
-    ABSL_HAVE_BUILTIN(__builtin_arm_cls64) &&      \
-    ABSL_HAVE_BUILTIN(__builtin_arm_rbit64)
-#define ABSL_INTERNAL_HAVE_ARM_ACLE 1
+// ABSL_INTERNAL_HAVE_ARM_NEON is used for compile-time detection of NEON (ARM
+// SIMD).
+#ifdef ABSL_INTERNAL_HAVE_ARM_NEON
+#error ABSL_INTERNAL_HAVE_ARM_NEON cannot be directly set
+#elif defined(__ARM_NEON)
+#define ABSL_INTERNAL_HAVE_ARM_NEON 1
 #endif
 
 #endif  // ABSL_BASE_CONFIG_H_

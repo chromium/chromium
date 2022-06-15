@@ -585,8 +585,20 @@ class InlinedVector {
 
     if (ABSL_PREDICT_TRUE(n != 0)) {
       value_type dealias = v;
+      // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102329#c2
+      // It appears that GCC thinks that since `pos` is a const pointer and may
+      // point to uninitialized memory at this point, a warning should be
+      // issued. But `pos` is actually only used to compute an array index to
+      // write to.
+#if !defined(__clang__) && defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
       return storage_.Insert(pos, CopyValueAdapter<A>(std::addressof(dealias)),
                              n);
+#if !defined(__clang__) && defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     } else {
       return const_cast<iterator>(pos);
     }

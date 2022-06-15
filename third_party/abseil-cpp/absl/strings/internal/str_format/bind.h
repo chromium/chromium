@@ -143,7 +143,8 @@ class FormatSpecTemplate
   template <typename T = void>
   FormatSpecTemplate(string_view s)  // NOLINT
       __attribute__((enable_if(str_format_internal::EnsureConstexpr(s),
-                               "constexpr trap"))) {
+                               "constexpr trap")))
+      : Base("to avoid noise in the compiler error") {
     static_assert(sizeof(T*) == 0,
                   "Format specified does not match the arguments passed.");
   }

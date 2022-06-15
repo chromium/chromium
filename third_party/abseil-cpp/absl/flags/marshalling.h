@@ -33,6 +33,7 @@
 // * `double`
 // * `std::string`
 // * `std::vector<std::string>`
+// * `std::optional<T>`
 // * `absl::LogSeverity` (provided natively for layering reasons)
 //
 // Note that support for integral types is implemented using overloads for
@@ -63,6 +64,42 @@
 // You can also provide your own custom flags by adding overloads for
 // `AbslParseFlag()` and `AbslUnparseFlag()` to your type definitions. (See
 // below.)
+//
+// -----------------------------------------------------------------------------
+// Optional Flags
+// -----------------------------------------------------------------------------
+//
+// The Abseil flags library supports flags of type `std::optional<T>` where
+// `T` is a type of one of the supported flags. We refer to this flag type as
+// an "optional flag." An optional flag is either "valueless", holding no value
+// of type `T` (indicating that the flag has not been set) or a value of type
+// `T`. The valueless state in C++ code is represented by a value of
+// `std::nullopt` for the optional flag.
+//
+// Using `std::nullopt` as an optional flag's default value allows you to check
+// whether such a flag was ever specified on the command line:
+//
+//   if (absl::GetFlag(FLAGS_foo).has_value()) {
+//     // flag was set on command line
+//   } else {
+//     // flag was not passed on command line
+//   }
+//
+// Using an optional flag in this manner avoids common workarounds for
+// indicating such an unset flag (such as using sentinal values to indicate this
+// state).
+//
+// An optional flag also allows a developer to pass a flag in an "unset"
+// valueless state on the command line, allowing the flag to later be set in
+// binary logic. An optional flag's valueless state is indicated by the special
+// notation of passing the value as an empty string through the syntax `--flag=`
+// or `--flag ""`.
+//
+//   $ binary_with_optional --flag_in_unset_state=
+//   $ binary_with_optional --flag_in_unset_state ""
+//
+// Note: as a result of the above syntax requirements, an optional flag cannot
+// be set to a `T` of any value which unparses to the empty string.
 //
 // -----------------------------------------------------------------------------
 // Adding Type Support for Abseil Flags

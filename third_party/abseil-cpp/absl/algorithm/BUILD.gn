@@ -23,6 +23,7 @@ absl_source_set("algorithm_test") {
   sources = [ "algorithm_test.cc" ]
   deps = [
     ":algorithm",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/googletest:gtest",
     "//third_party/googletest:gmock",
   ]

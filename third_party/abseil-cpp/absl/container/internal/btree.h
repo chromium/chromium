@@ -462,12 +462,6 @@ struct common_params {
   static void transfer(Alloc *alloc, slot_type *new_slot, slot_type *old_slot) {
     slot_policy::transfer(alloc, new_slot, old_slot);
   }
-  static void swap(Alloc *alloc, slot_type *a, slot_type *b) {
-    slot_policy::swap(alloc, a, b);
-  }
-  static void move(Alloc *alloc, slot_type *src, slot_type *dest) {
-    slot_policy::move(alloc, src, dest);
-  }
 };
 
 // An adapter class that converts a lower-bound compare into an upper-bound
@@ -2300,23 +2294,29 @@ auto btree<P>::operator=(btree &&other) noexcept -> btree & {
 
 template <typename P>
 auto btree<P>::erase(iterator iter) -> iterator {
-  bool internal_delete = false;
-  if (iter.node_->is_internal()) {
-    // Deletion of a value on an internal node. First, move the largest value
-    // from our left child here, then delete that position (in remove_values()
-    // below). We can get to the largest value from our left child by
-    // decrementing iter.
+  iter.node_->value_destroy(iter.position_, mutable_allocator());
+  iter.update_generation();
+
+  const bool internal_delete = iter.node_->is_internal();
+  if (internal_delete) {
+    // Deletion of a value on an internal node. First, transfer the largest
+    // value from our left child here, then erase/rebalance from that position.
+    // We can get to the largest value from our left child by decrementing iter.
     iterator internal_iter(iter);
     --iter;
     assert(iter.node_->is_leaf());
-    params_type::move(mutable_allocator(), iter.node_->slot(iter.position_),
-                      internal_iter.node_->slot(internal_iter.position_));
-    internal_delete = true;
+    internal_iter.node_->transfer(internal_iter.position_, iter.position_,
+                                  iter.node_, mutable_allocator());
+  } else {
+    // Shift values after erased position in leaf. In the internal case, we
+    // don't need to do this because the leaf position is the end of the node.
+    const field_type transfer_from = iter.position_ + 1;
+    const field_type num_to_transfer = iter.node_->finish() - transfer_from;
+    iter.node_->transfer_n(num_to_transfer, iter.position_, transfer_from,
+                           iter.node_, mutable_allocator());
   }
-
-  // Delete the key from the leaf.
-  iter.node_->remove_values(iter.position_, /*to_erase=*/1,
-                            mutable_allocator());
+  // Update node finish and container size.
+  iter.node_->set_finish(iter.node_->finish() - 1);
   --size_;
 
   // We want to return the next value after the one we just erased. If we

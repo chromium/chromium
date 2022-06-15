@@ -766,13 +766,14 @@ void AppendNumberUnit(std::string* out, double n, DisplayUnit unit) {
 //   is non-zero.
 // Unlike Go, we format the zero duration as 0, with no unit.
 std::string FormatDuration(Duration d) {
-  const Duration min_duration = Seconds(kint64min);
-  if (d == min_duration) {
+  constexpr Duration kMinDuration = Seconds(kint64min);
+  std::string s;
+  if (d == kMinDuration) {
     // Avoid needing to negate kint64min by directly returning what the
     // following code should produce in that case.
-    return "-2562047788015215h30m8s";
+    s = "-2562047788015215h30m8s";
+    return s;
   }
-  std::string s;
   if (d < ZeroDuration()) {
     s.append("-");
     d = -d;

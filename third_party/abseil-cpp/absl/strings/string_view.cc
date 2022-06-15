@@ -207,22 +207,11 @@ string_view::size_type string_view::find_last_not_of(
   return npos;
 }
 
-// MSVC has non-standard behavior that implicitly creates definitions for static
-// const members. These implicit definitions conflict with explicit out-of-class
-// member definitions that are required by the C++ standard, resulting in
-// LNK1169 "multiply defined" errors at link time. __declspec(selectany) asks
-// MSVC to choose only one definition for the symbol it decorates. See details
-// at https://msdn.microsoft.com/en-us/library/34h23df8(v=vs.100).aspx
-#ifdef _MSC_VER
-#define ABSL_STRING_VIEW_SELECTANY __declspec(selectany)
-#else
-#define ABSL_STRING_VIEW_SELECTANY
-#endif
 
-ABSL_STRING_VIEW_SELECTANY
+#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
 constexpr string_view::size_type string_view::npos;
-ABSL_STRING_VIEW_SELECTANY
 constexpr string_view::size_type string_view::kMaxSize;
+#endif
 
 ABSL_NAMESPACE_END
 }  // namespace absl

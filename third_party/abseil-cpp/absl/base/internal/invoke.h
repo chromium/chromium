@@ -39,7 +39,7 @@
 
 #include "absl/base/config.h"
 
-#if __cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
 
 #include <functional>
 
@@ -55,7 +55,7 @@ using std::is_invocable_r;
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#else  // __cplusplus >= 201703L
+#else  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
 
 #include <algorithm>
 #include <type_traits>
@@ -226,6 +226,6 @@ using is_invocable_r = IsInvocableRImpl<void, R, F, Args...>;
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // __cplusplus >= 201703L
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
 
 #endif  // ABSL_BASE_INTERNAL_INVOKE_H_
