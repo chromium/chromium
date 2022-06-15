@@ -94,6 +94,7 @@ void FakeUploadClient::Create(policy::CloudPolicyClient* cloud_policy_client,
 Status FakeUploadClient::EnqueueUpload(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
+    absl::optional<ScopedReservation> scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   UploadEncryptedReportingRequestBuilder builder;
@@ -108,10 +109,10 @@ Status FakeUploadClient::EnqueueUpload(
     return Status::StatusOK();
   }
 
-  auto response_cb = base::BindOnce(&FakeUploadClient::OnUploadComplete,
-                                    base::Unretained(this),
-                                    std::move(report_upload_success_cb),
-                                    std::move(encryption_key_attached_cb));
+  auto response_cb = base::BindOnce(
+      &FakeUploadClient::OnUploadComplete, base::Unretained(this),
+      std::move(scoped_reservation), std::move(report_upload_success_cb),
+      std::move(encryption_key_attached_cb));
 
   cloud_policy_client_->UploadEncryptedReport(std::move(request_result.value()),
                                               base::Value::Dict(),
@@ -120,6 +121,7 @@ Status FakeUploadClient::EnqueueUpload(
 }
 
 void FakeUploadClient::OnUploadComplete(
+    absl::optional<ScopedReservation> scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     absl::optional<base::Value::Dict> response) {

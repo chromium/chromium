@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -41,6 +42,7 @@ void UploadClient::Create(
 Status UploadClient::EnqueueUpload(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
+    absl::optional<ScopedReservation> scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   if (records.empty() && !need_encryption_key) {
@@ -48,7 +50,7 @@ Status UploadClient::EnqueueUpload(
   }
 
   return dm_server_upload_service_->EnqueueUpload(
-      need_encryption_key, std::move(records),
+      need_encryption_key, std::move(records), std::move(scoped_reservation),
       std::move(report_upload_success_cb),
       std::move(encryption_key_attached_cb));
 }

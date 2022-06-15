@@ -135,7 +135,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
-      need_encryption_key(), std::move(records_), handler_.get(),
+      need_encryption_key(), std::move(records_),
+      /*scoped_reservation*/ absl::nullopt, handler_.get(),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
       callback_waiter.cb(), sequenced_task_runner_);
 
@@ -188,7 +189,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
-      need_encryption_key(), std::move(records_), handler_.get(),
+      need_encryption_key(), std::move(records_),
+      /*scoped_reservation*/ absl::nullopt, handler_.get(),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
       callback_waiter.cb(), sequenced_task_runner_);
 
@@ -219,7 +221,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
-      need_encryption_key(), std::move(records_), handler_.get(),
+      need_encryption_key(), std::move(records_),
+      /*scoped_reservation*/ absl::nullopt, handler_.get(),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
       callback_waiter.cb(), sequenced_task_runner_);
 
@@ -264,7 +267,8 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
-      need_encryption_key(), std::move(records_), handler_.get(),
+      need_encryption_key(), std::move(records_),
+      /*scoped_reservation*/ absl::nullopt, handler_.get(),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
       callback_waiter.cb(), sequenced_task_runner_);
 
@@ -300,7 +304,8 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
-      /*need_encryption_key*/ true, std::move(records_), handler_.get(),
+      /*need_encryption_key*/ true, std::move(records_),
+      /*scoped_reservation*/ absl::nullopt, handler_.get(),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
       callback_waiter.cb(), sequenced_task_runner_);
 

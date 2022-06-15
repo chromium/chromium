@@ -203,7 +203,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
   auto enqueue_result = upload_client->EnqueueUpload(
-      need_encryption_key(), std::move(records), std::move(upload_success_cb),
+      need_encryption_key(), std::move(records),
+      /*scoped_reservation*/ absl::nullopt, std::move(upload_success_cb),
       encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
 

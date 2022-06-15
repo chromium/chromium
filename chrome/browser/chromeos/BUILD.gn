@@ -51,6 +51,7 @@ source_set("chromeos") {
     "//chromeos/strings",
     "//components/live_caption:constants",
     "//components/policy/proto",
+    "//components/reporting/resources:resource_interface",
     "//components/signin/core/browser",
     "//components/startup_metric_utils/browser:browser",
     "//mojo/public/cpp/bindings",
