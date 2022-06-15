@@ -90,13 +90,14 @@ base::FilePath FilePath(const base::FilePath::StringType& type) {
 
 }  // namespace
 
-TEST(ServiceProviderConfigTest, CurrentConfig) {
-  // Since this class should only be initialized with 1 value for now, all
-  // that's needed is a single test on that value checking every field.
+TEST(ServiceProviderConfigTest, Google) {
   const ServiceProviderConfig* config = GetServiceProviderConfig();
-
   ASSERT_TRUE(config->count("google"));
   ServiceProvider service_provider = config->at("google");
+
+  ASSERT_TRUE(service_provider.analysis);
+  ASSERT_TRUE(service_provider.reporting);
+  ASSERT_FALSE(service_provider.file_system);
 
   ASSERT_EQ("https://safebrowsing.google.com/safebrowsing/uploads/scan",
             std::string(service_provider.analysis->url));
@@ -105,21 +106,23 @@ TEST(ServiceProviderConfigTest, CurrentConfig) {
             std::string(service_provider.reporting->url));
   ASSERT_TRUE(GURL(service_provider.reporting->url).is_valid());
 
-  ASSERT_EQ(2u, service_provider.analysis->supported_tags.size());
-  ASSERT_EQ(std::string(service_provider.analysis->supported_tags.at(0).name),
+  // The Google service provider has 2 tags: malware and dlp.
+  ASSERT_EQ(service_provider.analysis->supported_tags.size(), 2u);
+  ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
             "malware");
-  ASSERT_EQ(service_provider.analysis->supported_tags.at(0).max_file_size,
+  ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
             kMaxFileSize);
-  ASSERT_EQ(std::string(service_provider.analysis->supported_tags.at(1).name),
+  ASSERT_EQ(std::string(service_provider.analysis->supported_tags[1].name),
             "dlp");
-  ASSERT_EQ(service_provider.analysis->supported_tags.at(1).max_file_size,
+  ASSERT_EQ(service_provider.analysis->supported_tags[1].max_file_size,
             kMaxFileSize);
+
   // Only a subset of mime types and extensions are supported by Google DLP, but
   // every type is supported by malware scanning.
   const auto* malware_supported_files =
-      service_provider.analysis->supported_tags.at(0).supported_files;
+      service_provider.analysis->supported_tags[0].supported_files;
   const auto* dlp_supported_files =
-      service_provider.analysis->supported_tags.at(1).supported_files;
+      service_provider.analysis->supported_tags[1].supported_files;
   for (const base::FilePath::StringType& type : SupportedDlpFileTypes()) {
     ASSERT_TRUE(dlp_supported_files->FileExtensionSupported(FilePath(type)));
     ASSERT_TRUE(
@@ -138,9 +141,50 @@ TEST(ServiceProviderConfigTest, CurrentConfig) {
     ASSERT_FALSE(dlp_supported_files->MimeTypeSupported(type));
     ASSERT_TRUE(malware_supported_files->MimeTypeSupported(type));
   }
+}
 
+TEST(ServiceProviderConfigTest, LocalTest) {
+  const ServiceProviderConfig* config = GetServiceProviderConfig();
+  ASSERT_TRUE(config->count("local_test"));
+  ServiceProvider service_provider = config->at("local_test");
+
+  ASSERT_TRUE(service_provider.analysis);
+  ASSERT_FALSE(service_provider.reporting);
+  ASSERT_FALSE(service_provider.file_system);
+
+  ASSERT_FALSE(service_provider.analysis->url);
+  ASSERT_TRUE(service_provider.analysis->local_path);
+  ASSERT_EQ("test_path", std::string(service_provider.analysis->local_path));
+
+  // The test local service provider has 1 tag: dlp.
+  ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
+  ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
+            "dlp");
+  ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
+            kMaxFileSize);
+
+  // Every type of file is supported for the test local content analysis service
+  // provider.
+  const auto* dlp_supported_files =
+      service_provider.analysis->supported_tags[0].supported_files;
+  for (const base::FilePath::StringType& type : SupportedDlpFileTypes())
+    ASSERT_TRUE(dlp_supported_files->FileExtensionSupported(FilePath(type)));
+  for (const base::FilePath::StringType& type : UnsupportedDlpFileTypes())
+    ASSERT_TRUE(dlp_supported_files->FileExtensionSupported(FilePath(type)));
+  for (const std::string& type : SupportedDlpMimeTypes())
+    ASSERT_TRUE(dlp_supported_files->MimeTypeSupported(type));
+  for (const std::string& type : UnsupportedDlpMimeTypes())
+    ASSERT_TRUE(dlp_supported_files->MimeTypeSupported(type));
+}
+
+TEST(ServiceProviderConfigTest, Box) {
+  const ServiceProviderConfig* config = GetServiceProviderConfig();
   ASSERT_TRUE(config->count("box"));
-  service_provider = config->at("box");
+  ServiceProvider service_provider = config->at("box");
+
+  ASSERT_FALSE(service_provider.analysis);
+  ASSERT_FALSE(service_provider.reporting);
+  ASSERT_TRUE(service_provider.file_system);
 
   ASSERT_EQ("https://box.com", std::string(service_provider.file_system->home));
   ASSERT_EQ("https://account.box.com/api/oauth2/authorize",

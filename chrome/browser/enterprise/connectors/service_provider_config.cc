@@ -137,22 +137,38 @@ class GoogleDlpSupportedFiles : public SupportedFiles {
 
 constexpr GoogleDlpSupportedFiles kGoogleDlpSupportedFiles;
 
+constexpr std::array<SupportedTag, 2> kGoogleDlpSupportedTags = {{
+    {
+        .name = "malware",
+        .display_name = "Threat protection",
+        .max_file_size = 52428800,
+        .supported_files = &kAllFilesAllowed,
+    },
+    {
+        .name = "dlp",
+        .display_name = "Sensitive data protection",
+        .max_file_size = 52428800,
+        .supported_files = &kGoogleDlpSupportedFiles,
+    },
+}};
+
 constexpr AnalysisConfig kGoogleAnalysisConfig = {
     .url = "https://safebrowsing.google.com/safebrowsing/uploads/scan",
-    .supported_tags = {{
-        {
-            .name = "malware",
-            .display_name = "Threat protection",
-            .max_file_size = 52428800,
-            .supported_files = &kAllFilesAllowed,
-        },
-        {
-            .name = "dlp",
-            .display_name = "Sensitive data protection",
-            .max_file_size = 52428800,
-            .supported_files = &kGoogleDlpSupportedFiles,
-        },
-    }},
+    .supported_tags = base::span<const SupportedTag>(kGoogleDlpSupportedTags),
+};
+
+constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{
+    {
+        .name = "dlp",
+        .display_name = "Sensitive data protection",
+        .max_file_size = 52428800,
+        .supported_files = &kAllFilesAllowed,
+    },
+}};
+
+constexpr AnalysisConfig kLocalTestAnalysisConfig = {
+    .local_path = "test_path",
+    .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
 };
 
 constexpr ReportingConfig kGoogleReportingConfig = {
@@ -188,6 +204,15 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
               {
                   .display_name = "Box",
                   .file_system = &kBoxFileSystemConfig,
+              },
+          },
+          // TODO(b/226560946): Add the actual local content analysis service
+          // providers to this config.
+          {
+              "local_test",
+              {
+                  .display_name = "Local Test",
+                  .analysis = &kLocalTestAnalysisConfig,
               },
           },
       });
