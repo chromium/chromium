@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
@@ -21,17 +20,18 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -47,33 +47,30 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.SuggestionAnswer.ImageLine;
 import org.chromium.components.omnibox.SuggestionAnswer.TextField;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.url.ShadowGURL;
 
 import java.util.Arrays;
 
 /**
  * Tests for {@link AnswerSuggestionProcessor}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class AnswerSuggestionProcessorUnitTest {
     private static final @AnswerType int ANSWER_TYPES[] = {AnswerType.DICTIONARY,
             AnswerType.FINANCE, AnswerType.KNOWLEDGE_GRAPH, AnswerType.SPORTS, AnswerType.SUNRISE,
             AnswerType.TRANSLATION, AnswerType.WEATHER, AnswerType.WHEN_IS, AnswerType.CURRENCY};
 
-    @Mock
-    SuggestionHost mSuggestionHost;
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    UrlBarEditingTextStateProvider mUrlStateProvider;
+    private @Mock SuggestionHost mSuggestionHost;
+    private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
+    private @Mock ImageFetcher mImageFetcher;
+    private @Mock Bitmap mBitmap;
 
-    @Mock
-    ImageFetcher mImageFetcher;
-
-    private Bitmap mBitmap;
     private AnswerSuggestionProcessor mProcessor;
 
     /**
@@ -170,17 +167,8 @@ public class AnswerSuggestionProcessorUnitTest {
                 /* additionalText */ null, /* statusText */ null, url);
     }
 
-    public AnswerSuggestionProcessorUnitTest() {
-        // SetUp runs on the UI thread because we're using UiThreadTestRule, so do native library
-        // loading here, which happens on the Instrumentation thread.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-    }
-
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
-
         mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
                 mSuggestionHost, mUrlStateProvider, () -> mImageFetcher);
     }
@@ -202,7 +190,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void regularAnswer_order() {
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "Query", 1, "Answer", 1, null);
@@ -216,7 +203,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void dictionaryAnswer_order() {
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.DICTIONARY, "Query", 1, "Answer", 1, null);
@@ -229,7 +215,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void calculationAnswer_order() {
         final SuggestionTestHelper suggHelper = createCalculationSuggestion("12345", "123 + 45");
         processSuggestion(suggHelper);
@@ -240,7 +225,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void regularAnswer_shortMultiline() {
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "", 1, "", 3, null);
@@ -252,7 +236,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void dictionaryAnswer_shortMultiline() {
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.DICTIONARY, "", 1, "", 3, null);
@@ -266,7 +249,6 @@ public class AnswerSuggestionProcessorUnitTest {
     // Check that multiline titles are truncated to a single line.
     @Test
     @SmallTest
-    @UiThreadTest
     public void regularAnswer_truncatedMultiline() {
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.KNOWLEDGE_GRAPH, "", 3, "", 10, null);
@@ -278,7 +260,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void dictionaryAnswer_truncatedMultiline() {
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.DICTIONARY, "", 3, "", 10, null);
@@ -291,7 +272,6 @@ public class AnswerSuggestionProcessorUnitTest {
     // Image fetching and icon association tests.
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_fallbackIcons() {
         for (@AnswerType int type : ANSWER_TYPES) {
             SuggestionTestHelper suggHelper = createAnswerSuggestion(type, "", 1, "", 1, null);
@@ -303,7 +283,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_iconAssociation() {
         SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.DICTIONARY, "", 1, "", 1, null);
@@ -349,7 +328,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_repeatedUrlsAreFetchedOnlyOnce() {
         final String url1 = "http://site1.com";
         final String url2 = "http://site2.com";
@@ -373,7 +351,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_bitmapReplacesIconForAllSuggestionsWithSameUrl() {
         final String url = "http://site.com";
         final SuggestionTestHelper sugg1 =
@@ -413,7 +390,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_failedBitmapFetchDoesNotClearIcons() {
         final String url = "http://site.com";
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
@@ -433,7 +409,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_noImageFetchWhenFetcherIsUnavailable() {
         final String url = "http://site.com";
         mImageFetcher = null;
@@ -445,7 +420,6 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void answerImage_associatedModelsAreErasedFromPendingListAfterImageFetch() {
         ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         final String url = "http://site1.com";
