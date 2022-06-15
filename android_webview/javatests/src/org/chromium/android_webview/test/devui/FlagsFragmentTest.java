@@ -29,6 +29,7 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -63,6 +64,7 @@ import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.devui.FlagsFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.DeveloperUiService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
@@ -109,6 +111,9 @@ public class FlagsFragmentTest {
             FlagsFragment.setFlagListForTesting(sMockFlagList);
             DeveloperUiService.setFlagListForTesting(sMockFlagList);
         });
+        Context context = InstrumentationRegistry.getTargetContext();
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_FLAGS);
         mRule.launchActivity(intent);
         // Always close the soft keyboard when the activity is launched which is sometimes shown

@@ -56,6 +56,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,8 +71,8 @@ import org.chromium.android_webview.devui.CrashesListFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.devui.WebViewPackageError;
-import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -105,6 +106,13 @@ public class CrashesListFragmentTest {
 
     @Rule
     public BaseActivityTestRule mRule = new BaseActivityTestRule<MainActivity>(MainActivity.class);
+
+    @Before
+    public void setUp() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+    }
 
     @After
     public void tearDown() {

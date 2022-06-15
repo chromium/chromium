@@ -48,12 +48,14 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Feature;
@@ -83,6 +85,13 @@ public class DeveloperUiTest {
         // done after launching the activity.
         intending(not(IntentMatchers.isInternal()))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+    }
+
+    @Before
+    public void setUp() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
     }
 
     @After

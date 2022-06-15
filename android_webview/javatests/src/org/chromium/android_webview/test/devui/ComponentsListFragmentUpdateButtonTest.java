@@ -14,12 +14,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.devui.ComponentsListFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.services.MockAwComponentUpdateService;
@@ -50,6 +54,13 @@ public class ComponentsListFragmentUpdateButtonTest {
 
     private static File sComponentsDownloadDir =
             new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath());
+
+    @Before
+    public void setUp() {
+        Context context = InstrumentationRegistry.getTargetContext();
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+    }
 
     @After
     public void tearDown() {
