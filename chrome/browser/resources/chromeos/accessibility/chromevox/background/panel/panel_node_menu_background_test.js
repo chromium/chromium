@@ -14,7 +14,7 @@ const Msgs = {
 
 // Fake PanelBridge.
 const PanelBridge = {
-  addMenuItem: (item, id) => PanelBridge.calls.append({item, id}),
+  addMenuItem: item => PanelBridge.calls.push(item),
   calls: [],
 };
 
@@ -33,18 +33,18 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
   assertMenuItemIndicatesNoNodesFound(item) {
     assertNotNullNorUndefined(item);
     assertEquals('None', item.title);
-    assertEquals(-1, item.callbackId);
+    assertEquals(-1, item.callbackNodeIndex);
     assertFalse(item.isActive);
   }
 
   assertItemMatches(expectedName, item, opt_isActive) {
     assertEquals(expectedName, item.title);
     assertTrue(
-        item.callbackId >= 0 &&
-        item.callbackId < PanelNodeMenuBackground.callbackNodes_.length);
+        item.callbackNodeIndex >= 0 &&
+        item.callbackNodeIndex < PanelNodeMenuBackground.callbackNodes_.length);
     assertEquals(
         expectedName,
-        PanelNodeMenuBackground.callbackNodes_[item.callbackId].name);
+        PanelNodeMenuBackground.callbackNodes_[item.callbackNodeIndex].name);
     if (opt_isActive) {
       assertTrue(item.isActive);
     } else {
@@ -53,13 +53,13 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
   }
 
   assertMenusHaveNoNodesFoundExcept(id) {
-    for (const menu of PanelNodeMenuData.ALL_NODE_MENUS) {
+    for (const menu of ALL_NODE_MENU_DATA) {
       if (menu.menuId === id) {
         continue;
       }
-      const call = PanelBridge.calls.find(args => args.id === menu.menuId);
+      const call = PanelBridge.calls.find(item => item.menuId === menu.menuId);
       assertNotNullNorUndefined(call);
-      this.assertMenuItemIndicatesNoNodesFound(call.item);
+      this.assertMenuItemIndicatesNoNodesFound(call);
     }
   }
 
@@ -68,24 +68,24 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxNextE2ETest {
     PanelBackground.instance.createAllNodeMenuBackgrounds_();
   }
 
-  isFormControl(args) {
-    return args.id === PanelNodeMenuId.FORM_CONTROL;
+  isFormControl(item) {
+    return item.menuId === PanelNodeMenuId.FORM_CONTROL;
   }
 
-  isHeading(args) {
-    return args.id === PanelNodeMenuId.HEADING;
+  isHeading(item) {
+    return item.menuId === PanelNodeMenuId.HEADING;
   }
 
-  isLandmark(args) {
-    return args.id === PanelNodeMenuId.LANDMARK;
+  isLandmark(item) {
+    return item.menuId === PanelNodeMenuId.LANDMARK;
   }
 
-  isLink(args) {
-    return args.id === PanelNodeMenuId.LINK;
+  isLink(item) {
+    return item.menuId === PanelNodeMenuId.LINK;
   }
 
-  isTable(args) {
-    return args.id === PanelNodeMenuId.TABLE;
+  isTable(item) {
+    return item.menuId === PanelNodeMenuId.TABLE;
   }
 
   get formControlsDoc() {
@@ -158,8 +158,7 @@ TEST_F(
 
       // Expect that one element is added per menu, specifying that no nodes
       // of that type are found.
-      assertEquals(
-          PanelNodeMenuData.ALL_NODE_MENUS.length, PanelBridge.calls.length);
+      assertEquals(ALL_NODE_MENU_DATA.length, PanelBridge.calls.length);
       // Assert all menus have a no nodes found element.
       this.assertMenusHaveNoNodesFoundExcept(null);
     });
@@ -168,14 +167,12 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Headings', async function() {
   await this.runWithLoadedTree(this.headingsDoc);
   this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu, plus
-  // two extra for the additional headings found).
-  assertEquals(
-      PanelNodeMenuData.ALL_NODE_MENUS_.length + 2, PanelBridge.calls.length);
+  // Check that there are the correct number of calls (one for each menu,
+  // plus two extra for the additional headings found).
+  assertEquals(ALL_NODE_MENU_DATA.length + 2, PanelBridge.calls.length);
 
   // Expect that the three items are added to the headings menu
-  const headingItems =
-      PanelBridge.calls.findAll(this.isHeading).map(args => args.item);
+  const headingItems = PanelBridge.calls.findAll(this.isHeading);
   assertEquals(3, headingItems.length);
 
   this.assertItemMatches('Heading 1', headingItems.unshift());
@@ -189,14 +186,12 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Landmarks', async function() {
   await this.runWithLoadedTree(this.landmarksDoc);
   this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu, plus
-  // seven extra for the additional landmarks found).
-  assertEquals(
-      PanelNodeMenuData.ALL_NODE_MENUS_.length + 7, PanelBridge.calls.length);
+  // Check that there are the correct number of calls (one for each menu,
+  // plus seven extra for the additional landmarks found).
+  assertEquals(ALL_NODE_MENU_DATA.length + 7, PanelBridge.calls.length);
 
   // Verify that eight items were added to the landmarks menu.
-  const landmarkItems =
-      PanelBridge.calls.findAll(this.isLandmark).map(args => args.item);
+  const landmarkItems = PanelBridge.calls.findAll(this.isLandmark);
   assertEquals(8, landmarkItems.length);
 
   this.assertItemMatches('application', landmarkItems.unshift());
@@ -217,12 +212,10 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Links', async function() {
 
   // Check that there are the correct number of calls (one for each menu, plus
   // three extra for the additional links found).
-  assertEquals(
-      PanelNodeMenuData.ALL_NODE_MENUS_.length + 3, PanelBridge.calls.length);
+  assertEquals(ALL_NODE_MENU_DATA.length + 3, PanelBridge.calls.length);
 
   // Verify that four items were added to the links menu.
-  const linkItems =
-      PanelBridge.calls.findAll(this.isLink).map(args => args.item);
+  const linkItems = PanelBridge.calls.findAll(this.isLink);
   assertEquals(4, linkItems.length);
 
   this.assertItemMatches('Link 1', linkItems.unshift());
@@ -240,13 +233,10 @@ TEST_F(
 
       // Check that there are the correct number of calls (one for each menu,
       // plus eight extra for the additional form controls found).
-      assertEquals(
-          PanelNodeMenuData.ALL_NODE_MENUS_.length + 8,
-          PanelBridge.calls.length);
+      assertEquals(ALL_NODE_MENU_DATA.length + 8, PanelBridge.calls.length);
 
       // Verify that nine items were added to the form controls menu.
-      const formItems =
-          PanelBridge.calls.findAll(this.isFormControl).map(args => args.item);
+      const formItems = PanelBridge.calls.findAll(this.isFormControl);
       assertEquals(9, formItems.length);
 
       this.assertItemMatches('button', formItems.unshift());
@@ -266,14 +256,12 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'Tables', async function() {
   await this.runWithLoadedTree(this.tablesDoc);
   this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu, plus
-  // one extra for the additional links found).
-  assertEquals(
-      PanelNodeMenuData.ALL_NODE_MENUS_.length + 1, PanelBridge.calls.length);
+  // Check that there are the correct number of calls (one for each menu,
+  // plus one extra for the additional links found).
+  assertEquals(ALL_NODE_MENU_DATA.length + 1, PanelBridge.calls.length);
 
   // Verify that two items were added to the tables menu.
-  const tableItems =
-      PanelBridge.calls.findAll(this.isTable).map(args => args.item);
+  const tableItems = PanelBridge.calls.findAll(this.isTable);
   assertEquals(2, tableItems.length);
 
   this.assertItemMatches('grid', tableItems.unshift());
@@ -287,22 +275,21 @@ TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'MixedData', async function() {
   this.createAllNodeMenuBackgrounds();
 
   // Check that there are the correct number of calls (one for each menu).
-  assertEquals(
-      PanelNodeMenuData.ALL_NODE_MENUS_.length, PanelBridge.calls.length);
+  assertEquals(ALL_NODE_MENU_DATA.length, PanelBridge.calls.length);
 
   // Check that each item was added to the correct menu.
-  const formItem = PanelBridge.calls.find(this.isFormControl).item;
+  const formItem = PanelBridge.calls.find(this.isFormControl);
   this.assertItemMatches('button', formItem);
 
-  const headingItem = PanelBridge.calls.find(this.isHeading).item;
+  const headingItem = PanelBridge.calls.find(this.isHeading);
   this.assertItemMatches('header', headingItem);
 
-  const landmarkItem = PanelBridge.calls.find(this.isLandmark).item;
+  const landmarkItem = PanelBridge.calls.find(this.isLandmark);
   this.assertItemMatches('region', landmarkItem);
 
-  const linkItem = PanelBridge.calls.find(this.isLink).item;
+  const linkItem = PanelBridge.calls.find(this.isLink);
   this.assertItemMatches('link', linkItem);
 
-  const tableItem = PanelBridge.calls.find(this.isTable).item;
+  const tableItem = PanelBridge.calls.find(this.isTable);
   this.assertItemMatches('table', tableItem);
 });
