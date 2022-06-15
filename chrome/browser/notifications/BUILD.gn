@@ -110,6 +110,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionChangeReceiverTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionControllerTest.java",
@@ -127,6 +128,7 @@ if (is_android) {
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/browser_ui/notifications/android:java",
       "//components/embedder_support/android:junit_test_support",
+      "//components/url_formatter/android:url_formatter_java",
       "//third_party/android_deps:espresso_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -150,7 +152,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsInitializerTest.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdaterTest.java",
     ]
 
     deps = [
