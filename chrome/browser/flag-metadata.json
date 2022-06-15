@@ -40,7 +40,7 @@
   },
   {
     "name": "accessible-pdf-form",
-    "owners": [ "ankk@microsoft.com", "mohitb@microsoft.com" ],
+    "owners": [ "asku@microsoft.com", "mohitb@microsoft.com" ],
     "expiry_milestone": 105
   },
   {
