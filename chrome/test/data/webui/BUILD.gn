@@ -504,9 +504,16 @@ generate_grd("build_grd") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "chromeos/personalization_app:build_grdp" ]
-    grdp_files +=
-        [ "$target_gen_dir/chromeos/personalization_app/resources.grdp" ]
+    deps += [
+      "chromeos/personalization_app:build_grdp",
+      "//ui/file_manager:build_tests_gen_grdp",
+      "//ui/file_manager:build_tests_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/chromeos/personalization_app/resources.grdp",
+      "$root_gen_dir/ui/file_manager/tests_resources.grdp",
+      "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
+    ]
   }
 
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
