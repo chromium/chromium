@@ -153,11 +153,9 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        # TODO(crbug.com/1293222): Restore after octopus capacity has been
-        # returned.
-        #'test_suites': {
-        #  'gtest_tests': 'chromeos_device_only_gtests',
-        #},
+        'test_suites': {
+          'gtest_tests': 'chromeos_device_only_gtests',
+        },
         'swarming': {
           'dimension_sets': [
             {
