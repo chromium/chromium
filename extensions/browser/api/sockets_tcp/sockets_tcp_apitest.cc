@@ -133,9 +133,7 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, result2.error);
 }
 
-// TODO(https://crbug.com/1218531): test has a high flake score and fails quite
-// often.
-IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, DISABLED_SocketTcpExtensionTLS) {
+IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtensionTLS) {
   // Because the network service runs in a utility process, the cert of the
   // EmbeddedTestServer won't be recognized, so inject mock cert verifier
   // through the test helper interface.

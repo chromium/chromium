@@ -10,10 +10,15 @@ const httpPost =
     "0100000005320000005";
 var expectedResponsePattern = /\n0100000005320000005$/;
 
+// The echo server can send back the response in multiple chunks. We must wait
+// for at least `minExpectedResponseLength` bytes to be received before matching
+// the response with `expectedResponsePattern`.
+var minExpectedResponseLength = 102;
+
 var tcp_address;
 var https_address;
 var bytesSent = 0;
-var dataAsString;
+var dataAsString = "";
 var dataRead = [];
 var tcp_port = -1;
 var https_port = -1;
@@ -21,7 +26,6 @@ var protocol = "none";
 var tcp_socketId = 0;
 var https_socketId = 0;
 var echoDataSent = false;
-var succeeded = false;
 var waitCount = 0;
 
 // Keys are socketIds. Values are inner dictionaries with two keys: onReceive,
@@ -99,7 +103,6 @@ var testSocketCreation = function() {
 
 var testSending = function() {
   dataRead = "";
-  succeeded = false;
   echoDataSent = false;
   waitCount = 0;
 
@@ -267,11 +270,15 @@ var testSending = function() {
     console.log("onSocketReceive");
     chrome.test.assertEq(tcp_socketId, receiveInfo.socketId);
     arrayBuffer2String(receiveInfo.data, function(s) {
-      dataAsString = s;  // save this for error reporting
-      var match = !!s.match(expectedResponsePattern);
-      chrome.test.assertTrue(match, "Received data does not match.");
-      console.log("echo data received, closing socket");
-      chrome.sockets.tcp.close(tcp_socketId, onCloseComplete);
+      // We may receive the response in multiple chunks. Keep appending the
+      // response to dataAsString until we reach minExpectedResponseLength.
+      dataAsString += s;
+      if (dataAsString.length >= minExpectedResponseLength) {
+        var match = !!dataAsString.match(expectedResponsePattern);
+        chrome.test.assertTrue(match, "Received data does not match.");
+        console.log("echo data received, closing socket");
+        chrome.sockets.tcp.close(tcp_socketId, onCloseComplete);
+      }
     });
   }
 
@@ -290,7 +297,6 @@ var testSending = function() {
 
   function onCloseComplete() {
     console.log("onCloseComplete");
-    succeeded = true;
     chrome.test.succeed();
   }
 
@@ -298,7 +304,6 @@ var testSending = function() {
 
 var testSecure = function () {
   var request_sent = false;
-  succeeded = false;
   dataAsString = "";
   setTimeout(waitForBlockingOperation, 1000);
 
@@ -384,15 +389,14 @@ var testSecure = function () {
       // we will get more data than we care about. We only care about the
       // first segment of data (the HTTP 200 code). Ignore the rest, which
       // won't match the pattern.
-      if (succeeded == false) {
-        dataAsString = s;  // for waitForBlockingOperation().
+      dataAsString += s;
+      if (dataAsString.length >= minExpectedResponseLength) {
         console.log("HTTPS receive: got " + s);
-        var match = !!s.match(expectedResponsePattern);
+        var match = !!dataAsString.match(expectedResponsePattern);
         chrome.test.assertTrue(match, "Received data does not match.");
         console.log("HTTPS response received, closing socket.");
         chrome.sockets.tcp.close(https_socketId, onCloseComplete);
       }
-      succeeded = true;
     });
   }
 
