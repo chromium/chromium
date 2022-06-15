@@ -60,15 +60,25 @@ class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
 // Can be handed over to another owner.
 class ScopedReservation {
  public:
-  ScopedReservation(uint64_t size,
-                    scoped_refptr<ResourceInterface> resource_interface);
-  ScopedReservation(ScopedReservation&& other);
+  ScopedReservation(
+      uint64_t size,
+      scoped_refptr<ResourceInterface> resource_interface) noexcept;
+  ScopedReservation(ScopedReservation&& other) noexcept;
   ScopedReservation(const ScopedReservation& other) = delete;
+  ScopedReservation& operator=(ScopedReservation&& other) = delete;
   ScopedReservation& operator=(const ScopedReservation& other) = delete;
   ~ScopedReservation();
 
   bool reserved() const;
+
+  // Reduces reservation to |new_size|.
   bool Reduce(uint64_t new_size);
+
+  // Adds |other| to |this| without assigning or releasing any reservation.
+  // Used for seamless transition from one reservation to another (more generic
+  // than std::move). Resets |other| to non-reserved state upon return from this
+  // method.
+  void HandOver(ScopedReservation& other);
 
  private:
   const scoped_refptr<ResourceInterface> resource_interface_;

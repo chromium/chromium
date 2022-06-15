@@ -25,6 +25,11 @@ namespace {
 class ResourceInterfaceTest
     : public ::testing::TestWithParam<scoped_refptr<ResourceInterface>> {
  protected:
+  void SetUp() override {
+    // Make sure parameters define reasonably large total resource size.
+    ASSERT_GE(resource_interface()->GetTotal(), 1u * 1024LLu * 1024LLu);
+  }
+
   scoped_refptr<ResourceInterface> resource_interface() const {
     return GetParam();
   }
@@ -146,7 +151,65 @@ TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingReductions) {
   for (; size >= 2; size /= 2) {
     EXPECT_TRUE(scoped_reservation.Reduce(size / 2));
   }
-  EXPECT_FALSE(scoped_reservation.Reduce(size / 2));
+  EXPECT_TRUE(scoped_reservation.Reduce(size / 2));
+  EXPECT_FALSE(scoped_reservation.reserved());
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationBasicHandOver) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  ASSERT_TRUE(scoped_reservation.reserved());
+  {
+    ScopedReservation another_reservation(size - 1, resource_interface());
+    ASSERT_TRUE(another_reservation.reserved());
+    EXPECT_THAT(resource_interface()->GetUsed(),
+                Eq(resource_interface()->GetTotal() - 1));
+    EXPECT_TRUE(scoped_reservation.reserved());
+    EXPECT_TRUE(another_reservation.reserved());
+    scoped_reservation.HandOver(another_reservation);
+    EXPECT_THAT(resource_interface()->GetUsed(),
+                Eq(resource_interface()->GetTotal() - 1));
+  }
+  // Destruction of |anoter_reservation| does not change the amount used.
+  EXPECT_THAT(resource_interface()->GetUsed(),
+              Eq(resource_interface()->GetTotal() - 1));
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingHandOvers) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+
+  for (; size >= 2; size /= 2) {
+    ScopedReservation another_reservation(size / 2, resource_interface());
+    scoped_reservation.HandOver(another_reservation);
+  }
+  EXPECT_THAT(resource_interface()->GetUsed(),
+              Eq(resource_interface()->GetTotal() - 1));
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationEmptyHandOver) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+
+  ASSERT_TRUE(scoped_reservation.reserved());
+  {
+    ScopedReservation another_reservation(size - 1, resource_interface());
+    ASSERT_TRUE(another_reservation.reserved());
+
+    EXPECT_THAT(resource_interface()->GetUsed(),
+                Eq(resource_interface()->GetTotal() - 1));
+    EXPECT_TRUE(scoped_reservation.reserved());
+    EXPECT_TRUE(another_reservation.reserved());
+
+    another_reservation.Reduce(0);
+    ASSERT_FALSE(another_reservation.reserved());
+
+    scoped_reservation.HandOver(another_reservation);
+    EXPECT_THAT(resource_interface()->GetUsed(), Eq(size));
+  }
+  // Destruction of |anoter_reservation| does not change the amount used.
+  EXPECT_THAT(resource_interface()->GetUsed(), Eq(size));
 }
 
 TEST_P(ResourceInterfaceTest, ReservationOverMaxTest) {
