@@ -75664,6 +75664,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Launcher search"/>
   <int value="3" label="Settings"/>
   <int value="4" label="Settings search"/>
+  <int value="5" label="Keyboard brightness slider"/>
 </enum>
 
 <enum name="PersonalizationPath">

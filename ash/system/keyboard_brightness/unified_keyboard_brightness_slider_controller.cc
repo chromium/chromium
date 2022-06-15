@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -20,6 +21,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -99,6 +101,10 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
   }
 
   void OnKeyboardBacklightColorIconPressed() {
+    // Record entry point metric to Personalization Hub.
+    base::UmaHistogramEnumeration(
+        kPersonalizationEntryPointHistogramName,
+        PersonalizationEntryPoint::kKeyboardBrightnessSlider);
     NewWindowDelegate* primary_delegate = NewWindowDelegate::GetPrimary();
     primary_delegate->OpenPersonalizationHub();
     return;
