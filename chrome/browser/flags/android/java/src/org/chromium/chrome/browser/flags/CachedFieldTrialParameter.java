@@ -41,16 +41,14 @@ public abstract class CachedFieldTrialParameter {
     private final String mFeatureName;
     private final String mParameterName;
     private final @FieldTrialParameterType int mType;
-    private final String mPreferenceKeyOverride;
 
-    CachedFieldTrialParameter(String featureName, String parameterName,
-            @FieldTrialParameterType int type, String preferenceKeyOverride) {
+    CachedFieldTrialParameter(
+            String featureName, String parameterName, @FieldTrialParameterType int type) {
         mFeatureName = featureName;
         // parameterName does not apply to ALL (because it includes all parameters).
         assert type != FieldTrialParameterType.ALL || parameterName.isEmpty();
         mParameterName = parameterName;
         mType = type;
-        mPreferenceKeyOverride = preferenceKeyOverride;
 
         registerInstance();
     }
@@ -106,10 +104,6 @@ public abstract class CachedFieldTrialParameter {
      * @return The SharedPreferences key to cache the field trial parameter.
      */
     String getSharedPreferenceKey() {
-        if (mPreferenceKeyOverride != null) {
-            return mPreferenceKeyOverride;
-        }
-
         return generateSharedPreferenceKey(getFeatureName(), getParameterName());
     }
 

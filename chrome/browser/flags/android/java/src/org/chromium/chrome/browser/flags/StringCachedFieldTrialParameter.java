@@ -16,12 +16,7 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
 
     public StringCachedFieldTrialParameter(
             String featureName, String variationName, String defaultValue) {
-        this(featureName, variationName, defaultValue, null);
-    }
-
-    public StringCachedFieldTrialParameter(String featureName, String variationName,
-            String defaultValue, String preferenceKeyOverride) {
-        super(featureName, variationName, FieldTrialParameterType.STRING, preferenceKeyOverride);
+        super(featureName, variationName, FieldTrialParameterType.STRING);
         mDefaultValue = defaultValue;
     }
 

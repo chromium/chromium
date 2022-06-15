@@ -16,7 +16,7 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
 
     public IntCachedFieldTrialParameter(
             String featureName, String variationName, int defaultValue) {
-        super(featureName, variationName, FieldTrialParameterType.INT, null);
+        super(featureName, variationName, FieldTrialParameterType.INT);
         mDefaultValue = defaultValue;
     }
 

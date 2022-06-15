@@ -68,9 +68,7 @@ class ValuesOverridden {
         return defaultValue;
     }
 
-    void clear() {
-        if (mOverridesTestFeatures != null) {
-            mOverridesTestFeatures.clear();
-        }
+    void removeOverrides() {
+        mOverridesTestFeatures = null;
     }
 }

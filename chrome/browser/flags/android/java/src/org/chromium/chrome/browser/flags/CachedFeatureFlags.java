@@ -476,7 +476,7 @@ public class CachedFeatureFlags {
     @VisibleForTesting
     public static void resetFlagsForTesting() {
         sValuesReturned = new ValuesReturned();
-        sValuesOverridden.clear();
+        sValuesOverridden.removeOverrides();
         sSafeMode.clearMemoryForTesting();
     }
 
