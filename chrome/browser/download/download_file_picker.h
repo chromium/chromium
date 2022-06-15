@@ -7,18 +7,16 @@
 
 #include "base/callback.h"
 #include "chrome/browser/download/download_confirmation_result.h"
+#include "components/download/public/common/download_item.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace base {
 class FilePath;
 }
 
-namespace download {
-class DownloadItem;
-}
-
 // Handles showing a dialog to the user to ask for the filename for a download.
-class DownloadFilePicker : public ui::SelectFileDialog::Listener {
+class DownloadFilePicker : public ui::SelectFileDialog::Listener,
+                           public download::DownloadItem::Observer {
  public:
   // Callback used to pass the user selection back to the owner of this
   // object.
@@ -56,6 +54,9 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
 
+  // DownloadItem::Observer
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
+
   // Initially suggested path.
   base::FilePath suggested_path_;
 
@@ -64,6 +65,9 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
 
   // For managing select file dialogs.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+
+  // The item to be downloaded.
+  download::DownloadItem* download_item_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_

@@ -10,7 +10,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -20,21 +19,27 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "ui/aura/window.h"
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #endif
 
 using download::DownloadItem;
 using content::DownloadManager;
 using content::WebContents;
 
-DownloadFilePicker::DownloadFilePicker(DownloadItem* item,
+DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
                                        const base::FilePath& suggested_path,
                                        ConfirmationCallback callback)
     : suggested_path_(suggested_path),
-      file_selected_callback_(std::move(callback)) {
+      file_selected_callback_(std::move(callback)),
+      download_item_(item) {
   const DownloadPrefs* prefs = DownloadPrefs::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
   DCHECK(prefs);
 
+  DCHECK(item);
+  item->AddObserver(this);
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (!web_contents || !web_contents->GetNativeView()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -94,13 +99,32 @@ DownloadFilePicker::DownloadFilePicker(DownloadItem* item,
 DownloadFilePicker::~DownloadFilePicker() {
   if (select_file_dialog_)
     select_file_dialog_->ListenerDestroyed();
+
+  if (download_item_)
+    download_item_->RemoveObserver(this);
 }
 
 void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
+  base::FilePath selected_path(path);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* web_contents =
+      download_item_
+          ? content::DownloadItemUtils::GetWebContents(download_item_)
+          : nullptr;
+  if (web_contents && !path.empty()) {
+    DCHECK(download_item_);
+    auto restricted_urls =
+        policy::DlpFilesController::IsFilesTransferRestricted(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+            {download_item_->GetURL()}, selected_path.value());
+    if (!restricted_urls.empty())
+      selected_path.clear();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::move(file_selected_callback_)
-      .Run(path.empty() ? DownloadConfirmationResult::CANCELED
-                        : DownloadConfirmationResult::CONFIRMED,
-           path);
+      .Run(selected_path.empty() ? DownloadConfirmationResult::CANCELED
+                                 : DownloadConfirmationResult::CONFIRMED,
+           selected_path);
   delete this;
 }
 
@@ -122,4 +146,9 @@ void DownloadFilePicker::ShowFilePicker(DownloadItem* item,
                                         ConfirmationCallback callback) {
   new DownloadFilePicker(item, suggested_path, std::move(callback));
   // DownloadFilePicker deletes itself.
+}
+
+void DownloadFilePicker::OnDownloadDestroyed(DownloadItem* download_item) {
+  DCHECK_EQ(download_item, download_item_);
+  download_item_ = nullptr;
 }
