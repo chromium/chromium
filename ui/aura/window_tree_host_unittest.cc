@@ -15,6 +15,7 @@
 #include "ui/aura/test/test_screen.h"
 #include "ui/aura/test/window_event_dispatcher_test_api.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host_observer.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
@@ -293,6 +294,45 @@ TEST_F(WindowTreeHostTest, ConvertPixelsToDIPShouldWorkWithPointF) {
 
   EXPECT_EQ(ConvertPixelsToDIP(host(), gfx::PointF(10.6f, 0)),
             gfx::PointF(5.3f, 0));
+}
+
+namespace {
+
+class TestWindowTreeHostObserver : public WindowTreeHostObserver {
+ public:
+  TestWindowTreeHostObserver() = default;
+  TestWindowTreeHostObserver(const TestWindowTreeHostObserver&) = delete;
+  TestWindowTreeHostObserver& operator=(const TestWindowTreeHostObserver&) =
+      delete;
+  // WndowTreeHostObserver:
+  ~TestWindowTreeHostObserver() override = default;
+  void OnHostResized(WindowTreeHost* host) override { resize_notified_ = true; }
+
+  bool resize_notified_and_reset() {
+    bool r = resize_notified_;
+    resize_notified_ = false;
+    return r;
+  }
+
+ private:
+  bool resize_notified_ = false;
+};
+
+}  // namespace
+
+TEST_F(WindowTreeHostTest, DontNotifyWhenNoChange) {
+  // make sure we're on the same size.
+  gfx::Size size_px = host()->compositor()->size();
+  TestWindowTreeHostObserver observer;
+  host()->AddObserver(&observer);
+  test::CallOnHostResizedInPixels(host(), size_px);
+  EXPECT_FALSE(observer.resize_notified_and_reset());
+  test_screen()->SetDeviceScaleFactor(2.0f, /*notify resize=*/true);
+  EXPECT_TRUE(observer.resize_notified_and_reset());
+  // Updating with same scale factor shouldn't notify observers.
+  test_screen()->SetDeviceScaleFactor(2.0f, /*notify resize=*/true);
+  EXPECT_FALSE(observer.resize_notified_and_reset());
+  host()->RemoveObserver(&observer);
 }
 
 class TestWindow : public ui::StubWindow {
