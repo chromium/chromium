@@ -28,7 +28,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.SHOW_ANIMATION;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
@@ -83,7 +82,6 @@ class StartSurfaceToolbarMediator {
 
     @StartSurfaceState
     private int mStartSurfaceState;
-    private boolean mIsAnimationEnabled;
     private boolean mDefaultSearchEngineHasLogo;
     private boolean mShouldShowStartSurfaceAsHomepage;
     private boolean mHomepageEnabled;
@@ -108,7 +106,7 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler, boolean shouldShowTabSwitcherButtonOnHomepage,
             boolean isTabGroupsAndroidContinuationEnabled, UserEducationHelper userEducationHelper,
-            BooleanSupplier isIncognitoModeEnabledSupplier, boolean isAnimationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> logoClickedCallback) {
         mPropertyModel = model;
@@ -155,7 +153,6 @@ class StartSurfaceToolbarMediator {
                     }));
         }
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
-        mIsAnimationEnabled = isAnimationEnabled;
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
@@ -206,7 +203,6 @@ class StartSurfaceToolbarMediator {
 
     void onStartSurfaceStateChanged(
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
-        updateShowAnimation(newState, shouldShowStartSurfaceToolbar);
         mStartSurfaceState = newState;
         updateLogoVisibility();
         updateTabSwitcherButtonVisibility();
@@ -468,32 +464,6 @@ class StartSurfaceToolbarMediator {
             // If it's not on the non-incognito homepage, set the translationY as 0.
             mPropertyModel.set(TRANSLATION_Y, 0);
         }
-    }
-
-    private void updateShowAnimation(
-            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
-        mPropertyModel.set(SHOW_ANIMATION,
-                shouldShowStartSurfaceToolbar && mIsAnimationEnabled
-                        && isSwitchingBetweenOverviews(mStartSurfaceState, newState));
-    }
-
-    private boolean isSwitchingBetweenOverviews(
-            @StartSurfaceState int previousState, @StartSurfaceState int newState) {
-        // The previousState should never be SHOWING states because if it's already on overview
-        // page, SHOWING state should've been updated to SHOWN state. The following transitions are
-        // handled:
-        // * SHOWN_HOMEPAGE -> SHOWING_TABSWITCHER
-        // * SHOWN_HOMEPAGE -> SHOWN_TABSWITCHER
-        // * SHOWN_TABSWITCHER -> SHOWING_HOMEPAGE
-        // * SHOWN_TABSWITCHER -> SHOWN_HOMEPAGE
-        return (previousState == StartSurfaceState.SHOWN_HOMEPAGE
-                       && newState == StartSurfaceState.SHOWING_TABSWITCHER)
-                || (previousState == StartSurfaceState.SHOWN_HOMEPAGE
-                        && newState == StartSurfaceState.SHOWN_TABSWITCHER)
-                || (previousState == StartSurfaceState.SHOWN_TABSWITCHER
-                        && newState == StartSurfaceState.SHOWING_HOMEPAGE)
-                || (previousState == StartSurfaceState.SHOWN_TABSWITCHER
-                        && newState == StartSurfaceState.SHOWN_HOMEPAGE);
     }
 
     @VisibleForTesting

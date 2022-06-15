@@ -71,11 +71,6 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SUPPORT_ACCESSIBILITY_PARAM, true);
 
-    private static final String FINALE_ANIMATION_ENABLED_PARAM = "finale_animation_enabled";
-    public static final BooleanCachedFieldTrialParameter FINALE_ANIMATION_ENABLED =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, FINALE_ANIMATION_ENABLED_PARAM, false);
-
     private static final String WARM_UP_RENDERER_PARAM = "warm_up_renderer";
     public static final BooleanCachedFieldTrialParameter WARM_UP_RENDERER =
             new BooleanCachedFieldTrialParameter(
@@ -179,13 +174,6 @@ public class StartSurfaceConfiguration {
     public static String getHistogramName(String name, boolean isInstantStart) {
         return STARTUP_UMA_PREFIX + name
                 + (isInstantStart ? INSTANT_START_SUBFIX : REGULAR_START_SUBFIX);
-    }
-
-    /**
-     * Returns whether to show the transition animations for the Finale version.
-     */
-    public static boolean shouldShowAnimationsForFinale() {
-        return HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue() && FINALE_ANIMATION_ENABLED.getValue();
     }
 
     @CalledByNative

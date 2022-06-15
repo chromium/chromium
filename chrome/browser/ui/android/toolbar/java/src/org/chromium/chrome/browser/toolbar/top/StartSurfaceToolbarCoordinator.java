@@ -17,7 +17,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -99,10 +98,7 @@ public class StartSurfaceToolbarCoordinator {
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabGroupsAndroidContinuationEnabled, userEducationHelper,
-                isIncognitoModeEnabledSupplier,
-                StartSurfaceConfiguration.shouldShowAnimationsForFinale()
-                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()),
-                profileSupplier, logoClickedCallback);
+                isIncognitoModeEnabledSupplier, profileSupplier, logoClickedCallback);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
