@@ -108,6 +108,7 @@ export function shareDataPageTestSuite() {
     // Screenshot elements.
     assertTrue(!!getElement('#screenshotCheckbox'));
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
+    assertTrue(page.i18nExists('attachScreenshotLabel'));
     assertTrue(!!getElement('#screenshotImage'));
 
     // Add file attachment element.

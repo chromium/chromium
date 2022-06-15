@@ -3413,6 +3413,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_SHARE_DIAGNOSTIC_DATA_LABEL" desc="Label showing the share diagnostic data.">
         Share diagnostic data
       </message>
+      <message name="IDS_FEEDBACK_TOOL_SCREENSHOT_LABEL" desc="Label for the screenshot field">
+        Screenshot
+      </message>
       <!-- Confirmation Page -->
       <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT" desc="Label showing a thank you message as the title of the confirmation page after a report has been sent.">
         Thanks for your feedback
