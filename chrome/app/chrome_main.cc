@@ -32,6 +32,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/allocator/buildflags.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/handle_hooks_win.h"
+#include "base/win/current_module.h"
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/allocator_shim.h"
 #endif
@@ -90,7 +93,16 @@ int ChromeMain(int argc, const char** argv) {
   base::UmaHistogramEnumeration("Windows.ChromeDllPrefetchResult",
                                 prefetch_result_code);
   install_static::InitializeFromPrimaryModule();
-#endif
+#if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
+  // Patch the main EXE on non-component builds when DCHECKs are enabled.
+  // This allows detection of third party code that might attempt to meddle with
+  // Chrome's handles. This must be done when single-threaded to avoid other
+  // threads attempting to make calls through the hooks while they are being
+  // emplaced.
+  // Note: The EXE is patched separately, in chrome/app/chrome_exe_main_win.cc.
+  base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
+#endif  // !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
+#endif  // BUILDFLAG(IS_WIN)
 
   ChromeMainDelegate chrome_main_delegate(
       base::TimeTicks::FromInternalValue(exe_entry_point_ticks));

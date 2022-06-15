@@ -11,7 +11,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/debug/handle_hooks_win.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "base/test/multiprocess_test.h"
@@ -19,7 +18,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -38,36 +36,8 @@ std::string FailureMessage(const std::string& msg) {
 #endif  // !defined(DEBUG) && defined(OFFICIAL_BUILD)
 }
 
-}  // namespace
-
-namespace testing {
-extern "C" bool __declspec(dllexport) RunTest();
-}  // namespace testing
-
-class ScopedHandleTest : public ::testing::Test,
-                         public ::testing::WithParamInterface<bool> {
- public:
-  ScopedHandleTest(const ScopedHandleTest&) = delete;
-  ScopedHandleTest& operator=(const ScopedHandleTest&) = delete;
-
- protected:
-  ScopedHandleTest() {
-    if (HooksEnabled()) {
-#if defined(ARCH_CPU_32_BITS)
-      // EAT patch is only supported on 32-bit.
-      base::debug::HandleHooks::AddEATPatch();
-#endif
-      base::debug::HandleHooks::PatchLoadedModules();
-    }
-  }
-
-  static bool HooksEnabled() { return GetParam(); }
-  static bool DoDeathTestsWork() {
-    // Death tests don't seem to work on Windows 7 32-bit native with hooks
-    // enabled.
-    // TODO(crbug.com/1328022): Investigate why.
-    if (!HooksEnabled())
-      return true;
+// Death tests don't seem to work on Windows 7 32-bit native with hooks enabled.
+bool DoDeathTestsWork() {
 #if defined(ARCH_CPU_32_BITS)
     const auto* os_info = base::win::OSInfo::GetInstance();
     if (os_info->version() <= base::win::Version::WIN7 &&
@@ -76,12 +46,18 @@ class ScopedHandleTest : public ::testing::Test,
     }
 #endif  // defined(ARCH_CPU_32_BITS)
     return true;
-  }
-};
+}
 
-using ScopedHandleDeathTest = ScopedHandleTest;
+}  // namespace
 
-TEST_P(ScopedHandleTest, ScopedHandle) {
+namespace testing {
+extern "C" bool __declspec(dllexport) RunTest();
+}  // namespace testing
+
+using ScopedHandleTest = ::testing::Test;
+using ScopedHandleDeathTest = ::testing::Test;
+
+TEST_F(ScopedHandleTest, ScopedHandle) {
   // Any illegal error code will do. We just need to test that it is preserved
   // by ScopedHandle to avoid https://crbug.com/528394.
   const DWORD magic_error = 0x12345678;
@@ -106,7 +82,10 @@ TEST_P(ScopedHandleTest, ScopedHandle) {
   EXPECT_EQ(magic_error, ::GetLastError());
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
+TEST_F(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
+  // This test is only valid if hooks are enabled.
+  if (!DoDeathTestsWork())
+    return;
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
   using NtCloseFunc = decltype(&::NtClose);
@@ -124,10 +103,8 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
       FailureMessage("CloseHandle failed"));
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierCloseTrackedHandle) {
+TEST_F(ScopedHandleDeathTest, HandleVerifierCloseTrackedHandle) {
   // This test is only valid if hooks are enabled.
-  if (!HooksEnabled())
-    return;
   if (!DoDeathTestsWork())
     return;
 
@@ -152,7 +129,7 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierCloseTrackedHandle) {
       FailureMessage("CloseHandleHook validation failure"));
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
+TEST_F(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
   if (!DoDeathTestsWork())
     return;
 
@@ -165,7 +142,7 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
                FailureMessage("Handle Already Tracked"));
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
+TEST_F(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
   if (!DoDeathTestsWork())
     return;
 
@@ -183,7 +160,7 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
   handle_holder.Close();
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
+TEST_F(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
   if (!DoDeathTestsWork())
     return;
 
@@ -208,7 +185,7 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
 #define MAYBE_MultiProcess MultiProcess
 #endif
 
-TEST_P(ScopedHandleTest, MAYBE_MultiProcess) {
+TEST_F(ScopedHandleTest, MAYBE_MultiProcess) {
   // Initializing ICU in the child process causes a scoped handle to be created
   // before the test gets a chance to test the race condition, so disable ICU
   // for the child process here.
@@ -239,19 +216,6 @@ MULTIPROCESS_TEST_MAIN(HandleVerifierChildProcess) {
 
   return 0;
 }
-
-INSTANTIATE_TEST_SUITE_P(HooksEnabled,
-                         ScopedHandleTest,
-                         ::testing::Values(true));
-INSTANTIATE_TEST_SUITE_P(HooksDisabled,
-                         ScopedHandleTest,
-                         ::testing::Values(false));
-INSTANTIATE_TEST_SUITE_P(HooksEnabled,
-                         ScopedHandleDeathTest,
-                         ::testing::Values(true));
-INSTANTIATE_TEST_SUITE_P(HooksDisabled,
-                         ScopedHandleDeathTest,
-                         ::testing::Values(false));
 
 }  // namespace win
 }  // namespace base

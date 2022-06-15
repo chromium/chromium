@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
+#include "base/debug/handle_hooks_win.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -31,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/win/current_module.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -300,12 +302,20 @@ int main() {
   const std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
+#if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
   // In non-component mode, chrome.exe contains a separate instance of
   // base::FeatureList. Prevent accidental use of this here by forbidding use of
   // the one that's linked with chrome.exe.
-#if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
   base::FeatureList::ForbidUseForCurrentModule();
-#endif
+
+  // Patch the main EXE on non-component builds when DCHECKs are enabled.
+  // This allows detection of third party code that might attempt to meddle with
+  // Chrome's handles. This must be done when single-threaded to avoid other
+  // threads attempting to make calls through the hooks while they are being
+  // emplaced.
+  // Note: The DLL is patched separately, in chrome/app/chrome_main.cc.
+  base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
+#endif  // !defined(COMPONENT_BUILD) && !DCHECK_IS_ON()
 
   // Confirm that an explicit prefetch profile is used for all process types
   // except for the browser process. Any new process type will have to assign
