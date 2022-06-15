@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Verbindung</translation>
 <translation id="2008685064673031089">Primzahlensuche</translation>
+<translation id="2011174342667534258">SDK-Version:</translation>
 <translation id="2016697457005847575">Schritte zur Fehlerbehebung ausprobieren</translation>
 <translation id="2016848882344942759">--kein White Label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
 <translation id="2275586345903859204">Reparatur abgeschlossen</translation>
+<translation id="2276999893457278469">Häufig gelesene Hilfeartikel</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2294753434210277304">Schließe einen USB-Speicher an, lege eine SD-Karte ein oder verwende ein anderes externes Speichergerät, auf dem sich das heruntergeladene Image des Programms zur Chromebook-Wiederherstellung befindet</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Wird neu gestartet…</translation>
+<translation id="2533048460510040082">Vorgeschlagene Hilfeartikel</translation>
 <translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
@@ -858,6 +861,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="885701979325669005">Speicher</translation>
 <translation id="8863170912498892583">Dunkles Design aktivieren</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> für „<ph name="QUERY" />“ bekommen und mehr</translation>
+<translation id="8864415976656252616">Keine vorgeschlagenen Artikel. Du kannst dir häufig gelesene Hilfeartikel ansehen.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>

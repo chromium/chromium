@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Pagkakakonekta</translation>
 <translation id="2008685064673031089">Prime na paghahanap</translation>
+<translation id="2011174342667534258">Bersyon ng SDK:</translation>
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="2016848882344942759">--walang white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Status ng pag-activate</translation>
 <translation id="2271469253353559191">Iskedyul ng dark mode</translation>
 <translation id="2275586345903859204">Kumpleto na ang pag-aayos</translation>
+<translation id="2276999893457278469">Nangungunang content ng tulong</translation>
 <translation id="2287186687001756809">Walang available na larawan. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Maglagay ng external storage, tulad ng USB drive o SD card, kasama ng na-download na larawan ng Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Gamitin ang kasalukuyang keypair</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Nagre-restart...</translation>
+<translation id="2533048460510040082">Iminumungkahing content ng tulong</translation>
 <translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
@@ -860,6 +863,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="885701979325669005">Storage</translation>
 <translation id="8863170912498892583">I-enable ng madilim na tema</translation>
 <translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
+<translation id="8864415976656252616">Walang iminumungkahing content. Tingnan ang nangungunang content ng tulong.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Tablet ang device.</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>

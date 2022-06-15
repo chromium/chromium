@@ -565,6 +565,7 @@
 <translation id="4095146165863963773">Διαγραφή δεδομένων εφαρμογών;</translation>
 <translation id="4096227151372679484">Ροή αποθήκευσης σελιδοδείκτη ανοιγμένη στο μισό ύψος</translation>
 <translation id="4099578267706723511">Συμβάλετε στη βελτίωση του Chrome, στέλνοντας στην Google στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων.</translation>
+<translation id="4101475238162928417">Χρησιμοποιήστε τον συγχρονισμό για να έχετε τους κωδικούς πρόσβασης, τους σελιδοδείκτες κ.ά. στις άλλες συσκευές σας.</translation>
 <translation id="410351446219883937">Αυτ. αναπαραγωγή</translation>
 <translation id="4106587138345390261">Το Chrome εξερευνά νέες λειτουργίες που επιτρέπουν στους ιστοτόπους να προσφέρουν την ίδια εμπειρία περιήγησης χρησιμοποιώντας λιγότερες από τις πληροφορίες σας</translation>
 <translation id="4108314971463891922">Παρακολούθηση</translation>
@@ -1195,6 +1196,7 @@
 <translation id="749294055653435199">Το Google Lens δεν είναι διαθέσιμο σε αυτήν τη συσκευή</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ενημέρωση στις <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Περιμένετε…</translation>
+<translation id="7502234197872745058">Για να αποσυνδεθείτε από τον Λογαριασμό σας Google σε όλους τους ιστοτόπους, <ph name="BEGIN_LINK1" />αποσυνδεθείτε από το Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Οι ενημερώσεις δεν είναι διαθέσιμες</translation>
 <translation id="7507207699631365376">Δείτε την <ph name="BEGIN_LINK" />πολιτική απορρήτου<ph name="END_LINK" /> του παρόχου</translation>
 <translation id="7514365320538308">Λήψη</translation>

@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍</translation>
 <translation id="2006864819935886708">ସଂଯୋଗ</translation>
 <translation id="2008685064673031089">ପ୍ରାଇମ୍ ସନ୍ଧାନ</translation>
+<translation id="2011174342667534258">SDK ସଂସ୍କରଣ:</translation>
 <translation id="2016697457005847575">ଟ୍ରବୁଲସୁଟିଂ ଷ୍ଟେପଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="2016848882344942759">--କୌଣସି ହ୍ୱାଇଟ-ଲେବଲ ନାହିଁ--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
 <translation id="2275586345903859204">ମରାମତି ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
+<translation id="2276999893457278469">ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2294753434210277304">ଡାଉନଲୋଡ କରାଯାଇଥିବା Chromebook ରିକଭରି ୟୁଟିଲିଟି ଇମେଜ ସହ ଏକ USB ଡ୍ରାଇଭ କିମ୍ବା SD କାର୍ଡ ପରି ଏକ୍ସଟର୍ନଲ ଷ୍ଟୋରେଜ ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
 <translation id="253029298928638905">ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି...</translation>
+<translation id="2533048460510040082">ପ୍ରସ୍ତାବିତ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -858,6 +861,7 @@
 <translation id="885701979325669005">ଷ୍ଟୋରେଜ୍</translation>
 <translation id="8863170912498892583">ଗାଢ଼ା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ <ph name="INTENT" /> ପାଆନ୍ତୁ</translation>
+<translation id="8864415976656252616">କୌଣସି ପ୍ରସ୍ତାବିତ ବିଷୟବସ୍ତୁ ନାହିଁ। ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ଡିଭାଇସଟି ଏକ ଟାବଲେଟ ଅଟେ।</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>

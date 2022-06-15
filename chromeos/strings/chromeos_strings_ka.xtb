@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">ავტორიზაციის პორტალი</translation>
 <translation id="2006864819935886708">კავშირი</translation>
 <translation id="2008685064673031089">Prime Search</translation>
+<translation id="2011174342667534258">SDK ვერსია:</translation>
 <translation id="2016697457005847575">გამოცადეთ დეფექტების აღმოფხვრის საფეხურები</translation>
 <translation id="2016848882344942759">--თეთრი ეტიკეტის გარეშე--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
 <translation id="2271469253353559191">მუქი რეჟიმის განრიგი</translation>
 <translation id="2275586345903859204">შეკეთება დასრულდა</translation>
+<translation id="2276999893457278469">პოპულარული დამხმარე კონტენტი</translation>
 <translation id="2287186687001756809">სურათი მიუწვდომელია. ფოტოების დასამატებლად გადადით აქ: <ph name="LINK" /></translation>
 <translation id="2294753434210277304">მიაერთეთ გარე მეხსიერება (მაგ., USB დისკი ან SD ბარათი), რომელზეც ჩამოტვირთულია Chromebook-ის აღდგენის ხელსაწყოს იმიჯი</translation>
 <translation id="2307344026739914387">ამჟამინდელი წყვილის გამოყენება</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2526590354069164005">სამუშაო დაფა</translation>
 <translation id="253029298928638905">მიმდინარეობს გადატვირთვა...</translation>
+<translation id="2533048460510040082">შემოთავაზებული დამხმარე კონტენტი</translation>
 <translation id="2536159006530886390">ინტერნეტთან დაკავშირება ვერ მოხერხდა.</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
@@ -858,6 +861,7 @@
 <translation id="885701979325669005">შენახვა</translation>
 <translation id="8863170912498892583">მუქი თემის ჩართვა</translation>
 <translation id="8863888432376731307">მიიღეთ <ph name="INTENT" /> მოთხოვნისთვის „<ph name="QUERY" />“ და სხვა</translation>
+<translation id="8864415976656252616">შემოთავაზებული კონტენტი არ არის. გაეცანით პოპულარულ დამხმარე კონტენტს.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">მოწყობილობა არის ტაბლეტი.</translation>
 <translation id="8881098542468797602">ტესტი წარმატებით შესრულდა</translation>

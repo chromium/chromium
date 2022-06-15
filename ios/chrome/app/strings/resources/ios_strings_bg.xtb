@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1147031633655575115">Влезли сте като <ph name="USER" /></translation>
 <translation id="1154984953698510061">Преглед на другите раздели</translation>
+<translation id="1161340988127985692">Запитване за отваряне на връзки от други приложения в режим „инкогнито“</translation>
 <translation id="1164064664035028907">Използване на надеждна парола:</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следващото поле</translation>
@@ -292,6 +293,7 @@
 <translation id="3443810440409579745">Получен раздел.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3448016392200048164">Разделен изглед</translation>
+<translation id="3450502512529866925">Запазване на отметка към тази страница</translation>
 <translation id="345565170154308620">Управление на паролите...</translation>
 <translation id="3469166899695866866">Искате ли да спрете изтеглянето?</translation>
 <translation id="3470502288861289375">Копира се...</translation>
@@ -484,6 +486,7 @@
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Можете да запазвате страници за четене по-късно или офлайн. Chrome ще ви попита дали искате да запазвате дълги страници.</translation>
 <translation id="5094827893301452931">Съобщението в Twitter е завършено.</translation>
+<translation id="509789154667432072">Добавяне на отметка</translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5118764316110575523">Изкл.</translation>
 <translation id="5127805178023152808">Синхронизирането е изключено</translation>

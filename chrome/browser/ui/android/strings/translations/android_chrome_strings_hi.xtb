@@ -565,6 +565,7 @@
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
 <translation id="4096227151372679484">बुकमार्क सेव फ़्लो के फ़ोल्डर, आधी स्क्रीन पर खुले हैं</translation>
 <translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर Chrome को बेहतर बनाने में मदद करें.</translation>
+<translation id="4101475238162928417">दूसरे डिवाइसों पर, अपने पासवर्ड, बुकमार्क वगैरह पाने के लिए, सिंक करें</translation>
 <translation id="410351446219883937">अपने आप चलाएं</translation>
 <translation id="4106587138345390261">Chrome नई सुविधाओं पर काम कर रहा है. इनकी मदद से साइटें, आपकी निजी जानकारी का कम से कम इस्तेमाल करने के बावजूद, आपको ब्राउज़िंग का पहले जैसा अनुभव दे पाएंगी</translation>
 <translation id="4108314971463891922">फ़ॉलो करें</translation>
@@ -1195,6 +1196,7 @@
 <translation id="749294055653435199">इस डिवाइस पर Google Lens नहीं है</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करें...</translation>
+<translation id="7502234197872745058">सभी वेबसाइटों पर अपने Google खाते से साइन आउट करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>

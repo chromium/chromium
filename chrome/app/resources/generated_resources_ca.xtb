@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Exporta les adreces d'interès</translation>
 <translation id="1008557486741366299">Ara no</translation>
 <translation id="1009476156254802388">Ubicació de <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Els controls de joc ja estan disponibles</translation>
 <translation id="1010498023906173788">Aquesta pestanya està connectada a un port en sèrie.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Pàgina que no respon}other{Pàgines que no responen}}</translation>
 <translation id="1011355516189274711">Volum de text a parla</translation>
@@ -846,6 +847,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1795214765651529549">Utilitza el tema clàssic</translation>
 <translation id="1796105431091975902">Selecciona un manual d'estratègia d'Ansible per afegir</translation>
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
+<translation id="1797117170091578105">Juga utilitzant el teclat del Chromebook. Pots personalitzar les tecles perquè facin accions específiques.</translation>
 <translation id="1800502858278951817">No s'ha sol·licitat cap extensió per llegir i canviar <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
@@ -1007,6 +1009,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1940546824932169984">Dispositius connectats</translation>
 <translation id="1941410638996203291">Hora d'inici: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versió: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Mostra el mapatge de teclat</translation>
 <translation id="1942128823046546853">Llegir i canviar totes les dades en tots els llocs web</translation>
 <translation id="1942600407708803723">Apaga quan es tanqui la tapa</translation>
 <translation id="1944528062465413897">Codi de vinculació per Bluetooth:</translation>
@@ -4577,6 +4580,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5449716055534515760">Tanca la &amp;finestra</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona sense connexió)</translation>
 <translation id="5454166040603940656">amb <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Consulta més resultats de la cerca</translation>
 <translation id="5455603387986949153">Llegir els números de sèrie del component i del dispositiu ChromeOS Flex.</translation>
 <translation id="5457113250005438886">No vàlides</translation>
 <translation id="5457459357461771897">Llegeix i suprimeix fotos, música i altres elements multimèdia de l'ordinador</translation>
@@ -7052,6 +7056,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Busques els components del navegador? Ves a</translation>
 <translation id="7903345046358933331">La pàgina no respon. Podeu esperar que respongui o tancar-la.</translation>
+<translation id="7903429136755645827">Fes clic per personalitzar els controls de joc</translation>
 <translation id="7903742244674067440">Tens certificats arxivats que identifiquen aquestes entitats emissores de certificats</translation>
 <translation id="7903925330883316394">Utilitat: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Fes que els ports de Linux estiguin disponibles per a altres dispositius de la xarxa.</translation>
@@ -8246,6 +8251,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9078316009970372699">Desactiva la compartició de xarxa instantània</translation>
 <translation id="9078842827190780028">Mostra més resultats de la cerca al tauler lateral</translation>
 <translation id="9079267182985899251">Aquesta opció aviat no s'admetrà. Per presentar una pestanya, utilitza <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">Estima els teus interessos. Chrome pot estimar els teus interessos.</translation>
 <translation id="9081543426177426948">Els llocs web que visites no es desen en mode d'incògnit</translation>
 <translation id="9084064520949870008">Obre com a finestra</translation>
 <translation id="9085256200913095638">Duplica la pestanya seleccionada</translation>

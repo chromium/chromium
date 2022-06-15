@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">صادرکردن نشانک‌ها</translation>
 <translation id="1008557486741366299">اکنون نه</translation>
 <translation id="1009476156254802388">مکان <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">کنترل‌های بازی اکنون دردسترس است</translation>
 <translation id="1010498023906173788">این برگه به درگاه سریال متصل است.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{صفحه غیرپاسخگو}one{صفحه‌های غیرپاسخگو}other{صفحه‌های غیرپاسخگو}}</translation>
 <translation id="1011355516189274711">میزان صدای نوشتار به گفتار</translation>
@@ -855,6 +856,7 @@
 <translation id="1795214765651529549">استفاده از کلاسیک</translation>
 <translation id="1796105431091975902">‏«دفترچه Ansible» را برای افزودن انتخاب کنید</translation>
 <translation id="1796588414813960292">ویژگی‌هایی که به صدا نیاز دارند کار نخواهند کرد</translation>
+<translation id="1797117170091578105">‏بااستفاده از صفحه‌کلید Chromebook بازی کنید. می‌توانید کلیدها را برای کنش‌های خاصی سفارشی کنید.</translation>
 <translation id="1800502858278951817">هیچ افزونه‌ای برای خواندن و تغییر دادن <ph name="SITE_NAME" /> درخواست نکرده است</translation>
 <translation id="1802624026913571222">خواب، پس از اینکه درپوش بسته می‌شود</translation>
 <translation id="1802687198411089702">صفحه پاسخ نمی‌دهد. می‌توانید منتظر بمانید یا خارج شوید.</translation>
@@ -1016,6 +1018,7 @@
 <translation id="1940546824932169984">دستگاه‌های متصل</translation>
 <translation id="1941410638996203291">زمان شروع <ph name="TIME" /></translation>
 <translation id="1941553344801134989">نسخه: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">نمایش نگاشت کلید</translation>
 <translation id="1942128823046546853">همه داده‌های شما را در همه وب‌سایت‌ها بخواند و تغییر دهد</translation>
 <translation id="1942600407708803723">خاموش شدن دستگاه، وقتی درپوش بسته می‌شود</translation>
 <translation id="1944528062465413897">کد مرتبط‌سازی بلوتوث:</translation>
@@ -4590,6 +4593,7 @@
 <translation id="5449716055534515760">بستن &amp;پنجره</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (آفلاین کار می‌کند)</translation>
 <translation id="5454166040603940656">با <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">دیدن نتایج جستجوی بیشتر</translation>
 <translation id="5455603387986949153">‏خواندن شماره سریال عناصر و دستگاه ChromeOS Flex.</translation>
 <translation id="5457113250005438886">نامعتبر</translation>
 <translation id="5457459357461771897">خواندن و حذف عکس‌ها، موسیقی، و سایر رسانه‌ها از رایانه‌تان</translation>
@@ -7068,6 +7072,7 @@
 <translation id="7901405293566323524">مرکز تلفن</translation>
 <translation id="7903290522161827520">به‌دنبال مؤلفه‌های مرورگر هستید؟ از این پیوند استفاده کنید:</translation>
 <translation id="7903345046358933331">صفحه پاسخ نمی‌دهد. می‌توانید صبر کنید تا پاسخ بدهد یا آن را ببندید.</translation>
+<translation id="7903429136755645827">برای سفارشی کردن کنترل‌های بازی، کلیک کنید</translation>
 <translation id="7903742244674067440">گواهی‌هایی برای فایل دارید که اعتبارهای این گواهی را شناسایی می‌کنند</translation>
 <translation id="7903925330883316394">ابزار کمکی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">‏درگاه‌های Linux را در دسترس دستگاه‌های دیگری که در شبکه‌تان موجود هستند قرار دهید.</translation>
@@ -8262,6 +8267,7 @@
 <translation id="9078316009970372699">غیرفعال کردن «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="9078842827190780028">نتایج جستجوی بیشتری در پانل کناری ببینید</translation>
 <translation id="9079267182985899251">به‌زودی دیگر از این گزینه پشتیبانی نخواهد شد. برای ارائه برگه، از <ph name="GOOGLE_MEET" /> استفاده کنید.</translation>
+<translation id="9080971985541434310">‏علایقتان را تخمین می‌زند - Chrome می‌تواند علایق شما را حدس بزند</translation>
 <translation id="9081543426177426948">سایت‌هایی که بازدید می‌کنید در «حالت ناشناس» ذخیره نمی‌شود</translation>
 <translation id="9084064520949870008">بازکردن به‌عنوان پنجره</translation>
 <translation id="9085256200913095638">تکرار برگه انتخابی</translation>

@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Salvar no pen drive</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
+<translation id="147809995039451286">Não foi possível fazer o download da atualização</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Atualizando firmware no <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Abrir nas configurações</translation>
 <translation id="2421798028054665193">Imagem <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisão de pontos flutuantes</translation>
+<translation id="2447969267935997922">A instalação foi concluída. Você já pode remover o drive USB ou cartão SD.</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2480034874476596812">Desativar manualmente</translation>

@@ -565,6 +565,7 @@
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
 <translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
+<translation id="4101475238162928417">동기화하여 다른 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
 <translation id="410351446219883937">자동재생</translation>
 <translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
 <translation id="4108314971463891922">팔로우</translation>
@@ -1195,6 +1196,7 @@
 <translation id="749294055653435199">이 기기에서는 Google 렌즈를 사용할 수 없습니다.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />(<ph name="TIME_SINCE_UPDATE" />에 업데이트됨)</translation>
 <translation id="7498271377022651285">잠시 기다려 주세요…</translation>
+<translation id="7502234197872745058">모든 웹사이트에서 Google 계정을 로그아웃하려면 <ph name="BEGIN_LINK1" />Chrome에서 로그아웃<ph name="END_LINK1" />하세요.</translation>
 <translation id="750228856503700085">업데이트 불가</translation>
 <translation id="7507207699631365376">제공업체의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" /> 보기</translation>
 <translation id="7514365320538308">다운로드</translation>

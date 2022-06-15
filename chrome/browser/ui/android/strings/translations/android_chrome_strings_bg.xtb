@@ -565,6 +565,7 @@
 <translation id="4095146165863963773">Да се изтрият ли данните на приложенията?</translation>
 <translation id="4096227151372679484">Потокът за запазване на отметка е отворен на половината височина</translation>
 <translation id="4099578267706723511">Помогнете за подобряването на Chrome, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
+<translation id="4101475238162928417">Включете синхронизирането, за да получите своите пароли, отметки и др. на останалите си устройства</translation>
 <translation id="410351446219883937">Автоматично възпроизвеждане</translation>
 <translation id="4106587138345390261">Chrome проучва нови функции, с чиято помощ сайтовете осигуряват същата практическа работа при сърфиране, използвайки по-малко ваши данни</translation>
 <translation id="4108314971463891922">Следване</translation>
@@ -1195,6 +1196,7 @@
 <translation id="749294055653435199">Google Обектив не е налице на устройството</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Актуализирано: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Моля, изчакайте...</translation>
+<translation id="7502234197872745058">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK1" />излезте от профила си в Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Не са налице актуализации</translation>
 <translation id="7507207699631365376">Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на този доставчик</translation>
 <translation id="7514365320538308">Изтегляне</translation>

@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">导出书签</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="1009476156254802388">“<ph name="WEB_DRIVE" />”位置</translation>
+<translation id="1009663062402466586">游戏控件现已可供使用</translation>
 <translation id="1010498023906173788">此标签页已连接到一个串行端口。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
 <translation id="1011355516189274711">文字转语音的音量</translation>
@@ -841,6 +842,7 @@
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796105431091975902">选择要添加的 Ansible Playbook</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
+<translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="1800502858278951817">没有任何扩展程序曾请求读取和更改 <ph name="SITE_NAME" /> 数据</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
@@ -1000,6 +1002,7 @@
 <translation id="1940546824932169984">已连接的设备</translation>
 <translation id="1941410638996203291">开始时间：<ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">显示按键映射</translation>
 <translation id="1942128823046546853">读取和更改您在所有网站上的数据</translation>
 <translation id="1942600407708803723">合盖后关机</translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
@@ -4563,6 +4566,7 @@
 <translation id="5449716055534515760">关闭窗口(&amp;D)</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" />（可离线使用）</translation>
 <translation id="5454166040603940656">提供方：<ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">查看更多搜索结果</translation>
 <translation id="5455603387986949153">读取 ChromeOS Flex 设备序列号和组件序列号。</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
@@ -7035,6 +7039,7 @@
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7903290522161827520">想要查看浏览器组件？请访问</translation>
 <translation id="7903345046358933331">该页面已停止响应。您可以等待该页面恢复响应，也可以将其关闭。</translation>
+<translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
 <translation id="7903742244674067440">您有证书可标识以下证书授权中心</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">使 Linux 端口可供您网络上的其他设备使用。</translation>
@@ -8226,6 +8231,7 @@
 <translation id="9078316009970372699">停用“即时网络共享”</translation>
 <translation id="9078842827190780028">在侧边栏中查看更多搜索结果</translation>
 <translation id="9079267182985899251">即将不再支持此选项。若要演示某个标签页，请使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9080971985541434310">推测您的兴趣 - Chrome 可以推测您的兴趣</translation>
 <translation id="9081543426177426948">在无痕模式下，系统不会保存您访问过的网站</translation>
 <translation id="9084064520949870008">在窗口中打开</translation>
 <translation id="9085256200913095638">复制所选标签页</translation>

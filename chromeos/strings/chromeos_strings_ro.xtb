@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Portal captiv</translation>
 <translation id="2006864819935886708">Conectivitate</translation>
 <translation id="2008685064673031089">Căutare de numere prime</translation>
+<translation id="2011174342667534258">Versiunea SDK:</translation>
 <translation id="2016697457005847575">Încearcă pașii pentru remedierea erorilor</translation>
 <translation id="2016848882344942759">--fără etichetă albă--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Stare de activare</translation>
 <translation id="2271469253353559191">Programul modului întunecat</translation>
 <translation id="2275586345903859204">Reparația s-a finalizat</translation>
+<translation id="2276999893457278469">Conținutul de ajutor principal</translation>
 <translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Introdu un dispozitiv de stocare externă, cum ar fi o unitate USB sau un card SD, cu imaginea Utilitar de recuperare Chromebook descărcată</translation>
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Se repornește…</translation>
+<translation id="2533048460510040082">Conținut de ajutor sugerat</translation>
 <translation id="2536159006530886390">Nu ne putem conecta la internet.</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
@@ -860,6 +863,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="885701979325669005">Stocare</translation>
 <translation id="8863170912498892583">Activează tema întunecată</translation>
 <translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
+<translation id="8864415976656252616">Nu există conținut sugerat. Vezi cel mai popular conținut de ajutor.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Dispozitivul este o tabletă.</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>

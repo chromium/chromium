@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Izvezi oznake</translation>
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="1009476156254802388">Lokacija za: <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Kontrole igre su sada dostupne</translation>
 <translation id="1010498023906173788">Ova kartica je povezana na serijski priključak.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Stranica ne reagira}one{Stranice ne reagiraju}few{Stranice ne reagiraju}other{Stranice ne reagiraju}}</translation>
 <translation id="1011355516189274711">Jačina zvuka pretvaranja teksta u govor</translation>
@@ -856,6 +857,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796105431091975902">Odaberite vodič Ansible da dodate</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
+<translation id="1797117170091578105">Igrajte pomoću Chromebookove tastature. Tipke možete prilagoditi određenim radnjama.</translation>
 <translation id="1800502858278951817">Nijedna ekstenzija nije zatražila da čita i mijenja <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Uključi stanje mirovanje kada se zatvori poklopac</translation>
 <translation id="1802687198411089702">Stranica ne reagira. Možete sačekati ili je zatvoriti.</translation>
@@ -1018,6 +1020,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1940546824932169984">Povezani uređaji</translation>
 <translation id="1941410638996203291">Vrijeme početka: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Verzija: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Prikaži mapiranje tipki</translation>
 <translation id="1942128823046546853">čitati i promijeniti sve vaše podatke na svim web lokacijama</translation>
 <translation id="1942600407708803723">Isključi kada se zatvori poklopac</translation>
 <translation id="1944528062465413897">Kôd za uparivanje putem Bluetootha:</translation>
@@ -2944,7 +2947,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3797739167230984533">Vašim uređajem <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> upravlja<ph name="END_LINK" /> vaša organizacija</translation>
 <translation id="3797900183766075808">&amp;Pretraži termin “<ph name="SEARCH_TERMS" />” u pretraživaču <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Verzija</translation>
-<translation id="3798632811625902122">Bluetooth uređaj <ph name="DEVICE" /> traži dopuštenje za uparivanje.</translation>
+<translation id="3798632811625902122">Bluetooth uređaj <ph name="DEVICE" /> traži odobrenje za uparivanje.</translation>
 <translation id="3799128412641261490">Postavke prekidača za pristup</translation>
 <translation id="3800806661949714323">Prikaži sve (preporučeno)</translation>
 <translation id="3800828618615365228">Dodatni uslovi za Google Chrome i ChromeOS</translation>
@@ -4591,6 +4594,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5449716055534515760">Zatvori prozor</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funkcionira van mreže)</translation>
 <translation id="5454166040603940656">s pružaocem usluge <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Prikaži više rezultata pretraživanja</translation>
 <translation id="5455603387986949153">Očitavanje serijskih brojeva ChromeOS Flex uređaja i komponenti.</translation>
 <translation id="5457113250005438886">Nevažeće</translation>
 <translation id="5457459357461771897">čitati i brisati fotografije, glazbu i druge medije s vašeg računala</translation>
@@ -7072,6 +7076,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7901405293566323524">Hub telefona</translation>
 <translation id="7903290522161827520">Tražite komponente preglednika? Posjetite</translation>
 <translation id="7903345046358933331">Stranica ne reagira. Možete sačekati da počne reagirati ili je zatvoriti.</translation>
+<translation id="7903429136755645827">Kliknite za prilagodbu kontrola igre</translation>
 <translation id="7903742244674067440">Imate potvrde o fajlu kojim se utvrđuje identitet ovih tijela za izdavanje potvrda</translation>
 <translation id="7903925330883316394">Uslužni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Učinite Linux priključke dostupnim drugim uređajima na vašoj mreži.</translation>
@@ -7433,7 +7438,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8242426110754782860">Nastavi</translation>
 <translation id="8243948765190375130">Kvalitet medijskih fajlova se može smanjiti</translation>
 <translation id="8244514732452879619">Uskoro će vrijeme za spavanje</translation>
-<translation id="8245361042748627813">Ovaj je prečac promijenjen. Upotrijebite <ph name="NEW_SHORTCUT_KEY" /> za ispis pomoću dijaloškog okvira sustava.</translation>
+<translation id="8245361042748627813">Ova prečica je promijenjena. Koristite <ph name="NEW_SHORTCUT_KEY" /> za štampanje pomoću sistemskog dijaloškog okvira.</translation>
 <translation id="8246776524656196770">Zaštitite sigurnosni ključ pomoću PIN-a (lični identifikacijski broj)</translation>
 <translation id="8248050856337841185">&amp;Zalijepi</translation>
 <translation id="8248381369318572865">Pristup mikrofonu i analiziranje vašeg govora</translation>
@@ -8267,6 +8272,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9078316009970372699">Onemogući Trenutno dijeljenje internetske veze</translation>
 <translation id="9078842827190780028">Pogledajte više rezultata pretraživanja u bočnoj ploči</translation>
 <translation id="9079267182985899251">Ova opcija uskoro više neće biti podržana. Da prikažete karticu, koristite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">procjenjuje vaša interesovanja – Chrome može procijeniti vaša interesovanja</translation>
 <translation id="9081543426177426948">Web lokacije koje posjećujete se ne pohranjuju u anonimnom načinu rada</translation>
 <translation id="9084064520949870008">Otvori u prozoru</translation>
 <translation id="9085256200913095638">Duplicirajte odabrane kartice</translation>

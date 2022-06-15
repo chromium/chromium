@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Ulazni portal</translation>
 <translation id="2006864819935886708">Uspostavljanje veze</translation>
 <translation id="2008685064673031089">Primarna pretraga</translation>
+<translation id="2011174342667534258">Verzija paketa za razvoj softvera:</translation>
 <translation id="2016697457005847575">Isprobajte korake za rešavanje problema</translation>
 <translation id="2016848882344942759">--nema bele oznake--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Status aktivacije</translation>
 <translation id="2271469253353559191">Raspored tamnog režima</translation>
 <translation id="2275586345903859204">Popravka je završena</translation>
+<translation id="2276999893457278469">Najpopularniji sadržaj pomoći</translation>
 <translation id="2287186687001756809">Slika nije dostupna. Da biste dodali slike, idite na <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Umetnite spoljnu memoriju, poput USB diska ili SD kartice, uz preuzetu sliku Servisa za oporavak Chromebook-a</translation>
 <translation id="2307344026739914387">Koristite aktuelni par ključeva</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Restartuje se...</translation>
+<translation id="2533048460510040082">Predloženi sadržaj pomoći</translation>
 <translation id="2536159006530886390">Povezivanje na internet nije uspelo.</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Da biste podesili mrežu, idite u Podešavanja</translation>
@@ -860,6 +863,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="885701979325669005">Memorijski prostor</translation>
 <translation id="8863170912498892583">Omogućite tamnu temu</translation>
 <translation id="8863888432376731307">Pronađite <ph name="INTENT" /> za „<ph name="QUERY" />“ i drugo</translation>
+<translation id="8864415976656252616">Nema predloženog sadržaja. Pogledajte najpopularniji sadržaj pomoći.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspeo</translation>

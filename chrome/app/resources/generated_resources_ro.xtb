@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Exportă marcajele</translation>
 <translation id="1008557486741366299">Nu acum</translation>
 <translation id="1009476156254802388">Locație <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Comenzile pentru joc sunt acum disponibile</translation>
 <translation id="1010498023906173788">Această filă este conectată la un port serial.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Pagină inactivă}few{Pagini inactive}other{Pagini inactive}}</translation>
 <translation id="1011355516189274711">Volumul de redare vocală a textului</translation>
@@ -847,6 +848,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1795214765651529549">Folosește tema clasică</translation>
 <translation id="1796105431091975902">Selectează un set de îndrumare Ansible de adăugat</translation>
 <translation id="1796588414813960292">Opțiunile care au nevoie de sunet nu vor funcționa</translation>
+<translation id="1797117170091578105">Joacă-te folosind tastatura Chromebookului. Poți personaliza cheile în funcție de anumite acțiuni.</translation>
 <translation id="1800502858278951817">Nicio extensie nu a solicitat să citească și să modifice <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Când capacul este închis: modul inactiv</translation>
 <translation id="1802687198411089702">Pagina nu răspunde. Poți aștepta să răspundă sau o poți închide.</translation>
@@ -1008,6 +1010,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1940546824932169984">Dispozitive conectate</translation>
 <translation id="1941410638996203291">Ora de începere: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versiune: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Afișează maparea tastelor</translation>
 <translation id="1942128823046546853">să citească și să modifice toate datele de pe toate site-urile</translation>
 <translation id="1942600407708803723">Când capacul este închis: oprire</translation>
 <translation id="1944528062465413897">Cod de asociere prin Bluetooth:</translation>
@@ -4578,6 +4581,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5449716055534515760">Închide fe&amp;reastra</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funcționează offline)</translation>
 <translation id="5454166040603940656">cu <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Vezi mai multe rezultate ale căutării</translation>
 <translation id="5455603387986949153">Citește numerele de serie ale dispozitivului cu sistemul de operare Chrome Flex și ale componentelor.</translation>
 <translation id="5457113250005438886">Nevalide</translation>
 <translation id="5457459357461771897">Citește și șterge fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
@@ -7056,6 +7060,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Cauți componentele browserului? Accesează</translation>
 <translation id="7903345046358933331">Pagina a devenit inactivă. Poți aștepta să devină activă sau o poți închide.</translation>
+<translation id="7903429136755645827">Dă clic pentru a personaliza comenzile jocului</translation>
 <translation id="7903742244674067440">Ai certificate stocate care identifică aceste autorități de certificare</translation>
 <translation id="7903925330883316394">Utilitar: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Fă porturile Linux disponibile pentru alte dispozitive din rețea.</translation>
@@ -8250,6 +8255,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9078316009970372699">Dezactivează Tetheringul instantaneu</translation>
 <translation id="9078842827190780028">Vezi mai multe rezultate ale căutării în panoul lateral</translation>
 <translation id="9079267182985899251">În curând, această opțiune nu va mai fi acceptată. Pentru a afișa o filă, folosește <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">îți estimează interesele – Chrome îți poate estima interesele</translation>
 <translation id="9081543426177426948">Site-urile pe care le accesezi nu sunt salvate în modul incognito</translation>
 <translation id="9084064520949870008">Deschideți ca fereastră</translation>
 <translation id="9085256200913095638">Fila selectată este o dublură</translation>

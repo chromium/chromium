@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">কেপ্টিভ প’ৰ্টেল</translation>
 <translation id="2006864819935886708">সংযোগ</translation>
 <translation id="2008685064673031089">প্ৰাইম সন্ধান</translation>
+<translation id="2011174342667534258">SDKৰ সংস্কৰণ:</translation>
 <translation id="2016697457005847575">সমস্যা নিবাৰণৰ পদক্ষেপসমূহ কাৰ্যকৰী কৰি চাওক</translation>
 <translation id="2016848882344942759">--কোনো বগা-লেবেল নাই--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">সক্ৰিয়কৰণৰ স্থিতি</translation>
 <translation id="2271469253353559191">গাঢ় ম’ডৰ সময়সূচী</translation>
 <translation id="2275586345903859204">মেৰামতি কৰাটো সম্পূৰ্ণ হৈছে</translation>
+<translation id="2276999893457278469">সহায় বিষয়ক সৰ্বোত্তম সমল</translation>
 <translation id="2287186687001756809">কোনো প্ৰতিচ্ছবি উপলব্ধ নহয়। ফট’ যোগ দিবলৈ, <ph name="LINK" />লৈ যাওক</translation>
 <translation id="2294753434210277304">ডাউনল’ড কৰা Chromebook Recovery Utility প্ৰতিচ্ছবিৰ সৈতে এটা ইউএছবি ড্ৰাইভ অথবা SD কাৰ্ডৰ দৰে কোনো বাহ্যিক ষ্ট’ৰেজ ভৰাওক</translation>
 <translation id="2307344026739914387">বৰ্তমানৰ কী পেয়াৰ ব্যৱহাৰ কৰক</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">স্কেন কৰক</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="253029298928638905">ৰিষ্টাৰ্ট কৰি থকা হৈছে…</translation>
+<translation id="2533048460510040082">পৰামৰ্শ হিচাপে আগবঢ়োৱা সহায়ক সমল</translation>
 <translation id="2536159006530886390">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2584559707064218956">ছেট আপ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>
@@ -858,6 +861,7 @@
 <translation id="885701979325669005">ষ্ট’ৰেজ</translation>
 <translation id="8863170912498892583">গাঢ় ৰঙৰ থীম সক্ষম কৰক</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />"ৰ বাবে <ph name="INTENT" /> আৰু বহুতো পাওক</translation>
+<translation id="8864415976656252616">পৰামৰ্শ হিচাপে আগবঢ়োৱা কোনো সমল নাই। সহায় বিষয়ক সৰ্বোত্তম সমল চাওক।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>

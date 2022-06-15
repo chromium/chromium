@@ -126,6 +126,7 @@
 <translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिविटी</translation>
 <translation id="2008685064673031089">प्राइम सर्च</translation>
+<translation id="2011174342667534258">SDK टूल का वर्शन:</translation>
 <translation id="2016697457005847575">समस्या ठीक करने के तरीके आज़माएं</translation>
 <translation id="2016848882344942759">--व्हाइट-लेबल मिटाएं--</translation>
 <translation id="202500043506723828">ईआईडी</translation>
@@ -157,6 +158,7 @@
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
 <translation id="2275586345903859204">रिपेयर की प्रोसेस पूरी हुई</translation>
+<translation id="2276999893457278469">सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="2294753434210277304">यूएसबी ड्राइव या एसडी कार्ड जैसा कोई बाहरी स्टोरेज डिवाइस इंसर्ट करें. उस डिवाइस में, Chromebook Recovery Utility की डाउनलोड की गई इमेज होनी चाहिए</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
@@ -189,6 +191,7 @@
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="253029298928638905">रीस्टार्ट हो रहा है…</translation>
+<translation id="2533048460510040082">सुझाया गया सहायता कॉन्टेंट</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584559707064218956">सेट अप के लिए, सेटिंग पर जाएं</translation>
@@ -858,6 +861,7 @@
 <translation id="885701979325669005">मेमोरी</translation>
 <translation id="8863170912498892583">गहरे रंग वाली थीम चालू करें</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" और बाकी चीज़ों के लिए <ph name="INTENT" /> पाएं</translation>
+<translation id="8864415976656252616">कोई कॉन्टेंट नहीं सुझाया गया. सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट देखें.</translation>
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>

@@ -565,6 +565,7 @@
 <translation id="4095146165863963773">Удалить данные приложения?</translation>
 <translation id="4096227151372679484">Страница сохранения закладки, открытая на половину экрана</translation>
 <translation id="4099578267706723511">Отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="4101475238162928417">Чтобы на других устройствах стали доступны пароли, закладки и другие данные, выполните синхронизацию.</translation>
 <translation id="410351446219883937">Автовоспроизведение</translation>
 <translation id="4106587138345390261">Chrome представляет новый взгляд на просмотр веб-страниц: сайты функционируют в обычном режиме, собирая меньше информации о вас.</translation>
 <translation id="4108314971463891922">Подписаться</translation>
@@ -1195,6 +1196,7 @@
 <translation id="749294055653435199">Google Объектив недоступен на этом устройстве.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (последнее обновление: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Подождите…</translation>
+<translation id="7502234197872745058">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK1" />выйдите из Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Обновления недоступны</translation>
 <translation id="7507207699631365376">Посмотреть <ph name="BEGIN_LINK" />политику конфиденциальности<ph name="END_LINK" /> этого поставщика услуг</translation>
 <translation id="7514365320538308">Скачать</translation>

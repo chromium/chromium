@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Извези обележиваче</translation>
 <translation id="1008557486741366299">Не сада</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> локација</translation>
+<translation id="1009663062402466586">Контроле за игре су сада доступне</translation>
 <translation id="1010498023906173788">Ова картица је повезана са серијским портом.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Страница се не одазива}one{Странице се не одазивају}few{Странице се не одазивају}other{Странице се не одазивају}}</translation>
 <translation id="1011355516189274711">Јачина звука за претварање текста у говор</translation>
@@ -845,6 +846,7 @@
 <translation id="1795214765651529549">Користи класичну</translation>
 <translation id="1796105431091975902">Изаберите Ansible водич за додавање</translation>
 <translation id="1796588414813960292">Функције којима треба звук неће радити</translation>
+<translation id="1797117170091578105">Играјте помоћу Chromebook тастатуре. Можете да прилагодите тастере одређеним радњама.</translation>
 <translation id="1800502858278951817">Ниједан додатак није затражио да чита и мења <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Пређи у стање спавања када се поклопац затвори</translation>
 <translation id="1802687198411089702">Страница се не одазива. Можете да сачекате да почне да се одазива или да је затворите.</translation>
@@ -1006,6 +1008,7 @@
 <translation id="1940546824932169984">Повезани уређаји</translation>
 <translation id="1941410638996203291">Време почетка <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Верзија: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Прикажи мапирање тастера</translation>
 <translation id="1942128823046546853">да чита и мења све ваше податке на свим веб-сајтовима</translation>
 <translation id="1942600407708803723">Искључи се када се поклопац затвори</translation>
 <translation id="1944528062465413897">Кôд за упаривање са Bluetooth уређајем:</translation>
@@ -4575,6 +4578,7 @@
 <translation id="5449716055534515760">Close Win&amp;dow (Затвори прозор)</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ради офлајн)</translation>
 <translation id="5454166040603940656">са добављачем <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Прикажи још резултата претраге</translation>
 <translation id="5455603387986949153">Читање серијских бројева Chrome OS Flex уређаја и компоненти.</translation>
 <translation id="5457113250005438886">Неважеће</translation>
 <translation id="5457459357461771897">Читање слика, музике и других медија са рачунара и брисање тих медија</translation>
@@ -7056,6 +7060,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Тражите компоненте прегледача? Посетите</translation>
 <translation id="7903345046358933331">Страница је престала да се одазива. Можете да сачекате да почне да се одазива или да је затворите.</translation>
+<translation id="7903429136755645827">Кликните да бисте прилагодили контроле за игре</translation>
 <translation id="7903742244674067440">Имате сачуване сертификате који идентификују ове ауторитете за издавање сертификата</translation>
 <translation id="7903925330883316394">Помоћни процес: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Учините Linux портове доступним за друге уређаје на својој мрежи.</translation>
@@ -8251,6 +8256,7 @@
 <translation id="9078316009970372699">Онемогући тренутно привезивање</translation>
 <translation id="9078842827190780028">Погледајте још резултата претраге на бочној табли</translation>
 <translation id="9079267182985899251">Ова опција ускоро више неће бити подржана. Да бисте приказали картицу, користите <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">процењује интересовања – Chrome може да процени ваша интересовања</translation>
 <translation id="9081543426177426948">Сајтови које посећујете се не чувају у режиму без архивирања</translation>
 <translation id="9084064520949870008">Отвори као прозор</translation>
 <translation id="9085256200913095638">Направи дупликат изабране картице</translation>

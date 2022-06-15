@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Obligatorisk side</translation>
 <translation id="2006864819935886708">Tilkobling</translation>
 <translation id="2008685064673031089">Primtallsøk</translation>
+<translation id="2011174342667534258">SDK-versjon:</translation>
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
 <translation id="2016848882344942759">– ikke noe eget varemerke –</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2271469253353559191">Tidsplan for mørk modus</translation>
 <translation id="2275586345903859204">Reparasjonen er fullført</translation>
+<translation id="2276999893457278469">Populært hjelpeinnhold</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Sett inn en ekstern lagringsenhet, for eksempel en USB-stasjon eller et SD-kort, med den nedlastede avbildningen av Gjenopprettelsesverktøy for Chromebook</translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="253029298928638905">Starter på nytt …</translation>
+<translation id="2533048460510040082">Foreslått hjelpeinnhold</translation>
 <translation id="2536159006530886390">Kan ikke koble til internett.</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">For å konfigurere nettverket, gå til Innstillinger</translation>
@@ -860,6 +863,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="885701979325669005">Lagring</translation>
 <translation id="8863170912498892583">Slå på mørkt tema</translation>
 <translation id="8863888432376731307">Få <ph name="INTENT" /> for «<ph name="QUERY" />» med mer</translation>
+<translation id="8864415976656252616">Ikke noe foreslått innhold. Se populært hjelpeinnhold.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten er et nettbrett.</translation>
 <translation id="8881098542468797602">Testen er fullført</translation>

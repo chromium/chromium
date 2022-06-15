@@ -27,6 +27,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
 <translation id="1154984953698510061">Se andre faner</translation>
+<translation id="1161340988127985692">Anmod om at åbne links fra andre apps i inkognito</translation>
 <translation id="1164064664035028907">Brug en stærk adgangskode:</translation>
 <translation id="1165039591588034296">Fejl</translation>
 <translation id="1172898394251786223">Næste felt</translation>
@@ -292,6 +293,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3448016392200048164">Opdelt visning</translation>
+<translation id="3450502512529866925">Tilføj denne side som bogmærke</translation>
 <translation id="345565170154308620">Administrer adgangskoder...</translation>
 <translation id="3469166899695866866">Vil du stoppe downloaden?</translation>
 <translation id="3470502288861289375">Kopierer...</translation>
@@ -484,6 +486,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Du kan gemme sider, som du vil læse senere, eller når du er offline. Chrome spørger dig, om du vil gemme lange sider.</translation>
 <translation id="5094827893301452931">Indlæg delt på Twitter.</translation>
+<translation id="509789154667432072">Tilføj et bogmærke</translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5118764316110575523">Fra</translation>
 <translation id="5127805178023152808">Synkronisering er slået fra</translation>

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1147031633655575115"><ph name="USER" />님의 계정으로 로그인됨</translation>
 <translation id="1154984953698510061">다른 탭 보기</translation>
+<translation id="1161340988127985692">시크릿 모드에서 다른 앱의 링크를 열도록 요청</translation>
 <translation id="1164064664035028907">아래와 같이 안전한 비밀번호를 사용하세요</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1172898394251786223">다음 필드</translation>
@@ -292,6 +293,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3443810440409579745">탭을 수신했습니다.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3448016392200048164">분할 보기</translation>
+<translation id="3450502512529866925">현재 페이지를 북마크에 추가</translation>
 <translation id="345565170154308620">비밀번호 관리...</translation>
 <translation id="3469166899695866866">다운로드를 중지하시겠습니까?</translation>
 <translation id="3470502288861289375">복사 중...</translation>
@@ -484,6 +486,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5090832849094901128">비밀번호를 삭제해도 <ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="5092117651143801290">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다. Chrome에서 장문의 페이지를 저장할지 묻는 메시지가 표시됩니다.</translation>
 <translation id="5094827893301452931">Tweet이 완료되었습니다.</translation>
+<translation id="509789154667432072">북마크 추가하기</translation>
 <translation id="5118713593561876160">관심분야</translation>
 <translation id="5118764316110575523">사용 안함</translation>
 <translation id="5127805178023152808">동기화 사용 안함</translation>

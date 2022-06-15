@@ -291,6 +291,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1662550410081243962">Cadw a llenwi dulliau talu</translation>
 <translation id="1663943134801823270">Daw cardiau a chyfeiriadau o Chrome. Gallwch eu rheoli yn y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Bydd tudalennau yn <ph name="SOURCE_LANGUAGE" /> yn cael eu cyfieithu i <ph name="TARGET_LANGUAGE" /> o hyn ymlaen.</translation>
+<translation id="1673886523110456987">Talwch gyda <ph name="CARD_DETAIL" /> i ddefnyddio'r cynnig</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> i <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Ymyl fer yn gyntaf</translation>
 <translation id="168693727862418163">Gwnaeth y gwerth polisi hwn fethu â dilysu yn erbyn ei sgema a bydd yn cael ei anwybyddu.</translation>
@@ -590,6 +591,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2523886232349826891">Cedwir ar y ddyfais hon yn unig</translation>
 <translation id="2524461107774643265">Ychwanegu Rhagor o Wybodaeth</translation>
 <translation id="2529899080962247600">Ni ddylai'r maes hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion. Bydd pob cofnod arall yn cael ei anwybyddu.</translation>
+<translation id="253493526287553278">Gweld manylion y cod hyrwyddo</translation>
 <translation id="2535585790302968248">Agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ac 1 arall}zero{a # arall}two{a # arall}few{a # arall}many{a # arall}other{a # arall}}</translation>
 <translation id="2536110899380797252">Ychwanegu Cyfeiriad</translation>
@@ -1106,6 +1108,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3986705137476756801">Diffodd Capsiynau Byw am y tro</translation>
 <translation id="3987940399970879459">Llai nag 1 MB</translation>
 <translation id="3990250421422698716">Gwrthbwyso loncian</translation>
+<translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
 <translation id="3996311196211510766">Mae'r wefan <ph name="ORIGIN" /> wedi gofyn bod polisi tarddiad
     yn berthnasol i bob cais iddo, ond ar hyn o bryd ni ellir cymhwyso'r polisi hwn.</translation>
 <translation id="4006465311664329701">Dulliau Talu, Cynigion a Chyfeiriadau sy'n defnyddio Google Pay</translation>
@@ -1281,6 +1284,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4435702339979719576">Cerdyn post)</translation>
 <translation id="443673843213245140">Mae'r defnydd o ddirprwy weinydd wedi'i ddiffodd, ond mae ffurfweddiad dirprwyol penodol wedi'i nodi.</translation>
 <translation id="4441832193888514600">Anwybyddwyd oherwydd dim ond fel polisi defnyddiwr cwmwl y gellir gosod y polisi.</translation>
+<translation id="4442470707340296952">Tabiau Chrome</translation>
 <translation id="4450893287417543264">Peidio â dangos eto</translation>
 <translation id="4451135742916150903">Yn gallu gofyn am gysylltu â dyfeisiau HID</translation>
 <translation id="4452328064229197696">Canfuwyd y cyfrinair rydych newydd ei ddefnyddio mewn achos o dor data. Er mwyn diogelu'ch cyfrifon, mae Rheolwr Cyfrineiriau Google yn argymell gwirio'ch cyfrineiriau sydd wedi'u cadw.</translation>
@@ -1555,6 +1559,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5171045022955879922">Chwiliwch neu teipiwch URL</translation>
 <translation id="5171689220826475070">Ffanffold-Ewropeaidd</translation>
 <translation id="5172758083709347301">Peiriant</translation>
+<translation id="5177076414499237632">Dysgu am ffynhonnell a phwnc y dudalen hon</translation>
 <translation id="5179510805599951267">Ddim yn <ph name="ORIGINAL_LANGUAGE" />? Rhoi gwybod am y gwall hwn</translation>
 <translation id="518639307526414276">Bwyd anifeiliaid anwes a chyflenwadau gofal anifeiliaid anwes</translation>
 <translation id="5190835502935405962">Bar Nodau Tudalen</translation>
