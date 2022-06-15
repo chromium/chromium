@@ -727,7 +727,7 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
   DCHECK(!monitoring_frame_rate_timer_);
 
   on_muted_callback_ = std::move(on_muted_callback);
-  monitoring_frame_rate_timer_ = std::make_unique<WebRtcTimer>(
+  monitoring_frame_rate_timer_ = std::make_unique<LowPrecisionTimer>(
       io_task_runner_,
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &VideoTrackAdapter::CheckFramesReceivedOnIO, WrapRefCounted(this))));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/webrtc_overrides/webrtc_timer.h"
+#include "third_party/webrtc_overrides/low_precision_timer.h"
 
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -14,9 +14,9 @@ namespace blink {
 
 namespace {
 
-class WebRtcTimerTest : public ::testing::Test {
+class LowPrecisionTimerTest : public ::testing::Test {
  public:
-  WebRtcTimerTest()
+  LowPrecisionTimerTest()
       : task_environment_(
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
@@ -78,7 +78,7 @@ class RecursiveStartOneShotter {
   }
 
  private:
-  WebRtcTimer timer_;
+  LowPrecisionTimer timer_;
   size_t repeat_count_;
   base::TimeDelta delay_;
   size_t callback_count_ = 0u;
@@ -102,7 +102,7 @@ class RecursiveStopper {
   }
 
  private:
-  WebRtcTimer timer_;
+  LowPrecisionTimer timer_;
   size_t callback_count_ = 0u;
 };
 
@@ -114,7 +114,7 @@ class IsActiveChecker {
                                    base::Unretained(this))) {}
   ~IsActiveChecker() { timer_.Shutdown(); }
 
-  WebRtcTimer& timer() { return timer_; }
+  LowPrecisionTimer& timer() { return timer_; }
   bool was_active_in_last_callback() const {
     return was_active_in_last_callback_;
   }
@@ -122,17 +122,17 @@ class IsActiveChecker {
   void Callback() { was_active_in_last_callback_ = timer_.IsActive(); }
 
  private:
-  WebRtcTimer timer_;
+  LowPrecisionTimer timer_;
   bool was_active_in_last_callback_;
 };
 
 }  // namespace
 
-TEST_F(WebRtcTimerTest, StartOneShot) {
+TEST_F(LowPrecisionTimerTest, StartOneShot) {
   CallbackListener listener;
-  WebRtcTimer timer(listener.task_runner(),
-                    base::BindRepeating(&CallbackListener::Callback,
-                                        base::Unretained(&listener)));
+  LowPrecisionTimer timer(listener.task_runner(),
+                          base::BindRepeating(&CallbackListener::Callback,
+                                              base::Unretained(&listener)));
 
   // Schedule to fire on the first tick.
   timer.StartOneShot(MetronomeSource::Tick());
@@ -169,7 +169,7 @@ TEST_F(WebRtcTimerTest, StartOneShot) {
   EXPECT_EQ(listener.callback_count(), 3u);
 }
 
-TEST_F(WebRtcTimerTest, RecursiveStartOneShot) {
+TEST_F(LowPrecisionTimerTest, RecursiveStartOneShot) {
   base::TimeDelta delay = base::Milliseconds(1);
   RecursiveStartOneShotter recursive_shotter(/*repeat_count=*/2, delay);
 
@@ -193,11 +193,11 @@ TEST_F(WebRtcTimerTest, RecursiveStartOneShot) {
   EXPECT_EQ(recursive_shotter.callback_count(), 2u);
 }
 
-TEST_F(WebRtcTimerTest, MoveToNewTaskRunner) {
+TEST_F(LowPrecisionTimerTest, MoveToNewTaskRunner) {
   CallbackListener listener;
-  WebRtcTimer timer(listener.task_runner(),
-                    base::BindRepeating(&CallbackListener::Callback,
-                                        base::Unretained(&listener)));
+  LowPrecisionTimer timer(listener.task_runner(),
+                          base::BindRepeating(&CallbackListener::Callback,
+                                              base::Unretained(&listener)));
 
   // Schedule on the next tick, and advance time close to that.
   timer.StartOneShot(MetronomeSource::Tick());
@@ -218,11 +218,11 @@ TEST_F(WebRtcTimerTest, MoveToNewTaskRunner) {
   timer.Shutdown();
 }
 
-TEST_F(WebRtcTimerTest, StartRepeating) {
+TEST_F(LowPrecisionTimerTest, StartRepeating) {
   CallbackListener listener;
-  WebRtcTimer timer(listener.task_runner(),
-                    base::BindRepeating(&CallbackListener::Callback,
-                                        base::Unretained(&listener)));
+  LowPrecisionTimer timer(listener.task_runner(),
+                          base::BindRepeating(&CallbackListener::Callback,
+                                              base::Unretained(&listener)));
 
   // The timer can only fire on ticks, so 10 milliseconds is not enough here.
   timer.StartRepeating(base::Milliseconds(10));
@@ -243,11 +243,11 @@ TEST_F(WebRtcTimerTest, StartRepeating) {
   EXPECT_EQ(listener.callback_count(), 3u);
 }
 
-TEST_F(WebRtcTimerTest, StopRepeatingTimer) {
+TEST_F(LowPrecisionTimerTest, StopRepeatingTimer) {
   CallbackListener listener;
-  WebRtcTimer timer(listener.task_runner(),
-                    base::BindRepeating(&CallbackListener::Callback,
-                                        base::Unretained(&listener)));
+  LowPrecisionTimer timer(listener.task_runner(),
+                          base::BindRepeating(&CallbackListener::Callback,
+                                              base::Unretained(&listener)));
 
   // Repeat every tick.
   timer.StartRepeating(MetronomeSource::Tick());
@@ -276,7 +276,7 @@ TEST_F(WebRtcTimerTest, StopRepeatingTimer) {
 }
 
 // Ensures stopping inside the timer callback does not deadlock.
-TEST_F(WebRtcTimerTest, StopTimerFromInsideCallback) {
+TEST_F(LowPrecisionTimerTest, StopTimerFromInsideCallback) {
   // Stops its own timer from inside the callback after a tick.
   RecursiveStopper recursive_stopper(MetronomeSource::Tick());
   task_environment_.FastForwardBy(MetronomeSource::Tick());
@@ -289,15 +289,15 @@ TEST_F(WebRtcTimerTest, StopTimerFromInsideCallback) {
 
 // Ensures in-parallel stopping while the task may be running does not
 // deadlock in race condition. Coverage for https://crbug.com/1281399.
-TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
+TEST(LowPrecisionTimerRealThreadsTest, StopTimerWithRaceCondition) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME);
 
   CallbackListener listener;
-  WebRtcTimer timer(listener.task_runner(),
-                    base::BindRepeating(&CallbackListener::Callback,
-                                        base::Unretained(&listener)));
+  LowPrecisionTimer timer(listener.task_runner(),
+                          base::BindRepeating(&CallbackListener::Callback,
+                                              base::Unretained(&listener)));
 
   scoped_refptr<base::SequencedTaskRunner> dedicated_task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -309,7 +309,7 @@ TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
   base::WaitableEvent event;
   dedicated_task_runner->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](WebRtcTimer* timer, base::WaitableEvent* event) {
+                     [](LowPrecisionTimer* timer, base::WaitableEvent* event) {
                        timer->Stop();
                        event->Signal();
                      },
@@ -319,7 +319,7 @@ TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
   timer.Shutdown();
 }
 
-TEST_F(WebRtcTimerTest, IsActive) {
+TEST_F(LowPrecisionTimerTest, IsActive) {
   IsActiveChecker is_active_checker;
 
   // StartOneShot() makes the timer temporarily active.

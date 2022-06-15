@@ -213,9 +213,9 @@ source_set("task_queue_factory") {
     "metronome_task_queue_factory.h",
 
     # Tested in
-    # third_party/blink/renderer/platform/peerconnection/webrtc_timer_test.cc
-    "webrtc_timer.cc",
-    "webrtc_timer.h",
+    # third_party/blink/renderer/platform/peerconnection/low_precision_timer_test.cc
+    "low_precision_timer.cc",
+    "low_precision_timer.h",
   ]
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [

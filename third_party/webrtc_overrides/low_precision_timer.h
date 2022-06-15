@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_WEBRTC_TIMER_H_
-#define THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_WEBRTC_TIMER_H_
+#ifndef THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_LOW_PRECISION_TIMER_H_
+#define THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_LOW_PRECISION_TIMER_H_
 
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -24,13 +24,17 @@ namespace blink {
 // This timer only fires on metronome ticks as specified by
 // MetronomeSource::TimeSnappedToNextTick(). This allows running numerous timers
 // without increasing the Idle Wake Ups frequency beyond the metronome tick
-// frequency, i.e. when each tick is already scheduled adding a WebRtcTimer
-// should not add any Idle Wake Ups.
-class RTC_EXPORT WebRtcTimer final {
+// frequency, i.e. when each tick is already scheduled adding a
+// LowPrecisionTimer should not add any Idle Wake Ups.
+//
+// TODO(https://crbug.com/1267874): Can this timer be moved to base/ or replaced
+// by a low precision base/ timer without causing excessive Idle Wake Up
+// frequencies (e.g. WebRTC use case with 50 incoming videos)?
+class RTC_EXPORT LowPrecisionTimer final {
  public:
-  WebRtcTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
-              base::RepeatingCallback<void()> callback);
-  ~WebRtcTimer();
+  LowPrecisionTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                    base::RepeatingCallback<void()> callback);
+  ~LowPrecisionTimer();
   // Must be called prior to destruction. Unregisters from the metronome
   // provider.
   void Shutdown();
@@ -110,4 +114,4 @@ class RTC_EXPORT WebRtcTimer final {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_WEBRTC_TIMER_H_
+#endif  // THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_LOW_PRECISION_TIMER_H_

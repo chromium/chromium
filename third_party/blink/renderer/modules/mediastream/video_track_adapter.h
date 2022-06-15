@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc_overrides/webrtc_timer.h"
+#include "third_party/webrtc_overrides/low_precision_timer.h"
 
 namespace blink {
 
@@ -166,7 +166,7 @@ class MODULES_EXPORT VideoTrackAdapter
   FrameAdapters adapters_;
 
   // Is non-null while frame monitoring. It is only accessed on the IO-thread.
-  std::unique_ptr<WebRtcTimer> monitoring_frame_rate_timer_;
+  std::unique_ptr<LowPrecisionTimer> monitoring_frame_rate_timer_;
   OnMutedInternalCallback on_muted_callback_;
 
   // Keeps track of it frames have been received. It is only accessed on the
