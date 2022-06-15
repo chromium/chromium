@@ -2652,6 +2652,14 @@ domain DOM
       # Query selector result.
       array of NodeId nodeIds
 
+  # Returns NodeIds of current top layer elements.
+  # Top layer is rendered closest to the user within a viewport, therefore its elements always 
+  # appear on top of all other content.
+  experimental command getTopLayerElements
+    returns
+      # NodeIds of top layer elements
+      array of NodeId nodeIds
+
   # Re-does the last undone action.
   experimental command redo
 
@@ -2911,6 +2919,9 @@ domain DOM
       NodeId parentId
       # The added pseudo element.
       Node pseudoElement
+
+  # Called when top layer elements are changed.
+  experimental event topLayerElementsUpdated
 
   # Called when a pseudo element is removed from an element.
   experimental event pseudoElementRemoved

@@ -810,6 +810,21 @@ Response InspectorDOMAgent::querySelectorAll(
   return Response::Success();
 }
 
+Response InspectorDOMAgent::getTopLayerElements(
+    std::unique_ptr<protocol::Array<int>>* result) {
+  if (!document_)
+    return Response::ServerError("DOM agent hasn't been enabled");
+
+  *result = std::make_unique<protocol::Array<int>>();
+  for (auto element : document_->TopLayerElements()) {
+    int node_id = PushNodePathToFrontend(element);
+    if (node_id)
+      (*result)->emplace_back(node_id);
+  }
+
+  return Response::Success();
+}
+
 int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push,
                                               NodeToIdMap* node_map) {
   DCHECK(node_to_push);  // Invalid input
@@ -2332,6 +2347,10 @@ void InspectorDOMAgent::PseudoElementCreated(PseudoElement* pseudo_element) {
   GetFrontend()->pseudoElementAdded(
       parent_id, BuildObjectForNode(pseudo_element, 0, false,
                                     document_node_to_id_map_.Get()));
+}
+
+void InspectorDOMAgent::TopLayerElementsChanged() {
+  GetFrontend()->topLayerElementsUpdated();
 }
 
 void InspectorDOMAgent::PseudoElementDestroyed(PseudoElement* pseudo_element) {

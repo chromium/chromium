@@ -143,6 +143,7 @@ interface CoreProbes {
   void LayerTreeDidChange(LocalFrame*);
   void LayerTreePainted(LocalFrame*);
   void PseudoElementCreated([Keep] PseudoElement*);
+  void TopLayerElementsChanged(Document*);
   void PseudoElementDestroyed([Keep] PseudoElement*);
   void DidCreateAnimation(Document*, unsigned);
   void AnimationPlayStateChanged(Document*, Animation*, Animation::AnimationPlayState old_play_state, Animation::AnimationPlayState new_play_state);

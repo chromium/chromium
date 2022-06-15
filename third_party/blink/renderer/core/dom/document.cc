@@ -7195,6 +7195,8 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
   }
   element->SetIsInTopLayer(true);
   display_lock_document_state_->ElementAddedToTopLayer(element);
+
+  probe::TopLayerElementsChanged(this);
 }
 
 void Document::RemoveFromTopLayer(Element* element) {
@@ -7205,6 +7207,8 @@ void Document::RemoveFromTopLayer(Element* element) {
   top_layer_elements_.EraseAt(position);
   element->SetIsInTopLayer(false);
   display_lock_document_state_->ElementRemovedFromTopLayer(element);
+
+  probe::TopLayerElementsChanged(this);
 }
 
 HTMLDialogElement* Document::ActiveModalDialog() const {
