@@ -4,10 +4,14 @@
 
 #include <sstream>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
+#include "components/breadcrumbs/core/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -110,7 +114,30 @@ void TestKeyedProfileServicesActives(
 // Example:
 //   // FooService is required because BarService depends on it.
 //   // TODO(crbug.com/12345): Stop creating BarService for the system profile.
-class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {};
+class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
+ public:
+  ProfileKeyedServiceBrowserTest() {
+    // Force features activation to make sure the test is accurate as possible.
+    // Also removes differences between official and non official run of the
+    // tests. If a feature is integrated in the fieldtrial_testing_config.json,
+    // it might not be considered under an official build. Adding it under a
+    // InitWithFeatures to activate it would neglect that difference.
+    feature_list_.InitWithFeatures(
+        {
+#if !BUILDFLAG(IS_ANDROID)
+          features::kTrustSafetySentimentSurvey,
+#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+              enterprise_connectors::kEnterpriseConnectorsEnabled,
+#endif  // !BUILDFLAG(IS_WIN)
+              breadcrumbs::kLogBreadcrumbs
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                        SystemProfileOTR_NeededServices) {
@@ -176,6 +203,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 
   Profile* system_profile_otr = otr_profiles[0];
   ASSERT_TRUE(system_profile_otr->IsOffTheRecord());
+  ASSERT_TRUE(system_profile_otr->IsSystemProfile());
   TestKeyedProfileServicesActives(system_profile_otr,
                                   system_otr_active_services);
 }
@@ -205,7 +233,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "VpnService",
 #else // !BUILDFLAG(IS_CHROMEOS_LACROS)
     "DownloadCoreService",
-    "HatsService",
     "SystemIndicatorManager",
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -296,6 +323,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "GAIAInfoUpdateService",
     "GCMProfileService",
     "GeneratedPrefs",
+    "HatsService",
     "HeavyAdService",
     "HidDeviceManager",
     "HistoryAPI",
@@ -425,6 +453,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 
   Profile* system_profile = GetSystemOriginalProfile();
   ASSERT_FALSE(system_profile->IsOffTheRecord());
+  ASSERT_TRUE(system_profile->IsSystemProfile());
   TestKeyedProfileServicesActives(system_profile, system_active_services);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
