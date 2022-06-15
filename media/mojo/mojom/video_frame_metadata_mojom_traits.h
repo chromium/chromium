@@ -104,6 +104,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.capture_update_rect;
   }
 
+  static const absl::optional<gfx::Size>& source_size(
+      const media::VideoFrameMetadata& input) {
+    return input.source_size;
+  }
+
   static const absl::optional<gfx::Rect>& region_capture_rect(
       const media::VideoFrameMetadata& input) {
     return input.region_capture_rect;

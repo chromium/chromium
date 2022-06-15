@@ -63,6 +63,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
 
   READ_AND_ASSIGN_OPT(base::UnguessableToken, overlay_plane_id, OverlayPlaneId);
 
+  READ_AND_ASSIGN_OPT(gfx::Size, source_size, SourceSize);
   READ_AND_ASSIGN_OPT(gfx::Rect, capture_update_rect, CaptureUpdateRect);
   READ_AND_ASSIGN_OPT(gfx::Rect, region_capture_rect, RegionCaptureRect);
 

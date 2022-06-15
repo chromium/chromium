@@ -75,13 +75,18 @@ void WebContentsVideoCaptureDevice::OnFrameCaptured(
     const gfx::Rect& content_rect,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
         callbacks) {
-  const gfx::Size new_size = content_rect.size();
-  if (new_size != content_size_) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WebContentsFrameTracker::SetCapturedContentSize,
-                       tracker_->AsWeakPtr(), content_rect.size()));
-    content_size_ = new_size;
+  if (info->metadata.source_size.has_value()) {
+    const gfx::Size new_size = *info->metadata.source_size;
+    // Only update the captured content size when the size changes. See also
+    // the comment in WebContentsFrameTracker::SetCapturedContentSize which
+    // expects that behavior.
+    if (new_size != content_size_) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WebContentsFrameTracker::SetCapturedContentSize,
+                         tracker_->AsWeakPtr(), new_size));
+      content_size_ = new_size;
+    }
   }
 
   FrameSinkVideoCaptureDevice::OnFrameCaptured(
@@ -103,6 +108,12 @@ void WebContentsVideoCaptureDevice::DidStop() {
       FROM_HERE,
       base::BindOnce(&WebContentsFrameTracker::DidStopCapturingWebContents,
                      tracker_->AsWeakPtr()));
+
+  // Currently, the video capture device is effectively a single-use object, so
+  // resetting capture_size_ isn't strictly necessary, but it helps ensure that
+  // SetCapturedContentSize works consistently in case the objects get reused in
+  // the future.
+  content_size_.SetSize(0, 0);
 }
 
 }  // namespace content

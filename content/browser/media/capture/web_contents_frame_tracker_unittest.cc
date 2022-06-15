@@ -394,10 +394,26 @@ TEST_F(WebContentsFrameTrackerTest, SetsScaleOverride) {
   tracker()->SetCapturedContentSize(gfx::Size(1920, 1080));
   EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
 
-  // If a frame ends up being larger than the capture_size, we should
-  // end up using the maximum scale override of 2.0.
-  tracker()->SetCapturedContentSize(gfx::Size(2304, 1080));
-  EXPECT_DOUBLE_EQ(context()->scale_override(), 2.0f);
+  // If a frame ends up being larger than the capture_size, the scale
+  // should get adjusted downwards so that the post-scaling size matches
+  // the capture size. This assumes a current scale override of 2.0f.
+  tracker()->SetCapturedContentSize(gfx::Size(2560, 1440));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+
+  // The scaled size should now match the capture size with a scale
+  // override of 1.5.
+  tracker()->SetCapturedContentSize(gfx::Size(1920, 1080));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+
+  // The scaling calculation is based on fitting a scaled copy of the
+  // source rectangle within the capture region, preserving aspect ratio.
+  // If the content size changes in a way that doesn't affect the scale
+  // factor (i.e. letterboxing or pillarboxing), the scale override remains
+  // unchanged.
+  tracker()->SetCapturedContentSize(gfx::Size(1080, 1080));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
+  tracker()->SetCapturedContentSize(gfx::Size(1920, 540));
+  EXPECT_DOUBLE_EQ(context()->scale_override(), 1.5f);
 
   // When we stop the tracker, the web contents issues a preferred size change
   // of the "old" size--so it shouldn't change.

@@ -54,6 +54,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // fully contained within visible_rect().
   absl::optional<gfx::Rect> capture_update_rect;
 
+  // For encoded frames, this is the original source size which may be different
+  // from the encoded size. It's used for the HiDPI tab capture heuristic.
+  // The size corresponds to the active region if region capture is active,
+  // or otherwise the full size of the captured source.
+  absl::optional<gfx::Size> source_size;
+
   // If cropping was applied due to Region Capture to produce this frame,
   // then this reflects where the frame's contents originate from in the
   // original uncropped frame.

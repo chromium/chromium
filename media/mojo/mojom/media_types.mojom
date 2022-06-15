@@ -287,6 +287,8 @@ struct VideoFrameMetadata {
 
   gfx.mojom.Rect? capture_update_rect;
 
+  gfx.mojom.Size? source_size;
+
   gfx.mojom.Rect? region_capture_rect;
   uint32 crop_version;
 

@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_util.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -149,6 +150,9 @@ void WebContentsFrameTracker::DidStopCapturingWebContents() {
 
 void WebContentsFrameTracker::SetCapturedContentSize(
     const gfx::Size& content_size) {
+  // For efficiency, this function should only be called when the captured
+  // content size changes. The caller is responsible for enforcing that.
+
   DVLOG(3) << __func__ << ": content_size=" << content_size.ToString();
   if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi)) {
     // Check if the capture scale needs to be modified. The content_size
@@ -201,6 +205,9 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
         preferred_size = gfx::ScaleToFlooredSize(
             preferred_size, static_cast<float>(1 / scale_ratio));
       }
+      DVLOG(3) << __func__ << ": x_ratio=" << x_ratio << " y_ratio=" << y_ratio
+               << " scale_ratio=" << scale_ratio
+               << " preferred_size=" << preferred_size.ToString();
     }
   }
   return preferred_size;
@@ -222,10 +229,18 @@ float WebContentsFrameTracker::CalculatePreferredScaleFactor(
   // capture size, which should never happen.
   constexpr float kMinFactor = 1.0f;
 
-  // Ideally is that the |content_size| is the same as |capture_size_|, so if
-  // we are achieving that with current settings we can exit early.
-  if (content_size.width() == capture_size_.width() &&
-      content_size.height() == capture_size_.height()) {
+  // The content rectangle is letterboxed within the capture size rectangle.
+  // Calculate the effective scaled size after this is applied, and use
+  // this size for ratio calculations.
+  gfx::Size letterbox_size =
+      media::ComputeLetterboxRegion(gfx::Rect(capture_size_), content_size)
+          .size();
+
+  // Ideally the |content_size| should be the same as |letterbox_size|, so if
+  // we are achieving that with current settings we can exit early. Also
+  // accept almost-equal sizes to avoid oscillations due to rounding errors.
+  if (std::abs(content_size.width() - letterbox_size.width()) < 4 &&
+      std::abs(content_size.height() - letterbox_size.height()) < 4) {
     return capture_scale_override_;
   }
 
@@ -236,15 +251,25 @@ float WebContentsFrameTracker::CalculatePreferredScaleFactor(
       content_size, 1.0f / context_->GetScaleOverrideForCapture());
 
   // Next, determine what the ideal scale factors in each direction would have
-  // been for this frame.
-  const gfx::Vector2dF factors(
-      static_cast<float>(capture_size_.width()) / unscaled_content_size.width(),
-      static_cast<float>(capture_size_.height()) /
-          unscaled_content_size.height());
+  // been for this frame. The factors should be nearly equal after letterboxing.
+  const gfx::Vector2dF factors(static_cast<float>(letterbox_size.width()) /
+                                   unscaled_content_size.width(),
+                               static_cast<float>(letterbox_size.height()) /
+                                   unscaled_content_size.height());
 
   // We prefer to err on the side of having to downscale in one direction rather
   // than upscale in the other direction, so we use the largest scale factor.
   const float largest_factor = std::max(factors.x(), factors.y());
+
+  DVLOG(3) << __func__ << ":"
+           << " capture_size_=" << capture_size_.ToString()
+           << " letterbox_size=" << letterbox_size.ToString()
+           << " content_size=" << content_size.ToString()
+           << " unscaled_content_size=" << unscaled_content_size.ToString()
+           << " context_->GetScaleOverrideForCapture()="
+           << context_->GetScaleOverrideForCapture()
+           << " factors.x()=" << factors.x() << " factors.y()=" << factors.y()
+           << " largest_factor=" << largest_factor;
   return std::clamp(largest_factor, kMinFactor, kMaxFactor);
 }
 
