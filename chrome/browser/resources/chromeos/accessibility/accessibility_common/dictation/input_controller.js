@@ -100,7 +100,14 @@ export class InputController {
       return;
     }
 
-    text = this.adjustCommitText_(text);
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (editableNode && editableNode.textSelStart === editableNode.textSelEnd) {
+      // Adjust the commit text to preserve spacing.
+      const value = editableNode.value;
+      const caretIndex = editableNode.textSelStart;
+      text = EditingUtil.adjustCommitText(value, caretIndex, text);
+    }
+
     chrome.input.ime.commitText({contextID: this.activeImeContextId_, text});
   }
 
@@ -132,36 +139,6 @@ export class InputController {
       this.activeImeContextId_ = InputController.NO_ACTIVE_IME_CONTEXT_ID_;
       this.stopDictationCallback_();
     }
-  }
-
-  /**
-   * @param {string} text
-   * @return {string}
-   */
-  adjustCommitText_(text) {
-    // There is currently a bug in SODA (b/213934503) where final speech results
-    // do not start with a space. This results in a Dictation bug
-    // (crbug.com/1294050), where final speech results are not separated by a
-    // space when committed to a text field. This is a temporary workaround
-    // until the blocking SODA bug can be fixed. Note, a similar strategy
-    // already exists in Dictation::OnSpeechResult().
-    const editableNode = this.focusHandler_.getEditableNode();
-    if (!editableNode ||
-        InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(text)) {
-      return text;
-    }
-
-    const value = editableNode.value;
-    const selStart = editableNode.textSelStart;
-    const selEnd = editableNode.textSelEnd;
-    // Prepend a space to `text` if there is text directly left of the cursor.
-    if (!selStart || selStart !== selEnd || !value ||
-        InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(
-            value[selStart - 1])) {
-      return text;
-    }
-
-    return ' ' + text;
   }
 
   /**
@@ -317,9 +294,3 @@ InputController.IME_ENGINE_ID =
  * @const
  */
 InputController.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
-
-/**
- * @private {!RegExp}
- * @const
- */
-InputController.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;

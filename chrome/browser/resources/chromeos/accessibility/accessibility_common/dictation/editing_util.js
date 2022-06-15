@@ -158,6 +158,35 @@ export class EditingUtil {
     return 0;
   }
 
+
+  /**
+   * @param {string} value
+   * @param {number} caretIndex
+   * @param {string} text
+   * @return {string}
+   */
+  static adjustCommitText(value, caretIndex, commitText) {
+    // There is currently a bug in SODA (b/213934503) where final speech results
+    // do not start with a space. This results in a Dictation bug
+    // (crbug.com/1294050), where final speech results are not separated by a
+    // space when committed to a text field. This is a temporary workaround
+    // until the blocking SODA bug can be fixed. Note, a similar strategy
+    // already exists in Dictation::OnSpeechResult().
+    if (!value || EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(commitText) ||
+        EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_.test(commitText)) {
+      return commitText;
+    }
+
+    // Prepend a space to `commitText`, unless there is whitespace directly left
+    // of the cursor.
+    const leftOfCaret = value[caretIndex - 1];
+    if (EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(leftOfCaret)) {
+      return commitText;
+    }
+
+    return ' ' + commitText;
+  }
+
   /**
    * Returns a RegExp that matches on the right-most occurrence of a phrase.
    * The returned RegExp is case insensitive and requires that `phrase` is
@@ -209,3 +238,10 @@ EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;
  */
 EditingUtil.PUNCTUATION_REGEX_ =
     /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.BEGINS_WITH_PUNCTUATION_REGEX_ =
+    /^[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/;

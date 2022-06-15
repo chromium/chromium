@@ -309,3 +309,37 @@ SYNC_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
   caretIndex = 0;
   assertEquals(0, f());
 });
+
+SYNC_TEST_F('DictationEditingUtilTest', 'AdjustCommitText', function() {
+  let value;
+  let caretIndex;
+  let commitText;
+  const f = () => EditingUtil.adjustCommitText(value, caretIndex, commitText);
+
+  // Add an extra space.
+  value = 'This is a test.';
+  caretIndex = value.length;
+  commitText = 'More text';
+  assertEquals(' More text', f());
+
+  value = 'This is a test';
+  caretIndex = value.length;
+  commitText = 'folks!';
+  assertEquals(' folks!', f());
+
+  // Don't add a space.
+  value = 'This is a test. ';
+  caretIndex = value.length;
+  commitText = 'More text';
+  assertEquals('More text', f());
+
+  value = 'This is a test.';
+  caretIndex = value.length;
+  commitText = ' More text';
+  assertEquals(' More text', f());
+
+  value = 'This is a test';
+  caretIndex = value.length;
+  commitText = '!';
+  assertEquals('!', f());
+});
