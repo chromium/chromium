@@ -128,26 +128,25 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
 
-  std::vector<base::Value> supported_features;
-  std::vector<base::Value> unsupported_features;
+  base::Value::List supported_features;
+  base::Value::List unsupported_features;
   GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features,
                         unsupported_features);
 
-  base::Value results(base::Value::Type::DICTIONARY);
-  results.SetKey(flags_ui::kSupportedFeatures,
-                 base::Value(std::move(supported_features)));
-  results.SetKey(flags_ui::kUnsupportedFeatures,
-                 base::Value(std::move(unsupported_features)));
+  base::Value::Dict results;
+  results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
+  results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
 
   // Cannot restart the browser on iOS.
-  results.SetBoolKey(flags_ui::kNeedsRestart, false);
-  results.SetBoolKey(flags_ui::kShowOwnerWarning,
-                     access_ == flags_ui::kGeneralAccessFlagsOnly);
+  results.Set(flags_ui::kNeedsRestart, false);
+  results.Set(flags_ui::kShowOwnerWarning,
+              access_ == flags_ui::kGeneralAccessFlagsOnly);
 
-  results.SetBoolKey(flags_ui::kShowBetaChannelPromotion, false);
-  results.SetBoolKey(flags_ui::kShowDevChannelPromotion, false);
+  results.Set(flags_ui::kShowBetaChannelPromotion, false);
+  results.Set(flags_ui::kShowDevChannelPromotion, false);
 
-  web_ui()->ResolveJavascriptCallback(callback_id, results);
+  web_ui()->ResolveJavascriptCallback(callback_id,
+                                      base::Value(std::move(results)));
 }
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(

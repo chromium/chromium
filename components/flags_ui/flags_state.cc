@@ -60,7 +60,7 @@ const struct {
 
 // Adds a |StringValue| to |list| for each platform where |bitmask| indicates
 // whether the entry is available on that platform.
-void AddOsStrings(unsigned bitmask, base::Value* list) {
+void AddOsStrings(unsigned bitmask, base::Value::List* list) {
   for (const auto& entry : kBitsToOs) {
     if (bitmask & entry.bit)
       list->Append(entry.name);
@@ -93,9 +93,10 @@ bool IsDefaultValue(const FeatureEntry& entry,
   return true;
 }
 
-// Returns the Value representing the choice data in the specified entry.
-base::Value CreateOptionsData(const FeatureEntry& entry,
-                              const std::set<std::string>& enabled_entries) {
+// Returns the Value::List representing the choice data in the specified entry.
+base::Value::List CreateOptionsData(
+    const FeatureEntry& entry,
+    const std::set<std::string>& enabled_entries) {
   DCHECK(entry.type == FeatureEntry::MULTI_VALUE ||
          entry.type == FeatureEntry::ENABLE_DISABLE_VALUE ||
          entry.type == FeatureEntry::FEATURE_VALUE ||
@@ -105,14 +106,14 @@ base::Value CreateOptionsData(const FeatureEntry& entry,
          entry.type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   );
-  base::Value result(base::Value::Type::LIST);
+  base::Value::List result;
   for (int i = 0; i < entry.NumOptions(); ++i) {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
     const std::string name = entry.NameForOption(i);
-    value.SetStringKey("internal_name", name);
-    value.SetStringKey("description", entry.DescriptionForOption(i));
-    value.SetBoolKey("selected", enabled_entries.count(name) > 0);
-    result.Append(std::move(value));
+    dict.Set("internal_name", name);
+    dict.Set("description", entry.DescriptionForOption(i));
+    dict.Set("selected", enabled_entries.count(name) > 0);
+    result.Append(std::move(dict));
   }
   return result;
 }
@@ -579,8 +580,8 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
 void FlagsState::GetFlagFeatureEntries(
     FlagsStorage* flags_storage,
     FlagAccess access,
-    base::Value::ListStorage& supported_entries,
-    base::Value::ListStorage& unsupported_entries,
+    base::Value::List& supported_entries,
+    base::Value::List& unsupported_entries,
     base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry) {
   DCHECK(flags_storage);
   std::set<std::string> enabled_entries;
@@ -592,35 +593,33 @@ void FlagsState::GetFlagFeatureEntries(
     if (skip_feature_entry.Run(entry))
       continue;
 
-    base::Value data(base::Value::Type::DICTIONARY);
-    data.SetStringKey("internal_name", entry.internal_name);
-    data.SetStringKey("name", base::StringPiece(entry.visible_name));
-    data.SetStringKey("description",
-                      base::StringPiece(entry.visible_description));
+    base::Value::Dict data;
+    data.Set("internal_name", entry.internal_name);
+    data.Set("name", entry.visible_name);
+    data.Set("description", entry.visible_description);
 
-    base::Value supported_platforms(base::Value::Type::LIST);
+    base::Value::List supported_platforms;
     AddOsStrings(entry.supported_platforms, &supported_platforms);
-    data.SetKey("supported_platforms", std::move(supported_platforms));
+    data.Set("supported_platforms", std::move(supported_platforms));
     // True if the switch is not currently passed.
     bool is_default_value = IsDefaultValue(entry, enabled_entries);
-    data.SetBoolKey("is_default", is_default_value);
+    data.Set("is_default", is_default_value);
 
     switch (entry.type) {
       case FeatureEntry::SINGLE_VALUE:
       case FeatureEntry::SINGLE_DISABLE_VALUE:
-        data.SetBoolKey(
+        data.Set(
             "enabled",
             (!is_default_value && entry.type == FeatureEntry::SINGLE_VALUE) ||
                 (is_default_value &&
                  entry.type == FeatureEntry::SINGLE_DISABLE_VALUE));
         break;
       case FeatureEntry::ORIGIN_LIST_VALUE:
-        data.SetBoolKey("enabled", !is_default_value);
-        data.SetStringKey(
-            "origin_list_value",
-            GetCombinedOriginListValue(
-                *flags_storage, *base::CommandLine::ForCurrentProcess(),
-                entry.internal_name, entry.switches.command_line_switch));
+        data.Set("enabled", !is_default_value);
+        data.Set("origin_list_value",
+                 GetCombinedOriginListValue(
+                     *flags_storage, *base::CommandLine::ForCurrentProcess(),
+                     entry.internal_name, entry.switches.command_line_switch));
         break;
       case FeatureEntry::MULTI_VALUE:
       case FeatureEntry::ENABLE_DISABLE_VALUE:
@@ -630,7 +629,7 @@ void FlagsState::GetFlagFeatureEntries(
       case FeatureEntry::PLATFORM_FEATURE_NAME_VALUE:
       case FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE:
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        data.SetKey("options", CreateOptionsData(entry, enabled_entries));
+        data.Set("options", CreateOptionsData(entry, enabled_entries));
         break;
     }
 
@@ -654,9 +653,9 @@ void FlagsState::GetFlagFeatureEntries(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     if (supported)
-      supported_entries.push_back(std::move(data));
+      supported_entries.Append(std::move(data));
     else
-      unsupported_entries.push_back(std::move(data));
+      unsupported_entries.Append(std::move(data));
   }
 }
 

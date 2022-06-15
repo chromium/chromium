@@ -112,8 +112,8 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
   BOOL usesSyncSandbox = NO;
   BOOL usesWalletSandbox = NO;
 
-  base::Value::ListStorage supportedFeatures;
-  base::Value::ListStorage unsupportedFeatures;
+  base::Value::List supportedFeatures;
+  base::Value::List unsupportedFeatures;
 
   _flagsState->GetFlagFeatureEntries(
       _flagsStorage.get(), flags_ui::kGeneralAccessFlagsOnly, supportedFeatures,

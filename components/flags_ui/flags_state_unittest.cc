@@ -839,8 +839,8 @@ TEST_F(FlagsStateTest, FeatureValues) {
 }
 
 TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
-  base::Value::ListStorage supported_entries;
-  base::Value::ListStorage unsupported_entries;
+  base::Value::List supported_entries;
+  base::Value::List unsupported_entries;
   flags_state_->GetFlagFeatureEntries(&flags_storage_, kGeneralAccessFlagsOnly,
                                       supported_entries, unsupported_entries,
                                       base::BindRepeating(&SkipFeatureEntry));
