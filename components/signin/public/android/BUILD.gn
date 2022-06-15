@@ -127,7 +127,7 @@ android_resources("signin_test_resources") {
   sources = [ "javatests/res/drawable/test_profile_picture.xml" ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   deps = [
     ":java",

@@ -169,7 +169,7 @@ if (is_android) {
     ]
   }
 
-  android_library("javatests") {
+  android_library("unit_device_javatests") {
     testonly = true
 
     sources = [
@@ -186,7 +186,7 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/video_tutorials:java",
       "//chrome/browser/video_tutorials:test_support_java",
-      "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_unit_test_support",
       "//components/thin_webview:java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_deps:espresso_java",

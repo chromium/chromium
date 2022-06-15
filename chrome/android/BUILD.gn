@@ -1365,8 +1365,6 @@ android_library("chrome_unit_test_java") {
     "//components/security_state/core:security_state_enums_java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
-    "//components/strictmode/android:javatests",
-    "//components/url_formatter/android:url_formatter_javatests",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
@@ -3146,19 +3144,21 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
   shared_libraries = [ ":libchromefortest" ]
   deps = [
     ":chrome_unit_test_java",
-    "//build/config/android/test/resource_overlay:javatests",
+    "//build/config/android/test/resource_overlay:unit_device_javatests",
     "//chrome/android/features/tab_ui:unit_device_javatests",
-    "//chrome/browser/back_press/android:javatests",
+    "//chrome/browser/back_press/android:unit_device_javatests",
     "//chrome/browser/loading_modal/android:unit_device_javatests",
-    "//chrome/browser/partnercustomizations:javatests",
+    "//chrome/browser/partnercustomizations:unit_device_javatests",
     "//chrome/browser/ui/android/appmenu/internal:unit_device_javatests",
     "//chrome/browser/ui/messages/android:unit_device_javatests",
-    "//chrome/browser/user_education:javatests",
-    "//chrome/browser/video_tutorials/internal:javatests",
+    "//chrome/browser/user_education:unit_device_javatests",
+    "//chrome/browser/video_tutorials/internal:unit_device_javatests",
     "//components/browser_ui/widget/android:unit_device_javatests",
     "//components/embedder_support/android:embedder_support_javatests",
     "//components/paint_preview/player/android:javatests",
-    "//components/signin/public/android:javatests",
+    "//components/signin/public/android:unit_device_javatests",
+    "//components/strictmode/android:unit_device_javatests",
+    "//components/url_formatter/android:unit_device_javatests",
   ]
 
   data_deps = [

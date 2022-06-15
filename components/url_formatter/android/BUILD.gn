@@ -25,7 +25,7 @@ generate_jni("jni_headers") {
       [ "java/src/org/chromium/components/url_formatter/UrlFormatter.java" ]
 }
 
-android_library("url_formatter_javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "javatests/src/org/chromium/components/url_formatter/UrlFormatterUnitTest.java" ]
