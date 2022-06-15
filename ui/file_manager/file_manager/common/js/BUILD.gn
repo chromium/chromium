@@ -42,6 +42,7 @@ group("js_modules") {
     ":notifications_browser_proxy",
     ":power",
     ":progress_center_common",
+    ":recent_date_bucket",
     ":storage_adapter",
     ":trash",
     ":url_constants",
@@ -72,6 +73,7 @@ js_type_check("closure_compile_jsmodules") {
     ":notifications_browser_proxy",
     ":power",
     ":progress_center_common",
+    ":recent_date_bucket",
     ":storage_adapter",
     ":trash",
     ":url_constants",
@@ -297,6 +299,22 @@ js_library("progress_center_common") {
 js_library("power") {
 }
 
+js_library("recent_date_bucket") {
+  deps = [
+    "//ui/file_manager/file_manager/externs:file_manager_private",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_unittest("recent_date_bucket_unittest.m") {
+  deps = [
+    ":mock_chrome",
+    ":recent_date_bucket",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 js_library("storage_adapter") {
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -389,6 +407,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":filtered_volume_manager_unittest.m",
     ":importer_common_unittest.m",
     ":lru_cache_unittest.m",
+    ":recent_date_bucket_unittest.m",
     ":storage_adapter_unittest.m",
     ":util_unittest.m",
     ":volume_manager_types_unittest.m",

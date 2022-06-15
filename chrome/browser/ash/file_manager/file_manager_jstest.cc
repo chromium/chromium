@@ -293,3 +293,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTest) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTypesTest) {
   RunTestURL("common/js/volume_manager_types_unittest.m_gen.html");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, RecentDateBucketTest) {
+  RunTestURL("common/js/recent_date_bucket_unittest.m_gen.html");
+}

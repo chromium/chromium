@@ -365,6 +365,15 @@ enum IOTaskType {
   zip
 };
 
+enum RecentDateBucket {
+  today,
+  yesterday,
+  earlier_this_week,
+  earlier_this_month,
+  earlier_this_year,
+  older
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -409,6 +418,9 @@ dictionary EntryProperties {
 
   // Timestamp of entry update time by me, in milliseconds past the epoch.
   double? modificationByMeTime;
+
+  // Date bucket calculated by |modificationTime| or |modificationByMeTime|.
+  RecentDateBucket? recentDateBucket;
 
   // URL to the Drive thumbnail image for this file.
   DOMString? thumbnailUrl;

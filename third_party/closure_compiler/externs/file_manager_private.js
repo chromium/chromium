@@ -325,6 +325,16 @@ chrome.fileManagerPrivate.IOTaskType = {
   ZIP: 'zip',
 };
 
+/** @enum {string} */
+chrome.fileManagerPrivate.RecentDateBucket = {
+  TODAY: 'today',
+  YESTERDAY: 'yesterday',
+  EARLIER_THIS_WEEK: 'earlier_this_week',
+  EARLIER_THIS_MONTH: 'earlier_this_month',
+  EARLIER_THIS_YEAR: 'earlier_this_year',
+  OLDER: 'older',
+};
+
 /**
  * @typedef {{
  *   appId: string,
