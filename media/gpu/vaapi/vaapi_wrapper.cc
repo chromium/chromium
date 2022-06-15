@@ -975,6 +975,10 @@ class VASupportedProfiles {
   // Determines if |mode| supports |va_profile| (and |va_entrypoint| if defined
   // and valid). If so, returns a const pointer to its ProfileInfo, otherwise
   // returns nullptr.
+  // TODO(hiroh): If VAEntrypoint is kVAEntrypointInvalid, the default entry
+  // point acquired by GetDefaultVaEntryPoint() is used. If the default entry
+  // point is not supported, the earlier supported entrypoint in
+  // |kAllowedEntryPopints| is used.
   const ProfileInfo* IsProfileSupported(
       VaapiWrapper::CodecMode mode,
       VAProfile va_profile,
@@ -1635,26 +1639,18 @@ bool VaapiWrapper::IsDecodingSupportedForInternalFormat(
 }
 
 // static
-bool VaapiWrapper::GetDecodeMinResolution(VAProfile va_profile,
-                                          gfx::Size* min_size) {
+bool VaapiWrapper::GetSupportedResolutions(VAProfile va_profile,
+                                           CodecMode codec_mode,
+                                           gfx::Size& min_size,
+                                           gfx::Size& max_size) {
   const VASupportedProfiles::ProfileInfo* profile_info =
-      VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
-  if (!profile_info)
-    return false;
-  *min_size = gfx::Size(std::max(1, profile_info->min_resolution.width()),
-                        std::max(1, profile_info->min_resolution.height()));
-  return true;
-}
-
-// static
-bool VaapiWrapper::GetDecodeMaxResolution(VAProfile va_profile,
-                                          gfx::Size* max_size) {
-  const VASupportedProfiles::ProfileInfo* profile_info =
-      VASupportedProfiles::Get().IsProfileSupported(kDecode, va_profile);
-  if (!profile_info)
+      VASupportedProfiles::Get().IsProfileSupported(codec_mode, va_profile);
+  if (!profile_info || profile_info->max_resolution.IsEmpty())
     return false;
 
-  *max_size = profile_info->max_resolution;
+  min_size = gfx::Size(std::max(1, profile_info->min_resolution.width()),
+                       std::max(1, profile_info->min_resolution.height()));
+  max_size = profile_info->max_resolution;
   return true;
 }
 

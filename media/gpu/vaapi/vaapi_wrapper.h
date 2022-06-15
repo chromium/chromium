@@ -208,18 +208,16 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Returns false if |rt_format| or |va_profile| is not supported for decoding.
   static bool IsDecodingSupportedForInternalFormat(VAProfile va_profile,
                                                    unsigned int rt_format);
-
-  // Gets the minimum surface size allowed for decoding using |va_profile|.
-  // Returns true if the size can be obtained, false otherwise. The minimum
-  // dimension (width or height) returned is 1. Particularly, if a dimension is
-  // not reported by the driver, the dimension is returned as 1.
-  static bool GetDecodeMinResolution(VAProfile va_profile, gfx::Size* min_size);
-
-  // Gets the maximum surface size allowed for decoding using |va_profile|.
-  // Returns true if the size can be obtained, false otherwise. Because of the
-  // initialization in VASupportedProfiles::FillProfileInfo_Locked(), the size
-  // is guaranteed to not be empty (as long as this method returns true).
-  static bool GetDecodeMaxResolution(VAProfile va_profile, gfx::Size* max_size);
+  // Gets the minimum and maximum surface sizes allowed for |va_profile| in
+  // |codec_mode|. Returns true if both sizes can be obtained, false otherwise.
+  // Each dimension in |min_size| will be at least 1 (as long as this method
+  // returns true). Additionally, because of the initialization in
+  // VASupportedProfiles::FillProfileInfo_Locked(), the |max_size| is guaranteed
+  // to not be empty (as long as this method returns true).
+  static bool GetSupportedResolutions(VAProfile va_profile,
+                                      CodecMode codec_mode,
+                                      gfx::Size& min_size,
+                                      gfx::Size& max_size);
 
   // Obtains a suitable FOURCC that can be used in vaCreateImage() +
   // vaGetImage(). |rt_format| corresponds to the JPEG's subsampling format.

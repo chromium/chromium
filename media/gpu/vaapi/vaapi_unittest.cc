@@ -779,12 +779,10 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   }
 
   gfx::Size minimum_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMinResolution(va_profile,
-                                                   &minimum_supported_size));
   gfx::Size maximum_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMaxResolution(va_profile,
-                                                   &maximum_supported_size));
-
+  ASSERT_TRUE(VaapiWrapper::GetSupportedResolutions(
+      va_profile, VaapiWrapper::CodecMode::kDecode, minimum_supported_size,
+      maximum_supported_size));
   if (resolution.width() < minimum_supported_size.width() ||
       resolution.height() < minimum_supported_size.height() ||
       resolution.width() > maximum_supported_size.width() ||

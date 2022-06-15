@@ -74,13 +74,11 @@ VaapiImageDecoder::GetSupportedProfile() const {
   DCHECK_NE(gpu::ImageDecodeAcceleratorType::kUnknown, profile.image_type);
 
   // Note that since |vaapi_wrapper_| was created successfully, we expect the
-  // following calls to be successful. Hence the DCHECKs.
-  const bool got_min_resolution = VaapiWrapper::GetDecodeMinResolution(
-      va_profile_, &profile.min_encoded_dimensions);
-  DCHECK(got_min_resolution);
-  const bool got_max_resolution = VaapiWrapper::GetDecodeMaxResolution(
-      va_profile_, &profile.max_encoded_dimensions);
-  DCHECK(got_max_resolution);
+  // following call to be successful. Hence the DCHECK.
+  const bool got_supported_resolutions = VaapiWrapper::GetSupportedResolutions(
+      va_profile_, VaapiWrapper::CodecMode::kDecode,
+      profile.min_encoded_dimensions, profile.max_encoded_dimensions);
+  DCHECK(got_supported_resolutions);
 
   // TODO(andrescj): Ideally, we would advertise support for all the formats
   // supported by the driver. However, for now, we will only support exposing

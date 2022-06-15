@@ -154,15 +154,11 @@ static bool IsVaapiSupportedJpeg(const JpegParseResult& jpeg) {
 
   // Validate the coded size.
   gfx::Size min_jpeg_resolution;
-  if (!VaapiWrapper::GetDecodeMinResolution(VAProfileJPEGBaseline,
-                                            &min_jpeg_resolution)) {
-    DLOG(ERROR) << "Could not get the minimum resolution";
-    return false;
-  }
   gfx::Size max_jpeg_resolution;
-  if (!VaapiWrapper::GetDecodeMaxResolution(VAProfileJPEGBaseline,
-                                            &max_jpeg_resolution)) {
-    DLOG(ERROR) << "Could not get the maximum resolution";
+  if (!VaapiWrapper::GetSupportedResolutions(
+          VAProfileJPEGBaseline, VaapiWrapper::CodecMode::kDecode,
+          min_jpeg_resolution, max_jpeg_resolution)) {
+    DLOG(ERROR) << "Could not get the minimum and maximum resolutions";
     return false;
   }
   const int actual_jpeg_coded_width =

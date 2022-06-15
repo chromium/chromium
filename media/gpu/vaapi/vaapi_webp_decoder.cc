@@ -45,9 +45,11 @@ static bool IsVaapiSupportedWebP(const Vp8FrameHeader& webp_header) {
   }
 
   gfx::Size min_webp_resolution;
-  if (!VaapiWrapper::GetDecodeMinResolution(kWebPVAProfile,
-                                            &min_webp_resolution)) {
-    DLOG(ERROR) << "Could not get the minimum resolution";
+  gfx::Size max_webp_resolution;
+  if (!VaapiWrapper::GetSupportedResolutions(
+          kWebPVAProfile, VaapiWrapper::CodecMode::kDecode, min_webp_resolution,
+          max_webp_resolution)) {
+    DLOG(ERROR) << "Could not get the minimum and maximum resolutions";
     return false;
   }
   if (webp_size.width() < min_webp_resolution.width() ||
@@ -55,13 +57,6 @@ static bool IsVaapiSupportedWebP(const Vp8FrameHeader& webp_header) {
     DLOG(ERROR) << "VAAPI doesn't support size " << webp_size.ToString()
                 << ": under minimum resolution "
                 << min_webp_resolution.ToString();
-    return false;
-  }
-
-  gfx::Size max_webp_resolution;
-  if (!VaapiWrapper::GetDecodeMaxResolution(kWebPVAProfile,
-                                            &max_webp_resolution)) {
-    DLOG(ERROR) << "Could not get the maximum resolution";
     return false;
   }
   if (webp_size.width() > max_webp_resolution.width() ||
