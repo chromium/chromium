@@ -146,8 +146,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   // Retrieves all buckets for `storage_key` and `type` that are in the buckets
-  // table.
-  virtual void GetBucketsForStorageKey(
+  // table. Expired buckets will be filtered out of the reply and also deleted
+  // from disk.
+  virtual void GetBucketsForStorageKeyDeleteExpired(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

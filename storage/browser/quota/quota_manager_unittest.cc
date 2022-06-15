@@ -275,10 +275,11 @@ class QuotaManagerImplTest : public testing::Test {
 
   QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKey(
       const StorageKey& storage_key,
-      blink::mojom::StorageType storage_type) {
+      blink::mojom::StorageType storage_type,
+      bool delete_expired = false) {
     base::test::TestFuture<QuotaErrorOr<std::set<BucketInfo>>> future;
-    quota_manager_impl_->GetBucketsForStorageKey(storage_key, storage_type,
-                                                 future.GetCallback());
+    quota_manager_impl_->GetBucketsForStorageKey(
+        storage_key, storage_type, future.GetCallback(), delete_expired);
     return future.Take();
   }
 
@@ -1048,6 +1049,42 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_THAT(buckets, testing::Contains(bucket_c));
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey_Expiration) {
+  StorageKey storage_key = ToStorageKey("http://a.com/");
+
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  QuotaDatabase::SetClockForTesting(clock.get());
+  clock->SetNow(base::Time::Now());
+
+  BucketInitParams params(storage_key, "bucket_1");
+  auto bucket = UpdateOrCreateBucket(params);
+  EXPECT_TRUE(bucket.ok());
+  BucketInfo bucket_1 = bucket.value();
+
+  params.name = "bucket_2";
+  params.expiration = clock->Now() + base::Days(1);
+  bucket = UpdateOrCreateBucket(params);
+  EXPECT_TRUE(bucket.ok());
+  BucketInfo bucket_2 = bucket.value();
+
+  params.name = "bucket_3";
+  bucket = UpdateOrCreateBucket(params);
+  EXPECT_TRUE(bucket.ok());
+  BucketInfo bucket_3 = bucket.value();
+
+  clock->Advance(base::Days(2));
+
+  QuotaErrorOr<std::set<BucketInfo>> result =
+      GetBucketsForStorageKey(storage_key, kTemp, /*delete_expired=*/true);
+  EXPECT_TRUE(result.ok());
+
+  std::set<BucketInfo> buckets = result.value();
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_EQ(*buckets.begin(), bucket_1);
+
+  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {

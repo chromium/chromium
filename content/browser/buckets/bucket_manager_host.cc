@@ -104,7 +104,7 @@ void BucketManagerHost::OpenBucket(const std::string& name,
 }
 
 void BucketManagerHost::Keys(KeysCallback callback) {
-  manager_->quota_manager_proxy()->GetBucketsForStorageKey(
+  manager_->quota_manager_proxy()->GetBucketsForStorageKeyDeleteExpired(
       blink::StorageKey(origin_), blink::mojom::StorageType::kTemporary,
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&BucketManagerHost::DidGetBuckets,
