@@ -415,6 +415,8 @@ export class SettingsLanguagesSubpageElement extends
         this.detailLanguage_!.language.code);
     this.languageHelper.moveLanguageToFront(
         this.detailLanguage_!.language.code);
+    LanguageSettingsMetricsProxyImpl.getInstance().recordSettingsMetric(
+        LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
 
     this.closeMenuSoon_();
   }
