@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://usb-internals/app.js';
 import 'chrome://test/mojo_webui_test_support.js';
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
+import {setSetupFn} from 'chrome://usb-internals/app.js';
 import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceError, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
 import {UsbInternalsPageHandler, UsbInternalsPageHandlerReceiver, UsbInternalsPageHandlerRemote} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
 import {UsbDeviceManagerReceiver, UsbDeviceManagerRemote} from 'chrome://usb-internals/usb_manager.mojom-webui.js';
@@ -233,21 +233,17 @@ function usbControlTransferParamsToString(params) {
 }
 
 const setupResolver = new PromiseResolver();
-const deviceManagerGetDevicesResolver = new PromiseResolver();
-const deviceTabInitializedResolver = new PromiseResolver();
 let deviceDescriptorRenderPromise =
     eventToPromise('device-descriptor-complete-for-test', document.body);
 let pageHandler = null;
 
-window.deviceListCompleteFn = () => {
-  deviceManagerGetDevicesResolver.resolve();
-};
+const deviceTabInitializedPromise =
+    eventToPromise('device-tab-initialized-for-test', document.body);
 
-window.deviceTabInitializedFn = () => {
-  deviceTabInitializedResolver.resolve();
-};
+const deviceManagerGetDevicesPromise =
+    eventToPromise('device-list-complete-for-test', document.body);
 
-window.setupFn = () => {
+setSetupFn(() => {
   const pageHandlerInterceptor =
       new MojoInterfaceInterceptor(UsbInternalsPageHandler.$interfaceName);
   pageHandlerInterceptor.oninterfacerequest = (e) => {
@@ -257,7 +253,7 @@ window.setupFn = () => {
   pageHandlerInterceptor.start();
 
   return Promise.resolve();
-};
+});
 
 
 suite('UsbInternalsUITest', function() {
@@ -298,7 +294,7 @@ suite('UsbInternalsUITest', function() {
                         .querySelectorAll('th');
     assertEquals(8, columns.length);
 
-    await deviceManagerGetDevicesResolver.promise;
+    await deviceManagerGetDevicesPromise;
     const devices = devicesTable.querySelectorAll('tbody tr');
     assertEquals(EXPECT_DEVICES_NUM, devices.length);
   });
@@ -360,7 +356,7 @@ suite('UsbInternalsUITest', function() {
     // Test the tab opened by clicking inspect button contains a panel that
     // can manually retrieve device descriptor from device. Check the response
     // can be rendered correctly.
-    await deviceTabInitializedResolver.promise;
+    await deviceTabInitializedPromise;
     // The tab panel of the first device is opened in previous test as the
     // third tab panel. This device has correct device descriptor.
     const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[2];
@@ -423,14 +419,14 @@ suite('UsbInternalsUITest', function() {
   });
 
   test('RenderShortDeviceDescriptor', async function() {
-    await deviceManagerGetDevicesResolver.promise;
+    await deviceManagerGetDevicesPromise;
     const devicesTable = app.$('#device-list');
     // Inspect the second device, which has short device descriptor.
     devicesTable.querySelectorAll('button')[1].click();
     // The fourth is the device tab (a third tab was opened in a previous test).
     const deviceTab = app.shadowRoot.querySelectorAll('div[slot=\'panel\']')[3];
 
-    await deviceTabInitializedResolver.promise;
+    await deviceTabInitializedPromise;
     deviceDescriptorRenderPromise =
         eventToPromise('device-descriptor-complete-for-test', document.body);
     deviceTab.querySelector('.device-descriptor-button').click();

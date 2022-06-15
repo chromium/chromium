@@ -10,118 +10,92 @@
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
-import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
 import {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbDeviceRemote, UsbEndpointInfo, UsbInterfaceInfo, UsbTransferDirection, UsbTransferType} from './usb_device.mojom-webui.js';
 import {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
 
-// TODO (rbpotter): Remove these temporary definitions after migrating to TS.
-/**
- * @typedef {{
- *   expanded: boolean,
- *   add: function(CrTreeItemElement): void,
- *   labelElement: HTMLElement,
- *   rowElement: HTMLElement,
- *   forceHoverStyle: function(boolean): void,
- * }}
- */
-export let CrTreeItemElement;
-
-/**
- * @typedef {{
- *   add: function(CrTreeItemElement): void,
- *   detail: {payload: Object, children: Object},
- *   removeTreeItem: function(CrTreeItemElement): void,
- *   expanded: boolean,
- *   items: Array<CrTreeItemElement>,
- *   selectedItem: CrTreeItemElement,
- * }}
- */
-export let CrTreeElement;
-
-
-
 /**
  * Page that contains a tab header and a tab panel displaying devices table.
  */
 export class DevicesPage {
-  /**
-   * @param {!UsbDeviceManagerRemote} usbManager
-   * @param {!ShadowRoot} root
-   */
-  constructor(usbManager, root) {
-    /** @private {!UsbDeviceManagerRemote} */
+  private usbManager_: UsbDeviceManagerRemote;
+  private root_: DocumentFragment;
+
+  constructor(usbManager: UsbDeviceManagerRemote, root: DocumentFragment) {
     this.usbManager_ = usbManager;
-    this.root = root;
+    this.root_ = root;
     this.renderDeviceList_();
   }
 
   /**
    * Sets the device collection for the page's device table.
-   * @private
    */
-  async renderDeviceList_() {
+  private async renderDeviceList_() {
     const response = await this.usbManager_.getDevices(null);
 
-    /** @type {!Array<!UsbDeviceInfo>} */
-    const devices = response.results;
+    const devices: UsbDeviceInfo[] = response.results;
 
-    const tableBody = this.root.querySelector('#device-list');
-    tableBody.innerHTML = trustedTypes.emptyHTML;
+    const tableBody = this.root_.querySelector<HTMLElement>('#device-list');
+    assert(tableBody);
+    tableBody.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
 
-    const rowTemplate = this.root.querySelector('#device-row');
+    const rowTemplate =
+        this.root_.querySelector<HTMLTemplateElement>('#device-row');
+    assert(rowTemplate);
 
     for (const device of devices) {
-      /** @type {DocumentFragment|Node} */
-      const clone = document.importNode(rowTemplate.content, true);
+      const clone =
+          document.importNode(rowTemplate.content, true) as DocumentFragment;
 
       const td = clone.querySelectorAll('td');
 
-      td[0].textContent = device.busNumber;
-      td[1].textContent = device.portNumber;
-      td[2].textContent = toHex(device.vendorId);
-      td[3].textContent = toHex(device.productId);
+      td[0]!.textContent = String(device.busNumber);
+      td[1]!.textContent = String(device.portNumber);
+      td[2]!.textContent = toHex(device.vendorId);
+      td[3]!.textContent = toHex(device.productId);
       if (device.manufacturerName) {
-        td[4].textContent = decodeString16(device.manufacturerName);
+        td[4]!.textContent = decodeString16(device.manufacturerName);
       }
       if (device.productName) {
-        td[5].textContent = decodeString16(device.productName);
+        td[5]!.textContent = decodeString16(device.productName);
       }
       if (device.serialNumber) {
-        td[6].textContent = decodeString16(device.serialNumber);
+        td[6]!.textContent = decodeString16(device.serialNumber);
       }
 
       const inspectButton = clone.querySelector('button');
+      assert(inspectButton);
       inspectButton.addEventListener('click', () => {
         this.switchToTab_(device);
       });
 
       tableBody.appendChild(clone);
     }
-    // window.deviceListCompleteFn() provides a hook for the test suite to
-    // perform test actions after the devices list is loaded.
-    window.deviceListCompleteFn();
+
+    document.body.dispatchEvent(new CustomEvent(
+        'device-list-complete-for-test', {bubbles: true, composed: true}));
   }
 
   /**
    * Switches to the device's tab, creating one if necessary.
-   * @param {!UsbDeviceInfo} device
-   * @private
    */
-  switchToTab_(device) {
-    const tabs = Array.from(this.root.querySelectorAll('div[slot=\'tab\']'));
+  private switchToTab_(device: UsbDeviceInfo) {
+    const tabs = Array.from(this.root_.querySelectorAll('div[slot=\'tab\']'));
     const tabId = device.guid;
     let index = tabs.findIndex(tab => tab.id === tabId);
 
     if (index === -1) {
-      const devicePage = new DevicePage(this.usbManager_, device, this.root);
+      new DevicePage(this.usbManager_, device, this.root_);
       index = tabs.length;
     }
-    const tabBox = this.root.querySelector('cr-tab-box');
-    tabBox.setAttribute('selected-index', index);
+    const tabBox = this.root_.querySelector('cr-tab-box');
+    assert(tabBox);
+    tabBox.setAttribute('selected-index', String(index));
   }
 }
 
@@ -130,12 +104,12 @@ export class DevicesPage {
  * descriptors.
  */
 class DevicePage {
-  /**
-   * @param {!UsbDeviceManagerRemote} usbManager
-   * @param {!UsbDeviceInfo} device
-   * @param {!ShadowRoot} root
-   */
-  constructor(usbManager, device, root) {
+  private usbManager_: UsbDeviceManagerRemote;
+  root: DocumentFragment;
+
+  constructor(
+      usbManager: UsbDeviceManagerRemote, device: UsbDeviceInfo,
+      root: DocumentFragment) {
     this.usbManager_ = usbManager;
     this.root = root;
     this.renderTab_(device);
@@ -143,17 +117,19 @@ class DevicePage {
 
   /**
    * Renders a tab to display a tree view showing device's detail information.
-   * @param {!UsbDeviceInfo} device
-   * @private
    */
-  renderTab_(device) {
+  private renderTab_(device: UsbDeviceInfo) {
     const tabBox = this.root.querySelector('cr-tab-box');
+    assert(tabBox);
 
-    const tabTemplate = queryRequiredElement('#tab-template', this.root);
-    /** @type {DocumentFragment|Node} */
-    const tabClone = document.importNode(tabTemplate.content, true);
+    const tabTemplate =
+        this.root.querySelector<HTMLTemplateElement>('#tab-template');
+    assert(tabTemplate);
+    const tabClone =
+        document.importNode(tabTemplate.content, true) as DocumentFragment;
 
-    const tab = tabClone.querySelector('div[slot=\'tab\']');
+    const tab = tabClone.querySelector<HTMLElement>('div[slot=\'tab\']');
+    assert(tab);
     if (device.productName && device.productName.data.length > 0) {
       tab.textContent = decodeString16(device.productName);
     } else {
@@ -166,23 +142,26 @@ class DevicePage {
     const firstPanel = tabBox.querySelector('div[slot=\'panel\']');
     tabBox.insertBefore(tab, firstPanel);
 
-    const tabPanelTemplate =
-        queryRequiredElement('#device-tabpanel-template', this.root);
-    /** @type {DocumentFragment|Node} */
-    const tabPanelClone = document.importNode(tabPanelTemplate.content, true);
+    const tabPanelTemplate = this.root.querySelector<HTMLTemplateElement>(
+        '#device-tabpanel-template');
+    assert(tabPanelTemplate);
+    const tabPanelClone =
+        document.importNode(tabPanelTemplate.content, true) as DocumentFragment;
 
     /**
      * Root of the WebContents tree of current device.
      */
-    const treeViewRoot = assertInstanceof(
-        tabPanelClone.querySelector('.tree-view'), HTMLElement);
+    const treeViewRoot =
+        tabPanelClone.querySelector<CrTreeElement>('.tree-view');
+    assert(treeViewRoot);
     treeViewRoot.detail = {payload: {}, children: {}};
     // Clear the tree first before populating it with the new content.
     treeViewRoot.innerText = '';
-    renderDeviceTree(device, /** @type {CrTreeElement} */ (treeViewRoot));
+    renderDeviceTree(device, treeViewRoot);
 
-    const tabPanel = assertInstanceof(
-        tabPanelClone.querySelector('div[slot=\'panel\']'), HTMLElement);
+    const tabPanel =
+        tabPanelClone.querySelector<HTMLElement>('div[slot=\'panel\']');
+    assert(tabPanel);
     this.initializeDescriptorPanels_(tabPanel, device.guid);
 
     tabBox.appendChild(tabPanel);
@@ -190,12 +169,11 @@ class DevicePage {
 
   /**
    * Initializes all the descriptor panels.
-   * @param {!HTMLElement} tabPanel
-   * @param {string} guid
-   * @private
    */
-  async initializeDescriptorPanels_(tabPanel, guid) {
+  private async initializeDescriptorPanels_(
+      tabPanel: HTMLElement, guid: string) {
     const usbDevice = new UsbDeviceRemote();
+    assert(this.usbManager_);
     await this.usbManager_.getDevice(
         guid, /*blocked_interface_classes=*/[],
         usbDevice.$.bindNewPipeAndPassReceiver(), /*device_client=*/ null);
@@ -216,19 +194,15 @@ class DevicePage {
 
     initialInspectorPanel(tabPanel, 'testing-tool', usbDevice, guid);
 
-    // window.deviceTabInitializedFn() provides a hook for the test suite to
-    // perform test actions after the device tab query descriptors actions are
-    // initialized.
-    window.deviceTabInitializedFn();
+    document.body.dispatchEvent(new CustomEvent(
+        'device-tab-initialized-for-test', {bubbles: true, composed: true}));
   }
 }
 
 /**
  * Renders a tree to display the device's detail information.
- * @param {!UsbDeviceInfo} device
- * @param {!CrTreeElement} root
  */
-function renderDeviceTree(device, root) {
+function renderDeviceTree(device: UsbDeviceInfo, root: CrTreeElement) {
   root.add(customTreeItem(`USB Version: ${device.usbVersionMajor}.${
       device.usbVersionMinor}.${device.usbVersionSubminor}`));
 
@@ -265,11 +239,11 @@ function renderDeviceTree(device, root) {
 
   if (device.webusbLandingPage) {
     const urlItem =
-        customTreeItem(`WebUSB Landing Page: ${device.webusbLandingPage.url}`);
+        customTreeItem(`WebUSB Landing Page: ${device.webusbLandingPage!.url}`);
     root.add(urlItem);
 
     urlItem.labelElement.addEventListener(
-        'click', () => window.open(device.webusbLandingPage.url, '_blank'));
+        'click', () => window.open(device.webusbLandingPage!.url, '_blank'));
   }
 
   root.add(
@@ -281,10 +255,9 @@ function renderDeviceTree(device, root) {
 
 /**
  * Renders a tree item to display the device's configuration information.
- * @param {!Array<!UsbConfigurationInfo>} configurationsArray
- * @param {!CrTreeElement} root
  */
-function renderConfigurationTreeItem(configurationsArray, root) {
+function renderConfigurationTreeItem(
+    configurationsArray: UsbConfigurationInfo[], root: CrTreeElement) {
   for (const configuration of configurationsArray) {
     const configurationItem =
         customTreeItem(`Configuration ${configuration.configurationValue}`);
@@ -303,10 +276,9 @@ function renderConfigurationTreeItem(configurationsArray, root) {
 
 /**
  * Renders a tree item to display the device's interface information.
- * @param {!Array<!UsbInterfaceInfo>} interfacesArray
- * @param {!CrTreeItemElement} root
  */
-function renderInterfacesTreeItem(interfacesArray, root) {
+function renderInterfacesTreeItem(
+    interfacesArray: UsbInterfaceInfo[], root: CrTreeItemElement) {
   for (const currentInterface of interfacesArray) {
     const interfaceItem =
         customTreeItem(`Interface ${currentInterface.interfaceNumber}`);
@@ -321,10 +293,9 @@ function renderInterfacesTreeItem(interfacesArray, root) {
 /**
  * Renders a tree item to display the device's alternate interfaces
  * information.
- * @param {!Array<!UsbAlternateInterfaceInfo>} alternatesArray
- * @param {!CrTreeItemElement} root
  */
-function renderAlternatesTreeItem(alternatesArray, root) {
+function renderAlternatesTreeItem(
+    alternatesArray: UsbAlternateInterfaceInfo[], root: CrTreeItemElement) {
   for (const alternate of alternatesArray) {
     const alternateItem =
         customTreeItem(`Alternate ${alternate.alternateSetting}`);
@@ -352,10 +323,9 @@ function renderAlternatesTreeItem(alternatesArray, root) {
 
 /**
  * Renders a tree item to display the device's endpoints information.
- * @param {!Array<!UsbEndpointInfo>} endpointsArray
- * @param {!CrTreeItemElement} root
  */
-function renderEndpointsTreeItem(endpointsArray, root) {
+function renderEndpointsTreeItem(
+    endpointsArray: UsbEndpointInfo[], root: CrTreeItemElement) {
   for (const endpoint of endpointsArray) {
     let itemLabel = 'Endpoint ';
 
@@ -398,17 +368,16 @@ function renderEndpointsTreeItem(endpointsArray, root) {
 
 /**
  * Initialize a descriptor panel.
- * @param {!HTMLElement} tabPanel
- * @param {string} panelType
- * @param {!UsbDeviceRemote} usbDevice
- * @param {string} guid
- * @return {!DescriptorPanel}
  */
-function initialInspectorPanel(tabPanel, panelType, usbDevice, guid) {
-  const button = queryRequiredElement(`.${panelType}-button`, tabPanel);
-  const displayElement = queryRequiredElement(`.${panelType}-panel`, tabPanel);
-  const descriptorPanel = new DescriptorPanel(
-      usbDevice, /** @type {!HTMLElement} */ (displayElement));
+function initialInspectorPanel(
+    tabPanel: HTMLElement, panelType: string, usbDevice: UsbDeviceRemote,
+    guid: string): DescriptorPanel {
+  const button = tabPanel.querySelector<HTMLElement>(`.${panelType}-button`);
+  assert(button);
+  const displayElement =
+      tabPanel.querySelector<HTMLElement>(`.${panelType}-panel`);
+  assert(displayElement);
+  const descriptorPanel = new DescriptorPanel(usbDevice, displayElement);
   switch (panelType) {
     case 'string-descriptor':
       descriptorPanel.initialStringDescriptorPanel(guid);
@@ -445,35 +414,23 @@ function initialInspectorPanel(tabPanel, panelType, usbDevice, guid) {
 
 /**
  * Parses utf16 coded string.
- * @param {!String16} arr
- * @return {string}
  */
-function decodeString16(arr) {
+function decodeString16(arr: String16): string {
   return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 /**
  * Parses the decimal number to hex format.
- * @param {number} num
- * @return {string}
  */
-function toHex(num) {
+function toHex(num: number): string {
   return `0x${num.toString(16).padStart(4, '0').toUpperCase()}`;
 }
 
 /**
  * Renders a customized TreeItem with the given content and class name.
- * @param {string} itemLabel
- * @return {!CrTreeItemElement}
- * @private
  */
-function customTreeItem(itemLabel) {
-  const item =
-      /** @type {CrTreeItemElement} */ (document.createElement('cr-tree-item'));
+function customTreeItem(itemLabel: string): CrTreeItemElement {
+  const item = document.createElement('cr-tree-item');
   item.label = itemLabel;
   return item;
 }
-
-window.deviceListCompleteFn = window.deviceListCompleteFn || function() {};
-
-window.deviceTabInitializedFn = window.deviceTabInitializedFn || function() {};
