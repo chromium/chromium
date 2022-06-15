@@ -343,9 +343,15 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
 
         # Builtins for Lacros (and potentially Linux, but not used there atm).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.builtins.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a',
 
         # crtstart/crtend for Linux and Lacros.
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtbegin.o',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtend.o',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtbegin.o',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtend.o',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/clang_rt.crtend.o',
 
@@ -361,9 +367,11 @@ def main():
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.msan_cxx.a.syms',
 
         # Profile runtime (used by profiler and code coverage).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.profile.a',
+        'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.profile.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.profile.a',
-        'lib/clang/$V/lib/linux/libclang_rt.profile-i686-android.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.profile.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-i686-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-arm-android.a',
 
@@ -516,10 +524,12 @@ def main():
 
     # Make `--target=*-cros-linux-gnu` work with
     # LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON.
-    os.symlink(
-        'x86_64-unknown-linux-gnu',
-        os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib',
-                     'x86_64-cros-linux-gnu'))
+    for arch, abi in [('armv7', 'gnueabihf'), ('aarch64', 'gnu'),
+                      ('x86_64', 'gnu')]:
+      old = '%s-unknown-linux-%s' % (arch, abi)
+      new = old.replace('unknown', 'cros').replace('armv7', 'armv7a')
+      os.symlink(
+          old, os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib', new))
 
   # Copy libc++ headers.
   if sys.platform == 'darwin':

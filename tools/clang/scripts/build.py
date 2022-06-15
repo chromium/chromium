@@ -414,8 +414,8 @@ def MaybeDownloadHostGcc(args):
   if args.gcc_toolchain:
     return
   gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-bionic')
-  if os.path.isdir(gcc_dir):  # TODO(thakis): Remove this branch after a few weeks.
-    RmTree(gcc_dir)
+  if os.path.isdir(gcc_dir):
+    RmTree(gcc_dir)  # TODO(thakis): Remove this branch after a few weeks.
   if not os.path.exists(gcc_dir):
     DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-bionic.tgz', gcc_dir)
   args.gcc_toolchain = gcc_dir
@@ -771,6 +771,22 @@ def main():
     sysroot_i386 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
     DownloadAndUnpack(U, sysroot_i386)
 
+    # arm
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#8
+    toolchain_hash = '0b9a3c54d2d5f6b1a428369aaa8d7ba7b227f701'
+    toolchain_name = 'debian_bullseye_arm_sysroot'
+    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
+    sysroot_arm = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
+    DownloadAndUnpack(U, sysroot_arm)
+
+    # arm64
+    # hash from https://chromium-review.googlesource.com/c/chromium/src/+/3684954/1/build/linux/sysroot_scripts/sysroots.json#12
+    toolchain_hash = '0e28d9832614729bb5b731161ff96cb4d516f345'
+    toolchain_name = 'debian_bullseye_arm64_sysroot'
+    U = toolchain_bucket + toolchain_hash + '/' + toolchain_name + '.tar.xz'
+    sysroot_arm64 = os.path.join(LLVM_BUILD_TOOLS_DIR, toolchain_name)
+    DownloadAndUnpack(U, sysroot_arm64)
+
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
 
@@ -1043,6 +1059,23 @@ def main():
          compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
              'CMAKE_SYSROOT=%s' % sysroot,
          ]))
+    runtimes_triples_args.append(
+        # Using "armv7a-unknown-linux-gnueabhihf" confuses the compiler-rt
+        # builtins build, since compiler-rt/cmake/builtin-config-ix.cmake
+        # doesn't include "armv7a" in its `ARM32` list.
+        # TODO(thakis): It seems to work for everything else though, see try
+        # results on
+        # https://chromium-review.googlesource.com/c/chromium/src/+/3702739/4
+        # Maybe it should work for builtins too?
+        ('armv7-unknown-linux-gnueabihf',
+         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+             'CMAKE_SYSROOT=%s' % sysroot_arm,
+         ]))
+    runtimes_triples_args.append(
+        ('aarch64-unknown-linux-gnu',
+         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+             'CMAKE_SYSROOT=%s' % sysroot_arm64,
+         ]))
   elif sys.platform == 'win32':
     runtimes_triples_args.append(
         ('i386-pc-windows-msvc',
@@ -1199,9 +1232,11 @@ def main():
       env = os.environ.copy()
       # See SANITIZER_OVERRIDE_INTERCEPTORS above: We disable crypt_r()
       # interception, so its tests can't pass.
-      env['LIT_FILTER_OUT'] = ('^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux ' +
-                               ':: Linux/crypt_r.cpp$')
-    RunCommand(['ninja', '-C', LLVM_BUILD_DIR] + test_targets, env=env, msvc_arch='x64')
+      env['LIT_FILTER_OUT'] = ('^SanitizerCommon-(a|l|m|ub|t)san-x86_64-Linux' +
+                               ' :: Linux/crypt_r.cpp$')
+    RunCommand(['ninja', '-C', LLVM_BUILD_DIR] + test_targets,
+               env=env,
+               msvc_arch='x64')
 
   WriteStampFile(PACKAGE_VERSION, STAMP_FILE)
   WriteStampFile(PACKAGE_VERSION, FORCE_HEAD_REVISION_FILE)
