@@ -6859,7 +6859,6 @@ crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Skip 
 crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Skip ]
 
 # Sheriff 2022-03-21: More flaky tests.
-crbug.com/1277696 [ Mac ] fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
 crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
 
 # Tests that need updates due to rounding math in layout
@@ -7076,3 +7075,6 @@ crbug.com/1229084 [ Win ] external/wpt/storage-access-api/requestStorageAccess.s
 
 # Sheriff 2022-06-09
 crbug.com/1335002 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Skip ]
+
+# Flaky on multiple platforms
+crbug.com/1277696 fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
