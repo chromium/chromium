@@ -241,3 +241,71 @@ SYNC_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
   assertEquals(5, selection.start);
   assertEquals(9, selection.end);
 });
+
+SYNC_TEST_F('DictationEditingUtilTest', 'NavNextSent', function() {
+  let value;
+  let caretIndex;
+  const f = () => EditingUtil.navNextSent(value, caretIndex);
+
+  // Simple.
+  value = 'Hello world. Goodnight world.';
+  caretIndex = 0;
+  assertEquals(12, f());
+
+  // If the end of the sentence can't be found, then moving to the next sentence
+  // should take us to the end of the value.
+  value = 'Hello world goodnight world';
+  caretIndex = 0;
+  assertEquals(value.length, f());
+
+  // Various punctuation.
+  value = 'This?\nIs! A. Test;';
+  caretIndex = 0;
+  assertEquals(5, f());
+  caretIndex = 5;
+  assertEquals(9, f());
+  caretIndex = 9;
+  assertEquals(12, f());
+  caretIndex = 12;
+  assertEquals(value.length, f());
+
+
+  // Edge case: empty value.
+  value = '';
+  caretIndex = 0;
+  assertEquals(0, f());
+});
+
+SYNC_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
+  let value;
+  let caretIndex;
+  const f = () => EditingUtil.navPrevSent(value, caretIndex);
+
+  // Simple.
+  value = 'Hello world. Goodnight world.';
+  caretIndex = value.length;
+  assertEquals(12, f());
+
+  // If the end of the sentence can't be found, then moving to the previous
+  // sentence should take us to the beginning of the value.
+  value = 'Hello world goodnight world';
+  caretIndex = value.length;
+  assertEquals(0, f());
+
+  // Various punctuation and whitespace.
+  value = 'This?\nIs! A. Test;';
+  caretIndex = value.length;
+  assertEquals(12, f());
+  caretIndex = 12;
+  assertEquals(9, f());
+
+  caretIndex = 9;
+  assertEquals(5, f());
+  caretIndex = 5;
+  assertEquals(0, f());
+
+  // Edge case: empty value.
+  value = '';
+  caretIndex = 0;
+  assertEquals(0, f());
+});

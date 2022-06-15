@@ -4,6 +4,7 @@
 
 import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete_prev_sent_macro.js';
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
+import {NavNextSentMacro, NavPrevSentMacro} from '/accessibility_common/dictation/macros/nav_sent_macro.js';
 import {DeletePrevWordMacro, NavNextWordMacro, NavPrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
 import {SmartDeletePhraseMacro} from '/accessibility_common/dictation/macros/smart_delete_phrase_macro.js';
 import {SmartInsertBeforeMacro} from '/accessibility_common/dictation/macros/smart_insert_before_macro.js';
@@ -38,10 +39,18 @@ export class HiddenMacroManager {
         new DeletePrevSentMacro(this.inputController_).runMacro();
         break;
       case MacroName.NAV_NEXT_WORD:
-        new NavNextWordMacro(/*isRtlLocale=*/ false).runMacro();
+        new NavNextWordMacro(/*isRTLLocale=*/ false).runMacro();
         break;
       case MacroName.NAV_PREV_WORD:
-        new NavPrevWordMacro(/*isRtlLocale=*/ false).runMacro();
+        new NavPrevWordMacro(/*isRTLLocale=*/ false).runMacro();
+        break;
+      case MacroName.NAV_NEXT_SENT:
+        new NavNextSentMacro(this.inputController_, /*isRTLLocale=*/ false)
+            .runMacro();
+        break;
+      case MacroName.NAV_PREV_SENT:
+        new NavPrevSentMacro(this.inputController_, /*isRTLLocale=*/ false)
+            .runMacro();
         break;
       default:
         throw new Error(`Cannot run macro: ${name} for testing`);
@@ -120,4 +129,6 @@ HiddenMacroManager.HIDDEN_MACROS_ = [
   MacroName.SMART_REPLACE_PHRASE,
   MacroName.SMART_INSERT_BEFORE,
   MacroName.SMART_SELECT_BTWN_INCL,
+  MacroName.NAV_NEXT_SENT,
+  MacroName.NAV_PREV_SENT,
 ];

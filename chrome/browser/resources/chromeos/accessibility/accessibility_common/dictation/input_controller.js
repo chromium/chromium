@@ -178,41 +178,9 @@ export class InputController {
 
     const value = editableNode.value;
     const caretIndex = editableNode.textSelStart;
-    const prevSentenceStart =
-        this.findPrevSentenceStartIndex_(value, caretIndex);
+    const prevSentenceStart = EditingUtil.navPrevSent(value, caretIndex);
     const length = caretIndex - prevSentenceStart;
     this.deleteSurroundingText_(length, -length);
-  }
-
-  /**
-   * Returns the start index of the sentence to the left of the caret. Indices
-   * are relative to `text`. Assumes that sentences are separated by punctuation
-   * specified in `InputController.END_OF_SENTENCE_REGEX_`.
-   * @param {string} text
-   * @param {number} caretIndex The index of the text caret.
-   */
-  findPrevSentenceStartIndex_(text, caretIndex) {
-    let encounteredText = false;
-    if (caretIndex === text.length) {
-      --caretIndex;
-    }
-
-    while (caretIndex >= 0) {
-      const valueAtCaret = text[caretIndex];
-      if (encounteredText &&
-          InputController.END_OF_SENTENCE_REGEX_.test(valueAtCaret)) {
-        // Adjust if there is another sentence after this one.
-        return text[caretIndex + 1] === ' ' ? caretIndex + 2 : caretIndex;
-      }
-
-      if (!InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(valueAtCaret) &&
-          !InputController.PUNCTUATION_REGEX_.test(valueAtCaret)) {
-        encounteredText = true;
-      }
-      --caretIndex;
-    }
-
-    return 0;
   }
 
   /**
@@ -307,6 +275,34 @@ export class InputController {
 
     editableNode.setSelection(selection.start, selection.end);
   }
+
+  /** Moves the text caret to the next sentence. */
+  navNextSent() {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode || !editableNode.value ||
+        editableNode.textSelStart !== editableNode.textSelEnd) {
+      return;
+    }
+
+    const value = editableNode.value;
+    const caretIndex = editableNode.textSelStart;
+    const newCaretIndex = EditingUtil.navNextSent(value, caretIndex);
+    editableNode.setSelection(newCaretIndex, newCaretIndex);
+  }
+
+  /** Moves the text caret to the previous sentence. */
+  navPrevSent() {
+    const editableNode = this.focusHandler_.getEditableNode();
+    if (!editableNode || !editableNode.value ||
+        editableNode.textSelStart !== editableNode.textSelEnd) {
+      return;
+    }
+
+    const value = editableNode.value;
+    const caretIndex = editableNode.textSelStart;
+    const newCaretIndex = EditingUtil.navPrevSent(value, caretIndex);
+    editableNode.setSelection(newCaretIndex, newCaretIndex);
+  }
 }
 
 /**
@@ -327,16 +323,3 @@ InputController.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
  * @const
  */
 InputController.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;
-
-/**
- * @private {!RegExp}
- * @const
- */
-InputController.PUNCTUATION_REGEX_ =
-    /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g;
-
-/**
- * @private {!RegExp}
- * @const
- */
-InputController.END_OF_SENTENCE_REGEX_ = /[;!.?]/g;

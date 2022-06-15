@@ -103,6 +103,62 @@ export class EditingUtil {
   }
 
   /**
+   * Returns the start index of the sentence to the right of the caret.
+   * Indices are relative to `value`. Assumes that sentences are separated by
+   * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no next
+   * sentence can be found, returns `value.length`.
+   * @param {string} value
+   * @param {number} caretIndex
+   * @return {number}
+   */
+  static navNextSent(value, caretIndex) {
+    const rightOfCaret = value.substring(caretIndex);
+    const index = rightOfCaret.search(EditingUtil.END_OF_SENTENCE_REGEX_);
+    if (index === -1) {
+      return value.length;
+    }
+
+    // `index` should be relative to `value`;
+    return index + caretIndex + 1;
+  }
+
+  /**
+   * Returns the start index of the sentence to the left of the caret. Indices
+   * are relative to `value`. Assumes that sentences are separated by
+   * punctuation specified in `EditingUtil.END_OF_SENTENCE_REGEX_`. If no
+   * previous sentence can be found, returns 0.
+   * @param {string} value
+   * @param {number} caretIndex
+   * @return {number|null}
+   */
+  static navPrevSent(value, caretIndex) {
+    let encounteredText = false;
+    if (caretIndex === value.length) {
+      --caretIndex;
+    }
+
+    while (caretIndex >= 0) {
+      const valueAtCaret = value[caretIndex];
+      if (encounteredText &&
+          EditingUtil.END_OF_SENTENCE_REGEX_.test(valueAtCaret)) {
+        // Adjust if there is whitespace immediately to the right of the caret.
+        return EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(
+                   value[caretIndex + 1]) ?
+            caretIndex + 1 :
+            caretIndex;
+      }
+
+      if (!EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_.test(valueAtCaret) &&
+          !EditingUtil.PUNCTUATION_REGEX_.test(valueAtCaret)) {
+        encounteredText = true;
+      }
+      --caretIndex;
+    }
+
+    return 0;
+  }
+
+  /**
    * Returns a RegExp that matches on the right-most occurrence of a phrase.
    * The returned RegExp is case insensitive and requires that `phrase` is
    * separated by word boundaries.
@@ -134,3 +190,22 @@ export class EditingUtil {
     return new RegExp(`(\\b${phrase}\\b )(?!.*\\b\\1\\b)`, 'i');
   }
 }
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.END_OF_SENTENCE_REGEX_ = /[;!.?]/;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+EditingUtil.PUNCTUATION_REGEX_ =
+    /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g;

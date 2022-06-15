@@ -21222,6 +21222,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="22" label="SMART_REPLACE_PHRASE"/>
   <int value="23" label="SMART_INSERT_BEFORE"/>
   <int value="24" label="SMART_SELECT_BTWN_INCL"/>
+  <int value="25" label="NAV_NEXT_SENT"/>
+  <int value="26" label="NAV_PREV_SENT"/>
 </enum>
 
 <enum name="CrosDictationToggleDictationMethod">
