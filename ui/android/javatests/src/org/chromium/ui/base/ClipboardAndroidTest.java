@@ -49,7 +49,7 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        ClipboardAndroidTestSupport.cleanup();
+        Clipboard.cleanupForTesting();
         super.tearDownTest();
     }
 
