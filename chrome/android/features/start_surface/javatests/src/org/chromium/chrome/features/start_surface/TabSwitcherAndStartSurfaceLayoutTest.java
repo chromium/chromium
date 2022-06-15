@@ -48,13 +48,11 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -65,6 +63,7 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.contrib.AccessibilityChecks;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.UiDevice;
 
@@ -104,6 +103,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -111,6 +111,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTestingRobot;
 import org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageService;
@@ -1106,26 +1107,33 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     }
 
     @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
+    @LargeTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
     @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_default() {
-        prepareTabs(2, 0, mUrl);
+        // clang-format on
+        prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
-        onView(tabSwitcherViewMatcher())
-                .check(ThumbnailAspectRatioAssertion.havingAspectRatio(1.0));
+        onViewWaiting(tabSwitcherViewMatcher())
+                .check(ThumbnailAspectRatioAssertion.havingAspectRatio(
+                        TabUtils.getTabThumbnailAspectRatio(mActivityTestRule.getActivity())));
     }
 
     @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
+    @LargeTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75/enable_launch_polish/true"})
     @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_point75() {
-        prepareTabs(2, 0, mUrl);
+        // clang-format on
+        prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
-        onView(tabSwitcherViewMatcher())
+        onViewWaiting(tabSwitcherViewMatcher())
                 .check(ThumbnailAspectRatioAssertion.havingAspectRatio(0.75));
         leaveGTSAndVerifyThumbnailsAreReleased();
 
@@ -1133,19 +1141,25 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mActivityTestRule.loadUrlInTab(
                 NTP_URL, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
         enterTabSwitcher(mActivityTestRule.getActivity());
-        onView(tabSwitcherViewMatcher())
+        onViewWaiting(tabSwitcherViewMatcher())
                 .check(ThumbnailAspectRatioAssertion.havingAspectRatio(0.75));
     }
 
     @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true"})
+    @LargeTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+    @CommandLineFlags.Add({BASE_PARAMS
+            + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true/enable_launch_polish/true"})
     @DisabledTest(message = "Flaky - https://crbug.com/1124041")
     public void testThumbnailAspectRatio_fromTwoToPoint75() throws Exception {
-        prepareTabs(2, 0, mUrl);
+        // clang-format on
+        prepareTabs(2, 0, "about:blank");
+        // Select the first tab to ensure the second tab thumbnail is captured.
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
         enterTabSwitcher(mActivityTestRule.getActivity());
-        onView(tabSwitcherViewMatcher())
+        onViewWaiting(tabSwitcherViewMatcher())
                 .check(ThumbnailAspectRatioAssertion.havingAspectRatio(2.0));
         TabModel currentTabModel =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
@@ -1158,7 +1172,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         verifyAllThumbnailHasAspectRatio(0.75);
 
         enterTabSwitcher(mActivityTestRule.getActivity());
-        onView(tabSwitcherViewMatcher())
+        onViewWaiting(tabSwitcherViewMatcher())
                 .check(ThumbnailAspectRatioAssertion.havingAspectRatio(2.0));
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
     }
@@ -1591,22 +1605,25 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             RecyclerView recyclerView = (RecyclerView) view;
 
             RecyclerView.Adapter adapter = recyclerView.getAdapter();
+            boolean hasAtLeastOneValidViewHolder = false;
             for (int i = 0; i < adapter.getItemCount(); i++) {
                 RecyclerView.ViewHolder viewHolder =
                         recyclerView.findViewHolderForAdapterPosition(i);
                 if (viewHolder != null) {
+                    hasAtLeastOneValidViewHolder = true;
                     ViewLookupCachingFrameLayout tabView =
                             (ViewLookupCachingFrameLayout) viewHolder.itemView;
-                    ImageView thumbnail = (ImageView) tabView.fastFindViewById(R.id.tab_thumbnail);
-                    BitmapDrawable drawable = (BitmapDrawable) thumbnail.getDrawable();
-                    Bitmap bitmap = drawable.getBitmap();
-                    double bitmapRatio = bitmap.getWidth() * 1.0 / bitmap.getHeight();
-                    assertTrue(
-                            "Actual ratio: " + bitmapRatio + "; Expected ratio: " + mExpectedRatio,
-                            Math.abs(bitmapRatio - mExpectedRatio)
+                    TabGridThumbnailView thumbnail =
+                            (TabGridThumbnailView) tabView.fastFindViewById(R.id.tab_thumbnail);
+                    double thumbnailViewRatio = thumbnail.getWidth() * 1.0 / thumbnail.getHeight();
+
+                    assertTrue("Actual ratio: " + thumbnailViewRatio
+                                    + "; Expected ratio: " + mExpectedRatio,
+                            Math.abs(thumbnailViewRatio - mExpectedRatio)
                                     <= TabContentManager.ASPECT_RATIO_PRECISION);
                 }
             }
+            assertTrue("should have at least one valid ViewHolder", hasAtLeastOneValidViewHolder);
         }
     }
 
