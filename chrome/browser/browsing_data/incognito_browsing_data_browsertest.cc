@@ -11,7 +11,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -29,7 +28,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -518,9 +516,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   // quota system. GetMediaLicenseCount() is expected to always return 0 using
   // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes.
-  int count =
-      base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 1;
+  // nodes. `count` should be 1 here.
+  int count = 0;
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
   EXPECT_EQ(count, GetMediaLicenseCount());

@@ -41,7 +41,6 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
@@ -1077,9 +1076,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   // quota system. GetMediaLicenseCount() is expected to always return 0 using
   // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes.
-  int count =
-      base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 1;
+  // nodes. `count` should be 1 here.
+  int count = 0;
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
   EXPECT_EQ(count, GetMediaLicenseCount());
@@ -1128,9 +1126,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // quota system. GetMediaLicenseCount() is expected to always return 0 using
   // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes.
-  int count =
-      base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 1;
+  // nodes. `count` should be 1 here.
+  int count = 0;
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(1, GetSiteDataCount());
   EXPECT_EQ(count, GetMediaLicenseCount());
@@ -1149,9 +1146,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // quota system. GetMediaLicenseCount() is expected to always return 0 using
   // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes.
-  int count =
-      base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 1;
+  // nodes. `count` should be 1 here.
+  int count = 0;
 
   // As the PRE_ test should run first, there should be one media license
   // still stored. The time of it's creation should be sometime before
@@ -1180,7 +1176,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // http://crbug.com/909829.
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
 
-  count = base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 2;
+  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
+  // nodes. `count` should be 2 here.
+  count = 0;
   // Create a media license for this domain.
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(count, GetMediaLicenseCount());
@@ -1192,7 +1190,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // media license, and leave the one created by the PRE_ test.
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
                 TimeEnum::kStart);
-  count = base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 1;
+  // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
+  // nodes. `count` should be 1 here.
+  count = 0;
   EXPECT_EQ(1, GetSiteDataCount());
   EXPECT_EQ(count, GetMediaLicenseCount());
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
@@ -1221,9 +1221,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // quota system. GetMediaLicenseCount() is expected to always return 0 using
   // the new backend.
   // TODO(crbug.com/1307796): Fix GetCookiesTreeModelCount() to include quota
-  // nodes.
-  int count =
-      base::FeatureList::IsEnabled(features::kMediaLicenseBackend) ? 0 : 1;
+  // nodes. `count` should be 1 here.
+  int count = 0;
   SetDataForType(kMediaLicenseType);
   EXPECT_EQ(count, GetMediaLicenseCount());
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
@@ -1291,12 +1290,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   for (const std::string& type : kStorageTypes) {
-    // TODO(crbug.com/1231162): This test was never run against the old media
-    // license backend (it fails), but we can run it against the new backend.
-    if (type == "MediaLicense" &&
-        !base::FeatureList::IsEnabled(features::kMediaLicenseBackend)) {
-      continue;
-    }
     SetDataForType(type);
     EXPECT_TRUE(HasDataForType(type));
   }
