@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_view_host.h"
@@ -734,34 +735,33 @@ class MultiScreenFullscreenControllerInteractiveTest
   }
 
   // Wait for a JS content fullscreen change with the given script and options.
-  void RequestContentFullscreenFromScript(
+  // Returns the script result.
+  content::EvalJsResult RequestContentFullscreenFromScript(
       const std::string& eval_js_script,
       int eval_js_options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-      bool expect_content_fullscreen = true,
       bool expect_window_fullscreen = true) {
     FullscreenNotificationObserver fullscreen_observer(browser());
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(expect_content_fullscreen,
-              EvalJs(tab, eval_js_script, eval_js_options));
+    content::EvalJsResult result = EvalJs(tab, eval_js_script, eval_js_options);
     fullscreen_observer.Wait();
     EXPECT_EQ(expect_window_fullscreen, browser()->window()->IsFullscreen());
+    return result;
   }
 
   // Execute JS to request content fullscreen on the current screen.
   void RequestContentFullscreen() {
-    const std::string request_fullscreen_script = R"(
+    const std::string script = R"(
       (async () => {
         await document.body.requestFullscreen();
         return !!document.fullscreenElement;
       })();
     )";
-    RequestContentFullscreenFromScript(request_fullscreen_script);
+    EXPECT_EQ(true, RequestContentFullscreenFromScript(script));
   }
 
   // Execute JS to request content fullscreen on a screen with the given index.
   void RequestContentFullscreenOnScreen(int screen_index) {
-    const std::string request_fullscreen_script =
-        base::StringPrintf(R"(
+    const std::string script = base::StringPrintf(R"(
       (async () => {
         if (!window.screenDetails)
           window.screenDetails = await window.getScreenDetails();
@@ -770,22 +770,22 @@ class MultiScreenFullscreenControllerInteractiveTest
         return !!document.fullscreenElement;
       })();
     )",
-                           screen_index);
-    RequestContentFullscreenFromScript(request_fullscreen_script);
+                                                  screen_index);
+    EXPECT_EQ(true, RequestContentFullscreenFromScript(script));
   }
 
   // Execute JS to exit content fullscreen.
   void ExitContentFullscreen(bool expect_window_fullscreen = false) {
-    const std::string exit_fullscreen_script = R"(
+    const std::string script = R"(
       (async () => {
         await document.exitFullscreen();
         return !!document.fullscreenElement;
       })();
     )";
     // Exiting fullscreen does not require a user gesture; do not supply one.
-    RequestContentFullscreenFromScript(
-        exit_fullscreen_script, content::EXECUTE_SCRIPT_NO_USER_GESTURE,
-        /*expect_content_fullscreen=*/false, expect_window_fullscreen);
+    EXPECT_EQ(false, RequestContentFullscreenFromScript(
+                         script, content::EXECUTE_SCRIPT_NO_USER_GESTURE,
+                         expect_window_fullscreen));
   }
 
   // Awaits expiry of the navigator.userActivation signal on the active tab.
@@ -1086,14 +1086,14 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Accept();
-  const std::string request_fullscreen_from_prompt_script = R"(
+  const std::string script = R"(
     (async () => {
       await document.body.requestFullscreen();
       return !!document.fullscreenElement;
     })();
   )";
-  RequestContentFullscreenFromScript(request_fullscreen_from_prompt_script,
-                                     content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_EQ(true, RequestContentFullscreenFromScript(
+                      script, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // Tests FullscreenController support for fullscreen companion windows.
@@ -1116,40 +1116,81 @@ class FullscreenCompanionWindowFullscreenControllerInteractiveTest
 // where the window server's async handling of the fullscreen window state may
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
-// TODO(crbug.com/1310416): Disabled on Chrome OS for flakiness.
-//
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_FullscreenCompanionWindow DISABLED_FullscreenCompanionWindow
+#else
+#define MAYBE_FullscreenCompanionWindow FullscreenCompanionWindow
+#endif
 // Test requesting fullscreen on a specific screen and opening a cross-screen
 // popup window from one gesture. Check the expected window activation pattern.
+// https://w3c.github.io/window-placement/#usage-overview-initiate-multi-screen-experiences
 IN_PROC_BROWSER_TEST_P(
     FullscreenCompanionWindowFullscreenControllerInteractiveTest,
-    DISABLED_FullscreenCompanionWindow) {
-  SetUpTestScreenAndWindowPlacementTab();
+    MAYBE_FullscreenCompanionWindow) {
+  content::WebContents* tab = SetUpTestScreenAndWindowPlacementTab();
 
-  // Execute JS to request fullscreen and open a popup on separate screens.
-  const std::string fullscreen_and_popup_script = R"(
-    (async () => {
-      if (!window.screenDetails)
-          window.screenDetails = await window.getScreenDetails();
-      const options = { screen: window.screenDetails.screens[0] };
-      await document.body.requestFullscreen(options);
-      if (navigator.userActivation.isActive)
-        return false;
-      const s = window.screenDetails.screens[1];
-      const f = `left=${s.availLeft},top=${s.availTop},width=300,height=200`;
-      window.open('.', '', f);
-      return !!document.fullscreenElement;
-    })();
-  )";
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1u, browser_list->size());
-  RequestContentFullscreenFromScript(fullscreen_and_popup_script);
+  blocked_content::PopupBlockerTabHelper* popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(tab);
+  EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
+
+  // Execute JS to request fullscreen and open a popup on separate screens.
+  const std::string script = R"(
+    (async () => {
+      // Note: WindowPlacementPermissionContext will send an activation signal.
+      window.screenDetails = await window.getScreenDetails();
+
+      const fullscreen_change_promise = new Promise(resolve => {
+          function waitAndRemove(e) {
+              document.removeEventListener("fullscreenchange", waitAndRemove);
+              document.removeEventListener("fullscreenerror", waitAndRemove);
+              resolve(document.fullscreenElement);
+          }
+          document.addEventListener("fullscreenchange", waitAndRemove);
+          document.addEventListener("fullscreenerror", waitAndRemove);
+      });
+
+      // Request fullscreen and ensure that transient activation is consumed.
+      const options = { screen: window.screenDetails.screens[0] };
+      const fullscreen_promise = document.body.requestFullscreen(options);
+      if (navigator.userActivation.isActive) {
+        console.error("Transient activation unexpectedly not consumed");
+        return false;
+      }
+
+      // Attempt to open a fullscreen companion window.
+      const s = window.screenDetails.screens[1];
+      const f = `left=${s.availLeft},top=${s.availTop},width=300,height=200`;
+      const w = window.open('.', '', f);
+
+      // Now await the fullscreen promise and change (or error) event.
+      await fullscreen_promise;
+      if (!await fullscreen_change_promise) {
+        console.error("Unexpected fullscreen change or error");
+        return false;
+      }
+
+      // Return true iff the opener is fullscreen and the popup is open.
+      return !!document.fullscreenElement && !!w && !w.closed;
+    })();
+  )";
+  EXPECT_EQ(GetParam(), RequestContentFullscreenFromScript(script));
   EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
-  // The popup opens iff kWindowPlacementFullscreenCompanionWindow is enabled.
-  EXPECT_EQ(GetParam() ? 2u : 1u, browser_list->size());
-  // Popup window activation is delayed until its opener exits fullscreen.
-  EXPECT_EQ(browser(), browser_list->GetLastActive());
-  ToggleTabFullscreen(/*enter_fullscreen=*/false);
-  EXPECT_EQ(GetParam(), browser() != browser_list->GetLastActive());
+
+  if (GetParam()) {
+    // The popup should open with FullscreenCompanionWindow enabled.
+    EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
+    EXPECT_EQ(2u, browser_list->size());
+    // Popup window activation is delayed until its opener exits fullscreen.
+    EXPECT_EQ(browser(), browser_list->GetLastActive());
+    ToggleTabFullscreen(/*enter_fullscreen=*/false);
+    EXPECT_NE(browser(), browser_list->GetLastActive());
+  } else {
+    // The popup should be blocked with FullscreenCompanionWindow disabled.
+    EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
+    EXPECT_EQ(1u, browser_list->size());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
