@@ -187,7 +187,7 @@ bool CompareOSVersionsInternal(const OSVERSIONINFOEX& os,
   // `ERROR_OLD_WIN_VERSION`. We do not handle that case here.
   // https://msdn.microsoft.com/ms725492.
   OSVERSIONINFOEX os_in = os;
-  return !!::VerifyVersionInfo(&os_in, type_mask, cond_mask);
+  return ::VerifyVersionInfo(&os_in, type_mask, cond_mask);
 }
 
 }  // namespace
@@ -797,15 +797,14 @@ absl::optional<OSVERSIONINFOEX> GetOSVersion() {
 bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
   DCHECK(oper);
 
-  const DWORD os_sp_type_mask = VER_MAJORVERSION | VER_MINORVERSION |
+  constexpr DWORD kOSTypeMask = VER_MAJORVERSION | VER_MINORVERSION |
                                 VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR;
-  const DWORD build_number_type_mask = VER_BUILDNUMBER;
+  constexpr DWORD kBuildTypeMask = VER_BUILDNUMBER;
 
   // If the OS and the service pack match, return the build number comparison.
-  return CompareOSVersionsInternal(os_version, os_sp_type_mask, VER_EQUAL)
-             ? CompareOSVersionsInternal(os_version, build_number_type_mask,
-                                         oper)
-             : CompareOSVersionsInternal(os_version, os_sp_type_mask, oper);
+  return CompareOSVersionsInternal(os_version, kOSTypeMask, VER_EQUAL)
+             ? CompareOSVersionsInternal(os_version, kBuildTypeMask, oper)
+             : CompareOSVersionsInternal(os_version, kOSTypeMask, oper);
 }
 
 }  // namespace updater
