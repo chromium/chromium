@@ -571,6 +571,7 @@ try_.builder(
     # OS version that's the oldest used on any bot.
     os = os.LINUX_BIONIC,
     notifies = ["chrome-rust-toolchain"],
+    execution_timeout = 5 * time.hour,
 )
 
 try_.builder(
