@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1321616">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="resources/calendar-picker-common.js"></script>
+
+<input type=month id=picker>
+
+<script>
+const forceRunAnimation = () => {
+  internals.pagePopupWindow.AnimationManager.shared._animationFrameCallback(0);
+}
+
+promise_test(async () => {
+  await openPicker(picker);
+
+  const scrollView = internals.pagePopupWindow.global.picker.yearListView_.scrollView;
+  const scrollViewOffset = cumulativeOffset(scrollView.element);
+
+  eventSender.clearTouchPoints();
+  eventSender.addTouchPoint(scrollViewOffset[0] + 1, scrollViewOffset[1] + 1);
+  eventSender.touchStart();
+  eventSender.updateTouchPoint(0, scrollViewOffset[0] + 1, scrollViewOffset[1] + 50);
+  eventSender.touchMove();
+  eventSender.releaseTouchPoint(0);
+  eventSender.touchEnd();
+  forceRunAnimation();
+
+  const firstYearCell = internals.pagePopupWindow.global.picker.yearListView_.firstVisibleRow();
+  assert_not_equals(firstYearCell, null);
+}, `Verifies that the month picker should show year list`);
+
+</script>
