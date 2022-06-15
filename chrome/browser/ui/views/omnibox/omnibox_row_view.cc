@@ -155,10 +155,10 @@ class OmniboxRowView::HeaderView : public views::View {
     }
 
     SkColor text_color = GetOmniboxColor(
-        GetThemeProvider(), OmniboxPart::RESULTS_TEXT_DIMMED, part_state);
+        GetColorProvider(), OmniboxPart::RESULTS_TEXT_DIMMED, part_state);
     header_label_->SetEnabledColor(text_color);
 
-    SkColor icon_color = GetOmniboxColor(GetThemeProvider(),
+    SkColor icon_color = GetOmniboxColor(GetColorProvider(),
                                          OmniboxPart::RESULTS_ICON, part_state);
     views::InkDrop::Get(header_toggle_button_)->SetBaseColor(icon_color);
 

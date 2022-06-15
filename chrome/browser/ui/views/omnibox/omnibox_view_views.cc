@@ -592,7 +592,7 @@ void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
   const SkColor dimmed_text_color = GetOmniboxColor(
-      GetThemeProvider(), OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+      GetColorProvider(), OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
   set_placeholder_text_color(dimmed_text_color);
 
   EmphasizeURLComponents();
@@ -990,7 +990,7 @@ int OmniboxViewViews::GetOmniboxTextLength() const {
 
 void OmniboxViewViews::SetEmphasis(bool emphasize, const gfx::Range& range) {
   SkColor color = GetOmniboxColor(
-      GetThemeProvider(), emphasize ? OmniboxPart::LOCATION_BAR_TEXT_DEFAULT
+      GetColorProvider(), emphasize ? OmniboxPart::LOCATION_BAR_TEXT_DEFAULT
                                     : OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
   if (range.IsValid())
     ApplyColor(color, range);

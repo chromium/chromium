@@ -9,7 +9,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ui {
-class ThemeProvider;
+class ColorProvider;
 }
 
 // A part of the omnibox (location bar, location bar decoration, or dropdown).
@@ -42,13 +42,13 @@ enum class OmniboxPartState {
 
 // Returns the color for the given |part| and |tint|. An optional |state| can be
 // provided for OmniboxParts that support stateful colors.
-SkColor GetOmniboxColor(const ui::ThemeProvider* theme_provider,
+SkColor GetOmniboxColor(const ui::ColorProvider* color_provider,
                         OmniboxPart part,
                         OmniboxPartState state = OmniboxPartState::NORMAL);
 
 // Returns the color of the security chip given |tint| and |security_level|.
 SkColor GetOmniboxSecurityChipColor(
-    const ui::ThemeProvider* theme_provider,
+    const ui::ColorProvider* color_provider,
     security_state::SecurityLevel security_level);
 
 float GetOmniboxStateOpacity(OmniboxPartState state);

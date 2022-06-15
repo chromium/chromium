@@ -142,10 +142,10 @@ TEST_F(ThemeProviderRedirectedEquivalenceLinuxTest, MAYBE_GetColor) {
     for (auto color_id : theme_service::test::kTestColorIds) {
       if (ignored_color_ids.contains(color_id))
         continue;
-      std::string error_message =
-          base::StrCat({"GTK theme ", theme, ": ",
-                        theme_service::test::ColorIdToString(color_id),
-                        " has mismatched values"});
+      std::string error_message = base::StrCat(
+          {"GTK theme ", theme, ": ",
+           theme_service::test::ThemePropertiesColorToString(color_id),
+           " has mismatched values"});
       theme_service::test::TestOriginalAndRedirectedColorMatched(
           theme_provider, color_id, error_message);
     }

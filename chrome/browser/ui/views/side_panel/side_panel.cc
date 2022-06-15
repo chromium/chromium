@@ -8,12 +8,11 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/theme_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -98,8 +97,8 @@ class SidePanelBorder : public views::Border {
 
     cc::PaintFlags flags;
     flags.setStrokeWidth(stroke_thickness);
-    flags.setColor(view.GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR));
+    flags.setColor(
+        view.GetColorProvider()->GetColor(kColorSidePanelContentAreaSeparator));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
 

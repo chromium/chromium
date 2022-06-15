@@ -28,7 +28,19 @@ std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
                                   SkColorGetB(color));
 }
 
-std::string ColorIdToString(int id) {
+std::string ColorIdToString(ui::ColorId id) {
+#define E(color_id, theme_property_id, ...) {color_id, #color_id},
+#define E_CPONLY(color_id, ...) {color_id, #color_id},
+
+  static constexpr const auto kMap =
+      base::MakeFixedFlatMap<ui::ColorId, const char*>({CHROME_COLOR_IDS});
+
+#undef E
+#undef E_CPONLY
+  return kMap.find(id)->second;
+}
+
+std::string ThemePropertiesColorToString(int id) {
 #define E(color_id, theme_property_id, ...) \
   {theme_property_id, #theme_property_id},
 #define E_CPONLY(color_id, ...)
@@ -38,9 +50,8 @@ std::string ColorIdToString(int id) {
 
 #undef E
 #undef E_CPONLY
-  constexpr char kPrefix[] = "ThemeProperties::";
-
   std::string id_str = kMap.find(id)->second;
+  constexpr char kPrefix[] = "ThemeProperties::";
   return base::StartsWith(id_str, kPrefix) ? id_str.substr(strlen(kPrefix))
                                            : id_str;
 }

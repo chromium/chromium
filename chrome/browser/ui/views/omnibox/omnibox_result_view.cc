@@ -241,11 +241,11 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     return nullptr;
 
   return views::CreateSolidBackground(GetOmniboxColor(
-      view->GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND, part_state));
+      view->GetColorProvider(), OmniboxPart::RESULTS_BACKGROUND, part_state));
 }
 
 SkColor OmniboxResultView::GetColor(OmniboxPart part) const {
-  return GetOmniboxColor(GetThemeProvider(), part, GetThemeState());
+  return GetOmniboxColor(GetColorProvider(), part, GetThemeState());
 }
 
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {

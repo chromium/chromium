@@ -118,14 +118,6 @@ class ThemeHelper {
                            bool incognito,
                            const CustomThemeSupplier* theme_supplier) const;
 
-  // Given a theme property ID |id|, returns the corresponding omnibox color
-  // overridden by the system theme.  Returns absl::nullopt if the color is not
-  // overridden, or if |id| does not correspond to an omnibox color.
-  absl::optional<SkColor> GetOmniboxColor(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier) const;
-
   SkColor GetTabGroupColor(int id,
                            bool incognito,
                            const CustomThemeSupplier* theme_supplier) const;

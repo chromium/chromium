@@ -149,12 +149,8 @@ void OmniboxChipButton::UpdateIconAndColors() {
 }
 
 SkColor OmniboxChipButton::GetTextAndIconColor() const {
-  if (theme_ == OmniboxChipTheme::kIconStyle) {
-    // Use ThemeProvider rather than ColorProvider to correctly match the color
-    // used for page action icons.
-    return GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON);
-  }
+  if (theme_ == OmniboxChipTheme::kIconStyle)
+    return GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
 
   return GetColorProvider()->GetColor(
       theme_ == OmniboxChipTheme::kLowVisibility

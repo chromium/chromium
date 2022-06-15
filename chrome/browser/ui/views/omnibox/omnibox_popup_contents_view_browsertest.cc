@@ -189,13 +189,13 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
 
   SkColor GetSelectedColor(Browser* browser) {
     return GetOmniboxColor(
-        BrowserView::GetBrowserViewForBrowser(browser)->GetThemeProvider(),
+        BrowserView::GetBrowserViewForBrowser(browser)->GetColorProvider(),
         OmniboxPart::RESULTS_BACKGROUND, OmniboxPartState::SELECTED);
   }
 
   SkColor GetNormalColor(Browser* browser) {
     return GetOmniboxColor(
-        BrowserView::GetBrowserViewForBrowser(browser)->GetThemeProvider(),
+        BrowserView::GetBrowserViewForBrowser(browser)->GetColorProvider(),
         OmniboxPart::RESULTS_BACKGROUND);
   }
 

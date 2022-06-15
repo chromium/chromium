@@ -40,8 +40,6 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
     case ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE:
     case ThemeProperties::
         COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO:
-    case ThemeProperties::COLOR_DOWNLOAD_SHELF:
-    case ThemeProperties::COLOR_INFOBAR:
     case ThemeProperties::COLOR_TOOLBAR:
       system_theme_color = ui::NativeTheme::SystemThemeColor::kWindow;
       break;
@@ -57,32 +55,7 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
       system_theme_color = ui::NativeTheme::SystemThemeColor::kWindowText;
       break;
 
-    // Button Background
-    case ThemeProperties::COLOR_OMNIBOX_BACKGROUND:
-    case ThemeProperties::COLOR_OMNIBOX_BACKGROUND_HOVERED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG:
-      system_theme_color = ui::NativeTheme::SystemThemeColor::kButtonFace;
-      break;
-
     // Button Text Foreground
-    case ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR:
-    case ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR:
-    case ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE:
-    case ThemeProperties::
-        COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_URL:
-    case ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT:
-    case ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE:
-    case ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS:
-    case ThemeProperties::COLOR_OMNIBOX_SELECTED_KEYWORD:
-    case ThemeProperties::COLOR_OMNIBOX_TEXT:
-    case ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED:
-    case ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
@@ -99,20 +72,8 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
       if (!base::FeatureList::IsEnabled(
               views::features::kEnablePlatformHighContrastInkDrop))
         return false;
-      [[fallthrough]];
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED:
       system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlight;
       break;
-
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED:
-      *color = color_utils::GetColorWithMaxContrast(
-          ui::NativeTheme::GetInstanceForNativeUi()
-              ->GetSystemThemeColor(
-                  ui::NativeTheme::SystemThemeColor::kHighlight)
-              .value());
-      return true;
 
     // Highlight/Selected Text Foreground
     case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED:
@@ -123,13 +84,6 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
             ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON, color);
       }
       [[fallthrough]];
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED:
-    case ThemeProperties::COLOR_OMNIBOX_RESULTS_URL_SELECTED:
     case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
       system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlightText;

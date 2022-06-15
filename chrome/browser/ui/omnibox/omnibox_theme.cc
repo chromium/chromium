@@ -6,99 +6,97 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 
 using TP = ThemeProperties;
 
 namespace {
 
-int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
+ui::ColorId GetColorId(OmniboxPart part, OmniboxPartState state) {
   const bool selected = state == OmniboxPartState::SELECTED;
   switch (part) {
     case OmniboxPart::LOCATION_BAR_BACKGROUND:
-      return state == OmniboxPartState::HOVERED
-                 ? static_cast<int>(TP::COLOR_OMNIBOX_BACKGROUND_HOVERED)
-                 : static_cast<int>(TP::COLOR_OMNIBOX_BACKGROUND);
+      return state == OmniboxPartState::HOVERED ? kColorOmniboxBackgroundHovered
+                                                : kColorOmniboxBackground;
     case OmniboxPart::LOCATION_BAR_SELECTED_KEYWORD:
-      return TP::COLOR_OMNIBOX_SELECTED_KEYWORD;
+      return kColorOmniboxKeywordSelected;
     case OmniboxPart::RESULTS_BACKGROUND:
       switch (state) {
         case OmniboxPartState::NORMAL:
-          return TP::COLOR_OMNIBOX_RESULTS_BG;
+          return kColorOmniboxResultsBackground;
         case OmniboxPartState::HOVERED:
-          return TP::COLOR_OMNIBOX_RESULTS_BG_HOVERED;
+          return kColorOmniboxResultsBackgroundHovered;
         case OmniboxPartState::SELECTED:
-          return TP::COLOR_OMNIBOX_RESULTS_BG_SELECTED;
+          return kColorOmniboxResultsBackgroundSelected;
         default:
           NOTREACHED();
-          return TP::COLOR_OMNIBOX_RESULTS_BG;
+          return kColorOmniboxResultsBackground;
       }
     case OmniboxPart::LOCATION_BAR_CLEAR_ALL:
     case OmniboxPart::LOCATION_BAR_TEXT_DEFAULT:
-      return TP::COLOR_OMNIBOX_TEXT;
+      return kColorOmniboxText;
     case OmniboxPart::LOCATION_BAR_TEXT_DIMMED:
-      return TP::COLOR_OMNIBOX_TEXT_DIMMED;
+      return kColorOmniboxTextDimmed;
     case OmniboxPart::RESULTS_ICON:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_ICON_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_ICON;
+      return selected ? kColorOmniboxResultsIconSelected
+                      : kColorOmniboxResultsIcon;
     case OmniboxPart::RESULTS_TEXT_DEFAULT:
-      return selected ? int{TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED}
-                      : int{TP::COLOR_OMNIBOX_TEXT};
+      return selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
     case OmniboxPart::RESULTS_TEXT_DIMMED:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED;
+      return selected ? kColorOmniboxResultsTextDimmedSelected
+                      : kColorOmniboxResultsTextDimmed;
     case OmniboxPart::RESULTS_TEXT_NEGATIVE:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE;
+      return selected ? kColorOmniboxResultsTextNegativeSelected
+                      : kColorOmniboxResultsTextNegative;
     case OmniboxPart::RESULTS_TEXT_POSITIVE:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE;
+      return selected ? kColorOmniboxResultsTextPositiveSelected
+                      : kColorOmniboxResultsTextPositive;
     case OmniboxPart::RESULTS_TEXT_SECONDARY:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY;
+      return selected ? kColorOmniboxResultsTextSecondarySelected
+                      : kColorOmniboxResultsTextSecondary;
     case OmniboxPart::RESULTS_TEXT_URL:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_URL;
+      return selected ? kColorOmniboxResultsUrlSelected
+                      : kColorOmniboxResultsUrl;
     case OmniboxPart::LOCATION_BAR_BUBBLE_OUTLINE:
       return OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()
-                 ? TP::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE
-                 : TP::COLOR_OMNIBOX_BUBBLE_OUTLINE;
+                 ? kColorOmniboxBubbleOutlineExperimentalKeywordMode
+                 : kColorOmniboxBubbleOutline;
     case OmniboxPart::RESULTS_BUTTON_BORDER:
-      return TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER;
+      return kColorOmniboxResultsButtonBorder;
     case OmniboxPart::RESULTS_BUTTON_INK_DROP:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED
-                      : TP::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP;
+      return selected ? kColorOmniboxResultsButtonInkDropSelected
+                      : kColorOmniboxResultsButtonInkDrop;
     default:
       NOTREACHED();
-      return -1;
+      return kColorOmniboxBackground;
   }
 }
 
 }  // namespace
 
-SkColor GetOmniboxColor(const ui::ThemeProvider* theme_provider,
+SkColor GetOmniboxColor(const ui::ColorProvider* color_provider,
                         OmniboxPart part,
                         OmniboxPartState state) {
-  return theme_provider->GetColor(GetThemePropertyId(part, state));
+  return color_provider->GetColor(GetColorId(part, state));
 }
 
 SkColor GetOmniboxSecurityChipColor(
-    const ui::ThemeProvider* theme_provider,
+    const ui::ColorProvider* color_provider,
     security_state::SecurityLevel security_level) {
   if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
-    return GetOmniboxColor(theme_provider,
+    return GetOmniboxColor(color_provider,
                            OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
   }
 
   if (security_level == security_state::SECURE) {
-    return theme_provider->GetColor(TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE);
+    return color_provider->GetColor(kColorOmniboxSecurityChipSecure);
   }
   if (security_level == security_state::DANGEROUS)
-    return theme_provider->GetColor(TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS);
-  return theme_provider->GetColor(TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT);
+    return color_provider->GetColor(kColorOmniboxSecurityChipDangerous);
+  return color_provider->GetColor(kColorOmniboxSecurityChipDefault);
 }
 
 float GetOmniboxStateOpacity(OmniboxPartState state) {

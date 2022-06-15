@@ -64,7 +64,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
     views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
         [](OmniboxSuggestionRowButton* host) {
-          return GetOmniboxColor(host->GetThemeProvider(),
+          return GetOmniboxColor(host->GetColorProvider(),
                                  OmniboxPart::RESULTS_BUTTON_INK_DROP,
                                  host->theme_state_);
         },
@@ -99,23 +99,23 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     MdTextButton::OnThemeChanged();
     // We can't use colors from NativeTheme as the omnibox theme might be
     // different (for example, if the NTP colors are customized).
-    const auto* const theme_provider = GetThemeProvider();
+    const auto* const color_provider = GetColorProvider();
     SkColor icon_color = GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_ICON, theme_state_);
+        color_provider, OmniboxPart::RESULTS_ICON, theme_state_);
     SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
                               icon_color));
     SetEnabledTextColors(GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
+        color_provider, OmniboxPart::RESULTS_TEXT_DEFAULT, theme_state_));
   }
 
   void UpdateBackgroundColor() override {
-    const auto* const theme_provider = GetThemeProvider();
+    const auto* const color_provider = GetColorProvider();
     SkColor stroke_color = GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_BUTTON_BORDER, theme_state_);
+        color_provider, OmniboxPart::RESULTS_BUTTON_BORDER, theme_state_);
     SkColor fill_color = GetOmniboxColor(
-        theme_provider, OmniboxPart::RESULTS_BACKGROUND, theme_state_);
+        color_provider, OmniboxPart::RESULTS_BACKGROUND, theme_state_);
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
             fill_color, stroke_color, GetCornerRadius())));

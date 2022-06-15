@@ -245,11 +245,12 @@ void LocationBarView::Init() {
         label->SetHorizontalAlignment(horizontal_alignment);
         label->SetElideBehavior(gfx::NO_ELIDE);
         label->SetAutoColorReadabilityEnabled(false);
+        const auto* const color_provider = GetColorProvider();
         label->SetBackground(views::CreateSolidBackground(GetOmniboxColor(
-            GetThemeProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND,
+            color_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
             OmniboxPartState::SELECTED)));
         label->SetEnabledColor(GetOmniboxColor(
-            GetThemeProvider(), OmniboxPart::LOCATION_BAR_TEXT_DEFAULT,
+            color_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT,
             OmniboxPartState::SELECTED));
         label->SetVisible(false);
         return label;
@@ -392,7 +393,7 @@ bool LocationBarView::IsInitialized() const {
 
 SkColor LocationBarView::GetColor(OmniboxPart part) const {
   DCHECK(GetWidget());
-  return GetOmniboxColor(GetThemeProvider(), part);
+  return GetOmniboxColor(GetColorProvider(), part);
 }
 
 int LocationBarView::GetBorderRadius() const {
@@ -990,7 +991,7 @@ void LocationBarView::RefreshBackground() {
   } else {
     const SkColor normal = GetColor(OmniboxPart::LOCATION_BAR_BACKGROUND);
     const SkColor hovered = GetOmniboxColor(
-        GetThemeProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND,
+        GetColorProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND,
         OmniboxPartState::HOVERED);
     const double opacity = hover_animation_.GetCurrentValue();
     background_color = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
@@ -1401,7 +1402,7 @@ void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
 
 SkColor LocationBarView::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
-  return GetOmniboxSecurityChipColor(GetThemeProvider(), security_level);
+  return GetOmniboxSecurityChipColor(GetColorProvider(), security_level);
 }
 
 bool LocationBarView::ShowPageInfoDialog() {

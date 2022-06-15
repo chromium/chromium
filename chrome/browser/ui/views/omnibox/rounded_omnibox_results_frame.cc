@@ -82,7 +82,7 @@ class OmniboxResultsContentsView : public views::View {
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
     const SkColor background_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND);
+        GetOmniboxColor(GetColorProvider(), OmniboxPart::RESULTS_BACKGROUND);
     SetBackground(views::CreateSolidBackground(background_color));
   }
 };
@@ -101,7 +101,7 @@ class TopBackgroundView : public views::View {
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
     const SkColor background_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND);
+        GetOmniboxColor(GetColorProvider(), OmniboxPart::RESULTS_BACKGROUND);
 
     // Paint a stroke of the background color as a 1 px border to hide the
     // underlying antialiased location bar/toolbar edge.  The round rect here is

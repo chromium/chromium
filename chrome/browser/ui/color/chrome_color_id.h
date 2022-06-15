@@ -53,13 +53,12 @@
   E_CPONLY(kColorDownloadItemForegroundSafe) \
   E_CPONLY(kColorDownloadItemProgressRingBackground) \
   E_CPONLY(kColorDownloadItemProgressRingForeground) \
-  E(kColorDownloadShelfBackground, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
+  E_CPONLY(kColorDownloadShelfBackground) \
   E_CPONLY(kColorDownloadShelfButtonBackground) \
   E_CPONLY(kColorDownloadShelfButtonText) \
   E_CPONLY(kColorDownloadShelfButtonIcon) \
   E_CPONLY(kColorDownloadShelfButtonIconDisabled) \
-  E(kColorDownloadShelfContentAreaSeparator, \
-    ThemeProperties::COLOR_DOWNLOAD_SHELF_CONTENT_AREA_SEPARATOR) \
+  E_CPONLY(kColorDownloadShelfContentAreaSeparator) \
   E_CPONLY(kColorDownloadShelfForeground) \
   E_CPONLY(kColorDownloadStartedAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonActive) \
@@ -111,11 +110,10 @@
   E(kColorFrameCaptionActive, ThemeProperties::COLOR_FRAME_CAPTION_ACTIVE) \
   E(kColorFrameCaptionInactive, ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE) \
   /* InfoBar colors. */ \
-  E(kColorInfoBarBackground, ThemeProperties::COLOR_INFOBAR) \
+  E_CPONLY(kColorInfoBarBackground) \
   E_CPONLY(kColorInfoBarButtonIcon) \
   E_CPONLY(kColorInfoBarButtonIconDisabled) \
-  E(kColorInfoBarContentAreaSeparator, \
-    ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR) \
+  E_CPONLY(kColorInfoBarContentAreaSeparator) \
   E_CPONLY(kColorInfoBarForeground) \
   /* Intent Picker colors. */ \
   E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
@@ -153,63 +151,39 @@
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxAnswerIconBackground) \
   E_CPONLY(kColorOmniboxAnswerIconForeground) \
-  E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
-  E(kColorOmniboxBackgroundHovered, \
-    ThemeProperties::COLOR_OMNIBOX_BACKGROUND_HOVERED) \
-  E(kColorOmniboxBubbleOutline, \
-    ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE) \
-  E(kColorOmniboxBubbleOutlineExperimentalKeywordMode, \
-    ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE) \
+  E_CPONLY(kColorOmniboxBackground) \
+  E_CPONLY(kColorOmniboxBackgroundHovered) \
+  E_CPONLY(kColorOmniboxBubbleOutline) \
+  E_CPONLY(kColorOmniboxBubbleOutlineExperimentalKeywordMode) \
   E_CPONLY(kColorOmniboxChipBackgroundLowVisibility) \
   E_CPONLY(kColorOmniboxChipBackgroundNormalVisibility) \
   E_CPONLY(kColorOmniboxChipForegroundLowVisibility) \
   E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
-  E(kColorOmniboxKeywordSelected, \
-    ThemeProperties::COLOR_OMNIBOX_SELECTED_KEYWORD) \
-  E(kColorOmniboxResultsBackground, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_BG) \
-  E(kColorOmniboxResultsBackgroundHovered, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED) \
-  E(kColorOmniboxResultsBackgroundSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED) \
-  E(kColorOmniboxResultsButtonBorder, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER) \
-  E(kColorOmniboxResultsButtonInkDrop, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP) \
-  E(kColorOmniboxResultsButtonInkDropSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_BUTTON_INK_DROP_SELECTED) \
-  E(kColorOmniboxResultsIcon, ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON) \
-  E(kColorOmniboxResultsIconSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED) \
-  E(kColorOmniboxResultsTextDimmed, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED) \
-  E(kColorOmniboxResultsTextDimmedSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED) \
-  E(kColorOmniboxResultsTextNegative, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE) \
-  E(kColorOmniboxResultsTextNegativeSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_NEGATIVE_SELECTED) \
-  E(kColorOmniboxResultsTextPositive, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE) \
-  E(kColorOmniboxResultsTextPositiveSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_POSITIVE_SELECTED) \
-  E(kColorOmniboxResultsTextSecondary, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY) \
-  E(kColorOmniboxResultsTextSecondarySelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SECONDARY_SELECTED) \
-  E(kColorOmniboxResultsTextSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED) \
-  E(kColorOmniboxResultsUrl, ThemeProperties::COLOR_OMNIBOX_RESULTS_URL) \
-  E(kColorOmniboxResultsUrlSelected, \
-    ThemeProperties::COLOR_OMNIBOX_RESULTS_URL_SELECTED) \
-  E(kColorOmniboxSecurityChipDangerous, \
-    ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS) \
-  E(kColorOmniboxSecurityChipDefault, \
-    ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT) \
-  E(kColorOmniboxSecurityChipSecure, \
-    ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
-  E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
-  E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
+  E_CPONLY(kColorOmniboxKeywordSelected) \
+  E_CPONLY(kColorOmniboxResultsBackground) \
+  E_CPONLY(kColorOmniboxResultsBackgroundHovered) \
+  E_CPONLY(kColorOmniboxResultsBackgroundSelected) \
+  E_CPONLY(kColorOmniboxResultsButtonBorder) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDrop) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
+  E_CPONLY(kColorOmniboxResultsIcon) \
+  E_CPONLY(kColorOmniboxResultsIconSelected) \
+  E_CPONLY(kColorOmniboxResultsTextDimmed) \
+  E_CPONLY(kColorOmniboxResultsTextDimmedSelected) \
+  E_CPONLY(kColorOmniboxResultsTextNegative) \
+  E_CPONLY(kColorOmniboxResultsTextNegativeSelected) \
+  E_CPONLY(kColorOmniboxResultsTextPositive) \
+  E_CPONLY(kColorOmniboxResultsTextPositiveSelected) \
+  E_CPONLY(kColorOmniboxResultsTextSecondary) \
+  E_CPONLY(kColorOmniboxResultsTextSecondarySelected) \
+  E_CPONLY(kColorOmniboxResultsTextSelected) \
+  E_CPONLY(kColorOmniboxResultsUrl) \
+  E_CPONLY(kColorOmniboxResultsUrlSelected) \
+  E_CPONLY(kColorOmniboxSecurityChipDangerous) \
+  E_CPONLY(kColorOmniboxSecurityChipDefault) \
+  E_CPONLY(kColorOmniboxSecurityChipSecure) \
+  E_CPONLY(kColorOmniboxText) \
+  E_CPONLY(kColorOmniboxTextDimmed) \
   /* Page Info colors */ \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \
@@ -261,16 +235,13 @@
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
-  E(kColorSidePanelContentAreaSeparator, \
-    ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR) \
+  E_CPONLY(kColorSidePanelContentAreaSeparator) \
   /* Status bubble colors. */ \
-  E(kColorStatusBubbleBackgroundFrameActive, \
-    ThemeProperties::COLOR_STATUS_BUBBLE_ACTIVE) \
-  E(kColorStatusBubbleBackgroundFrameInactive, \
-    ThemeProperties::COLOR_STATUS_BUBBLE_INACTIVE) \
+  E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
+  E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \
   E_CPONLY(kColorStatusBubbleForegroundFrameActive) \
   E_CPONLY(kColorStatusBubbleForegroundFrameInactive) \
-  E(kColorStatusBubbleShadow, ThemeProperties::COLOR_STATUS_BUBBLE_SHADOW) \
+  E_CPONLY(kColorStatusBubbleShadow) \
   /* Tab alert colors. */ \
   E_CPONLY(kColorTabAlertAudioPlayingActiveFrameActive) \
   E_CPONLY(kColorTabAlertAudioPlayingActiveFrameInactive) \
@@ -301,10 +272,8 @@
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
-  E(kColorTabHoverCardBackground, \
-    ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND) \
-  E(kColorTabHoverCardForeground, \
-    ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_FOREGROUND) \
+  E_CPONLY(kColorTabHoverCardBackground) \
+  E_CPONLY(kColorTabHoverCardForeground) \
   /* The colors used for tab groups in the tabstrip. */ \
   E_CPONLY(kColorTabGroupTabStripFrameActiveGrey) \
   E_CPONLY(kColorTabGroupTabStripFrameActiveBlue) \

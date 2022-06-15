@@ -267,46 +267,47 @@ new_tab_page::mojom::ThemePtr MakeTheme(
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
   search_box->bg =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
   search_box->bg_hovered =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
+      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
                       OmniboxPartState::HOVERED);
   search_box->border_color =
       webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
           ? color_provider.GetColor(kColorLocationBarBorder)
           : SkColorSetRGB(218, 220, 224);  // google-grey-300
-  search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
+  search_box->icon =
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_ICON);
   search_box->icon_selected = GetOmniboxColor(
-      theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
+      &color_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
   search_box->is_dark = !color_utils::IsDark(text_color);
   search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
   search_box->placeholder =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
   search_box->results_bg =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_BACKGROUND);
   search_box->results_bg_hovered =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_BACKGROUND,
                       OmniboxPartState::HOVERED);
   search_box->results_bg_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_BACKGROUND,
                       OmniboxPartState::SELECTED);
   search_box->results_dim =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
   search_box->results_dim_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
                       OmniboxPartState::SELECTED);
   search_box->results_text =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
   search_box->results_text_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
                       OmniboxPartState::SELECTED);
   search_box->results_url =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL);
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_URL);
   search_box->results_url_selected =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL,
+      GetOmniboxColor(&color_provider, OmniboxPart::RESULTS_TEXT_URL,
                       OmniboxPartState::SELECTED);
   search_box->text =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
+      GetOmniboxColor(&color_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
   theme->search_box = std::move(search_box);
 
   return theme;

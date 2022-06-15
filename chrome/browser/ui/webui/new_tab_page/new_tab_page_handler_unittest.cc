@@ -299,44 +299,32 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
       .WillByDefault(testing::Return(true));
   mock_color_provider_source_.SetColor(
       kColorNewTabPageMostVisitedTileBackground, SkColorSetRGB(0, 0, 4));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_BACKGROUND))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 5)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 6)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 7)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 8)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_BG))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 9)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 10)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 11)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 12)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 13)));
-  ON_CALL(mock_theme_provider_, GetColor(ThemeProperties::COLOR_OMNIBOX_TEXT))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 14)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 15)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_URL))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 16)));
-  ON_CALL(mock_theme_provider_,
-          GetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_URL_SELECTED))
-      .WillByDefault(testing::Return(SkColorSetRGB(0, 0, 17)));
+  mock_color_provider_source_.SetColor(kColorOmniboxBackground,
+                                       SkColorSetRGB(0, 0, 5));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsIcon,
+                                       SkColorSetRGB(0, 0, 6));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsIconSelected,
+                                       SkColorSetRGB(0, 0, 7));
+  mock_color_provider_source_.SetColor(kColorOmniboxTextDimmed,
+                                       SkColorSetRGB(0, 0, 8));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsBackground,
+                                       SkColorSetRGB(0, 0, 9));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsBackgroundHovered,
+                                       SkColorSetRGB(0, 0, 10));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsBackgroundSelected,
+                                       SkColorSetRGB(0, 0, 11));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsTextDimmed,
+                                       SkColorSetRGB(0, 0, 12));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsTextDimmedSelected,
+                                       SkColorSetRGB(0, 0, 13));
+  mock_color_provider_source_.SetColor(kColorOmniboxText,
+                                       SkColorSetRGB(0, 0, 14));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsTextSelected,
+                                       SkColorSetRGB(0, 0, 15));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsUrl,
+                                       SkColorSetRGB(0, 0, 16));
+  mock_color_provider_source_.SetColor(kColorOmniboxResultsUrlSelected,
+                                       SkColorSetRGB(0, 0, 17));
 
   theme_service_observer_->OnThemeChanged();
   mock_page_.FlushForTesting();
