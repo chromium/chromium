@@ -10,7 +10,7 @@ PHONE_HOME_WHOLE_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHol
 EMAIL_ADDRESS | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$email2 | Email |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$chbox2 | Send me exclusive offers, deals and expert reviews. | on | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$same | Same as billing address. | same | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
-UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$giftOrder | Prices will not appear on invoice. This order is a gift. | gift | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
+UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$giftOrder | This order is a gift. Prices will not appear on invoice. | gift | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
 NAME_FIRST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname | First Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
 NAME_MIDDLE_INITIAL | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingMi | M.I. |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
 NAME_LAST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingLastname | Last Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default

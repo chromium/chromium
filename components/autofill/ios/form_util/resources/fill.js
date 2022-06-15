@@ -1025,9 +1025,9 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
   }
 
   // Ignore elements known not to contain inferable labels.
+  let skipNode = false;
   if (node.nodeType === Node.ELEMENT_NODE) {
-    if (node.tagName === 'OPTION' || node.tagName === 'SCRIPT' ||
-        node.tagName === 'NOSCRIPT') {
+    if (node.tagName === 'OPTION') {
       return '';
     }
     if (__gCrWeb.form.isFormControlElement(/** @type {Element} */ (node))) {
@@ -1036,6 +1036,7 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
         return '';
       }
     }
+    skipNode = node.tagName === 'SCRIPT' || node.tagName === 'NOSCRIPT';
   }
 
   if (node.tagName === 'DIV') {
@@ -1047,30 +1048,33 @@ __gCrWeb.fill.findChildTextInner = function(node, depth, divsToSkip) {
   }
 
   // Extract the text exactly at this node.
-  let nodeText = __gCrWeb.fill.nodeValue(node);
-  if (node.nodeType === Node.TEXT_NODE && !nodeText) {
-    // In the C++ version, this text node would have been stripped completely.
-    // Just pass the buck.
-    return __gCrWeb.fill.findChildTextInner(
-        node.nextSibling, depth, divsToSkip);
-  }
+  let nodeText = '';
+  if (!skipNode) {
+    nodeText = __gCrWeb.fill.nodeValue(node);
+    if (node.nodeType === Node.TEXT_NODE && !nodeText) {
+      // In the C++ version, this text node would have been stripped completely.
+      // Just pass the buck.
+      return __gCrWeb.fill.findChildTextInner(
+          node.nextSibling, depth, divsToSkip);
+    }
 
-  // Recursively compute the children's text.
-  // Preserve inter-element whitespace separation.
-  const childText =
-      __gCrWeb.fill.findChildTextInner(node.firstChild, depth - 1, divsToSkip);
-  let addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
-  // Emulate apparently incorrect Chromium behavior tracked in
-  // https://crbug.com/239819.
-  addSpace = false;
-  nodeText =
-      __gCrWeb.fill.combineAndCollapseWhitespace(nodeText, childText, addSpace);
+    // Recursively compute the children's text.
+    // Preserve inter-element whitespace separation.
+    const childText = __gCrWeb.fill.findChildTextInner(
+        node.firstChild, depth - 1, divsToSkip);
+    let addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
+    // Emulate apparently incorrect Chromium behavior tracked in
+    // https://crbug.com/239819.
+    addSpace = false;
+    nodeText = __gCrWeb.fill.combineAndCollapseWhitespace(
+        nodeText, childText, addSpace);
+  }
 
   // Recursively compute the siblings' text.
   // Again, preserve inter-element whitespace separation.
   const siblingText =
       __gCrWeb.fill.findChildTextInner(node.nextSibling, depth - 1, divsToSkip);
-  addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
+  let addSpace = node.nodeType === Node.TEXT_NODE && !nodeText;
   // Emulate apparently incorrect Chromium behavior tracked in
   // https://crbug.com/239819.
   addSpace = false;
@@ -1174,8 +1178,13 @@ __gCrWeb.fill.inferLabelFromSibling = function(element, forward) {
       const value = __gCrWeb.fill.findChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       const addSpace = nodeType === Node.TEXT_NODE && value.length === 0;
-      inferredLabel = __gCrWeb.fill.combineAndCollapseWhitespace(
-          value, inferredLabel, addSpace);
+      if (forward) {
+        inferredLabel = __gCrWeb.fill.combineAndCollapseWhitespace(
+            inferredLabel, value, addSpace);
+      } else {
+        inferredLabel = __gCrWeb.fill.combineAndCollapseWhitespace(
+            value, inferredLabel, addSpace);
+      }
       continue;
     }
 
@@ -1575,8 +1584,14 @@ __gCrWeb.fill.inferLabelFromEnclosingLabel = function(element) {
  * e.g. <div>Some Text<span><input ...></span></div>
  * e.g. <div>Some Text</div><div><input ...></div>
  *
- * Because this is already traversing the <div> structure, if it finds a <label>
- * sibling along the way, infer from that <label>.
+ * Contrary to the other InferLabelFrom* functions, this functions walks up
+ * the DOM tree from the original input, instead of down from the surrounding
+ * tag. While doing so, if a <label> or text node sibling are found along the
+ * way, a label is inferred from them directly. For example, <div>First
+ * name<div><input></div>Last name<div><input></div></div> infers "First name"
+ * and "Last name" for the two inputs, respectively, by picking up the text
+ * nodes on the way to the surrounding div. Without doing so, the label of both
+ * inputs becomes "First nameLast name".
  *
  * It is based on the logic in
  *    string16 InferLabelFromDivTable(const WebFormControlElement& element)
@@ -1623,12 +1638,14 @@ __gCrWeb.fill.inferLabelFromDivTable = function(element) {
       }
 
       lookingForParent = false;
-    } else if (!lookingForParent && __gCrWeb.fill.hasTagName(node, 'label')) {
-      if (!node.control) {
+    } else if (!lookingForParent) {
+      // Infer a label from text nodes and unassigned <label> siblings.
+      if (__gCrWeb.fill.hasTagName(node, 'label') && !node.control) {
         inferredLabel = __gCrWeb.fill.findChildText(node);
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        inferredLabel = __gCrWeb.fill.nodeValue(node).trim();
       }
-    } else if (
-        lookingForParent && __gCrWeb.fill.isTraversableContainerElement(node)) {
+    } else if (__gCrWeb.fill.isTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.
       break;
     }

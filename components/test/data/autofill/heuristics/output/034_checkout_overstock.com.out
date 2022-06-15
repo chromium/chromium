@@ -25,7 +25,7 @@ CREDIT_CARD_EXP_4_DIGIT_YEAR | exp_year | Expiration Date: |  | credit-card-cc
 UNKNOWN_TYPE | CC | PayPal | PayPal | ShippingFirstName_2-default
 UNKNOWN_TYPE | CC | bml | bml | ShippingFirstName_2-default
 UNKNOWN_TYPE | UsePromoCode | Use Promo Code | on | ShippingFirstName_2-default
-MERCHANT_PROMO_CODE | PromoCode | See Terms |  | ShippingFirstName_2-default
+MERCHANT_PROMO_CODE | PromoCode | Use Promo Code |  | ShippingFirstName_2-default
 UNKNOWN_TYPE | UseGiftCards | Use Gift Card | on | ShippingFirstName_2-default
 UNKNOWN_TYPE | GiftCardNumber0 | Gift Card 1: |  | ShippingFirstName_2-default
 UNKNOWN_TYPE | PINNumber0 | PIN: |  | ShippingFirstName_2-default

@@ -253,34 +253,37 @@ std::u16string FindChildTextInner(const WebNode& node,
     return std::u16string();
 
   // Ignore elements known not to contain inferable labels.
+  bool skip_node = false;
   if (node.IsElementNode()) {
     const WebElement element = node.To<WebElement>();
-    if (IsOptionElement(element) || IsScriptElement(element) ||
-        IsNoScriptElement(element) ||
+    if (IsOptionElement(element) ||
+        (element.HasHTMLTagName("div") && base::Contains(divs_to_skip, node)) ||
         (element.IsFormControlElement() &&
          IsAutofillableElement(element.To<WebFormControlElement>()))) {
       return std::u16string();
     }
-
-    if (element.HasHTMLTagName("div") && base::Contains(divs_to_skip, node))
-      return std::u16string();
+    skip_node = IsScriptElement(element) || IsNoScriptElement(element);
   }
 
-  // Extract the text exactly at this node.
-  std::u16string node_text = node.NodeValue().Utf16();
+  std::u16string node_text;
 
-  // Recursively compute the children's text.
-  // Preserve inter-element whitespace separation.
-  std::u16string child_text =
-      FindChildTextInner(node.FirstChild(), depth - 1, divs_to_skip);
-  bool add_space = node.IsTextNode() && node_text.empty();
-  node_text = CombineAndCollapseWhitespace(node_text, child_text, add_space);
+  if (!skip_node) {
+    // Extract the text exactly at this node.
+    node_text = node.NodeValue().Utf16();
+
+    // Recursively compute the children's text.
+    // Preserve inter-element whitespace separation.
+    std::u16string child_text =
+        FindChildTextInner(node.FirstChild(), depth - 1, divs_to_skip);
+    bool add_space = node.IsTextNode() && node_text.empty();
+    node_text = CombineAndCollapseWhitespace(node_text, child_text, add_space);
+  }
 
   // Recursively compute the siblings' text.
   // Again, preserve inter-element whitespace separation.
   std::u16string sibling_text =
       FindChildTextInner(node.NextSibling(), depth - 1, divs_to_skip);
-  add_space = node.IsTextNode() && node_text.empty();
+  bool add_space = node.IsTextNode() && node_text.empty();
   node_text = CombineAndCollapseWhitespace(node_text, sibling_text, add_space);
 
   return node_text;
@@ -358,8 +361,13 @@ bool InferLabelFromSibling(const WebFormControlElement& element,
       // A text node's value will be empty if it is for a line break.
       bool add_space = sibling.IsTextNode() && value.empty();
       inferred_label_source = FormFieldData::LabelSource::kCombined;
-      inferred_label =
-          CombineAndCollapseWhitespace(value, inferred_label, add_space);
+      if (forward) {
+        inferred_label =
+            CombineAndCollapseWhitespace(inferred_label, value, add_space);
+      } else {
+        inferred_label =
+            CombineAndCollapseWhitespace(value, inferred_label, add_space);
+      }
       continue;
     }
 
@@ -649,8 +657,14 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
 // e.g. <div>Some Text<span><input ...></span></div>
 // e.g. <div>Some Text</div><div><input ...></div>
 //
-// Because this is already traversing the <div> structure, if it finds a <label>
-// sibling along the way, infer from that <label>.
+// Contrary to the other InferLabelFrom* functions, this functions walks up
+// the DOM tree from the original input, instead of down from the surrounding
+// tag. While doing so, if a <label> or text node sibling are found along the
+// way, a label is inferred from them directly. For example, <div>First
+// name<div><input></div>Last name<div><input></div></div> infers "First name"
+// and "Last name" for the two inputs, respectively, by picking up the text
+// nodes on the way to the surrounding div. Without doing so, the label of both
+// inputs becomes "First nameLast name".
 std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
   WebNode node = element.ParentNode();
   bool looking_for_parent = true;
@@ -679,11 +693,21 @@ std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
       }
 
       looking_for_parent = false;
-    } else if (!looking_for_parent && HasTagName(node, *kLabel)) {
-      WebLabelElement label_element = node.To<WebLabelElement>();
-      if (label_element.CorrespondingControl().IsNull())
+    } else if (!looking_for_parent) {
+      // Infer a label from text nodes and unassigned <label> siblings.
+      if (HasTagName(node, *kLabel) &&
+          node.To<WebLabelElement>().CorrespondingControl().IsNull()) {
         inferred_label = FindChildText(node);
-    } else if (looking_for_parent && IsTraversableContainerElement(node)) {
+      } else if (node.IsTextNode()) {
+        // TODO(crbug.com/796918): Ideally `FindChildText()` should be used
+        // here as well. But because the function doesn't trim it's return
+        // value on every code path, the `NodeValue()` is explicitly extracted
+        // here. Trimming is necessary to skip indentation.
+        inferred_label = node.NodeValue().Utf16();
+        base::TrimWhitespace(inferred_label, base::TrimPositions::TRIM_ALL,
+                             &inferred_label);
+      }
+    } else if (IsTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.
       break;
     }
