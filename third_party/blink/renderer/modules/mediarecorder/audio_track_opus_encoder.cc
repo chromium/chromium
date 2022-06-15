@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -68,7 +69,7 @@ namespace blink {
 
 AudioTrackOpusEncoder::AudioTrackOpusEncoder(
     OnEncodedAudioCB on_encoded_audio_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     bool vbr_enabled)
     : AudioTrackEncoder(std::move(on_encoded_audio_cb)),
       bits_per_second_(bits_per_second),
@@ -144,7 +145,9 @@ void AudioTrackOpusEncoder::OnSetFormat(
   // buffer duration. The Opus library authors may, of course, adjust this in
   // later versions.
   const opus_int32 bitrate =
-      (bits_per_second_ > 0) ? bits_per_second_ : OPUS_AUTO;
+      (bits_per_second_ > 0)
+          ? base::saturated_cast<opus_int32>(bits_per_second_)
+          : OPUS_AUTO;
   if (opus_encoder_ctl(opus_encoder_, OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
     DLOG(ERROR) << "Failed to set Opus bitrate: " << bitrate;
     return;

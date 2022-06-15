@@ -30,7 +30,7 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
 
   VpxEncoder(bool use_vp9,
              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-             int32_t bits_per_second,
+             uint32_t bits_per_second,
              scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
   VpxEncoder(const VpxEncoder&) = delete;

@@ -54,7 +54,7 @@ class MODULES_EXPORT AudioTrackRecorder
                      MediaStreamComponent* track,
                      OnEncodedAudioCB on_encoded_audio_cb,
                      base::OnceClosure on_track_source_ended_cb,
-                     int32_t bits_per_second,
+                     uint32_t bits_per_second,
                      BitrateMode bitrate_mode);
 
   AudioTrackRecorder(const AudioTrackRecorder&) = delete;
@@ -76,7 +76,7 @@ class MODULES_EXPORT AudioTrackRecorder
   static scoped_refptr<AudioTrackEncoder> CreateAudioEncoder(
       CodecId codec,
       OnEncodedAudioCB on_encoded_audio_cb,
-      int32_t bits_per_second,
+      uint32_t bits_per_second,
       BitrateMode bitrate_mode);
 
   void ConnectToTrack();

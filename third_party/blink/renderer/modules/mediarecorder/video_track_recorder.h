@@ -142,7 +142,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
   class MODULES_EXPORT Encoder : public WTF::ThreadSafeRefCounted<Encoder> {
    public:
     Encoder(const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-            int32_t bits_per_second,
+            uint32_t bits_per_second,
             scoped_refptr<base::SequencedTaskRunner> main_task_runner,
             scoped_refptr<base::SequencedTaskRunner> encoding_task_runner =
                 nullptr);
@@ -233,7 +233,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     const OnEncodedVideoCB on_encoded_video_cb_;
 
     // Target bitrate for video encoding. If 0, a standard bitrate is used.
-    const int32_t bits_per_second_;
+    const uint32_t bits_per_second_;
 
     // Number of frames that we keep the reference alive for encode.
     // Operated and released exclusively on |origin_task_runner_|.
@@ -324,7 +324,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       MediaStreamComponent* track,
       OnEncodedVideoCB on_encoded_video_cb,
       base::OnceClosure on_track_source_ended_cb,
-      int32_t bits_per_second,
+      uint32_t bits_per_second,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
   VideoTrackRecorderImpl(const VideoTrackRecorderImpl&) = delete;
@@ -342,7 +342,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   void InitializeEncoder(
       CodecProfile codec,
       const OnEncodedVideoCB& on_encoded_video_cb,
-      int32_t bits_per_second,
+      uint32_t bits_per_second,
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> video_frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
@@ -350,7 +350,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   void InitializeEncoderOnEncoderSupportKnown(
       CodecProfile codec_profile,
       const OnEncodedVideoCB& on_encoded_video_cb,
-      int32_t bits_per_second,
+      uint32_t bits_per_second,
       bool allow_vea_encoder,
       scoped_refptr<media::VideoFrame> frame,
       base::TimeTicks capture_time);

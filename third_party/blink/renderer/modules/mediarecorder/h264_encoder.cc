@@ -94,7 +94,7 @@ void H264Encoder::ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
 H264Encoder::H264Encoder(
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
     VideoTrackRecorder::CodecProfile codec_profile,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : Encoder(on_encoded_video_cb, bits_per_second, std::move(task_runner)),
       codec_profile_(codec_profile) {

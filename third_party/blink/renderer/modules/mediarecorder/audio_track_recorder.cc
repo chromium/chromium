@@ -53,7 +53,7 @@ AudioTrackRecorder::AudioTrackRecorder(
     MediaStreamComponent* track,
     OnEncodedAudioCB on_encoded_audio_cb,
     base::OnceClosure on_track_source_ended_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     BitrateMode bitrate_mode)
     : TrackRecorder(std::move(on_track_source_ended_cb)),
       track_(track),
@@ -82,7 +82,7 @@ AudioTrackRecorder::~AudioTrackRecorder() {
 scoped_refptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     CodecId codec,
     OnEncodedAudioCB on_encoded_audio_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     BitrateMode bitrate_mode) {
   if (codec == CodecId::kPcm) {
     return base::MakeRefCounted<AudioTrackPcmEncoder>(

@@ -160,7 +160,7 @@ class VideoTrackRecorderTest
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &VideoTrackRecorderTest::OnSourceReadyStateEnded,
             CrossThreadUnretained(this))),
-        0 /* bits_per_second */,
+        0u /* bits_per_second */,
         scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 

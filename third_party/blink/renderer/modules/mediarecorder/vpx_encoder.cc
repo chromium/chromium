@@ -49,7 +49,7 @@ void VpxEncoder::ShutdownEncoder(std::unique_ptr<Thread> encoding_thread,
 VpxEncoder::VpxEncoder(
     bool use_vp9,
     const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-    int32_t bits_per_second,
+    uint32_t bits_per_second,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : VideoTrackRecorder::Encoder(on_encoded_video_cb,
                                   bits_per_second,

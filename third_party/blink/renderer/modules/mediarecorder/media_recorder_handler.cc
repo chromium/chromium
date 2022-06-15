@@ -206,8 +206,8 @@ bool MediaRecorderHandler::Initialize(
     MediaStreamDescriptor* media_stream,
     const String& type,
     const String& codecs,
-    int32_t audio_bits_per_second,
-    int32_t video_bits_per_second,
+    uint32_t audio_bits_per_second,
+    uint32_t video_bits_per_second,
     AudioTrackRecorder::BitrateMode audio_bitrate_mode) {
   DCHECK(IsMainThread());
   // Save histogram data so we can see how much MediaStream Recorder is used.

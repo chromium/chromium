@@ -134,7 +134,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         WTF::BindRepeating(&AudioTrackRecorderTest::OnEncodedAudio,
                            WTF::Unretained(this)),
         ConvertToBaseOnceCallback(CrossThreadBindOnce([] {})),
-        0 /* bits_per_second */, GetParam().bitrateMode);
+        0u /* bits_per_second */, GetParam().bitrateMode);
   }
 
   AudioTrackRecorderTest(const AudioTrackRecorderTest&) = delete;
