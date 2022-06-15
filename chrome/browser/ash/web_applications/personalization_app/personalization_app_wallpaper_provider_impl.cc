@@ -72,15 +72,16 @@ using ash::personalization_app::GetAccountId;
 using ash::personalization_app::GetUser;
 
 constexpr int kLocalImageThumbnailSizeDip = 256;
+constexpr int kCurrentWallpaperThumbnailSizeDip = 512;
 
 const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
   // Resize the image maintaining our aspect ratio.
   float aspect_ratio =
       static_cast<float>(image.width()) / static_cast<float>(image.height());
-  int height = kLocalImageThumbnailSizeDip;
+  int height = kCurrentWallpaperThumbnailSizeDip;
   int width = static_cast<int>(aspect_ratio * height);
-  if (width > kLocalImageThumbnailSizeDip) {
-    width = kLocalImageThumbnailSizeDip;
+  if (width > kCurrentWallpaperThumbnailSizeDip) {
+    width = kCurrentWallpaperThumbnailSizeDip;
     height = static_cast<int>(width / aspect_ratio);
   }
   return gfx::ImageSkiaOperations::CreateResizedImage(

@@ -444,9 +444,9 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
   EXPECT_EQ(ash::WallpaperType::kOnline, current->type);
   EXPECT_EQ(ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
             current->layout);
-  // Data url of a solid black image scaled up to 256x256.
+  // Data url of a solid black image scaled up to 512x512.
   EXPECT_EQ(webui::GetBitmapDataUrl(
-                *CreateSolidImageSkia(256, 256, SK_ColorBLACK).bitmap()),
+                *CreateSolidImageSkia(512, 512, SK_ColorBLACK).bitmap()),
             current->url);
 }
 
