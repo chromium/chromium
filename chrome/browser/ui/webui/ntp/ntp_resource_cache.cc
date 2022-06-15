@@ -23,6 +23,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -51,6 +52,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -96,9 +98,9 @@ std::string ReplaceTemplateExpressions(
 }  // namespace
 
 SkColor GetThemeColor(const ui::NativeTheme* native_theme,
-                      const ui::ThemeProvider& tp,
+                      const ui::ColorProvider& cp,
                       int id) {
-  SkColor color = tp.GetColor(id);
+  SkColor color = cp.GetColor(id);
   // If web contents are being inverted because the system is in high-contrast
   // mode, any system theme colors we use must be inverted too to cancel out.
   return native_theme->GetPlatformHighContrastColorScheme() ==
@@ -436,8 +438,9 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
       profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
 
   // Colors.
+  const ui::ColorProvider& cp = web_contents->GetColorProvider();
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
-      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_BACKGROUND));
+      GetThemeColor(native_theme, cp, kColorNewTabPageBackground));
   substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(*tp);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(*tp);
 
@@ -463,17 +466,17 @@ void NTPResourceCache::CreateNewTabCSS(
 
   const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
   DCHECK(tp);
+  const ui::ColorProvider& cp = web_contents->GetColorProvider();
 
   // Get our theme colors.
   SkColor color_background =
-      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_BACKGROUND);
-  SkColor color_text =
-      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_TEXT);
+      GetThemeColor(native_theme, cp, kColorNewTabPageBackground);
+  SkColor color_text = GetThemeColor(native_theme, cp, kColorNewTabPageText);
   SkColor color_text_light =
-      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_TEXT_LIGHT);
+      GetThemeColor(native_theme, cp, kColorNewTabPageTextLight);
 
-  SkColor color_section_border = GetThemeColor(
-      native_theme, *tp, ThemeProperties::COLOR_NTP_SECTION_BORDER);
+  SkColor color_section_border =
+      GetThemeColor(native_theme, cp, kColorNewTabPageSectionBorder);
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;
@@ -486,7 +489,7 @@ void NTPResourceCache::CreateNewTabCSS(
   substitutions["colorBackground"] =
       color_utils::SkColorToRgbaString(color_background);
   substitutions["colorLink"] = color_utils::SkColorToRgbString(
-      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_LINK));
+      GetThemeColor(native_theme, cp, kColorNewTabPageLink));
   substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(*tp);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(*tp);
   substitutions["colorTextRgba"] = color_utils::SkColorToRgbaString(color_text);

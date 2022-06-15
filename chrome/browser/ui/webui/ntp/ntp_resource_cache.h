@@ -31,11 +31,12 @@ class PolicyChangeRegistrar;
 }
 
 namespace ui {
+class ColorProvider;
 class ThemeProvider;
 }
 
 SkColor GetThemeColor(const ui::NativeTheme* native_theme,
-                      const ui::ThemeProvider& tp,
+                      const ui::ColorProvider& cp,
                       int id);
 std::string GetNewTabBackgroundPositionCSS(
     const ui::ThemeProvider& theme_provider);
