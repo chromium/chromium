@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -128,7 +129,8 @@ std::string FakeAuthorizationServer::ReceiveGET(const std::string& url) {
   std::string payload;
   auto msg = GetNextRequest("GET", url, "", payload);
   if (!payload.empty()) {
-    msg += "Unexpected payload: \"" + payload.substr(0, 256) + "\"";
+    msg +=
+        base::StrCat({"Unexpected payload: \"", payload.substr(0, 256), "\""});
   }
   return msg;
 }
@@ -143,7 +145,8 @@ std::string FakeAuthorizationServer::ReceivePOSTWithJSON(
   if (content && content->is_dict()) {
     out_params = std::move(content->GetDict());
   } else {
-    msg += "Cannot parse the payload: \"" + payload.substr(0, 256) + "\"";
+    msg += base::StrCat(
+        {"Cannot parse the payload: \"", payload.substr(0, 256), "\""});
   }
   return msg;
 }
@@ -155,7 +158,8 @@ std::string FakeAuthorizationServer::ReceivePOSTWithURLParams(
   auto msg =
       GetNextRequest("POST", url, "application/x-www-form-urlencoded", payload);
   if (!ParseURLParameters(payload, out_params)) {
-    msg += "Cannot parse the payload: \"" + payload.substr(0, 256) + "\"";
+    msg += base::StrCat(
+        {"Cannot parse the payload: \"", payload.substr(0, 256), "\""});
   }
   return msg;
 }

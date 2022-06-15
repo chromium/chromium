@@ -4,6 +4,7 @@
 
 #include "printing/backend/ipp_handlers.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "printing/backend/cups_printer.h"
 
@@ -103,7 +104,7 @@ void MultivalueEnumHandler(int none_value,
       continue;
 
     capabilities->emplace_back(
-        std::string(attribute_name) + "/" + base::NumberToString(value),
+        base::StrCat({attribute_name, "/", base::NumberToString(value)}),
         AdvancedCapability::Type::kBoolean);
     // TODO(crbug.com/964919): Set defaults.
   }

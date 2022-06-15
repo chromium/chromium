@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
 #include "chromeos/printing/uri.h"
@@ -83,10 +84,9 @@ void PrefixForError(StatusCallback callback,
                     const std::string& context,
                     StatusCode status,
                     const std::string& data) {
-  std::string msg = data;
-  if (status != StatusCode::kOK) {
-    msg = "[" + context + "] " + data;
-  }
+  std::string msg = status == StatusCode::kOK
+                        ? data
+                        : base::StrCat({"[", context, "] ", data});
   std::move(callback).Run(status, msg);
 }
 

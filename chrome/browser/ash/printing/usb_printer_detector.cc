@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
@@ -43,8 +44,8 @@ namespace {
 // Given a usb device, guesses the make and model for a driver lookup.
 std::string GuessEffectiveMakeAndModel(
     const device::mojom::UsbDeviceInfo& device) {
-  return base::UTF16ToUTF8(GetManufacturerName(device)) + " " +
-         base::UTF16ToUTF8(GetProductName(device));
+  return base::StrCat({base::UTF16ToUTF8(GetManufacturerName(device)), " ",
+                       base::UTF16ToUTF8(GetProductName(device))});
 }
 
 // The PrinterDetector that drives the flow for setting up a USB printer to use

@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
@@ -85,7 +86,8 @@ void PopulateAdvancedCapsLocalization(
       capability.display_name = l10n_util::GetStringUTF8(capability_it->second);
 
     for (AdvancedCapabilityValue& value : capability.values) {
-      auto value_it = l10n_map.find(capability.name + "/" + value.name);
+      auto value_it =
+          l10n_map.find(base::StrCat({capability.name, "/", value.name}));
       if (value_it != l10n_map.end())
         value.display_name = l10n_util::GetStringUTF8(value_it->second);
     }
