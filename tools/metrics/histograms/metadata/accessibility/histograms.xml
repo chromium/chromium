@@ -1133,6 +1133,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.CaptionBubbleError"
+    enum="CaptionBubbleErrorType" expires_after="2023-06-13">
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when the caption bubble displays an error. This is logged once each
+    time the caption bubble model encounters an error.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
     units="ms" expires_after="2022-07-26">
   <owner>abigailbklein@google.com</owner>
@@ -1230,7 +1241,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.Session"
+<histogram name="Accessibility.LiveCaption.Session2"
     enum="LiveCaptionSessionEvent" expires_after="2022-11-27">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>

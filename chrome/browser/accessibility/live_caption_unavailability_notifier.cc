@@ -133,7 +133,7 @@ void LiveCaptionUnavailabilityNotifier::DisplayMediaFoundationRendererError() {
   // received from another audio stream.
   live_caption_controller->OnError(
       context_.get(),
-      CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
+      CaptionBubbleErrorType::kMediaFoundationRendererUnsupported,
       base::BindRepeating(&LiveCaptionUnavailabilityNotifier::
                               OnMediaFoundationRendererErrorClicked,
                           weak_factory_.GetWeakPtr()),

@@ -75,7 +75,7 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
     live_caption_controller->OnError(
-        context_.get(), CaptionBubbleErrorType::GENERIC,
+        context_.get(), CaptionBubbleErrorType::kGeneric,
         base::RepeatingClosure(),
         base::BindRepeating(
             [](CaptionBubbleErrorType error_type, bool checked) {}));

@@ -90,23 +90,6 @@ static constexpr int kErrorImageSizeDip = 20;
 static constexpr int kErrorMessageBetweenChildSpacingDip = 16;
 static constexpr int kNoActivityIntervalSeconds = 5;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. These should be the same as
-// LiveCaptionSessionEvent in enums.xml.
-enum class SessionEvent {
-  // We began showing captions for an audio stream.
-  kStreamStarted = 0,
-  // The audio stream ended and the caption bubble closes.
-  kStreamEnded = 1,
-  // The close button was clicked, so we stopped listening to an audio stream.
-  kCloseButtonClicked = 2,
-  kMaxValue = kCloseButtonClicked,
-};
-
-void LogSessionEvent(SessionEvent event) {
-  base::UmaHistogramEnumeration("Accessibility.LiveCaption.Session", event);
-}
-
 std::unique_ptr<views::ImageButton> BuildImageButton(
     views::Button::PressedCallback callback,
     const int tooltip_text_id) {
@@ -752,7 +735,7 @@ void CaptionBubble::OnErrorChanged(
 
 #if BUILDFLAG(IS_WIN)
   if (error_type ==
-      CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED) {
+      CaptionBubbleErrorType::kMediaFoundationRendererUnsupported) {
     media_foundation_renderer_error_message_->SetVisible(has_error);
     generic_error_message_->SetVisible(false);
   } else {
@@ -1087,7 +1070,7 @@ void CaptionBubble::OnInactivityTimeout() {
 void CaptionBubble::MediaFoundationErrorCheckboxPressed() {
 #if BUILDFLAG(IS_WIN)
   error_silenced_callback_.Run(
-      CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
+      CaptionBubbleErrorType::kMediaFoundationRendererUnsupported,
       media_foundation_renderer_error_checkbox_->GetChecked());
 #endif
 }
@@ -1095,7 +1078,13 @@ void CaptionBubble::MediaFoundationErrorCheckboxPressed() {
 bool CaptionBubble::HasMediaFoundationError() {
   return (model_ && model_->HasError() &&
           model_->ErrorType() ==
-              CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED);
+              CaptionBubbleErrorType::kMediaFoundationRendererUnsupported);
+}
+
+void CaptionBubble::LogSessionEvent(SessionEvent event) {
+  if (model_ && !model_->HasError()) {
+    base::UmaHistogramEnumeration("Accessibility.LiveCaption.Session2", event);
+  }
 }
 
 bool CaptionBubble::HasActivity() {

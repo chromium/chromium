@@ -13870,6 +13870,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="CAPS Service started"/>
 </enum>
 
+<enum name="CaptionBubbleErrorType">
+  <int value="0" label="Generic"/>
+  <int value="1" label="Media foundation renderer unsupported"/>
+</enum>
+
 <enum name="CaptivePortalBlockingPageEvent">
   <int value="0" label="SHOW_ALL"/>
   <int value="1" label="OPEN_LOGIN_PAGE"/>

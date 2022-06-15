@@ -15,7 +15,14 @@ namespace captions {
 class CaptionBubble;
 class CaptionBubbleContext;
 
-enum CaptionBubbleErrorType { GENERIC, MEDIA_FOUNDATION_RENDERER_UNSUPPORTED };
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum CaptionBubbleErrorType {
+  kGeneric = 0,
+  kMediaFoundationRendererUnsupported = 1,
+  kMaxValue = kMediaFoundationRendererUnsupported
+};
+
 using OnErrorClickedCallback = base::RepeatingCallback<void()>;
 using OnDoNotShowAgainClickedCallback =
     base::RepeatingCallback<void(CaptionBubbleErrorType, bool)>;
@@ -93,7 +100,7 @@ class CaptionBubbleModel {
   bool has_error_ = false;
 
   // The most recent error type encountered.
-  CaptionBubbleErrorType error_type_ = CaptionBubbleErrorType::GENERIC;
+  CaptionBubbleErrorType error_type_ = CaptionBubbleErrorType::kGeneric;
 
   // The CaptionBubble observing changes to this model.
   raw_ptr<CaptionBubble> observer_ = nullptr;

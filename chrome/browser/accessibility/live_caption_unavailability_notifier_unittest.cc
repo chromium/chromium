@@ -33,7 +33,7 @@ class LiveCaptionUnavailabilityNotifierTest
   void OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(
       bool checked) {
     notifier_->OnMediaFoundationRendererErrorDoNotShowAgainCheckboxClicked(
-        CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED, checked);
+        CaptionBubbleErrorType::kMediaFoundationRendererUnsupported, checked);
   }
 
  protected:

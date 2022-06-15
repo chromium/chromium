@@ -174,7 +174,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   void OnError(CaptionBubbleContext* caption_bubble_context) {
     GetController()->OnError(
-        caption_bubble_context, CaptionBubbleErrorType::GENERIC,
+        caption_bubble_context, CaptionBubbleErrorType::kGeneric,
         base::RepeatingClosure(),
         base::BindRepeating(
             [](CaptionBubbleErrorType error_type, bool checked) {}));
@@ -187,7 +187,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void OnMediaFoundationError(CaptionBubbleContext* caption_bubble_context) {
     GetController()->OnError(
         caption_bubble_context,
-        CaptionBubbleErrorType::MEDIA_FOUNDATION_RENDERER_UNSUPPORTED,
+        CaptionBubbleErrorType::kMediaFoundationRendererUnsupported,
         base::RepeatingClosure(),
         base::BindRepeating(
             [](CaptionBubbleErrorType error_type, bool checked) {}));
