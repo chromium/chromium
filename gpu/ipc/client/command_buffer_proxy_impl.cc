@@ -390,6 +390,22 @@ void CommandBufferProxyImpl::DestroyTransferBuffer(int32_t id) {
                              NewDestroyTransferBuffer(id))));
 }
 
+void CommandBufferProxyImpl::ForceLostContext(error::ContextLostReason reason) {
+  CheckLock();
+  base::AutoLock lock(last_state_lock_);
+  if (last_state_.error == gpu::error::kLostContext) {
+    // Per specification, do nothing if the context is already lost.
+    return;
+  }
+  last_state_.error = gpu::error::kLostContext;
+  // The caller determines the context lost reason.
+  last_state_.context_lost_reason = reason;
+  // Calling code may be in an indeterminate state (possibly including
+  // being in a GpuControlClient callback), so avoid re-entering the
+  // GpuControlClient here.
+  DisconnectChannelInFreshCallStack();
+}
+
 void CommandBufferProxyImpl::SetGpuControlClient(GpuControlClient* client) {
   CheckLock();
   gpu_control_client_ = client;

@@ -41,6 +41,7 @@ class GPU_EXPORT CommandBufferDirect : public CommandBuffer,
       TransferBufferAllocationOption option =
           TransferBufferAllocationOption::kLoseContextOnOOM) override;
   void DestroyTransferBuffer(int32_t id) override;
+  void ForceLostContext(error::ContextLostReason reason) override;
 
   // CommandBufferServiceClient implementation:
   CommandBatchProcessedResult OnCommandBatchProcessed() override;

@@ -58,6 +58,7 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
       gpu::TransferBufferAllocationOption option =
           gpu::TransferBufferAllocationOption::kLoseContextOnOOM) override;
   void DestroyTransferBuffer(int32_t id) override;
+  void ForceLostContext(gpu::error::ContextLostReason reason) override;
 
   // gpu::GpuControl implementation:
   void SetGpuControlClient(gpu::GpuControlClient*) override;

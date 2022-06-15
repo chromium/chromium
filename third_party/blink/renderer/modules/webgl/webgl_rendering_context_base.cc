@@ -8201,6 +8201,22 @@ bool WebGLRenderingContextBase::ValidateUniformMatrixParameters(
     SynthesizeGLError(GL_INVALID_VALUE, function_name, "invalid size");
     return false;
   }
+  // By design the command buffer has an internal (signed) 32-bit
+  // limit, so ensure that the amount of data passed down to it
+  // doesn't exceed what it can handle. Only integer or float typed
+  // arrays can be passed into the uniform*v or uniformMatrix*v
+  // functions; each has 4-byte elements.
+  base::CheckedNumeric<int32_t> total_size(actual_size);
+  total_size *= 4;
+  // Add on a fixed constant to account for internal metadata in the
+  // command buffer.
+  constexpr int32_t kExtraCommandSize = 1024;
+  total_size += kExtraCommandSize;
+  if (!total_size.IsValid()) {
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      "size * elementSize, plus a constant, is too large");
+    return false;
+  }
   return true;
 }
 

@@ -792,6 +792,21 @@ void InProcessCommandBuffer::DestroyTransferBuffer(int32_t id) {
                      gpu_thread_weak_ptr_factory_.GetWeakPtr(), id));
 }
 
+void InProcessCommandBuffer::ForceLostContext(error::ContextLostReason reason) {
+  ScheduleGpuTask(
+      base::BindOnce(&InProcessCommandBuffer::ForceLostContextOnGpuThread,
+                     gpu_thread_weak_ptr_factory_.GetWeakPtr(), reason));
+}
+
+void InProcessCommandBuffer::ForceLostContextOnGpuThread(
+    error::ContextLostReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  // Similar implementation to CommandBufferDirect.
+  command_buffer_->SetContextLostReason(reason);
+  command_buffer_->SetParseError(error::kLostContext);
+}
+
 void InProcessCommandBuffer::DestroyTransferBufferOnGpuThread(int32_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   command_buffer_->DestroyTransferBuffer(id);

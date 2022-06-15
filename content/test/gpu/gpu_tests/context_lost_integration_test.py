@@ -160,6 +160,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'webgl_with_select_element.html'),
              ('ContextLost_WebGLContextLostInHiddenTab',
               'webgl.html?query=kill_after_notification'),
+             ('ContextLost_WebGLContextLostOverlyLargeUniform',
+              'webgl-overly-large-uniform.html'),
              ('ContextLost_WebGLBlockedAfterJSNavigation',
               'webgl-domain-blocking-page1.html'),
              ('ContextLost_WebGLUnblockedAfterUserInitiatedReload',
@@ -402,6 +404,16 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.EvaluateJavaScript('loseContextUsingExtension()')
     tab.Activate()
     self._WaitForTabAndCheckCompletion()
+
+  def _ContextLost_WebGLContextLostOverlyLargeUniform(self,
+                                                      test_path: str) -> None:
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--enable-features=DisableArrayBufferSizeLimitsForTesting'
+    ])
+    self._NavigateAndWaitForLoad(test_path)
+    # No reason to wait more than 10 seconds for this test to complete.
+    self._WaitForTabAndCheckCompletion(timeout=10)
 
   def _ContextLost_WebGLBlockedAfterJSNavigation(self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])

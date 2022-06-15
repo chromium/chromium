@@ -119,6 +119,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       TransferBufferAllocationOption option =
           TransferBufferAllocationOption::kLoseContextOnOOM) override;
   void DestroyTransferBuffer(int32_t id) override;
+  void ForceLostContext(error::ContextLostReason reason) override;
 
   // gpu::GpuControl implementation:
   void SetGpuControlClient(GpuControlClient* client) override;

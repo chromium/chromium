@@ -126,6 +126,10 @@ class GPU_EXPORT CommandBuffer {
   // An ordering barrier must be placed after any commands that use the buffer
   // before it is safe to call this function to destroy it.
   virtual void DestroyTransferBuffer(int32_t id) = 0;
+
+  // Forcibly lose this context. Used by higher-level code when it determines
+  // the necessity to do so. Has no effect if the context has already been lost.
+  virtual void ForceLostContext(error::ContextLostReason reason) = 0;
 };
 
 }  // namespace gpu
