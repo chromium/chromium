@@ -4,27 +4,30 @@
 
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 
-namespace chromeos {
+namespace ash {
 namespace federated {
 
 FakeServiceConnectionImpl::FakeServiceConnectionImpl() = default;
 FakeServiceConnectionImpl::~FakeServiceConnectionImpl() = default;
 
 void FakeServiceConnectionImpl::BindReceiver(
-    mojo::PendingReceiver<mojom::FederatedService> receiver) {
+    mojo::PendingReceiver<chromeos::federated::mojom::FederatedService>
+        receiver) {
   Clone(std::move(receiver));
 }
 
 void FakeServiceConnectionImpl::Clone(
-    mojo::PendingReceiver<mojom::FederatedService> receiver) {
+    mojo::PendingReceiver<chromeos::federated::mojom::FederatedService>
+        receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void FakeServiceConnectionImpl::ReportExample(const std::string& client_name,
-                                              mojom::ExamplePtr example) {
+void FakeServiceConnectionImpl::ReportExample(
+    const std::string& client_name,
+    chromeos::federated::mojom::ExamplePtr example) {
   LOG(INFO) << "In FakeServiceConnectionImpl::ReportExample, does nothing";
   return;
 }
 
 }  // namespace federated
-}  // namespace chromeos
+}  // namespace ash

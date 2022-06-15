@@ -8,13 +8,13 @@
 #include "chromeos/ash/services/federated/public/mojom/federated_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace federated {
 
 // Encapsulates a connection to the Chrome OS Federated Service daemon via its
 // Mojo interface. Usage:
 //  mojo::Remote<FederatedService> federated_service;
-//  chromeos::federated::ServiceConnection::GetInstance()->BindReceiver(
+//  ash::federated::ServiceConnection::GetInstance()->BindReceiver(
 //        federated_service.BindNewPipeAndPassReceiver());
 //  if (federated_service) {
 //    chromeos::federated::mojom::ExamplePtr example = ...;
@@ -31,7 +31,8 @@ class ServiceConnection {
 
   // Binds the receiver to the implementation in the Federated Service daemon.
   virtual void BindReceiver(
-      mojo::PendingReceiver<mojom::FederatedService> receiver) = 0;
+      mojo::PendingReceiver<chromeos::federated::mojom::FederatedService>
+          receiver) = 0;
 
  protected:
   ServiceConnection() = default;
@@ -54,6 +55,6 @@ class ScopedFakeServiceConnectionForTest {
 };
 
 }  // namespace federated
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_SERVICES_FEDERATED_PUBLIC_CPP_SERVICE_CONNECTION_H_

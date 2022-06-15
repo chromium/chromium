@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace federated {
 
 namespace {
@@ -31,7 +31,8 @@ class ServiceConnectionImpl : public ServiceConnection {
 
   // ServiceConnection:
   void BindReceiver(
-      mojo::PendingReceiver<mojom::FederatedService> receiver) override;
+      mojo::PendingReceiver<chromeos::federated::mojom::FederatedService>
+          receiver) override;
 
  private:
   // Binds the top level interface |federated_service_| to an
@@ -46,7 +47,7 @@ class ServiceConnectionImpl : public ServiceConnection {
   // Response callback for FederatedClient::BootstrapMojoConnection.
   void OnBootstrapMojoConnectionResponse(bool success);
 
-  mojo::Remote<mojom::FederatedService> federated_service_;
+  mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -56,7 +57,8 @@ ServiceConnectionImpl::ServiceConnectionImpl() {
 }
 
 void ServiceConnectionImpl::BindReceiver(
-    mojo::PendingReceiver<mojom::FederatedService> receiver) {
+    mojo::PendingReceiver<chromeos::federated::mojom::FederatedService>
+        receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindFederatedServiceIfNeeded();
   federated_service_->Clone(std::move(receiver));
@@ -81,8 +83,9 @@ void ServiceConnectionImpl::BindFederatedServiceIfNeeded() {
 
   // Bind our end of |pipe| to our mojo::Remote<FederatedService>. The daemon
   // should bind its end to a FederatedService implementation.
-  federated_service_.Bind(mojo::PendingRemote<mojom::FederatedService>(
-      std::move(pipe), 0u /* version */));
+  federated_service_.Bind(
+      mojo::PendingRemote<chromeos::federated::mojom::FederatedService>(
+          std::move(pipe), 0u /* version */));
   federated_service_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnMojoDisconnect, base::Unretained(this)));
 
@@ -131,4 +134,4 @@ ScopedFakeServiceConnectionForTest::~ScopedFakeServiceConnectionForTest() {
 }
 
 }  // namespace federated
-}  // namespace chromeos
+}  // namespace ash

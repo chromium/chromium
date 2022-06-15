@@ -16,7 +16,7 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace federated {
 namespace {
 
@@ -58,8 +58,8 @@ class FederatedServiceConnectionTest : public testing::Test {
 
 // Tests that BindReceiver runs OK (no crash) in a basic Mojo environment.
 TEST_F(FederatedServiceConnectionTest, ReportExample) {
-  mojo::Remote<mojom::FederatedService> federated_service;
-  chromeos::federated::ServiceConnection::GetInstance()->BindReceiver(
+  mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service;
+  ServiceConnection::GetInstance()->BindReceiver(
       federated_service.BindNewPipeAndPassReceiver());
 }
 
@@ -70,8 +70,8 @@ TEST_F(FederatedServiceConnectionTest, FakeServiceConnection) {
   ScopedFakeServiceConnectionForTest scoped_fake_for_test(
       &fake_service_connection);
 
-  mojo::Remote<mojom::FederatedService> federated_service;
-  chromeos::federated::ServiceConnection::GetInstance()->BindReceiver(
+  mojo::Remote<chromeos::federated::mojom::FederatedService> federated_service;
+  ServiceConnection::GetInstance()->BindReceiver(
       federated_service.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(federated_service.is_bound());
   EXPECT_TRUE(federated_service.is_connected());
@@ -82,4 +82,4 @@ TEST_F(FederatedServiceConnectionTest, FakeServiceConnection) {
 
 }  // namespace
 }  // namespace federated
-}  // namespace chromeos
+}  // namespace ash
