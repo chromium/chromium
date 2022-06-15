@@ -421,13 +421,6 @@ static_library("browser") {
 
   sources += get_target_outputs(":regex_patterns_inl_h")
 
-  if (is_win) {
-    sources += [
-      "autofill_ie_toolbar_import_win.cc",
-      "autofill_ie_toolbar_import_win.h",
-    ]
-  }
-
   if (is_ios) {
     sources += [
       "autofill_save_update_address_profile_delegate_ios.cc",
@@ -875,10 +868,6 @@ source_set("unit_tests") {
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]
-
-  if (is_win) {
-    sources += [ "autofill_ie_toolbar_import_win_unittest.cc" ]
-  }
 
   if (is_ios) {
     sources +=
