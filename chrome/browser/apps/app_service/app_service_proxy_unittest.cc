@@ -632,6 +632,93 @@ TEST_F(AppServiceProxyPreferredAppsTest,
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
 }
 
+// Test that app with overlapped supported links works properly.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlapSupportedLink) {
+  // Test Initialize.
+  GetPreferredAppsList().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  GURL filter_url_3 = GURL("https://www.abc.com/abc");
+
+  auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+                               PatternMatchType::kNone, intent_filter_1);
+  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+                               PatternMatchType::kNone, intent_filter_1);
+
+  auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+                               PatternMatchType::kNone, intent_filter_2);
+  apps_util::AddConditionValue(ConditionType::kHost, filter_url_2.host(),
+                               PatternMatchType::kNone, intent_filter_2);
+
+  auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
+
+  IntentFilters app_1_filters;
+  app_1_filters.push_back(std::move(intent_filter_1));
+  app_1_filters.push_back(std::move(intent_filter_2));
+  IntentFilters app_2_filters;
+  app_2_filters.push_back(std::move(intent_filter_3));
+
+  FakePublisherForProxyTest pub(proxy(), AppType::kArc,
+                                std::vector<std::string>{kAppId1, kAppId2});
+
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(0U, GetPreferredAppsList().GetEntrySize());
+
+  // Test that add preferred app with overlapped filters for same app will
+  // add all entries.
+  proxy()->SetSupportedLinksPreference(kAppId1,
+                                       CloneIntentFilters(app_1_filters));
+
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_EQ(2U, GetPreferredAppsList().GetEntrySize());
+
+  // Test that add preferred app with another app that has overlapped filter
+  // will clear all entries from the original app.
+  proxy()->SetSupportedLinksPreference(kAppId2,
+                                       CloneIntentFilters(app_2_filters));
+
+  EXPECT_EQ(kAppId2,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(absl::nullopt,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_EQ(1U, GetPreferredAppsList().GetEntrySize());
+
+  // Test that setting back to app 1 works.
+  proxy()->SetSupportedLinksPreference(kAppId1,
+                                       CloneIntentFilters(app_1_filters));
+
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForUrl(filter_url_3));
+  EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_EQ(2U, GetPreferredAppsList().GetEntrySize());
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
