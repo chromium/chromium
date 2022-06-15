@@ -94,9 +94,11 @@ export function shareDataPageTestSuite() {
     assertEquals('Send', getElementContent('#buttonSend'));
 
     // Verify the attach files label is in the page.
+    assertTrue(page.i18nExists('attachFilesLabel'));
     assertEquals('Attach files', getElementContent('#attachFilesLabel'));
 
     // Verify the user email label is in the page.
+    assertTrue(page.i18nExists('userEmailLabel'));
     assertEquals('Email', getElementContent('#userEmailLabel'));
 
     // Verify the share diagnostic data label is in the page.
