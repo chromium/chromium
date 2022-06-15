@@ -1984,3 +1984,6 @@ virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/* [ Pass ]
 # virtual test suite.
 wpt_internal/origin-agent-cluster-default/* [ Skip ]
 virtual/origin-agent-cluster-default/wpt_internal/origin-agent-cluster-default/* [ Pass ]
+
+# Skip manual tests, see crbug/1114920
+external/wpt/html/semantics/forms/the-input-element/disabled-click-picker-manual.html [ Skip ]
