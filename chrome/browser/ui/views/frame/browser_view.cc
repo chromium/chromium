@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -216,6 +217,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/content_accelerators/accelerator_util.h"
@@ -461,8 +463,8 @@ class ContentsSeparator : public views::View {
  private:
   // views::View:
   void OnThemeChanged() override {
-    SetBackground(views::CreateSolidBackground(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)));
+    SetBackground(views::CreateSolidBackground(
+        GetColorProvider()->GetColor(kColorToolbarContentAreaSeparator)));
     View::OnThemeChanged();
   }
 };
