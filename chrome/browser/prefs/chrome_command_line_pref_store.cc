@@ -47,6 +47,7 @@ const CommandLinePrefStore::SwitchToPreferenceMapEntry
         {switches::kAuthServerAllowlist, prefs::kAuthServerAllowlist},
         {switches::kSSLVersionMin, prefs::kSSLVersionMin},
         {switches::kSSLVersionMax, prefs::kSSLVersionMax},
+        {switches::kWebRtcIPHandlingPolicy, prefs::kWebRTCIPHandlingPolicy},
 #if BUILDFLAG(IS_ANDROID)
         {switches::kAuthAndroidNegotiateAccountType,
          prefs::kAuthAndroidNegotiateAccountType},

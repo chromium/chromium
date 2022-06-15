@@ -590,6 +590,10 @@ const char kWebRtcRemoteEventLogUploadDelayMs[] =
 const char kWebRtcRemoteEventLogUploadNoSuppression[] =
     "webrtc-event-log-upload-no-suppression";
 
+// Override WebRTC IP handling policy to mimic the behavior when WebRTC IP
+// handling policy is specified in Preferences.
+const char kWebRtcIPHandlingPolicy[] = "webrtc-ip-handling-policy";
+
 // Specify the initial window position: --window-position=x,y
 const char kWindowPosition[] = "window-position";
 

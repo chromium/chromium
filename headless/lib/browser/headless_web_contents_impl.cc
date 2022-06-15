@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -320,6 +322,14 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
       browser_context->options()->accept_language();
   web_contents_->GetMutableRendererPrefs()->hinting =
       browser_context->options()->font_render_hinting();
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kForceWebRtcIPHandlingPolicy)) {
+    web_contents_->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
+        command_line->GetSwitchValueASCII(
+            switches::kForceWebRtcIPHandlingPolicy);
+  }
+
   web_contents_->SetDelegate(web_contents_delegate_.get());
   render_process_host_->AddObserver(this);
   agent_host_->AddObserver(this);
