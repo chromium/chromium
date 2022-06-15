@@ -321,4 +321,23 @@ TEST_F(ListMarkerTest, WidthOfSymbolForFontSizeZero) {
             ListMarker::WidthOfSymbol(target_layout_object.StyleRef()));
 }
 
+// crbug.com/1310599
+TEST_F(ListMarkerTest, InlineMarginsForOutside) {
+  GetDocument().body()->setInnerHTML(
+      R"HTML(<details open><summary id="target" style="
+  font-size: 536870912px;
+  zoom: 65536;
+  list-style-position: outside;
+  ">foo</summary></details>)HTML",
+      ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+  auto* item_object = GetLayoutObjectByElementId("target");
+  auto* marker_object = ListMarker::MarkerFromListItem(item_object);
+  auto [start, end] = ListMarker::InlineMarginsForOutside(
+      GetDocument(), marker_object->StyleRef(), item_object->StyleRef(),
+      LayoutUnit::Max());
+  EXPECT_EQ(LayoutUnit::Min(), start);
+  EXPECT_EQ(LayoutUnit(), end);
+}
+
 }  // namespace blink

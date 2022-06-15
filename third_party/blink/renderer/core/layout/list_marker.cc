@@ -404,7 +404,7 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
         margin_start = -marker_inline_size;
     }
   }
-  DCHECK_EQ(margin_start + margin_end, -marker_inline_size);
+  DCHECK_EQ(-margin_start - margin_end, marker_inline_size);
   return {margin_start, margin_end};
 }
 
