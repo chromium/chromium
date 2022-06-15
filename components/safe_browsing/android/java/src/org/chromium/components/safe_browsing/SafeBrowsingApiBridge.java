@@ -14,14 +14,26 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Helper for calling GMSCore Safe Browsing API from native code.
+ *
+ * The {@link #setHandler(SafeBrowsingApiHandler)} must be invoked first. After that
+ * {@link #startUriLookup(long, String, int[])} and {@link #startAllowlistLookup(String, int)} can
+ * be used to check the URLs. The handler would be initialized lazily on the first URL check.
+ *
+ * Optionally calling {@link #ensureInitialized()} allows to initialize the handler eagerly.
+ *
+ * All of these methods can be called on any thread.
  */
 @JNINamespace("safe_browsing")
 public final class SafeBrowsingApiBridge {
     private static final String TAG = "SBApiBridge";
     private static final boolean DEBUG = false;
 
-    private static Class<? extends SafeBrowsingApiHandler> sHandlerClass;
+    // Volatile to allow it being set from any thread.
+    private static volatile SafeBrowsingApiHandler sHandler;
     private static UrlCheckTimeObserver sUrlCheckTimeObserver;
+
+    // Deprecated. See setHandler().
+    private static Class<? extends SafeBrowsingApiHandler> sHandlerClass;
 
     private SafeBrowsingApiBridge() {
         // Util class, do not instantiate.
@@ -30,29 +42,39 @@ public final class SafeBrowsingApiBridge {
     /**
      * Set the class-file for the implementation of SafeBrowsingApiHandler to use when the safe
      * browsing api is invoked.
+     *
+     * TODO(crbug.com/1296097): Remove this method when all clients are switched to
+     * {@link #setHandler(SafeBrowsingApiHandler)}.
      */
+    @Deprecated
     public static void setSafeBrowsingHandlerType(
             Class<? extends SafeBrowsingApiHandler> handlerClass) {
-        if (DEBUG) {
-            Log.i(TAG, "setSafeBrowsingHandlerType: " + String.valueOf(handlerClass != null));
-        }
         sHandlerClass = handlerClass;
     }
 
     /**
-     * Creates the singleton SafeBrowsingApiHandler instance on the first call. On subsequent calls
-     * does nothing, returns the same value as returned on the first call.
+     * Sets the {@link SafeBrowsingApiHandler} object once and for the lifetime of this process.
      *
-     * The caller must {@link #setSafeBrowsingHandlerType(Class)} first.
+     * @param handler An instance that has not been initialized.
+     */
+    public static void setHandler(SafeBrowsingApiHandler handler) {
+        assert sHandler == null;
+        sHandler = handler;
+    }
+
+    /**
+     * Initializes the singleton SafeBrowsingApiHandler instance on the first call. On subsequent
+     * calls it does nothing, returns the same value as returned on the first call.
      *
-     * @return true iff the creation succeeded.
+     * The caller must {@link #setHandler(SafeBrowsingApiHandler)} first.
+     *
+     * @return true iff the initialization succeeded.
      */
     @CalledByNative
-    public static boolean ensureCreated() {
+    public static boolean ensureInitialized() {
         return getHandler() != null;
     }
 
-    // Lazily creates the singleton. Can be invoked from any thread.
     private static SafeBrowsingApiHandler getHandler() {
         return LazyHolder.INSTANCE;
     }
@@ -82,33 +104,37 @@ public final class SafeBrowsingApiBridge {
     }
 
     private static class LazyHolder {
-        static final SafeBrowsingApiHandler INSTANCE = create();
+        static final SafeBrowsingApiHandler INSTANCE = initHandler();
     }
 
     /**
-     * Creates a SafeBrowsingApiHandler and initialize its client, if supported.
+     * Initializes the SafeBrowsingApiHandler, if supported.
      *
-     * The caller must {@link #setSafeBrowsingHandlerType(Class)} first.
+     * The caller must {@link #setHandler(SafeBrowsingApiHandler)} first.
      *
-     * @return the handler if it's usable, or null if the API is not supported.
+     * @return the handler if it is usable, or null if the API is not supported.
      */
-    private static SafeBrowsingApiHandler create() {
-        try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.create")) {
-            return createInTraceEvent();
+    private static SafeBrowsingApiHandler initHandler() {
+        try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.initHandler")) {
+            return initHandlerInTraceEvent();
         }
     }
 
-    private static SafeBrowsingApiHandler createInTraceEvent() {
+    private static SafeBrowsingApiHandler initHandlerInTraceEvent() {
         if (DEBUG) {
-            Log.i(TAG, "create");
+            Log.i(TAG, "initHandler");
         }
         SafeBrowsingApiHandler handler;
-        try {
-            handler = sHandlerClass.getDeclaredConstructor().newInstance();
-        } catch (NullPointerException | InstantiationException | IllegalAccessException
-                | NoSuchMethodException | InvocationTargetException e) {
-            Log.e(TAG, "Failed to init handler: " + e.getMessage());
-            return null;
+        if (sHandler != null) {
+            handler = sHandler;
+        } else {
+            try {
+                handler = sHandlerClass.getDeclaredConstructor().newInstance();
+            } catch (NullPointerException | InstantiationException | IllegalAccessException
+                    | NoSuchMethodException | InvocationTargetException e) {
+                Log.e(TAG, "Failed to init handler: " + e.getMessage());
+                return null;
+            }
         }
         boolean initSuccessful = handler.init((callbackId, resultStatus, metadata, checkDelta) -> {
             if (sUrlCheckTimeObserver != null) {

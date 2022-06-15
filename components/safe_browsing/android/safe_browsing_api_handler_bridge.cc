@@ -105,7 +105,7 @@ static PendingCallbacksMap* GetPendingCallbacksMapOnIOThread() {
 bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   JNIEnv* env = AttachCurrentThread();
-  if (!Java_SafeBrowsingApiBridge_ensureCreated(env)) {
+  if (!Java_SafeBrowsingApiBridge_ensureInitialized(env)) {
     return false;
   }
 
@@ -216,7 +216,7 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   JNIEnv* env = AttachCurrentThread();
-  if (!Java_SafeBrowsingApiBridge_ensureCreated(env)) {
+  if (!Java_SafeBrowsingApiBridge_ensureInitialized(env)) {
     // Mark all requests as safe. Only users who have an old, broken GMSCore or
     // have sideloaded Chrome w/o PlayStore should land here.
     RunCallbackOnIOThread(std::move(callback), SB_THREAT_TYPE_SAFE,

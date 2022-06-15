@@ -217,7 +217,7 @@ public class ChromeBrowserInitializer {
         if (mPreInflationStartupComplete) return;
 
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP)) {
-            new Thread(SafeBrowsingApiBridge::ensureCreated).start();
+            new Thread(SafeBrowsingApiBridge::ensureInitialized).start();
         }
 
         // Ensure critical files are available, so they aren't blocked on the file-system
