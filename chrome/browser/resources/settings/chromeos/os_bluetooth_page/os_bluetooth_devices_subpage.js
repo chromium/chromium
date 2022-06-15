@@ -110,6 +110,16 @@ class SettingsBluetoothDevicesSubpageElement extends
       },
 
       /**
+       * @private
+       */
+      savedDevicesSublabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('sublableWithEmail');
+        },
+      },
+
+      /**
        * @private {!Array<!PairedBluetoothDeviceProperties>}
        */
       unconnectedDevices_: {
@@ -298,6 +308,15 @@ class SettingsBluetoothDevicesSubpageElement extends
   isFastPairToggleVisible_() {
     return this.isFastPairSupportedByDevice_ &&
         loadTimeData.getBoolean('enableFastPairFlag');
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isFastPairSavedDevicesRowVisible_() {
+    return this.isFastPairSupportedByDevice_ &&
+        loadTimeData.getBoolean('enableSavedDevicesFlag');
   }
 }
 

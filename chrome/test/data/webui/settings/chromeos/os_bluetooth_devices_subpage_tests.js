@@ -10,7 +10,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {eventToPromise, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from '../../../chai_assert.js';
 
@@ -70,6 +70,31 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   test('Base Test', async function() {
     await init();
     assertTrue(!!bluetoothDevicesSubpage);
+  });
+
+  test('Only show saved devices link row when flag is true', async function() {
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    await init();
+
+    bluetoothDevicesSubpage.remove();
+    // Set flag to True and check that the row is visible.
+    loadTimeData.overrideValues({'enableSavedDevicesFlag': true});
+    bluetoothDevicesSubpage =
+        document.createElement('os-settings-bluetooth-devices-subpage');
+    document.body.appendChild(bluetoothDevicesSubpage);
+    flush();
+    assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
+        '#savedDevicesRowLink')));
+
+    bluetoothDevicesSubpage.remove();
+    // Set flag to False and check that the row is not visible.
+    loadTimeData.overrideValues({'enableSavedDevicesFlag': false});
+    bluetoothDevicesSubpage =
+        document.createElement('os-settings-bluetooth-devices-subpage');
+    document.body.appendChild(bluetoothDevicesSubpage);
+    flush();
+    assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
+        '#savedDevicesRowLink')));
   });
 
   test('Toggle button creation and a11y', async function() {

@@ -2193,6 +2193,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is disabled.">
     Bluetooth disabled
   </message>
+  <message name="IDS_BLUETOOTH_SAVED_DEVICES_LABEL" desc="Label for the link row that directs to Saved Devices settings sub-page.">
+    Devices saved to your account
+  </message>
+  <message name="IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE" desc="Subtitle for the link row that directs to Saved Devices settings sub-page.">
+    Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>john@google.com</ex></ph>
+  </message>
 
 
   <!-- Parental Controls -->

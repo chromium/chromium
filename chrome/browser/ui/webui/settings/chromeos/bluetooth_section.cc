@@ -316,6 +316,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothManaged", IDS_SETTINGS_BLUETOOTH_MANAGED},
       {"enableFastPairLabel", IDS_BLUETOOTH_ENABLE_FAST_PAIR_LABEL},
       {"enableFastPairSubtitle", IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE},
+      {"savedDevicesLabel", IDS_BLUETOOTH_SAVED_DEVICES_LABEL},
+      {"savedDevicesSubtitle", IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE},
       {"bluetoothPrimaryUserControlled",
        IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED},
       {"bluetoothDeviceWithConnectionStatus",
@@ -360,6 +362,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("enableFastPairFlag", features::IsFastPairEnabled());
+  html_source->AddBoolean("enableSavedDevicesFlag",
+                          features::IsFastPairSavedDevicesEnabled());
   chromeos::bluetooth::AddLoadTimeData(html_source);
 }
 
