@@ -488,6 +488,10 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
           base::BindRepeating(&PreferenceEventRouter::OnAshPrefChanged,
                               base::Unretained(this), pref_path,
                               pref.extension_pref, pref.browser_pref)));
+      registrar_.Add(
+          pref.browser_pref,
+          base::BindRepeating(&PreferenceEventRouter::OnControlledPrefChanged,
+                              base::Unretained(this), registrar_.prefs()));
       continue;
     }
 #endif
@@ -508,6 +512,43 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
 PreferenceEventRouter::~PreferenceEventRouter() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+void PreferenceEventRouter::OnControlledPrefChanged(
+    PrefService* pref_service,
+    const std::string& browser_pref) {
+  // This pref has a corresponding value in ash. We should send the updated
+  // value of the pref to ash.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+    // Without the service, we cannot update this pref in ash.
+    LOG(ERROR) << ErrorUtils::FormatErrorMessage(
+        "API unavailable to set pref * in ash.", browser_pref);
+    return;
+  }
+
+  crosapi::mojom::PrefPath pref_path =
+      PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
+  // Should be a known pref path. Otherwise we would not have created this
+  // observer.
+  DCHECK(pref_path != crosapi::mojom::PrefPath::kUnknown);
+
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(browser_pref);
+  CHECK(pref);
+  if (pref->IsExtensionControlled()) {
+    // The pref has been set in lacros by an extension.
+    // Transmit the value to ash to be stored in the standalone browser
+    // prefstore.
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()->SetPref(
+        pref_path, pref->GetValue()->Clone(), base::OnceClosure());
+  } else {
+    // The pref hasn't been set in lacros.
+    // Remove any value from the standalone browser prefstore in ash.
+    lacros_service->GetRemote<crosapi::mojom::Prefs>()
+        ->ClearExtensionControlledPref(pref_path, base::OnceClosure());
+  }
+}
+
 void PreferenceEventRouter::OnAshPrefChanged(crosapi::mojom::PrefPath pref_path,
                                              const std::string& extension_pref,
                                              const std::string& browser_pref,
@@ -727,6 +768,13 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
     DCHECK(rv);
     EventRouter::Get(profile_)->RegisterObserver(this, event_name);
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On lacros, ensure the PreferenceEventRouter is always created to watch for
+  // and notify of any pref changes, even if there's no extension listeners.
+  // TODO(crbug.com/1334829): Abstract out lacros logic from the
+  // PreferenceEventRouter so we don't needlessly dispatch extension events.
+  EnsurePreferenceEventRouterCreated();
+#endif
   content_settings_store()->AddObserver(this);
 }
 
@@ -754,8 +802,15 @@ PreferenceAPI* PreferenceAPI::Get(content::BrowserContext* context) {
 }
 
 void PreferenceAPI::OnListenerAdded(const EventListenerInfo& details) {
-  preference_event_router_ = std::make_unique<PreferenceEventRouter>(profile_);
+  EnsurePreferenceEventRouterCreated();
   EventRouter::Get(profile_)->UnregisterObserver(this);
+}
+
+void PreferenceAPI::EnsurePreferenceEventRouterCreated() {
+  if (!preference_event_router_) {
+    preference_event_router_ =
+        std::make_unique<PreferenceEventRouter>(profile_);
+  }
 }
 
 void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,

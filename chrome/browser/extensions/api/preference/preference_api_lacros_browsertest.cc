@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/prefs.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
@@ -122,6 +123,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
   if (!IsServiceAvailable()) {
     return;
   }
+  absl::optional<::base::Value> out_value;
+  crosapi::mojom::PrefsAsyncWaiter async_waiter(
+      chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>().get());
+
+  // At start, the value in ash should not be set.
+  async_waiter.GetPref(crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled,
+                       &out_value);
+  EXPECT_FALSE(out_value.value().GetBool());
+
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("preference/lacros");
   {
@@ -134,6 +144,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
   CheckPreferencesSet();
+
+  // In ash, the value should now be set.
+  async_waiter.GetPref(crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled,
+                       &out_value);
+  EXPECT_TRUE(out_value.value().GetBool());
 
   // The settings should not be reset when the extension is reloaded.
   {
@@ -151,6 +166,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiLacrosBrowserTest, Lacros) {
   UninstallExtension(last_loaded_extension_id());
   observer.WaitForExtensionUninstalled();
   CheckPreferencesCleared();
+
+  if (DoesAshSupportObservers()) {
+    // When the extension in uninstalled, the pref in lacros should be the
+    // default value (false). This only works if Ash correctly implements
+    // extension-controlled pref observers.
+    async_waiter.GetPref(
+        crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled, &out_value);
+    EXPECT_FALSE(out_value.value().GetBool());
+  }
 
   {
     ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
