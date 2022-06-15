@@ -52,7 +52,6 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_event_details.h"
@@ -601,7 +600,7 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
   // the WebUI can use the CSS variables to color the tab strip
   base::flat_map<std::string, std::string> colors;
   colors["--tabstrip-background-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetColorProviderColor(ui::kColorFrameActive));
+      embedder_->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE));
   colors["--tabstrip-tab-background-color"] = color_utils::SkColorToRgbaString(
       embedder_->GetColor(ThemeProperties::COLOR_TOOLBAR));
   colors["--tabstrip-tab-text-color"] = color_utils::SkColorToRgbaString(
@@ -636,7 +635,7 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors["--tabstrip-scrollbar-thumb-color-rgb"] =
       color_utils::SkColorToRgbString(color_utils::GetColorWithMaxContrast(
-          embedder_->GetColorProviderColor(ui::kColorFrameActive)));
+          embedder_->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)));
 #endif
 
   std::move(callback).Run(std::move(colors));
