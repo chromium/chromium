@@ -352,6 +352,7 @@
     },
     {
       name: "CapabilityDelegationFullscreenRequest",
+      status: "stable",
     },
     {
       name: "CaptureHandle",
