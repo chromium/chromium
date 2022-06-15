@@ -1451,7 +1451,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_FALSE(GetCookies(embedded_test_server()->base_url()).empty());
 }
 
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CookiesEnabled) {
+// Disabled due to flakiness. See https://crbug.com/1273903.
+IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
+                       DISABLED_CookiesEnabled) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // Check that the cookie from the first stage of the test was / was not
