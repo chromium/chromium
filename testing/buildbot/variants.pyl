@@ -463,6 +463,7 @@
   'WEBVIEW_TRICHROME_FULL_CTS_TESTS': {
     'identifier': 'full_mode',
     'swarming': {
+      'shards': 2,
       'cipd_packages': [
         {
           'cipd_package': 'chromium/android_webview/tools/cts_archive',

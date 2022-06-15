@@ -14796,7 +14796,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "webview_trichrome_cts_tests",
         "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
@@ -19684,7 +19685,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "webview_trichrome_64_cts_tests",
         "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
@@ -50492,7 +50494,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "webview_trichrome_cts_tests",
         "test_id_prefix": "ninja://android_webview/test:webview_trichrome_cts_tests/",
