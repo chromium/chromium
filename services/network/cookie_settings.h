@@ -177,6 +177,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     ThirdPartyBlockingOutcome third_party_blocking_outcome;
   };
 
+  // Determines whether cookie access should be blocked due to the
+  // third-party-cookie-blocking setting and any relevant Storage Access
+  // permission grants. Does not distinguish between access to unpartitioned
+  // state and access to partitioned state.
+  bool BlockDueToThirdPartyCookieBlockingSetting(
+      bool is_third_party_request,
+      const GURL& url,
+      const GURL& first_party_url,
+      ContentSetting cookie_setting) const;
+
+  // Determines the scope of third-party-cookie-blocking, i.e. whether it
+  // applies to all cookies or just unpartitioned cookies. Assumes that
+  // BlockDueToThirdpartyCookieBlockingSetting has been called and returned
+  // true.
+  ThirdPartyBlockingOutcome GetThirdPartyBlockingScope(
+      const GURL& first_party_url) const;
+
   // Returns the cookie setting for the given request, along with metadata
   // associated with the lookup. Namely, whether the setting is due to
   // third-party cookie blocking settings or not.

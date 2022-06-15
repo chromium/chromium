@@ -187,6 +187,51 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
   }
 }
 
+bool CookieSettings::BlockDueToThirdPartyCookieBlockingSetting(
+    bool is_third_party_request,
+    const GURL& url,
+    const GURL& first_party_url,
+    ContentSetting cookie_setting) const {
+  if (block_third_party_cookies_ && is_third_party_request &&
+      !base::Contains(third_party_cookies_allowed_schemes_,
+                      first_party_url.scheme())) {
+    // See if a Storage Access permission grant can unblock.
+    if (const ContentSettingPatternSource* match =
+            FindMatchingSetting(url, first_party_url, storage_access_grants_);
+        match && match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+      FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
+                                     ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
+      return false;
+    }
+
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
+    return true;
+  }
+
+  // Cookies aren't blocked solely due to the third-party-cookie blocking
+  // setting, but they still may be blocked due to a global default. So we
+  // have to check what the setting is here.
+  FireStorageAccessHistogram(
+      cookie_setting == CONTENT_SETTING_BLOCK
+          ? net::cookie_util::StorageAccessResult::ACCESS_BLOCKED
+          : net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
+
+  return false;
+}
+
+CookieSettings::ThirdPartyBlockingOutcome
+CookieSettings::GetThirdPartyBlockingScope(const GURL& first_party_url) const {
+  // If cookies are allowed for the first-party URL then we allow
+  // partitioned cross-site cookies.
+  if (const ContentSettingPatternSource* match = FindMatchingSetting(
+          first_party_url, first_party_url, content_settings_);
+      !match || match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+    return ThirdPartyBlockingOutcome::kPartitionedStateAllowed;
+  }
+  return ThirdPartyBlockingOutcome::kAllStateDisallowed;
+}
+
 CookieSettings::CookieSettingWithMetadata
 CookieSettings::GetCookieSettingWithMetadata(
     const GURL& url,
@@ -204,66 +249,27 @@ CookieSettings::GetCookieSettingWithMetadata(
   ContentSetting cookie_setting = CONTENT_SETTING_ALLOW;
   ThirdPartyBlockingOutcome third_party_blocking_outcome =
       ThirdPartyBlockingOutcome::kIrrelevant;
-  if (block_third_party_cookies_ && is_third_party_request &&
-      !base::Contains(third_party_cookies_allowed_schemes_,
-                      first_party_url.scheme())) {
-    // We'll set `cookie_setting` to `CONTENT_SETTING_BLOCK`
-    // below iff there's no Storage Access permission grant
-    // that can allow access.
-    third_party_blocking_outcome =
-        ThirdPartyBlockingOutcome::kAllStateDisallowed;
-  }
 
+  bool found_explicit_setting = false;
   if (const ContentSettingPatternSource* match =
           FindMatchingSetting(url, first_party_url, content_settings_);
       match) {
     cookie_setting = match->GetContentSetting();
-    if (cookie_setting == CONTENT_SETTING_BLOCK || IsExplicitSetting(*match)) {
-      third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
-    }
+    found_explicit_setting = IsExplicitSetting(*match);
   }
 
-  switch (third_party_blocking_outcome) {
-    case ThirdPartyBlockingOutcome::kAllStateDisallowed:
-      if (const ContentSettingPatternSource* match =
-              FindMatchingSetting(url, first_party_url, storage_access_grants_);
-          match && match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
-        third_party_blocking_outcome = ThirdPartyBlockingOutcome::kIrrelevant;
-        FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
-                                       ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);
-      } else {
-        cookie_setting = CONTENT_SETTING_BLOCK;
-        FireStorageAccessHistogram(
-            net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
-      }
-      break;
-    case ThirdPartyBlockingOutcome::kIrrelevant:
-      // Cookies aren't blocked solely due to the third-party-cookie blocking
-      // setting, but they still may be blocked due to a global default. So we
-      // have to check what the setting is here.
-      FireStorageAccessHistogram(
-          cookie_setting == CONTENT_SETTING_BLOCK
-              ? net::cookie_util::StorageAccessResult::ACCESS_BLOCKED
-              : net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
-      break;
-    case ThirdPartyBlockingOutcome::kPartitionedStateAllowed:
-      NOTREACHED();
-      break;
-  }
-
-  if (third_party_blocking_outcome ==
-      ThirdPartyBlockingOutcome::kAllStateDisallowed) {
-    // If the third-party cookie blocking setting is enabled and will block
-    // access to unpartitioned cookies, we check if the user has any content
-    // settings for the first-party URL as the primary pattern. If cookies are
-    // allowed for the first-party URL then we allow partitioned cross-site
-    // cookies.
-    if (const ContentSettingPatternSource* match = FindMatchingSetting(
-            first_party_url, first_party_url, content_settings_);
-        !match || match->GetContentSetting() == CONTENT_SETTING_ALLOW) {
+  if (cookie_setting != CONTENT_SETTING_BLOCK && !found_explicit_setting) {
+    if (BlockDueToThirdPartyCookieBlockingSetting(
+            is_third_party_request, url, first_party_url, cookie_setting)) {
+      cookie_setting = CONTENT_SETTING_BLOCK;
       third_party_blocking_outcome =
-          ThirdPartyBlockingOutcome::kPartitionedStateAllowed;
+          GetThirdPartyBlockingScope(first_party_url);
     }
+  } else {
+    FireStorageAccessHistogram(
+        cookie_setting == CONTENT_SETTING_BLOCK
+            ? net::cookie_util::StorageAccessResult::ACCESS_BLOCKED
+            : net::cookie_util::StorageAccessResult::ACCESS_ALLOWED);
   }
 
   return {cookie_setting, third_party_blocking_outcome};
