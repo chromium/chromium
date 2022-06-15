@@ -27,6 +27,12 @@
   ],
   use: [
     {
+      // Required by the build-info-service child.
+      directory: "build-info",
+      rights: [ "r*" ],
+      path: "/config/build-info",
+    },
+    {
       directory: "config-data",
       rights: [ "r*" ],
       path: "/config/data",
@@ -58,7 +64,6 @@
     },
     {
       protocol: [
-        "fuchsia.hwinfo.Product",
         "fuchsia.media.ProfileProvider",
         "fuchsia.process.Launcher",
         "fuchsia.sys.Loader",
