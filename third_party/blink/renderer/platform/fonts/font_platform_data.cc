@@ -29,6 +29,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -200,10 +202,14 @@ SkTypeface* FontPlatformData::Typeface() const {
 }
 
 HarfBuzzFace* FontPlatformData::GetHarfBuzzFace() const {
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  return &harfbuzz_face_.GetOrCreate(const_cast<FontPlatformData*>(this));
+#else
   if (!harfbuzz_face_)
     harfbuzz_face_ = HarfBuzzFace::Create(const_cast<FontPlatformData*>(this));
 
   return harfbuzz_face_.get();
+#endif
 }
 
 bool FontPlatformData::HasSpaceInLigaturesOrKerning(
@@ -343,5 +349,23 @@ String FontPlatformData::GetPostScriptName() const {
   bool success = typeface_->getPostScriptName(&postscript_name);
   return success ? postscript_name.c_str() : String();
 }
+
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+// --
+
+FontPlatformData::ThreadSpecificHarfBuzzFace::ThreadSpecificHarfBuzzFace() =
+    default;
+FontPlatformData::ThreadSpecificHarfBuzzFace::~ThreadSpecificHarfBuzzFace() =
+    default;
+
+HarfBuzzFace& FontPlatformData::ThreadSpecificHarfBuzzFace::GetOrCreate(
+    FontPlatformData* platform_data) {
+  base::AutoLock guard(lock_);
+  const auto result = map_.insert(CurrentThread(), nullptr);
+  if (result.is_new_entry)
+    result.stored_value->value = HarfBuzzFace::Create(platform_data);
+  return *result.stored_value->value;
+}
+#endif
 
 }  // namespace blink
