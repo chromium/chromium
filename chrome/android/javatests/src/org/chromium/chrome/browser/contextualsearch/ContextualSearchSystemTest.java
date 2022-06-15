@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -102,19 +101,6 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
                                        .isAppMenuShowing(),
                     Matchers.is(isVisible));
         });
-    }
-
-    /**
-     * Sets the online status and reloads the current Tab with our test URL.
-     * @param isOnline Whether to go online.
-     */
-    private void setOnlineStatusAndReload(boolean isOnline) {
-        mFakeServer.setIsOnline(isOnline);
-        final String testUrl = mTestServer.getURL(mTestPage);
-        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.reload());
-        // Make sure the page is fully loaded.
-        ChromeTabUtils.waitForTabPageLoaded(tab, testUrl);
     }
 
     //============================================================================================
@@ -230,33 +216,5 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         assertAppMenuVisibility(true);
 
         closeAppMenu();
-    }
-
-    /**
-     * Tests that Contextual Search is fully disabled when offline.
-     */
-    @Test
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled in 2017.  https://crbug.com/761946")
-    // @SmallTest
-    // @Feature({"ContextualSearch"})
-    // // NOTE: Remove the flag so we will run just this test with onLine detection enabled.
-    // @CommandLineFlags.Remove(ContextualSearchFieldTrial.ONLINE_DETECTION_DISABLED)
-    public void testNetworkDisconnectedDeactivatesSearch(@EnabledFeature int enabledFeature)
-            throws Exception {
-        setOnlineStatusAndReload(false);
-        // We use the longpress gesture here because unlike Tap it's never suppressed.
-        longPressNodeWithoutWaiting(SEARCH_NODE);
-        waitForSelectActionBarVisible();
-        // Verify the panel didn't open.  It should open by now if CS has not been disabled.
-        // TODO(donnd): Consider waiting for some condition to be sure we'll catch all failures,
-        // e.g. in case the Bar is about to show but has not yet appeared.  Currently catches ~90%.
-        assertPanelClosedOrUndefined();
-
-        // Similar sequence with network connected should peek for Longpress.
-        setOnlineStatusAndReload(true);
-        longPressNodeWithoutWaiting(SEARCH_NODE);
-        waitForSelectActionBarVisible();
-        waitForPanelToPeek();
     }
 }

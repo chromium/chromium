@@ -33,11 +33,6 @@ interface ContextualSearchNetworkCommunicator {
     void handleSearchTermResolutionResponse(ResolvedSearchTerm resolvedSearchTerm);
 
     /**
-     * @return Whether the device is currently online.
-     */
-    boolean isOnline();
-
-    /**
      * Stops any navigation in the overlay panel's {@code WebContents}.
      */
     void stopPanelContentsNavigation();

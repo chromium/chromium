@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
@@ -32,16 +31,12 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Implements a fake Contextual Search server, for testing purposes.
- * TODO(donnd): add more functionality to this class once the overall approach has been validated.
  * TODO(donnd): rename this class when we refactor and rename the interface it implements.  Should
  *              be something like ContextualSearchFakeEnvironment.
  */
 @VisibleForTesting
 class ContextualSearchFakeServer
         implements ContextualSearchNetworkCommunicator, OverlayPanelContentFactory {
-    private static final String SIMPLE_SERP_URL =
-            "/chrome/test/data/android/contextualsearch/simple_serp.html";
-
     private final ContextualSearchPolicy mPolicy;
 
     private final ContextualSearchTestHost mTestHost;
@@ -61,11 +56,8 @@ class ContextualSearchFakeServer
 
     private String mLoadedUrl;
     private int mLoadedUrlCount;
-    private boolean mUseInvalidLowPriorityPath;
-    private boolean mActuallyLoadALiveSerp;
 
     private String mSearchTermRequested;
-    private boolean mIsOnline = true;
     private boolean mIsExactResolve;
     private ContextualSearchContext mSearchContext;
 
@@ -426,15 +418,10 @@ class ContextualSearchFakeServer
 
         @Override
         public void loadUrl(String url, boolean shouldLoadImmediately) {
-            if (mUseInvalidLowPriorityPath && isLowPriorityUrl(url)) {
-                url = makeInvalidUrl(url);
-            }
             mLoadedUrl = url;
             mLoadedUrlCount++;
 
-            String urlToLoad = mActuallyLoadALiveSerp ? url : SIMPLE_SERP_URL;
-            // TODO(donnd): make low priority if needed?
-            super.loadUrl(urlToLoad, shouldLoadImmediately);
+            super.loadUrl(url, shouldLoadImmediately);
             mContentsObserver = new ContentsObserver(getWebContents());
         }
 
@@ -442,23 +429,6 @@ class ContextualSearchFakeServer
         public void removeLastHistoryEntry(String url, long timeInMs) {
             // Override to prevent call to native code.
             mRemovedUrls.add(url);
-        }
-
-        /**
-         * Creates an invalid version of the given URL.
-         * @param baseUrl The URL to build upon / modify.
-         * @return The same URL but with an invalid path.
-         */
-        private String makeInvalidUrl(String baseUrl) {
-            return Uri.parse(baseUrl).buildUpon().appendPath("invalid").build().toString();
-        }
-
-        /**
-         * @return Whether the given URL is a low-priority URL.
-         */
-        private boolean isLowPriorityUrl(String url) {
-            // Just check if it's set up to prefetch.
-            return url.contains("&pf=c");
         }
     }
 
@@ -523,51 +493,16 @@ class ContextualSearchFakeServer
     }
 
     /**
-     * Sets whether the device is currently online or not.
-     */
-    @VisibleForTesting
-    void setIsOnline(boolean isOnline) {
-        mIsOnline = isOnline;
-    }
-
-    /**
      * Resets the fake server's member data.
      */
     @VisibleForTesting
     void reset() {
         mLoadedUrl = null;
         mSearchTermRequested = null;
-        mIsOnline = true;
         mLoadedUrlCount = 0;
-        mUseInvalidLowPriorityPath = false;
-        mActuallyLoadALiveSerp = false;
         mIsExactResolve = false;
         mSearchContext = null;
         mExpectedFakeResolveSearch = null;
-    }
-
-    /**
-     * Sets a flag to build low-priority paths that are invalid in order to test failover.
-     */
-    @VisibleForTesting
-    void setLowPriorityPathInvalid() {
-        mUseInvalidLowPriorityPath = true;
-    }
-
-    /**
-     * Sets a flag to actually load a live Search Result Page in the Panel.
-     */
-    @VisibleForTesting
-    void setActuallyLoadALiveSerp() {
-        mActuallyLoadALiveSerp = true;
-    }
-
-    /**
-     * @return Whether the most recent loadUrl was on an invalid path.
-     */
-    @VisibleForTesting
-    boolean didAttemptLoadInvalidUrl() {
-        return mUseInvalidLowPriorityPath && mLoadedUrl.contains("invalid");
     }
 
     @VisibleForTesting
@@ -622,11 +557,6 @@ class ContextualSearchFakeServer
     @Override
     public void handleSearchTermResolutionResponse(ResolvedSearchTerm resolvedSearchTerm) {
         mBaseManager.handleSearchTermResolutionResponse(resolvedSearchTerm);
-    }
-
-    @Override
-    public boolean isOnline() {
-        return mIsOnline;
     }
 
     @Override

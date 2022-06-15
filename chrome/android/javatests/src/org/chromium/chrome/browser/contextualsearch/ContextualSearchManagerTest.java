@@ -213,45 +213,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests that a live request that fails (for an invalid URL) does a failover to a
-     * normal priority request once the user triggers the failover by opening the panel.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "https://crbug.com/1140413")
-    public void testLivePrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
-            throws Exception {
-        // Test fails with out-of-process network service. crbug.com/1071721
-        if (!ChromeFeatureList.isEnabled("NetworkServiceInProcess2")) return;
-
-        mFakeServer.reset();
-        mFakeServer.setLowPriorityPathInvalid();
-        mFakeServer.setActuallyLoadALiveSerp();
-        simulateResolveSearch("search");
-        assertLoadedLowPriorityInvalidUrl();
-        Assert.assertTrue(mFakeServer.didAttemptLoadInvalidUrl());
-
-        // we should not automatically issue a new request.
-        Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
-
-        // Fake a navigation error if offline.
-        // When connected to the Internet this error may already have happened due to actually
-        // trying to load the invalid URL.  But on test bots that are not online we need to
-        // fake that a navigation happened with an error. See crbug.com/682953 for details.
-        if (!mManager.isOnline()) {
-            boolean isFailure = true;
-            fakeContentViewDidNavigate(isFailure);
-        }
-
-        // Once the bar opens, we make a new request at normal priority.
-        expandPanelAndAssert();
-        waitForNormalPriorityUrlLoaded();
-        Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
-    }
-
-    /**
      * Tests that long-press selects text, and a subsequent tap will unselect text.
      */
     @Test
