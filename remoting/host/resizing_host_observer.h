@@ -22,6 +22,8 @@ class TickClock;
 
 namespace remoting {
 
+class DesktopDisplayInfo;
+class DesktopDisplayInfoMonitor;
 class DesktopResizer;
 
 // TODO(alexeypa): Rename this class to reflect that it is not
@@ -41,6 +43,8 @@ class ResizingHostObserver : public ScreenControls {
 
   ~ResizingHostObserver() override;
 
+  void RegisterForDisplayChanges(DesktopDisplayInfoMonitor& monitor);
+
   // ScreenControls interface.
   void SetScreenResolution(const ScreenResolution& resolution,
                            absl::optional<webrtc::ScreenId> screen_id) override;
@@ -52,6 +56,8 @@ class ResizingHostObserver : public ScreenControls {
 
  private:
   void RestoreScreenResolution();
+
+  void OnDisplayInfoChanged(const DesktopDisplayInfo& display_info);
 
   std::unique_ptr<DesktopResizer> desktop_resizer_;
   ScreenResolution original_resolution_;

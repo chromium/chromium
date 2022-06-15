@@ -122,8 +122,9 @@ DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
     DesktopDisplayInfoMonitor::Callback callback =
         std::move(converting_callback).Then(std::move(video_layout_callback));
 
-    display_info_monitor_ = std::make_unique<DesktopDisplayInfoMonitor>(
-        ui_task_runner_, std::move(callback));
+    display_info_monitor_ =
+        std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_);
+    display_info_monitor_->AddCallback(std::move(callback));
   }
   return display_info_monitor_.get();
 }
