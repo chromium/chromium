@@ -288,7 +288,8 @@ class LocalDeviceInstrumentationTestRun(
                            instant_app=self._test_instance.test_apk_as_instant))
 
       steps.extend(
-          install_helper(apk) for apk in self._test_instance.additional_apks)
+          install_helper(apk, instant_app=self._test_instance.IsApkInstant(apk))
+          for apk in self._test_instance.additional_apks)
 
       # We'll potentially need the package names later for setting app
       # compatibility workarounds.

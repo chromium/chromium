@@ -32,6 +32,9 @@ from pylib.utils import test_filter
 # contents need to be updated if there is an important fix to any of
 # the tests
 
+_APP_MODE_FULL = 'full'
+_APP_MODE_INSTANT = 'instant'
+
 _TEST_RUNNER_PATH = os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir,
     'build', 'android', 'test_runner.py')
@@ -101,15 +104,15 @@ def GetCTSModuleNames(arch, cts_release):
   return [os.path.basename(r['apk']) for r in test_runs]
 
 
-def GetTestRunFilterArg(args, test_run, arch=None):
+def GetTestRunFilterArg(args, test_run, test_app_mode=None, arch=None):
   """ Merges json file filters with cmdline filters using
       test_filter.InitializeFilterFromArgs
   """
 
+  test_app_mode = test_app_mode or _APP_MODE_FULL
+
   # Convert cmdline filters to test-filter style
   filter_string = test_filter.InitializeFilterFromArgs(args)
-
-  test_app_mode = 'instant' if args.test_apk_as_instant else 'full'
 
   # Get all the filters for either include or exclude patterns
   # and filter where an architecture is provided and does not match
@@ -144,12 +147,15 @@ def RunCTS(test_runner_args,
            apk,
            voice_service=None,
            additional_apks=None,
+           test_app_mode=None,
            json_results_file=None):
   """Run tests in apk using test_runner script at _TEST_RUNNER_PATH.
 
   Returns the script result code, test results will be stored in
   the json_results_file file if specified.
   """
+
+  test_app_mode = test_app_mode or _APP_MODE_FULL
 
   local_test_runner_args = test_runner_args + ['--test-apk',
                                                os.path.join(local_cts_dir, apk)]
@@ -165,6 +171,12 @@ def RunCTS(test_runner_args,
       if additional_apk.get('forced_queryable', False):
         local_test_runner_args += [
             '--forced-queryable-additional-apk', additional_apk_tmp
+        ]
+
+      if test_app_mode == _APP_MODE_INSTANT and not additional_apk.get(
+          'force_full_mode', False):
+        local_test_runner_args += [
+            '--instant-additional-apk', additional_apk_tmp
         ]
 
   if json_results_file:
@@ -253,25 +265,29 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
       # services to run
       additional_apks = cts_test_run.get('additional_apks')
 
+      test_app_mode = (_APP_MODE_INSTANT
+                       if args.test_apk_as_instant else _APP_MODE_FULL)
+
       # If --module-apk is specified then skip tests in all other modules
       if args.module_apk and os.path.basename(test_apk) != args.module_apk:
         continue
 
       iter_test_runner_args = test_runner_args + GetTestRunFilterArg(
-          args, cts_test_run, arch)
+          args, cts_test_run, test_app_mode, arch)
 
       if json_results_file:
         with tempfile.NamedTemporaryFile() as iteration_json_file:
           iteration_cts_result = RunCTS(iter_test_runner_args, local_cts_dir,
                                         test_apk, voice_service,
-                                        additional_apks,
+                                        additional_apks, test_app_mode,
                                         iteration_json_file.name)
           with open(iteration_json_file.name) as f:
             additional_results_json = json.load(f)
             MergeTestResults(cts_results_json, additional_results_json)
       else:
         iteration_cts_result = RunCTS(iter_test_runner_args, local_cts_dir,
-                                      test_apk, voice_service, additional_apks)
+                                      test_apk, voice_service, test_app_mode,
+                                      additional_apks)
       if iteration_cts_result:
         cts_result = iteration_cts_result
     if json_results_file:

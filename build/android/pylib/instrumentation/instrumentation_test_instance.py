@@ -630,6 +630,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._additional_apks = []
     self._forced_queryable_additional_apks = []
+    self._instant_additional_apks = []
     self._apk_under_test = None
     self._apk_under_test_incremental_install_json = None
     self._modules = None
@@ -808,7 +809,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
           '(This may just mean that the test package is '
           'currently being installed.)', self._test_package)
 
-    for x in set(args.additional_apks + args.forced_queryable_additional_apks):
+    for x in set(args.additional_apks + args.forced_queryable_additional_apks +
+                 args.instant_additional_apks):
       if not os.path.exists(x):
         error_func('Unable to find additional APK: %s' % x)
 
@@ -817,6 +819,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
       if x in args.forced_queryable_additional_apks:
         self._forced_queryable_additional_apks.append(apk)
+
+      if x in args.instant_additional_apks:
+        self._instant_additional_apks.append(apk)
 
   def _initializeDataDependencyAttributes(self, args, data_deps_delegate):
     self._data_deps = []
@@ -1136,6 +1141,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def IsApkForceQueryable(self, apk):
     return apk in self._forced_queryable_additional_apks
+
+  def IsApkInstant(self, apk):
+    return apk in self._instant_additional_apks
 
   # pylint: disable=no-self-use
   def _InflateTests(self, tests):

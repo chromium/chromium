@@ -460,6 +460,36 @@
       'ios_runtime_cache_16_0',
     ],
   },
+  'WEBVIEW_TRICHROME_FULL_CTS_TESTS': {
+    'identifier': 'full_mode',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/android_webview/tools/cts_archive',
+          'location': 'android_webview/tools/cts_archive',
+          'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+        }
+      ]
+    },
+  },
+  'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS': {
+    'identifier': 'instant_mode',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/android_webview/tools/cts_archive',
+          'location': 'android_webview/tools/cts_archive',
+          'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+        }
+      ]
+    },
+    'args': [
+      '--exclude-annotation',
+      'AppModeFull',
+      '--test-apk-as-instant',
+    ],
+    'test': 'webview_trichrome_cts_tests',
+  },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
       '--webview-apk-path=apks/AOSP_SystemWebView.apk',

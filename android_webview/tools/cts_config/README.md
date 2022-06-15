@@ -36,6 +36,14 @@ Android release basis by editing
               // be queryable by other APKs
               // Only usable from Android 11+
               "forced_queryable": true
+            },
+            {
+              "apk": "location of the additional apk in the cts zip file",
+              // An optional boolean flag to indicate an additional APK should always
+              // be installed in full mode, even when the tests are being run in
+              // instant mode
+              // This flag is only available for additional APKs
+              "force_full_mode": true
             }
           ]
         },

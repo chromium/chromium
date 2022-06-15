@@ -140,7 +140,8 @@ class _RunCtsTest(unittest.TestCase):
     }
 
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.test1:good.test2'],
-                     run_cts.GetTestRunFilterArg(mock_args, cts_run, 'x86'))
+                     run_cts.GetTestRunFilterArg(mock_args, cts_run,
+                                                 arch='x86'))
 
   def testFilter_ExcludesForArchitecture(self):
     mock_args = self._getArgsMock(skip_expected_failures=True)
@@ -160,10 +161,11 @@ class _RunCtsTest(unittest.TestCase):
     }
 
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=-good.test1:good.test2'],
-                     run_cts.GetTestRunFilterArg(mock_args, cts_run, 'x86'))
+                     run_cts.GetTestRunFilterArg(mock_args, cts_run,
+                                                 arch='x86'))
 
   def testFilter_IncludesForMode(self):
-    mock_args = self._getArgsMock(test_apk_as_instant=True)
+    mock_args = self._getArgsMock()
 
     cts_run = {
         'apk':
@@ -180,11 +182,12 @@ class _RunCtsTest(unittest.TestCase):
     }
 
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.test1:good.test2'],
-                     run_cts.GetTestRunFilterArg(mock_args, cts_run))
+                     run_cts.GetTestRunFilterArg(mock_args,
+                                                 cts_run,
+                                                 test_app_mode='instant'))
 
   def testFilter_ExcludesForMode(self):
-    mock_args = self._getArgsMock(test_apk_as_instant=True,
-                                  skip_expected_failures=True)
+    mock_args = self._getArgsMock(skip_expected_failures=True)
 
     cts_run = {
         'apk':
@@ -201,7 +204,9 @@ class _RunCtsTest(unittest.TestCase):
     }
 
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=-good.test1:good.test2'],
-                     run_cts.GetTestRunFilterArg(mock_args, cts_run))
+                     run_cts.GetTestRunFilterArg(mock_args,
+                                                 cts_run,
+                                                 test_app_mode='instant'))
 
   def testIsolatedFilter_CombinesExcludedMatches(self):
     mock_args = self._getArgsMock(isolated_script_test_filter='good#test',

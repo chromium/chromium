@@ -437,6 +437,12 @@ def AddInstrumentationTestOptions(parser):
                       type=_RealPath,
                       help='Configures an additional-apk to be forced '
                       'to be queryable by other APKs.')
+  parser.add_argument('--instant-additional-apk',
+                      action='append',
+                      dest='instant_additional_apks',
+                      default=[],
+                      type=_RealPath,
+                      help='Configures an additional-apk to be an instant APK')
   parser.add_argument(
       '-A', '--annotation',
       dest='annotation_str',

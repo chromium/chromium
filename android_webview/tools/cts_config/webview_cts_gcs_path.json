@@ -170,7 +170,8 @@
             "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService.apk"
+            "apk": "android-cts/testcases/CtsAssistService.apk",
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -220,7 +221,8 @@
             "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService.apk"
+            "apk": "android-cts/testcases/CtsAssistService.apk",
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -289,7 +291,8 @@
             "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService.apk"
+            "apk": "android-cts/testcases/CtsAssistService.apk",
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -389,7 +392,8 @@
             "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService.apk"
+            "apk": "android-cts/testcases/CtsAssistService.apk",
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -480,7 +484,8 @@
             "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService.apk"
+            "apk": "android-cts/testcases/CtsAssistService.apk",
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -494,7 +499,8 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true
+            "forced_queryable": true,
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -605,7 +611,8 @@
             "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService.apk"
+            "apk": "android-cts/testcases/CtsAssistService.apk",
+            "force_full_mode": true
           }
         ],
         "includes": [
@@ -619,7 +626,8 @@
         "additional_apks": [
           {
             "apk": "android-cts/testcases/CtsMockInputMethod.apk",
-            "forced_queryable": true
+            "forced_queryable": true,
+            "force_full_mode": true
           }
         ],
         "includes": [

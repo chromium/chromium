@@ -5364,34 +5364,12 @@
       },
     },
 
-    'webview_trichrome_64_cts_tests_gtest': {
-      'webview_trichrome_64_cts_tests': {
-        'swarming': {
-          'shards': 2,
-          'cipd_packages': [
-            {
-              "cipd_package": 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
-            }
-          ]
-        },
-      },
+    'webview_trichrome_64_cts_tests': {
+      'webview_trichrome_64_cts_tests': {},
     },
 
-    'webview_trichrome_cts_tests_gtest': {
-      'webview_trichrome_cts_tests': {
-        'swarming': {
-          'shards': 2,
-          'cipd_packages': [
-            {
-              "cipd_package": 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
-            }
-          ]
-        },
-      },
+    'webview_trichrome_cts_tests': {
+      'webview_trichrome_cts_tests': {},
     },
 
     'webview_ui_instrumentation_tests': {
@@ -5599,38 +5577,8 @@
       'android_ddready_vr_gtests',
     ],
 
-    'android_11_emulator_gtests': [
-      'android_emulator_specific_chrome_public_tests',
-      'android_monochrome_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'system_webview_shell_instrumentation_tests', # Not an experimental test
-      'weblayer_android_gtests',
-      'weblayer_gtests',
-      'webview_trichrome_cts_tests_gtest',
-      'webview_ui_instrumentation_tests',
-    ],
-
     'android_12_dbg_emulator_gtests': [
       'android_trichrome_smoke_tests',
-    ],
-
-    'android_12_emulator_gtests': [
-      'android_emulator_specific_chrome_public_tests',
-      'android_monochrome_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'system_webview_shell_instrumentation_tests', # Not an experimental test
-      'weblayer_android_gtests',
-      'weblayer_gtests',
-      'webview_trichrome_64_cts_tests_gtest',
-      'webview_ui_instrumentation_tests',
     ],
 
     # This is the same as 'android_marshmallow_gtests'
@@ -6701,6 +6649,46 @@
 
   'matrix_compound_suites': {
 
+    'android_11_emulator_gtests': {
+      'android_emulator_specific_chrome_public_tests': {},
+      'android_monochrome_smoke_tests': {},
+      'android_smoke_tests': {},
+      'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chromium_gtests': {},
+      'chromium_gtests_for_devices_with_graphical_output': {},
+      'linux_flavor_specific_chromium_gtests': {},
+      'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'weblayer_android_gtests': {},
+      'weblayer_gtests': {},
+      'webview_trichrome_cts_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ]
+      },
+      'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_12_emulator_gtests': {
+      'android_emulator_specific_chrome_public_tests': {},
+      'android_monochrome_smoke_tests': {},
+      'android_smoke_tests': {},
+      'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chromium_gtests': {},
+      'chromium_gtests_for_devices_with_graphical_output': {},
+      'linux_flavor_specific_chromium_gtests': {},
+      'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'weblayer_android_gtests': {},
+      'weblayer_gtests': {},
+      'webview_trichrome_64_cts_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ]
+      },
+      'webview_ui_instrumentation_tests': {},
+    },
+
     'android_weblayer_x86_10_gtests': {
       'weblayer_instrumentation_tests': {
         'variants': [
@@ -7589,6 +7577,15 @@
           'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
+    },
+
+    'webview_trichrome_10_cts_tests_gtest': {
+      'webview_trichrome_cts_tests': {
+        'variants': [
+          'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
+          'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
+        ]
+      }
     },
 
     'win_optional_gpu_tests_rel_gpu_telemetry_tests': {

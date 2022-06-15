@@ -1104,7 +1104,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'webview_trichrome_cts_tests_gtest',
+          'gtest_tests': 'webview_trichrome_10_cts_tests_gtest',
         },
         'use_swarming': True,
       },
