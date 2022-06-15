@@ -1768,8 +1768,6 @@ crbug.com/1119600 external/wpt/direct-sockets/* [ Skip ]
 crbug.com/1119600 wpt_internal/direct-sockets/* [ Skip ]
 virtual/direct-sockets/external/wpt/direct-sockets/* [ Pass ]
 virtual/direct-sockets/wpt_internal/direct-sockets/* [ Pass ]
-crbug.com/1082020 http/tests/loading/wbn/origin-trial/* [ Skip ]
-virtual/subresource-web-bundles-disabled/http/tests/loading/wbn/origin-trial/* [ Pass ]
 
 # No good way to automate this test yet
 external/wpt/file-system-access/showSaveFilePicker-manual.https.html [ Skip ]
