@@ -417,6 +417,11 @@ void AppListControllerImpl::GetAppInfoDialogBounds(
 }
 
 void AppListControllerImpl::ShowAppList() {
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
   if (IsKioskSession())
     return;
 
@@ -476,10 +481,14 @@ void AppListControllerImpl::OnSessionStateChanged(
   if (state == session_manager::SessionState::ACTIVE)
     has_session_started_ = true;
 
-  if (!IsTabletMode())
+  const bool in_clamshell = !IsTabletMode();
+  if (state != session_manager::SessionState::ACTIVE || IsKioskSession()) {
+    if (in_clamshell)
+      DismissAppList();
     return;
+  }
 
-  if (state != session_manager::SessionState::ACTIVE || IsKioskSession())
+  if (in_clamshell)
     return;
 
   // Show the app list after signing in in tablet mode. For metrics, the app
@@ -614,6 +623,11 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     int64_t display_id,
     AppListShowSource show_source,
     base::TimeTicks event_time_stamp) {
+  if (Shell::Get()->session_controller()->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return SHELF_ACTION_APP_LIST_DISMISSED;
+  }
+
   if (IsKioskSession())
     return SHELF_ACTION_APP_LIST_DISMISSED;
 
