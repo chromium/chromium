@@ -200,7 +200,12 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
                     @Override
                     public void onSignInAborted() {
-                        // TODO(crbug/1248090): Handle the sign-in error here
+                        // TODO(crbug/1248090): For now we enable the buttons again to not block the
+                        // users from continuing to the next page. Should show a dialog with the
+                        // signin error.
+                        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT,
+                                false);
+                        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
                 });
     }
