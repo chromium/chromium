@@ -20,7 +20,6 @@
 <translation id="115443833402798225">хангул, ахматае</translation>
 <translation id="1155759005174418845">каталонска</translation>
 <translation id="1168100932582989117">Сервери за име на Google</translation>
-<translation id="1171082344678443012">Компримирана архива XZ</translation>
 <translation id="1172970565351728681">Преостануваат околу <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1173916544412572294">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, детали</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1209796539517632982">Сервери за автоматско име</translation>
 <translation id="1210831758834677569">лаошки</translation>
-<translation id="1223825810409523901">Екстензија за Chrome</translation>
 <translation id="1243314992276662751">Постави</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна интернет-врска</translation>
 <translation id="1272293450992660632">PIN-вредностите не се совпаѓаат.</translation>
-<translation id="127650757582748357">Архива компримирана со BZIP2</translation>
 <translation id="1280820357415527819">Се пребаруваат мобилни мрежи</translation>
 <translation id="1291603679744561561">SIM-картичката е заклучена</translation>
 <translation id="1293556467332435079">Датотеки</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Не е дозволено да се менуваат конфигурациите на споделената мрежа</translation>
 <translation id="1665611772925418501">Оваа датотека не може да се менува.</translation>
 <translation id="1673103856845176271">Не може да се пристапи до датотеката поради безбедносни причини.</translation>
-<translation id="16762847117768727">ISO-слика</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Возење велосипед</translation>
 <translation id="1722487484194605434">Се пакуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Резолуција на слика</translation>
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
-<translation id="1996806196681857869">Архива компримирана со Z</translation>
 <translation id="2001796770603320721">Управување во Drive</translation>
 <translation id="2009067268969781306">Форматирањето на USB-дискот ќе ги избрише сите податоци складирани во него. Дејството не може да се врати.</translation>
 <translation id="2025955442973426285">тигрејски</translation>
-<translation id="2028997212275086731">РАР-архива</translation>
 <translation id="2037845485764049925">руски</translation>
 <translation id="2044023416777079300">Модемот не е регистриран</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Сирење</translation>
 <translation id="2781645665747935084">Белгиски</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
-<translation id="2788520643285360081">7-Zip-архива</translation>
 <translation id="2803375539583399270">Внесете PIN.</translation>
 <translation id="2820957248982571256">Се скенира…</translation>
-<translation id="2822595620066756134">Архива компримирана со GZIP</translation>
 <translation id="2830077785865012357">кинески џујин</translation>
 <translation id="2843806747483486897">Промени зададени вредности…</translation>
 <translation id="2850124913210091882">Бекап</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">литвански</translation>
 <translation id="3587482841069643663">Сите</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> не можеше да се направи да биде достапна офлајн</translation>
-<translation id="3593874215226880809">Архива компримирана со LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">канадско француска</translation>
 <translation id="3606220979431771195">Турска-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, <ph name="CONNECTION_STATUS" />, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="3691184985318546178">синхалски</translation>
-<translation id="3703620396751288986">ZIP-архива</translation>
 <translation id="3726463242007121105">Уредот не може да се отвори затоа што не го поддржува системот со датотеки.</translation>
 <translation id="3727148787322499904">Менувањето на оваа поставка ќе влијае на сите споделени мрежи</translation>
 <translation id="3737576078404241332">Отстрани од странична лента</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">чешки со тастатура Qwerty</translation>
 <translation id="4656777537938206294">Направете датотеките да се достапни офлајн</translation>
 <translation id="4658782175094886150">Човек во снег</translation>
-<translation id="4661996069183330363">TAR-архива</translation>
 <translation id="4669606053856530811">Членовите на „<ph name="SOURCE_NAME" />“ ќе изгубат пристап освен ако ставкиве се споделени со нив.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">шведски</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013">Мрежа со <ph name="NETWORK_TYPE" />, не е поврзана</translation>
 <translation id="6074825444536523002">Google формулар</translation>
 <translation id="6079871810119356840">унгарски со тастатура Qwerty</translation>
-<translation id="6082256976217156453">Компримирана архива LZMA</translation>
 <translation id="6096979789310008754">Текстот за пребарување е избришан, се прикажуваат сите датотеки и папки.</translation>
 <translation id="610101264611565198">Се преместува <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Текстуална CSV-датотека</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">пенџапски</translation>
 <translation id="6224240818060029162">дански</translation>
 <translation id="6224253798271602650">Форматирање на <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Архива компримирана со ZST</translation>
 <translation id="6227235786875481728">Датотеката не може да се репродуцира.</translation>
 <translation id="6241349547798190358">холандски (Белгија)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">Дипломец</translation>
 <translation id="8912078710089354287">Куче што мавта со опашката</translation>
 <translation id="8919081441417203123">дански</translation>
-<translation id="8965273390142984105">Архива компримирана со LZOP</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
 <translation id="8997962250644902079">кинески (традиционален) пинјин</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>

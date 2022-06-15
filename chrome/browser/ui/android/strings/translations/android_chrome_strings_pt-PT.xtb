@@ -508,6 +508,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="3740525748616366977">A pesquisa por voz não está disponível neste dispositivo</translation>
 <translation id="3749259744154402564">Não suportado</translation>
 <translation id="3771033907050503522">Sep. nav. anónima</translation>
+<translation id="377124182565324804">Adicionar <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Esta definição está desativada porque o controlo parental está ativado.</translation>
 <translation id="3771694256347217732">Termos de Utilização do Google</translation>
 <translation id="3773856050682458546">Os dados básicos e as informações acerca dos Websites que visita e as apps que utiliza.</translation>
@@ -590,6 +591,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> o seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
 <translation id="4263656433980196874">IU de consentimento da pesquisa por voz do Assistente aberta à altura total</translation>
+<translation id="4266054596873078491">Inicie sessão neste site e no Chrome com a sua Conta Google.</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4290281343757112331">Pretende transferir mais tarde?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ative o bloqueio de ecrã nas definições do Android<ph name="END_LINK" /></translation>
@@ -732,6 +734,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4985248278475639481">Acerca da personalização de anúncios</translation>
 <translation id="4987271110129728827">Não é possível encontrar a página. Verifique a ortografia ou experimente pesquisar na Web.</translation>
 <translation id="4988526792673242964">Páginas </translation>
+<translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seguir este site aqui</translation>
 <translation id="500351648694011114">Explore mais facilmente</translation>
 <translation id="5004416275253351869">Controlos da atividade Google</translation>
@@ -790,6 +793,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
 <translation id="5339031667684712858">Sites que removeu</translation>
 <translation id="5342314432463739672">Pedidos de autorização</translation>
+<translation id="53537532693258630">Os sites removidos aparecem aqui</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
 <translation id="5368227114232678694">Para navegar em privado neste dispositivo, experimente a Navegação anónima</translation>
 <translation id="5375577065097716013">Pesquisar imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -981,6 +985,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um símbolo fidedigno para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um símbolo fidedigno válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
 
 Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados para descobrir a sua identidade.</translation>
+<translation id="6394791151443660613">Pesquisar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Ligação retomada</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1500,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8993760627012879038">Abrir novo separador no modo de navegação anónima</translation>
 <translation id="8996847606757455498">Escolher outro fornecedor</translation>
 <translation id="8998729206196772491">Está a iniciar sessão com uma conta gerida por <ph name="MANAGED_DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
+<translation id="9021388532480169802">Site adicionado</translation>
 <translation id="9022774213089566801">Visitados frequentemente</translation>
 <translation id="9028914725102941583">Ative a sincronização para partilhar entre dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>

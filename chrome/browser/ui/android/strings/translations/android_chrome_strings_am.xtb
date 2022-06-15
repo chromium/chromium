@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">የተወሰኑ የChrome ባህሪዎች ከአሁን በኋላ \u2019 አይገኙም</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2871733351037274014">ገጾችን ቅድሚያ ጫን</translation>
+<translation id="2886836735871983413">ድሩን ሲያስሱ የጣቢያዎች ዝርዝር እዚህ ይታያል</translation>
 <translation id="2888126860611144412">ስለChrome</translation>
 <translation id="2891154217021530873">ገጹን መጫን አቁም</translation>
 <translation id="2892647708214602204">ይህ ፋይል ዝግጁ ሲሆን ማሳወቂያ ያያሉ</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">ከሌሎች መሣሪያዎች የተጋራ ጽሑፍ</translation>
 <translation id="2989523299700148168">በቅርብ ጊዜ የተጎበኙ</translation>
 <translation id="2992473221983447149">የምስል መግለጫዎች</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" />ን አስወግድ</translation>
 <translation id="2996291259634659425">የይለፍ ሐረግ ይፍጠሩ</translation>
 <translation id="2996809686854298943">ዩአርኤል ያስፈልጋል</translation>
 <translation id="2997081575621687554">አንድ የGoogle ጣቢያ በገጻቸው ላይ አገናኞችን በግል ቅድሚያ እንዲጭኑ ሲጠይቀዎት Chrome ገጾችን አመስጥሮ ያለኩኪዎች በGoogle አገልጋዮች በኩል ቅድሚያ ይጭናቸዋል። ይህ ማንነትዎን ቅድሚያ ከተጫነው ጣቢያ ይደብቀዋል።</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">ይህ ልክ የሆነ አገልግሎት አቅራቢ መሆኑን እባክዎ ያረጋግጡ ወይም ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3861633093716975811">ታዋቂ ቪዲዮዎች</translation>
+<translation id="3874520961715512166">ጣቢያ ተወግዷል</translation>
 <translation id="3892148308691398805">ጽሑፍ ቅዳ</translation>
 <translation id="3894427358181296146">አቃፊ ያክሉ</translation>
 <translation id="3899682235662194879">ሁሉንም ማንነት የማያሳውቅ ትሮች ይዝጉ</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">የመተግበሪያ ውሂብ ይሰረዝ?</translation>
 <translation id="4096227151372679484">የዕልባት ማስቀመጥ ፍሰት በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="4099578267706723511">የአጠቃቀም ስታቲክሶችን እና የብልሽት ሪፖርቶችን ወደ Google በመላክ Chromeን የተሻለ ለማድረግ እገዛ ያድርጉ።</translation>
+<translation id="4101475238162928417">በእርስዎ ሌሎች መሣሪያዎች ላይ የእርስዎን የይለፍ ቃካት፣ እልባቶች እና ተጨማሪ ነገሮችን ለማግኘት ያስምሩ</translation>
 <translation id="410351446219883937">ራስ-አጫውት</translation>
 <translation id="4106587138345390261">Chrome ጣቢያዎች ያነሰ መረጃዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዲስ ባህሪያት እያሰሰ ነው።</translation>
 <translation id="4108314971463891922">ተከተል</translation>
@@ -1191,6 +1195,7 @@
 <translation id="749294055653435199">Google ሌንስ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (የተዘመነው በ<ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">እባክዎ ይጠብቁ…</translation>
+<translation id="7502234197872745058">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK1" />ከChrome ዘግተው ይውጡ<ph name="END_LINK1" />።</translation>
 <translation id="750228856503700085">ዝማኔዎች አይገኙም</translation>
 <translation id="7507207699631365376">የዚህን አቅራቢ <ph name="BEGIN_LINK" />የግላዊነት መመሪያ<ph name="END_LINK" /> ይመልከቱ</translation>
 <translation id="7514365320538308">አውርድ</translation>

@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Izvezi obeleživače</translation>
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> lokacija</translation>
+<translation id="1009663062402466586">Kontrole za igre su sada dostupne</translation>
 <translation id="1010498023906173788">Ova kartica je povezana sa serijskim portom.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Stranica se ne odaziva}one{Stranice se ne odazivaju}few{Stranice se ne odazivaju}other{Stranice se ne odazivaju}}</translation>
 <translation id="1011355516189274711">Jačina zvuka za pretvaranje teksta u govor</translation>
@@ -845,6 +846,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796105431091975902">Izaberite Ansible vodič za dodavanje</translation>
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
+<translation id="1797117170091578105">Igrajte pomoću Chromebook tastature. Možete da prilagodite tastere određenim radnjama.</translation>
 <translation id="1800502858278951817">Nijedan dodatak nije zatražio da čita i menja <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
 <translation id="1802687198411089702">Stranica se ne odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
@@ -1006,6 +1008,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1940546824932169984">Povezani uređaji</translation>
 <translation id="1941410638996203291">Vreme početka <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Verzija: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Prikaži mapiranje tastera</translation>
 <translation id="1942128823046546853">da čita i menja sve vaše podatke na svim veb-sajtovima</translation>
 <translation id="1942600407708803723">Isključi se kada se poklopac zatvori</translation>
 <translation id="1944528062465413897">Kôd za uparivanje sa Bluetooth uređajem:</translation>
@@ -1415,6 +1418,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
     Ako kasnije odlučite da Voice Match ne odgovara vašem detetu, jednostavno ga uklonite iz podešavanja Pomoćnika. Da biste pregledali ili izbrisali audio snimke koje dete snimi tokom podešavanja Voice Match-a, idite na <ph name="VOICE_MATCH_SETTINGS_URL" /> sa detetovog naloga.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">Sledeći tasteri nisu podržani: Tab, Shift, Control, Escape, Caps lock, tasteri za jačinu zvuka</translation>
 <translation id="2309620859903500144">Ovom sajtu je zabranjen pristup senzorima za pokret ili svetlo.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL stranice</translation>
@@ -2740,6 +2744,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3613422051106148727">&amp;Otvori na novoj kartici</translation>
 <translation id="3615073365085224194">Dodirnite prstom senzor za otisak prsta</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> se skenira.</translation>
+<translation id="3615596877979647433">Taster nedostaje. Pritisnite taster na tastaturi da biste prilagodili</translation>
 <translation id="3616741288025931835">&amp;Obriši podatke pregledanja...</translation>
 <translation id="3617891479562106823">Pozadine nisu dostupne. Probajte ponovo kasnije.</translation>
 <translation id="3619115746895587757">Kapučino</translation>
@@ -2895,6 +2900,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3764753550716962406">Želite da dozvolite da Google koristi korpu za pronalaženje dostupnih popusta?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Šalje se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}one{Šalje se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}few{Šalju se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}other{Šalje se <ph name="ATTACHMENTS" /> na <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Čitanje oflajn smernica za režim demonstracije nije uspelo.</translation>
+<translation id="3766687283066842296">Saznajte više o Phone Hub-u</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Sladoled</translation>
 <translation id="3771290962915251154">Ovo podešavanje je onemogućeno zato što je uključen roditeljski nadzor</translation>
@@ -3336,6 +3342,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4193836101014293726">Brisanje ovog profila nije uspelo</translation>
 <translation id="419427585139779713">Unosite jedan po jedan slog</translation>
 <translation id="4194570336751258953">Omogući funkciju „dodirni-za-klik“</translation>
+<translation id="4195378859392041564">Kliknite mišem na bilo koji taster, pa pritisnite taster na tastaturi da biste ga prilagodili</translation>
 <translation id="4195421689821407315">Nebezbedno preuzimanje</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4195814663415092787">Nastavi prethodnu sesiju</translation>
@@ -3401,6 +3408,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4258348331913189841">Sistemi datoteka</translation>
 <translation id="4259388776256904261">Ovo može da potraje</translation>
 <translation id="4260182282978351200">Datoteka <ph name="FILE_NAME" /> je možda opasna. Želite li da je pošaljete u Google naprednu zaštitu radi skeniranja? Pritiskajte Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
+<translation id="4260699894265914672">Pritisnite taster na tastaturi da biste prilagodili</translation>
 <translation id="4261429981378979799">Dozvole za dodatke</translation>
 <translation id="4262004481148703251">Odbaci upozorenje</translation>
 <translation id="4263223596040212967">Proverite raspored tastature i probajte ponovo.</translation>
@@ -4574,6 +4582,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5449716055534515760">Close Win&amp;dow (Zatvori prozor)</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (radi oflajn)</translation>
 <translation id="5454166040603940656">sa dobavljačem <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Prikaži još rezultata pretrage</translation>
 <translation id="5455603387986949153">Čitanje serijskih brojeva Chrome OS Flex uređaja i komponenti.</translation>
 <translation id="5457113250005438886">Nevažeće</translation>
 <translation id="5457459357461771897">Čitanje slika, muzike i drugih medija sa računara i brisanje tih medija</translation>
@@ -7053,6 +7062,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Tražite komponente pregledača? Posetite</translation>
 <translation id="7903345046358933331">Stranica je prestala da se odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
+<translation id="7903429136755645827">Kliknite da biste prilagodili kontrole za igre</translation>
 <translation id="7903742244674067440">Imate sačuvane sertifikate koji identifikuju ove autoritete za izdavanje sertifikata</translation>
 <translation id="7903925330883316394">Pomoćni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Učinite Linux portove dostupnim za druge uređaje na svojoj mreži.</translation>
@@ -8248,6 +8258,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9078316009970372699">Onemogući trenutno privezivanje</translation>
 <translation id="9078842827190780028">Pogledajte još rezultata pretrage na bočnoj tabli</translation>
 <translation id="9079267182985899251">Ova opcija uskoro više neće biti podržana. Da biste prikazali karticu, koristite <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">procenjuje interesovanja – Chrome može da proceni vaša interesovanja</translation>
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
 <translation id="9084064520949870008">Otvori kao prozor</translation>
 <translation id="9085256200913095638">Napravi duplikat izabrane kartice</translation>

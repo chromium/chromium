@@ -345,6 +345,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2861923151411510142">Hindi na magiging available ang ilang feature ng Chrome</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Mag-preload ng mga page</translation>
+<translation id="2886836735871983413">May lalabas na listahan ng mga site dito habang nagba-browse ka sa web</translation>
 <translation id="2888126860611144412">Tungkol sa Chrome</translation>
 <translation id="2891154217021530873">Ihinto ang pag-load ng page</translation>
 <translation id="2892647708214602204">Makakakita ka ng notification kapag handa na ang file na ito</translation>
@@ -372,6 +373,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2987620471460279764">Ibinahaging text mula sa ibang device</translation>
 <translation id="2989523299700148168">Mga kamakailang binisita</translation>
 <translation id="2992473221983447149">Mga paglalarawan ng larawan</translation>
+<translation id="2994959273484668146">Alisin ang <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Gumawa ng passphrase</translation>
 <translation id="2996809686854298943">Kinakailangan ang URL</translation>
 <translation id="2997081575621687554">Kapag humiling ang isang site ng Google na pribadong mag-preload ng mga link sa page nito, mag-e-encrypt at magpi-preload ng mga page ang Chrome sa pamamagitan ng mga server ng Google nang walang cookies. Maitatago nito ang iyong pagkakakilanlan sa na-preload na site.</translation>
@@ -521,6 +523,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3861633093716975811">Mga sikat na video</translation>
+<translation id="3874520961715512166">Inalis ang site</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3894427358181296146">Magdagdag ng folder</translation>
 <translation id="3899682235662194879">Isara ang lahat ng tab na Incognito</translation>
@@ -558,6 +561,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="4095146165863963773">I-delete ang data ng app?</translation>
 <translation id="4096227151372679484">Nakabukas nang kalahati ang proseso ng pag-save ng bookmark</translation>
 <translation id="4099578267706723511">Tulungang mapahusay ang Chrome sa pamamagitan ng pagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash.</translation>
+<translation id="4101475238162928417">Mag-sync para makuha ang iyong mga password, bookmark, at higit pa sa iba mo pang device</translation>
 <translation id="410351446219883937">I-autoplay</translation>
 <translation id="4106587138345390261">Nag-e-explore ang Chrome ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong impormasyon</translation>
 <translation id="4108314971463891922">Subaybayan</translation>
@@ -728,6 +732,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4985248278475639481">Tungkol sa pag-personalize ng ad</translation>
 <translation id="4987271110129728827">Hindi makita ang page na iyon. Suriin ang iyong spelling o sumubok ng paghahanap sa web.</translation>
 <translation id="4988526792673242964">Mga Page</translation>
+<translation id="499724277181351974">Mag-navigate: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Subaybayan ang site na ito dito</translation>
 <translation id="500351648694011114">Mag-browse nang mas madali</translation>
 <translation id="5004416275253351869">Mga kontrol ng aktibidad sa Google</translation>
@@ -977,6 +982,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 Batay sa iyong pakikipag-ugnayan sa isang site, tulad ng regular na pag-sign in sa isang account, puwedeng magbigay ang site na iyon ng trust token sa browser mo. Sa ibang pagkakataon, kung titingin at maghahanap ng valid na trust token ang iba pang site na binibisita mo, malamang na ituring ka nito bilang tao at hindi bot.
 
 Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito para malaman kung sino ka.</translation>
+<translation id="6394791151443660613">Hanapin: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Online ulit</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sa <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1197,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="749294055653435199">Hindi available ang Google Lens sa device na ito</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Na-update <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Mangyaring maghintay…</translation>
+<translation id="7502234197872745058">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK1" />mag-sign out sa Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Hindi Available ang Mga Update</translation>
 <translation id="7507207699631365376">Tingnan ang <ph name="BEGIN_LINK" />patakaran sa privacy<ph name="END_LINK" /> ng provider na ito</translation>
 <translation id="7514365320538308">I-download</translation>

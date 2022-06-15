@@ -20,7 +20,6 @@
 <translation id="115443833402798225">ハングル（Ahnmatae 式）</translation>
 <translation id="1155759005174418845">カタロニア語</translation>
 <translation id="1168100932582989117">Google ネーム サーバー</translation>
-<translation id="1171082344678443012">XZ で圧縮されたアーカイブ</translation>
 <translation id="1172970565351728681">残り約 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1209796539517632982">自動ネーム サーバー</translation>
 <translation id="1210831758834677569">ラオ語</translation>
-<translation id="1223825810409523901">Chrome 拡張機能</translation>
 <translation id="1243314992276662751">アップロード</translation>
 <translation id="1249250836236328755">ジャンル</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
 <translation id="1272293450992660632">PIN の値が一致しません。</translation>
-<translation id="127650757582748357">Bzip2 で圧縮されたアーカイブ</translation>
 <translation id="1280820357415527819">モバイル ネットワークを検索しています</translation>
 <translation id="1291603679744561561">SIM がロックされています</translation>
 <translation id="1293556467332435079">ファイル</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">共有のネットワーク設定を変更することはできません</translation>
 <translation id="1665611772925418501">ファイルを修正することができませんでした。</translation>
 <translation id="1673103856845176271">セキュリティ上の理由で、ファイルにアクセスできませんでした。</translation>
-<translation id="16762847117768727">ISO イメージ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">自転車</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを圧縮しています...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">画像解像度</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
-<translation id="1996806196681857869">Z で圧縮されたアーカイブ</translation>
 <translation id="2001796770603320721">ドライブで管理</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
-<translation id="2028997212275086731">RAR アーカイブ</translation>
 <translation id="2037845485764049925">ロシア語</translation>
 <translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="2046702855113914483">ラーメン</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2781645665747935084">ベルギー語</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
-<translation id="2788520643285360081">7-Zip アーカイブ</translation>
 <translation id="2803375539583399270">PIN を入力</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
-<translation id="2822595620066756134">Gzip で圧縮されたアーカイブ</translation>
 <translation id="2830077785865012357">中国語（注音）</translation>
 <translation id="2843806747483486897">デフォルトを変更...</translation>
 <translation id="2850124913210091882">バックアップ</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">リトアニア語</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> をオフラインで使用するよう設定できませんでした</translation>
-<translation id="3593874215226880809">LZIP で圧縮されたアーカイブ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">フランス語（カナダ）</translation>
 <translation id="3606220979431771195">トルコ語-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> をキャンセルします。</translation>
 <translation id="3690128548376345212">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、<ph name="CONNECTION_STATUS" />、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3691184985318546178">シンハラ語</translation>
-<translation id="3703620396751288986">ZIP アーカイブ</translation>
 <translation id="3726463242007121105">ファイルシステムがサポートされていないため、このデバイスを開くことはできません。</translation>
 <translation id="3727148787322499904">この設定を変更すると、共有しているすべてのネットワークに影響します</translation>
 <translation id="3737576078404241332">サイドバーから削除</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">チェコ語（QWERTY）キーボード</translation>
 <translation id="4656777537938206294">ファイルへのオフライン アクセスの有効化</translation>
 <translation id="4658782175094886150">雪の中の人</translation>
-<translation id="4661996069183330363">tar アーカイブ</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」のメンバーはこれらのアイテムにアクセスできなくなります（ただし個別に共有されている場合はアクセス可能です）。</translation>
 <translation id="467809019005607715">Google スライド</translation>
 <translation id="4690246192099372265">スウェーデン語</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ネットワーク、未接続</translation>
 <translation id="6074825444536523002">Google フォーム</translation>
 <translation id="6079871810119356840">ハンガリー語（QWERTY）キーボード</translation>
-<translation id="6082256976217156453">LZMA で圧縮されたアーカイブ</translation>
 <translation id="6096979789310008754">検索語句を削除しました。すべてのファイルとフォルダを表示しています。</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に移動しています</translation>
 <translation id="61118516107968648">CSV テキスト</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">パンジャブ語</translation>
 <translation id="6224240818060029162">デンマーク語</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> をフォーマット</translation>
-<translation id="6224665423283788195">Zstandard で圧縮されたアーカイブ</translation>
 <translation id="6227235786875481728">このファイルは再生できませんでした。</translation>
 <translation id="6241349547798190358">オランダ語（ベルギー）</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、接続</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">卒業</translation>
 <translation id="8912078710089354287">尻尾を振る犬</translation>
 <translation id="8919081441417203123">デンマーク語</translation>
-<translation id="8965273390142984105">LZOP で圧縮されたアーカイブ</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>

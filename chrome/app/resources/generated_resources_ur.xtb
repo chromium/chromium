@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">بُک مارکس برآمد کریں</translation>
 <translation id="1008557486741366299">ابھی نہیں</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> مقام</translation>
+<translation id="1009663062402466586">گیم کنٹرولز اب دستیاب ہے</translation>
 <translation id="1010498023906173788">یہ ٹیب سیریل پورٹ سے منسلک ہے۔</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{صفحہ غیر اثرپذیر ہے}other{صفحات غیر اثرپذیر ہیں}}</translation>
 <translation id="1011355516189274711">ٹیکسٹ ٹو اسپیچ کا والیوم</translation>
@@ -846,6 +847,7 @@
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
 <translation id="1796105431091975902">‏شامل کرنے کے لیے ایک Ansible پلے بُک منتخب کریں</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
+<translation id="1797117170091578105">‏اپنا Chromebook کی بورڈ استعمال کر کے کھیلیں۔ آپ مخصوص کاروائیوں کے لیے کلیدوں کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="1800502858278951817">کسی بھی ایکسٹینشن نے <ph name="SITE_NAME" /> کو پڑھنے اور تبدیل کرنے کی درخواست نہیں کی ہے</translation>
 <translation id="1802624026913571222">کوَر بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="1802687198411089702">صفحہ کھل نہیں رہا ہے۔ آپ اس کے کھلنے انتظار کر سکتے ہیں یا باہر نکل سکتے ہیں۔</translation>
@@ -1007,6 +1009,7 @@
 <translation id="1940546824932169984">منسلک آلات</translation>
 <translation id="1941410638996203291">وقت آغاز <ph name="TIME" /></translation>
 <translation id="1941553344801134989">ورژن: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">کلید کی نقشہ سازی دکھائیں</translation>
 <translation id="1942128823046546853">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="1942600407708803723">کوَر بند ہونے پر شٹ ڈاؤن کریں</translation>
 <translation id="1944528062465413897">بلوٹوتھ جوڑا بنانے کا کوڈ:</translation>
@@ -1418,6 +1421,7 @@
     اگر آپ بعد میں فیصلہ کرتے ہیں کہ Voice Match آپ کے بچے کے لیے صحیح نہیں ہے تو اسے بس اس کی اسسٹنٹ کی ترتیبات سے ہٹائیں۔ Voice Match سیٹ اپ کے دوران جو آڈیو کلپس آپ کا بچہ ریکارڈ کرتا ہے انہیں ملاحظہ کرنے یا حذف کرنے کے لیے اپنے بچے کے اکاؤنٹ سے <ph name="VOICE_MATCH_SETTINGS_URL" /> پر جائیں۔
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">‏درج ذیل کلیدیں تعاون یافتہ نہیں ہیں: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">اس سائٹ کو آپ کے موشن اور لائٹ سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">‏صفحہ کا URL</translation>
@@ -2741,6 +2745,7 @@
 <translation id="3613422051106148727">نئے ٹیب میں &amp;کھولیں</translation>
 <translation id="3615073365085224194">اپنی انگلی سے فنگر پرنٹ سینسر کو ٹچ کریں</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> اسکین کیا جا رہا ہے۔</translation>
+<translation id="3615596877979647433">کلید غائب ہے۔ حسب ضرورت بنانے کے ليے کی بورڈ کی کلید دبائیں</translation>
 <translation id="3616741288025931835">براؤزنگ ڈیٹا &amp;صاف کریں…</translation>
 <translation id="3617891479562106823">پس منظر غیر دستیاب ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3619115746895587757">کیپو چینو</translation>
@@ -2896,6 +2901,7 @@
 <translation id="3764753550716962406">‏دستیاب رعایتیں تلاش کرنے کے لیے Google کو آپ کی کارٹ استعمال کرنے دیں؟</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}other{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}}</translation>
 <translation id="3765246971671567135">آف لائن ڈیمو موڈ کی پالیسی کو پڑھا نہیں جا سکا۔</translation>
+<translation id="3766687283066842296">فون ہب کے بارے میں مزید جانیں</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">آئس کریم</translation>
 <translation id="3771290962915251154">یہ ترتیب غیر فعال ہے کیونکہ پیرنٹل کنٹرولز آن ہیں</translation>
@@ -3336,6 +3342,7 @@
 <translation id="4193836101014293726">اس پروفائل کو حذف نہیں کیا جا سکتا</translation>
 <translation id="419427585139779713">ایک بار میں ایک حرف درج کریں</translation>
 <translation id="4194570336751258953">کلک کرنے کیلئے تھپتھپائیں کو فعال کریں</translation>
+<translation id="4195378859392041564">اپنے ماؤس کے ساتھ کسی بھی کلید پر کلک کریں پھر حسب ضرورت بنانے کے ليے کی بورڈ کی کلید دبائیں</translation>
 <translation id="4195421689821407315">غیر محفوظ ڈاؤن لوڈ</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4195814663415092787">آپ نے جہاں چھوڑا تھا وہیں سے جاری رکھیں</translation>
@@ -3401,6 +3408,7 @@
 <translation id="4258348331913189841">فائل سسٹمز</translation>
 <translation id="4259388776256904261">اس میں کچھ وقت لگ سکتا ہے</translation>
 <translation id="4260182282978351200">‏<ph name="FILE_NAME" /> خطرناک ہو سکتا ہے۔ اسکیننگ کے لیے Google کے اعلی تحفظ کو بھیجیں؟ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
+<translation id="4260699894265914672">حسب ضرورت بنانے کے ليے کی بورڈ کی کلید دبائیں</translation>
 <translation id="4261429981378979799">ایکسٹینشن کی اجازتیں</translation>
 <translation id="4262004481148703251">وارننگ کو برخاست کریں</translation>
 <translation id="4263223596040212967">اپنے کی بورڈ کا لے آؤٹ چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -4574,6 +4582,7 @@
 <translation id="5449716055534515760">&amp;ونڈو بند کردیں</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (آف لائن کام کرتی ہے)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> کے ساتھ</translation>
+<translation id="545484289444831485">تلاش کے مزید نتائج دیکھیں</translation>
 <translation id="5455603387986949153">‏ChromeOS Flex آلہ اور جزو کے نمبر شمار پڑھیں۔</translation>
 <translation id="5457113250005438886">غلط</translation>
 <translation id="5457459357461771897">اپنے کمپیوٹر سے تصاویر، موسیقی اور دیگر میڈیا پڑھیں اور حذف کریں</translation>
@@ -7047,6 +7056,7 @@
 <translation id="7901405293566323524">فون کا ہب</translation>
 <translation id="7903290522161827520">براؤزر کے اجزاء تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="7903345046358933331">صفحہ جواب نہیں دے رہا ہے۔ آپ اس کے جواب دینے کا انتظار کر سکتے ہیں یا اسے بند کر سکتے ہیں۔</translation>
+<translation id="7903429136755645827">اپنے گیم کنٹرولز کو حسب ضرورت بنانے کے لیے کلک کریں</translation>
 <translation id="7903742244674067440">آپ کے پاس ان سرٹیفیکیٹ اتھارٹی کی شناخت کرنے والی فائل پر سرٹیفیکیٹس ہیں</translation>
 <translation id="7903925330883316394">یوٹیلٹی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">‏اپنے نیٹ ورک پر دیگر آلات کو Linux پورٹس دستیاب کرائیں۔</translation>
@@ -8237,6 +8247,7 @@
 <translation id="9078316009970372699">فوری ٹیدرنگ غیر فعال کریں</translation>
 <translation id="9078842827190780028">سائیڈ پینل میں مزید تلاش کے نتائج دیکھیں</translation>
 <translation id="9079267182985899251">جلد ہی یہ اختیار اب تعاون یافتہ نہیں ہوگا۔ ٹیب کو پیش کرنے کیلئے <ph name="GOOGLE_MEET" /> کا استعمال کریں۔</translation>
+<translation id="9080971985541434310">‏آپ کی دلچسپیوں کا اندازہ لگاتا ہے - Chrome آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے</translation>
 <translation id="9081543426177426948">جو سائٹس آپ ملاحظہ کرتے ہیں وہ پوشیدگی وضع میں محفوظ نہیں ہوتی ہیں</translation>
 <translation id="9084064520949870008">بطور ونڈو کھولیں</translation>
 <translation id="9085256200913095638">منتخب کردہ ٹیب کا ڈپلیکیٹ بنائیں</translation>

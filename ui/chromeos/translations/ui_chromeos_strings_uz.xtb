@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Koreys (Ahnmatae)</translation>
 <translation id="1155759005174418845">Katalan tili</translation>
 <translation id="1168100932582989117">Google nom serverlari</translation>
-<translation id="1171082344678443012">XZ turidagi arxiv</translation>
 <translation id="1172970565351728681">Taxminan <ph name="REMAINING_TIME" /> qoldi</translation>
 <translation id="1173894706177603556">Qayta nomlash</translation>
 <translation id="1173916544412572294">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Batafsil</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1209796539517632982">Avtomatik nom serverlari</translation>
 <translation id="1210831758834677569">Lao</translation>
-<translation id="1223825810409523901">Chrome kengaytmasi</translation>
 <translation id="1243314992276662751">Yuklash</translation>
 <translation id="1249250836236328755">Janri</translation>
 <translation id="1254593899333212300">Internetga to‘g‘ridan-to‘g‘ri ulanish</translation>
 <translation id="1272293450992660632">PIN qiymatlari mos kelmadi.</translation>
-<translation id="127650757582748357">BZIP2 turidagi arxiv</translation>
 <translation id="1280820357415527819">Mobil tarmoqlar qidirilmoqda</translation>
 <translation id="1291603679744561561">SIM karta qulflandi</translation>
 <translation id="1293556467332435079">Fayllar</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Umumiy tarmoq sozlamalarini o‘zgartirib bo‘lmaydi</translation>
 <translation id="1665611772925418501">Faylni o‘zgartirib bo‘lmadi.</translation>
 <translation id="1673103856845176271">Faylga ruxsat havfsizlik maqsadlarida cheklangan.</translation>
-<translation id="16762847117768727">ISO tasvir</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Velosiped</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Tasvirning piksellar sig‘imi</translation>
 <translation id="1972984168337863910">Fayllar holat panelini yoyish</translation>
 <translation id="1995337122023280937">Fayl joylashuviga kirish</translation>
-<translation id="1996806196681857869">Z turdagi arxiv</translation>
 <translation id="2001796770603320721">Google Drive orqali ochish</translation>
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
-<translation id="2028997212275086731">RAR arxivi</translation>
 <translation id="2037845485764049925">Rus</translation>
 <translation id="2044023416777079300">Modem registratsiya qilinmagan</translation>
 <translation id="2046702855113914483">Ramyon</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Pishloq</translation>
 <translation id="2781645665747935084">Belgiya</translation>
 <translation id="2782104745158847185">Linux ilovasini o‘rnatishda xatolik yuz berdi</translation>
-<translation id="2788520643285360081">7-ZIP arxiv</translation>
 <translation id="2803375539583399270">PIN kodni kiriting</translation>
 <translation id="2820957248982571256">Tekshirilmoqda...</translation>
-<translation id="2822595620066756134">GZIP turidagi arxiv</translation>
 <translation id="2830077785865012357">Xitoy (Chjuin)</translation>
 <translation id="2843806747483486897">Standartni o‘zgartirish...</translation>
 <translation id="2850124913210091882">Zaxiralash</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Litvan tili</translation>
 <translation id="3587482841069643663">Barchasi</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> oflaynda ochish uchun yuklab olinmadi</translation>
-<translation id="3593874215226880809">LZIP turidagi arxiv</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Fransuz (Kanada)</translation>
 <translation id="3606220979431771195">Turk-F klaviaturasi</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Bekor qilish <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, <ph name="CONNECTION_STATUS" />, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
 <translation id="3691184985318546178">Singal</translation>
-<translation id="3703620396751288986">ZIP arxiv</translation>
 <translation id="3726463242007121105">Bu qurilmani fayl tizimi qo‘llab-quvvatlanmasligi sababli ochib bo‘lmadi.</translation>
 <translation id="3727148787322499904">Bu parametrni o‘zgartirish barcha umumiy tarmoqlarga ta’sir qiladi</translation>
 <translation id="3737576078404241332">Yon paneldan olib tashlash</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Chex va Qwerty klaviaturasi</translation>
 <translation id="4656777537938206294">Fayllarni oflaynga nusxalash</translation>
 <translation id="4658782175094886150">Qordagi odam</translation>
-<translation id="4661996069183330363">TAR arxivi</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” foydalanuvchilariga ulashmasangiz, ular bu obyektlardan foydalana olmasliklari mumkin.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Shved tili</translation>
@@ -600,7 +589,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6055907707645252013">Tarmoq: <ph name="NETWORK_TYPE" />, ulanmagan</translation>
 <translation id="6074825444536523002">Google-shakl</translation>
 <translation id="6079871810119356840">Venger va Qwerty klaviaturasi</translation>
-<translation id="6082256976217156453">LZMA turidagi arxiv</translation>
 <translation id="6096979789310008754">Qidiruv qatori tozalandi, barcha fayl va jildlar chiqarildi.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga koʻchirilmoqda</translation>
 <translation id="61118516107968648">CSV matn</translation>
@@ -621,7 +609,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6220423280121890987">Panjob</translation>
 <translation id="6224240818060029162">Dan</translation>
 <translation id="6224253798271602650">Formatlash: <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Zstandard turdagi arxiv</translation>
 <translation id="6227235786875481728">Bu faylni ijro etib bo‘lmaydi.</translation>
 <translation id="6241349547798190358">Golland (Belgiya)</translation>
 <translation id="6267547857941397424">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Ulanish</translation>
@@ -935,7 +922,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8903931173357132290">Bitiruvchi</translation>
 <translation id="8912078710089354287">Dumini likkillatayotgan it</translation>
 <translation id="8919081441417203123">Datcha</translation>
-<translation id="8965273390142984105">LZOP turidagi arxiv</translation>
 <translation id="8965697826696209160">Bo‘sh joy yetarli emas.</translation>
 <translation id="8997962250644902079">Xitoycha Pinyin (odatiy)</translation>
 <translation id="9003940392834790328">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Batafsil</translation>

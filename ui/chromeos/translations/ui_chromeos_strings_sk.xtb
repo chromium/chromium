@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalánčina</translation>
 <translation id="1168100932582989117">Menné servery Google</translation>
-<translation id="1171082344678443012">Komprimovaný archív XZ</translation>
 <translation id="1172970565351728681">Zostáva približne <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Premenovať</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1209796539517632982">Automatické menné servery</translation>
 <translation id="1210831758834677569">Laoská klávesnica</translation>
-<translation id="1223825810409523901">Rozšírenie Chrome</translation>
 <translation id="1243314992276662751">Nahrať</translation>
 <translation id="1249250836236328755">Žáner</translation>
 <translation id="1254593899333212300">Priame pripojenie k Internetu</translation>
 <translation id="1272293450992660632">Kódy PIN sa nezhodujú.</translation>
-<translation id="127650757582748357">Komprimovaný archív BZIP2</translation>
 <translation id="1280820357415527819">Hľadajú sa mobilné siete</translation>
 <translation id="1291603679744561561">SIM karta je uzamknutá</translation>
 <translation id="1293556467332435079">Súbory</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Zmena konfigurácií zdieľanej siete nie je povolená</translation>
 <translation id="1665611772925418501">Súbor sa nepodarilo upraviť.</translation>
 <translation id="1673103856845176271">Súbor je z bezpečnostných dôvodov nedostupný.</translation>
-<translation id="16762847117768727">Obraz ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Cyklista</translation>
 <translation id="1722487484194605434">Prebieha komprimovanie <ph name="NUMBER_OF_ITEMS" /> položiek…</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Rozlíšenie obrázka</translation>
 <translation id="1972984168337863910">Rozbaliť panely so spätnou väzbou týkajúcou sa súborov</translation>
 <translation id="1995337122023280937">Prejsť na umiestnenie súboru</translation>
-<translation id="1996806196681857869">Archív komprimovaný metódou Z</translation>
 <translation id="2001796770603320721">Spravovať na Disku</translation>
 <translation id="2009067268969781306">Formátovaním kľúča odstránite všetky dáta, ktoré sú v ňom uložené. Túto akciu nie je možné vrátiť späť.</translation>
 <translation id="2025955442973426285">Tigrinská klávesnica</translation>
-<translation id="2028997212275086731">Archív vo formáte RAR</translation>
 <translation id="2037845485764049925">Ruská klávesnica</translation>
 <translation id="2044023416777079300">Modem nebol zaregistrovaný</translation>
 <translation id="2046702855113914483">Rámen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Syr</translation>
 <translation id="2781645665747935084">Belgická klávesnica</translation>
 <translation id="2782104745158847185">Pri inštalácii aplikácie pre Linux sa vyskytla chyba</translation>
-<translation id="2788520643285360081">Archív 7-Zip</translation>
 <translation id="2803375539583399270">Zadajte kód PIN</translation>
 <translation id="2820957248982571256">Prebieha vyhľadávanie...</translation>
-<translation id="2822595620066756134">Komprimovaný archív GZIP</translation>
 <translation id="2830077785865012357">Čínska klávesnica Ču-jin</translation>
 <translation id="2843806747483486897">Zmeniť predvolenú akciu...</translation>
 <translation id="2850124913210091882">Zálohovať</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Litovčina</translation>
 <translation id="3587482841069643663">Všetko</translation>
 <translation id="3592251141500063301">Súbor <ph name="FILE_NAME" /> sa nepodarilo sprístupniť offline</translation>
-<translation id="3593874215226880809">Komprimovaný archív LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadská francúzska klávesnica</translation>
 <translation id="3606220979431771195">Turecká (typ F)</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Zrušiť <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivovaná, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3691184985318546178">Sinhálska klávesnica</translation>
-<translation id="3703620396751288986">Archív ZIP</translation>
 <translation id="3726463242007121105">Toto zariadenie nie je možné otvoriť, pretože jeho systém súborov nie je podporovaný.</translation>
 <translation id="3727148787322499904">Zmena tohto nastavenia ovplyvní všetky zdieľané siete</translation>
 <translation id="3737576078404241332">Odstrániť z bočného panela</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Česká klávesnica s rozložením Qwerty</translation>
 <translation id="4656777537938206294">Sprístupnite súbory offline</translation>
 <translation id="4658782175094886150">Osoba v snehu</translation>
-<translation id="4661996069183330363">Archív vo formáte TAR</translation>
 <translation id="4669606053856530811">Členovia zdroja <ph name="SOURCE_NAME" /> stratia prístup, pokiaľ s nimi tieto položky nezačnete zdieľať.</translation>
 <translation id="467809019005607715">Prezentácie Google</translation>
 <translation id="4690246192099372265">Švédčina</translation>
@@ -601,7 +590,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6055907707645252013">Sieť <ph name="NETWORK_TYPE" /> nie je pripojená</translation>
 <translation id="6074825444536523002">Formulár Google</translation>
 <translation id="6079871810119356840">Maďarská klávesnica s rozložením Qwerty</translation>
-<translation id="6082256976217156453">Komprimovaný archív LZMA</translation>
 <translation id="6096979789310008754">Text vyhľadávania bol vymazaný, zobrazujú sa všetky súbory a priečinky</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> sa presúva do priečnika <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Text vo formáte CSV</translation>
@@ -622,7 +610,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6220423280121890987">Pandžábska klávesnica</translation>
 <translation id="6224240818060029162">Dánska klávesnica</translation>
 <translation id="6224253798271602650">Formátovať: <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Archív komprimovaný metódou Zstandard</translation>
 <translation id="6227235786875481728">Tento súbor nie je možné prehrať.</translation>
 <translation id="6241349547798190358">Holandská (Belgicko) klávesnica</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, pripojenie</translation>
@@ -936,7 +923,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Pes krútiaci chvostom</translation>
 <translation id="8919081441417203123">Dánčina</translation>
-<translation id="8965273390142984105">Komprimovaný archív LZOP</translation>
 <translation id="8965697826696209160">Nedostatok miesta</translation>
 <translation id="8997962250644902079">Čínska klávesnica Pchin-jin (tradičná)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, ovládané správcom, podrobnosti</translation>

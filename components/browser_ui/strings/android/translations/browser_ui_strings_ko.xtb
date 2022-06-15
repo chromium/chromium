@@ -91,6 +91,7 @@
 <translation id="300526633675317032">웹사이트 저장공간 <ph name="SIZE_IN_KB" />가 모두 삭제됩니다.</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
+<translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
 <translation id="3114012059975132928">동영상 플레이어</translation>
 <translation id="3115898365077584848">정보 표시</translation>
 <translation id="3123473560110926937">일부 사이트에서 차단됨</translation>
@@ -125,6 +126,7 @@
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3987993985790029246">링크 복사</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
+<translation id="3992684624889376114">이 페이지에 관한 정보</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4008040567710660924">특정 사이트의 쿠키를 허용합니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
@@ -225,6 +227,7 @@
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6320088164292336938">진동</translation>
+<translation id="6367753977865761591">특정 사이트에 대해 서드 파티 로그인을 차단합니다.</translation>
 <translation id="6388207532828177975">삭제 및 재설정</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="6439114592976064011">사이트에서 내 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>

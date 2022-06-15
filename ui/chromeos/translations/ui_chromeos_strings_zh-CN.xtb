@@ -20,7 +20,6 @@
 <translation id="115443833402798225">韩语（安马太）</translation>
 <translation id="1155759005174418845">加泰罗尼亚语</translation>
 <translation id="1168100932582989117">Google 域名服务器</translation>
-<translation id="1171082344678443012">XZ 压缩包</translation>
 <translation id="1172970565351728681">还需大约 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，详细信息</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1209796539517632982">自动域名服务器</translation>
 <translation id="1210831758834677569">老挝语</translation>
-<translation id="1223825810409523901">Chrome 扩展程序</translation>
 <translation id="1243314992276662751">上传</translation>
 <translation id="1249250836236328755">流派</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1272293450992660632">PIN 码的值不一致。</translation>
-<translation id="127650757582748357">BZIP2 压缩的归档文件</translation>
 <translation id="1280820357415527819">正在搜索移动网络</translation>
 <translation id="1291603679744561561">SIM 卡已锁定</translation>
 <translation id="1293556467332435079">文件</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">不允许更改共享网络配置</translation>
 <translation id="1665611772925418501">无法修改该文件。</translation>
 <translation id="1673103856845176271">出于安全原因，无法访问该文件。</translation>
-<translation id="16762847117768727">ISO 映像</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">骑车</translation>
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">图片分辨率</translation>
 <translation id="1972984168337863910">展开文件反馈面板</translation>
 <translation id="1995337122023280937">转到文件位置</translation>
-<translation id="1996806196681857869">Z 压缩的归档文件</translation>
 <translation id="2001796770603320721">在云端硬盘中管理</translation>
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="2025955442973426285">蒂格尼亚语</translation>
-<translation id="2028997212275086731">RAR 归档</translation>
 <translation id="2037845485764049925">俄语</translation>
 <translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="2046702855113914483">拉面</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">奶酪</translation>
 <translation id="2781645665747935084">比利时语</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
-<translation id="2788520643285360081">7-ZIP 归档文件</translation>
 <translation id="2803375539583399270">输入 PIN 码</translation>
 <translation id="2820957248982571256">正在扫描…</translation>
-<translation id="2822595620066756134">GZIP 压缩的归档文件</translation>
 <translation id="2830077785865012357">中文注音</translation>
 <translation id="2843806747483486897">更改默认设置...</translation>
 <translation id="2850124913210091882">备份</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">立陶宛语</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3592251141500063301">无法将文件“<ph name="FILE_NAME" />”设为“可离线使用”</translation>
-<translation id="3593874215226880809">LZIP 压缩的归档文件</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">加拿大法语</translation>
 <translation id="3606220979431771195">土耳其语 F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，<ph name="CONNECTION_STATUS" />，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3691184985318546178">僧伽罗语</translation>
-<translation id="3703620396751288986">ZIP 归档文件</translation>
 <translation id="3726463242007121105">系统不支持此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="3727148787322499904">更改此设置将会影响所有共享网络</translation>
 <translation id="3737576078404241332">从边栏中移除</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">捷克语 Qwerty 键盘</translation>
 <translation id="4656777537938206294">将文件设为“可离线使用”</translation>
 <translation id="4658782175094886150">一个人站在雪地里</translation>
-<translation id="4661996069183330363">TAR 归档文件</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />”的成员将不再能够访问这些内容（除非与他们共享了这些内容）。</translation>
 <translation id="467809019005607715">Google 幻灯片</translation>
 <translation id="4690246192099372265">瑞典语</translation>
@@ -596,7 +585,6 @@
 <translation id="6055907707645252013">“<ph name="NETWORK_TYPE" />”类型的网络，未连接</translation>
 <translation id="6074825444536523002">Google 表单</translation>
 <translation id="6079871810119356840">匈牙利语 Qwerty 键盘</translation>
-<translation id="6082256976217156453">LZMA 压缩包</translation>
 <translation id="6096979789310008754">已清除搜索文本，目前显示的是所有文件和文件夹。</translation>
 <translation id="610101264611565198">正在将 <ph name="FILE_NAME" /> 移动到“<ph name="FOLDER_NAME" />”</translation>
 <translation id="61118516107968648">CSV 文本</translation>
@@ -617,7 +605,6 @@
 <translation id="6220423280121890987">旁遮普语</translation>
 <translation id="6224240818060029162">丹麦语</translation>
 <translation id="6224253798271602650">将“<ph name="DRIVE_NAME" />”格式化</translation>
-<translation id="6224665423283788195">Zstandard 压缩的归档文件</translation>
 <translation id="6227235786875481728">此文件无法播放。</translation>
 <translation id="6241349547798190358">荷兰语（比利时）</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
@@ -931,7 +918,6 @@
 <translation id="8903931173357132290">毕业</translation>
 <translation id="8912078710089354287">一只狗在摇尾巴</translation>
 <translation id="8919081441417203123">丹麦语</translation>
-<translation id="8965273390142984105">LZOP 压缩的归档文件</translation>
 <translation id="8965697826696209160">空间不足。</translation>
 <translation id="8997962250644902079">中文（繁体）拼音</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>

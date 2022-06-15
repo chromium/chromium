@@ -591,6 +591,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2523886232349826891">Sačuvano je samo na ovom uređaju</translation>
 <translation id="2524461107774643265">Dodajte još informacija</translation>
 <translation id="2529899080962247600">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi budući unosi će se zanemariti.</translation>
+<translation id="253493526287553278">Prikaži detalje o promotivnom kodu</translation>
 <translation id="2535585790302968248">Otvorite novu karticu bez arhiviranja da biste pregledali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2536110899380797252">Dodaj adresu</translation>
@@ -1283,6 +1284,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4435702339979719576">razglednica)</translation>
 <translation id="443673843213245140">Korišćenje proksija je onemogućeno, ali je navedena eksplicitna konfiguracija proksija.</translation>
 <translation id="4441832193888514600">Ignoriše se jer smernice mogu da se podese samo kao smernice za korisnika u klaudu.</translation>
+<translation id="4442470707340296952">Chrome kartice</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451135742916150903">Može da traži da se povezuje sa HID uređajima</translation>
 <translation id="4452328064229197696">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da proverite sačuvane lozinke.</translation>

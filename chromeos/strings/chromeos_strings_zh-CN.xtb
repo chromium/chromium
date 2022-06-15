@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">强制门户</translation>
 <translation id="2006864819935886708">连接</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
+<translation id="2011174342667534258">SDK 版本：</translation>
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
 <translation id="2016848882344942759">--无白标签--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2275586345903859204">已修复完毕</translation>
+<translation id="2276999893457278469">热门帮助内容</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="2294753434210277304">请插接包含已下载的 Chromebook 恢复工具映像的外部存储设备（例如 U 盘或 SD 卡）</translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="253029298928638905">正在重启…</translation>
+<translation id="2533048460510040082">推荐的帮助内容</translation>
 <translation id="2536159006530886390">无法连接到互联网。</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
@@ -303,6 +306,7 @@
 <translation id="3784455785234192852">锁定</translation>
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
+<translation id="3824259034819781947">附加文件</translation>
 <translation id="3838338534323494292">新密码</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3856304145690230735">底座陀螺仪</translation>
@@ -863,6 +867,7 @@
 <translation id="885701979325669005">存储数据</translation>
 <translation id="8863170912498892583">启用深色主题</translation>
 <translation id="8863888432376731307">获取“<ph name="QUERY" />”的<ph name="INTENT" />，等等</translation>
+<translation id="8864415976656252616">没有推荐的内容。请查看热门帮助内容。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">设备类型是平板电脑。</translation>
 <translation id="8881098542468797602">测试成功</translation>

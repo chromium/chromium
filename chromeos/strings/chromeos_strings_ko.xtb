@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USB에 저장</translation>
 <translation id="1468664791493211953">혜택</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
+<translation id="147809995039451286">업데이트를 다운로드할 수 없음</translation>
 <translation id="1478594628797167447">스캐너</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> 펌웨어 업데이트 중</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며, 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">종속 포털</translation>
 <translation id="2006864819935886708">연결</translation>
 <translation id="2008685064673031089">Prime 검색</translation>
+<translation id="2011174342667534258">SDK 버전:</translation>
 <translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
 <translation id="2016848882344942759">--허용 목록 라벨 없음--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">활성화 상태</translation>
 <translation id="2271469253353559191">어두운 모드 예약</translation>
 <translation id="2275586345903859204">수리 완료</translation>
+<translation id="2276999893457278469">상위 도움말 콘텐츠</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
 <translation id="2294753434210277304">Chromebook 복구 유틸리티 이미지를 다운로드한 USB 드라이브 또는 SD 카드와 같은 외부 저장소를 삽입합니다.</translation>
 <translation id="2307344026739914387">현재 키 쌍 사용</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">설정에서 열기</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />페이지 중 <ph name="CURRENT_PAGE" />에 있는 이미지</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
+<translation id="2447969267935997922">설치가 완료되었습니다. 이제 USB 드라이브 또는 SD 카드를 제거할 수 있습니다.</translation>
 <translation id="2448312741937722512">유형</translation>
 <translation id="2461822463642141190">현재</translation>
 <translation id="2480034874476596812">수동으로 사용 중지</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">검색</translation>
 <translation id="2526590354069164005">데스크톱</translation>
 <translation id="253029298928638905">다시 시작 중...</translation>
+<translation id="2533048460510040082">추천 도움말 콘텐츠</translation>
 <translation id="2536159006530886390">인터넷에 연결할 수 없습니다.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> 테스트 실행 중…</translation>
 <translation id="2584559707064218956">설정하려면 설정으로 이동하세요.</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">잠금</translation>
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
+<translation id="3824259034819781947">파일 첨부</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3856304145690230735">베이스 자이로스코프</translation>
@@ -863,6 +869,7 @@
 <translation id="885701979325669005">저장소</translation>
 <translation id="8863170912498892583">어두운 테마 사용</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />"의 <ph name="INTENT" /> 확인 등</translation>
+<translation id="8864415976656252616">추천 콘텐츠가 없습니다. 상위 도움말 콘텐츠를 참고하세요.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">태블릿 기기입니다.</translation>
 <translation id="8881098542468797602">테스트 성공</translation>

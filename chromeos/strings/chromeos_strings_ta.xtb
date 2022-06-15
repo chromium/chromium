@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USBல் சேமி</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
 <translation id="1476467821656042872">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
+<translation id="147809995039451286">புதுப்பிப்பைப் பதிவிறக்க முடியவில்லை</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பிக்கிறது</translation>
 <translation id="1499900233129743732">இந்தப் பயனரை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">கேப்டிவ் போர்டல்</translation>
 <translation id="2006864819935886708">இணைப்பு</translation>
 <translation id="2008685064673031089">முதன்மைத் தேடல்</translation>
+<translation id="2011174342667534258">SDK பதிப்பு:</translation>
 <translation id="2016697457005847575">பிழையறிந்து திருத்தும் படிகளை முயன்று பார்க்கவும்</translation>
 <translation id="2016848882344942759">--வெள்ளை லேபிள் இல்லை--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">செயலாக்க நிலை</translation>
 <translation id="2271469253353559191">டார்க் பயன்முறையைத் திட்டமிடுதல்</translation>
 <translation id="2275586345903859204">ரிப்பேர் நிறைவடைந்தது</translation>
+<translation id="2276999893457278469">சிறந்த உதவி உள்ளடக்கம்</translation>
 <translation id="2287186687001756809">படங்கள் எதுவுமில்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
 <translation id="2294753434210277304">பதிவிறக்கிய Chromebook மீட்புப் பயன்பாட்டின் பிரதி உள்ள USB இயக்ககம் அல்லது SD கார்டு போன்ற வெளிப்புறச் சேமிப்பகத்தைச் செருகவும்</translation>
 <translation id="2307344026739914387">தற்போதைய குறியீட்டு இணையைப் பயன்படுத்து</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">அமைப்புகளில் திற</translation>
 <translation id="2421798028054665193">படம்: <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
+<translation id="2447969267935997922">நிறுவப்பட்டது. USB இயக்ககம் அல்லது SD கார்டை இப்போது அகற்றலாம்.</translation>
 <translation id="2448312741937722512">வகை</translation>
 <translation id="2461822463642141190">தற்போதைய மின் உபயோகம்</translation>
 <translation id="2480034874476596812">நேரடியாக முடக்கு</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2526590354069164005">டெஸ்க்டாப்</translation>
 <translation id="253029298928638905">மீண்டும் தொடங்குகிறது...</translation>
+<translation id="2533048460510040082">பரிந்துரைக்கப்படும் உதவி உள்ளடக்கம்</translation>
 <translation id="2536159006530886390">இணையத்துடன் இணைக்க முடியவில்லை.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> சோதனை இயங்குகிறது...</translation>
 <translation id="2584559707064218956">அமைக்க, அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">பூட்டு</translation>
 <translation id="38114475217616659">அனைத்து வரலாற்றையும் அழி</translation>
 <translation id="3820172043799983114">தவறான பின்.</translation>
+<translation id="3824259034819781947">ஃபைல்களை இணை</translation>
 <translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3856304145690230735">பேஸ் திசை காட்டி</translation>
@@ -863,6 +869,7 @@
 <translation id="885701979325669005">சேமிப்பிடம்</translation>
 <translation id="8863170912498892583">டார்க் தீமினை இயக்குதல்</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />", மேலும் பலவற்றுக்கான <ph name="INTENT" /> பெறுங்கள்</translation>
+<translation id="8864415976656252616">பரிந்துரைக்கப்படும் உள்ளடக்கம் இல்லை. சிறந்த உதவி உள்ளடக்கத்தைப் பார்க்கவும்.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">சாதனம் ஒரு டேப்லெட்.</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>

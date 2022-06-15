@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">Chromeની કેટલીક સુવિધાઓ હવે ઉપલબ્ધ રહેશે નહીં</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2871733351037274014">પહેલેથી લોડ કરેલા પેજ</translation>
+<translation id="2886836735871983413">જ્યારે તમે વેબ બ્રાઉઝ કરશો, ત્યારે સાઇટની સૂચિ અહીં દેખાશે</translation>
 <translation id="2888126860611144412">Chrome વિશે</translation>
 <translation id="2891154217021530873">પેજ લોડ કરવાનું રોકો</translation>
 <translation id="2892647708214602204">આ ફાઇલ તૈયાર હોય ત્યારે તમે એક નોટિફિકેશન જોશો</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">બીજા ડિવાઇસ પરથી શેર થયેલી ટેક્સ્ટ</translation>
 <translation id="2989523299700148168">તાજેતરમાં મુલાકાત લીધેલ</translation>
 <translation id="2992473221983447149">છબીના વર્ણનો</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" />ને કાઢી નાખો</translation>
 <translation id="2996291259634659425">પાસફ્રેઝ બનાવો</translation>
 <translation id="2996809686854298943">URL આવશ્યક છે</translation>
 <translation id="2997081575621687554">જ્યારે Google site દ્વારા તેમના પેજ પર લિંકને ખાનગી રીતે પહેલેથી લોડ કરવાનું કહેવામાં આવે, ત્યારે Chrome, કુકી વિના Googleના સર્વર મારફતે પેજને એન્ક્રિપ્ટ અને પહેલેથી લોડ કરે છે. આ પહેલેથી લોડ કરેલી સાઇટથી તમારી ઓળખ છુપાવે છે.</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">કૃપા કરીને ચકાસણી કરો કે આ માન્ય પ્રદાતા છે અથવા પછીથી ફરી પ્રયાસ કરો</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3861633093716975811">લોકપ્રિય વીડિયો</translation>
+<translation id="3874520961715512166">સાઇટ કાઢી નાખી</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="3894427358181296146">ફોલ્ડર ઉમેરો</translation>
 <translation id="3899682235662194879">બધી છૂપી ટૅબ બંધ કરો</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="4096227151372679484">બુકમાર્ક સાચવવાનો ફ્લો અડધી ઊંચાઈએ ખુલ્લો છે</translation>
 <translation id="4099578267706723511">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
+<translation id="4101475238162928417">તમારા અન્ય ડિવાઇસ પર તમારા પાસવર્ડ અને બુકમાર્ક જેવું બીજું ઘણું મેળવવા માટે સિંક કરો</translation>
 <translation id="410351446219883937">ઑટોપ્લે</translation>
 <translation id="4106587138345390261">Chrome એવી નવી સુવિધાઓની શોધખોળ કરી રહ્યું છે કે જેના વડે સાઇટ તમારી ઓછી માહિતીનો ઉપયોગ કરીને બ્રાઉઝિંગનો એવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="4108314971463891922">ફૉલો કરો</translation>
@@ -1191,6 +1195,7 @@
 <translation id="749294055653435199">Google Lens આ ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (અપડેટ કર્યું <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">કૃપા કરીને રાહ જુઓ…</translation>
+<translation id="7502234197872745058">બધી વેબસાઇટ પર તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">અપડેટ અનુપલબ્ધ છે</translation>
 <translation id="7507207699631365376">આ પ્રદાતાની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>

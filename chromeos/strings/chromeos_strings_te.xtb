@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USBకి సేవ్ చేయండి</translation>
 <translation id="1468664791493211953">ఆఫర్‌లు</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />, ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, ఇంకా మీ యాక్టివిటీని మానిటర్ చేయగలదు.</translation>
+<translation id="147809995039451286">అప్‌డేట్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1478594628797167447">స్కానర్</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్ అప్‌డేట్ చేయబడుతోంది</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />, ఈ యూజర్‌ను మేనేజ్ చేస్తుంది, ఇంకా అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">క్యాప్టివ్ పోర్టల్</translation>
 <translation id="2006864819935886708">కనెక్టివిటీ</translation>
 <translation id="2008685064673031089">ప్రైమ్ సెర్చ్</translation>
+<translation id="2011174342667534258">SDK వెర్షన్:</translation>
 <translation id="2016697457005847575">పరిష్కార ప్రక్రియకు సంబంధించిన దశలను ట్రై చేయండి</translation>
 <translation id="2016848882344942759">--వైట్ లేబుల్ ఉండదు--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
 <translation id="2275586345903859204">రిపేర్ పూర్తయింది</translation>
+<translation id="2276999893457278469">టాప్ సహాయక కంటెంట్</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
 <translation id="2294753434210277304">డౌన్‌లోడ్ చేసిన Chromebook రికవరీ యుటిలిటీ ఇమేజ్‌తో, USB డిస్క్ లేదా SD కార్డ్ వంటి బాహ్య స్టోరేజ్‌ను ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="2307344026739914387">ప్రస్తుత కీపెయిర్‌ను ఉపయోగించండి</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">సెట్టింగ్‌లలో తెరువు</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" />వ ఇమేజ్</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
+<translation id="2447969267935997922">ఇన్‌స్టాల్ చేయడం పూర్తయింది. ఇప్పుడు మీరు మీ USB డిస్క్‌ను లేదా SD కార్డ్‌ను తీసివేయవచ్చు.</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
 <translation id="2480034874476596812">మాన్యువల్‌గా ఆఫ్ చేయండి</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2526590354069164005">డెస్క్‌టాప్</translation>
 <translation id="253029298928638905">రీస్టార్ట్ అవుతోంది…</translation>
+<translation id="2533048460510040082">సూచించబడిన సహాయక కంటెంట్</translation>
 <translation id="2536159006530886390">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
 <translation id="2584559707064218956">సెటప్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
@@ -306,6 +311,7 @@
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="38114475217616659">చరిత్ర మొత్తాన్ని క్లియర్ చేయి</translation>
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
+<translation id="3824259034819781947">ఫైల్స్‌ను జోడించండి</translation>
 <translation id="3838338534323494292">కొత్త పాస్‌వర్డ్</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3856304145690230735">బేస్ గైరోస్కోప్</translation>
@@ -868,6 +874,7 @@
 <translation id="885701979325669005">నిల్వ</translation>
 <translation id="8863170912498892583">ముదురు రంగు రూపాన్ని ఎనేబుల్ చేయండి</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />", అలాగే మరిన్నింటి కోసం <ph name="INTENT" />ను పొందండి</translation>
+<translation id="8864415976656252616">ఏ కంటెంట్ సూచించబడలేదు. టాప్ సహాయక కంటెంట్‌ను చూడండి.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">పరికర రకం టాబ్లెట్.</translation>
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>

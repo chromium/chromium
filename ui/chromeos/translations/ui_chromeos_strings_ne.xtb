@@ -20,7 +20,6 @@
 <translation id="115443833402798225">हंगुल Ahnmatae</translation>
 <translation id="1155759005174418845">क्याटालान</translation>
 <translation id="1168100932582989117">Google का नामसम्बन्धी सर्भरहरू</translation>
-<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">लगभग <ph name="REMAINING_TIME" /> बाँकी</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" /> सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1209796539517632982">स्वचालित नाम सर्भरहरू</translation>
 <translation id="1210831758834677569">लाओ</translation>
-<translation id="1223825810409523901">Chrome एक्सटेन्सन</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
 <translation id="1249250836236328755">विधा</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इन्टरनेट जडान</translation>
 <translation id="1272293450992660632">PIN का मानहरू मिल्दैनन्।</translation>
-<translation id="127650757582748357">कम्प्रेस गरिएको BZIP2 अभिलेख</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्कहरू खोज्दै</translation>
 <translation id="1291603679744561561">SIM लक गरिएको छ</translation>
 <translation id="1293556467332435079">फाइलहरू</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">साझा गरिएको नेटवर्कको कन्फिगरेसनहरू परिवर्तन गर्न अनुमति छैन</translation>
 <translation id="1665611772925418501">फाइल परिमार्जन गर्न सकिएन।</translation>
 <translation id="1673103856845176271">सुरक्षाको कारणले यो फाइल पहुँच गर्न सकिएन।</translation>
-<translation id="16762847117768727">ISO इमेज</translation>
 <translation id="169515659049020177">सिफ्ट</translation>
 <translation id="1715848075824334077">बाइक चलाइरहेका व्यक्ति</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू जिप गर्दै...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
 <translation id="1995337122023280937">फाइल रहेको स्थानमा जानुहोस्</translation>
-<translation id="1996806196681857869">Z compressed archive</translation>
 <translation id="2001796770603320721">ड्राइभमा व्यवस्थित गर्नुहोस्</translation>
 <translation id="2009067268969781306">ड्राइभ फर्म्याट गर्नुले यसमा भण्डार गरिएका सम्पूर्ण डेटा मेट्ने छ। यो कार्य उल्टाउन सकिँदैन।</translation>
 <translation id="2025955442973426285">टिग्रिन्या</translation>
-<translation id="2028997212275086731">RAR सङ्ग्रह</translation>
 <translation id="2037845485764049925">रुसी</translation>
 <translation id="2044023416777079300">मोडेम दर्ता गरिएको छैन</translation>
 <translation id="2046702855113914483">रामेन</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">चिज</translation>
 <translation id="2781645665747935084">बेल्गियम</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
-<translation id="2788520643285360081">7-Zip अभिलेख</translation>
 <translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
-<translation id="2822595620066756134">कम्प्रेस गरिएको GZIP अभिलेख</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
 <translation id="2843806747483486897">डिफल्ट परिवर्तन गर्नुहोस्...</translation>
 <translation id="2850124913210091882">जगेडा गर्नुहोस्</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">लिथुएनियन</translation>
 <translation id="3587482841069643663">सबै</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि डाउनलोड गर्न सकिएन</translation>
-<translation id="3593874215226880809">कम्प्रेस गरिएको LZIP अभिलेख</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">क्यानाडाली फ्रान्सेली</translation>
 <translation id="3606220979431771195">टर्किस-एफ</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द गर्नुहोस्।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, <ph name="CONNECTION_STATUS" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="3691184985318546178">सिंहली</translation>
-<translation id="3703620396751288986">ZIP अभिलेख</translation>
 <translation id="3726463242007121105">यो यन्त्रलाई खोल्न सकिँदैन किनभने यसको फाइल सिस्टम समर्थित छैन।</translation>
 <translation id="3727148787322499904">यो सेटिङ परिवर्तन गर्नुले आदान प्रदान गरिएका सबै नेटवर्कहरूमा असर पार्नेछ</translation>
 <translation id="3737576078404241332">साइडबारबाट हटाउनुहोस्</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">चेक Qwerty किबोर्ड</translation>
 <translation id="4656777537938206294">फाइलहरू अफलाइन उपलब्ध गराउनुहोस्</translation>
 <translation id="4658782175094886150">हिउँमा उभिरहेका व्यक्ति</translation>
-<translation id="4661996069183330363">TAR अभिलेख</translation>
 <translation id="4669606053856530811">यी वस्तुहरूलाई '<ph name="SOURCE_NAME" />' का सदस्यहरूसँग आदान प्रदान नगरेसम्म तिनीहरू ले यी वस्तुहरूमाथिको पहुँच गुमाउनुहुनेछन्।</translation>
 <translation id="467809019005607715">Google स्लाइड</translation>
 <translation id="4690246192099372265">&amp;#2360;&amp;#2381;&amp;#2357;&amp;#2367;&amp;#2337;&amp;#2367;&amp;#2358;</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> नेटवर्क, जोडिएको छैन</translation>
 <translation id="6074825444536523002">Google फारम</translation>
 <translation id="6079871810119356840">हङ्गेरियाली Qwerty किबोर्ड</translation>
-<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">खोज पाठ मेटाइयो, सबै फाइल र फोल्डरहरू देखाउँदै।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" /> मा <ph name="FILE_NAME" /> सारिँदै छ</translation>
 <translation id="61118516107968648">CSV टेक्स्ट</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">पञ्जाबी</translation>
 <translation id="6224240818060029162">डेनिस</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फर्म्याट गर्नुहोस्</translation>
-<translation id="6224665423283788195">Zstandard compressed archive</translation>
 <translation id="6227235786875481728">फाइल प्ले हुन सकेन।</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">स्नातक</translation>
 <translation id="8912078710089354287">पुच्छर हल्लाइरहेको कुकुर</translation>
 <translation id="8919081441417203123">ड्यानिस</translation>
-<translation id="8965273390142984105">कम्प्रेस गरिएको LZOP अभिलेख</translation>
 <translation id="8965697826696209160">त्यहाँ उपयुक्त ठाउँ छैन।</translation>
 <translation id="8997962250644902079">चिनियाँ (परम्परागत) पिनयिन</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क<ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>

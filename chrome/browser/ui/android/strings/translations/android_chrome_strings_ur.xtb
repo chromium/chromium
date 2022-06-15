@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">‏Chrome کی کچھ خصوصیات اب دستیاب نہیں ہوں گی۔</translation>
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2871733351037274014">پیشگی لوڈ والے صفحات</translation>
+<translation id="2886836735871983413">آپ کے ویب براؤز کرتے ہی سائٹس کی ایک فہرست یہاں ظاہر ہوگی</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
 <translation id="2891154217021530873">صفحہ لوڈ کرنا بند کریں</translation>
 <translation id="2892647708214602204">فائل تیار ہونے پر آپ کو اطلاع دکھائی دے گی</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">دوسرے آلے سے اشتراک کردہ متن</translation>
 <translation id="2989523299700148168">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="2992473221983447149">تصویر کی تفصیلات</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" /> ہٹائیں</translation>
 <translation id="2996291259634659425">پاس فریز بنائیں</translation>
 <translation id="2996809686854298943">‏URL درکار ہے</translation>
 <translation id="2997081575621687554">‏جب Google سائٹ اپنے صفحہ پر لنکس کو نجی طور پر پیشگی لوڈ کرنے کا مطالبہ کرتی ہے تو Chrome کوکیز کے بغیر Google سرورز کے ذریعے صفحات کو مرموز اور پیشگی لوڈ کرتا ہے۔ اس سے پیشگی لوڈ کردہ سائٹ سے آپ کی شناخت پوشیدہ ہو جاتی ہے۔</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861633093716975811">مقبول ویڈیوز</translation>
+<translation id="3874520961715512166">سائٹ ہٹا دی گئی</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
 <translation id="3899682235662194879">سبھی پوشیدگی ٹیبز بند کریں</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">ایپ کا ڈیٹا حذف کریں؟</translation>
 <translation id="4096227151372679484">بُک مارک محفوظ کرنے کا فلو نصف اونچائی پر کھلا ہوا ہے</translation>
 <translation id="4099578267706723511">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chrome کو بہتر بنانے میں مدد کریں۔</translation>
+<translation id="4101475238162928417">اپنے دیگر آلات پر اپنے پاس ورڈز، بُک مارکس اور بہت کچھ حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="410351446219883937">آٹوپلے</translation>
 <translation id="4106587138345390261">‏Chrome نئی خصوصیات کو دریافت کر رہا ہے جو سائٹس کو آپ کی کم معلومات کا استعمال کر کے وہی براؤزنگ تجربہ فراہم کرنے کی اجازت دیتی ہیں</translation>
 <translation id="4108314971463891922">پیروی کریں</translation>
@@ -1191,6 +1195,7 @@
 <translation id="749294055653435199">‏اس آلے پر Google لینز دستیاب نہیں ہے</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (اپ ڈیٹ کا وقت <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">براہ کرم انتظار کریں…</translation>
+<translation id="7502234197872745058">‏سبھی ویب سائٹس پر اپنے Google اکاؤنٹ سے سائن آؤٹ کرنے کے لیے <ph name="BEGIN_LINK1" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK1" /></translation>
 <translation id="750228856503700085">اپ ڈیٹس دستیاب نہیں ہیں</translation>
 <translation id="7507207699631365376">اس فراہم کنندہ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>

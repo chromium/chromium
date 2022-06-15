@@ -129,6 +129,7 @@
 <translation id="1999615961760456652">Portal captiu</translation>
 <translation id="2006864819935886708">Connectivitat</translation>
 <translation id="2008685064673031089">Cerca principal</translation>
+<translation id="2011174342667534258">Versió de l'SDK:</translation>
 <translation id="2016697457005847575">Prova els passos de resolució de problemes</translation>
 <translation id="2016848882344942759">--sense etiqueta blanca--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +161,7 @@
 <translation id="225692081236532131">Estat d'activació</translation>
 <translation id="2271469253353559191">Programació del mode fosc</translation>
 <translation id="2275586345903859204">La reparació s'ha completat</translation>
+<translation id="2276999893457278469">Contingut d'ajuda principal</translation>
 <translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
 <translation id="2294753434210277304">Insereix un emmagatzematge extern, com ara una unitat USB o una targeta SD, amb la imatge baixada d'Eina de recuperació de Chromebook</translation>
 <translation id="2307344026739914387">Utilitza el parell de claus actual</translation>
@@ -193,6 +195,7 @@
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2526590354069164005">Escriptori</translation>
 <translation id="253029298928638905">S'està reiniciant...</translation>
+<translation id="2533048460510040082">Contingut d'ajuda suggerit</translation>
 <translation id="2536159006530886390">No es pot connectar a Internet.</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Per configurar-la, ves a Configuració</translation>
@@ -305,6 +308,7 @@
 <translation id="3784455785234192852">Bloqueja</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
+<translation id="3824259034819781947">Adjunta fitxers</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3856304145690230735">Giroscopi de la base</translation>
@@ -865,6 +869,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="885701979325669005">Emmagatzematge</translation>
 <translation id="8863170912498892583">Activa el tema fosc</translation>
 <translation id="8863888432376731307">Obtén la <ph name="INTENT" /> per a "<ph name="QUERY" />" i més</translation>
+<translation id="8864415976656252616">No hi ha contingut suggerit. Consulta el contingut d'ajuda principal.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositiu és una tauleta.</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>

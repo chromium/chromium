@@ -2616,6 +2616,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> は次のファイルを表示できます</translation>
 <translation id="3484273680291419129">有害なソフトウェアを削除しています...</translation>
 <translation id="3484869148456018791">新しい証明書を取得</translation>
+<translation id="3486950712960783074">旅行</translation>
 <translation id="3487007233252413104">無名関数</translation>
 <translation id="3490695139702884919">ダウンロードしています... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">お子様のアカウントは、ファミリー リンクの保護者による使用制限が設定されていません。セットアップが完了すると、保護者による使用制限を設定できます。保護者による使用制限に関する情報は、「使い方・ヒント」アプリで確認できます。</translation>
@@ -2928,6 +2929,7 @@
 <translation id="3797739167230984533">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は組織によって管理<ph name="END_LINK" />されています</translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> で「<ph name="SEARCH_TERMS" />」を検索(&amp;S)</translation>
 <translation id="3798449238516105146">バージョン</translation>
+<translation id="3798632811625902122">Bluetooth デバイス <ph name="DEVICE" /> がペア設定の権限をリクエストしています。</translation>
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
 <translation id="3800806661949714323">すべてを表示（推奨）</translation>
 <translation id="3800828618615365228">Google Chrome および Chrome OS 追加利用規約</translation>
@@ -4909,6 +4911,7 @@
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> に対するその他の操作</translation>
 <translation id="5792728279623964091">電源ボタンをタップしてください</translation>
 <translation id="5793339252089865437">モバイル ネットワーク経由でアップデートをダウンロードすると、追加料金が発生する可能性があります。</translation>
+<translation id="5793420564274426163">ペア設定の確認</translation>
 <translation id="5794034487966529952">デスク「<ph name="DESK_TITLE" />」には <ph name="NUM_BROWSERS" /> 個のブラウザ ウィンドウが開いています</translation>
 <translation id="5794414402486823030">常にシステム ビューアで開く</translation>
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
@@ -7397,6 +7400,7 @@
 <translation id="8242426110754782860">続行</translation>
 <translation id="8243948765190375130">メディアの品質が低下する可能性があります</translation>
 <translation id="8244514732452879619">もうすぐ、おやすみの時間です</translation>
+<translation id="8245361042748627813">このショートカットは変更されています。システム ダイアログを使用して印刷するには、<ph name="NEW_SHORTCUT_KEY" /> を使用してください。</translation>
 <translation id="8246776524656196770">PIN（個人識別番号）を使ってセキュリティ キーを保護します</translation>
 <translation id="8248050856337841185">貼り付け(&amp;P)</translation>
 <translation id="8248381369318572865">マイクへのアクセスと音声の分析</translation>
@@ -7701,6 +7705,7 @@
 <translation id="8561565784790166472">続行する場合は十分ご注意ください</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">アプリのダウングレードが試行されました。</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> の詳細</translation>
 <translation id="8569682776816196752">送信先が見つかりません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8571687764447439720">Kerberos チケットの追加</translation>

@@ -2634,6 +2634,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> har visningsbehörighet till följande filer</translation>
 <translation id="3484273680291419129">Den skadliga programvaran tas bort …</translation>
 <translation id="3484869148456018791">Hämta nytt certifikat</translation>
+<translation id="3486950712960783074">Din resa</translation>
 <translation id="3487007233252413104">anonym funktion</translation>
 <translation id="3490695139702884919">Laddas ned … <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Ditt barns konto har inte konfigurerats för föräldrakontroller i Family Link. Du kan lägga till föräldrakontroller när du har slutfört konfigureringen. Information om föräldrakontroller finns i Utforska-appen.</translation>
@@ -2944,6 +2945,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3797739167230984533">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> hanteras<ph name="END_LINK" /> av organisationen</translation>
 <translation id="3797900183766075808">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter ”<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Version</translation>
+<translation id="3798632811625902122">Bluetooth-enheten <ph name="DEVICE" /> vill ha behörighet att parkoppla.</translation>
 <translation id="3799128412641261490">Inställningar för brytarstyrning</translation>
 <translation id="3800806661949714323">Visa alla (rekommenderas)</translation>
 <translation id="3800828618615365228">Ytterligare villkor för Google Chrome och Chrome OS</translation>
@@ -4930,6 +4932,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5792295754950501287">Fler åtgärder för <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Tryck på strömbrytaren</translation>
 <translation id="5793339252089865437">Om du laddar ned uppdateringen via mobilnätverket kan det leda till avgifter för överskriden förbrukningsgräns.</translation>
+<translation id="5793420564274426163">Bekräftelse av parkoppling</translation>
 <translation id="5794034487966529952">Skrivbordet <ph name="DESK_TITLE" /> har <ph name="NUM_BROWSERS" /> webbläsarfönster öppna</translation>
 <translation id="5794414402486823030">Öppna alltid med systemets visningsprogram</translation>
 <translation id="5794700615121138172">Delade mappar i Linux</translation>
@@ -7425,6 +7428,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8242426110754782860">Fortsätt</translation>
 <translation id="8243948765190375130">Kvaliteten för media kan minska</translation>
 <translation id="8244514732452879619">Dags att sluta snart</translation>
+<translation id="8245361042748627813">Kortkommandot har ändrats. Använd <ph name="NEW_SHORTCUT_KEY" /> för att skriva ut med hjälp av systemets dialogruta.</translation>
 <translation id="8246776524656196770">Skydda säkerhetsnyckeln med en pinkod (personligt identifieringsnummer)</translation>
 <translation id="8248050856337841185">K&amp;listra in</translation>
 <translation id="8248381369318572865">Få åtkomst till telefonen och analysera ditt tal</translation>
@@ -7729,6 +7733,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8561565784790166472">Tänk dig för innan du fortsätter</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Försökte nedgradera appen.</translation>
+<translation id="8569673829373920831">Mer om <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Det gick inte att hitta några platser</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8571687764447439720">Lägg till Kerberos-biljett</translation>

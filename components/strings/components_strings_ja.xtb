@@ -291,6 +291,7 @@
 <translation id="1662550410081243962">お支払い方法の保存と入力</translation>
 <translation id="1663943134801823270">Chrome に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="1671391448414634642">今後、<ph name="SOURCE_LANGUAGE" />のページは<ph name="TARGET_LANGUAGE" />に翻訳されます。</translation>
+<translation id="1673886523110456987">特典を使用するには、<ph name="CARD_DETAIL" /> で決済を行ってください</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">短辺から</translation>
 <translation id="168693727862418163">このポリシーの値は、スキーマの検証でエラーとなったため無視されます。</translation>
@@ -1103,6 +1104,7 @@
 <translation id="3986705137476756801">今回のみ自動字幕起こしをオフにする</translation>
 <translation id="3987940399970879459">1 MB 未満</translation>
 <translation id="3990250421422698716">ジョグ オフセット</translation>
+<translation id="3992684624889376114">このページについて</translation>
 <translation id="3996311196211510766">サイト <ph name="ORIGIN" /> では、サイトへのすべてのリクエストにオリジン ポリシーの適用を求めていますが、このポリシーは現在適用することができません。</translation>
 <translation id="4006465311664329701">Google Pay を使用したお支払方法、クーポン、住所</translation>
 <translation id="4009243425692662128">印刷するページのコンテンツは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
@@ -1548,6 +1550,7 @@
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">マシン</translation>
+<translation id="5177076414499237632">このページのソースとトピックについて</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
 <translation id="518639307526414276">ペットフード、ペットケア用品</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>

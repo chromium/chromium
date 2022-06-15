@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalaans</translation>
 <translation id="1168100932582989117">Google-naambedieners</translation>
-<translation id="1171082344678443012">Saamgeperste XZ-argief</translation>
 <translation id="1172970565351728681">Omtrent <ph name="REMAINING_TIME" /> bly oor</translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1173916544412572294">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, besonderhede</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Outomatiese naambedieners</translation>
 <translation id="1210831758834677569">Lao</translation>
-<translation id="1223825810409523901">Chrome-uitbreiding</translation>
 <translation id="1243314992276662751">Laai op</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetverbinding</translation>
 <translation id="1272293450992660632">PIN-waardes stem nie ooreen nie.</translation>
-<translation id="127650757582748357">Saamgeperste BZIP2-argief</translation>
 <translation id="1280820357415527819">Soek tans vir mobiele netwerke …</translation>
 <translation id="1291603679744561561">SIM is gesluit</translation>
 <translation id="1293556467332435079">Lêers</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Gedeeldenetwerkopstellings mag nie verander word nie</translation>
 <translation id="1665611772925418501">Die lêer kon nie verander word nie.</translation>
 <translation id="1673103856845176271">Weens sekuriteitsredes kon daar nie by die lêer ingegaan word nie.</translation>
-<translation id="16762847117768727">ISO-prent</translation>
 <translation id="169515659049020177">Skuifsleutel</translation>
 <translation id="1715848075824334077">Persoon ry fiets</translation>
 <translation id="1722487484194605434">Kompakteer tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Prentresolusie</translation>
 <translation id="1972984168337863910">Vou lêersterugvoerpanele uit</translation>
 <translation id="1995337122023280937">Gaan na lêerligging toe</translation>
-<translation id="1996806196681857869">Saamgeperste Z-argief</translation>
 <translation id="2001796770603320721">Bestuur in Drive</translation>
 <translation id="2009067268969781306">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word. Hierdie handeling kan nie ontdoen word nie.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
-<translation id="2028997212275086731">RAR-argief</translation>
 <translation id="2037845485764049925">Russies</translation>
 <translation id="2044023416777079300">Modem is nie geregistreer nie</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Kaas</translation>
 <translation id="2781645665747935084">Belgiese</translation>
 <translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
-<translation id="2788520643285360081">7-ZIP-argief</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
 <translation id="2820957248982571256">Skandeer tans …</translation>
-<translation id="2822595620066756134">Saamgeperste GZIP-argief</translation>
 <translation id="2830077785865012357">Chinees-Zhujin</translation>
 <translation id="2843806747483486897">Verander verstek …</translation>
 <translation id="2850124913210091882">Rugsteun</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Litaus</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3592251141500063301">Kon nie <ph name="FILE_NAME" /> vanlyn beskikbaar maak nie</translation>
-<translation id="3593874215226880809">Saamgeperste LZIP-argief</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadese Frans</translation>
 <translation id="3606220979431771195">Turkse F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Kanselleer <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; <ph name="CONNECTION_STATUS" />; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
 <translation id="3691184985318546178">Singalees</translation>
-<translation id="3703620396751288986">ZIP-argief</translation>
 <translation id="3726463242007121105">Hierdie toestel kan nie oopgemaak word nie want sy lêerstelsel word nie gesteun nie.</translation>
 <translation id="3727148787322499904">As hierdie instelling verander word, sal dit alle gedeelde netwerke raak</translation>
 <translation id="3737576078404241332">Verwyder uit kantbalk</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Tsjeggies met Qwerty-sleutelbord</translation>
 <translation id="4656777537938206294">Maak lêers vanlyn beskikbaar</translation>
 <translation id="4658782175094886150">Persoon in sneeu</translation>
-<translation id="4661996069183330363">TAR-argief</translation>
 <translation id="4669606053856530811">Lede van "<ph name="SOURCE_NAME" />" sal toegang verloor tensy hierdie items met hulle gedeel word.</translation>
 <translation id="467809019005607715">Google Skyfies</translation>
 <translation id="4690246192099372265">Sweeds</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" />-netwerk; nie gekoppel nie</translation>
 <translation id="6074825444536523002">Google-vorm</translation>
 <translation id="6079871810119356840">Hongaars met Qwerty-sleutelbord</translation>
-<translation id="6082256976217156453">Saamgeperste LZMA-argief</translation>
 <translation id="6096979789310008754">Soekteks is uitgevee; alle lêers en vouers word gewys.</translation>
 <translation id="610101264611565198">Skuif <ph name="FILE_NAME" /> nou na <ph name="FOLDER_NAME" /> toe</translation>
 <translation id="61118516107968648">CSV-teks</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">Pandjabi</translation>
 <translation id="6224240818060029162">Deens</translation>
 <translation id="6224253798271602650">Formateer <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Saamgeperste Zstandard-argief</translation>
 <translation id="6227235786875481728">Hierdie lêer kan nie gespeel word nie.</translation>
 <translation id="6241349547798190358">Nederlands (België)</translation>
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, koppel</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">Gegradueerde</translation>
 <translation id="8912078710089354287">Hond waai stert</translation>
 <translation id="8919081441417203123">Deens</translation>
-<translation id="8965273390142984105">Saamgeperste LZOP-argief</translation>
 <translation id="8965697826696209160">Daar is nie genoeg spasie nie.</translation>
 <translation id="8997962250644902079">Chinees- (tradisioneel) Pinjin</translation>
 <translation id="9003940392834790328">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, deur jou administrateur bestuur, besonderhede</translation>

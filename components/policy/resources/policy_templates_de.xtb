@@ -1327,6 +1327,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Seit Version 91 kann diese Richtlinie nicht mehr auf „tls1“ oder „tls1.1“ gesetzt werden. Das Unterdrücken der TLS 1.0/1.1-Warnung wird nicht mehr unterstützt.</translation>
 <translation id="2364639863953745682">Modus für die Assistant-Einrichtung</translation>
 <translation id="2366301887862414321">Native Nachrichtenhosts sowohl auf Nutzer- als auch auf Systemebene zulassen</translation>
+<translation id="2382672620906337383">Die JavaScript-Funktion „setTimeout()“ wird nach Überschreiten eines höheren Verschachtelungsgrenzwerts verzögert.</translation>
 <translation id="2384233438419344179">Wenn diese Richtlinie aktiviert ist, können Websiteelemente, die nicht von der Domain in der Adressleiste des Browsers stammen, keine Cookies setzen. Wenn die Richtlinie deaktiviert ist, können diese Elemente Cookies setzen und Nutzer können diese Einstellung nicht ändern.
 
       Wenn sie nicht konfiguriert ist, werden Cookies von Drittanbietern zugelassen, aber Nutzer können diese Einstellung ändern.</translation>
@@ -1752,6 +1753,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="283478052049914107">Wenn die Richtlinie aktiviert ist und ein Nicht-Standard-Port, d. h. ein anderer Port als 80 oder 443, eingegeben wird, wird dieser in den generierten Kerberos-SPN aufgenommen.
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, umfasst der generierte Kerberos-SPN keinen Port.</translation>
+<translation id="2835686964326214400">Benutzerdefinierten Zeitplan für den Neustart von Geräten festlegen</translation>
 <translation id="2838830882081735096">Datenmigration und ARC nicht zulassen</translation>
 <translation id="2839294585867804686">Einstellungen für Netzwerkfreigaben</translation>
 <translation id="284288632677954003">Die URL einer XML-Datei mit URLs, die grundsätzlich keinen Browserwechsel auslösen sollen.</translation>
@@ -2318,6 +2320,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3387211681524224831">Wenn die Richtlinie aktiviert ist, wird der Browserverlauf nicht gespeichert, die Tab-Synchronisierung ist deaktiviert und Nutzer können diese Einstellung nicht ändern.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird der Browserverlauf gespeichert.</translation>
+<translation id="3387999258705169775">Standardverhalten für die verschachtelte Mindestverzögerung der Funktion „setTimeout()“.</translation>
 <translation id="3389088527709746815">Gnubby-Authentifizierung für den Host für den Remote-Zugriff aktivieren</translation>
 <translation id="3391457705621770207">Wenn die Richtlinie konfiguriert ist, gibt sie an, wie viele Millisekunden der Nutzer inaktiv sein kann, bevor er automatisch in einem lokalen Gerätekonto angemeldet wird, das über die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> festgelegt wird.
 
@@ -2986,6 +2989,16 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Textcursor hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4183229833636799228">"<ph name="FLASH_PLUGIN_NAME" />" als Standardeinstellung</translation>
+<translation id="4186244263855283575">Mit dieser Richtlinie kann ein benutzerdefinierter Zeitplan zum Neustart von Geräten festgelegt werden. Wenn sie auf „true“ gesetzt ist, startet das Gerät wie im Zeitplan festgelegt neu. Wenn keine geplanten Neustarts mehr durchgeführt werden sollen, muss die Richtlinie entfernt werden.
+
+      In Nutzer- und Gastsitzungen gilt Folgendes:
+
+        * Nutzer werden eine Stunde vor dem geplanten Neustart darüber informiert, dass in einer Stunde ein Neustart erfolgt. Sie haben die Möglichkeit, direkt neu zu starten oder auf den geplanten Neustart zu warten. Der geplante Neustart kann nicht aufgeschoben werden.
+
+        * Nach dem Hochfahren des Geräts gilt eine Frist von einer Stunde: Geplante Neustarts werden in diesem Zeitraum übersprungen und je nach Einstellung für den nächsten Tag, die nächste Woche oder den nächsten Monat angesetzt.
+
+      In Kiosksitzungen gibt es keine Frist und keine Benachrichtigungen zum Neustart.
+</translation>
 <translation id="4187576366596772431">WebHID API auf diesen Websites blockieren</translation>
 <translation id="4192388905594723944">URL zur Überprüfung des Client-Authentifizierungs-Tokens für den Remotezugriff</translation>
 <translation id="4203055629055264833">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer ihre neuesten Ergebnisse der Standardsuchmaschine in einer Seitenleiste anzeigen, indem sie ein Symbol in der Symbolleiste ein- oder ausschalten.
@@ -3319,6 +3332,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="4632566332417930481">Nutzung der Entwicklertools für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, nicht zulassen und Nutzung der Entwicklertools in anderen Kontexten zulassen</translation>
 <translation id="4635284822166984665">Zeitpunkt, an dem der Ladevorgang beginnt, angegeben in der lokalen Zeit des Geräts.</translation>
+<translation id="4638532652671131094">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird.</translation>
 <translation id="4646626362889216307">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene. Dabei werden die Schlüssel des Wörterbuchs auf der ersten Ebene aus jeder Quelle zusammengeführt. Der Schlüssel aus der Quelle mit der höchsten Priorität hat Vorrang.
 
       Mit dem Platzhalterzeichen * kann das Zusammenführen aller unterstützten Wörterbuchrichtlinien erlaubt werden.
@@ -4666,6 +4680,13 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Wenn für die Richtlinie ein gültiger Hex-Farbcode festgelegt ist, wird automatisch ein entsprechendes Design erstellt und auf den Browser angewendet. Nutzer können das Design, das durch diese Richtlinie festgelegt ist, nicht ändern.
 
       Wird die Richtlinie nicht konfiguriert, können Nutzer das Design nach Belieben ändern.</translation>
+<translation id="619376519309703699">Über diese Richtlinie kann die Funktion „First-Party-Sets“ deaktiviert werden.
+
+                  Ist diese Richtlinie nicht konfiguriert oder aktiviert, ist die Funktion „First-Party-Sets“ aktiviert.
+
+                  Wenn diese Richtlinie deaktiviert ist, ist die Funktion „First-Party-Sets“ deaktiviert.
+
+                  Außerdem legt sie fest, ob zugehörige Funktionen in Chrome unterstützt werden, z. B. das Cookie-Attribut „SameParty“.</translation>
 <translation id="6195802366906945965">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet wird</translation>
 <translation id="6198947200418556248">Diese Richtlinie wurde eingestellt. Falls du immer noch das alte Cookie-Verhalten benötigst, verwende stattdessen „<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />“. Hiermit kann für alle Cookies das alte „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Verhalten wiederhergestellt werden. Wird es wiederhergestellt, werden Cookies, für die kein „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Attribut angegeben ist, so behandelt, als würden sie „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut „<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />“ auch das Attribut „<ph name="ATTRIBUTE_SECURE_NAME" />“ enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
 
@@ -7076,6 +7097,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8749536858950505376">Wenn du die Richtlinie auf "True" setzt, bleibt der große Cursor aktiviert. Wenn du die Richtlinie auf "False" setzt, bleibt der große Cursor deaktiviert.
 
       Wenn du diese Richtlinie konfigurierst, kann die Funktion von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist der große Cursor erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
+<translation id="8750941317035081777">Die JavaScript-Funktion „setTimeout()“ wird nach Überschreiten eines normalen Verschachtelungsgrenzwerts verzögert.</translation>
 <translation id="8753264624162178499">Macht die Option „Als Bild drucken“ zur Auswahl durch den Nutzer verfügbar, um vor dem Versenden des Druckauftrags an das Druckziel eine PDF-Rasterung zu ermöglichen.</translation>
 <translation id="8757552286070680084">Wilco DTC-Konfiguration</translation>
 <translation id="8758831693895931466">Erforderliche Registrierung für Cloud Management aktivieren</translation>

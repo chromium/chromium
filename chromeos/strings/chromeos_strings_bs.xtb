@@ -102,6 +102,7 @@
 <translation id="1745577949879301685">Slike se nisu mogle učitati. Provjerite mrežnu vezu ili ponovo pokušajte učitati slike.</translation>
 <translation id="1751249301761991853">Lično</translation>
 <translation id="1753496554272155572">Izlaz iz pregleda pozadinske slike</translation>
+<translation id="1755556344721611131">Aplikacija Dijagnostika</translation>
 <translation id="175763766237925754">Dobro (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -129,6 +130,7 @@
 <translation id="1999615961760456652">Zaštitni portal</translation>
 <translation id="2006864819935886708">Povezivost</translation>
 <translation id="2008685064673031089">Primarno pretraživanje</translation>
+<translation id="2011174342667534258">Verzija SDK:</translation>
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="2016848882344942759">--ukloni white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +162,7 @@
 <translation id="225692081236532131">Status aktivacije</translation>
 <translation id="2271469253353559191">Raspored tamnog načina rada</translation>
 <translation id="2275586345903859204">Popravak je završen</translation>
+<translation id="2276999893457278469">Najpopularniji sadržaj za pomoć</translation>
 <translation id="2287186687001756809">Nema dostupne slike. Da dodate fotografije, idite na <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Umetnite vanjsku pohranu, kao što je USB disk ili SD kartica, na kojoj se nalazi slika preuzete Usluge oporavka za Chromebook</translation>
 <translation id="2307344026739914387">Koristi trenutni par ključeva</translation>
@@ -181,7 +184,7 @@
 <translation id="2418150275289244458">Otvori u postavkama</translation>
 <translation id="2421798028054665193">Slika: <ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
-<translation id="2447969267935997922">Instaliranje je dovršeno. Sad možete ukloniti USB disk ili SD karticu.</translation>
+<translation id="2447969267935997922">Instaliranje je gotovo. Sada možete ukloniti USB disk ili SD karticu.</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2480034874476596812">Ručno isključivanje</translation>
@@ -193,6 +196,7 @@
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Ponovno pokretanje...</translation>
+<translation id="2533048460510040082">Predloženi sadržaj za pomoć</translation>
 <translation id="2536159006530886390">Nije moguće povezivanje na internet.</translation>
 <translation id="2570743873672969996">Pokretanje testa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Da postavite, idite u Postavke</translation>
@@ -308,6 +312,7 @@
 <translation id="3784455785234192852">Zaključano</translation>
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
+<translation id="3824259034819781947">Prilaganje fajlova</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3856304145690230735">Žiroskop u bazi</translation>
@@ -871,6 +876,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="885701979325669005">Pohrana</translation>
 <translation id="8863170912498892583">Omogući tamnu temu</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> za upit "<ph name="QUERY" />" i drugo</translation>
+<translation id="8864415976656252616">Nema predloženih sadržaja. Pogledajte najpopularniji sadržaj za pomoć.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspješan</translation>

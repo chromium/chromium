@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Simpan ke USB</translation>
 <translation id="1468664791493211953">Penawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> akan mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
+<translation id="147809995039451286">Tidak dapat mendownload update</translation>
 <translation id="1478594628797167447">Pemindai</translation>
 <translation id="1491076385728777984">Mengupdate firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> akan mengelola pengguna ini serta mungkin dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Konektivitas</translation>
 <translation id="2008685064673031089">Penelusuran bilangan prima</translation>
+<translation id="2011174342667534258">Versi SDK:</translation>
 <translation id="2016697457005847575">Coba langkah-langkah pemecahan masalah</translation>
 <translation id="2016848882344942759">--tanpa white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Status aktivasi</translation>
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
 <translation id="2275586345903859204">Perbaikan selesai</translation>
+<translation id="2276999893457278469">Konten bantuan teratas</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Masukkan penyimpanan eksternal, seperti drive USB atau kartu SD, yang berisi image Utilitas Pemulihan Chromebook yang telah didownload</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2421798028054665193">Gambar <ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Akurasi floating point</translation>
+<translation id="2447969267935997922">Penginstalan selesai. Anda sekarang dapat mencabut drive USB atau kartu SD.</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2461822463642141190">Arus</translation>
 <translation id="2480034874476596812">Nonaktifkan secara manual</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Pindai</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Memulai ulang ...</translation>
+<translation id="2533048460510040082">Konten bantuan yang disarankan</translation>
 <translation id="2536159006530886390">Tidak dapat terhubung ke internet.</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="38114475217616659">Hapus semua histori</translation>
 <translation id="3820172043799983114">PIN tidak valid.</translation>
+<translation id="3824259034819781947">Lampirkan file</translation>
 <translation id="3838338534323494292">Sandi baru</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3856304145690230735">Papan Giroskop</translation>
@@ -863,6 +869,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="885701979325669005">Penyimpanan</translation>
 <translation id="8863170912498892583">Aktifkan tema gelap</translation>
 <translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan lainnya</translation>
+<translation id="8864415976656252616">Tidak ada konten yang disarankan. Lihat konten bantuan teratas.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Perangkat adalah tablet.</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>

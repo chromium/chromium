@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Cadw i USB</translation>
 <translation id="1468664791493211953">Cynigion</translation>
 <translation id="1476467821656042872">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae'n bosib y bydd yn gallu monitro'ch gweithgarwch.</translation>
+<translation id="147809995039451286">Methu â lawrlwytho'r diweddariad</translation>
 <translation id="1478594628797167447">Sganiwr</translation>
 <translation id="1491076385728777984">Wrthi'n diweddaru'r gadarnwedd ar <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">Mae <ph name="MANAGER" /> yn rheoli'r defnyddiwr hwn ac mae'n bosib y bydd yn rheoli gosodiadau o bell ac yn monitro gweithgarwch y defnyddiwr.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Porth Caeth</translation>
 <translation id="2006864819935886708">Cysylltedd</translation>
 <translation id="2008685064673031089">Prif chwiliad</translation>
+<translation id="2011174342667534258">Fersiwn SDK:</translation>
 <translation id="2016697457005847575">Rhowch gynnig ar gamau datrys problemau</translation>
 <translation id="2016848882344942759">--dim label gwyn--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Statws gweithredu</translation>
 <translation id="2271469253353559191">Amserlen Modd tywyll</translation>
 <translation id="2275586345903859204">Wedi cwblhau atgyweirio</translation>
+<translation id="2276999893457278469">Cynnwys cymorth gorau</translation>
 <translation id="2287186687001756809">Nid oes unrhyw lun ar gael. I ychwanegu lluniau, ewch i <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Mewnosodwch storfa allanol, megis gyriant USB neu gerdyn SD, gyda'r ddelwedd Chromebook Recovery Utility sydd wedi'i lawrlwytho</translation>
 <translation id="2307344026739914387">Defnyddio'r pâr o allweddi presennol</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Agor yn y gosodiadau</translation>
 <translation id="2421798028054665193">Llun <ph name="CURRENT_PAGE" /> o <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Cywirdeb pwynt rhydd</translation>
+<translation id="2447969267935997922">Wedi cwblhau gosod. Gallwch bellach gael gwared ar eich gyriant USB neu gerdyn SD.</translation>
 <translation id="2448312741937722512">Math</translation>
 <translation id="2461822463642141190">Presennol</translation>
 <translation id="2480034874476596812">Diffodd yn bwrpasol</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Sganio</translation>
 <translation id="2526590354069164005">Bwrdd gwaith</translation>
 <translation id="253029298928638905">Wrthi'n ailgychwyn...</translation>
+<translation id="2533048460510040082">Cynnwys cymorth a awgrymir</translation>
 <translation id="2536159006530886390">Ni ellir cysylltu â'r we.</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Cloi</translation>
 <translation id="38114475217616659">Clirio'r holl hanes</translation>
 <translation id="3820172043799983114">PIN annilys.</translation>
+<translation id="3824259034819781947">Atodi ffeiliau</translation>
 <translation id="3838338534323494292">Cyfrinair newydd</translation>
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3856304145690230735">Geirosgop Gwaelod</translation>
@@ -863,6 +869,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="885701979325669005">Storfa</translation>
 <translation id="8863170912498892583">Galluogi'r thema dywyll</translation>
 <translation id="8863888432376731307">Cael y <ph name="INTENT" /> ar gyfer "<ph name="QUERY" />" a rhagor</translation>
+<translation id="8864415976656252616">Dim cynnwys a awgrymir. Gweld y cynnwys cymorth gorau.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Mae'r ddyfais yn llechen.</translation>
 <translation id="8881098542468797602">Llwyddodd y prawf</translation>

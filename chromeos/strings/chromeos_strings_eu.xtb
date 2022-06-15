@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Gorde USB bidezko unitate batean</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta baliteke zure jardueren jarraipena egin ahal izatea.</translation>
+<translation id="147809995039451286">Ezin izan da deskargatu eguneratzea</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> gailuaren firmwarea eguneratzen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> domeinuak kudeatzen du erabiltzaile hau, eta baliteke urrunetik haren ezarpenak kudeatzea eta jarduerak gainbegiratzea.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Sare-zerbitzuaren ataria</translation>
 <translation id="2006864819935886708">Konexioa</translation>
 <translation id="2008685064673031089">Prime bilaketa</translation>
+<translation id="2011174342667534258">SDKaren bertsioa:</translation>
 <translation id="2016697457005847575">Egin arazoa konpontzeko urratsak</translation>
 <translation id="2016848882344942759">Ezabatu marka zuria</translation>
 <translation id="202500043506723828">EIDa</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
 <translation id="2271469253353559191">Modu ilunaren programazioa</translation>
 <translation id="2275586345903859204">Konpondu dira arazoak</translation>
+<translation id="2276999893457278469">Laguntza-eduki nagusia</translation>
 <translation id="2287186687001756809">Ez dago irudirik. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
 <translation id="2294753434210277304">Sartu Chromebook-eko edukia berreskuratzeko tresnaren irudia deskargatuta daukan kanpoko memoria bat (adibidez, USB bidezko unitate bat edo SD txartel bat)</translation>
 <translation id="2307344026739914387">Erabili une honetako gako parea</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Ireki ezarpenetan</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" /> iruditatik <ph name="TOTAL_PAGES" />garrena</translation>
 <translation id="2446553403094072641">Puntu gainerakorraren zehaztasuna</translation>
+<translation id="2447969267935997922">Amaitu da instalazio-prozesua. Orain, kendu egin dezakezu USB unitatea edo SD txartela.</translation>
 <translation id="2448312741937722512">Mota</translation>
 <translation id="2461822463642141190">Oraingo kontsumoa</translation>
 <translation id="2480034874476596812">Desaktibatu eskuz</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="253029298928638905">Berrabiarazten…</translation>
+<translation id="2533048460510040082">Iradokitako laguntza-edukia</translation>
 <translation id="2536159006530886390">Ezin da konektatu Internetera.</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
 <translation id="2584559707064218956">Konfiguratzeko, joan ezarpenetara</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Blokeatu</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
+<translation id="3824259034819781947">Erantsi fitxategiak</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3856304145690230735">Oinarriko giroskopioa</translation>
@@ -863,6 +869,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="885701979325669005">Biltegia</translation>
 <translation id="8863170912498892583">Gaitu gai iluna</translation>
 <translation id="8863888432376731307">Eskuratu "<ph name="QUERY" />" adierazpenaren <ph name="INTENT" /> eta beste</translation>
+<translation id="8864415976656252616">Ez dago iradokitako edukirik. Ikusi goiko laguntza-edukia.</translation>
 <translation id="8868741746785112895">GUIDa</translation>
 <translation id="8876270629542503161">Gailua tableta bat da.</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>

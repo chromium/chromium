@@ -91,6 +91,7 @@
 <translation id="300526633675317032">Ушуну менен <ph name="SIZE_IN_KB" /> сайттардын дайындарынын баары тазаланат.</translation>
 <translation id="3008272652534848354">Уруксаттарды өзгөртүү</translation>
 <translation id="301521992641321250">Автоматтык түрдө бөгөттөлдү</translation>
+<translation id="3069226013421428034">Белгилүү бир сайтка үчүнчү тараптан кирүүгө уруксат бериңиз.</translation>
 <translation id="3114012059975132928">Видео ойноткуч</translation>
 <translation id="3115898365077584848">Маалыматты көрсөтүү</translation>
 <translation id="3123473560110926937">Айрым сайттарда бөгөттөлдү</translation>
@@ -125,6 +126,7 @@
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3987993985790029246">Шилтм көчр</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992684624889376114">Бул бет жөнүндө</translation>
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4008040567710660924">Белгилүү бир сайттын cookie файлдарына уруксат берүү.</translation>
 <translation id="4046123991198612571">Кийинки трек</translation>
@@ -225,6 +227,7 @@
 <translation id="6270391203985052864">Сайттар билдирмелерди жөнөтүүнү сурана алышат</translation>
 <translation id="6295158916970320988">Бардык сайттар</translation>
 <translation id="6320088164292336938">Дирилдөө</translation>
+<translation id="6367753977865761591">Белгилүү бир сайтка үчүнчү тараптан кирүүнү бөгөттөңүз.</translation>
 <translation id="6388207532828177975">Тазалоо жана баштапкы абалга келтирүү</translation>
 <translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
 <translation id="6439114592976064011">Сайттарга виртуалдык чындык түзмөктөрүңүздү жана маалыматты колдонууга тыюу салуу</translation>

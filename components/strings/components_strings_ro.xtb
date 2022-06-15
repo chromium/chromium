@@ -591,6 +591,7 @@
 <translation id="2523886232349826891">Salvat numai pe acest dispozitiv</translation>
 <translation id="2524461107774643265">Adaugă mai multe informații</translation>
 <translation id="2529899080962247600">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Intrările suplimentare vor fi ignorate.</translation>
+<translation id="253493526287553278">Vezi detaliile codului promoțional</translation>
 <translation id="2535585790302968248">Deschide o nouă filă incognito pentru a naviga în privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
 <translation id="2536110899380797252">Adaugă o adresă</translation>
@@ -1283,6 +1284,7 @@
 <translation id="4435702339979719576">Carte poștală)</translation>
 <translation id="443673843213245140">Utilizarea unui proxy este dezactivată, dar o configurare proxy este specificată în mod explicit.</translation>
 <translation id="4441832193888514600">Ignorată deoarece politica poate fi setată numai ca politică privind utilizatorii cloud.</translation>
+<translation id="4442470707340296952">File Chrome</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4451135742916150903">Poate solicita permisiunea de a se conecta la dispozitive HID</translation>
 <translation id="4452328064229197696">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Pentru a-ți proteja conturile, Managerul de parole Google îți recomandă să verifici parolele salvate.</translation>

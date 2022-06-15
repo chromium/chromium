@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Хангъл, анматае</translation>
 <translation id="1155759005174418845">каталонски</translation>
 <translation id="1168100932582989117">Сървъри на Google за имена</translation>
-<translation id="1171082344678443012">Архив, компресиран във формат XZ</translation>
 <translation id="1172970565351728681">Оставащото време е около <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1173916544412572294">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1209796539517632982">Автоматично избиране на сървъри за имена</translation>
 <translation id="1210831758834677569">Лаоски</translation>
-<translation id="1223825810409523901">Разширение за Chrome</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна връзка с интернет</translation>
 <translation id="1272293450992660632">ПИН кодовете не са идентични.</translation>
-<translation id="127650757582748357">Архив, компресиран във формат BZIP2</translation>
 <translation id="1280820357415527819">Търсят се мобилни мрежи</translation>
 <translation id="1291603679744561561">SIM картата е заключена</translation>
 <translation id="1293556467332435079">Файлове</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Промените в конфигурациите за споделени мрежи не са разрешени</translation>
 <translation id="1665611772925418501">Файлът не можа да бъде променен.</translation>
 <translation id="1673103856845176271">От съображения за сигурност не можа да бъде осъществен достъп до файла.</translation>
-<translation id="16762847117768727">ISO образ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Колоездене</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Разделителна способност на изображението</translation>
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
-<translation id="1996806196681857869">Архив, компресиран във формат Z</translation>
 <translation id="2001796770603320721">Управление в Диск</translation>
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
 <translation id="2025955442973426285">Тигриня</translation>
-<translation id="2028997212275086731">RAR архив</translation>
 <translation id="2037845485764049925">Руски</translation>
 <translation id="2044023416777079300">Модемът не е регистриран</translation>
 <translation id="2046702855113914483">Супа „Рамен“</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Сирене</translation>
 <translation id="2781645665747935084">Белгийска клавиатура</translation>
 <translation id="2782104745158847185">Грешка при инсталирането на приложението за Linux</translation>
-<translation id="2788520643285360081">7-Zip архив</translation>
 <translation id="2803375539583399270">Въведете ПИН кодa</translation>
 <translation id="2820957248982571256">Сканира се...</translation>
-<translation id="2822595620066756134">Архив, компресиран във формат GZIP</translation>
 <translation id="2830077785865012357">Китайски (джуин)</translation>
 <translation id="2843806747483486897">Промяна на действието по подразбиране...</translation>
 <translation id="2850124913210091882">Създаване на резервно копие</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">литовски</translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3592251141500063301">Файлът „<ph name="FILE_NAME" />“ не е налице офлайн</translation>
-<translation id="3593874215226880809">Архив, компресиран във формат LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Канадска (френски) клавиатура</translation>
 <translation id="3606220979431771195">Турски (тип „F“)</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Анулиране на <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, <ph name="CONNECTION_STATUS" />, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3691184985318546178">Синхалски</translation>
-<translation id="3703620396751288986">ZIP файл</translation>
 <translation id="3726463242007121105">Това устройство не може да бъде отворено, защото файловата му система не се поддържа.</translation>
 <translation id="3727148787322499904">Промяната на тази настройка ще засегне всички споделени мрежи</translation>
 <translation id="3737576078404241332">Премахване от страничната лента</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Чешки с клавиатура QWERTY</translation>
 <translation id="4656777537938206294">Осигуряване на офлайн достъп до файловете</translation>
 <translation id="4658782175094886150">Човек в снега</translation>
-<translation id="4661996069183330363">TAR архив</translation>
 <translation id="4669606053856530811">Членовете на „<ph name="SOURCE_NAME" />“ ще загубят достъп, ако тези елементи не са споделени с тях.</translation>
 <translation id="467809019005607715">Google Презентации</translation>
 <translation id="4690246192099372265">шведски</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> мрежа – не е установена връзка</translation>
 <translation id="6074825444536523002">Формуляр на Google</translation>
 <translation id="6079871810119356840">Унгарски с клавиатура QWERTY</translation>
-<translation id="6082256976217156453">Архив, компресиран във формат LZMA</translation>
 <translation id="6096979789310008754">Текстът за търсене е изчистен. Показват се всички файлове и папки.</translation>
 <translation id="610101264611565198">„<ph name="FILE_NAME" />“ се премества в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="61118516107968648">Текстов файл във формат CSV</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">Пенджаби</translation>
 <translation id="6224240818060029162">Датски</translation>
 <translation id="6224253798271602650">Форматиране на <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Архив, компресиран във формат Zstandard</translation>
 <translation id="6227235786875481728">Този файл не можа да бъде възпроизведен.</translation>
 <translation id="6241349547798190358">Нидерландски (Белгия)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, свързване</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">Абитуриент</translation>
 <translation id="8912078710089354287">Куче, което маха с опашка</translation>
 <translation id="8919081441417203123">датски</translation>
-<translation id="8965273390142984105">Архив, компресиран във формат LZOP</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>

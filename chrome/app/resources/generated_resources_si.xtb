@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">පිටුසන් නිර්යාත කරන්න</translation>
 <translation id="1008557486741366299">දැන් නොවේ</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> ස්ථානය</translation>
+<translation id="1009663062402466586">ක්‍රීඩා පාලන දැන් ලබා ගත හැකිය</translation>
 <translation id="1010498023906173788">මෙම පටිත්ත අනුක්‍රමික තොටකට සම්බන්ධ කර ඇත.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{පිටුව ප්‍රතිචාර නොදක්වයි}one{පිටු ප්‍රතිචාර නොදක්වයි}other{පිටු ප්‍රතිචාර නොදක්වයි}}</translation>
 <translation id="1011355516189274711">කථනයට පාඨය හඬ පරිමාව</translation>
@@ -846,6 +847,7 @@
 <translation id="1795214765651529549">පැරණි එක භාවිත කරන්න</translation>
 <translation id="1796105431091975902">එක් කිරීමට Ansible අත්පොතක් තෝරන්න</translation>
 <translation id="1796588414813960292">හඬ අවශ්‍ය විශේෂාංග ක්‍රියා නොකරනු ඇත</translation>
+<translation id="1797117170091578105">ඔබගේ Chromebook යතුරු පුවරුව භාවිතයෙන් ක්‍රීඩා කරන්න. ඔබට විශේෂිත ක්‍රියා සඳහා යතුරු අභිරුචිකරණය කළ හැකිය.</translation>
 <translation id="1800502858278951817">දිගු <ph name="SITE_NAME" /> කියවීමට සහ වෙනස් කිරීමට ඉල්ලා නැත</translation>
 <translation id="1802624026913571222">ආවරණය වැසුණු විට නිදා ගන්න</translation>
 <translation id="1802687198411089702">පිටුව ප්‍රතිචාර නොදක්වයි. ඔබට එය සඳහා රැඳී සිටීමට හෝ පිටවීමට හැකිය.</translation>
@@ -1008,6 +1010,7 @@
 <translation id="1940546824932169984">සම්බන්ධ කළ උපාංග</translation>
 <translation id="1941410638996203291">ආරම්භක වේලාව <ph name="TIME" /></translation>
 <translation id="1941553344801134989">අනුවාදය: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">යතුරු අනුරූපණය පෙන්වන්න</translation>
 <translation id="1942128823046546853">සියලු වෙබ් අඩවිවල ඔබගේ සියලු දත්ත කියවන්න සහ වෙනස් කරන්න</translation>
 <translation id="1942600407708803723">ආවරණය වසා ඇති විට වසා දමන්න</translation>
 <translation id="1944528062465413897">බ්ලූටූත් යුගලන කේතය:</translation>
@@ -1420,6 +1423,7 @@
     Voice Match ඔබගේ දරුවාට සුදුසු නොවන බව ඔබ පසුව තීරණය කළහොත්, එය ඔවුන්ගේ සහායක සැකසීම් තුළ ඉවත් කරන්න. Voice Match පිහිටුවීම අතරතුර ඔබගේ දරුවා පටිගත කරන ලද ශ්‍රව්‍ය පසුරු බැලීමට හෝ මැකීමට, ඔබගේ දරුවාගේ ගිණුමෙන් <ph name="VOICE_MATCH_SETTINGS_URL" /> වෙත යන්න.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">පහත යතුරු සඳහා සහාය නොදක්වයි: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">මෙම අඩවිය ඔබේ චලන හෝ ආලෝක සංවේදක වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">පිටු URL</translation>
@@ -2744,6 +2748,7 @@
 <translation id="3613422051106148727">නව ටැබයක &amp;විවෘත කරන්න</translation>
 <translation id="3615073365085224194">ඔබේ ඇඟිල්ලෙන් ඇඟිලි සලකුණු සංවේදකය ස්පර්ශ කරන්න</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> ස්කෑන් කරමින් පවතී.</translation>
+<translation id="3615596877979647433">යතුර අස්ථානගතයි. අභිරුචිකරණය කිරීමට යතුරු පුවරු යතුරක් ඔබන්න</translation>
 <translation id="3616741288025931835">ශවේෂණ දත්ත හිස් කරන්න</translation>
 <translation id="3617891479562106823">පසුබිම් නොතිබේ. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3619115746895587757">කපුචිනෝ</translation>
@@ -2899,6 +2904,7 @@
 <translation id="3764753550716962406">තිබෙන වට්ටම් සොයා ගැනීමට Google හට ඔබගේ කරත්තය භාවිත කිරීමට ඉඩ දෙන්නද?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙත යවමින්}one{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙත යවමින්}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> වෙත යවමින්}}</translation>
 <translation id="3765246971671567135">නොබැඳි ආදර්ශන ප්‍රකාර ප්‍රතිපත්තිය කියවීමට නොහැකි විය.</translation>
+<translation id="3766687283066842296">Phone Hub ගැන තව දැන ගන්න</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">අයිස් ක්‍රීම්</translation>
 <translation id="3771290962915251154">මාපිය පාලන සක්‍රීය බැවින් මෙම සැකසීම අබල කර ඇත</translation>
@@ -3341,6 +3347,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4193836101014293726">මෙම පැතිකඩ මැකිය නොහැකිය</translation>
 <translation id="419427585139779713">වරකට එක් අකුරක් ආදානය කරන්න</translation>
 <translation id="4194570336751258953">ක්ලික් කිරීමට තට්ටු කරන්න සක්‍රිය කරන්න</translation>
+<translation id="4195378859392041564">ඔබගේ මූසිකය සමඟ ඕනෑම යතුරක් ක්ලික් කරන්න, අනතුරුව අභිරුචිකරණය කිරීමට යතුරු පුවරු යතුරක් ඔබන්න</translation>
 <translation id="4195421689821407315">අනාරක්ෂිත බාගැනීම</translation>
 <translation id="4195643157523330669">නව ටැබයක විවෘත කරන්න</translation>
 <translation id="4195814663415092787">ඔබ ඉතිරි කළ තැනින් දිගටම කරගෙන යන්න</translation>
@@ -3406,6 +3413,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4258348331913189841">ගොනු පද්ධති</translation>
 <translation id="4259388776256904261">මෙයට ටික වේලාවක් ගත විය හැකිය</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> අනතුරුදායක විය හැක. ස්කෑන් කිරීම සඳහා Google ඉහළ ආරක්ෂාව වෙත යවන්නේද? බාගැනීම් තීරු ප්‍රදේශයට මාරු වීමට Shift+F6 ඔබන්න.</translation>
+<translation id="4260699894265914672">අභිරුචිකරණය කිරීමට යතුරු පුවරු යතුරක් ඔබන්න</translation>
 <translation id="4261429981378979799">දිගු අවසර</translation>
 <translation id="4262004481148703251">අනතුරු ඇඟවීම ඉවතලන්න</translation>
 <translation id="4263223596040212967">ඔබේ යතුරු පුවරු වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
@@ -4580,6 +4588,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5449716055534515760">කවුළුව වසන්න</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (නොබැඳිව ක්‍රියාකරයි)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> සමඟ</translation>
+<translation id="545484289444831485">තවත් සෙවීම් ප්‍රතිඵල බලන්න</translation>
 <translation id="5455603387986949153">ChromeOS Flex උපාංග සහ සංරචක අනුක්‍රමික අංක කියවන්න.</translation>
 <translation id="5457113250005438886">අවලංගු</translation>
 <translation id="5457459357461771897">ඔබගේ පරිගණකයෙන් ඡායාරූප, සංගීතය, සහ වෙනත් මාධ්‍යය කියවා මකන්න</translation>
@@ -7054,6 +7063,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7901405293566323524">දුරකථන මධ්‍යස්ථානය</translation>
 <translation id="7903290522161827520">බ්‍රවුසර සංරචක සඳහා සොයන්නේද? පිවිසෙන්න</translation>
 <translation id="7903345046358933331">පිටුව ප්‍රතිචාර නොදක්වයි. ඔබට එය ප්‍රතිචාර දක්වන තෙක් රැඳී සිටීමට හෝ වසා දැමීමට හැකිය.</translation>
+<translation id="7903429136755645827">ඔබගේ ක්‍රීඩා පාලන අභිරුචිකරණය කිරීමට ක්ලික් කරන්න</translation>
 <translation id="7903742244674067440">මෙම සහතික බලධාරීන් හඳුනා ගන්නා සහතික ගොනුව තුළ ඔබට තිබේ</translation>
 <translation id="7903925330883316394">උපයෝගිතා: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">ලිනක්ස් තොට ඔබේ ජාලයෙන් වෙනත් උපාංගවලට ලද හැකි කරන්න.</translation>
@@ -8247,6 +8257,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9078316009970372699">ක්‍ෂණික ටෙදරින් අබල කරන්න</translation>
 <translation id="9078842827190780028">පැති පැනලයේ තව සෙවීම් ප්‍රතිඵල බලන්න</translation>
 <translation id="9079267182985899251">ළඟදීම මෙම විකල්පය තවදුරටත් සහාය නොදක්වනු ඇත. ටැබයක් ඉදිරිපත් කිරීමට, <ph name="GOOGLE_MEET" /> භාවිත කරන්න.</translation>
+<translation id="9080971985541434310">ඔබගේ ලැදිකම් තක්සේරු කරන්න - Chrome හට ඔබගේ ලැදිකම් තක්සේරු කළ හැකිය</translation>
 <translation id="9081543426177426948">ඔබ පිවිසෙන අඩවි අප්‍රසිද්ධ ප්‍රකාරයේදී සුරකිනු නොලැබේ.</translation>
 <translation id="9084064520949870008">කවුළුවක් සේ විවෘත කරන්න</translation>
 <translation id="9085256200913095638">තේරූ පටිත්ත අනුපත් කරන්න</translation>

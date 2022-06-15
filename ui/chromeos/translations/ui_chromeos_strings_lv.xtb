@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Hangils (Ahnmatae)</translation>
 <translation id="1155759005174418845">Kataloniešu valoda</translation>
 <translation id="1168100932582989117">Google nosaukumu serveri</translation>
-<translation id="1171082344678443012">XZ saspiests arhīvs</translation>
 <translation id="1172970565351728681">Aptuvens atlikušais laiks: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, informācija</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1209796539517632982">Automātiski nosaukumu serveri</translation>
 <translation id="1210831758834677569">Laosiešu</translation>
-<translation id="1223825810409523901">Chrome paplašinājums</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1249250836236328755">Žanrs</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
 <translation id="1272293450992660632">PIN vērtības nav vienādas.</translation>
-<translation id="127650757582748357">Saspiests BZIP2 arhīvs</translation>
 <translation id="1280820357415527819">Notiek mobilo tīklu meklēšana</translation>
 <translation id="1291603679744561561">SIM karte bloķēta</translation>
 <translation id="1293556467332435079">Faili</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Nav atļauts mainīt koplietota tīkla konfigurāciju.</translation>
 <translation id="1665611772925418501">Failu nevarēja pārveidot.</translation>
 <translation id="1673103856845176271">Failam nevar piekļūt drošības apsvērumu dēļ.</translation>
-<translation id="16762847117768727">ISO attēls</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Riteņbraukšana</translation>
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Attēla izšķirtspēja</translation>
 <translation id="1972984168337863910">Notiek failu atsauksmju paneļu izvēršana</translation>
 <translation id="1995337122023280937">Pāriet uz faila atrašanās vietu</translation>
-<translation id="1996806196681857869">Z saspiests arhīvs</translation>
 <translation id="2001796770603320721">Pārvaldīt Diskā</translation>
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
-<translation id="2028997212275086731">RAR arhīvs</translation>
 <translation id="2037845485764049925">Krievu</translation>
 <translation id="2044023416777079300">Modems nav reģistrēts</translation>
 <translation id="2046702855113914483">Nūdeļu zupa</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Siers</translation>
 <translation id="2781645665747935084">Beļģu</translation>
 <translation id="2782104745158847185">Instalējot Linux lietojumprogrammu, radās kļūda</translation>
-<translation id="2788520643285360081">7-Zip arhīvs</translation>
 <translation id="2803375539583399270">Ievadiet PIN</translation>
 <translation id="2820957248982571256">Notiek meklēšana...</translation>
-<translation id="2822595620066756134">Saspiests GZIP arhīvs</translation>
 <translation id="2830077785865012357">Ķīniešu, Zhuyin</translation>
 <translation id="2843806747483486897">Mainīt noklusējumu...</translation>
 <translation id="2850124913210091882">Dublēt</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Lietuviešu valoda</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3592251141500063301">Nevarēja padarīt failu “<ph name="FILE_NAME" />” pieejamu bezsaistē.</translation>
-<translation id="3593874215226880809">Saspiests LZIP arhīvs</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanādas franču</translation>
 <translation id="3606220979431771195">Turku-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Atcelt: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
 <translation id="3691184985318546178">Singāļu</translation>
-<translation id="3703620396751288986">ZIP arhīvs</translation>
 <translation id="3726463242007121105">Šo ierīci nevar atvērt, jo tās failu sistēma netiek atbalstīta.</translation>
 <translation id="3727148787322499904">Nomainot šo iestatījumu, tiks ietekmēti visi koplietotie tīkli.</translation>
 <translation id="3737576078404241332">Noņemt no sānjoslas</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Čehu, ar Qwerty tastatūru</translation>
 <translation id="4656777537938206294">Padariet failus pieejamus bezsaistē</translation>
 <translation id="4658782175094886150">Persona sniegā</translation>
-<translation id="4661996069183330363">TAR arhīvs</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” dalībnieki zaudēs piekļuvi šiem vienumiem, ja tie netiks kopīgoti ar viņiem.</translation>
 <translation id="467809019005607715">Google prezentācijas</translation>
 <translation id="4690246192099372265">Zviedru valoda</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013">Tīkls: <ph name="NETWORK_TYPE" />, nav savienojuma ar tīklu</translation>
 <translation id="6074825444536523002">Google veidlapa</translation>
 <translation id="6079871810119356840">Ungāru, ar Qwerty tastatūru</translation>
-<translation id="6082256976217156453">LZMA saspiests arhīvs</translation>
 <translation id="6096979789310008754">Meklēšanas teksts ir notīrīts; tiek rādīti visi faili un mapes.</translation>
 <translation id="610101264611565198">Fails “<ph name="FILE_NAME" />” tiek pārvietots uz mapi “<ph name="FOLDER_NAME" />”</translation>
 <translation id="61118516107968648">CSV formāta teksts</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">Pandžabu</translation>
 <translation id="6224240818060029162">Dāņu</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatēšana</translation>
-<translation id="6224665423283788195">Zstandard saspiests arhīvs</translation>
 <translation id="6227235786875481728">Šo failu nevarēja demonstrēt.</translation>
 <translation id="6241349547798190358">Holandiešu (Beļģija)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, savienojums</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">Absolvents</translation>
 <translation id="8912078710089354287">Suns luncina asti</translation>
 <translation id="8919081441417203123">Dāņu valoda</translation>
-<translation id="8965273390142984105">Saspiests LZOP arhīvs</translation>
 <translation id="8965697826696209160">Nepietiek vietas.</translation>
 <translation id="8997962250644902079">Ķīniešu (tradicionālā), piņjiņs</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, pārvalda jūsu administrators, informācija</translation>

@@ -345,6 +345,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="2861923151411510142">Bəzi Chrome funksiyaları daha əlçatan olmayacaq</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2871733351037274014">Səhifələri əvvəlcədən yükləyin</translation>
+<translation id="2886836735871983413">Vebdə axtarış etdiyiniz zaman saytların siyahısı burada görünəcək</translation>
 <translation id="2888126860611144412">Chrome haqqında</translation>
 <translation id="2891154217021530873">Səhifə yükləməsini dayandırın</translation>
 <translation id="2892647708214602204">Bu fayl hazır olduqda bildiriş görəcəksiniz</translation>
@@ -372,6 +373,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="2987620471460279764">Digər cihazdan paylaşılan mətn</translation>
 <translation id="2989523299700148168">Son ziyarət</translation>
 <translation id="2992473221983447149">Şəkil təsvirləri</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" /> silin</translation>
 <translation id="2996291259634659425">Parol söz yaradın</translation>
 <translation id="2996809686854298943">URL tələb olunur</translation>
 <translation id="2997081575621687554">Google saytı öz səhifəsindəki keçidləri məxfi olaraq əvvəlcədən yükləməyi tələb etdikdə, Chrome kukilər olmadan Google serverləri vasitəsilə səhifələri şifrələyir və əvvəlcədən yükləyir. Bu, kimliyinizi əvvəlcədən yüklənmiş saytdan gizlədir.</translation>
@@ -521,6 +523,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="3856096718352044181">Bunun etibarlı təminatçı olduğunu doğrulayın, ya da daha sonra təkrar cəhd edin</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3861633093716975811">Populyar videolar</translation>
+<translation id="3874520961715512166">Sayt silinib</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
 <translation id="3894427358181296146">Qovluq əlavə edin</translation>
 <translation id="3899682235662194879">Bütün Anonim Tabları qapadın</translation>
@@ -558,6 +561,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="4095146165863963773">Tətbiq datası silinsin?</translation>
 <translation id="4096227151372679484">Əlfəcin saxlama prosesi yarım hündürlükdə açılıb</translation>
 <translation id="4099578267706723511">İstifadə statistikası və qəza raportlarını Google'a göndərməklə Chrome'un gəlişməsini sağlayın.</translation>
+<translation id="4101475238162928417">Digər cihazlarınızda parollarınızı, əlfəcinlərinizi və daha çoxunu əldə etmək üçün sinxronizasiya edin</translation>
 <translation id="410351446219883937">Avtomatik oxutma</translation>
 <translation id="4106587138345390261">Chrome saytlara məlumatlarınızdan daha az istifadə etməklə eyni baxış təcrübəsi təqdim etməyə imkan verən yeni funksiyaları araşdırır</translation>
 <translation id="4108314971463891922">İzləyin</translation>
@@ -1189,6 +1193,7 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="749294055653435199">Google Linza bu cihazda əlçatan deyil</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Güncəlləşib <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Xahiş edirik gözləyin ...</translation>
+<translation id="7502234197872745058">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK1" />Chrome'dan çıxın<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Güncəlləmələr əlçatan deyil</translation>
 <translation id="7507207699631365376">Bu təminatçının <ph name="BEGIN_LINK" />məxfilik siyasətinə<ph name="END_LINK" /> baxın</translation>
 <translation id="7514365320538308">Endirmə</translation>

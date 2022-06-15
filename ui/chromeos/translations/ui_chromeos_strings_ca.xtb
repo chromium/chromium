@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Ahnmatae de hangul</translation>
 <translation id="1155759005174418845">Català</translation>
 <translation id="1168100932582989117">Servidors de noms de Google</translation>
-<translation id="1171082344678443012">Arxiu comprimit XZ</translation>
 <translation id="1172970565351728681">Temps restant aproximat: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1173916544412572294">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />%, d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, detalls</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1209796539517632982">Servidors de noms automàtics</translation>
 <translation id="1210831758834677569">Laosià</translation>
-<translation id="1223825810409523901">Extensió de Chrome</translation>
 <translation id="1243314992276662751">Penja</translation>
 <translation id="1249250836236328755">Gènere</translation>
 <translation id="1254593899333212300">Connexió directa a Internet</translation>
 <translation id="1272293450992660632">Els valors del PIN no coincideixen.</translation>
-<translation id="127650757582748357">Arxiu comprimit BZIP2</translation>
 <translation id="1280820357415527819">S'estan cercant xarxes mòbils</translation>
 <translation id="1291603679744561561">SIM bloquejada</translation>
 <translation id="1293556467332435079">Fitxers</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">No es pot canviar la configuració de la xarxa compartida</translation>
 <translation id="1665611772925418501">El fitxer no s'ha pogut modificar.</translation>
 <translation id="1673103856845176271">No s'ha pogut accedir al fitxer per qüestions de seguretat.</translation>
-<translation id="16762847117768727">Imatge ISO</translation>
 <translation id="169515659049020177">Maj</translation>
 <translation id="1715848075824334077">Persona en bicicleta</translation>
 <translation id="1722487484194605434">S'estan comprimint <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Resolució de la imatge</translation>
 <translation id="1972984168337863910">Desplega els taulers amb informació dels fitxers</translation>
 <translation id="1995337122023280937">Ves a la ubicació del fitxer</translation>
-<translation id="1996806196681857869">Arxiu comprimit Z</translation>
 <translation id="2001796770603320721">Gestiona a Drive</translation>
 <translation id="2009067268969781306">En formatar una unitat, se'n suprimeixen totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
-<translation id="2028997212275086731">Arxiu RAR</translation>
 <translation id="2037845485764049925">Rus</translation>
 <translation id="2044023416777079300">Mòdem no registrat</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Formatge</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">S'ha produït un error en instal·lar l'aplicació per a Linux</translation>
-<translation id="2788520643285360081">Arxiu 7-Zip</translation>
 <translation id="2803375539583399270">Introdueix el PIN</translation>
 <translation id="2820957248982571256">S'està cercant...</translation>
-<translation id="2822595620066756134">Arxiu comprimit GZIP</translation>
 <translation id="2830077785865012357">Xinès (zhuyin)</translation>
 <translation id="2843806747483486897">Canvia els valors predeterminats...</translation>
 <translation id="2850124913210091882">Còpia de seguretat</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Lituà</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3592251141500063301">No s'ha pogut fer que <ph name="FILE_NAME" /> estigui disponible sense connexió</translation>
-<translation id="3593874215226880809">Arxiu comprimit LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> (<ph name="CARRIER_NAME" />)</translation>
 <translation id="3603385196401704894">Francès canadenc</translation>
 <translation id="3606220979431771195">Turc-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Cancel·la <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
 <translation id="3691184985318546178">Singalès</translation>
-<translation id="3703620396751288986">Arxiu ZIP</translation>
 <translation id="3726463242007121105">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no és compatible.</translation>
 <translation id="3727148787322499904">Els canvis en aquesta opció de configuració afectaran totes les xarxes compartides</translation>
 <translation id="3737576078404241332">Suprimeix de la barra lateral</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Txec amb teclat QWERTY</translation>
 <translation id="4656777537938206294">Fes que els fitxers estiguin disponibles sense connexió</translation>
 <translation id="4658782175094886150">Persona a la neu</translation>
-<translation id="4661996069183330363">Arxiu TAR</translation>
 <translation id="4669606053856530811">Els membres de l'equip <ph name="SOURCE_NAME" /> ja no podran accedir a aquests elements, tret que es comparteixin amb ells.</translation>
 <translation id="467809019005607715">Presentacions de Google</translation>
 <translation id="4690246192099372265">Suec</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013">Xarxa <ph name="NETWORK_TYPE" /> (no connectada)</translation>
 <translation id="6074825444536523002">Formulari de Google</translation>
 <translation id="6079871810119356840">Hongarès amb teclat QWERTY</translation>
-<translation id="6082256976217156453">Arxiu comprimit LZMA</translation>
 <translation id="6096979789310008754">El text de cerca s'ha esborrat. Es mostren tots els fitxers i carpetes.</translation>
 <translation id="610101264611565198">S'està movent <ph name="FILE_NAME" /> a la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Text de CSV</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Danès</translation>
 <translation id="6224253798271602650">Formata <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Arxiu comprimit Zstandard</translation>
 <translation id="6227235786875481728">No s'ha pogut reproduir aquest fitxer.</translation>
 <translation id="6241349547798190358">Neerlandès (Bèlgica)</translation>
 <translation id="6267547857941397424">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">Graduat</translation>
 <translation id="8912078710089354287">Gos remenant la cua</translation>
 <translation id="8919081441417203123">Danès</translation>
-<translation id="8965273390142984105">Arxiu comprimit LZOP</translation>
 <translation id="8965697826696209160">No hi ha prou espai.</translation>
 <translation id="8997962250644902079">Xinès tradicional (pinyin)</translation>
 <translation id="9003940392834790328">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, detalls</translation>

@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">Chrome की कुछ सुविधाएं अब उपलब्ध नहीं होंगी</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजों को पहले से लोड करना</translation>
+<translation id="2886836735871983413">वेब को ब्राउज़ करने पर, यहां साइटों की एक सूची दिखेगी</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
 <translation id="2891154217021530873">पेज को लोड करना रोकें</translation>
 <translation id="2892647708214602204">इस फ़ाइल के तैयार होने पर आपको एक सूचना दिखेगी</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">दूसरी साइटों से शेयर किया गया टेक्स्ट</translation>
 <translation id="2989523299700148168">हाल ही में देखे गए</translation>
 <translation id="2992473221983447149">इमेज के बारे में जानकारी</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" /> को हटाएं</translation>
 <translation id="2996291259634659425">'पासफ़्रेज़' बनाएं</translation>
 <translation id="2996809686854298943">URL ज़रूरी है</translation>
 <translation id="2997081575621687554">जब कोई Google साइट अपने पेज पर, लिंक को निजी तौर पर पहले से लोड करने के लिए कहती है, तो Chrome, Google के सर्वर की मदद से पेजों को एन्क्रिप्ट करके पहले से लोड कर देता है. इसके लिए, Chrome कुकी का इस्तेमाल नहीं करता है. इससे, पहले से लोड की गई साइट से आपकी पहचान को छिपाया जा सकता है.</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">कृपया पुष्टि करें कि यह एक मान्य डीएनएस सेवा है या थोड़ी देर बाद कोशिश करें</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3861633093716975811">लोकप्रिय वीडियो</translation>
+<translation id="3874520961715512166">साइट हटाई गई</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
 <translation id="3894427358181296146">फ़ोल्डर जोड़ें</translation>
 <translation id="3899682235662194879">सभी गुप्त टैब बंद करें</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
 <translation id="4096227151372679484">बुकमार्क सेव फ़्लो के फ़ोल्डर, आधी स्क्रीन पर खुले हैं</translation>
 <translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर Chrome को बेहतर बनाने में मदद करें.</translation>
+<translation id="4101475238162928417">दूसरे डिवाइसों पर, अपने पासवर्ड, बुकमार्क वगैरह पाने के लिए, सिंक करें</translation>
 <translation id="410351446219883937">अपने आप चलाएं</translation>
 <translation id="4106587138345390261">Chrome नई सुविधाओं पर काम कर रहा है. इनकी मदद से साइटें, आपकी निजी जानकारी का कम से कम इस्तेमाल करने के बावजूद, आपको ब्राउज़िंग का पहले जैसा अनुभव दे पाएंगी</translation>
 <translation id="4108314971463891922">फ़ॉलो करें</translation>
@@ -728,6 +732,7 @@
 <translation id="4985248278475639481">दिलचस्पी के मुताबिक विज्ञापन के बारे में जानकारी</translation>
 <translation id="4987271110129728827">वह पेज नहीं मिला. स्पेलिंग की जांच करें या वेब पर खोजें.</translation>
 <translation id="4988526792673242964">पेज</translation>
+<translation id="499724277181351974">यहां जाएं: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">इस साइट को यहां फ़ॉलो करें</translation>
 <translation id="500351648694011114">ज़्यादा आसानी से ब्राउज़ करें</translation>
 <translation id="5004416275253351869">Google गतिविधि नियंत्रण</translation>
@@ -977,6 +982,7 @@
 किसी साइट के साथ हुए आपके इंटरैक्शन के आधार पर, वह साइट आपके ब्राउज़र को ट्रस्ट टोकन जारी कर सकती है. इस इंटरैक्शन में किसी खाते में नियमित रूप से साइन इन करने जैसी गतिविधियां शामिल होती हैं. इसके बाद, आपके दूसरी साइटों पर जाने पर, अगर वे साइटें आपको जारी किए गए एक मान्य ट्रस्ट टोकन का पता लगा लेती हैं, तो इस बात की ज़्यादा उम्मीद होती है कि आपको एक व्यक्ति माना जाएगा, न कि बॉट.
 
 ट्रस्ट टोकन, वेब पर निजता बनाए रखने का बेहतर तरीका है. इनसे आपकी पहचान भी ज़ाहिर नहीं होती.</translation>
+<translation id="6394791151443660613"><ph name="SEARCH_QUERY" />: खोजें</translation>
 <translation id="6395288395575013217">लिंक</translation>
 <translation id="6397616442223433927">इंटरनेट कनेक्शन फिर से जुड़ गया</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> पर <ph name="ERROR_CODE" /></translation>
@@ -1191,6 +1197,7 @@
 <translation id="749294055653435199">इस डिवाइस पर Google Lens नहीं है</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करें...</translation>
+<translation id="7502234197872745058">सभी वेबसाइटों पर अपने Google खाते से साइन आउट करने के लिए, <ph name="BEGIN_LINK1" />Chrome से साइन आउट करें<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">कोई अपडेट उपलब्ध नहीं है</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>

@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Хангыль Ahnmatae горим</translation>
 <translation id="1155759005174418845">Каталан</translation>
 <translation id="1168100932582989117">Google-н нэрийн сервер</translation>
-<translation id="1171082344678443012">XZ-н шахсан архив</translation>
 <translation id="1172970565351728681">Ойролцоогоор <ph name="REMAINING_TIME" /> үлдсэн</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1173916544412572294">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, дэлгэрэнгүй мэдээлэл</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1209796539517632982">Автомат нэрийн серверүүд</translation>
 <translation id="1210831758834677569">Лао</translation>
-<translation id="1223825810409523901">Chrome өргөтгөл</translation>
 <translation id="1243314992276662751">Байршуул</translation>
 <translation id="1249250836236328755">Төрөл</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
 <translation id="1272293450992660632">ПИН кодын утга таарахгүй байна.</translation>
-<translation id="127650757582748357">BZIP2 шахалттай archive</translation>
 <translation id="1280820357415527819">Мобайл сүлжээг хайж байна</translation>
 <translation id="1291603679744561561">SIM-г түгжсэн</translation>
 <translation id="1293556467332435079">Файлууд</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Хуваалцсан сүлжээний тохиргоог өөрчлөх боломжгүй</translation>
 <translation id="1665611772925418501">Энэ файлыг өөрчилж чадсангүй.</translation>
 <translation id="1673103856845176271">Файлд аюулгүй байдлын үүднээс нэвтэрч чадсангүй.</translation>
-<translation id="16762847117768727">ISO зураг</translation>
 <translation id="169515659049020177">Солих</translation>
 <translation id="1715848075824334077">Дугуй унах</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> зүйлийг zip хийж байна...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Зургийн нягтрал</translation>
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
-<translation id="1996806196681857869">Z-н шахсан архив</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
-<translation id="2028997212275086731">RAR архив</translation>
 <translation id="2037845485764049925">Орос</translation>
 <translation id="2044023416777079300">Модемыг бүртгээгүй байна</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Бяслаг</translation>
 <translation id="2781645665747935084">Бельги</translation>
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
-<translation id="2788520643285360081">7-ZIP архив</translation>
 <translation id="2803375539583399270">ПИН оруулна уу</translation>
 <translation id="2820957248982571256">Шалгаж байна...</translation>
-<translation id="2822595620066756134">GZIP шахалттай архив</translation>
 <translation id="2830077785865012357">Хятад жуинь</translation>
 <translation id="2843806747483486897">Анхдагч тохиргоог өөрчлөх ...</translation>
 <translation id="2850124913210091882">Хадгалах</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Литви</translation>
 <translation id="3587482841069643663">Бүгд</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />-г офлайнаар ашиглах боломжтой болгож чадсангүй</translation>
-<translation id="3593874215226880809">LZIP шахалттай архив</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Канадын франц хэл</translation>
 <translation id="3606220979431771195">Турк хэлний-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />-г цуцлах.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
 <translation id="3691184985318546178">Синхала</translation>
-<translation id="3703620396751288986">ZIP архив</translation>
 <translation id="3726463242007121105">Файлын систем нь дэмжигдээгүй учир энэ төхөөрөмжийг нээх боломжгүй.</translation>
 <translation id="3727148787322499904">Энэ тохиргоог өөрчилснөөр хуваалцсан бүх сүлжээнд нөлөөлнө</translation>
 <translation id="3737576078404241332">Хажуугийн цэсээс хасах</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Qwerty гартай чех</translation>
 <translation id="4656777537938206294">Файлуудыг офлайн үед ашиглах боломжтой болгох</translation>
 <translation id="4658782175094886150">Цасан дунд байгаа хүн</translation>
-<translation id="4661996069183330363">TAR архив</translation>
 <translation id="4669606053856530811">Эдгээр зүйлийг '<ph name="SOURCE_NAME" />'-н гишүүдтэй хуваалцаагүй тохиолдолд тус гишүүд хандах боломжгүй.</translation>
 <translation id="467809019005607715">Google Слайд</translation>
 <translation id="4690246192099372265">Швед</translation>
@@ -598,7 +587,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> сүлжээ, холбогдоогүй</translation>
 <translation id="6074825444536523002">Google-ийн маягт</translation>
 <translation id="6079871810119356840">Qwerty гартай унгар</translation>
-<translation id="6082256976217156453">LZMA-н шахсан архив</translation>
 <translation id="6096979789310008754">Хайлтын текстийг устгасан, бүх файл болон фолдерыг харуулж байна.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу зөөж байна</translation>
 <translation id="61118516107968648">CSV текст</translation>
@@ -619,7 +607,6 @@
 <translation id="6220423280121890987">Пaнжаб</translation>
 <translation id="6224240818060029162">Дани</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />-г форматлах</translation>
-<translation id="6224665423283788195">Zstandard-н шахсан архив</translation>
 <translation id="6227235786875481728">Энэ файлыг тоглуулж чадсангүй.</translation>
 <translation id="6241349547798190358">Голланд (Бельги)</translation>
 <translation id="6267547857941397424">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, холбогдох</translation>
@@ -933,7 +920,6 @@
 <translation id="8903931173357132290">Төгсөгч</translation>
 <translation id="8912078710089354287">Сүүлээ годолзуулж буй нохой</translation>
 <translation id="8919081441417203123">Дани хэл</translation>
-<translation id="8965273390142984105">LZOP шахалттай архив</translation>
 <translation id="8965697826696209160">Хангалттай багтаамж байхгүй байна.</translation>
 <translation id="8997962250644902079">Хятад (уламжлалт) пиньинь</translation>
 <translation id="9003940392834790328">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>

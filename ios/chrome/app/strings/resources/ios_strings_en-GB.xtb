@@ -75,7 +75,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1509960214886564027">Features on many sites may break</translation>
 <translation id="152234381334907219">Never saved</translation>
 <translation id="1523341279170789507">Allow All Cookies</translation>
-<translation id="1524563461097350801">No, thanks</translation>
+<translation id="1524563461097350801">No, Thanks</translation>
 <translation id="1535268707340844072">Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -164,7 +164,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="236977714248711277">Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
-<translation id="2375243552872247702">See content for you</translation>
+<translation id="2375243552872247702">See Content for You</translation>
 <translation id="2381405137052800939">Basics</translation>
 <translation id="2386793615875593361">1 selected</translation>
 <translation id="2421004566762153674">Blocking third-party cookies</translation>
@@ -186,7 +186,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2600682495497606169">Clear site cookies</translation>
 <translation id="2625189173221582860">Password copied</translation>
 <translation id="2626236249646841566">Check your connection and try signing in again.</translation>
-<translation id="2637313651144986786">Search tabs…</translation>
+<translation id="2637313651144986786">Search Tabs…</translation>
 <translation id="2647269890314209800">Cookies in Use</translation>
 <translation id="2648803196158606475">Delete Read</translation>
 <translation id="2653659639078652383">Submit</translation>
@@ -245,7 +245,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2989805286512600854">Open in New Tab</translation>
 <translation id="3020183492814296499">Shortcuts</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
-<translation id="3039722182465315531">Don't sign in</translation>
+<translation id="3039722182465315531">Don't Sign In</translation>
 <translation id="3076846064362030967">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
 
 
@@ -467,7 +467,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4904877109095351937">Mark Read</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
-<translation id="4930714375720679147">Turn on</translation>
+<translation id="4930714375720679147">Turn On</translation>
 <translation id="4941089862236492464">Sorry, there was a problem sharing your item.</translation>
 <translation id="4944543191714094452">Find in page…</translation>
 <translation id="4945756290001680296">Access password settings</translation>
@@ -785,7 +785,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7464701184726199289">This clears synced data from all devices. Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Select Chrome</translation>
 <translation id="7472734401283673885">Company Name</translation>
-<translation id="7473891865547856676">No, thanks</translation>
+<translation id="7473891865547856676">No, Thanks</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>

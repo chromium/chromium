@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">புத்தகக்குறிகளை ஏற்று</translation>
 <translation id="1008557486741366299">இப்போது இல்லை </translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" /> சேமிப்பிடம்</translation>
+<translation id="1009663062402466586">கேம் கண்ட்ரோல்கள் இப்போது கிடைக்கின்றன</translation>
 <translation id="1010498023906173788">இந்தத் தாவல் ஒரு சீரியல் போர்ட்டுடன் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{பக்கம் செயலிழந்தது}other{பக்கங்கள் செயலிழந்தன}}</translation>
 <translation id="1011355516189274711">’உரையிலிருந்து பேச்சு’ ஒலியளவு</translation>
@@ -857,6 +858,7 @@
 <translation id="1795214765651529549">கிளாசிக்கைப் பயன்படுத்து</translation>
 <translation id="1796105431091975902">நீங்கள் சேர்க்க விரும்பும் Ansible பிளேபுக்கைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="1796588414813960292">ஒலியுடன் இயங்கும் அம்சங்கள் செயல்படாது</translation>
+<translation id="1797117170091578105">உங்கள் Chromebook கீபோர்டைப் பயன்படுத்தி விளையாடுங்கள். குறிப்பிட்ட செயல்களுக்கு பட்டன்களைப் பிரத்தியேகமாக்கலாம்.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> தளத்தில் உள்ளவற்றைப் படிக்கவும் மாற்றவும் எந்த நீட்டிப்பும் அனுமதி கோரவில்லை</translation>
 <translation id="1802624026913571222">கவர் மூடப்பட்டிருக்கும்போது உறக்கநிலைக்குச் செல்</translation>
 <translation id="1802687198411089702">பக்கம் செயல்படவில்லை. காத்திருக்கவும் அல்லது வெளியேறவும்.</translation>
@@ -1019,6 +1021,7 @@
 <translation id="1940546824932169984">இணைத்துள்ள சாதனங்கள்</translation>
 <translation id="1941410638996203291">தொடக்க நேரம்: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">பதிப்பு: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">பட்டன் ஒதுக்கீட்டைக் காட்டு</translation>
 <translation id="1942128823046546853">எல்லா இணையதளங்களிலும் உள்ள உங்களின் அனைத்துத் தரவையும் படிக்கலாம் திருத்தலாம்</translation>
 <translation id="1942600407708803723">கவர் மூடியிருக்கும்போது நிறுத்து</translation>
 <translation id="1944528062465413897">புளூடூத் இணைத்தல் குறியீடு:</translation>
@@ -1431,6 +1434,7 @@
     Voice Match உங்கள் பிள்ளைக்கு ஏற்றது அல்ல என நீங்கள் பின்னர் முடிவு செய்தால் அதை Assistant அமைப்புகளுக்குச் சென்று முடக்கவும். Voice Match அமைவின்போது உங்கள் பிள்ளை ரெக்கார்டு செய்த ஆடியோ கிளிப்புகளைப் பார்க்கவோ நீக்கவோ அவரின் கணக்கில் இருந்து <ph name="VOICE_MATCH_SETTINGS_URL" /> தளத்திற்குச் செல்லவும்.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">பின்வரும் பட்டன்களைப் பயன்படுத்த முடியாது: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">இந்தத் தளம் உங்கள் நகர்வு அல்லது ஒளி சென்சார்களை அணுகுவதிலிருந்து தடைசெய்யப்பட்டுள்ளது.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">பக்கத்தின் URL</translation>
@@ -2634,6 +2638,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> தளத்தால் பின்வரும் ஃபைல்களைப் பார்க்க முடியும்:</translation>
 <translation id="3484273680291419129">தீங்கிழைக்கும் மென்பொருளை அகற்றுகிறது...</translation>
 <translation id="3484869148456018791">புதிய சான்றிதழைப் பெறு</translation>
+<translation id="3486950712960783074">உங்கள் பயணம்</translation>
 <translation id="3487007233252413104">அநாமதேய செயல்பாடு</translation>
 <translation id="3490695139702884919">பதிவிறக்குகிறது... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">உங்கள் பிள்ளையின் கணக்கில் Family Linkகின் பெற்றோர் கட்டுப்பாடுகள் அமைக்கப்படவில்லை. அமைவை நிறைவு செய்ததும் பெற்றோர் கட்டுப்பாடுகளைச் சேர்க்கலாம். Explore ஆப்ஸில் பெற்றோர் கட்டுப்பாடுகள் குறித்த தகவல்களைப் பார்க்கலாம்.</translation>
@@ -2755,6 +2760,7 @@
 <translation id="3613422051106148727">புதிய தாவலில் &amp;திற</translation>
 <translation id="3615073365085224194">விரலால் கைரேகை சென்சாரைத் தொடவும்</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> ஸ்கேன் செய்யப்படுகிறது.</translation>
+<translation id="3615596877979647433">பட்டன் ஒதுக்கப்படவில்லை. பிரத்தியேகமாக்க கீபோர்டு பட்டனை அழுத்தவும்</translation>
 <translation id="3616741288025931835">உலாவிய தரவை &amp;சுத்தமாக்கு...</translation>
 <translation id="3617891479562106823">பின்னணிகள் கிடைக்கவில்லை. பின்னர் மீண்டும் முயலவும்.</translation>
 <translation id="3619115746895587757">காப்பச்சினோ</translation>
@@ -2910,6 +2916,7 @@
 <translation id="3764753550716962406">கிடைக்கக்கூடிய தள்ளுபடிகளைக் கண்டறிய, உங்கள் கார்ட்டைப் பயன்படுத்துவதற்கு Googleளை அனுமதிக்கவா?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ஐ <ph name="DEVICE_NAME" /> சாதனத்திற்கு அனுப்புகிறது}other{<ph name="ATTACHMENTS" /> ஐ <ph name="DEVICE_NAME" /> சாதனத்திற்கு அனுப்புகிறது}}</translation>
 <translation id="3765246971671567135">ஆஃப்லைன் டெமோ பயன்முறைக் கொள்கையைப் படிக்க முடியவில்லை.</translation>
+<translation id="3766687283066842296">ஃபோன் ஹப் குறித்து மேலும் அறியலாம்</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">ஐஸ்கிரீம்</translation>
 <translation id="3771290962915251154">பெற்றோர் கட்டுப்பாடுகள் இயக்கத்தில் உள்ளதால் இந்த அமைப்பு முடக்கப்பட்டுள்ளது</translation>
@@ -2944,6 +2951,7 @@
 <translation id="3797739167230984533">உங்கள் நிறுவனம் உங்களுடைய <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> சாதனத்தை நிர்வகிக்கிறது<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> இல் “<ph name="SEARCH_TERMS" />” எனத் &amp;தேடு</translation>
 <translation id="3798449238516105146">பதிப்பு</translation>
+<translation id="3798632811625902122"><ph name="DEVICE" /> என்ற புளூடூத் சாதனம் இணைக்க விரும்புகிறது.</translation>
 <translation id="3799128412641261490">ஸ்விட்ச் அணுகலுக்கான அமைப்புகள்</translation>
 <translation id="3800806661949714323">எல்லாம் காட்டு (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="3800828618615365228">Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் விதிமுறைகள்</translation>
@@ -3350,6 +3358,7 @@
 <translation id="4193836101014293726">இந்தச் சுயவிவரத்தை நீக்க முடியவில்லை</translation>
 <translation id="419427585139779713">ஒரு நேரத்தில் ஓர் அசையை மட்டும் உள்ளிடு</translation>
 <translation id="4194570336751258953">கிளிக்குக்கு தட்டுவதை இயக்கு</translation>
+<translation id="4195378859392041564">உங்கள் மவுஸ் மூலம் ஏதேனும் பட்டனைக் கிளிக் செய்தபிறகு அதைப் பிரத்தியேகமாக்க ஒரு கீபோர்டு பட்டனை அழுத்தவும்</translation>
 <translation id="4195421689821407315">பாதுகாப்பற்ற பதிவிறக்கம்</translation>
 <translation id="4195643157523330669">புதிய தாவலில் திற</translation>
 <translation id="4195814663415092787">நான் விட்ட இடத்திலிருந்து தொடங்கு</translation>
@@ -3415,6 +3424,7 @@
 <translation id="4258348331913189841">ஃபைல் முறைமைகள்</translation>
 <translation id="4259388776256904261">இதற்குச் சிறிது நேரம் ஆகலாம்</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> ஆபத்தானதாக இருக்கக்கூடும். ஸ்கேன் செய்வதற்காக இதை Googleளின் 'மேம்பட்ட பாதுகாப்புக்கு' அனுப்பவா? பதிவிறக்கங்கள் பட்டிக்குச் செல்ல Shift+F6 விசைகளை அழுத்தவும்.</translation>
+<translation id="4260699894265914672">பிரத்தியேகமாக்க கீபோர்டு பட்டனை அழுத்தவும்</translation>
 <translation id="4261429981378979799">நீட்டிப்பிற்கான அனுமதிகள்</translation>
 <translation id="4262004481148703251">எச்சரிக்கையை நிராகரி</translation>
 <translation id="4263223596040212967">கீபோர்டின் தளவமைப்பை சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
@@ -4590,6 +4600,7 @@
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (ஆஃப்லைனிலும் பயன்படுத்தலாம்)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> உடன்</translation>
+<translation id="545484289444831485">கூடுதல் தேடல் முடிவுகளைக் காட்டு</translation>
 <translation id="5455603387986949153">ChromeOS Flex சாதனம், காம்பொனெண்ட் ஆகியவற்றின் வரிசை எண்களைப் படிக்கும்.</translation>
 <translation id="5457113250005438886">தவறானது</translation>
 <translation id="5457459357461771897">உங்கள் கம்ப்யூட்டரிலிருந்து படங்கள், இசை மற்றும் பிற மீடியாவைப் படிக்கலாம், நீக்கலாம்</translation>
@@ -4931,6 +4942,7 @@
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" />க்கான கூடுதல் செயல்கள்</translation>
 <translation id="5792728279623964091">பவர் பட்டனைத் தட்டவும்</translation>
 <translation id="5793339252089865437">புதுப்பிப்பை மொபைல் நெர்ட்வொர்க் மூலம் பதிவிறக்கினால் கூடுதல் கட்டணங்கள் வசூலிக்கப்படலாம்.</translation>
+<translation id="5793420564274426163">இணைத்தலை உறுதிப்படுத்தல்</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> டெஸ்க்கில் <ph name="NUM_BROWSERS" /> உலாவிச் சாளரங்கள் திறந்துள்ளன</translation>
 <translation id="5794414402486823030">எப்போதும் சிஸ்டம் வியூவரைக் கொண்டு திற</translation>
 <translation id="5794700615121138172">Linux பகிர்ந்த ஃபோல்டர்கள்</translation>
@@ -7065,6 +7077,7 @@
 <translation id="7901405293566323524">மொபைல் ஹப்</translation>
 <translation id="7903290522161827520">உலாவிக் காம்பனென்ட்டுகளைத் தேடுகிறீர்களா? இந்தத் தளத்திற்குச் செல்க</translation>
 <translation id="7903345046358933331">பக்கம் பதிலளிக்கவில்லை. பதிலளிக்கும் வரை நீங்கள் காத்திருக்கலாம் அல்லது அதை மூடி விடலாம்.</translation>
+<translation id="7903429136755645827">கேம் கண்ட்ரோல்களைப் பிரத்தியேகமாக்க கிளிக் செய்யவும்</translation>
 <translation id="7903742244674067440">இந்தச் சான்றிதழ் அங்கீகரிப்பாளர்களை அடையாளங்காணும் சான்றிதழ்கள் ஃபைலில் உள்ளன</translation>
 <translation id="7903925330883316394">கருவி: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">உங்கள் நெட்வொர்க்கிலுள்ள பிற சாதனங்களுக்கு Linux போர்ட்டுகள் கிடைக்குமாறு செய்யலாம்.</translation>
@@ -7426,6 +7439,7 @@
 <translation id="8242426110754782860">தொடருக</translation>
 <translation id="8243948765190375130">மீடியாவின் தரம் குறையக்கூடும்</translation>
 <translation id="8244514732452879619">தூங்கும் நேரம் வந்துவிட்டது</translation>
+<translation id="8245361042748627813">இந்த ஷார்ட்கட் மாற்றப்பட்டது. சிஸ்டம் உரையாடல் மூலம் பிரிண்ட் செய்ய <ph name="NEW_SHORTCUT_KEY" /> பட்டன்களைப் பயன்படுத்தவும்.</translation>
 <translation id="8246776524656196770">பின் (தனிப்பட்ட அடையாள எண்) மூலம் உங்கள் பாதுகாப்பு விசையைப் பத்திரமாக வைத்திருக்கலாம்</translation>
 <translation id="8248050856337841185">&amp;ஒட்டு</translation>
 <translation id="8248381369318572865">எனது மைக்ரோஃபோனை அணுகி எனது பேச்சை ஆய்வு செய்</translation>
@@ -7730,6 +7744,7 @@
 <translation id="8561565784790166472">எச்சரிக்கையுடன் தொடர்க</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">ஆப்ஸை முந்தைய பதிப்பிற்கு மாற்ற முயற்சித்துள்ளீர்கள்.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> குறித்த மேலும் தகவல்கள்</translation>
 <translation id="8569682776816196752">எந்த இலக்குகளும் கண்டறியப்படவில்லை</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
 <translation id="8571687764447439720">Kerberos டிக்கெட்டைச் சேர்த்தல்</translation>
@@ -8256,6 +8271,7 @@
 <translation id="9078316009970372699">உடனடி இணைப்பு முறையை முடக்கு</translation>
 <translation id="9078842827190780028">கூடுதல் தேடல் முடிவுகளைப் பக்கவாட்டுப் பேனலில் பாருங்கள்</translation>
 <translation id="9079267182985899251">இந்த விருப்பம் விரைவில் ஆதரிக்கப்படாமல் போகும். தாவலின் ஸ்கிரீனைப் பகிர <ph name="GOOGLE_MEET" /> ஆப்ஸைப் பயன்படுத்தவும்.</translation>
+<translation id="9080971985541434310">உங்கள் ஆர்வங்களைக் கணிக்கும் - உங்கள் ஆர்வங்களை Chrome கணிக்கலாம்</translation>
 <translation id="9081543426177426948">மறைநிலைப் பயன்முறையில் நீங்கள் பார்க்கும் தளங்கள் சேமிக்கப்படாது</translation>
 <translation id="9084064520949870008">சாளரமாகத் திற</translation>
 <translation id="9085256200913095638">தேர்வுசெய்துள்ள தாவலை நகலெடுக்கவும்</translation>

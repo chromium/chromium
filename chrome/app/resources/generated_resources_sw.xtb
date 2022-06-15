@@ -2631,6 +2631,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3482719661246593752"><ph name="ORIGIN" /> inaweza kuona faili zifuatazo</translation>
 <translation id="3484273680291419129">Inaondoa programu hatari...</translation>
 <translation id="3484869148456018791">Pata cheti kipya</translation>
+<translation id="3486950712960783074">Safari yako</translation>
 <translation id="3487007233252413104">chaguo za kukokotoa zisizo na jina</translation>
 <translation id="3490695139702884919">Inapakua... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Akaunti ya mtoto wako haijawekewa mipangilio ya vidhibiti vya wazazi kwenye Family Link. Unaweza kuongeza vidhibiti vya wazazi baada ya kukamilisha kuweka mipangilio. Utapata maelezo kuhusu vidhibiti vya wazazi kwenye programu ya Gundua.</translation>
@@ -2941,6 +2942,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3797739167230984533">Kifaa chako cha <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> kinadhibitiwa<ph name="END_LINK" /> na shirika lako</translation>
 <translation id="3797900183766075808">&amp;Tafuta <ph name="SEARCH_ENGINE" /> upate “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Toleo</translation>
+<translation id="3798632811625902122">Kifaa chenye Bluetooth <ph name="DEVICE" /> kinaomba idhini ya kuoanisha.</translation>
 <translation id="3799128412641261490">Mipangilio ya kufikia kupitia swichi</translation>
 <translation id="3800806661949714323">Onyeza zote (inapendekezwa)</translation>
 <translation id="3800828618615365228">Sheria na Masharti ya Ziada ya Google Chrome na Mfumo wa Uendeshaji wa Chrome</translation>
@@ -4925,6 +4927,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5792295754950501287">Vitendo zaidi vya <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Tafadhali gusa kitufe chako cha kuwasha/kuzima</translation>
 <translation id="5793339252089865437">Iwapo unapakua sasisho kupitia mtandao wa simu, huenda utatozwa zaidi.</translation>
+<translation id="5793420564274426163">Uthibitisho wa Kuoanisha</translation>
 <translation id="5794034487966529952">Eneokazi la <ph name="DESK_TITLE" /> lina madirisha <ph name="NUM_BROWSERS" /> ya kivinjari yaliyofunguliwa</translation>
 <translation id="5794414402486823030">Fungua ukitumia kitazamaji cha mfumo wakati wowote</translation>
 <translation id="5794700615121138172">Folda zinazoshirikiwa za Linux</translation>
@@ -7421,6 +7424,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8242426110754782860">Endelea</translation>
 <translation id="8243948765190375130">Huenda ubora wa maudhui ukapunguzwa</translation>
 <translation id="8244514732452879619">Tutafunga kifaa hivi punde</translation>
+<translation id="8245361042748627813">Njia hii ya mkato imebadilika. Tafadhali tumia <ph name="NEW_SHORTCUT_KEY" /> ili uchapishe kwa kutumia kidirisha cha mfumo.</translation>
 <translation id="8246776524656196770">Linda ufunguo wako wa usalama ukitumia PIN (Nambari ya Siri ya Utambulisho)</translation>
 <translation id="8248050856337841185">&amp;Bandika</translation>
 <translation id="8248381369318572865">Kufikia maikrofoni yako na kuchambua matamshi yako</translation>
@@ -7725,6 +7729,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8561565784790166472">Endelea kwa tahadhari</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Ulijaribu kushusha programu kiwango</translation>
+<translation id="8569673829373920831">Maelezo zaidi kuhusu <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Hakuna hatima zilizopatikana</translation>
 <translation id="8571213806525832805">Wiki 4 zilizopita</translation>
 <translation id="8571687764447439720">Weka tiketi ya Kerberos</translation>

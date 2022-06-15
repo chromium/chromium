@@ -129,6 +129,7 @@
 <translation id="1999615961760456652">Πύλη υποδοχής</translation>
 <translation id="2006864819935886708">Συνδεσιμότητα</translation>
 <translation id="2008685064673031089">Αναζήτηση Prime</translation>
+<translation id="2011174342667534258">Έκδοση SDK:</translation>
 <translation id="2016697457005847575">Δοκιμή βημάτων αντιμετώπισης προβλημάτων</translation>
 <translation id="2016848882344942759">--χωρίς λευκή ετικέτα--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +161,7 @@
 <translation id="225692081236532131">Κατάσταση ενεργοποίησης</translation>
 <translation id="2271469253353559191">Πρόγραμμα λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2275586345903859204">Η επισκευή ολοκληρώθηκε</translation>
+<translation id="2276999893457278469">Κορυφαίο περιεχόμενο βοήθειας</translation>
 <translation id="2287186687001756809">Δεν υπάρχει διαθέσιμη εικόνα. Για προσθήκη φωτογραφιών, μεταβείτε στη διεύθυνση <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Εισαγάγετε εξωτερικό αποθηκευτικό χώρο, όπως μια μονάδα USB ή μια κάρτα SD, με τη ληφθείσα εικόνα του Εργαλείου ανάκτησης Chromebook.</translation>
 <translation id="2307344026739914387">Χρήση τρέχοντος ζεύγους κλειδιών</translation>
@@ -193,6 +195,7 @@
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2526590354069164005">Επιφάνεια εργασίας</translation>
 <translation id="253029298928638905">Επανεκκίνηση…</translation>
+<translation id="2533048460510040082">Προτεινόμενο περιεχόμενο βοήθειας</translation>
 <translation id="2536159006530886390">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο.</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Για να ρυθμίσετε το δίκτυο, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -305,6 +308,7 @@
 <translation id="3784455785234192852">Κλείδωμα</translation>
 <translation id="38114475217616659">Εκκαθάριση όλου του ιστορικού</translation>
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
+<translation id="3824259034819781947">Επισύναψη αρχείων</translation>
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3856304145690230735">Γυροσκόπιο βάσης</translation>
@@ -865,6 +869,7 @@
 <translation id="885701979325669005">Αποθήκευση</translation>
 <translation id="8863170912498892583">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="8863888432376731307">Αποκτήστε το <ph name="INTENT" /> για "<ph name="QUERY" />" και περισσότερα</translation>
+<translation id="8864415976656252616">Δεν υπάρχει προτεινόμενο περιεχόμενο. Ανατρέξτε στο κορυφαίο περιεχόμενο βοήθειας.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>

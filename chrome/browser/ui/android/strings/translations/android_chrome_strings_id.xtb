@@ -345,6 +345,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2861923151411510142">Beberapa fitur Chrome tidak akan tersedia lagi</translation>
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2871733351037274014">Pramuat halaman</translation>
+<translation id="2886836735871983413">Daftar situs akan muncul di sini saat Anda menjelajahi web</translation>
 <translation id="2888126860611144412">Tentang Chrome</translation>
 <translation id="2891154217021530873">Hentikan pemuatan halaman</translation>
 <translation id="2892647708214602204">Anda akan melihat notifikasi saat file siap</translation>
@@ -372,6 +373,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2987620471460279764">Teks yang dibagikan dari perangkat lain</translation>
 <translation id="2989523299700148168">Baru saja dikunjungi</translation>
 <translation id="2992473221983447149">Deskripsi gambar</translation>
+<translation id="2994959273484668146">Hapus <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Buat frasa sandi</translation>
 <translation id="2996809686854298943">Perlu URL</translation>
 <translation id="2997081575621687554">Saat sebuah situs Google meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan mengenkripsi dan melakukan pramuat halaman melalui server Google tanpa cookie. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat.</translation>
@@ -521,6 +523,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861633093716975811">Video populer</translation>
+<translation id="3874520961715512166">Situs dihapus</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3899682235662194879">Tutup semua tab Samaran</translation>
@@ -558,6 +561,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
 <translation id="4096227151372679484">Alur penyimpanan bookmark terbuka setengah</translation>
 <translation id="4099578267706723511">Bantu penyempurnaan Chrome dengan mengirimkan statistik penggunaan dan laporan error ke Google.</translation>
+<translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark Anda serta data lain di perangkat lainnya</translation>
 <translation id="410351446219883937">Putar otomatis</translation>
 <translation id="4106587138345390261">Chrome sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
 <translation id="4108314971463891922">Ikuti</translation>
@@ -1191,6 +1195,7 @@ Trust token meningkatkan privasi di web dan tidak dapat digunakan untuk menemuka
 <translation id="749294055653435199">Google Lens tidak tersedia di perangkat ini</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Diperbarui <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Harap tunggu...</translation>
+<translation id="7502234197872745058">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK1" />logout dari Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Update Tidak Tersedia</translation>
 <translation id="7507207699631365376">Lihat <ph name="BEGIN_LINK" />kebijakan privasi<ph name="END_LINK" /> penyedia ini</translation>
 <translation id="7514365320538308">Download</translation>

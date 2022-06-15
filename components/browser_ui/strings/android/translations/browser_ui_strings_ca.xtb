@@ -91,6 +91,7 @@
 <translation id="300526633675317032">Amb aquesta acció s'esborraran <ph name="SIZE_IN_KB" /> d'emmagatzematge del lloc web.</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
+<translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>
 <translation id="3115898365077584848">Mostra la informació</translation>
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
@@ -226,6 +227,7 @@
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6320088164292336938">Vibració</translation>
+<translation id="6367753977865761591">Bloqueja l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="6388207532828177975">Esborra i restableix</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="6439114592976064011">Impedeix que els llocs web utilitzin les teves dades i el teu dispositiu de realitat virtual</translation>

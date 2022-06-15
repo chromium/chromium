@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">కొన్ని Chrome ఫీచర్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2871733351037274014">పేజీలను ప్రీ - లోడ్ చేయండి</translation>
+<translation id="2886836735871983413">మీరు వెబ్‌లో బ్రౌజ్ చేస్తున్నప్పుడు, ఇక్కడ సైట్‌ల లిస్ట్ కనిపిస్తుంది</translation>
 <translation id="2888126860611144412">Chrome పరిచయం</translation>
 <translation id="2891154217021530873">పేజీ లోడ్ కాకుండా ఆపివేయండి</translation>
 <translation id="2892647708214602204">ఈ ఫైల్ సిద్ధంగా ఉన్నప్పుడు మీకు నోటిఫికేషన్ కనిపిస్తుంది</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">ఇతర పరికరం నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="2989523299700148168">ఇటీవల సందర్శించినవి</translation>
 <translation id="2992473221983447149">ఇమేజ్ వివరణలు</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" />‌ను తీసివేస్తుంది</translation>
 <translation id="2996291259634659425">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
 <translation id="2996809686854298943">URL అవసరం</translation>
 <translation id="2997081575621687554">Google సైట్ వారి పేజీలోని లింక్‌లను ప్రైవేట్‌గా ప్రీ - లోడ్ చేయమని అడిగినప్పుడు, Chrome కుక్కీలు లేకుండా Google సర్వర్‌ల ద్వారా పేజీలను ఎన్‌క్రిప్ట్, అలాగే ప్రీ - లోడ్ చేస్తుంది. ఇది ప్రీ - లోడ్ చేయబడిన సైట్ నుండి మీ గుర్తింపును దాచిపెడుతుంది.</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">దయచేసి ఇది చెల్లుబాటు అయ్యే ప్రొవైడర్ అని వెరిఫై చేయండి లేదా తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3861633093716975811">జనాదరణ పొందిన వీడియోలు</translation>
+<translation id="3874520961715512166">సైట్ తీసివేయబడింది</translation>
 <translation id="3892148308691398805">టెక్స్ట్‌ను కాపీ చేయి</translation>
 <translation id="3894427358181296146">ఫోల్డర్‌ను జోడించండి</translation>
 <translation id="3899682235662194879">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">యాప్‌ డేటాను తొలగించాలా?</translation>
 <translation id="4096227151372679484">బుక్‌మార్క్‌ను సేవ్ చేయడానికి సంబంధించిన దశల ఫోల్డర్‌లు స్క్రీన్‌లో సగం వరకు తెరవబడ్డాయి</translation>
 <translation id="4099578267706723511">వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లను Googleకు పంపి, తద్వారా Chromeను మెరుగుపరచడంలో సహాయపడండి.</translation>
+<translation id="4101475238162928417">మీ ఇతర పరికరాలన్నిటిలో మీ పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని పొందడానికి సింక్ చేయండి</translation>
 <translation id="410351446219883937">స్వీయ ప్లే</translation>
 <translation id="4106587138345390261">Chrome మీ సమాచారాన్ని తక్కువగా ఉపయోగిస్తూ అదే బ్రౌజింగ్ అనుభవాన్ని అందించడానికి సైట్‌లను అనుమతించే కొత్త ఫీచర్‌ల కోసం అన్వేషిస్తోంది</translation>
 <translation id="4108314971463891922">ఫాలో అవ్వండి</translation>
@@ -1193,6 +1197,7 @@
 <translation id="749294055653435199">ఈ పరికరంలో Google Lens అందుబాటులో లేదు</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (నవీకరించినది <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">దయచేసి వేచి ఉండండి...</translation>
+<translation id="7502234197872745058">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK1" />Chrome నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">అప్‌డేట్‌లు అందుబాటులో లేవు</translation>
 <translation id="7507207699631365376">ఈ ప్రొవైడర్ <ph name="BEGIN_LINK" />గోప్యతా పాలసీ<ph name="END_LINK" />ని చూడండి</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>

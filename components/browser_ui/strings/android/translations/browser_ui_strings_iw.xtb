@@ -91,6 +91,7 @@
 <translation id="300526633675317032">פעולה זו תמחק את כל נתוני האתר המאוחסנים (<ph name="SIZE_IN_KB" />).</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
+<translation id="3069226013421428034">אישור הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="3114012059975132928">נגן וידאו</translation>
 <translation id="3115898365077584848">הצגת פרטים</translation>
 <translation id="3123473560110926937">חסומות בחלק מהאתרים</translation>
@@ -225,6 +226,7 @@
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6320088164292336938">רטט</translation>
+<translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>
 <translation id="6388207532828177975">ניקוי ואיפוס</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>

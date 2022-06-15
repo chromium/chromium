@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Zapisz na nośniku USB</translation>
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
+<translation id="147809995039451286">Nie udało się pobrać aktualizacji</translation>
 <translation id="1478594628797167447">Skanery</translation>
 <translation id="1491076385728777984">Aktualizuję oprogramowanie układowe urządzenia: <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
@@ -182,6 +183,7 @@
 <translation id="2418150275289244458">Otwórz w ustawieniach</translation>
 <translation id="2421798028054665193">Zdjęcie <ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
+<translation id="2447969267935997922">Instalacja została zakończona. Teraz możesz wyjąć dysk USB lub kartę SD.</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2480034874476596812">Wyłącz ręcznie</translation>

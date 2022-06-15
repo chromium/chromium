@@ -345,6 +345,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2861923151411510142">Enkelte Chrome-funksjoner kommer ikke til å være tilgjengelige lenger</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2871733351037274014">Forhåndslasting av sider</translation>
+<translation id="2886836735871983413">En liste over nettsteder vises her mens du surfer på nettet</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Stopp innlastingen av siden</translation>
 <translation id="2892647708214602204">Du får et varsel når filen er klar</translation>
@@ -372,6 +373,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2987620471460279764">En annen enhet har delt tekst</translation>
 <translation id="2989523299700148168">Nylig besøkte</translation>
 <translation id="2992473221983447149">Bildebeskrivelser</translation>
+<translation id="2994959273484668146">Fjern <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Opprett en passordfrase</translation>
 <translation id="2996809686854298943">Nettadresse kreves</translation>
 <translation id="2997081575621687554">Når Google-nettsteder ber om privat forhåndslasting av linker på sidene sine, medfører det at Chrome krypterer og forhåndslaster sider gjennom Googles tjenere uten informasjonskapsler. Dermed skjules identiteten din for det forhåndslastede nettstedet.</translation>
@@ -521,6 +523,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="3856096718352044181">Verifiser at dette er en gyldig leverandør, eller prøv på nytt senere</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861633093716975811">Populære videoer</translation>
+<translation id="3874520961715512166">Nettsted fjernet</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="3894427358181296146">Legg til en mappe</translation>
 <translation id="3899682235662194879">Lukk alle inkognitofaner</translation>
@@ -558,6 +561,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="4095146165863963773">Slette appdataene?</translation>
 <translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
 <translation id="4099578267706723511">Gjør Chrome bedre ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
+<translation id="4101475238162928417">Synkroniser for å få passordene dine, bokmerkene dine med mer på andre enheter du bruker.</translation>
 <translation id="410351446219883937">Autoavspilling</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="4108314971463891922">Følg</translation>
@@ -1193,6 +1197,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="749294055653435199">Google Lens er ikke tilgjengelig på denne enheten</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (oppdatert <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Vent litt</translation>
+<translation id="7502234197872745058">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK1" />logg av Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Oppdateringer er ikke tilgjengelige</translation>
 <translation id="7507207699631365376">Se denne leverandørens <ph name="BEGIN_LINK" />personvernerklæring<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Last ned</translation>

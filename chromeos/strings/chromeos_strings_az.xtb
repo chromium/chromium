@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USB'də saxlayın</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bu cihazı idarə edir və fəaliyyətinizə nəzarət edə bilər.</translation>
+<translation id="147809995039451286">Güncəlləməni endirmək mümkün olmadı</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> cihazında proqram güncəllənir</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
 <translation id="2008685064673031089">Əsas axtarış</translation>
+<translation id="2011174342667534258">SDK Versiyası:</translation>
 <translation id="2016697457005847575">Nasazlıqların aradan qaldırılması addımlarını sınayın</translation>
 <translation id="2016848882344942759">--ağ etiketsiz--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
 <translation id="2271469253353559191">Qaranlıq rejim cədvəli</translation>
 <translation id="2275586345903859204">Təmir tamamlandı</translation>
+<translation id="2276999893457278469">Populyar yardım məzmunu</translation>
 <translation id="2287186687001756809">Əlçatan şəkil yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
 <translation id="2294753434210277304">Endirilmiş Chromebook Bərpa Utilit şəkli ilə USB disk və ya SD kart kimi xarici yaddaşı daxil edin</translation>
 <translation id="2307344026739914387">Cari açar cütündən istifadə edin</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Ayarlarda açın</translation>
 <translation id="2421798028054665193">Şəkil <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
+<translation id="2447969267935997922">Quraşdırma tamamlandı. İndi USB diski və ya SD kartınızı çıxara bilərsiniz.</translation>
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2461822463642141190">Cari</translation>
 <translation id="2480034874476596812">Manual olaraq deaktiv edin</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
 <translation id="253029298928638905">Yenidən başladılır...</translation>
+<translation id="2533048460510040082">Təklif olunan yardım məzmunu</translation>
 <translation id="2536159006530886390">İnternetə qoşulmaq olmur.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
 <translation id="2584559707064218956">Ayarlamaq üçün Ayarlara keçin</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Kilidləyin</translation>
 <translation id="38114475217616659">Bütün tarixçəni silin</translation>
 <translation id="3820172043799983114">Yanlış PIN.</translation>
+<translation id="3824259034819781947">Fayllar əlavə edin</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3856304145690230735">Baza Giroskopu</translation>
@@ -862,6 +868,7 @@
 <translation id="885701979325669005">Yaddaş</translation>
 <translation id="8863170912498892583">Qaranlıq temanı aktiv edin</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" və daha çoxu üçün <ph name="INTENT" /> əldə edin</translation>
+<translation id="8864415976656252616">Təklif olunan məzmun yoxdur. Populyar yardım məzmununa baxın.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Cihaz planşetdir.</translation>
 <translation id="8881098542468797602">Test uğurlu oldu</translation>

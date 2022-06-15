@@ -345,6 +345,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2861923151411510142">Einige Chrome-Funktionen sind dann nicht mehr verfügbar</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2871733351037274014">Seiten vorab laden</translation>
+<translation id="2886836735871983413">Wenn du im Web surfst, wird hier eine Liste mit Websites angezeigt</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
 <translation id="2891154217021530873">Laden der Seite anhalten</translation>
 <translation id="2892647708214602204">Du erhältst eine Bestätigung, wenn die Datei bereit ist</translation>
@@ -372,6 +373,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2987620471460279764">Text, der über ein anderes Gerät geteilt wurde</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2992473221983447149">Bildbeschreibungen</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" /> entfernen</translation>
 <translation id="2996291259634659425">Passphrase erstellen</translation>
 <translation id="2996809686854298943">URL erforderlich</translation>
 <translation id="2997081575621687554">Wenn eine Google Sites-Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verschlüsselt Chrome die verlinkten Seiten und lädt sie ohne Cookies über Google-Server vorab. Damit wird deine Identität vor der vorab geladenen Website verborgen.</translation>
@@ -521,6 +523,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861633093716975811">Beliebte Videos</translation>
+<translation id="3874520961715512166">Website entfernt</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3894427358181296146">Ordner hinzufügen</translation>
 <translation id="3899682235662194879">Alle Inkognitotabs schließen</translation>
@@ -558,6 +561,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="4095146165863963773">App-Daten löschen?</translation>
 <translation id="4096227151372679484">Ablauf zum Speichern von Lesezeichen ist halb geöffnet</translation>
 <translation id="4099578267706723511">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
+<translation id="4101475238162928417">Mit der Synchronisierung kannst du beispielsweise Passwörter und Lesezeichen auf deinen anderen Geräten abrufen</translation>
 <translation id="410351446219883937">Autoplay</translation>
 <translation id="4106587138345390261">In Chrome werden neue Funktionen ausprobiert, mit denen Websites bei gleichbleibender Nutzererfahrung beim Surfen weniger Nutzerdaten verwenden</translation>
 <translation id="4108314971463891922">Folgen</translation>
@@ -728,6 +732,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4985248278475639481">Personalisierte Werbung</translation>
 <translation id="4987271110129728827">Diese Seite konnte nicht gefunden werden. Prüfe die Schreibweise oder versuche es mit einer Internetsuche.</translation>
 <translation id="4988526792673242964">Seiten</translation>
+<translation id="499724277181351974">Aufrufen: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dieser Website folgen</translation>
 <translation id="500351648694011114">Einfacher surfen</translation>
 <translation id="5004416275253351869">Google-Aktivitätseinstellungen</translation>
@@ -977,6 +982,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 Basierend auf deiner Interaktion mit einer Website, z. B. regelmäßige Anmeldungen in einem Konto, kann diese Website ein Trust Token für deinen Browser ausstellen. Wenn andere von dir besuchte Websites später dann ein gültiges Trust Token finden, ist die Wahrscheinlichkeit höher, dass du als Person und nicht als Bot eingestuft wirst.
 
 Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet werden, deine Identität zu ermitteln.</translation>
+<translation id="6394791151443660613">Suchen: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Wieder online</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> auf <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1197,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="749294055653435199">Google Lens ist auf diesem Gerät nicht verfügbar</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (aktualisiert <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Bitte warten...</translation>
+<translation id="7502234197872745058">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK1" />von Chrome abmeldest<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Keine Updates verfügbar</translation>
 <translation id="7507207699631365376"><ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieses Dienstanbieters ansehen</translation>
 <translation id="7514365320538308">Herunterladen</translation>

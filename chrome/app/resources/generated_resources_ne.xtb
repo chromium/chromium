@@ -2621,6 +2621,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ले निम्न फाइलहरू हेर्न सक्छ</translation>
 <translation id="3484273680291419129">हानिकारक सफ्टवेयर हटाउँदै...</translation>
 <translation id="3484869148456018791">नयाँ प्रमाणपत्र प्राप्त गर्नुहोस्</translation>
+<translation id="3486950712960783074">तपाईंको यात्रा</translation>
 <translation id="3487007233252413104">बेनाम प्रकार्य</translation>
 <translation id="3490695139702884919">डाउनलोड गरिँदै छ... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">तपाईंका बच्चाको खातामा Family Link का अभिभावकीय नियन्त्रणहरू सेटअप गरिएका छैनन्। तपाईंले सेटअप पूरा गरिसकेपछि तपाईं बच्चाको खातामा अभिभावकीय नियन्त्रणहरू थप्न सक्नुहुन्छ। तपाईं एक्स्प्लोर एपमा अभिभावकीय नियन्त्रणसम्बन्धी जानकारी फेला पार्न सक्नुहुन्छ।</translation>
@@ -2933,6 +2934,7 @@
 <translation id="3797739167230984533">तपाईंको सङ्गठनले तपाईंको <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">'<ph name="SEARCH_TERMS" />' का लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3798449238516105146">संस्करण</translation>
+<translation id="3798632811625902122">ब्लुटुथ डिभाइस <ph name="DEVICE" /> ले कनेक्ट गर्ने अनुमति माग्दै छ।</translation>
 <translation id="3799128412641261490">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी सेटिङ</translation>
 <translation id="3800806661949714323">सबै देखाउनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="3800828618615365228">Google Chrome र ChromeOS का अतिरिक्त सर्तहरू</translation>
@@ -4920,6 +4922,7 @@
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="5792728279623964091">कृपया आफ्नो पावर बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="5793339252089865437">तपाईंले अद्यावधिक डाउनलोड गर्दा आफ्नो मोबाइल नेटवर्कमार्फत गर्नुभयो भने अधिक शुल्क लाग्न सक्छ।</translation>
+<translation id="5793420564274426163">कनेक्ट भएको कुराको पुष्टि</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> नामक डेस्कमा ब्राउजरका <ph name="NUM_BROWSERS" /> वटा विन्डो खोलिएका छन्</translation>
 <translation id="5794414402486823030">प्रणाली दर्शकमार्फत सधैं खोल्नुहोस्</translation>
 <translation id="5794700615121138172">Linux बाट सेयर गरिएका फोल्डरहरू</translation>
@@ -7414,6 +7417,7 @@
 <translation id="8242426110754782860">अगाडि बढ्नुहोस्</translation>
 <translation id="8243948765190375130">मिडियाको गुणस्तर खस्किन सक्छ</translation>
 <translation id="8244514732452879619">बत्ती निभ्ने बेला भयो</translation>
+<translation id="8245361042748627813">यो सर्टकट परिवर्तन भएको छ। सिस्टम डायलग प्रयोग गरी प्रिन्ट गर्न कृपया <ph name="NEW_SHORTCUT_KEY" /> थिच्नुहोस्।</translation>
 <translation id="8246776524656196770">कुनै PIN (व्यक्तिगत पहिचान नम्बर) प्रयोग गरी आफ्नो सुरक्षा साँचो सेभ गर्नुहोस्</translation>
 <translation id="8248050856337841185">&amp;टाँस्नुहोस्</translation>
 <translation id="8248381369318572865">तपाईंको डिभाइसको माइक्रोफोन प्रयोग गर्ने तथा तपाईंको बोलीको विश्लेषण गर्ने अनुमति</translation>
@@ -7718,6 +7722,7 @@
 <translation id="8561565784790166472">यो सुविधा प्रयोग गर्दा सावधानी अपनाउनुहोस्</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">एपलाई डाउनग्रेज गर्ने प्रयत्न भयो।</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> का बारेमा थप जानकारी</translation>
 <translation id="8569682776816196752">कुनैपनि गन्तव्यहरू फेला परेनन्</translation>
 <translation id="8571213806525832805">पछिल्ला ४ हप्ता</translation>
 <translation id="8571687764447439720">Kerberos को टिकट थप्नुहोस्</translation>

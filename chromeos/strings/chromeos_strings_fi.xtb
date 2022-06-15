@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Tallenna USB:lle</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ylläpitää tätä laitetta ja voi ehkä seurata toimintaasi.</translation>
+<translation id="147809995039451286">Päivityksen lataaminen epäonnistui</translation>
 <translation id="1478594628797167447">Skanneri</translation>
 <translation id="1491076385728777984">Päivitetään laiteohjelmistoa: <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ylläpitää tätä käyttäjää ja voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Yhteys</translation>
 <translation id="2008685064673031089">Ensisijainen haku</translation>
+<translation id="2011174342667534258">SDK-versio:</translation>
 <translation id="2016697457005847575">Kokeile ongelmanratkaisuohjeita</translation>
 <translation id="2016848882344942759">--ei tuotemerkitön--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Aktivoinnin tila</translation>
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
 <translation id="2275586345903859204">Korjaus on valmis</translation>
+<translation id="2276999893457278469">Suosituin ohjesisältö</translation>
 <translation id="2287186687001756809">Kuvia ei saatavilla. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Lisää ulkoinen tallennustila, esim. USB-muisti tai SD-kortti, ladatun Chromebookin palautussovellus ‑kuvan avulla</translation>
 <translation id="2307344026739914387">Käytä tämänhetkistä avainparia</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Avaa asetuksissa</translation>
 <translation id="2421798028054665193">Kuva <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Liukulukuesityksen tarkkuus</translation>
+<translation id="2447969267935997922">Asennus on valmis. Voit nyt irrottaa USB-muistin tai SD-kortin.</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
 <translation id="2461822463642141190">Nykyinen</translation>
 <translation id="2480034874476596812">Laita pois päältä manuaalisesti</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2526590354069164005">Työpöytä</translation>
 <translation id="253029298928638905">Käynnistetään uudelleen…</translation>
+<translation id="2533048460510040082">Ehdotettu ohjesisältö</translation>
 <translation id="2536159006530886390">Ei internetyhteyttä.</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Aloita määritys avaamalla Asetukset.</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Lukitse</translation>
 <translation id="38114475217616659">Tyhjennä koko historia</translation>
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
+<translation id="3824259034819781947">Liitä tiedostoja</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3856304145690230735">Perusgyroskooppi</translation>
@@ -863,6 +869,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="885701979325669005">Tallennus</translation>
 <translation id="8863170912498892583">Ota tumma teema käyttöön</translation>
 <translation id="8863888432376731307">Hae <ph name="INTENT" />: "<ph name="QUERY" />" ja muita</translation>
+<translation id="8864415976656252616">Ei sisältöehdotuksia. Katso suosituin ohjesisältö.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Laite on tabletti.</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>

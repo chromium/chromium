@@ -20,7 +20,6 @@
 <translation id="115443833402798225">安馬太韓文</translation>
 <translation id="1155759005174418845">加泰隆尼亞文</translation>
 <translation id="1168100932582989117">Google 名稱伺服器</translation>
-<translation id="1171082344678443012">XZ 壓縮檔</translation>
 <translation id="1172970565351728681">大約還剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，詳細資料</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1209796539517632982">自動名稱伺服器</translation>
 <translation id="1210831758834677569">寮文</translation>
-<translation id="1223825810409523901">Chrome 擴充功能</translation>
 <translation id="1243314992276662751">上傳</translation>
 <translation id="1249250836236328755">類型</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
 <translation id="1272293450992660632">PIN 碼值不相符。</translation>
-<translation id="127650757582748357">BZIP2 壓縮檔</translation>
 <translation id="1280820357415527819">正在搜尋行動網路</translation>
 <translation id="1291603679744561561">SIM 卡已鎖定</translation>
 <translation id="1293556467332435079">檔案</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">不允許變更共用網路設定</translation>
 <translation id="1665611772925418501">無法修改檔案。</translation>
 <translation id="1673103856845176271">基於安全理由，你無法存取檔案。</translation>
-<translation id="16762847117768727">ISO 映像檔</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">騎自行車</translation>
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">影像解析度</translation>
 <translation id="1972984168337863910">展開檔案意見回饋面板</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
-<translation id="1996806196681857869">Z 壓縮的封存檔</translation>
 <translation id="2001796770603320721">在雲端硬碟中管理</translation>
 <translation id="2009067268969781306">若將硬碟格式化，其中儲存的所有資料都將遭到刪除。這項操作無法復原。</translation>
 <translation id="2025955442973426285">蒂格里亞文</translation>
-<translation id="2028997212275086731">RAR 封存</translation>
 <translation id="2037845485764049925">俄文</translation>
 <translation id="2044023416777079300">數據機尚未註冊</translation>
 <translation id="2046702855113914483">拉麵</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">乳酪</translation>
 <translation id="2781645665747935084">比利時文</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
-<translation id="2788520643285360081">7-Zip 封存檔</translation>
 <translation id="2803375539583399270">輸入 PIN</translation>
 <translation id="2820957248982571256">掃描中...</translation>
-<translation id="2822595620066756134">GZIP 壓縮檔</translation>
 <translation id="2830077785865012357">中文 (注音)</translation>
 <translation id="2843806747483486897">變更預設值...</translation>
 <translation id="2850124913210091882">備份</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">立陶宛文</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3592251141500063301">無法將「<ph name="FILE_NAME" />」設為可離線使用</translation>
-<translation id="3593874215226880809">LZIP 壓縮檔</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">加拿大法文</translation>
 <translation id="3606220979431771195">土耳其文 F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
-<translation id="3703620396751288986">ZIP 封存檔</translation>
 <translation id="3726463242007121105">這個裝置所用的檔案系統不受支援，因此系統無法開啟這個裝置。</translation>
 <translation id="3727148787322499904">變更這項設定會影響所有共用網路</translation>
 <translation id="3737576078404241332">從側欄中移除</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">捷克文搭配 Qwerty 鍵盤</translation>
 <translation id="4656777537938206294">將檔案設為可離線使用</translation>
 <translation id="4658782175094886150">雪中人</translation>
-<translation id="4661996069183330363">TAR 封存檔</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」的成員將失去存取權，除非有人與他們共用這些項目。</translation>
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4690246192099372265">瑞典文</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" />網路，未連線</translation>
 <translation id="6074825444536523002">Google 表單</translation>
 <translation id="6079871810119356840">匈牙利文搭配 Qwerty 鍵盤</translation>
-<translation id="6082256976217156453">LZMA 壓縮檔</translation>
 <translation id="6096979789310008754">已清除搜尋文字，畫面顯示所有檔案和資料夾。</translation>
 <translation id="610101264611565198">正在將 <ph name="FILE_NAME" /> 移至「<ph name="FOLDER_NAME" />」</translation>
 <translation id="61118516107968648">CSV 文字</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">旁遮普文</translation>
 <translation id="6224240818060029162">丹麥文</translation>
 <translation id="6224253798271602650">將「<ph name="DRIVE_NAME" />」格式化</translation>
-<translation id="6224665423283788195">Zstandard 壓縮的封存檔</translation>
 <translation id="6227235786875481728">無法播放這個檔案。</translation>
 <translation id="6241349547798190358">荷蘭文 (比利時)</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，連線</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">畢業生</translation>
 <translation id="8912078710089354287">搖尾巴的狗</translation>
 <translation id="8919081441417203123">丹麥文</translation>
-<translation id="8965273390142984105">LZOP 壓縮檔</translation>
 <translation id="8965697826696209160">空間不足。</translation>
 <translation id="8997962250644902079">中文 (繁體拼音)</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>

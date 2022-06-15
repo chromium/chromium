@@ -20,7 +20,6 @@
 <translation id="115443833402798225">హాంగుల్ అన్‌మాటి</translation>
 <translation id="1155759005174418845">కేటలాన్</translation>
 <translation id="1168100932582989117">Google పేరు సర్వర్‌లు</translation>
-<translation id="1171082344678443012">XZ కుదించిన ఆర్కైవ్</translation>
 <translation id="1172970565351728681">దాదాపు <ph name="REMAINING_TIME" /> మిగిలి ఉంది</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, వివరాలు</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">తరువాత</translation>
 <translation id="1209796539517632982">ఆటోమేటిక్‌ పేరు సర్వర్‌లు</translation>
 <translation id="1210831758834677569">లావో</translation>
-<translation id="1223825810409523901">Chrome ఎక్స్‌టెన్షన్</translation>
 <translation id="1243314992276662751">అప్‌లోడ్ చేయి</translation>
 <translation id="1249250836236328755">కళా ప్రక్రియ</translation>
 <translation id="1254593899333212300">ప్రత్యక్ష ఇంటర్నెట్ కనెక్షన్</translation>
 <translation id="1272293450992660632">పిన్ విలువలు సరిపోలలేదు.</translation>
-<translation id="127650757582748357">కుదించిన BZIP2 ఆర్కైవ్</translation>
 <translation id="1280820357415527819">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="1291603679744561561">SIM లాక్ చేయబడింది</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">షేర్ చేసిన నెట్‌వర్క్ కాన్ఫిగరేషన్‌లను మార్చడం అనుమతించబడదు</translation>
 <translation id="1665611772925418501">ఫైల్‌ను సవరించడం సాధ్యపడదు.</translation>
 <translation id="1673103856845176271">భద్రతా కారణాల దృష్ట్యా ఫైల్‌ను యాక్సెస్‌ చేయడం సాధ్యపడదు.</translation>
-<translation id="16762847117768727">ISO ఇమేజ్</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">బైకింగ్</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">చిత్ర రిజల్యూషన్</translation>
 <translation id="1972984168337863910">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు విస్తరించు</translation>
 <translation id="1995337122023280937">ఫైల్ లొకేషన్‌కు వెళ్ళు</translation>
-<translation id="1996806196681857869">Z కుదించిన ఆర్కైవ్</translation>
 <translation id="2001796770603320721">డిస్క్‌లో నిర్వహించు</translation>
 <translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో నిల్వ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="2025955442973426285">టైగ్రిన్యా</translation>
-<translation id="2028997212275086731">RAR ఆర్కైవ్</translation>
 <translation id="2037845485764049925">రష్యన్</translation>
 <translation id="2044023416777079300">మోడెమ్ రిజిస్టర్ చేయబడలేదు</translation>
 <translation id="2046702855113914483">రామెన్</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">జున్ను</translation>
 <translation id="2781645665747935084">బెల్జియన్</translation>
 <translation id="2782104745158847185">Linux అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
-<translation id="2788520643285360081">7-Zip ఆర్కైవ్</translation>
 <translation id="2803375539583399270">PINను నమోదు చేయండి</translation>
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
-<translation id="2822595620066756134">కుదించిన Gzip ఆర్కైవ్</translation>
 <translation id="2830077785865012357">చైనీస్ జుయిన్</translation>
 <translation id="2843806747483486897">డిఫాల్ట్‌ను మార్చు...</translation>
 <translation id="2850124913210091882">బ్యాకప్ చేయి</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">లిథువేనియన్</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచడం సాధ్యం కాలేదు</translation>
-<translation id="3593874215226880809">కుదించిన LZIP ఆర్కైవ్</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">కెనడియెన్ ఫ్రెంచ్</translation>
 <translation id="3606220979431771195">టర్కిష్-ఎఫ్</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
-<translation id="3703620396751288986">ZIP ఆర్కైవ్</translation>
 <translation id="3726463242007121105">పరికరం తెరవడం సాధ్యం కాదు ఎందుకంటే దాని ఫైల్‌సిస్టమ్‌కు మద్దతు లేదు.</translation>
 <translation id="3727148787322499904">ఈ సెట్టింగ్‌ను మార్చడం వలన అన్ని భాగస్వామ్య నెట్‌వర్క్‌లు ప్రభావితం అవుతాయి</translation>
 <translation id="3737576078404241332">సైడ్‌బార్ నుండి తీసివేయండి</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Qwerty కీబోర్డ్‌తో చెక్(Czech)</translation>
 <translation id="4656777537938206294">ఫైళ్లను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచండి</translation>
 <translation id="4658782175094886150">మంచు ప్రదేశంలో ఉన్న వ్యక్తి</translation>
-<translation id="4661996069183330363">TAR ఆర్కైవ్</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' యొక్క సభ్యులతో ఈ అంశాలను షేర్ చేస్తే మినహా వారు యాక్సెస్‌ను కోల్పోతారు.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">స్వీడిష్</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, కనెక్ట్ కాలేదు</translation>
 <translation id="6074825444536523002">Google ఫారమ్</translation>
 <translation id="6079871810119356840">Qwerty కీబోర్డ్‌తో హంగేరియన్</translation>
-<translation id="6082256976217156453">LZMA కుదించిన ఆర్కైవ్</translation>
 <translation id="6096979789310008754">శోధన వచనం క్లియర్ చేయబడింది, అన్ని ఫైళ్లు మరియు ఫోల్డర్‌లు చూపబడుతున్నాయి.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" />ను <ph name="FOLDER_NAME" />కు తరలిస్తోంది</translation>
 <translation id="61118516107968648">CSV టెక్స్ట్</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">పంజాబీ</translation>
 <translation id="6224240818060029162">డేనిష్</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయండి</translation>
-<translation id="6224665423283788195">Zstandard కుదించిన ఆర్కైవ్</translation>
 <translation id="6227235786875481728">ఈ ఫైల్‌ని ప్లే చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="6241349547798190358">డచ్ (బెల్జియం)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">గ్రాడ్యుయేట్</translation>
 <translation id="8912078710089354287">తోక ఊపుతున్న కుక్క</translation>
 <translation id="8919081441417203123">డేనిష్</translation>
-<translation id="8965273390142984105">కుదించిన LZOP ఆర్కైవ్</translation>
 <translation id="8965697826696209160">తగినంత ఖాళీ లేదు.</translation>
 <translation id="8997962250644902079">చైనీస్ (సాంప్రదాయ) పిన్యిన్</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>

@@ -291,6 +291,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1662550410081243962">Salvar e preencher as formas de pagamento</translation>
 <translation id="1663943134801823270">As informações dos cartões e os endereços foram acessadas pelo Chrome. É possível gerenciar essas opções em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> de agora em diante.</translation>
+<translation id="1673886523110456987">Finalize a compra com o <ph name="CARD_DETAIL" /> para aproveitar a oferta</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Borda menor primeiro</translation>
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
@@ -1103,6 +1104,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3986705137476756801">Desativar "Legenda instantânea" por enquanto</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Ajustar desvio</translation>
+<translation id="3992684624889376114">Sobre esta página</translation>
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que uma política de origem seja aplicada a todas as solicitações feitas a ele, mas não é possível aplicá-la no momento.</translation>
 <translation id="4006465311664329701">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que você imprime é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, ele pode ser verificado em busca de dados sensíveis.</translation>
@@ -1548,6 +1550,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5171045022955879922">Pesquisar ou digitar URL</translation>
 <translation id="5171689220826475070">Fanfold European</translation>
 <translation id="5172758083709347301">Máquina</translation>
+<translation id="5177076414499237632">Saiba mais sobre a origem e o assunto desta página</translation>
 <translation id="5179510805599951267">Não está em <ph name="ORIGINAL_LANGUAGE" />? Informe este erro</translation>
 <translation id="518639307526414276">Produtos para alimentação e bem-estar de animais de estimação</translation>
 <translation id="5190835502935405962">Barra de favoritos</translation>

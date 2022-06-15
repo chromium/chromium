@@ -20,7 +20,6 @@
 <translation id="115443833402798225">I-Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Isi-Catalan</translation>
 <translation id="1168100932582989117">Amaseva egama le-Google</translation>
-<translation id="1171082344678443012">Ingobo yomlando eminyanisiwe ye-XZ</translation>
 <translation id="1172970565351728681">Cishe okungu-<ph name="REMAINING_TIME" /> okusele</translation>
 <translation id="1173894706177603556">Qamba kabusha</translation>
 <translation id="1173916544412572294">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, ibhethri lefoni <ph name="BATTERY_STATUS" />%, imininingwane</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Okulandelayo</translation>
 <translation id="1209796539517632982">Amaseva wegama elizenzakalelayo</translation>
 <translation id="1210831758834677569">Isi-Lao</translation>
-<translation id="1223825810409523901">Isandiso se-Chrome</translation>
 <translation id="1243314992276662751">Layisha</translation>
 <translation id="1249250836236328755">Uhlobo</translation>
 <translation id="1254593899333212300">Qondisa ukuxhumeka kwe-inthanethi</translation>
 <translation id="1272293450992660632">Amavelu ephinikhodi awafani.</translation>
-<translation id="127650757582748357">Ingobo yomlando eminyanisiwe ye-BZIP2</translation>
 <translation id="1280820357415527819">Isesha amanethiwekhi eselula</translation>
 <translation id="1291603679744561561">I-SIM Ikhiyiwe</translation>
 <translation id="1293556467332435079">Amafayela</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Ukushintsha ukulungiselelwa kwenethiwekhi okwabiwe akuvunyelwe</translation>
 <translation id="1665611772925418501">Ifayela ayikwazi ukuguqulwa.</translation>
 <translation id="1673103856845176271">Ifayela alikwazanga ukufinyelelwa ngenxa yezizathu zokuvikela.</translation>
-<translation id="16762847117768727">Umfanekiso we-ISO</translation>
 <translation id="169515659049020177">U-Shift</translation>
 <translation id="1715848075824334077">Ukuhamba ngebhayisikili</translation>
 <translation id="1722487484194605434">Izipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Ukulungiswa kwesithombe</translation>
 <translation id="1972984168337863910">Nweba amaphaneli wempendulo yamafayela</translation>
 <translation id="1995337122023280937">Iya endaweni yefayela</translation>
-<translation id="1996806196681857869">Ingobo yomlando eminyanisiwe ye-Z</translation>
 <translation id="2001796770603320721">Phatha kuDrayivu</translation>
 <translation id="2009067268969781306">Ukufometha idrayivu kuzosula yonke idatha elondolozwe kuyo. Lesi senzo asikwazi ukuhlehliswa.</translation>
 <translation id="2025955442973426285">Isi-Tigrinya</translation>
-<translation id="2028997212275086731">Ingobo yomlando ye-RAR</translation>
 <translation id="2037845485764049925">Isi-Russian</translation>
 <translation id="2044023416777079300">Imodemu ayibhaliswanga</translation>
 <translation id="2046702855113914483">I-Ramen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Ushizi</translation>
 <translation id="2781645665747935084">Isi-Belgian</translation>
 <translation id="2782104745158847185">Iphutha ukufaka uhlelo lokusebenza le-Linux</translation>
-<translation id="2788520643285360081">Ingobo yomlando ye-7-ZIP</translation>
 <translation id="2803375539583399270">Faka iphinikhodi</translation>
 <translation id="2820957248982571256">Iyaskena...</translation>
-<translation id="2822595620066756134">Ingobo yomlando eminyanisiwe ye-GZIP</translation>
 <translation id="2830077785865012357">I-Chinese Zhuyin</translation>
 <translation id="2843806747483486897">Shintsha okuzenzakalelayo...</translation>
 <translation id="2850124913210091882">Yenza isipele</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Isi-Lithuanian</translation>
 <translation id="3587482841069643663">Konke</translation>
 <translation id="3592251141500063301">Ayikwazanga ukwenza i-<ph name="FILE_NAME" /> itholakale ngokungaxhunyiwe kwi-inthanethi</translation>
-<translation id="3593874215226880809">Ingobo yomlando eminyanisiwe ye-LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Isi-Canadian French</translation>
 <translation id="3606220979431771195">I-Turkish-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Khansela i-<ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Akusetshenzisiwe <ph name="CONNECTION_STATUS" />, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Imininingwane</translation>
 <translation id="3691184985318546178">Isi-Sinhala</translation>
-<translation id="3703620396751288986">Ingobo yomlando ye-ZIP</translation>
 <translation id="3726463242007121105">Le divayisi ayikwazi ukuvulwa ngoba isistimu yefayela layo ayisekelwe.</translation>
 <translation id="3727148787322499904">Ukushintsha lesi silungiselelo kuzothinta onke amanethiwekhi abiwe</translation>
 <translation id="3737576078404241332">Susa kwibha eseceleni</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Isi-Czech esinekhibhodi ye-Qwerty</translation>
 <translation id="4656777537938206294">Yenza amafayela atholakala ngokungaxhunyiwe kwi-inthanethi</translation>
 <translation id="4658782175094886150">Umuntu okwisthwathwa</translation>
-<translation id="4661996069183330363">Ingobo yomlando ye-TAR</translation>
 <translation id="4669606053856530811">Amalungu e-'<ph name="SOURCE_NAME" />' azolahlekelwa ukufinyelela ngaphandle kokuthi lezi zinto zabiwe nabo.</translation>
 <translation id="467809019005607715">Google Amaslayidi</translation>
 <translation id="4690246192099372265">Isi-Swedish</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013">Inethiwekhi ye-<ph name="NETWORK_TYPE" /> ayixhunyiwe</translation>
 <translation id="6074825444536523002">Ifomu le-Google</translation>
 <translation id="6079871810119356840">Isi-Hungarian esinekhibhodi ye-Qwerty</translation>
-<translation id="6082256976217156453">Ingobo yomlando eminyanisiwe ye-LZMA</translation>
 <translation id="6096979789310008754">Umbhalo wosesho usuliwe, kuboniswa wonke amafaela namafolda.</translation>
 <translation id="610101264611565198">Ihambisa i-<ph name="FILE_NAME" /> ku-<ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Umbhalo we-CSV</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">Isi-Phunjabi</translation>
 <translation id="6224240818060029162">Isi-Danish</translation>
 <translation id="6224253798271602650">Ifomethi <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Ingobo yomlando eminyanisiwe ye-Zstandard</translation>
 <translation id="6227235786875481728">Leli fayela alikwazanga ukudlalwa.</translation>
 <translation id="6241349547798190358">Isi-Dutch (Belgium)</translation>
 <translation id="6267547857941397424">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, Ibhethri lefoni <ph name="BATTERY_STATUS" />%, xhuma</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">Thola iziqu</translation>
 <translation id="8912078710089354287">Inja enyakazisa umsila</translation>
 <translation id="8919081441417203123">Isi-Danish</translation>
-<translation id="8965273390142984105">Ingobo yomlando eminyanisiwe ye-LZOP</translation>
 <translation id="8965697826696209160">Asikho isikhala esanele.</translation>
 <translation id="8997962250644902079">Isi-Chinese (Traditional) Pinyin</translation>
 <translation id="9003940392834790328">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, kuphethwe umlawuli wakho, imininingwane</translation>

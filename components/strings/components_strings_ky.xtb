@@ -291,6 +291,7 @@
 <translation id="1662550410081243962">Төлөм ыкмаларын сактоо жана автоматтык түрдө толтуруу</translation>
 <translation id="1663943134801823270">Карточкалар жана даректер Chrome’дон алынган. Аларды <ph name="BEGIN_LINK" />Жөндөөлөрдөн<ph name="END_LINK" /> башкарсаңыз болот.</translation>
 <translation id="1671391448414634642">Мындан кийин <ph name="SOURCE_LANGUAGE" /> тилиндеги барактар <ph name="TARGET_LANGUAGE" /> тилине которулат.</translation>
+<translation id="1673886523110456987">Бул сунушту колдонуу үчүн <ph name="CARD_DETAIL" /> картасын колдонуп көрүңүз</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тилинен <ph name="TARGET_LANGUAGE" /> тилине</translation>
 <translation id="1682696192498422849">Биринчи туурасы боюнча</translation>
 <translation id="168693727862418163">Бул саясаттын мааниси схемасына дал келбей калды, андыктан этибарга алынбайт.</translation>
@@ -590,6 +591,7 @@
 <translation id="2523886232349826891">Ушул түзмөккө гана сакталды</translation>
 <translation id="2524461107774643265">Көбүрөөк маалымат кошуу</translation>
 <translation id="2529899080962247600">Бул талаага киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек. Бардык андан кийинки жазмалар четке кагылат.</translation>
+<translation id="253493526287553278">Промокоддун чоо-жайын көрүү</translation>
 <translation id="2535585790302968248">Жаңы Жашыруун өтмөктү ачып, купуя серептеңиз</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{жана дагы 1}other{жана дагы #}}</translation>
 <translation id="2536110899380797252">Дарегин кошуу</translation>
@@ -1105,6 +1107,7 @@
 <translation id="3986705137476756801">Ыкчам коштомо жазууларды азырынча өчүрүү</translation>
 <translation id="3987940399970879459">1 Мб азыраак</translation>
 <translation id="3990250421422698716">Оффсеттик басып чыгаруу</translation>
+<translation id="3992684624889376114">Бул бет жөнүндө</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> сайты бардык кирүү сурамдары үчүн баштапкы саясаты
     колдонулсун деп суранды, бирок бул саясатты учурда колдонууга болбойт.</translation>
 <translation id="4006465311664329701">Google Pay'ди колдонгон төлөм ыкмалары, сунуштар жана даректер</translation>
@@ -1280,6 +1283,7 @@
 <translation id="4435702339979719576">Ачык кат)</translation>
 <translation id="443673843213245140">Прокси пайдалануу мүмкүнчүлүгү өчүрүлгөнү менен, ачык-айкын прокси конфигурациясы белгиленген.</translation>
 <translation id="4441832193888514600">Четке кагылды, анткени саясатты булуттагы колдонуучулар үчүн саясат катары гана коюуга болот.</translation>
+<translation id="4442470707340296952">Chrome өтмөктөрү</translation>
 <translation id="4450893287417543264">Экинчи көрүнбөсүн</translation>
 <translation id="4451135742916150903">HID түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="4452328064229197696">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Google'дун Сырсөздөрдү башкаргычы сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
@@ -1554,6 +1558,7 @@
 <translation id="5171045022955879922">URL издеңиз же териңиз</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Шайман</translation>
+<translation id="5177076414499237632">Бул барактын булагы жана темасы жөнүндө маалымат алыңыз</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тилинде эмеспи? Бул ката тууралуу кабарлаңыз</translation>
 <translation id="518639307526414276">Үй жаныбарлары үчүн тамак-аш жана кам көрүү</translation>
 <translation id="5190835502935405962">Кыстармалар тилкеси</translation>

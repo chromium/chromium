@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">Chromeৰ কিছুমান সুবিধা আৰু উপলব্ধ হৈ নাথাকিব</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা আগতীয়াকৈ ল’ড কৰক</translation>
+<translation id="2886836735871983413">আপুনি ৱেব ব্ৰাউজ কৰিলে ইয়াত ছাইটসমূহৰ এখন সূচী প্ৰদৰ্শিত হ’ব</translation>
 <translation id="2888126860611144412">Chromeৰ বিষয়ে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা ল’ড হোৱা কার্যটো বন্ধ কৰক</translation>
 <translation id="2892647708214602204">এই ফাইলটো সাজু হ’লে আপুনি এটা জাননী দেখিবলৈ পাব</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">অন্য ডিভাইচৰ পৰা শ্বেয়াৰ কৰা পাঠ</translation>
 <translation id="2989523299700148168">শেহতীয়াকৈ চোৱা</translation>
 <translation id="2992473221983447149">প্ৰতিচ্ছবিৰ বিৱৰণ</translation>
+<translation id="2994959273484668146"><ph name="DOMAIN" /> আঁতৰাওক</translation>
 <translation id="2996291259634659425">পাছফ্ৰেজ সৃষ্টি কৰক</translation>
 <translation id="2996809686854298943">URL আৱশ্যক</translation>
 <translation id="2997081575621687554">Googleৰ কোনো ছাইটে নিজৰ পৃষ্ঠাত থকা লিংকসমূহ গোপনে আগতীয়াকৈ ল’ড কৰিবলৈ অনুৰোধ কৰিলে Chromeএ কুকি অবিহনে Google ছাৰ্ভাৰৰ জৰিয়তে পৃষ্ঠাসমূহ এনক্ৰিপ্ট কৰি আগতীয়াকৈ ল’ড কৰে। ই আগতীয়াকৈ ল’ড কৰা ছাইটৰ পৰা আপোনাৰ পৰিচয় লুকুৱায়।</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">অনুগ্ৰহ কৰি এইটো কোনো মান্য প্ৰদানকাৰীৰ বুলি সত্যাপন কৰক অথবা পাছত আকৌ চেষ্টা কৰক</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861633093716975811">জনপ্ৰিয় ভিডিঅ’</translation>
+<translation id="3874520961715512166">ছাইট আঁতৰোৱা হৈছে</translation>
 <translation id="3892148308691398805">পাঠৰ প্ৰতিলিপি কৰক</translation>
 <translation id="3894427358181296146">ফ’ল্ডাৰ যোগ কৰক</translation>
 <translation id="3899682235662194879">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰক</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">এপ্ ডেটা মচিবনে?</translation>
 <translation id="4096227151372679484">বুকমাৰ্ক ছেভ কৰাৰ ফ্ল’ অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="4099578267706723511">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই Chrome ক অধিক উন্নত কৰাত সহায় কৰক।</translation>
+<translation id="4101475238162928417">আপোনাৰ অন্য ডিভাইচসমূহত আপোনাৰ পাছৱৰ্ড, বুকমাৰ্ক আৰু অধিক পাবলৈ ছিংক কৰক</translation>
 <translation id="410351446219883937">স্বয়ংক্রিয় প্লে’</translation>
 <translation id="4106587138345390261">Chromeএ এনে কিছুমান নতুন সুবিধা অন্বেষণ কৰি আছে, যিবোৰে ছাইটসমূহক আপোনাৰ তথ্য কমকৈ ব্যৱহাৰ কৰি একেই ব্ৰাউজিঙৰ অভিজ্ঞতা প্ৰদান কৰিবলৈ দিয়ে</translation>
 <translation id="4108314971463891922">ফ’ল’ কৰক</translation>
@@ -728,6 +732,7 @@
 <translation id="4985248278475639481">বিজ্ঞাপনৰ ব্যক্তিগতকৃত কৰাৰ বিষয়ে</translation>
 <translation id="4987271110129728827">সেই পৃষ্ঠাখন বিচাৰি পোৱা নাই। আপোনাৰ বানান পৰীক্ষা কৰক অথবা ৱেবত সন্ধান কৰি চাওক।</translation>
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
+<translation id="499724277181351974">নেভিগে’ট কৰক: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ইয়াত এই ছাইটটো ফ’ল’ কৰক</translation>
 <translation id="500351648694011114">অধিক সহজে ব্ৰাউজ কৰক</translation>
 <translation id="5004416275253351869">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
@@ -977,6 +982,7 @@
 ছাইট এটাৰ সৈতে আপোনাৰ ভাব-বিনিময়ৰ ভিত্তিত, যেনে নিয়মিতভাৱে একাউণ্ট এটাত ছাইন ইন কৰা ইত্যাদি, ছাইটটোৱে আপোনাৰ ব্ৰাউজাৰত এটা বিশ্বস্ত ট’কেন প্ৰদান কৰিব পাৰে। পাছত, আপুনি চোৱা অন্য ছাইটে যদি পৰীক্ষা কৰি এনে বিশ্বস্ত ট’কেন দেখা পায়, তেন্তে সেইবিলাকে আপোনাক ব’টৰ সলনি ব্যক্তি হিচাপে গণ্য কৰাৰ অধিক সম্ভাৱনা থাকে।
 
 বিশ্বস্ত ট’কেনসমূহে ৱেবত গোপনীয়তা উন্নত কৰে আৰু সেইবোৰক আপোনাৰ পৰিচয় জানিবলৈ ব্যৱহাৰ কৰিব পৰা নাযায়।</translation>
+<translation id="6394791151443660613">সন্ধান কৰক: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">লিংক</translation>
 <translation id="6397616442223433927">আকৌ অনলাইন হৈছে</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />ত <ph name="ERROR_CODE" /></translation>
@@ -1191,6 +1197,7 @@
 <translation id="749294055653435199">এই ডিভাইচটোত Google Lens উপলব্ধ নহয়</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> ( <ph name="TIME_SINCE_UPDATE" />ত আপডে'ট কৰা হৈছিল)</translation>
 <translation id="7498271377022651285">অনুগ্ৰহ কৰি অপেক্ষা কৰক…</translation>
+<translation id="7502234197872745058">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK1" />Chromeৰ পৰা ছাইন আউট কৰক<ph name="END_LINK1" />।</translation>
 <translation id="750228856503700085">আপডে’ট উপলব্ধ নহয়</translation>
 <translation id="7507207699631365376">এই প্ৰদানকাৰীৰ <ph name="BEGIN_LINK" />গোপনীয়তাৰ নীতি<ph name="END_LINK" /> চাওক</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>

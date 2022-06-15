@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Lesezeichen exportieren</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="1009476156254802388"><ph name="WEB_DRIVE" />-Speicherort</translation>
+<translation id="1009663062402466586">Spielsteuerung jetzt verfügbar</translation>
 <translation id="1010498023906173788">Dieser Tab ist mit einer seriellen Schnittstelle verbunden.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Seite reagiert nicht}other{Seiten reagieren nicht}}</translation>
 <translation id="1011355516189274711">Lautstärke der Sprachausgabe</translation>
@@ -843,6 +844,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
 <translation id="1796105431091975902">Ansible-Playbook zum Hinzufügen auswählen</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
+<translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="1800502858278951817">Keine Erweiterungen haben angefragt, Daten auf <ph name="SITE_NAME" /> abzurufen und zu ändern</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
@@ -1004,6 +1006,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1940546824932169984">Verbundene Geräte</translation>
 <translation id="1941410638996203291">Startzeit: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Tastenbelegung anzeigen</translation>
 <translation id="1942128823046546853">Alle deine Daten auf allen Websites lesen und ändern</translation>
 <translation id="1942600407708803723">Beim Zuklappen herunterfahren</translation>
 <translation id="1944528062465413897">Bluetooth-Kopplungscode:</translation>
@@ -1413,6 +1416,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
     Falls du dich später gegen Voice Match entscheidest, entferne die Funktion einfach in den Assistant-Einstellungen deines Kindes. Unter <ph name="VOICE_MATCH_SETTINGS_URL" /> kannst du die Audioclips, die dein Kind während der Voice Match-Einrichtung aufgenommen hat, im Konto deines Kindes aufrufen oder löschen.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">Folgende Tasten werden nicht unterstützt: Tabulatortaste, Umschalttaste, Steuerungtaste, Esc-Taste, Feststelltaste, Lautstärketaste</translation>
 <translation id="2309620859903500144">Diese Website darf nicht auf meine Bewegungs- oder Lichtsensoren zugreifen.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Seiten-URL</translation>
@@ -2737,6 +2741,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3613422051106148727">In &amp;neuem Tab öffnen</translation>
 <translation id="3615073365085224194">Berühre den Fingerabdrucksensor mit dem Finger</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> wird gegenwärtig gescannt</translation>
+<translation id="3615596877979647433">Keine Taste zugewiesen. Drücke zum Anpassen eine Taste auf der Tastatur.</translation>
 <translation id="3616741288025931835">&amp;Browserdaten löschen...</translation>
 <translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -2892,6 +2897,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3764753550716962406">Zulassen, dass Google deinen Einkaufswagen verwendet, um verfügbare Rabatte zu finden?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird an <ph name="DEVICE_NAME" /> gesendet}other{<ph name="ATTACHMENTS" /> werden an <ph name="DEVICE_NAME" /> gesendet}}</translation>
 <translation id="3765246971671567135">Richtlinie für den Offlinedemomodus konnte nicht verarbeitet werden.</translation>
+<translation id="3766687283066842296">Weitere Informationen zu Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Eiscreme</translation>
 <translation id="3771290962915251154">Diese Einstellung ist deaktiviert, weil die Jugendschutzeinstellungen aktiviert sind</translation>
@@ -3332,6 +3338,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4193836101014293726">Dieses Profil kann nicht gelöscht werden</translation>
 <translation id="419427585139779713">Jeweils eine Silbe eingeben</translation>
 <translation id="4194570336751258953">Touchpad-Klick aktivieren</translation>
+<translation id="4195378859392041564">Klicke mit der Maus auf eine Taste und drücke dann zum Anpassen eine Taste auf der Tastatur</translation>
 <translation id="4195421689821407315">Unsicherer Download</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
@@ -3397,6 +3404,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4258348331913189841">Dateisysteme</translation>
 <translation id="4259388776256904261">Das kann etwas dauern</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> könnte schädlich sein. Soll sie zum Scannen an das erweiterte Sicherheitsprogramm von Google gesendet werden? Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
+<translation id="4260699894265914672">Zum Anpassen Taste auf der Tastatur drücken</translation>
 <translation id="4261429981378979799">Erweiterungsberechtigungen</translation>
 <translation id="4262004481148703251">Warnung schließen</translation>
 <translation id="4263223596040212967">Prüfe dein Tastaturlayout und versuche es noch einmal.</translation>
@@ -4571,6 +4579,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5449716055534515760">Fen&amp;ster schließen</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funktioniert im Offlinemodus)</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Weitere Suchergebnisse einblenden</translation>
 <translation id="5455603387986949153">Seriennummern von Chrome OS Flex-Geräten und Komponenten lesen.</translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5457459357461771897">Fotos, Musik und andere Medien auf deinem Computer lesen und löschen</translation>
@@ -7041,6 +7050,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Suchst du die Browser-Komponenten? Gehe zu</translation>
 <translation id="7903345046358933331">Die Seite reagiert nicht mehr. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
+<translation id="7903429136755645827">Zum Anpassen der Spielsteuerung klicken</translation>
 <translation id="7903742244674067440">Deine gespeicherten Zertifikate identifizieren diese Zertifizierungsstellen</translation>
 <translation id="7903925330883316394">Dienstprogramm: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Hier kannst du Linux-Ports für andere Geräte in deinem Netzwerk verfügbar machen.</translation>
@@ -8232,6 +8242,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9078316009970372699">Instant Tethering deaktivieren</translation>
 <translation id="9078842827190780028">Mehr Suchergebnisse in der Seitenleiste sehen</translation>
 <translation id="9079267182985899251">Diese Option wird bald nicht mehr unterstützt. Nutze <ph name="GOOGLE_MEET" />, um einen Tab einzublenden.</translation>
+<translation id="9080971985541434310">schätzt deine Interessen ein – Chrome kann deine Interessen einschätzen</translation>
 <translation id="9081543426177426948">Besuchte Websites werden im Inkognitomodus nicht gespeichert</translation>
 <translation id="9084064520949870008">In Fenster öffnen</translation>
 <translation id="9085256200913095638">Ausgewählten Tab duplizieren</translation>

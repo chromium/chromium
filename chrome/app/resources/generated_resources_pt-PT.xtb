@@ -2576,6 +2576,7 @@ Pretende pará-lo?</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> poderá ver <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostas rápidas do Assistente Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344537926140058498">A sua organização bloqueou este ficheiro porque tem conteúdo sensível ou perigoso. Peça ao proprietário para o corrigir.</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Ler os seus dados em vários Sites</translation>
@@ -3134,6 +3135,7 @@ Pretende pará-lo?</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O utilizador não é permitido</translation>
+<translation id="3973062011568994448">Para importar palavras-passe, selecione um ficheiro CSV.</translation>
 <translation id="3973660817924297510">A verificar palavras-passe (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Use "Seguinte" para mover o foco para a frente no ecrã</translation>
 <translation id="3975201861340929143">Explicação</translation>
@@ -4602,6 +4604,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5466374726908360271">Co&amp;lar e pesquisar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Bloqueou <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">À procura de partilhas de ficheiros…</translation>
+<translation id="5468881191994555667">Escolher ficheiro</translation>
 <translation id="5469852975082458401">Pode navegar pelas páginas com um cursor de texto. Prima F7 para desativar esta opção.</translation>
 <translation id="5470735824776589490">É necessário reiniciar antes de ser possível repor o dispositivo com o Powerwash. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Olá! Sou a sua voz para a síntese de voz.</translation>
@@ -6335,6 +6338,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7191159667348037">Impressora desconhecida (USB)</translation>
 <translation id="7193051357671784796">Esta aplicação foi adicionada pela sua organização. Reinicie a aplicação para concluir a instalação da mesma.</translation>
 <translation id="7193374945610105795">Sem palavras-passe guardadas para <ph name="ORIGIN" /></translation>
+<translation id="7194873994243265344">A sua organização bloqueou este ficheiro porque está encriptado. Peça ao proprietário para o desencriptar.</translation>
 <translation id="7196913789568937443">Faça uma cópia de segurança no Google Drive. Restaure os dados ou mude de dispositivo facilmente em qualquer altura. A cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google. <ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" />.</translation>
 <translation id="7197190419934240522">Obtenha a Pesquisa Google e a inteligência da Google sempre que navegar</translation>
 <translation id="719791532916917144">Atalho de teclado</translation>
@@ -6353,6 +6357,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7211783048245131419">Ainda não foi atribuído qualquer comutador</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
 <translation id="7213903639823314449">Motor de pesquisa utilizado na barra de endereço</translation>
+<translation id="721490496276866468">Importar palavras-passe</translation>
 <translation id="7216595297012131718">Ordene idiomas com base na sua preferência</translation>
 <translation id="7219473482981809164">Encontrámos vários perfis disponíveis para transferência. Selecione os que quer transferir antes de prosseguir.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Sem palavras-passe fracas.}=1{1 palavra-passe fraca.}other{{NUM_WEAK} palavras-passe fracas.}}</translation>
@@ -6986,6 +6991,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7826190688224781865">Código do ID da loja do retalhista</translation>
 <translation id="7826249772873145665">Depuração do ADB desativada</translation>
 <translation id="7826254698725248775">O identificador do dispositivo está em conflito.</translation>
+<translation id="7828642077514646543">Erro: não foi possível descodificar o certificado</translation>
 <translation id="7828731929332799387">Esta ação eliminará todos os cookies e dados de sites disponíveis em contextos de terceiros. Pretende continuar?</translation>
 <translation id="7829877209233347340">Peça a um dos seus pais para lhe conceder autorização para adicionar uma conta escolar.</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7948,6 +7954,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8775653927968399786">{0,plural, =1{O dispositivo <ph name="DEVICE_TYPE" /> será bloqueado automaticamente dentro de # segundo.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}other{O dispositivo <ph name="DEVICE_TYPE" /> será bloqueado automaticamente dentro de # segundos.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.}}</translation>
+<translation id="8776294611668764629">A sua organização bloqueou este ficheiro porque o mesmo é demasiado grande para uma verificação de segurança. Pode abrir ficheiros até 50 MB.</translation>
 <translation id="8777628254805677039">palavra-passe de raiz</translation>
 <translation id="8779944680596936487">Os sites apenas podem utilizar cookies para ver a sua atividade de navegação no respetivo site</translation>
 <translation id="8780123805589053431">Obter descrições de imagens a partir do Google</translation>

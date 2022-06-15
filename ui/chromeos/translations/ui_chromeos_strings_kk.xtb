@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Ханғыл (Ahnmatae)</translation>
 <translation id="1155759005174418845">каталан</translation>
 <translation id="1168100932582989117">Google ат серверлері</translation>
-<translation id="1171082344678443012">XZ сығылған мұрағат файлы</translation>
 <translation id="1172970565351728681">Шамамен <ph name="REMAINING_TIME" /> қалды.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1209796539517632982">Автоматты атау серверлері</translation>
 <translation id="1210831758834677569">Лаос</translation>
-<translation id="1223825810409523901">Chrome кеңейтімі</translation>
 <translation id="1243314992276662751">Жүктеп салу</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
 <translation id="1272293450992660632">PIN кодтары сәйкес келмейді.</translation>
-<translation id="127650757582748357">BZIP2 сығылған мұрағаты</translation>
 <translation id="1280820357415527819">Мобильдік желілер ізделуде</translation>
 <translation id="1291603679744561561">SIM картасы құлыпталған.</translation>
 <translation id="1293556467332435079">Файлдар</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Ортақ желі конфигурацияларын өзгертуге рұқсат жоқ</translation>
 <translation id="1665611772925418501">Файлды өзгерту мүмкін болмады.</translation>
 <translation id="1673103856845176271">Қауіпсіздік себептеріне байланысты файлға кіру мүмкін емес.</translation>
-<translation id="16762847117768727">ISO кескіні</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Велосипедші</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> элемент қысылуда…</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Кескін ажыратымдылығы</translation>
 <translation id="1972984168337863910">Файлдар пікірі панельдерін жаю</translation>
 <translation id="1995337122023280937">Файл орнына өту</translation>
-<translation id="1996806196681857869">Z сығылған мұрағаты</translation>
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
-<translation id="2028997212275086731">RAR мұрағаты</translation>
 <translation id="2037845485764049925">Орыс</translation>
 <translation id="2044023416777079300">Модем тіркелмеген.</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Ірімшік</translation>
 <translation id="2781645665747935084">Бельгиялық</translation>
 <translation id="2782104745158847185">Linux қолданбасын орнату кезінде қате кетті</translation>
-<translation id="2788520643285360081">7-Zip мұрағаты</translation>
 <translation id="2803375539583399270">PIN кодын енгізіңіз</translation>
 <translation id="2820957248982571256">Іздеуде...</translation>
-<translation id="2822595620066756134">GZIP сығылған мұрағаты</translation>
 <translation id="2830077785865012357">Қытай (чжуинь)</translation>
 <translation id="2843806747483486897">Әдепкі параметрді өзгерту…</translation>
 <translation id="2850124913210091882">Сақтық көшірме жасау</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">литва</translation>
 <translation id="3587482841069643663">Барлығы</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> файлын офлайн режимде қолжетімді ету мүмкін болмады.</translation>
-<translation id="3593874215226880809">LZIP сығылған мұрағаты</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Француз (Канадалық)</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Келесі әрекеттен бас тарту: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, өшірілді, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="3691184985318546178">Сингал</translation>
-<translation id="3703620396751288986">ZIP мұрағаты</translation>
 <translation id="3726463242007121105">Бұл құрылғыны ашу мүмкін емес, себебі оның файл жүйесіне қолдау көрсетілмеген.</translation>
 <translation id="3727148787322499904">Бұл параметрдің өзгерісі барлық ортақ желілерге әсерін етеді</translation>
 <translation id="3737576078404241332">Жылжыту жолағынан өшіру</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Чех (QWERTY пернетақтасымен)</translation>
 <translation id="4656777537938206294">Файлдарды офлайн режимде қолжетімді ету</translation>
 <translation id="4658782175094886150">Қардағы адам</translation>
-<translation id="4661996069183330363">TAR мұрағаты</translation>
 <translation id="4669606053856530811">Бұл файлдар "<ph name="SOURCE_NAME" />" мүшелерімен бөлісілмейтін болса, олар кіру рұқсатынан айырылады</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">швед</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> желісі, жалғанбаған</translation>
 <translation id="6074825444536523002">Google пішіні</translation>
 <translation id="6079871810119356840">Венгр (QWERTY пернетақтасымен)</translation>
-<translation id="6082256976217156453">LZMA сығылған мұрағат файлы</translation>
 <translation id="6096979789310008754">Ізделген мәтін өшірілді. Барлық файл мен қалта көрсетілуде.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына тасымалдануда</translation>
 <translation id="61118516107968648">CSV мәтіні</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">Панджаб</translation>
 <translation id="6224240818060029162">Дат</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> жадын форматтау</translation>
-<translation id="6224665423283788195">Zstandard сығылған мұрағаты</translation>
 <translation id="6227235786875481728">Бқұл файлды ойнату мүмкін болмады.</translation>
 <translation id="6241349547798190358">Нидерланд (Бельгия)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, қосылу</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">Түлек</translation>
 <translation id="8912078710089354287">Құйрығын бұлғаңдатқан ит</translation>
 <translation id="8919081441417203123">дат</translation>
-<translation id="8965273390142984105">LZOP сығылған мұрағаты</translation>
 <translation id="8965697826696209160">Бос орын жеткіліксіз.</translation>
 <translation id="8997962250644902079">Қытай (дәстүрлі, пиньинь)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>

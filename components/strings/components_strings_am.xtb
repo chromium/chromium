@@ -586,6 +586,7 @@
 <translation id="2523886232349826891">በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
 <translation id="2524461107774643265">ተጨማሪ መረጃ ያክሉ</translation>
 <translation id="2529899080962247600">ይህ መስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሁሉም ተጨማሪ ግቤቶች ችላ ይባላሉ።</translation>
+<translation id="253493526287553278">የማስተዋወቂያ ኮድ ዝርዝሮችን ይመልከቱ</translation>
 <translation id="2535585790302968248">በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትርን ክፈት</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
 <translation id="2536110899380797252">አድራሻ ያክሉ</translation>
@@ -1273,6 +1274,7 @@
 <translation id="4435702339979719576">የፖስታ ካርድ)</translation>
 <translation id="443673843213245140">የተኪ መጠቀም ተሰናክሏል ግን ግልጽ የሆነ የተኪ ውቅር ተገልጿል።</translation>
 <translation id="4441832193888514600">መመሪያው ሊዋቀር የሚችለው እንደ ደመና ተጠቃሚ መመሪያ ብቻ ስለሆነ ችላ ተብሏል።</translation>
+<translation id="4442470707340296952">የChrome ትሮች</translation>
 <translation id="4450893287417543264">ዳግም አታሳይ</translation>
 <translation id="4451135742916150903">ከHID መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
 <translation id="4452328064229197696">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ Google የይለፍ ቃል አስተዳዳሪ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>

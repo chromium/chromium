@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">Энэ төхөөрөмж дээр дуут хайлт боломжгүй</translation>
 <translation id="3749259744154402564">Дэмждэггүй</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
+<translation id="377124182565324804"><ph name="SITE" />-г нэмэх</translation>
 <translation id="3771290962915251154">Эцэг эхийн хяналт асаалттай байгаа тул энэ тохиргоог идэвхгүй болгосон</translation>
 <translation id="3771694256347217732">Google-н Үйлчилгээний нөхцөл</translation>
 <translation id="3773856050682458546">Үндсэн өгөгдөл болон таны зочилдог вебсайтууд, таны ашигладаг аппуудын талаарх мэдээлэл</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">Source licenses-г нээх</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ямар өгөгдлийг ашигладаг вэ?:<ph name="END_BOLD" /> Таны хөтчийн түүх буюу энэ төхөөрөмж дээр Chrome-г ашиглан зочилсон сайтуудын бүртгэл.</translation>
 <translation id="4263656433980196874">Туслахын дуут хайлтын зөвшөөрлийн ui-г бүтэн өндрөөр нээсэн</translation>
+<translation id="4266054596873078491">Google Бүртгэлээрээ энэ сайт болон Chrome-д нэвтэрнэ үү.</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
 <translation id="4290281343757112331">Оронд нь дараа татаж авах уу?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android-н тохиргоонд дэлгэцийн түгжээг асаана уу<ph name="END_LINK" /></translation>
@@ -790,6 +792,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5329858041417644019">Таны хөтчийг удирдаагүй байна</translation>
 <translation id="5339031667684712858">Таны хассан сайтууд</translation>
 <translation id="5342314432463739672">Зөвшөөрлийн хүсэлт</translation>
+<translation id="53537532693258630">Таны хассан сайтууд энд харагдана</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="5368227114232678694">Энэ төхөөрөмж дээр нууцлалтайгаар үзэхийн тулд Нууцлалтай горимыг туршина уу</translation>
 <translation id="5375577065097716013">Google Lens-р зураг хайх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
@@ -1496,6 +1499,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8993760627012879038">Шинэ чихтэй хуудсыг нууцлалын горимд нээх</translation>
 <translation id="8996847606757455498">Өөр үйлчилгээ үзүүлэгч сонгох</translation>
 <translation id="8998729206196772491">Та <ph name="MANAGED_DOMAIN" />-н удирддаг бүртгэлээр нэвтэрч байгаа бөгөөд үүний админд таны Chrome-н өгөгдлийг хянах зөвшөөрлийг олгож байна. Таны өгөгдөл энэ бүртгэлд бүрмөсөн холбоотой байх болно. Chrome-с гарснаар таны өгөгдлийг энэ төхөөрөмжөөс устгах хэдий ч, тэдгээр нь таны Google бүртгэлд хэвээр үлдэх болно.</translation>
+<translation id="9021388532480169802">Сайт нэмсэн</translation>
 <translation id="9022774213089566801">Байнга зочилдог</translation>
 <translation id="9028914725102941583">Төхөөрөмжүүдийн хооронд хуваалцахын тулд синк хийхийг асаана уу</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Видео}other{# Видео}}</translation>

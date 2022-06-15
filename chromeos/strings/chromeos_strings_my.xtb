@@ -234,6 +234,7 @@
 <translation id="3083667275341675831">ချိတ်ဆက်နိုင်မှုဆိုင်ရာ အမှားရှာဖွေမှုများ</translation>
 <translation id="3084958266922136097">ဖန်သားပြင်နားချိန် ပိတ်ရန်</translation>
 <translation id="3091839911843451378">မအောင်မြင်ပါ - ရပ်သွားသည်</translation>
+<translation id="3096753366938912951">ညီညာသည့်မျက်နှာပြင်ပေါ် အဖုံးကိုတင်ပါ</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ကိရိယာနှင့် ချိတ်ဆက်ထားသည်။</translation>
@@ -291,9 +292,11 @@
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
+<translation id="361575905210396100">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်</translation>
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
+<translation id="3643198267586205643">OS အပ်ဒိတ်လုပ်ခြင်း</translation>
 <translation id="3643810137582748570">ချိန်ညှိမှုကို ကျော်ရန်</translation>
 <translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
 <translation id="3678765385266369662">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်လိုသည့်ပုံစံကို ရွေးပါ</translation>
@@ -412,6 +415,7 @@
 <translation id="469379815867856270">လိုင်းဆွဲအား</translation>
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
+<translation id="4740255236714854844">ညီညာသည့်မျက်နှာပြင်ပေါ် အောက်ခံပြားကို တင်ပါ</translation>
 <translation id="4744944742468440486">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ</translation>
 <translation id="4751272708893364980">RMA မှတ်တမ်းများကြည့်ရန်</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
@@ -459,6 +463,7 @@
 <translation id="5017508259293544172">နှစ်ထက်နှစ်</translation>
 <translation id="5019310272469539976">သင့်ဖန်သားပြင်ကို အသုံးမပြုသောအခါ ဓာတ်ပုံများ၊ အချိန်၊ ရာသီဥတုနှင့် မီဒီယာအချက်အလက်များ ပြသည်။</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
+<translation id="5044978354634658544">USB ထည့်ခြင်း</translation>
 <translation id="5049856988445523908">ဆင်းမ် လော့ခ်ချထားသည် (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">အုပ်စု အမည်</translation>
 <translation id="5051044138948155788">ဤသည်မှာ တစ်ခုတည်းသော စာမျက်နှာဖြစ်ပါသည်။ ဤသည်အားဖြင့် စကင်စဖတ်မည့် ဖန်သားပြင်သို့ ရောက်ပါမည်။</translation>
@@ -742,6 +747,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> ပြုပြင်မှုအမှား</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7665800271478495366">ချန်နယ်ပုံပြောင်းရန်</translation>
+<translation id="7682274994254393134">ပြင်ဆင်မှု စတင်ခြင်း</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7705524343798198388">VPN</translation>

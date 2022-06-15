@@ -728,6 +728,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4985248278475639481">Acerca de la personalización de Anuncios</translation>
 <translation id="4987271110129728827">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a hacer una búsqueda web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
+<translation id="499724277181351974">Ir a: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seguir a este sitio aquí</translation>
 <translation id="500351648694011114">Navega más fácilmente</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
@@ -977,6 +978,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 En función de tu interacción con un sitio (por ejemplo, iniciar sesión de forma habitual con una cuenta), el sitio puede emitir un token de confianza a tu navegador. Después, si otros sitios que visites buscan y encuentran un token de confianza válido, es más probable que te traten como a una persona y no como a un bot.
 
 Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para averiguar quién eres.</translation>
+<translation id="6394791151443660613">Buscar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ENLACE</translation>
 <translation id="6397616442223433927">Vuelves a tener conexión</translation>
 <translation id="6402652558933147609">Error <ph name="ERROR_CODE" /> en <ph name="VIOLATED_URL" /></translation>

@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Išsaugoti USB įrenginyje</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
+<translation id="147809995039451286">Nepavyko atsisiųsti naujinio</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
 <translation id="1491076385728777984">Atnaujinama įrenginio „<ph name="DEVICE_NAME" />“ programinė aparatinė įranga</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
@@ -128,6 +129,7 @@
 <translation id="1999615961760456652">Fiksuotasis portalas</translation>
 <translation id="2006864819935886708">Jungiamumas</translation>
 <translation id="2008685064673031089">Pagrindinė paieška</translation>
+<translation id="2011174342667534258">SDK versija:</translation>
 <translation id="2016697457005847575">Išbandykite trikčių šalinimo veiksmus</translation>
 <translation id="2016848882344942759">--išvalyti baltą etiketę--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +161,7 @@
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
 <translation id="2271469253353559191">Tamsaus režimo planavimas</translation>
 <translation id="2275586345903859204">Sutvarkyta</translation>
+<translation id="2276999893457278469">Geriausias pagalbos centro turinys</translation>
 <translation id="2287186687001756809">Nėra jokių vaizdų. Jei norite pridėti nuotraukų, eikite adresu <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Įdėkite išorinę saugyklą, pvz., atmintuką ar SD kortelę, su atsisiųstu „Chromebook“ atkūrimo paslaugų programos vaizdu</translation>
 <translation id="2307344026739914387">Naudoti dabartinę raktų porą</translation>
@@ -180,6 +183,7 @@
 <translation id="2418150275289244458">Atidaryti skiltyje „Nustatymai“</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" /> vaizdas iš <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
+<translation id="2447969267935997922">Diegimas baigtas. Dabar galite pašalinti atmintuką arba SD kortelę.</translation>
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
 <translation id="2480034874476596812">Išjungti neautomatiškai</translation>
@@ -191,6 +195,7 @@
 <translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2526590354069164005">Darbalaukis</translation>
 <translation id="253029298928638905">Paleidžiama iš naujo...</translation>
+<translation id="2533048460510040082">Siūlomas pagalbos centro turinys</translation>
 <translation id="2536159006530886390">Nepavyko prisijungti prie interneto.</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2584559707064218956">Norėdami nustatyti eikite į Nustatymus</translation>
@@ -303,6 +308,7 @@
 <translation id="3784455785234192852">Užrakinti</translation>
 <translation id="38114475217616659">Išvalyti visą istoriją</translation>
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
+<translation id="3824259034819781947">Pridėti failų</translation>
 <translation id="3838338534323494292">Naujas slaptažodis</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3856304145690230735">Pagrindo giroskopas</translation>
@@ -863,6 +869,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="885701979325669005">Saugykla</translation>
 <translation id="8863170912498892583">Įgalinti tamsiąją temą</translation>
 <translation id="8863888432376731307">Jums bus pateiktas „<ph name="QUERY" />“ <ph name="INTENT" /> ir dar daugiau</translation>
+<translation id="8864415976656252616">Siūlomo turinio nėra. Peržiūrėkite svarbiausią pagalbos centro turinį.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Įrenginys yra planšetinis kompiuteris.</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>

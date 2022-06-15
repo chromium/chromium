@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Spara på USB-enhet</translation>
 <translation id="1468664791493211953">Erbjudanden</translation>
 <translation id="1476467821656042872">Den här enheten hanteras av <ph name="MANAGER" />, som kan ha möjlighet att övervaka din aktivitet.</translation>
+<translation id="147809995039451286">Det gick inte att ladda ned uppdateringen</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1491076385728777984">Firmware uppdateras på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
+<translation id="2447969267935997922">Installationen är slutförd. Nu kan du ta bort USB-enheten eller SD-kortet.</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="2480034874476596812">Stäng av manuellt</translation>

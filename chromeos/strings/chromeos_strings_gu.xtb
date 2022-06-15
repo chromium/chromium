@@ -129,6 +129,7 @@
 <translation id="1999615961760456652">કૅપ્ટિવ પોર્ટલ</translation>
 <translation id="2006864819935886708">કનેક્ટિવિટી</translation>
 <translation id="2008685064673031089">મુખ્ય શોધ</translation>
+<translation id="2011174342667534258">SDK વર્ઝન:</translation>
 <translation id="2016697457005847575">સમસ્યા નિવારણના પગલાં અજમાવી જુઓ</translation>
 <translation id="2016848882344942759">--કોઈ સફેદ-લેબલ નથી--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +161,7 @@
 <translation id="225692081236532131">સક્રિયતાની સ્થિતિ</translation>
 <translation id="2271469253353559191">ઘેરા મોડનું શેડ્યૂલ</translation>
 <translation id="2275586345903859204">રિપેર પ્રક્રિયા પૂર્ણ થઈ</translation>
+<translation id="2276999893457278469">લોકપ્રિય સહાયક કન્ટેન્ટ</translation>
 <translation id="2287186687001756809">કોઈ છબી ઉપલબ્ધ નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
 <translation id="2294753434210277304">ડાઉનલોડ કરેલી Chromebook પુનઃપ્રાપ્તિ ઉપયોગિતા છબી ધરાવતો USB ડ્રાઇવ અથવા SD કાર્ડ જેવો બાહ્ય સ્ટોરેજ દાખલ કરો</translation>
 <translation id="2307344026739914387">હાલની કીની જોડીનો ઉપયોગ કરો</translation>
@@ -193,6 +195,7 @@
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="253029298928638905">ફરી શરૂ કરી રહ્યાં છીએ…</translation>
+<translation id="2533048460510040082">સૂચિત સહાયક કન્ટેન્ટ</translation>
 <translation id="2536159006530886390">ઇન્ટરનેટથી કનેક્ટ થઈ શકતા નથી.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
@@ -305,6 +308,7 @@
 <translation id="3784455785234192852">લૉક છે</translation>
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
+<translation id="3824259034819781947">ફાઇલ જોડો</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3856304145690230735">બેઝ જાઇરોસ્કોપ</translation>
@@ -864,6 +868,7 @@
 <translation id="885701979325669005">સ્ટોરેજ</translation>
 <translation id="8863170912498892583">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" માટે <ph name="INTENT" /> અને વધુ મેળવો</translation>
+<translation id="8864415976656252616">કોઈ સૂચિત કન્ટેન્ટ નથી. લોકપ્રિય સહાયક કન્ટેન્ટ જુઓ.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ડિવાઇસ એક ટૅબ્લેટ છે.</translation>
 <translation id="8881098542468797602">પરીક્ષણ સફળ થયું</translation>

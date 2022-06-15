@@ -129,6 +129,7 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Pagkakakonekta</translation>
 <translation id="2008685064673031089">Prime na paghahanap</translation>
+<translation id="2011174342667534258">Bersyon ng SDK:</translation>
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="2016848882344942759">--walang white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +161,7 @@
 <translation id="225692081236532131">Status ng pag-activate</translation>
 <translation id="2271469253353559191">Iskedyul ng dark mode</translation>
 <translation id="2275586345903859204">Kumpleto na ang pag-aayos</translation>
+<translation id="2276999893457278469">Nangungunang content ng tulong</translation>
 <translation id="2287186687001756809">Walang available na larawan. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Maglagay ng external storage, tulad ng USB drive o SD card, kasama ng na-download na larawan ng Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Gamitin ang kasalukuyang keypair</translation>
@@ -193,6 +195,7 @@
 <translation id="2517472476991765520">I-scan</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Nagre-restart...</translation>
+<translation id="2533048460510040082">Iminumungkahing content ng tulong</translation>
 <translation id="2536159006530886390">Hindi makakonekta sa internet.</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
@@ -231,6 +234,7 @@
 <translation id="3083667275341675831">Mga Diagnostic sa Pagkakonekta</translation>
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
+<translation id="3096753366938912951">Ilagay ang takip sa patag na lugar</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Nakakonekta ang device.</translation>
@@ -288,9 +292,11 @@
 <translation id="3604713164406837697">Palitan ang wallpaper</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
+<translation id="361575905210396100">Salamat sa iyong feedback</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
+<translation id="3643198267586205643">I-update ang OS</translation>
 <translation id="3643810137582748570">Laktawan ang pag-calibrate</translation>
 <translation id="3651050199673793219">Pumili ng unit ng temperatura</translation>
 <translation id="3678765385266369662">Piliin kung paano mo gustong i-off ang Write Protect</translation>
@@ -305,6 +311,7 @@
 <translation id="3784455785234192852">I-lock</translation>
 <translation id="38114475217616659">I-clear ang lahat ng history</translation>
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
+<translation id="3824259034819781947">Mag-attach ng mga file</translation>
 <translation id="3838338534323494292">Bagong password</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3856304145690230735">Base Gyroscope</translation>
@@ -408,6 +415,7 @@
 <translation id="469379815867856270">Lakas ng Signal</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="473775607612524610">I-update</translation>
+<translation id="4740255236714854844">Ilagay ang base sa patag na lugar</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
 <translation id="4751272708893364980">Tingnan ang mga log ng RMA</translation>
 <translation id="4773299976671772492">Inihinto</translation>
@@ -455,6 +463,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media.</translation>
 <translation id="5039804452771397117">Payagan</translation>
+<translation id="5044978354634658544">Ipasok ang USB</translation>
 <translation id="5049856988445523908">Na-lock ang SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Pangalan ng grupo</translation>
 <translation id="5051044138948155788">Ito lang ang page. Dadalhin ka nito sa screen ng pagsisimula ng pag-scan.</translation>
@@ -739,6 +748,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7657530360897961171">Error sa pag-aayos ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665800271478495366">Palitan ang avatar</translation>
+<translation id="7682274994254393134">Pagsisimula ng pag-aayos</translation>
 <translation id="7690294790491645610">Kumpirmahin ang bagong password</translation>
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -865,6 +875,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="885701979325669005">Storage</translation>
 <translation id="8863170912498892583">I-enable ng madilim na tema</translation>
 <translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
+<translation id="8864415976656252616">Walang iminumungkahing content. Tingnan ang nangungunang content ng tulong.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Tablet ang device.</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>

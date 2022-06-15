@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Bahasa Catalan</translation>
 <translation id="1168100932582989117">Nama pelayan Google</translation>
-<translation id="1171082344678443012">Arkib termampat XZ</translation>
 <translation id="1172970565351728681">Kira-kira <ph name="REMAINING_TIME" /> lagi</translation>
 <translation id="1173894706177603556">Namakan semula</translation>
 <translation id="1173916544412572294">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Butiran</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1209796539517632982">Nama pelayan automatik</translation>
 <translation id="1210831758834677569">Lao</translation>
-<translation id="1223825810409523901">Sambungan Chrome</translation>
 <translation id="1243314992276662751">Muat naik</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Sambungan Internet Langsung</translation>
 <translation id="1272293450992660632">Nilai PIN tidak sepadan.</translation>
-<translation id="127650757582748357">Arkib termampat BZIP2</translation>
 <translation id="1280820357415527819">Mencari rangkaian mudah alih</translation>
 <translation id="1291603679744561561">SIM Dikunci</translation>
 <translation id="1293556467332435079">Fail</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Penukaran konfigurasi rangkaian kongsi tidak dibenarkan</translation>
 <translation id="1665611772925418501">Fail tidak boleh diubah suai.</translation>
 <translation id="1673103856845176271">Fail tidak boleh diakses atas sebab keselamatan.</translation>
-<translation id="16762847117768727">Imej ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Berbasikal</translation>
 <translation id="1722487484194605434">Mengezip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Peleraian imej</translation>
 <translation id="1972984168337863910">Kembangkan panel maklum balas fail</translation>
 <translation id="1995337122023280937">Pergi ke lokasi fail</translation>
-<translation id="1996806196681857869">Arkib termampat Z</translation>
 <translation id="2001796770603320721">Urus dalam Drive</translation>
 <translation id="2009067268969781306">Memformatkan pemacu akan memadamkan semua data yang disimpan di dalamnya. Tindakan ini tidak boleh dibuat asal.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
-<translation id="2028997212275086731">Arkib RAR</translation>
 <translation id="2037845485764049925">Rusia</translation>
 <translation id="2044023416777079300">Modem tidak didaftarkan</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Keju</translation>
 <translation id="2781645665747935084">Bahasa Belgium</translation>
 <translation id="2782104745158847185">Ralat semasa memasang aplikasi Linux</translation>
-<translation id="2788520643285360081">7-arkib ZIP</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
 <translation id="2820957248982571256">Mengimbas…</translation>
-<translation id="2822595620066756134">Arkib termampat GZIP</translation>
 <translation id="2830077785865012357">Zhuyin Cina</translation>
 <translation id="2843806747483486897">Tukar lalai...</translation>
 <translation id="2850124913210091882">Sandaran</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Bahasa Lithuania</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3592251141500063301">Tidak dapat menjadikan <ph name="FILE_NAME" /> tersedia di luar talian</translation>
-<translation id="3593874215226880809">Arkib termampat LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Bahasa Perancis Kanada</translation>
 <translation id="3606220979431771195">Turki-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Batalkan <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Dinyahaktifkan, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Butiran</translation>
 <translation id="3691184985318546178">Sinhala</translation>
-<translation id="3703620396751288986">arkib ZIP</translation>
 <translation id="3726463242007121105">Peranti ini tidak boleh dibuka kerana sistem failnya tidak disokong.</translation>
 <translation id="3727148787322499904">Tindakan menukar tetapan ini akan menjejaskan semua rangkaian yang dikongsi</translation>
 <translation id="3737576078404241332">Alih keluar daripada bar sisi</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Czech dengan papan kekunci Qwerty</translation>
 <translation id="4656777537938206294">Jadikan fail tersedia di luar talian</translation>
 <translation id="4658782175094886150">Orang dalam salji</translation>
-<translation id="4661996069183330363">Arkib TAR</translation>
 <translation id="4669606053856530811">Ahli '<ph name="SOURCE_NAME" />' akan kehilangan akses melainkan item ini dikongsi dengan mereka.</translation>
 <translation id="467809019005607715">Slaid Google</translation>
 <translation id="4690246192099372265">Sweden</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013">Rangkaian <ph name="NETWORK_TYPE" />, tidak disambungkan</translation>
 <translation id="6074825444536523002">Borang Google</translation>
 <translation id="6079871810119356840">Hungary dengan papan kekunci Qwerty</translation>
-<translation id="6082256976217156453">Arkib termampat LZMA</translation>
 <translation id="6096979789310008754">Carian teks dikosongkan, menunjukkan semua fail dan folder.</translation>
 <translation id="610101264611565198">Mengalihkan <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Text CSV</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Denmark</translation>
 <translation id="6224253798271602650">Formatkan <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Arkib termampat Zstandard</translation>
 <translation id="6227235786875481728">Fail ini tidak dapat dimainkan.</translation>
 <translation id="6241349547798190358">Belanda (Belgium)</translation>
 <translation id="6267547857941397424">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Sambung</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">Graduan</translation>
 <translation id="8912078710089354287">Anjing menggoyang-goyangkan ekor</translation>
 <translation id="8919081441417203123">Bahasa Denmark</translation>
-<translation id="8965273390142984105">Arkib termampat LZOP</translation>
 <translation id="8965697826696209160">Tiada ruang yang mencukupi.</translation>
 <translation id="8997962250644902079">Pinyin Cina (Tradisional)</translation>
 <translation id="9003940392834790328">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>

@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Google name servers</translation>
-<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">About <ph name="REMAINING_TIME" /> remaining</translation>
 <translation id="1173894706177603556">Rename</translation>
 <translation id="1173916544412572294">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Next</translation>
 <translation id="1209796539517632982">Automatic name servers</translation>
 <translation id="1210831758834677569">Lao</translation>
-<translation id="1223825810409523901">Chrome extension</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
 <translation id="1272293450992660632">PIN values do not match.</translation>
-<translation id="127650757582748357">BZIP2 compressed archive</translation>
 <translation id="1280820357415527819">Searching for mobile networks</translation>
 <translation id="1291603679744561561">SIM locked</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Changing shared network configurations is not allowed</translation>
 <translation id="1665611772925418501">The file could not be modified.</translation>
 <translation id="1673103856845176271">The file could not be accessed for security reasons.</translation>
-<translation id="16762847117768727">ISO image</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">Cycling</translation>
 <translation id="1722487484194605434">Zipping <ph name="NUMBER_OF_ITEMS" /> items…</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Image resolution</translation>
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1995337122023280937">Go to file location</translation>
-<translation id="1996806196681857869">Z compressed archive</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
-<translation id="2028997212275086731">RAR archive</translation>
 <translation id="2037845485764049925">Russian</translation>
 <translation id="2044023416777079300">Modem not registered</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Cheese</translation>
 <translation id="2781645665747935084">Belgian</translation>
 <translation id="2782104745158847185">Error installing Linux application</translation>
-<translation id="2788520643285360081">7-ZIP archive</translation>
 <translation id="2803375539583399270">Enter PIN</translation>
 <translation id="2820957248982571256">Scanning...</translation>
-<translation id="2822595620066756134">GZIP compressed archive</translation>
 <translation id="2830077785865012357">Chinese Zhuyin</translation>
 <translation id="2843806747483486897">Change default...</translation>
 <translation id="2850124913210091882">Back Up</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3592251141500063301">Could not make <ph name="FILE_NAME" /> available offline</translation>
-<translation id="3593874215226880809">LZIP compressed archive</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Cancel <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3691184985318546178">Sinhala</translation>
-<translation id="3703620396751288986">ZIP archive</translation>
 <translation id="3726463242007121105">This device cannot be opened because its file system is not supported.</translation>
 <translation id="3727148787322499904">Changing this setting will affect all shared networks</translation>
 <translation id="3737576078404241332">Remove from sidebar</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Czech with QWERTY keyboard</translation>
 <translation id="4656777537938206294">Make files available offline</translation>
 <translation id="4658782175094886150">Person in snow</translation>
-<translation id="4661996069183330363">TAR archive</translation>
 <translation id="4669606053856530811">Members of '<ph name="SOURCE_NAME" />' will lose access unless these items are shared with them.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">Swedish</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> network, not connected</translation>
 <translation id="6074825444536523002">Google form</translation>
 <translation id="6079871810119356840">Hungarian with QWERTY keyboard</translation>
-<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">Search text cleared, showing all files and folders.</translation>
 <translation id="610101264611565198">Moving <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV text</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Danish</translation>
 <translation id="6224253798271602650">Format <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Zstandard compressed archive</translation>
 <translation id="6227235786875481728">This file could not be played.</translation>
 <translation id="6241349547798190358">Dutch (Belgium)</translation>
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
@@ -631,6 +618,7 @@
 <translation id="6296410173147755564">Invalid PUK</translation>
 <translation id="6312403991423642364">Unknown network error</translation>
 <translation id="6317608858038767920">Custom nameserver <ph name="INPUT_INDEX" /></translation>
+<translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> archive</translation>
 <translation id="6321303798550928047">Waving</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
@@ -936,7 +924,6 @@
 <translation id="8903931173357132290">Graduate</translation>
 <translation id="8912078710089354287">Dog wagging tail</translation>
 <translation id="8919081441417203123">Danish</translation>
-<translation id="8965273390142984105">LZOP compressed archive</translation>
 <translation id="8965697826696209160">There is not enough space.</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>

@@ -345,6 +345,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2861923151411510142">Mõned Chrome'i funktsioonid pole enam saadaval</translation>
 <translation id="2870560284913253234">Sait</translation>
 <translation id="2871733351037274014">Lehtede eellaadimine</translation>
+<translation id="2886836735871983413">Kui veebi sirvite, kuvatakse siin saitide loend</translation>
 <translation id="2888126860611144412">Teave Chrome'i kohta</translation>
 <translation id="2891154217021530873">Peata lehe laadimine</translation>
 <translation id="2892647708214602204">Kui see fail on valmis, kuvatakse märguanne</translation>
@@ -372,6 +373,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2987620471460279764">Muust seadmest jagatud tekst</translation>
 <translation id="2989523299700148168">Hiljuti külastatud</translation>
 <translation id="2992473221983447149">Piltide kirjeldused</translation>
+<translation id="2994959273484668146">Eemalda <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Parooli loomine</translation>
 <translation id="2996809686854298943">Vaja on URL-i</translation>
 <translation id="2997081575621687554">Kui Google'i sait palub lehel olevad lingid privaatselt eellaadida, krüpteerib Chrome need lehed ja laadib need Google'i serverite kaudu ilma küpsisefailideta. See peidab teie identiteedi eellaaditud saidi eest.</translation>
@@ -521,6 +523,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861633093716975811">Populaarsed videod</translation>
+<translation id="3874520961715512166">Sait on eemaldatud</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="3894427358181296146">Kausta lisamine</translation>
 <translation id="3899682235662194879">Sule kõik inkognito vahelehed</translation>
@@ -558,6 +561,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="4095146165863963773">Kas kustutada rakenduse andmed?</translation>
 <translation id="4096227151372679484">Järjehoidja salvestamise voog on avatud poolel kõrgusel</translation>
 <translation id="4099578267706723511">Aidake muuta Chrome'i paremaks, saates Google'ile kasutusstatistikat ja krahhiaruandeid.</translation>
+<translation id="4101475238162928417">Oma muudest seadmetest paroolide, järjehoidjate ja muu hankimiseks sünkroonige</translation>
 <translation id="410351446219883937">Automaatesitus</translation>
 <translation id="4106587138345390261">Chrome katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema teabemahu juures samasugust sirvimiskogemust</translation>
 <translation id="4108314971463891922">Jälgi</translation>
@@ -1191,6 +1195,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="749294055653435199">Google Lens pole selles seadmes saadaval</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (värskendati <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Oodake ...</translation>
+<translation id="7502234197872745058">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK1" />logige välja Chrome'ist<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Värskendusi pole saadaval</translation>
 <translation id="7507207699631365376">Vaadake selle teenusepakkuja <ph name="BEGIN_LINK" />privaatsuseeskirju<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Laadi alla</translation>

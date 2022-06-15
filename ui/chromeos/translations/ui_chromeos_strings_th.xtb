@@ -20,7 +20,6 @@
 <translation id="115443833402798225">ฮังกูล Ahnmatae</translation>
 <translation id="1155759005174418845">คาตาลัน</translation>
 <translation id="1168100932582989117">เซิร์ฟเวอร์ชื่อของ Google</translation>
-<translation id="1171082344678443012">ที่เก็บถาวรซึ่งบีบอัดโดย XZ</translation>
 <translation id="1172970565351728681">เหลือเวลาอีกประมาณ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1173916544412572294">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1209796539517632982">เซิร์ฟเวอร์ชื่ออัตโนมัติ</translation>
 <translation id="1210831758834677569">ลาว</translation>
-<translation id="1223825810409523901">ส่วนขยาย Chrome</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
 <translation id="1249250836236328755">ประเภท</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
 <translation id="1272293450992660632">ค่า PIN ไม่ตรงกัน</translation>
-<translation id="127650757582748357">ไฟล์เก็บถาวรที่บีบอัดโดย BZIP2</translation>
 <translation id="1280820357415527819">กำลังค้นหาเครือข่ายมือถือ</translation>
 <translation id="1291603679744561561">ล็อกซิมแล้ว</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">ไม่อนุญาตให้เปลี่ยนการกำหนดค่าเครือข่ายที่ใช้ร่วมกัน</translation>
 <translation id="1665611772925418501">ไม่สามารถแก้ไขไฟล์</translation>
 <translation id="1673103856845176271">ไม่สามารถเข้าถึงไฟล์เนื่องจากเหตุผลด้านความปลอดภัย</translation>
-<translation id="16762847117768727">รูปภาพ ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">ขี่จักรยาน</translation>
 <translation id="1722487484194605434">กำลังซิป <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
 <translation id="1995337122023280937">ไปยังตำแหน่งที่ตั้งไฟล์</translation>
-<translation id="1996806196681857869">ที่เก็บถาวรซึ่งบีบอัดโดย Z</translation>
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
 <translation id="2025955442973426285">ตีกรินยา</translation>
-<translation id="2028997212275086731">ไฟล์ RAR</translation>
 <translation id="2037845485764049925">รัสเซีย</translation>
 <translation id="2044023416777079300">ไม่ได้จดทะเบียนโมเด็ม</translation>
 <translation id="2046702855113914483">ราเม็ง</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2781645665747935084">เบลเยียม</translation>
 <translation id="2782104745158847185">เกิดข้อผิดพลาดในการติดตั้งแอปพลิเคชัน Linux</translation>
-<translation id="2788520643285360081">ไฟล์เก็บถาวรแบบ 7-Zip</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
-<translation id="2822595620066756134">ไฟล์เก็บถาวรที่บีบอัดโดย GZIP</translation>
 <translation id="2830077785865012357">จีน (Zhuyin)</translation>
 <translation id="2843806747483486897">เปลี่ยนค่าเริ่มต้น...</translation>
 <translation id="2850124913210091882">สำรองข้อมูล</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">ลิทัวเนีย</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3592251141500063301">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ไม่ได้</translation>
-<translation id="3593874215226880809">ไฟล์เก็บถาวรที่บีบอัดโดย LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ฝรั่งเศสแบบแคนาดา</translation>
 <translation id="3606220979431771195">ภาษาตุรกี-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">ยกเลิก<ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, <ph name="CONNECTION_STATUS" />, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="3691184985318546178">สิงหล</translation>
-<translation id="3703620396751288986">ไฟล์เก็บถาวรแบบ Zip</translation>
 <translation id="3726463242007121105">ไม่สามารถเปิดอุปกรณ์นี้ได้ เนื่องจากไม่สนับสนุนระบบไฟล์ของอุปกรณ์นี้</translation>
 <translation id="3727148787322499904">การเปลี่ยนการตั้งค่านี้จะส่งผลกับเครือข่ายที่แชร์ทั้งหมด</translation>
 <translation id="3737576078404241332">นำออกจากแถบด้านข้าง</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">เช็กด้วยแป้นพิมพ์ Qwerty</translation>
 <translation id="4656777537938206294">ทำให้ไฟล์ใช้งานได้แบบออฟไลน์</translation>
 <translation id="4658782175094886150">คนอยู่ท่ามกลางหิมะ</translation>
-<translation id="4661996069183330363">ไฟล์เก็บถาวรแบบ TAR</translation>
 <translation id="4669606053856530811">สมาชิกของ "<ph name="SOURCE_NAME" />" จะสูญเสียสิทธิ์เข้าถึง เว้นแต่มีการแชร์รายการเหล่านี้กับสมาชิกดังกล่าว</translation>
 <translation id="467809019005607715">Google สไลด์</translation>
 <translation id="4690246192099372265">สวีเดน</translation>
@@ -601,7 +590,6 @@
 <translation id="6055907707645252013">เครือข่าย <ph name="NETWORK_TYPE" /> ยังไม่ได้เชื่อมต่อ</translation>
 <translation id="6074825444536523002">Google ฟอร์ม</translation>
 <translation id="6079871810119356840">ฮังการีด้วยแป้นพิมพ์ Qwerty</translation>
-<translation id="6082256976217156453">ที่เก็บถาวรซึ่งบีบอัดโดย LZMA</translation>
 <translation id="6096979789310008754">ล้างข้อความค้นหาแล้ว กำลังแสดงไฟล์และโฟลเดอร์ทั้งหมด</translation>
 <translation id="610101264611565198">กำลังย้าย <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">ข้อความ CSV</translation>
@@ -622,7 +610,6 @@
 <translation id="6220423280121890987">ปัญจาบ</translation>
 <translation id="6224240818060029162">เดนมาร์ก</translation>
 <translation id="6224253798271602650">ฟอร์แมต <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">ที่เก็บถาวรซึ่งบีบอัดโดย Zstandard</translation>
 <translation id="6227235786875481728">ไม่สามารถเล่นไฟล์นี้</translation>
 <translation id="6241349547798190358">ดัตช์ (เบลเยียม)</translation>
 <translation id="6267547857941397424">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, เชื่อมต่อ</translation>
@@ -936,7 +923,6 @@
 <translation id="8903931173357132290">รับปริญญา</translation>
 <translation id="8912078710089354287">สุนัขกำลังกระดิกหาง</translation>
 <translation id="8919081441417203123">เดนมาร์ก</translation>
-<translation id="8965273390142984105">ไฟล์เก็บถาวรที่บีบอัดโดย LZOP</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
 <translation id="8997962250644902079">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="9003940392834790328">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>

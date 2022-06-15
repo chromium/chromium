@@ -2619,6 +2619,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ดูไฟล์ต่อไปนี้ได้</translation>
 <translation id="3484273680291419129">กำลังนำซอฟต์แวร์อันตรายออก...</translation>
 <translation id="3484869148456018791">รับใบรับรองใหม่</translation>
+<translation id="3486950712960783074">การเดินทางของคุณ</translation>
 <translation id="3487007233252413104">ฟังก์ชันที่ไม่ระบุชื่อ</translation>
 <translation id="3490695139702884919">กำลังดาวน์โหลด... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">บัญชีของบุตรหลานยังไม่ได้ตั้งค่าสำหรับการควบคุมโดยผู้ปกครองของ Family Link คุณจะเพิ่มการควบคุมโดยผู้ปกครองได้เมื่อตั้งค่าเรียบร้อยแล้ว ดูข้อมูลเกี่ยวกับการควบคุมโดยผู้ปกครองได้ในแอปสำรวจ</translation>
@@ -2929,6 +2930,7 @@
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ได้รับการจัดการ<ph name="END_LINK" />โดยองค์กรของคุณ</translation>
 <translation id="3797900183766075808">&amp;ค้นหา “<ph name="SEARCH_TERMS" />” ด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">รุ่น</translation>
+<translation id="3798632811625902122">อุปกรณ์บลูทูธ <ph name="DEVICE" /> ต้องการสิทธิ์ในการจับคู่</translation>
 <translation id="3799128412641261490">การตั้งค่าการเข้าถึงด้วยสวิตช์</translation>
 <translation id="3800806661949714323">แสดงทั้งหมด (แนะนำ)</translation>
 <translation id="3800828618615365228">ข้อกำหนดเพิ่มเติมของ Google Chrome และ Chrome OS</translation>
@@ -4912,6 +4914,7 @@
 <translation id="5792295754950501287">การดำเนินการเพิ่มเติมสำหรับ<ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">โปรดแตะปุ่มเปิด/ปิด</translation>
 <translation id="5793339252089865437">หากดาวน์โหลดอัปเดตผ่านเครือข่ายมือถือ อาจทำให้มีค่าบริการเน็ตมือถือเพิ่มเติม</translation>
+<translation id="5793420564274426163">การยืนยันการจับคู่</translation>
 <translation id="5794034487966529952">เดสก์ <ph name="DESK_TITLE" /> มีเบราว์เซอร์เปิดอยู่ <ph name="NUM_BROWSERS" /> หน้าต่าง</translation>
 <translation id="5794414402486823030">เปิดด้วยโปรแกรมดูของระบบทุกครั้ง</translation>
 <translation id="5794700615121138172">โฟลเดอร์ที่แชร์ใน Linux</translation>
@@ -7405,6 +7408,7 @@
 <translation id="8242426110754782860">ดำเนินการต่อ</translation>
 <translation id="8243948765190375130">คุณภาพของสื่ออาจลดลง</translation>
 <translation id="8244514732452879619">อีกสักพักก็นอนได้แล้ว</translation>
+<translation id="8245361042748627813">แป้นพิมพ์ลัดนี้มีการเปลี่ยนแปลง โปรดใช้ <ph name="NEW_SHORTCUT_KEY" /> เพื่อพิมพ์โดยใช้กล่องโต้ตอบของระบบ</translation>
 <translation id="8246776524656196770">ปกป้องคีย์ความปลอดภัยด้วย PIN (หมายเลขประจำตัวส่วนบุคคล)</translation>
 <translation id="8248050856337841185">&amp;วาง</translation>
 <translation id="8248381369318572865">เข้าถึงไมโครโฟนและวิเคราะห์คำพูด</translation>
@@ -7709,6 +7713,7 @@
 <translation id="8561565784790166472">โปรดดำเนินการด้วยความระมัดระวัง</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">พยายามปรับลดรุ่นแอปพลิเคชัน</translation>
+<translation id="8569673829373920831">ข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">ไม่พบปลายทาง</translation>
 <translation id="8571213806525832805">4 สัปดาห์ที่แล้ว</translation>
 <translation id="8571687764447439720">เพิ่มตั๋ว Kerberos</translation>

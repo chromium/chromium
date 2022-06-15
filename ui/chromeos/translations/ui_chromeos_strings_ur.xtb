@@ -20,7 +20,6 @@
 <translation id="115443833402798225">ہنگول اہنمیٹی</translation>
 <translation id="1155759005174418845">کاٹالانين</translation>
 <translation id="1168100932582989117">‏Google نام سرورز</translation>
-<translation id="1171082344678443012">‏XZ کمپریسڈ آرکائیو</translation>
 <translation id="1172970565351728681">تقریباً <ph name="REMAINING_TIME" /> باقی</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، تفصیلات</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1209796539517632982">خود کار نام سرورز</translation>
 <translation id="1210831758834677569">لاؤ</translation>
-<translation id="1223825810409523901">‏Chrome ایکسٹینشن</translation>
 <translation id="1243314992276662751">اپ لوڈ کریں</translation>
 <translation id="1249250836236328755">نوع</translation>
 <translation id="1254593899333212300">براہ راست انٹرنیٹ کنکشن</translation>
 <translation id="1272293450992660632">‏PIN کی اقدار مماثل نہیں ہیں۔</translation>
-<translation id="127650757582748357">‏BZIP2 کمپریسڈ آرکائیو</translation>
 <translation id="1280820357415527819">موبائل نیٹ ورکس کو تلاش کیا جا رہا ہے</translation>
 <translation id="1291603679744561561">‏SIM مقفل ہو گیا</translation>
 <translation id="1293556467332435079">فائلیں</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">اشتراک کردہ نیٹ ورک کنفیگریشنز تبدیل کرنے کی اجازت نہیں ہے</translation>
 <translation id="1665611772925418501">فائل میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="1673103856845176271">سیکیورٹی اسباب کی بنا پر فائل تک رسائی حاصل نہیں کی جا سکی۔</translation>
-<translation id="16762847117768727">‏ISO تصویر</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">بائيکنگ</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو زِپ کیا جا رہا ہے...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">تصویر کا ریزولیوشن</translation>
 <translation id="1972984168337863910">فائلز کے تاثرات کے پینلز کو پھیلائیں</translation>
 <translation id="1995337122023280937">فائل کے مقام پر جائیں</translation>
-<translation id="1996806196681857869">‏Z کمپریسڈ آرکائیو</translation>
 <translation id="2001796770603320721">‏Drive میں نظم کریں</translation>
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="2025955442973426285">تگرینی</translation>
-<translation id="2028997212275086731">‏RAR آرکائیو</translation>
 <translation id="2037845485764049925">روسی</translation>
 <translation id="2044023416777079300">موڈیم رجسٹرڈ نہیں ہے</translation>
 <translation id="2046702855113914483">رامین</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بیلجین</translation>
 <translation id="2782104745158847185">‏Linux ایپلیکیشن انسٹال کرنے میں خرابی</translation>
-<translation id="2788520643285360081">‏7-Zip آرکائیو</translation>
 <translation id="2803375539583399270">‏PIN درج کریں</translation>
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
-<translation id="2822595620066756134">‏GZIP کمپریسڈ آرکائیو</translation>
 <translation id="2830077785865012357">‏چینی Zhuyin</translation>
 <translation id="2843806747483486897">ڈیفالٹ کو تبدیل کریں…</translation>
 <translation id="2850124913210091882">بیک اپ لیں</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">لتھُواینین</translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> کو آف لائن دستیاب نہیں بنایا جا سکا</translation>
-<translation id="3593874215226880809">‏LZIP کمپریسڈ آرکائیو</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">کینیڈین فرانسیسی</translation>
 <translation id="3606220979431771195">‏ترکی F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> منسوخ کریں۔</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> کا نیٹ ورک <ph name="NETWORK_INDEX" /> غیر فعال ہے، <ph name="CONNECTION_STATUS" />، <ph name="SIGNAL_STRENGTH" />% سگنل کی مضبوطی کی تفصیلات</translation>
 <translation id="3691184985318546178">سنہالا</translation>
-<translation id="3703620396751288986">‏ZIP آرکائیو</translation>
 <translation id="3726463242007121105">اس آلے کو نہیں کھولا جا سکتا کیونکہ اس کا فائل سسٹم تعاون یافتہ نہیں ہے۔</translation>
 <translation id="3727148787322499904">اس ترتیب کو تبدیل کرنے سے سبھی اشتراک کردہ نیٹ ورکس پر اثر پڑے گا</translation>
 <translation id="3737576078404241332">سائیڈ بار سے ہٹائیں</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">‏Qwerty کی بورڈ کے ساتھ چیک زبان</translation>
 <translation id="4656777537938206294">فائلز کو آف لائن دستیاب کرائیں</translation>
 <translation id="4658782175094886150">برف سے ڈھکا ہوا شخص</translation>
-<translation id="4661996069183330363">‏TAR آرکائیو</translation>
 <translation id="4669606053856530811">جب تک ان آئٹمز کا ان کے ساتھ اشتراک نہیں کیا جاتا ہے، <ph name="SOURCE_NAME" /> کے اراکین کی رسائی منقطع ہو جائے گي۔</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">سويڈش</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> نیٹ ورک، منسلک نہیں ہے</translation>
 <translation id="6074825444536523002">‏Google فارم</translation>
 <translation id="6079871810119356840">‏Qwerty کی بورڈ کے ساتھ ہنگریائی</translation>
-<translation id="6082256976217156453">‏LZMA کمپریسڈ آرکائیو</translation>
 <translation id="6096979789310008754">تلاش کا متن صاف کر دیا گیا، سبھی فائلیں اور فولڈرز دکھائی دے رہے ہیں۔</translation>
 <translation id="610101264611565198">‫<ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں منتقل کیا جا رہا ہے</translation>
 <translation id="61118516107968648">‏CSV ٹیکسٹ</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">پنجابی</translation>
 <translation id="6224240818060029162">ڈينش</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> کو فارمیٹ کریں</translation>
-<translation id="6224665423283788195">‏Zstandard کمپریسڈ آرکائیو</translation>
 <translation id="6227235786875481728">یہ فائل نہیں چلائی جا سکی۔</translation>
 <translation id="6241349547798190358">ڈچ (بیلجیم)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، منسلک کریں</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">گریجویٹ</translation>
 <translation id="8912078710089354287">دُم ہلاتا ہوا کتا</translation>
 <translation id="8919081441417203123">ڈينش</translation>
-<translation id="8965273390142984105">‏LZOP کمپریسڈ آرکائیو</translation>
 <translation id="8965697826696209160">اس میں کافی جگہ نہیں ہے۔</translation>
 <translation id="8997962250644902079">‏چینی (روایتی) Pinyin</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>

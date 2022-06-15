@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">Hõiveportaal</translation>
 <translation id="2006864819935886708">Ühenduvus</translation>
 <translation id="2008685064673031089">Algarvude otsing</translation>
+<translation id="2011174342667534258">SDK versioon:</translation>
 <translation id="2016697457005847575">Proovige neid veaotsingu toiminguid</translation>
 <translation id="2016848882344942759">--eemalda tähistamata toote märgistus--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">Aktiveerimise olek</translation>
 <translation id="2271469253353559191">Tumeda režiimi ajakava</translation>
 <translation id="2275586345903859204">Parandus on lõpule viidud</translation>
+<translation id="2276999893457278469">Peamine abisisu</translation>
 <translation id="2287186687001756809">Pilte pole saadaval. Fotode lisamiseks minge saidile <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Sisestage väline salvestusseade, näiteks USB-ketas või SD-kaart, millel on allalaaditud Chromebooki taasteutiliidi kujutist</translation>
 <translation id="2307344026739914387">Kasuta praegust võtmepaari</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2526590354069164005">Töölaud</translation>
 <translation id="253029298928638905">Taaskäivitamine …</translation>
+<translation id="2533048460510040082">Soovitatud abisisu</translation>
 <translation id="2536159006530886390">Internetiga ei õnnestu ühendust luua.</translation>
 <translation id="2570743873672969996">Testi <ph name="TEST_NAME" /> käitamine …</translation>
 <translation id="2584559707064218956">Seadistamiseks avage leht Seaded</translation>
@@ -303,6 +306,7 @@
 <translation id="3784455785234192852">Lukusta</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
+<translation id="3824259034819781947">Failide manustamine</translation>
 <translation id="3838338534323494292">Uus parool</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="3856304145690230735">Alusel olev güroskoop</translation>
@@ -863,6 +867,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="885701979325669005">Salvestamine</translation>
 <translation id="8863170912498892583">Tumeda teema lubamine</translation>
 <translation id="8863888432376731307">Hankige päringu „<ph name="QUERY" />“ <ph name="INTENT" /> ja muud</translation>
+<translation id="8864415976656252616">Soovitatud sisu pole. Vaadake peamist abisisu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Seade on tahvelarvuti.</translation>
 <translation id="8881098542468797602">Test õnnestus</translation>

@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USB मा सेभ गर्नुहोस्</translation>
 <translation id="1468664791493211953">योजनाहरू</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले तपाईंको क्रियाकलाप निगरानी गर्न सक्छ।</translation>
+<translation id="147809995039451286">अपडेट डाउनलोड गर्न सकिएन</translation>
 <translation id="1478594628797167447">स्क्यानर</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गरिँदै छ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
@@ -182,6 +183,7 @@
 <translation id="2418150275289244458">सेटिङमा गई खोल्नुहोस्</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ फोटो</translation>
 <translation id="2446553403094072641">फ्लोटिङ पोइन्टको सटीकता</translation>
+<translation id="2447969267935997922">इन्स्टल गर्ने कार्य पूरा भयो। तपाईं अब आफ्नो USB ड्राइभ वा SD कार्ड झिक्न सक्नुहुन्छ।</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="2480034874476596812">म्यानुअल रूपमा अफ गरियोस्</translation>

@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Карэйскі алфавіт (хангыль), рэжым AhnMaTae</translation>
 <translation id="1155759005174418845">Каталанская</translation>
 <translation id="1168100932582989117">Серверы даменных імён Google</translation>
-<translation id="1171082344678443012">Сціснуты архіў XZ</translation>
 <translation id="1172970565351728681">Прыблізны час да завяршэння: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1173916544412572294">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1210831758834677569">Лаоская</translation>
-<translation id="1223825810409523901">Пашырэнне Chrome</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
 <translation id="1272293450992660632">PIN-коды не супадаюць.</translation>
-<translation id="127650757582748357">Сціснуты BZIP2-архіў</translation>
 <translation id="1280820357415527819">Ідзе пошук мабільных сетак</translation>
 <translation id="1291603679744561561">SIM-карта заблакіравана</translation>
 <translation id="1293556467332435079">Файлы</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">Забаронена змяняць налады агульнай сеткі</translation>
 <translation id="1665611772925418501">Не ўдалося мадыфікаваць файл.</translation>
 <translation id="1673103856845176271">Атрымаць доступ да файла не ўдалося ў мэтах бяспекі.</translation>
-<translation id="16762847117768727">Вобраз ISO</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">На веласіпедзе</translation>
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
-<translation id="1996806196681857869">Сціснуты архіў Z</translation>
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
 <translation id="2025955442973426285">Тыгрынья</translation>
-<translation id="2028997212275086731">Архіў RAR</translation>
 <translation id="2037845485764049925">Руская</translation>
 <translation id="2044023416777079300">Мадэм не зарэгістраваны</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2781645665747935084">Бельгійская</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
-<translation id="2788520643285360081">7-ZIP-архіў</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
-<translation id="2822595620066756134">Сціснуты GZIP-архіў</translation>
 <translation id="2830077785865012357">Кітайская (чжуінь)</translation>
 <translation id="2843806747483486897">Змяніць стандартнае дзеянне...</translation>
 <translation id="2850124913210091882">Стварыць рэзервовую копію</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Літоўская</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3592251141500063301">Не ўдалося зрабіць файл <ph name="FILE_NAME" /> даступным па-за сеткай</translation>
-<translation id="3593874215226880809">Сціснуты LZIP-архіў</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Французская (канадская)</translation>
 <translation id="3606220979431771195">Турэцкая-F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Скасаваць дзеянне "<ph name="ACTIVITY_DESCRIPTION" />".</translation>
 <translation id="3690128548376345212">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3691184985318546178">Сінгальская</translation>
-<translation id="3703620396751288986">ZIP-архіў</translation>
 <translation id="3726463242007121105">Прыладу адкрыць не ўдалося: яе файлавая сістэма не падтрымліваецца.</translation>
 <translation id="3727148787322499904">Змена гэтай налады закране ўсе абагуленыя сеткі</translation>
 <translation id="3737576078404241332">Выдаліць з бакавой панэлі</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Чэшская з раскладкай Qwerty</translation>
 <translation id="4656777537938206294">Доступ да файлаў у пазасеткавым рэжыме</translation>
 <translation id="4658782175094886150">Чалавек у снезе</translation>
-<translation id="4661996069183330363">TAR-архіў</translation>
 <translation id="4669606053856530811">Удзельнікі дыска "<ph name="SOURCE_NAME" />" страцяць доступ да гэтых элементаў, калі гэтыя элементы не абагулены з імі.</translation>
 <translation id="467809019005607715">Прэзентацыі Google</translation>
 <translation id="4690246192099372265">Шведская</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013">Тып сеткі – <ph name="NETWORK_TYPE" />, не падключана</translation>
 <translation id="6074825444536523002">Форма Google</translation>
 <translation id="6079871810119356840">Венгерская з раскладкай Qwerty</translation>
-<translation id="6082256976217156453">Сціснуты архіў LZMA</translation>
 <translation id="6096979789310008754">Крытэрыі пошуку выдалены, паказваюцца ўсе файлы і папкі.</translation>
 <translation id="610101264611565198">Ідзе перамяшчэнне файла "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="61118516107968648">Тэкставы файл CSV</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">Панджабі</translation>
 <translation id="6224240818060029162">Дацкая</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />: фармаціраванне</translation>
-<translation id="6224665423283788195">Сціснуты архіў Zstandard</translation>
 <translation id="6227235786875481728">Не атрымалася прайграць файл.</translation>
 <translation id="6241349547798190358">Нідэрландская (Бельгія)</translation>
 <translation id="6267547857941397424">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падключыцца</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">Выпускнік</translation>
 <translation id="8912078710089354287">Сабака віляе хвастом</translation>
 <translation id="8919081441417203123">Дацкая</translation>
-<translation id="8965273390142984105">Сціснуты LZOP-архіў</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>

@@ -345,6 +345,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2861923151411510142">Neke Chrome funkcije više neće biti dostupne</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2871733351037274014">Predučitavajte stranice</translation>
+<translation id="2886836735871983413">Lista sajtova će se prikazati ovde dok pregledate veb</translation>
 <translation id="2888126860611144412">O Chrome pregledaču</translation>
 <translation id="2891154217021530873">Zaustavi učitavanje stranice</translation>
 <translation id="2892647708214602204">Videćete obaveštenje kada ova datoteka bude spremna</translation>
@@ -372,6 +373,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2987620471460279764">Tekst koji se deli sa drugog uređaja</translation>
 <translation id="2989523299700148168">Nedavno posećeno</translation>
 <translation id="2992473221983447149">Opisi slika</translation>
+<translation id="2994959273484668146">Uklonite <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Napravite pristupnu frazu</translation>
 <translation id="2996809686854298943">URL je obavezan</translation>
 <translation id="2997081575621687554">Kada Google sajt zatraži da privatno predučitava linkove na stranici, Chrome šifruje i predučitava stranice preko Google servera bez kolačića. Na taj način se vaš identitet krije od predučitanog sajta.</translation>
@@ -521,6 +523,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="3856096718352044181">Proverite da li je ovo važeći dobavljač usluge ili probajte ponovo kasnije</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3861633093716975811">Popularni video snimci</translation>
+<translation id="3874520961715512166">Sajt je uklonjen</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3894427358181296146">Dodajte direktorijum</translation>
 <translation id="3899682235662194879">Zatvori sve kartice bez arhiviranja</translation>
@@ -558,6 +561,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="4095146165863963773">Želite li da izbrišete podatke aplikacije?</translation>
 <translation id="4096227151372679484">Tok čuvanja obeleživača je otvoren do polovine ekrana</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome slanjem statistike korišćenja i izveštaja o otkazivanju Google-u.</translation>
+<translation id="4101475238162928417">Sinhronizujte podatke da biste preuzeli lozinke, obeleživače i drugo na ostalim uređajima</translation>
 <translation id="410351446219883937">Autoplej</translation>
 <translation id="4106587138345390261">Chrome istražuje nove funkcije koje omogućavaju sajtovima da pružaju isti doživljaj pregledanja, a da koriste manje podataka</translation>
 <translation id="4108314971463891922">Prati</translation>
@@ -728,6 +732,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4985248278475639481">O personalizaciji oglasa</translation>
 <translation id="4987271110129728827">Nismo uspeli da pronađemo tu stranicu. Proverite pravopis ili probajte veb-pretragu.</translation>
 <translation id="4988526792673242964">Stranice</translation>
+<translation id="499724277181351974">Idite na: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Pratite ovaj sajt ovde</translation>
 <translation id="500351648694011114">Pregledajte jednostavnije</translation>
 <translation id="5004416275253351869">Google kontrole aktivnosti</translation>
@@ -977,6 +982,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 Taj sajt može da izda pouzdan token za pregledač na osnovu vaše interakcije sa sajtom, poput redovnog prijavljivanja na nalog. Ako drugi sajtovi koje posećujete kasnije potraže i pronađu važeći pouzdani token, veća je verovatnoća da će vas tretirati kao osobu, a ne kao robota.
 
 Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkrivanje identiteta.</translation>
+<translation id="6394791151443660613">Pretražite: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Ponovo ste onlajn</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1197,7 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="749294055653435199">Google objektiv nije dostupan na ovom uređaju</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (ažurirano je <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Sačekajte...</translation>
+<translation id="7502234197872745058">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK1" />odjavite se iz Chrome-a<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Ažuriranja nisu dostupna</translation>
 <translation id="7507207699631365376">Pogledajte <ph name="BEGIN_LINK" />politiku privatnosti<ph name="END_LINK" /> ovog dobavljača</translation>
 <translation id="7514365320538308">Preuzmi</translation>

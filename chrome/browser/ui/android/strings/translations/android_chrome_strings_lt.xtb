@@ -345,6 +345,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2861923151411510142">Kai kurios „Chrome“ funkcijos nebebus pasiekiamos</translation>
 <translation id="2870560284913253234">Svetainė</translation>
 <translation id="2871733351037274014">Puslapių įkėlimas iš anksto</translation>
+<translation id="2886836735871983413">Svetainių sąrašas bus rodomas čia jums naršant žiniatinklį</translation>
 <translation id="2888126860611144412">Apie „Chrome“</translation>
 <translation id="2891154217021530873">Sustabdyti puslapio įkėlimą</translation>
 <translation id="2892647708214602204">Kai failas bus paruoštas, matysite pranešimą</translation>
@@ -372,6 +373,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2987620471460279764">Tekstas, bendrinamas iš kito įrenginio</translation>
 <translation id="2989523299700148168">Neseniai lankyta</translation>
 <translation id="2992473221983447149">Vaizdų aprašai</translation>
+<translation id="2994959273484668146">Pašalinti <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Kurkite slaptafrazę</translation>
 <translation id="2996809686854298943">Reikalingas URL</translation>
 <translation id="2997081575621687554">Kai „Google“ svetainė paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ šifruoja ir iš anksto įkelia puslapius per „Google“ serverius be slapukų. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės.</translation>
@@ -521,6 +523,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="3856096718352044181">Patvirtinkite, kad tai yra tinkamas paslaugų teikėjas, arba vėliau bandykite dar kartą</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3861633093716975811">Populiarūs vaizdo įrašai</translation>
+<translation id="3874520961715512166">Svetainė pašalinta</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="3894427358181296146">Aplanko pridėjimas</translation>
 <translation id="3899682235662194879">Uždaryti visus inkognito skirtukus</translation>
@@ -558,6 +561,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>
 <translation id="4096227151372679484">Žymių išsaugojimo srautas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="4099578267706723511">Padėkite tobulinti „Chrome“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas.</translation>
+<translation id="4101475238162928417">Sinchronizuokite, kad gautumėte slaptažodžius, žymes ir kitą turinį visuose kituose įrenginiuose</translation>
 <translation id="410351446219883937">Automatinis paleidimas</translation>
 <translation id="4106587138345390261">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų informacijos</translation>
 <translation id="4108314971463891922">Stebėti</translation>
@@ -1191,6 +1195,7 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="749294055653435199">„Google Lens“ nepasiekiama šiame įrenginyje</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (atnaujinta <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Palaukite…</translation>
+<translation id="7502234197872745058">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK1" />atsijunkite nuo „Chrome“<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Naujiniai nepasiekiami</translation>
 <translation id="7507207699631365376">Žr. šio teikėjo <ph name="BEGIN_LINK" />privatumo politiką<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Atsisiųsti</translation>

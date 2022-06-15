@@ -20,7 +20,6 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Server dei nomi Google</translation>
-<translation id="1171082344678443012">Archivio compresso con xz</translation>
 <translation id="1172970565351728681">Tempo rimanente: circa <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1173916544412572294">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
@@ -30,12 +29,10 @@
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1209796539517632982">Assegnazione automatica nomi ai server</translation>
 <translation id="1210831758834677569">Lao</translation>
-<translation id="1223825810409523901">Estensione di Chrome</translation>
 <translation id="1243314992276662751">Carica</translation>
 <translation id="1249250836236328755">Genere</translation>
 <translation id="1254593899333212300">Connessione diretta a Internet</translation>
 <translation id="1272293450992660632">I valori PIN non corrispondono.</translation>
-<translation id="127650757582748357">Archivio compresso con BZIP2</translation>
 <translation id="1280820357415527819">Ricerca di reti mobili in corso</translation>
 <translation id="1291603679744561561">SIM bloccata</translation>
 <translation id="1293556467332435079">File</translation>
@@ -81,7 +78,6 @@
 <translation id="166439687370499867">La modifica delle configurazioni di rete condivise non è consentita</translation>
 <translation id="1665611772925418501">Impossibile modificare il file.</translation>
 <translation id="1673103856845176271">Impossibile accedere al file per motivi di sicurezza.</translation>
-<translation id="16762847117768727">Immagine ISO</translation>
 <translation id="169515659049020177">Maiusc</translation>
 <translation id="1715848075824334077">In bicicletta</translation>
 <translation id="1722487484194605434">Compressione di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
@@ -121,11 +117,9 @@
 <translation id="1942765061641586207">Risoluzione dell'immagine</translation>
 <translation id="1972984168337863910">Espandi i riquadri di feedback dei file</translation>
 <translation id="1995337122023280937">Vai a posizione file</translation>
-<translation id="1996806196681857869">Archivio compresso con Z</translation>
 <translation id="2001796770603320721">Gestisci in Drive</translation>
 <translation id="2009067268969781306">Se formatti un'unità vengono eliminati tutti i dati in essa memorizzati. L'azione non può essere annullata.</translation>
 <translation id="2025955442973426285">Tigrino</translation>
-<translation id="2028997212275086731">Archivio RAR</translation>
 <translation id="2037845485764049925">Russo</translation>
 <translation id="2044023416777079300">Modem non registrato</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -208,10 +202,8 @@
 <translation id="2771816809568414714">Formaggio</translation>
 <translation id="2781645665747935084">Belga</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
-<translation id="2788520643285360081">Archivio 7-Zip</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
 <translation id="2820957248982571256">Scansione…</translation>
-<translation id="2822595620066756134">Archivio compresso con GZIP</translation>
 <translation id="2830077785865012357">Cinese Zhuyin</translation>
 <translation id="2843806747483486897">Cambia predefinita...</translation>
 <translation id="2850124913210091882">Backup</translation>
@@ -303,7 +295,6 @@
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3592251141500063301">Impossibile rendere disponibile offline il file <ph name="FILE_NAME" /></translation>
-<translation id="3593874215226880809">Archivio compresso con LZIP</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Francese canadese</translation>
 <translation id="3606220979431771195">Turco F</translation>
@@ -316,7 +307,6 @@
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, <ph name="CONNECTION_STATUS" />, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="3691184985318546178">Singalese</translation>
-<translation id="3703620396751288986">File Zip</translation>
 <translation id="3726463242007121105">Impossibile aprire il dispositivo perché il suo filesystem non è supportato.</translation>
 <translation id="3727148787322499904">La modifica di questa impostazione avrà effetto su tutte le reti condivise</translation>
 <translation id="3737576078404241332">Rimuovi dalla barra laterale</translation>
@@ -418,7 +408,6 @@
 <translation id="4646813851450205600">Ceco con tastiera Qwerty</translation>
 <translation id="4656777537938206294">Rendi i file disponibili offline</translation>
 <translation id="4658782175094886150">Persona nella neve</translation>
-<translation id="4661996069183330363">Archivio TAR</translation>
 <translation id="4669606053856530811">I membri di "<ph name="SOURCE_NAME" />" non avranno più accesso, a meno che questi elementi vengano condivisi con loro.</translation>
 <translation id="467809019005607715">Presentazioni Google</translation>
 <translation id="4690246192099372265">Svedese</translation>
@@ -600,7 +589,6 @@
 <translation id="6055907707645252013">Rete <ph name="NETWORK_TYPE" />, non collegata</translation>
 <translation id="6074825444536523002">Modulo Google</translation>
 <translation id="6079871810119356840">Ungherese con tastiera Qwerty</translation>
-<translation id="6082256976217156453">Archivio compresso con LZMA</translation>
 <translation id="6096979789310008754">Testo di ricerca cancellato, sono visualizzati tutti i file e tutte le cartelle.</translation>
 <translation id="610101264611565198">Spostamento di <ph name="FILE_NAME" /> in <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Testo CSV</translation>
@@ -621,7 +609,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Danese</translation>
 <translation id="6224253798271602650">Formatta <ph name="DRIVE_NAME" /></translation>
-<translation id="6224665423283788195">Archivio compresso con Zstandard</translation>
 <translation id="6227235786875481728">Impossibile riprodurre il file.</translation>
 <translation id="6241349547798190358">Olandese (Belgio)</translation>
 <translation id="6267547857941397424">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
@@ -935,7 +922,6 @@
 <translation id="8903931173357132290">Persona laureata</translation>
 <translation id="8912078710089354287">Cane che scodinzola</translation>
 <translation id="8919081441417203123">Danese</translation>
-<translation id="8965273390142984105">Archivio compresso con LZOP</translation>
 <translation id="8965697826696209160">Spazio insufficiente.</translation>
 <translation id="8997962250644902079">Cinese (tradizionale) Pinyin</translation>
 <translation id="9003940392834790328">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>

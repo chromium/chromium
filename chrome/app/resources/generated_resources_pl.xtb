@@ -2609,6 +2609,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3482719661246593752">Strona <ph name="ORIGIN" /> może wyświetlać te pliki:</translation>
 <translation id="3484273680291419129">Usuwam szkodliwe oprogramowanie…</translation>
 <translation id="3484869148456018791">Pobierz nowy certyfikat</translation>
+<translation id="3486950712960783074">Twoja podróż</translation>
 <translation id="3487007233252413104">funkcja anonimowa</translation>
 <translation id="3490695139702884919">Pobieram... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Konto Twojego dziecka nie jest skonfigurowane pod kątem kontroli rodzicielskiej w Family Link. Możesz ją dodać, gdy zakończysz konfigurowanie. Informacje o kontroli rodzicielskiej znajdziesz w aplikacji Odkrywaj.</translation>
@@ -2921,6 +2922,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3797739167230984533">Urządzenie <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> jest zarządzane<ph name="END_LINK" /> przez Twoją organizację</translation>
 <translation id="3797900183766075808">Wy&amp;szukaj „<ph name="SEARCH_TERMS" />” w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Wersja</translation>
+<translation id="3798632811625902122">Urządzenie Bluetooth <ph name="DEVICE" /> chce się sparować.</translation>
 <translation id="3799128412641261490">Ustawienia funkcji Switch Access</translation>
 <translation id="3800806661949714323">Pokaż wszystkie (zalecane)</translation>
 <translation id="3800828618615365228">Dodatkowe warunki korzystania z Google Chrome i Chrome OS</translation>
@@ -4908,6 +4910,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5792295754950501287">Więcej działań dotyczących: <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Naciśnij przycisk zasilania</translation>
 <translation id="5793339252089865437">Jeśli pobierzesz aktualizację przez sieć komórkową, może zostać naliczona opłata za przekroczenie limitu danych.</translation>
+<translation id="5793420564274426163">Potwierdzenie parowania</translation>
 <translation id="5794034487966529952">Biurko „<ph name="DESK_TITLE" />” ma otwarte okna przeglądarki (<ph name="NUM_BROWSERS" />)</translation>
 <translation id="5794414402486823030">Zawsze otwieraj w przeglądarce systemowej</translation>
 <translation id="5794700615121138172">Foldery udostępnione Linuksa</translation>
@@ -7408,6 +7411,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8242426110754782860">Dalej</translation>
 <translation id="8243948765190375130">Multimedia mogą mieć gorszą jakość</translation>
 <translation id="8244514732452879619">Wkrótce trzeba zgasić światło</translation>
+<translation id="8245361042748627813">Ten skrót się zmienił. Użyj <ph name="NEW_SHORTCUT_KEY" />, aby drukować w oknie systemowym.</translation>
 <translation id="8246776524656196770">Chroń klucz bezpieczeństwa kodem PIN</translation>
 <translation id="8248050856337841185">&amp;Wklej</translation>
 <translation id="8248381369318572865">Dostęp do mikrofonu i analizowanie Twojej mowy</translation>
@@ -7712,6 +7716,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8561565784790166472">Zachowaj ostrożność</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Próbowano zmienić wersję aplikacji na starszą.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> – więcej informacji</translation>
 <translation id="8569682776816196752">Nie znaleziono urządzeń docelowych</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8571687764447439720">Dodawanie zgłoszenia Kerberos</translation>

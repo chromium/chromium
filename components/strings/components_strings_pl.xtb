@@ -291,6 +291,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1662550410081243962">Zapisuj i automatycznie uzupełniaj informacje o formach płatności</translation>
 <translation id="1663943134801823270">Karty i adresy pochodzą z Chrome. Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Od teraz strony, których językiem jest <ph name="SOURCE_LANGUAGE" />, będą tłumaczone na <ph name="TARGET_LANGUAGE" />.</translation>
+<translation id="1673886523110456987">Aby skorzystać z oferty, zapłać kartą <ph name="CARD_DETAIL" /></translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Najpierw krótsza krawędź</translation>
 <translation id="168693727862418163">Nie udało się zweryfikować tej wartości zasady względem jej schematu. Będzie ona ignorowana.</translation>
@@ -1103,6 +1104,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3986705137476756801">Na razie wyłącz napisy na żywo</translation>
 <translation id="3987940399970879459">Mniej niż 1 MB</translation>
 <translation id="3990250421422698716">Odsunięcie poszczególnych kopii</translation>
+<translation id="3992684624889376114">Informacje o tej stronie</translation>
 <translation id="3996311196211510766">Strona <ph name="ORIGIN" /> zażądała, by do wszystkich kierowanych do niej żądań stosować zasadę dotyczącą źródła, ale tej zasady nie można teraz zastosować.</translation>
 <translation id="4006465311664329701">Formy płatności, oferty i adresy korzystające z Google Pay</translation>
 <translation id="4009243425692662128">Zawartość drukowanych stron jest wysyłana do Google Cloud lub innych firm w celu przeanalizowania. Może na przykład zostać przeskanowana w poszukiwaniu danych wrażliwych.</translation>
@@ -1548,6 +1550,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Komputer</translation>
+<translation id="5177076414499237632">Więcej informacji o źródle i temacie tej strony</translation>
 <translation id="5179510805599951267">Jeśli to nie jest język <ph name="ORIGINAL_LANGUAGE" />, zgłoś błąd</translation>
 <translation id="518639307526414276">Karma i artykuły dla zwierząt</translation>
 <translation id="5190835502935405962">Pasek zakładek</translation>

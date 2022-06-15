@@ -91,6 +91,7 @@
 <translation id="300526633675317032">Tämä tyhjentää yhteensä <ph name="SIZE_IN_KB" /> tallennettuja sivustotietoja.</translation>
 <translation id="3008272652534848354">Nollaa luvat</translation>
 <translation id="301521992641321250">Estetty automaattisesti</translation>
+<translation id="3069226013421428034">Salli kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="3114012059975132928">Videosoitin</translation>
 <translation id="3115898365077584848">Näytä tiedot</translation>
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
@@ -125,6 +126,7 @@
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3987993985790029246">Kopioi linkki</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992684624889376114">Tietoja sivusta</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4008040567710660924">Salli evästeet tietyllä sivustolla.</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
@@ -225,6 +227,7 @@
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6320088164292336938">Värinä</translation>
+<translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="6388207532828177975">Tyhjennä ja nollaa</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="6439114592976064011">Estä sivustoja käyttämästä virtuaalitodellisuuslaitteitasi ja ‑dataasi</translation>

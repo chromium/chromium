@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">Hifadhi kwenye USB</translation>
 <translation id="1468664791493211953">Ofa</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> anadhibiti kifaa hiki na anaweza kufuatilia shughuli zako.</translation>
+<translation id="147809995039451286">Imeshindwa kupakua sasisho</translation>
 <translation id="1478594628797167447">Kichanganuzi</translation>
 <translation id="1491076385728777984">Inasasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Fungua katika mipangilio</translation>
 <translation id="2421798028054665193">Picha ya <ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Usahihi wa mfumo wa uhandisi wa kuonyesha nambari</translation>
+<translation id="2447969267935997922">Usakinishaji umekamilika. Sasa unaweza kuondoa kifaa cha hifadhi ya USB au Kadi yako ya SD.</translation>
 <translation id="2448312741937722512">Aina</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
 <translation id="2480034874476596812">Zima wewe mwenyewe</translation>

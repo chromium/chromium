@@ -129,6 +129,7 @@
 <translation id="1999615961760456652">Portal captiv</translation>
 <translation id="2006864819935886708">Conectivitate</translation>
 <translation id="2008685064673031089">Căutare de numere prime</translation>
+<translation id="2011174342667534258">Versiunea SDK:</translation>
 <translation id="2016697457005847575">Încearcă pașii pentru remedierea erorilor</translation>
 <translation id="2016848882344942759">--fără etichetă albă--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +161,7 @@
 <translation id="225692081236532131">Stare de activare</translation>
 <translation id="2271469253353559191">Programul modului întunecat</translation>
 <translation id="2275586345903859204">Reparația s-a finalizat</translation>
+<translation id="2276999893457278469">Conținutul de ajutor principal</translation>
 <translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Introdu un dispozitiv de stocare externă, cum ar fi o unitate USB sau un card SD, cu imaginea Utilitar de recuperare Chromebook descărcată</translation>
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
@@ -193,6 +195,7 @@
 <translation id="2517472476991765520">Scanează</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Se repornește…</translation>
+<translation id="2533048460510040082">Conținut de ajutor sugerat</translation>
 <translation id="2536159006530886390">Nu ne putem conecta la internet.</translation>
 <translation id="2570743873672969996">Se rulează testul <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Accesează Setările pentru configurare</translation>
@@ -231,6 +234,7 @@
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3084958266922136097">Dezactivează screensaverul</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
+<translation id="3096753366938912951">Așază capacul pe o suprafață plană</translation>
 <translation id="3102119246920354026">Memoria cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Dispozitivul este conectat.</translation>
@@ -288,9 +292,11 @@
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
+<translation id="361575905210396100">Îți mulțumim pentru feedback</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
+<translation id="3643198267586205643">Actualizează sistemul de operare</translation>
 <translation id="3643810137582748570">Omite calibrarea</translation>
 <translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
 <translation id="3678765385266369662">Selectează cum dorești să dezactivezi protecția la scriere</translation>
@@ -305,6 +311,7 @@
 <translation id="3784455785234192852">Blochează</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
+<translation id="3824259034819781947">Atașează fișiere</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3856304145690230735">Giroscopul bazei</translation>
@@ -408,6 +415,7 @@
 <translation id="469379815867856270">Puterea semnalului</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="473775607612524610">Actualizează</translation>
+<translation id="4740255236714854844">Așază baza pe suprafață plană</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
 <translation id="4751272708893364980">Vezi jurnalele RMA</translation>
 <translation id="4773299976671772492">Oprit</translation>
@@ -455,6 +463,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Când ecranul este inactiv, se afișează fotografii, ora, vremea și informații despre media.</translation>
 <translation id="5039804452771397117">Permite</translation>
+<translation id="5044978354634658544">Introdu un USB</translation>
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Numele grupului</translation>
 <translation id="5051044138948155788">Aceasta este singura pagină. Astfel, vei accesa ecranul de pornire a scanării.</translation>
@@ -709,6 +718,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
+<translation id="73631062356239394">Trimite date de diagnosticare</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Dezactivează tema luminoasă</translation>
@@ -739,6 +749,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7657530360897961171">Eroare la repararea dispozitivului <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7665800271478495366">Schimbă avatarul</translation>
+<translation id="7682274994254393134">Începe repararea</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -865,6 +876,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="885701979325669005">Stocare</translation>
 <translation id="8863170912498892583">Activează tema întunecată</translation>
 <translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
+<translation id="8864415976656252616">Nu există conținut sugerat. Vezi cel mai popular conținut de ajutor.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Dispozitivul este o tabletă.</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
@@ -912,6 +924,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
 <translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
 <translation id="917720651393141712">Testează</translation>
+<translation id="9188992814426075118">Tastatura se poate potrivi automat cu imaginea de fundal</translation>
 <translation id="9204237731135241582">Nu se poate contacta gateway-ul din aplicații pentru Android</translation>
 <translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="922179502584117429">Versiunea actuală, <ph name="VERSION_NUMBER" />, este învechită</translation>

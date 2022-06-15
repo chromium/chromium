@@ -64,6 +64,7 @@
 <translation id="1459784442280469416">USB に保存</translation>
 <translation id="1468664791493211953">クーポン</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
+<translation id="147809995039451286">アップデートをダウンロードできませんでした</translation>
 <translation id="1478594628797167447">スキャナ</translation>
 <translation id="1491076385728777984">「<ph name="DEVICE_NAME" />」のファームウェアを更新中</translation>
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
@@ -182,6 +183,7 @@
 <translation id="2418150275289244458">設定で開く</translation>
 <translation id="2421798028054665193">画像 <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
+<translation id="2447969267935997922">インストールが完了しました。USB ドライブまたは SD カードを取り外すことができます。</translation>
 <translation id="2448312741937722512">種類</translation>
 <translation id="2461822463642141190">現在</translation>
 <translation id="2480034874476596812">手動で無効にする</translation>

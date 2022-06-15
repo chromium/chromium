@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Ekspor bookmark</translation>
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="1009476156254802388">Lokasi <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Kontrol game kini tersedia</translation>
 <translation id="1010498023906173788">Tab ini terhubung ke sebuah port serial.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Halaman Tidak Merespons}other{Halaman Tidak Merespons}}</translation>
 <translation id="1011355516189274711">Volume text-to-speech</translation>
@@ -857,6 +858,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1795214765651529549">Gunakan Klasik</translation>
 <translation id="1796105431091975902">Pilih Playbook Ansible untuk ditambahkan</translation>
 <translation id="1796588414813960292">Fitur yang memerlukan suara tidak akan berfungsi</translation>
+<translation id="1797117170091578105">Mainkan dengan keyboard Chromebook. Anda dapat menyesuaikan tombol untuk tindakan tertentu.</translation>
 <translation id="1800502858278951817">Tidak ada ekstensi yang meminta untuk membaca dan mengubah <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Tidur saat cover ditutup</translation>
 <translation id="1802687198411089702">Halaman tidak merespons. Anda dapat menunggunya atau keluar.</translation>
@@ -1019,6 +1021,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1940546824932169984">Perangkat yang terhubung</translation>
 <translation id="1941410638996203291">Waktu mulai <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Versi: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Tampilkan konfigurasi tombol</translation>
 <translation id="1942128823046546853">Membaca dan mengubah semua data Anda di semua situs</translation>
 <translation id="1942600407708803723">Mati saat cover ditutup</translation>
 <translation id="1944528062465413897">Kode penyambungan Bluetooth:</translation>
@@ -1431,6 +1434,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
     Jika nantinya Anda memutuskan bahwa Voice Match tidak cocok untuk anak Anda, cukup nonaktifkan fitur tersebut di Setelan Asisten. Untuk melihat atau menghapus klip audio yang direkam oleh anak Anda selama penyiapan Voice Match, buka <ph name="VOICE_MATCH_SETTINGS_URL" /> dari akunnya.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">Tombol berikut tidak didukung: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan atau sensor cahaya.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL Halaman</translation>
@@ -2634,6 +2638,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> dapat melihat file berikut</translation>
 <translation id="3484273680291419129">Menghapus software berbahaya...</translation>
 <translation id="3484869148456018791">Dapatkan sertifikat baru</translation>
+<translation id="3486950712960783074">Perjalanan Anda</translation>
 <translation id="3487007233252413104">fungsi anonim</translation>
 <translation id="3490695139702884919">Mendownload ... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Akun anak Anda belum disiapkan untuk kontrol orang tua Family Link. Anda dapat menambahkan kontrol orang tua setelah menyelesaikan penyiapan. Anda akan menemukan informasi tentang kontrol orang tua di aplikasi Jelajahi.</translation>
@@ -2755,6 +2760,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3613422051106148727">&amp;Buka di tab baru</translation>
 <translation id="3615073365085224194">Sentuh sensor sidik jari dengan jari Anda</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> sedang dipindai.</translation>
+<translation id="3615596877979647433">Tombol tidak ada. Tekan tombol keyboard untuk menyesuaikan</translation>
 <translation id="3616741288025931835">&amp;Hapus Data browsing...</translation>
 <translation id="3617891479562106823">Background tidak tersedia. Coba lagi nanti.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -2910,6 +2916,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3764753550716962406">Izinkan Google menemukan diskon yang tersedia berdasarkan item di keranjang Anda?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Mengirim <ph name="ATTACHMENTS" /> ke <ph name="DEVICE_NAME" />}other{Mengirim <ph name="ATTACHMENTS" /> ke <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Tidak dapat membaca kebijakan mode demo offline.</translation>
+<translation id="3766687283066842296">Pelajari Phone Hub lebih lanjut</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Es krim</translation>
 <translation id="3771290962915251154">Setelan ini dinonaktifkan karena kontrol orang tua aktif</translation>
@@ -2944,6 +2951,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> dikelola<ph name="END_LINK" /> oleh organisasi Anda</translation>
 <translation id="3797900183766075808">&amp;Menelusuri <ph name="SEARCH_ENGINE" /> untuk “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Versi</translation>
+<translation id="3798632811625902122">Perangkat Bluetooth <ph name="DEVICE" /> meminta izin untuk tersambung.</translation>
 <translation id="3799128412641261490">Setelan tombol akses</translation>
 <translation id="3800806661949714323">Tampilkan semua (disarankan)</translation>
 <translation id="3800828618615365228">Persyaratan Tambahan Google Chrome dan ChromeOS</translation>
@@ -3350,6 +3358,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4193836101014293726">Tidak dapat menghapus profil ini</translation>
 <translation id="419427585139779713">Masukkan satu suku kata dalam satu waktu</translation>
 <translation id="4194570336751258953">Aktifkan ketuk untuk mengklik</translation>
+<translation id="4195378859392041564">Klik tombol mana pun dengan mouse, lalu tekan tombol keyboard untuk menyesuaikan</translation>
 <translation id="4195421689821407315">Download tidak aman</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4195814663415092787">Lanjutkan dari halaman terakhir yang dibuka</translation>
@@ -3415,6 +3424,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4258348331913189841">Sistem file</translation>
 <translation id="4259388776256904261">Proses ini mungkin memerlukan waktu beberapa saat</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> mungkin berbahaya. Kirim file ke Perlindungan Lanjutan Google untuk dipindai? Tekan Shift+F6 untuk masuk ke area kotak download.</translation>
+<translation id="4260699894265914672">Tekan tombol keyboard untuk menyesuaikan</translation>
 <translation id="4261429981378979799">Izin ekstensi</translation>
 <translation id="4262004481148703251">Tolak peringatan</translation>
 <translation id="4263223596040212967">Periksa tata letak keyboard Anda dan coba lagi.</translation>
@@ -4590,6 +4600,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5449716055534515760">Tutup Jen&amp;dela</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (berfungsi secara offline)</translation>
 <translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Lihat hasil penelusuran lainnya</translation>
 <translation id="5455603387986949153">Membaca nomor seri perangkat dan komponen ChromeOS Flex.</translation>
 <translation id="5457113250005438886">Tidak valid</translation>
 <translation id="5457459357461771897">Membaca dan menghapus foto, musik, serta media lain dari komputer Anda</translation>
@@ -4930,6 +4941,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5792295754950501287">Tindakan lainnya untuk <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Harap ketuk power Anda</translation>
 <translation id="5793339252089865437">Jika Anda mendownload update melalui jaringan seluler Anda, tindakan tersebut akan mengakibatkan tagihan berlebih.</translation>
+<translation id="5793420564274426163">Konfirmasi Penyambungan</translation>
 <translation id="5794034487966529952">Desktop <ph name="DESK_TITLE" /> memiliki <ph name="NUM_BROWSERS" /> jendela browser yang terbuka</translation>
 <translation id="5794414402486823030">Selalu buka dengan penampil sistem</translation>
 <translation id="5794700615121138172">Folder bersama Linux</translation>
@@ -7064,6 +7076,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Mencari komponen browser? Buka</translation>
 <translation id="7903345046358933331">Halaman ini tidak merespons. Anda dapat menunggu hingga halaman merespons atau menutupnya.</translation>
+<translation id="7903429136755645827">Klik untuk menyesuaikan kontrol game Anda</translation>
 <translation id="7903742244674067440">Anda memiliki sertifikat pada file yang mengidentifikasi otoritas sertifikat ini</translation>
 <translation id="7903925330883316394">Utilitas: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Sediakan port Linux untuk perangkat lain di jaringan Anda.</translation>
@@ -7425,6 +7438,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8242426110754782860">Lanjutkan</translation>
 <translation id="8243948765190375130">Kualitas media mungkin diturunkan</translation>
 <translation id="8244514732452879619">Sebentar lagi waktunya tidur</translation>
+<translation id="8245361042748627813">Pintasan ini telah diubah. Gunakan <ph name="NEW_SHORTCUT_KEY" /> untuk mencetak menggunakan dialog sistem.</translation>
 <translation id="8246776524656196770">Melindungi kunci keamanan Anda dengan Nomor Pengenal Pribadi (PIN)</translation>
 <translation id="8248050856337841185">&amp;Tempel</translation>
 <translation id="8248381369318572865">Mengakses mikrofon dan menganalisis ucapan</translation>
@@ -7729,6 +7743,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8561565784790166472">Lanjutkan dengan hati-hati</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Berusaha menurunkan versi aplikasi.</translation>
+<translation id="8569673829373920831">Selengkapnya tentang <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Tidak ditemukan tujuan</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
 <translation id="8571687764447439720">Tambahkan tiket Kerberos</translation>
@@ -8255,6 +8270,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9078316009970372699">Nonaktifkan Tethering Instan</translation>
 <translation id="9078842827190780028">Lihat hasil penelusuran lainnya di panel samping</translation>
 <translation id="9079267182985899251">Dalam waktu dekat, opsi ini tidak lagi didukung. Untuk menampilkan tab, gunakan <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">memperkirakan minat Anda - Chrome dapat memperkirakan minat Anda</translation>
 <translation id="9081543426177426948">Situs yang Anda buka tidak disimpan dalam mode Samaran</translation>
 <translation id="9084064520949870008">Buka sebagai Jendela</translation>
 <translation id="9085256200913095638">Duplikasi Tab Terpilih</translation>

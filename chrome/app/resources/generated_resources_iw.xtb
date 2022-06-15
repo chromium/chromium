@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">ייצוא סימניות</translation>
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="1009476156254802388">מיקום ב-<ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">פקדי המשחקים זמינים עכשיו</translation>
 <translation id="1010498023906173788">הכרטיסייה הזו מחוברת ליציאה טורית.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{הדף אינו מגיב}two{הדפים אינם מגיבים}many{הדפים אינם מגיבים}other{הדפים אינם מגיבים}}</translation>
 <translation id="1011355516189274711">‏עוצמת קול של המרת טקסט לדיבור (TTS)</translation>
@@ -856,6 +857,7 @@
 <translation id="1795214765651529549">שימוש בעיצוב קלאסי</translation>
 <translation id="1796105431091975902">‏יש לבחור פלייבוק של Ansible כדי להוסיף אותו</translation>
 <translation id="1796588414813960292">תכונות שצריכות צלילים לא יפעלו</translation>
+<translation id="1797117170091578105">‏אפשר לשחק באמצעות המקלדת של Chromebook. ניתן להתאים אישית את המקשים לפעולות ספציפיות.</translation>
 <translation id="1800502858278951817">לא התקבלה בקשה מתוסף כלשהו לקרוא ולשנות את <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">מעבר למצב שינה כשסוגרים את הכיסוי</translation>
 <translation id="1802687198411089702">הדף לא מגיב. אפשר לחכות או לצאת.</translation>
@@ -1018,6 +1020,7 @@
 <translation id="1940546824932169984">מכשירים מחוברים</translation>
 <translation id="1941410638996203291">שעת ההתחלה <ph name="TIME" /></translation>
 <translation id="1941553344801134989">גרסה: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">הצגת מיפוי המפתחות</translation>
 <translation id="1942128823046546853">קריאה ושינוי של כל הנתונים שלך בכל האתרים</translation>
 <translation id="1942600407708803723">כיבוי כשסוגרים את הכיסוי</translation>
 <translation id="1944528062465413897">‏קוד התאמת Bluetooth:</translation>
@@ -1430,6 +1433,7 @@
     החלטת שהתכונה Voice Match לא מתאימה לילד או לילדה? בכל שלב ניתן להסיר את התכונה בהגדרות של Assistant שלהם. יש לך אפשרות לראות או למחוק את קטעי הקול שהילד או הילדה הקליטו בהגדרה של Voice Match בכתובת <ph name="VOICE_MATCH_SETTINGS_URL" />, מהחשבון של הילד או הילדה.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">‏אין תמיכה במקשים הבאים: Tab,‏ Shift,‏ Control,‏ Escape,‏ Caps lock,‏ עוצמת קול</translation>
 <translation id="2309620859903500144">נחסמה הגישה של האתר הזה אל חיישני התנועה או התאורה.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">‏כתובת ה-URL של הדף</translation>
@@ -2755,6 +2759,7 @@
 <translation id="3613422051106148727">&amp;פתיחה בכרטיסייה חדשה</translation>
 <translation id="3615073365085224194">יש לגעת עם האצבע בחיישן טביעת האצבע</translation>
 <translation id="3615579745882581859">מתבצעת סריקה בקובץ <ph name="FILE_NAME" />.</translation>
+<translation id="3615596877979647433">המפתח חסר. יש להקיש על מקש מקלדת כלשהו כדי להתאים אישית</translation>
 <translation id="3616741288025931835">&amp;ניקוי נתוני גלישה...</translation>
 <translation id="3617891479562106823">רקעים אינם זמינים. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="3619115746895587757">קפוצ'ינו</translation>
@@ -2910,6 +2915,7 @@
 <translation id="3764753550716962406">‏לאפשר ל-Google להשתמש בעגלת הקניות שלך כדי למצוא הנחות זמינות?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}many{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">לא ניתן לקרוא מדיניות של מצב הדגמה לא מקוון.</translation>
+<translation id="3766687283066842296">‏מידע נוסף על Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> הרץ</translation>
 <translation id="377050016711188788">גלידה</translation>
 <translation id="3771290962915251154">ההגדרה הזו מושבתת מאחר שבקרת ההורים מופעלת</translation>
@@ -3350,6 +3356,7 @@
 <translation id="4193836101014293726">לא ניתן למחוק את הפרופיל הזה</translation>
 <translation id="419427585139779713">צריך להזין כל הברה בנפרד</translation>
 <translation id="4194570336751258953">הפעלת האפשרות 'נגיעה קלה'</translation>
+<translation id="4195378859392041564">יש להקיש על מקש כלשהו באמצעות העכבר, ואז להקיש על מקש מקלדת כדי להתאים אישית</translation>
 <translation id="4195421689821407315">הורדה לא מאובטחת</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
@@ -3415,6 +3422,7 @@
 <translation id="4258348331913189841">מערכות קבצים</translation>
 <translation id="4259388776256904261">הפעולה עשויה להימשך זמן מה</translation>
 <translation id="4260182282978351200">‏הקובץ <ph name="FILE_NAME" /> עלול להיות מסוכן. האם לשלוח אותו לסריקה באמצעות ההגנה המתקדמת של Google? אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
+<translation id="4260699894265914672">יש להקיש על מקש מקלדת כלשהו כדי להתאים אישית</translation>
 <translation id="4261429981378979799">הרשאות של תוספים</translation>
 <translation id="4262004481148703251">סגירת האזהרה</translation>
 <translation id="4263223596040212967">כדאי לבדוק את פריסת המקלדת ולנסות שוב.</translation>
@@ -4590,6 +4598,7 @@
 <translation id="5449716055534515760">סגירת ח&amp;לון</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (פועלת אופליין)</translation>
 <translation id="5454166040603940656">עם <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">הצגת תוצאות חיפוש נוספות</translation>
 <translation id="5455603387986949153">‏קריאת מספרים סידוריים של מכשירי ChromeOS Flex ושל הרכיבים שלהם.</translation>
 <translation id="5457113250005438886">לא חוקי</translation>
 <translation id="5457459357461771897">קריאה ומחיקה של קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
@@ -7067,6 +7076,7 @@
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7903290522161827520">רוצה לאתר את רכיבי הדפדפן? יש לעבור לכתובת</translation>
 <translation id="7903345046358933331">הדף אינו מגיב. תוכל להמתין עד שיגיב או לסגור אותו.</translation>
+<translation id="7903429136755645827">ניתן ללחוץ כדי להתאים אישית את פקדי המשחקים</translation>
 <translation id="7903742244674067440">יש לך אישורים בקובץ המזהים רשויות אישורים אלה</translation>
 <translation id="7903925330883316394">תוכנית שירות: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">‏הגדרת יציאות Linux שזמינות למכשירים אחרים ברשת.</translation>
@@ -8262,6 +8272,7 @@
 <translation id="9078316009970372699">השבתה של שיתוף אינטרנט מיידי בין מכשירים</translation>
 <translation id="9078842827190780028">תוצאת חיפוש נוספות מוצגות בחלונית הצדדית</translation>
 <translation id="9079267182985899251">בקרוב לא תהיה יותר תמיכה באפשרות זו. כדי להציג כרטיסייה יש להשתמש ב-<ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">‏הערכת תחומי העניין שלך – Chrome יכול להעריך את תחומי העניין שלך</translation>
 <translation id="9081543426177426948">אתרים שנכנסים אליהם לא נשמרים במצב אנונימי</translation>
 <translation id="9084064520949870008">פתיחה כחלון</translation>
 <translation id="9085256200913095638">שכפול הכרטיסייה שנבחרה</translation>

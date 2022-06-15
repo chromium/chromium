@@ -1346,6 +1346,7 @@ Web e PWAs. No momento, com suporte apenas no
       A definição da política como "tls1" ou "tls1.1" foi removida na versão 91. Não é mais possível suprimir o aviso de TLS 1.0/1.1.</translation>
 <translation id="2364639863953745682">Modo da experiência de integração do Assistente</translation>
 <translation id="2366301887862414321">Permitir hosts de mensagens nativas no nível do usuário e do sistema</translation>
+<translation id="2382672620906337383">A função setTimeout() do JavaScript não será ajustada até um limite de aninhamento maior.</translation>
 <translation id="2384233438419344179">Se a política for definida como "Ativada", os cookies não poderão ser definidos por elementos de página da Web que não sejam do domínio que está na barra de endereço do navegador. Se a política for definida como "Desativada", os cookies poderão ser definidos por esses elementos e os usuários serão impedidos de mudar essa configuração.
 
       Se ela não for definida, os cookies de terceiros serão ativados, mas os usuários poderão mudar essa configuração.</translation>
@@ -2336,6 +2337,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o histórico de navegação será salvo.</translation>
+<translation id="3387999258705169775">Comportamento padrão do ajuste aninhado da função setTimeout().</translation>
 <translation id="3389088527709746815">Ativar a autenticação gnubby para o host de acesso remoto</translation>
 <translation id="3391457705621770207">A definição da política determina o tempo (em milissegundos) sem atividade do usuário até o login automático na conta local do dispositivo especificada pela <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
@@ -3358,6 +3360,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="4635284822166984665">Horário em que o carregamento do dispositivo será iniciado, interpretado no fuso horário local do dispositivo.</translation>
+<translation id="4638532652671131094">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
       Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.
@@ -4725,6 +4728,13 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como uma cor hexadecimal válida, um tema baseado nessa cor será gerado automaticamente e aplicado ao navegador. O usuário não poderá mudar o tema definido pela política.
 
       Se a política for deixada sem definição, o usuário poderá mudar o tema do navegador como quiser.</translation>
+<translation id="619376519309703699">Esta política é fornecida como uma forma de desativar o recurso de conjuntos primários.
+
+                  Quando ela é deixada sem definição ou é ativada, os conjuntos primários ficam ativados.
+
+                  Quando ela é desativada, eles também ficam desativados.
+
+                  Essa política controla se o Chrome oferece suporte a recursos relacionados aos conjuntos primários, como o atributo de cookies SameParty.</translation>
 <translation id="6195802366906945965">Determina se o verificador integrado de certificados será usado para verificar os certificados do servidor</translation>
 <translation id="6198947200418556248">Esta política foi descontinuada. Se você ainda precisa de um comportamento de cookies legado, use a <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Com ela, é possível reverter todos os cookies para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado. A reversão para o comportamento legado faz com que os cookies que não especificam um atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> sejam tratados como <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />, remove o requisito de que cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> precisam ter o atributo <ph name="ATTRIBUTE_SECURE_NAME" /> e ignora a comparação do esquema ao avaliar se dois sites são o mesmo. Para ver uma descrição completa, consulte https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies (em inglês).
 
@@ -5299,6 +5309,17 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento de origem cruzada.</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
+<translation id="6740299900063889926">setTimeout(…, 0) normalmente é usado para dividir tarefas longas de JavaScript.
+          Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não serão ajustadas de forma tão agressiva.
+          Isso melhora a performance no curto prazo, mas os sites que abusam da API ainda têm os setTimeouts ajustados.
+
+          É possível que a ordem das tarefas em uma página da Web mude, levando a um comportamento inesperado em sites que dependem de uma ordem específica.
+          Também é possível que isso afete sites com muitas funções setTimeout() com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
+
+          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no Canal Stable.
+
+          Essa é uma política temporária e tem remoção planejada para a versão 107 do Chrome. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
+          </translation>
 <translation id="6740611636377710500">Permitir que este usuário execute o PluginVm.
 
       Se esta política for definida como falsa ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o usuário.
@@ -7140,6 +7161,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8749536858950505376">Se esta política for definida como verdadeira, o cursor grande será ativado. Se esta política for definida como falsa, o cursor grande será desativado.
 
       Se você definir a política, os usuários não poderão mudar o recurso. Se a política não for definida, o cursor grande será desativado inicialmente, mas os usuários poderão ativá-lo quando quiserem.</translation>
+<translation id="8750941317035081777">A função setTimeout() do JavaScript será ajustada após um limite de aninhamento normal.</translation>
 <translation id="8753264624162178499">A opção "Imprimir como imagem" está disponível para permitir que o usuário rasterize o PDF antes de enviar o trabalho de impressão ao destino.</translation>
 <translation id="8757552286070680084">Configuração do DTC wilco</translation>
 <translation id="8758831693895931466">Permite a inscrição obrigatória no gerenciamento em nuvem</translation>

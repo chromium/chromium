@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">‏برخی‌از ویژگی‌های Chrome دیگر دردسترس نخواهد بود</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2871733351037274014">پیش‌بارگیری صفحات</translation>
+<translation id="2886836735871983413">همان‌طور که وب را مرور می‌کنید، فهرستی از سایت‌ها در اینجا نشان داده خواهد شد</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2891154217021530873">توقف بارگیری صفحه</translation>
 <translation id="2892647708214602204">هنگامی که این فایل آماده باشد اعلانی را می‌بینید</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">نوشتار هم‌رسانی‌شده از دستگاه دیگر</translation>
 <translation id="2989523299700148168">اخیراً دیده‌شده</translation>
 <translation id="2992473221983447149">شرح تصویر</translation>
+<translation id="2994959273484668146">برداشتن <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">ایجاد گذرعبارت</translation>
 <translation id="2996809686854298943">نشانی وب لازم است</translation>
 <translation id="2997081575621687554">‏وقتی یک سایت Google برای پیش‌بارگیری خصوصی پیوندها در صفحه‌اش درخواست می‌کند، Chrome صفحات را بدون کوکی‌ها ازطریق سرورهای Google رمزگذاری و پیش‌بارگیری می‌کند. با این کار هویتتان از سایت پیش‌بارگیری‌شده پنهان می‌شود.</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">لطفاً تأیید کنید این ارائه‌دهندهْ معتبر است یا بعداً دوباره امتحان کنید</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861633093716975811">ویدیوهای پرطرفدار</translation>
+<translation id="3874520961715512166">سایت برداشته شد</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3894427358181296146">افزودن پوشه</translation>
 <translation id="3899682235662194879">بستن همه «برگه‌های ناشناس»</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
 <translation id="4096227151372679484">جریان ذخیره نشانک به‌صورت نیمه باز شده است</translation>
 <translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
+<translation id="4101475238162928417">برای دریافت گذرواژه‌ها، نشانک‌ها، و سایر داده‌هایتان در دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
 <translation id="410351446219883937">پخش خودکار</translation>
 <translation id="4106587138345390261">‏Chrome درحال کاوش ویژگی‌های جدیدی است که به سایت‌های امکان می‌دهد تجربه مرور یکسانی را با مصرف اطلاعات شخصی کمتر ارائه دهند</translation>
 <translation id="4108314971463891922">دنبال کردن</translation>
@@ -1191,6 +1195,7 @@
 <translation id="749294055653435199">‏«لنز Google» در این دستگاه دردسترس نیست</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (زمان به‌روزرسانی <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">لطفاً صبر کنید...</translation>
+<translation id="7502234197872745058">‏برای خارج شدن از سیستم «حساب Google» خود در همه وب‌سایت‌ها، <ph name="BEGIN_LINK1" />از سیستم Chrome خارج شوید<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">به‌روزرسانی دردسترس نیست</translation>
 <translation id="7507207699631365376">به <ph name="BEGIN_LINK" />خط‌مشی رازداری<ph name="END_LINK" /> این ارائه‌دهنده بروید</translation>
 <translation id="7514365320538308">بارگیری</translation>

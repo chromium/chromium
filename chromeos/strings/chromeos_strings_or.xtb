@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍</translation>
 <translation id="2006864819935886708">ସଂଯୋଗ</translation>
 <translation id="2008685064673031089">ପ୍ରାଇମ୍ ସନ୍ଧାନ</translation>
+<translation id="2011174342667534258">SDK ସଂସ୍କରଣ:</translation>
 <translation id="2016697457005847575">ଟ୍ରବୁଲସୁଟିଂ ଷ୍ଟେପଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="2016848882344942759">--କୌଣସି ହ୍ୱାଇଟ-ଲେବଲ ନାହିଁ--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
 <translation id="2275586345903859204">ମରାମତି ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
+<translation id="2276999893457278469">ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2294753434210277304">ଡାଉନଲୋଡ କରାଯାଇଥିବା Chromebook ରିକଭରି ୟୁଟିଲିଟି ଇମେଜ ସହ ଏକ USB ଡ୍ରାଇଭ କିମ୍ବା SD କାର୍ଡ ପରି ଏକ୍ସଟର୍ନଲ ଷ୍ଟୋରେଜ ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2526590354069164005">ଡେସ୍କଟପ୍</translation>
 <translation id="253029298928638905">ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି...</translation>
+<translation id="2533048460510040082">ପ୍ରସ୍ତାବିତ ସହାୟତା ବିଷୟବସ୍ତୁ</translation>
 <translation id="2536159006530886390">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -229,6 +232,7 @@
 <translation id="3083667275341675831">ସଂଯୋଗ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
 <translation id="3084958266922136097">ସ୍କ୍ରିନ୍ ସେଭର୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3091839911843451378">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
+<translation id="3096753366938912951">ଲିଡକୁ ସମତଳ ପୃଷ୍ଠରେ ରଖନ୍ତୁ</translation>
 <translation id="3102119246920354026">କ୍ୟାଶ୍</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ଡିଭାଇସଟି ସଂଯୁକ୍ତ ହୋଇଛି।</translation>
@@ -286,9 +290,11 @@
 <translation id="3604713164406837697">ୱାଲପେପର୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
+<translation id="361575905210396100">ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
 <translation id="3621202678540785336">ଇନ୍‌ପୁଟ୍</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
+<translation id="3643198267586205643">OS ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="3643810137582748570">କାଲିବ୍ରେସନକୁ ବାଦ ଦିଅନ୍ତୁ</translation>
 <translation id="3651050199673793219">ଏକ ତାପମାତ୍ରା ୟୁନିଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3678765385266369662">Write Protectକୁ ଆପଣ କିପରି ବନ୍ଦ କରିବା ପାଇଁ ଚାହାଁନ୍ତି ତାହା ଚୟନ କରନ୍ତୁ</translation>
@@ -303,6 +309,7 @@
 <translation id="3784455785234192852">ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="38114475217616659">ସମସ୍ତ ଇତିହାସ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
+<translation id="3824259034819781947">ଫାଇଲଗୁଡ଼ିକୁ ଆଟାଚ କରନ୍ତୁ</translation>
 <translation id="3838338534323494292">ନୂଆ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3856304145690230735">ବେସ ଜାଇରୋସ୍କୋପ</translation>
@@ -406,6 +413,7 @@
 <translation id="469379815867856270">ସିଗନାଲର କ୍ଷମତା</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
+<translation id="4740255236714854844">ବେସକୁ ସମତଳ ପୃଷ୍ଠରେ ରଖନ୍ତୁ</translation>
 <translation id="4744944742468440486">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା</translation>
 <translation id="4751272708893364980">RMA ଲଗଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
@@ -453,6 +461,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ଆପଣଙ୍କ ସ୍କ୍ରିନ ନିଷ୍କ୍ରିୟ ଥିବା ବେଳେ ଫଟୋ, ସମୟ, ପାଣିପାଗ ଏବଂ ମିଡିଆ ସମ୍ବନ୍ଧିତ ସୂଚନା ଦେଖାନ୍ତୁ।</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
+<translation id="5044978354634658544">USB ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
@@ -737,6 +746,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" />ର ମରାମତି କରିବା ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7665800271478495366">ଅବତାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
+<translation id="7682274994254393134">ମରାମତି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -863,6 +873,7 @@
 <translation id="885701979325669005">ଷ୍ଟୋରେଜ୍</translation>
 <translation id="8863170912498892583">ଗାଢ଼ା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ <ph name="INTENT" /> ପାଆନ୍ତୁ</translation>
+<translation id="8864415976656252616">କୌଣସି ପ୍ରସ୍ତାବିତ ବିଷୟବସ୍ତୁ ନାହିଁ। ଶ୍ରେଷ୍ଠ ସହାୟତା ବିଷୟବସ୍ତୁ ଦେଖନ୍ତୁ।</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ଡିଭାଇସଟି ଏକ ଟାବଲେଟ ଅଟେ।</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>

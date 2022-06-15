@@ -2877,7 +2877,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3755411799582650620">El <ph name="PHONE_NAME" /> ahora también puede desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">El sitio está usando el micrófono</translation>
 <translation id="3756485814916578707">Transmitiendo pantalla</translation>
-<translation id="3756578970075173856">Establece un PIN</translation>
+<translation id="3756578970075173856">Establecer un PIN</translation>
 <translation id="3756795331760037744">Permite que Asistente de Google utilice información de la pantalla de <ph name="SUPERVISED_USER_NAME" /> para que le sea útil</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
 <translation id="375841316537350618">Descargando secuencia de comandos proxy...</translation>
@@ -3890,7 +3890,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4742970037960872810">Quitar el texto destacado</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Obtener información sobre cómo actualizar las aplicaciones<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar el sonido del sitio}other{Activar el sonido de los sitios}}</translation>
-<translation id="474609389162964566">Accede a tu Asistente mediante "Hey Google"</translation>
+<translation id="474609389162964566">Accede a tu Asistente con "Hey Google"</translation>
 <translation id="4746351372139058112">Mensajes</translation>
 <translation id="4748783296226936791">Por lo general, los sitios se conectan a dispositivos HID para usarlos en funciones que utilizan teclados poco habituales, controles de juegos y otros dispositivos.</translation>
 <translation id="4750185073185658673">Revisa algunos permisos en tu teléfono. Asegúrate de que las conexiones Bluetooth y Wi-Fi del teléfono estén activadas.</translation>

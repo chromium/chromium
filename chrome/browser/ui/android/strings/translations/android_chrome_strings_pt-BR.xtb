@@ -508,6 +508,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="3740525748616366977">A pesquisa por voz não está disponível neste dispositivo</translation>
 <translation id="3749259744154402564">Incompatível</translation>
 <translation id="3771033907050503522">Guias anônimas</translation>
+<translation id="377124182565324804">Adicionar <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Esta configuração está desativada porque o "controle dos pais" está ativado</translation>
 <translation id="3771694256347217732">Termos de Serviço do Google</translation>
 <translation id="3773856050682458546">Dados básicos e informações sobre os sites que você visita e os apps que usa</translation>
@@ -590,6 +591,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: seu histórico de navegação, um registro de sites visitados usando o Chrome neste dispositivo.</translation>
 <translation id="4263656433980196874">IU de consentimento para a pesquisa por voz do Assistente aberta no tamanho máximo</translation>
+<translation id="4266054596873078491">Faça login neste site e no Chrome com sua Conta do Google.</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4290281343757112331">Fazer o download mais tarde?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ativar o bloqueio de tela nas configurações do Android<ph name="END_LINK" /></translation>
@@ -733,6 +735,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4985248278475639481">Sobre a personalização de anúncios</translation>
 <translation id="4987271110129728827">Não foi possível encontrar a página. Verifique se há erros de ortografia ou faça uma pesquisa na Web.</translation>
 <translation id="4988526792673242964">Páginas</translation>
+<translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="5001388021414335527">Siga este site</translation>
 <translation id="500351648694011114">Navegar com mais facilidade</translation>
 <translation id="5004416275253351869">Controles de atividade do Google</translation>
@@ -791,6 +794,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5329858041417644019">Seu navegador não é gerenciado</translation>
 <translation id="5339031667684712858">Sites que você removeu</translation>
 <translation id="5342314432463739672">Solicitações de permissão</translation>
+<translation id="53537532693258630">Os sites removidos vão aparecer aqui</translation>
 <translation id="5355191726083956201">A Proteção reforçada está ativa</translation>
 <translation id="5368227114232678694">Para navegar com privacidade no dispositivo, use a navegação anônima</translation>
 <translation id="5375577065097716013">Pesquisar imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -982,6 +986,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 Baseado na sua interação com um site, como fazer login em uma conta com frequência, o site pode emitir um token de confiança para o navegador. Se outros sites que você visitar verificarem e encontrarem um token de confiança válido, é mais provável que eles tratem você como uma pessoa e não como um robô.
 
 Os tokens de confiança melhoram a privacidade na Web e não podem ser usados para descobrir quem você é.</translation>
+<translation id="6394791151443660613">Pesquisar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINK</translation>
 <translation id="6397616442223433927">Conectado novamente</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
@@ -1496,6 +1501,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998729206196772491">Você está fazendo login com uma conta gerenciada por <ph name="MANAGED_DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
+<translation id="9021388532480169802">Site adicionado</translation>
 <translation id="9022774213089566801">Visitados com frequência</translation>
 <translation id="9028914725102941583">Ative a sincronização para compartilhar entre dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}one{# vídeo}other{# vídeos}}</translation>

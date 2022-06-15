@@ -234,6 +234,7 @@
 <translation id="3083667275341675831">കണക്റ്റിവിറ്റി തകരാർ കണ്ടെത്തൽ</translation>
 <translation id="3084958266922136097">സ്ക്രീൻ സേവർ പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
+<translation id="3096753366938912951">പരന്ന പ്രതലത്തിൽ ലിഡ് വയ്ക്കുക</translation>
 <translation id="3102119246920354026">കാഷെ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
@@ -291,9 +292,11 @@
 <translation id="3604713164406837697">വാൾപേപ്പർ മാറ്റുക</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
+<translation id="361575905210396100">നിങ്ങളുടെ ഫീഡ്ബാക്കിന് നന്ദി</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
 <translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
+<translation id="3643198267586205643">OS അപ്‌ഡേറ്റ്</translation>
 <translation id="3643810137582748570">കാലിബ്രേറ്റ് ചെയ്യുന്നത് ഒഴിവാക്കുക</translation>
 <translation id="3651050199673793219">താപനിലാ യൂണിറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3678765385266369662">റൈറ്റ് പരിരക്ഷ ഓഫാക്കേണ്ടത് എങ്ങനെയെന്ന് തിരഞ്ഞെടുക്കുക</translation>
@@ -412,6 +415,7 @@
 <translation id="469379815867856270">സിഗ്‌നൽ ശക്തി</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="4740255236714854844">പരന്ന പ്രതലത്തിൽ ബേസ് വയ്ക്കുക</translation>
 <translation id="4744944742468440486">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ</translation>
 <translation id="4751272708893364980">RMA ലോഗുകൾ കാണുക</translation>
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
@@ -459,6 +463,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">നിങ്ങളുടെ സ്‌ക്രീൻ നിഷ്‌ക്രിയമായിരിക്കുമ്പോൾ ഫോട്ടോകൾ, സമയം, കാലാവസ്ഥ, മീഡിയാ വിവരങ്ങൾ എന്നിവ കാണിക്കുക.</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
+<translation id="5044978354634658544">USB ഇൻസേർട്ട് ചെയ്യൽ</translation>
 <translation id="5049856988445523908">സിം ലോക്ക് ചെയ്തു (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ഗ്രൂപ്പിന്‍റെ പേര്</translation>
 <translation id="5051044138948155788">ഇത് അവസാനത്തെ പേജാണ്. ഇത് നീക്കം ചെയ്യുന്നത് നിങ്ങളെ സ്‌കാനിംഗിന്റെ ആരംഭ സ്ക്രീനിലേക്ക് കൊണ്ടുപോകും.</translation>
@@ -742,6 +747,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> റിപ്പയറിൽ പിശക്</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7665800271478495366">അവതാർ മാറ്റുക</translation>
+<translation id="7682274994254393134">റിപ്പയർ ആരംഭിക്കുന്നു</translation>
 <translation id="7690294790491645610">പുതിയ പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
 <translation id="7705524343798198388">VPN</translation>

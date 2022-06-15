@@ -16,7 +16,6 @@
 <translation id="115443833402798225">ಹಂಗುಲ್ ಅಹ್ಮಟೆ</translation>
 <translation id="1155759005174418845">ಕೆಟಲಾನ್</translation>
 <translation id="1168100932582989117">Google ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
-<translation id="1171082344678443012">XZ ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="1172970565351728681">ಸುಮಾರು <ph name="REMAINING_TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ವಿವರಗಳು</translation>
@@ -26,12 +25,10 @@
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1209796539517632982">ಸ್ವಯಂಚಾಲಿತ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="1210831758834677569">ಲಾವೋ</translation>
-<translation id="1223825810409523901">Chrome ವಿಸ್ತರಣೆ</translation>
 <translation id="1243314992276662751">ಅಪ್‌ಲೋಡ್</translation>
 <translation id="1249250836236328755">ಪ್ರಕಾರ</translation>
 <translation id="1254593899333212300">ನೇರ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
 <translation id="1272293450992660632">ಪಿನ್ ಮೌಲ್ಯಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ.</translation>
-<translation id="127650757582748357">BZIP2 ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="1280820357415527819">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1291603679744561561">ಸಿಮ್ ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -77,7 +74,6 @@
 <translation id="166439687370499867">ಹಂಚಿದ ನೆಟ್‌ವರ್ಕ್‌ ಕಾನ್ಫಿಗರ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1665611772925418501">ಫೈಲ್ ಅನ್ನು ಮಾರ್ಪಡಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="1673103856845176271">ಸುರಕ್ಷತಾ ಕಾರಣಗಳಿಗಾಗಿ ಫೈಲ್ ಅನ್ನು ಪ್ರವೇಶಿಸಲಾಗಲಿಲ್ಲ.</translation>
-<translation id="16762847117768727">ISO ಚಿತ್ರ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">ಬೈಕಿಂಗ್</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಝಿಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -117,11 +113,9 @@
 <translation id="1942765061641586207">ಚಿತ್ರದ ರೆಸಲ್ಯೂಷನ್‌‌</translation>
 <translation id="1972984168337863910">ಫೈಲ್‌ಗಳ ಪ್ರತಿಕ್ರಿಯೆ ಫಲಕಗಳನ್ನು ವಿಸ್ತರಿಸಿ</translation>
 <translation id="1995337122023280937">ಫೈಲ್ ಸ್ಥಳಕ್ಕೆ ಹೋಗಿ</translation>
-<translation id="1996806196681857869">Z ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="2001796770603320721">ಡ್ರೈವ್‌ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2009067268969781306">ಡ್ರೈವ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುವುದರಿಂದ, ಅದರಲ್ಲಿ ಸಂಗ್ರಣೆಯಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಪಡಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2025955442973426285">ಟಿಗ್ರಿನ್ಯಾ</translation>
-<translation id="2028997212275086731">RAR ಆರ್ಕೈವ್</translation>
 <translation id="2037845485764049925">ರಷ್ಯನ್</translation>
 <translation id="2044023416777079300">ಮೋಡೆಮ್ ಅನ್ನು ನೋಂದಾಯಿಸಿಲ್ಲ</translation>
 <translation id="2046702855113914483">ರಾಮೆನ್</translation>
@@ -204,10 +198,8 @@
 <translation id="2771816809568414714">ಚೀಸ್</translation>
 <translation id="2781645665747935084">ಬೆಲ್ಜಿಯನ್</translation>
 <translation id="2782104745158847185">Linux ಅಪ್ಲಿಕೇಶನ್‌ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ</translation>
-<translation id="2788520643285360081">7-Zip ಆರ್ಕೈವ್</translation>
 <translation id="2803375539583399270">ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2820957248982571256">ಸ್ಕ್ಯಾನ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
-<translation id="2822595620066756134">GZIP ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="2830077785865012357">ಚೈನೀಸ್ ಜುಯೆನ್</translation>
 <translation id="2843806747483486897">ಡಿಫಾಲ್ಟ್‌ ಅನ್ನು ಬದಲಾಯಿಸಿ...</translation>
 <translation id="2850124913210091882">ಬ್ಯಾಕಪ್‌ ಮಾಡು</translation>
@@ -299,7 +291,6 @@
 <translation id="357479282490346887">ಲಿಥುವಾನಿಯನ್</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
-<translation id="3593874215226880809">LZIP ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ಕೆನೆಡಿಯನ್ ಫ್ರೆಂಚ್</translation>
 <translation id="3606220979431771195">ಟರ್ಕಿಶ್‌-F</translation>
@@ -312,7 +303,6 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ಅನ್ನು ರದ್ದುಮಾಡಿ.</translation>
 <translation id="3690128548376345212">ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="3691184985318546178">ಸಿಂಹಳ</translation>
-<translation id="3703620396751288986">ZIP ಆರ್ಕೈವ್</translation>
 <translation id="3726463242007121105">ಇದರ ಫೈಲ್‌ಸಿಸ್ಟಂ ಅನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ ಈ ಸಾಧನವನ್ನು ತೆರೆಯಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3727148787322499904">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಎಲ್ಲಾ ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ</translation>
 <translation id="3737576078404241332">ಸೈಡ್‌ಬಾರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
@@ -414,7 +404,6 @@
 <translation id="4646813851450205600">Qwerty ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಝೆಕ್</translation>
 <translation id="4656777537938206294">ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡಿ</translation>
 <translation id="4658782175094886150">ಹಿಮದಲ್ಲಿರುವ ವ್ಯಕ್ತಿ</translation>
-<translation id="4661996069183330363">TAR ಆರ್ಕೈವ್</translation>
 <translation id="4669606053856530811"><ph name="SOURCE_NAME" /> ನ ಸದಸ್ಯರೊಂದಿಗೆ ಈ ಐಟಂಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳದ ಹೊರತು ಅವರು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ಸ್ವೀಡಿಶ್</translation>
@@ -597,7 +586,6 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ನೆಟ್‌ವರ್ಕ್, ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ</translation>
 <translation id="6074825444536523002">Google ಫಾರ್ಮ್</translation>
 <translation id="6079871810119356840">Qwerty ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಹಂಗೇರಿಯನ್</translation>
-<translation id="6082256976217156453">LZMA ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="6096979789310008754">ಹುಡುಕಾಟ ಪಠ್ಯವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗಿದೆ, ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಫೋಲ್ಡರ್‌ಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> ಅನ್ನು <ph name="FOLDER_NAME" /> ಗೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="61118516107968648">CSV ಪಠ್ಯ</translation>
@@ -618,7 +606,6 @@
 <translation id="6220423280121890987">ಪಂಜಾಬಿ</translation>
 <translation id="6224240818060029162">ಡ್ಯಾನಿಶ್</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿ</translation>
-<translation id="6224665423283788195">Z ಸ್ಟ್ಯಾಂಡರ್ಡ್ ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="6227235786875481728">ಈ ಫೈಲ್ ಅನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="6241349547798190358">ಡಚ್ (ಬೆಲ್ಜಿಯಂ)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ಕನೆಕ್ಟ್</translation>
@@ -924,7 +911,6 @@
 <translation id="8903931173357132290">ಪದವೀಧರ</translation>
 <translation id="8912078710089354287">ಬಾಲ ಅಲ್ಲಾಡಿಸುತ್ತಿರುವ ನಾಯಿ</translation>
 <translation id="8919081441417203123">ಡ್ಯಾನಿಶ್</translation>
-<translation id="8965273390142984105">LZOP ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="8965697826696209160">ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ.</translation>
 <translation id="8997962250644902079">ಚೈನೀಸ್ (ಸಾಂಪ್ರದಾಯಿಕ) ಪಿನ್‌ಯಿನ್</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>

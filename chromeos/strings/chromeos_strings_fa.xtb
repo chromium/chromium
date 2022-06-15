@@ -129,6 +129,7 @@
 <translation id="1999615961760456652">درگاه مهمان</translation>
 <translation id="2006864819935886708">قابلیت اتصال</translation>
 <translation id="2008685064673031089">جستجوی اصلی</translation>
+<translation id="2011174342667534258">‏نسخه SDK:</translation>
 <translation id="2016697457005847575">مراحل عیب‌یابی را امتحان کنید</translation>
 <translation id="2016848882344942759">--بدون برچسب-سفید--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +161,7 @@
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
 <translation id="2271469253353559191">زمان‌بندی حالت تاریک</translation>
 <translation id="2275586345903859204">تعمیر انجام شد</translation>
+<translation id="2276999893457278469">محتوای راهنمای برتر</translation>
 <translation id="2287186687001756809">تصویری وجود ندارد. برای افزودن عکس به <ph name="LINK" /> بروید</translation>
 <translation id="2294753434210277304">‏فضای ذخیره‌سازی خارجی، مثل درایو USB یا کارت SD حاوی تصویر «ابزار بازیابی Chromebook» بارگیری‌شده را وارد کنید</translation>
 <translation id="2307344026739914387">استفاده از جفت‌کلید فعلی</translation>
@@ -193,6 +195,7 @@
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
 <translation id="253029298928638905">در حال بازراه‌اندازی…</translation>
+<translation id="2533048460510040082">محتوای راهنمای پیشنهادی</translation>
 <translation id="2536159006530886390">اتصال به اینترنت ممکن نیست.</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
@@ -305,6 +308,7 @@
 <translation id="3784455785234192852">قفل</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
+<translation id="3824259034819781947">پیوست فایل</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3856304145690230735">ژیروسکوپ پایه</translation>
@@ -865,6 +869,7 @@
 <translation id="885701979325669005">فضای ذخیره‌سازی</translation>
 <translation id="8863170912498892583">فعال کردن زمینه تیره</translation>
 <translation id="8863888432376731307">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />» و موارد دیگر</translation>
+<translation id="8864415976656252616">محتوای پیشنهادی وجود ندارد. محتوای راهنمای برتر را ببینید.</translation>
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8876270629542503161">دستگاه رایانه لوحی است.</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>

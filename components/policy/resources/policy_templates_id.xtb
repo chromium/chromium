@@ -1353,6 +1353,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Dukungan untuk penyetelan kebijakan ini ke "tls1" atau "tls1.1" dihapus di versi 91. Menyembunyikan peringatan TLS 1.0/1.1 tidak lagi didukung.</translation>
 <translation id="2364639863953745682">Mode pengalaman aktivasi Asisten</translation>
 <translation id="2366301887862414321">Izinkan host pesan native tingkat pengguna dan tingkat sistem</translation>
+<translation id="2382672620906337383">setTimeout() JavaScript tidak akan dikunci hingga batas bertingkat yang lebih tinggi.</translation>
 <translation id="2384233438419344179">Jika kebijakan disetel ke Aktif, elemen halaman web yang tidak berasal dari domain di kolom URL browser tidak dapat menyetel cookie. Jika kebijakan disetel ke Nonaktif, elemen tersebut akan dapat menyetel cookie dan pengguna tidak dapat mengubah setelan ini.
 
       Jika tidak disetel, cookie pihak ketiga akan aktif, tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -1779,6 +1780,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="283478052049914107">Jika kebijakan disetel ke Aktif dan port non-standar dimasukkan (selain port 80 atau 443), port tersebut akan disertakan dalam SPN Kerberos yang dihasilkan.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, SPN Kerberos yang dihasilkan tidak akan mencakup port.</translation>
+<translation id="2835686964326214400">Menyetel jadwal kustom untuk memulai ulang perangkat</translation>
 <translation id="2838830882081735096">Jangan izinkan migrasi data dan ARC</translation>
 <translation id="2839294585867804686">Pengaturan Berbagi File Jaringan</translation>
 <translation id="284288632677954003">URL file XML yang berisi URL yang tidak akan memicu pengalihan browser.</translation>
@@ -2346,6 +2348,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3387211681524224831">Jika kebijakan disetel ke Aktif, histori penjelajahan tidak akan disimpan, sinkronisasi tab akan dinonaktifkan, dan pengguna tidak dapat mengubah setelan ini.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, histori penjelajahan akan disimpan.</translation>
+<translation id="3387999258705169775">Perilaku default untuk penguncian bertingkat fungsi setTimeout().</translation>
 <translation id="3389088527709746815">Aktifkan autentikasi gnubby untuk host akses jarak jauh</translation>
 <translation id="3391457705621770207">Menyetel kebijakan akan menentukan jumlah waktu dalam milidetik tanpa aktivitas pengguna sebelum login otomatis ke akun lokal perangkat sebagaimana ditentukan oleh kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
@@ -3028,6 +3031,16 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor teks mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4183229833636799228">Setelan <ph name="FLASH_PLUGIN_NAME" /> default</translation>
+<translation id="4186244263855283575">Memungkinkan penyetelan jadwal kustom untuk memulai ulang perangkat. Setelah kebijakan disetel ke Benar (True), perangkat akan dimulai ulang sesuai jadwal. Kebijakan harus dihapus untuk membatalkan semua mulai ulang terjadwal lainnya.
+
+      Dalam sesi pengguna dan sesi tamu, hal berikut akan berlaku:
+
+        * Pengguna diberi tahu bahwa mulai ulang akan dilakukan, 1 jam sebelum jadwal mulai ulang. Pengguna memiliki opsi untuk memulai ulang saat itu juga atau menunggu mulai ulang terjadwal. Mulai ulang terjadwal tidak dapat ditunda.
+
+        * Terdapat masa tenggang 1 jam setelah perangkat di-booting. Mulai ulang terjadwal akan dilewati selama periode ini dan dijadwalkan ulang untuk hari, minggu, atau bulan berikutnya, bergantung pada setelan.
+
+      Dalam sesi kios, tidak ada masa tenggang dan tidak ada notifikasi tentang mulai ulang.
+</translation>
 <translation id="4187576366596772431">Memblokir WebHID API di situs ini</translation>
 <translation id="4192388905594723944">URL untuk memvalidasi token autentikasi klien akses jarak jauh</translation>
 <translation id="4203055629055264833">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat menampilkan halaman hasil penelusuran mesin telusur default terbaru di panel samping dengan mengalihkan ikon di toolbar.
@@ -3361,6 +3374,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
 <translation id="4632566332417930481">Larang penggunaan Developer Tools pada ekstensi yang diinstal oleh kebijakan perusahaan, izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
 <translation id="4635284822166984665">Waktu perangkat akan mulai mengisi daya, disesuaikan dengan zona waktu lokal perangkat.</translation>
+<translation id="4638532652671131094">Mengontrol batas bertingkat sebelum fungsi setTimeout() JavaScript mulai dikunci.</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
       Gunakan karakter pengganti '*' untuk mengizinkan penggabungan semua kebijakan kamus yang didukung.
@@ -4735,6 +4749,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke warna hex yang valid, tema yang didasarkan pada warna tersebut akan otomatis dibuat dan diterapkan ke browser. Pengguna tidak akan dapat mengubah tema yang disetel oleh kebijakan ini.
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengubah tema browser sesuai keinginan.</translation>
+<translation id="619376519309703699">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama.
+
+                  Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
+
+                  Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
+
+                  Status tersebut mengontrol apakah Chrome akan mendukung fitur terkait Set Pihak Pertama (misalnya, atribut cookie SameParty).</translation>
 <translation id="6195802366906945965">Menentukan apakah pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
 <translation id="6198947200418556248">Kebijakan ini tidak digunakan lagi. Jika Anda masih memerlukan perilaku cookie lama, gunakan <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Mengizinkan Anda mengembalikan semua cookie ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama. Pengembalian ke perilaku lama akan menyebabkan cookie yang tidak menentukan atribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> dianggap sebagai "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", menghapus persyaratan bagi cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" untuk membawa atribut "<ph name="ATTRIBUTE_SECURE_NAME" />", dan melewati perbandingan skema saat evaluasi jika dua situs adalah situs yang sama. Lihat penjelasan lengkapnya di https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -7152,6 +7173,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8749536858950505376">Jika kebijakan ditetapkan ke Benar (True), kursor besar akan tetap diaktifkan. Jika kebijakan ditetapkan ke Salah (False), kursor besar akan tetap dinonaktifkan.
 
       Jika kebijakan tersebut ditetapkan, pengguna tidak dapat mengubah fitur. Jika tidak ditetapkan, kursor besar mula-mula akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
+<translation id="8750941317035081777">setTimeout() JavaScript akan dikunci setelah batas bertingkat normal.</translation>
 <translation id="8753264624162178499">Opsi Cetak sebagai gambar tersedia bagi pengguna untuk memungkinkan rasterisasi PDF sebelum mengirim tugas pencetakan ke tujuan.</translation>
 <translation id="8757552286070680084">Konfigurasi DTC wilco</translation>
 <translation id="8758831693895931466">Aktifkan pendaftaran pengelolaan cloud wajib</translation>

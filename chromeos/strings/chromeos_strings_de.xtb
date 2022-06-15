@@ -128,6 +128,7 @@
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Verbindung</translation>
 <translation id="2008685064673031089">Primzahlensuche</translation>
+<translation id="2011174342667534258">SDK-Version:</translation>
 <translation id="2016697457005847575">Schritte zur Fehlerbehebung ausprobieren</translation>
 <translation id="2016848882344942759">--kein White Label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +160,7 @@
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
 <translation id="2275586345903859204">Reparatur abgeschlossen</translation>
+<translation id="2276999893457278469">Häufig gelesene Hilfeartikel</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2294753434210277304">Schließe einen USB-Speicher an, lege eine SD-Karte ein oder verwende ein anderes externes Speichergerät, auf dem sich das heruntergeladene Image des Programms zur Chromebook-Wiederherstellung befindet</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Wird neu gestartet…</translation>
+<translation id="2533048460510040082">Vorgeschlagene Hilfeartikel</translation>
 <translation id="2536159006530886390">Keine Verbindung zum Internet.</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
@@ -229,6 +232,7 @@
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3084958266922136097">Bildschirmschoner deaktivieren</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
+<translation id="3096753366938912951">Leg den Deckel auf einen ebenen Untergrund</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Das Gerät ist verbunden.</translation>
@@ -286,9 +290,11 @@
 <translation id="3604713164406837697">Hintergrund ändern</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
+<translation id="361575905210396100">Vielen Dank für dein Feedback</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Eingang</translation>
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
+<translation id="3643198267586205643">Betriebssystem aktualisieren</translation>
 <translation id="3643810137582748570">Kalibrierung überspringen</translation>
 <translation id="3651050199673793219">Temperatureinheit auswählen</translation>
 <translation id="3678765385266369662">Wähle aus, wie du den Schreibschutz deaktivieren möchtest</translation>
@@ -303,6 +309,7 @@
 <translation id="3784455785234192852">Sperre</translation>
 <translation id="38114475217616659">Gesamten Verlauf löschen</translation>
 <translation id="3820172043799983114">Ungültige PIN.</translation>
+<translation id="3824259034819781947">Dateien anhängen</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3856304145690230735">Gyroskop im Unterbau</translation>
@@ -406,6 +413,7 @@
 <translation id="469379815867856270">Signalstärke</translation>
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
+<translation id="4740255236714854844">Stell die Unterseite auf einen ebenen Untergrund</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
 <translation id="4751272708893364980">RMA-Protokolle ansehen</translation>
 <translation id="4773299976671772492">Angehalten</translation>
@@ -453,6 +461,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, kannst du dir Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
 <translation id="5039804452771397117">Zulassen</translation>
+<translation id="5044978354634658544">USB-Stick einstecken</translation>
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
 <translation id="5051044138948155788">Das ist die einzige Seite. Du gelangst dann zum Startbildschirm für den Scanvorgang.</translation>
@@ -737,6 +746,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" />-Reparaturfehler</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7665800271478495366">Avatar ändern</translation>
+<translation id="7682274994254393134">Reparaturbeginn</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -863,6 +873,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="885701979325669005">Speicher</translation>
 <translation id="8863170912498892583">Dunkles Design aktivieren</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> für „<ph name="QUERY" />“ bekommen und mehr</translation>
+<translation id="8864415976656252616">Keine vorgeschlagenen Artikel. Du kannst dir häufig gelesene Hilfeartikel ansehen.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>

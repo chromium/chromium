@@ -1350,6 +1350,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       En la versión 91, se quitó la compatibilidad para establecer esta política como "tls1" o "tls1.1". Ya no es posible quitar la advertencia de TLS 1.0/1.1.</translation>
 <translation id="2364639863953745682">Modo de la experiencia de integración del Asistente</translation>
 <translation id="2366301887862414321">Permitir hosts de mensajería nativa a nivel del sistema y del usuario</translation>
+<translation id="2382672620906337383">No se restringirá JavaScript setTimeout() hasta que el umbral de anidación sea más alto</translation>
 <translation id="2384233438419344179">Si habilitas la política, los elementos de la página web que no sean del dominio especificado en la barra de direcciones del navegador no podrán establecer cookies. Si inhabilitas la política, esos elementos podrán establecer cookies y los usuarios no podrán cambiar esta configuración.
 
       Si no la estableces, se activarán las cookies de terceros, pero los usuarios podrán cambiar esta configuración.</translation>
@@ -2342,6 +2343,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3387211681524224831">Si habilitas la política, no se guardará el historial de navegación, estará desactivada la sincronización de pestañas, y los usuarios no podrán cambiar esta configuración.
 
       Si inhabilitas la política o no la estableces, se guardará el historial de navegación.</translation>
+<translation id="3387999258705169775">Comportamiento predeterminado de la anidación restringida de la función setTimeout()</translation>
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
 <translation id="3391457705621770207">Si estableces la política, se determinará la cantidad de tiempo (expresado en milisegundos) sin actividad del usuario antes de acceder automáticamente a la cuenta local del dispositivo especificada en la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
@@ -3353,6 +3355,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
 <translation id="4632566332417930481">No permitir el uso de las Herramientas para desarrolladores en extensiones instaladas por una política empresarial; permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="4635284822166984665">La hora a la que el dispositivo comenzará a cargarse (según la zona horaria local del dispositivo).</translation>
+<translation id="4638532652671131094">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
 <translation id="4646626362889216307">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas del diccionario compatibles.
@@ -4727,6 +4730,13 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si estableces la política con un código hexadecimal de color válido, se generará automáticamente un tema basado en ese color y se aplicará al navegador. Los usuarios no podrán cambiar el tema establecido por la política.
 
       Si no la estableces, los usuarios podrán cambiar el tema de su navegador como prefieran.</translation>
+<translation id="619376519309703699">Esta política se utiliza como método para inhabilitar la función de conjuntos propios.
+
+                  Si habilitas esta política o no la estableces, se habilitará la función de conjuntos propios.
+
+                  Si la inhabilitas, se inhabilitará la función de conjuntos propios.
+
+                  Controla si Chrome admite funciones relacionadas con conjuntos propios (p. ej., el atributo SameParty de una cookie).</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de servidores</translation>
 <translation id="6198947200418556248">Esta política dejó de estar disponible. Si todavía necesitas el comportamiento heredado de las cookies, usa <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Permite revertir todas las cookies al comportamiento del atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> heredado. Si se revierte el comportamiento, las cookies que no tengan un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> especificado se tratarán según el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", las cookies con el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ya no necesitarán el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />", y se omitirá la comparación de esquemas cuando se evalúa si dos sitios son el mismo sitio. Para obtener la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -7164,6 +7174,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8749536858950505376">Si estableces el valor "True" para la política, el cursor quedará activado. Si estableces el valor "False", el cursor quedará desactivado.
 
       Si configuras la política, los usuarios no podrán cambiar la función. Si no la configuras, el cursor grande estará desactivado al principio, pero los usuarios podrán activarlo en cualquier momento.</translation>
+<translation id="8750941317035081777">Se restringirá JavaScript después de un umbral normal de anidación</translation>
 <translation id="8753264624162178499">La opción Imprimir como imagen está disponible para el usuario a fin de permitir la rasterización de archivos PDF antes de enviar el trabajo de impresión a destino</translation>
 <translation id="8757552286070680084">Configuración de DTC wilco</translation>
 <translation id="8758831693895931466">Habilitar la inscripción obligatoria en la administración de la nube</translation>

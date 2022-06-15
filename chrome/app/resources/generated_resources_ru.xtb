@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Экспортировать закладки</translation>
 <translation id="1008557486741366299">Не сейчас</translation>
 <translation id="1009476156254802388">Папка в сервисе "<ph name="WEB_DRIVE" />"</translation>
+<translation id="1009663062402466586">Теперь доступны средства управления играми</translation>
 <translation id="1010498023906173788">Эта вкладка подключена к последовательному порту.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Страница не отвечает}one{Страницы не отвечают}few{Страницы не отвечают}many{Страницы не отвечают}other{Страницы не отвечают}}</translation>
 <translation id="1011355516189274711">Громкость озвучивания текста</translation>
@@ -848,6 +849,7 @@
 <translation id="1795214765651529549">Использовать классическую тему</translation>
 <translation id="1796105431091975902">Выберите сценарий Ansible</translation>
 <translation id="1796588414813960292">Функции, которые используют звук, не будут работать</translation>
+<translation id="1797117170091578105">Играйте с помощью клавиатуры Chromebook. Клавиши можно настроить таким образом, чтобы они отвечали за выполнение определенных действий.</translation>
 <translation id="1800502858278951817">Ни одно расширение не запрашивало разрешение на чтение и изменение данных сайта <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Перейти в спящий режим, когда обложка закрыта</translation>
 <translation id="1802687198411089702">Страница не отвечает. Вы можете закрыть ее или дождаться ответа сервера.</translation>
@@ -1009,6 +1011,7 @@
 <translation id="1940546824932169984">Подключенные устройства</translation>
 <translation id="1941410638996203291">Время начала: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версия: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Показать привязку клавиш</translation>
 <translation id="1942128823046546853">Просмотр и изменение ваших данных на всех сайтах.</translation>
 <translation id="1942600407708803723">Завершить работу, когда обложка закрыта</translation>
 <translation id="1944528062465413897">Код Bluetooth-подключения:</translation>
@@ -1418,6 +1421,7 @@
     Отключить функцию Voice Match можно в настройках Ассистента. Чтобы послушать или удалить записи, сделанные при настройке Voice Match, войдите в аккаунт ребенка и откройте страницу <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">Нельзя использовать следующие клавиши: Tab, Shift, Ctrl, Esc, Caps Lock и клавиши регулировки громкости.</translation>
 <translation id="2309620859903500144">Этому сайту запрещено использовать датчики движения и освещенности.</translation>
 <translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL страницы</translation>
@@ -2741,6 +2745,7 @@
 <translation id="3613422051106148727">&amp;Открыть в новой вкладке</translation>
 <translation id="3615073365085224194">Приложите палец к сканеру отпечатков пальцев.</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" />: проверка…</translation>
+<translation id="3615596877979647433">Клавиша не задана. Нажмите на нее, чтобы настроить.</translation>
 <translation id="3616741288025931835">Очистить данные просмотров...</translation>
 <translation id="3617891479562106823">Фоновые изображения недоступны. Повторите попытку позже.</translation>
 <translation id="3619115746895587757">Капучино</translation>
@@ -2896,6 +2901,7 @@
 <translation id="3764753550716962406">Разрешить Google доступ к корзине, чтобы искать скидки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
+<translation id="3766687283066842296">Подробнее о функции "Управление телефоном"</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
 <translation id="377050016711188788">Мороженое</translation>
 <translation id="3771290962915251154">Эта настройка отключена, так как работает родительский контроль</translation>
@@ -3336,6 +3342,7 @@
 <translation id="4193836101014293726">Невозможно удалить профиль</translation>
 <translation id="419427585139779713">Вводить по слогам</translation>
 <translation id="4194570336751258953">Включить нажатие от прикосновения</translation>
+<translation id="4195378859392041564">Выберите любую клавишу с помощью мыши. Затем нажмите клавишу на клавиатуре, чтобы выполнить настройку.</translation>
 <translation id="4195421689821407315">Незащищенное скачивание</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
@@ -3401,6 +3408,7 @@
 <translation id="4258348331913189841">Файловые системы</translation>
 <translation id="4259388776256904261">Это может занять несколько минут…</translation>
 <translation id="4260182282978351200">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки с помощью Дополнительной защиты? Чтобы перейти к панели скачанных файлов, нажмите Shift + F6.</translation>
+<translation id="4260699894265914672">Чтобы выполнить настройку, нажмите на клавишу.</translation>
 <translation id="4261429981378979799">Разрешения для расширений</translation>
 <translation id="4262004481148703251">Закрыть</translation>
 <translation id="4263223596040212967">Проверьте раскладку клавиатуры и повторите попытку.</translation>
@@ -4575,6 +4583,7 @@
 <translation id="5449716055534515760">Закрыть &amp;окно</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (доступен офлайн)</translation>
 <translation id="5454166040603940656">с помощью <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Показывать больше результатов поиска</translation>
 <translation id="5455603387986949153">Чтение серийных номеров устройства Chrome OS Flex и его компонентов</translation>
 <translation id="5457113250005438886">Недопустимые данные</translation>
 <translation id="5457459357461771897">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их удаление</translation>
@@ -7054,6 +7063,7 @@
 <translation id="7901405293566323524">Интерфейс Phone Hub</translation>
 <translation id="7903290522161827520">Ищете компоненты браузера? Перейдите на страницу</translation>
 <translation id="7903345046358933331">Страница перестала отвечать на запросы. Вы можете подождать от нее ответа или закрыть.</translation>
+<translation id="7903429136755645827">Нажмите, чтобы настроить управление игрой</translation>
 <translation id="7903742244674067440">У вас есть сертификаты, которые идентифицируют эти центры сертификации</translation>
 <translation id="7903925330883316394">Утилита: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Предоставьте устройствам в вашей сети доступ к портам Linux.</translation>
@@ -8248,6 +8258,7 @@
 <translation id="9078316009970372699">Отключить мгновенную точку доступа</translation>
 <translation id="9078842827190780028">Смотреть дополнительные результаты поиска на боковой панели</translation>
 <translation id="9079267182985899251">Скоро эта функция перестанет поддерживаться. Чтобы начать презентацию с вкладкой на главном экране, используйте <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">оценивает ваши интересы – Chrome может оценивать, какие темы вам интересны</translation>
 <translation id="9081543426177426948">В режиме инкогнито сведения о посещенных сайтах не сохраняются</translation>
 <translation id="9084064520949870008">Открыть в отдельном окне</translation>
 <translation id="9085256200913095638">Дублировать выбранную вкладку</translation>
