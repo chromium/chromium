@@ -400,7 +400,10 @@ android_library("chrome_java_integration_only_test_support") {
 
 android_library("chrome_java_test_support_common") {
   testonly = true
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/android/features/tab_ui:unit_device_javatests",
+  ]
   sources = [
     "javatests/src/org/chromium/chrome/browser/tab/MockTab.java",
     "javatests/src/org/chromium/chrome/test/ChromeJUnit4ClassRunner.java",

@@ -235,6 +235,27 @@ android_library("java") {
   resources_package = "org.chromium.chrome.tab_ui"
 }
 
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinderTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/android/features/tab_ui:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 module_desc_java("module_desc_java") {
   module_name = "tab_management"
 }
