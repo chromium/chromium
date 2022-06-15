@@ -1826,6 +1826,7 @@ test("content_browsertests") {
   } else {
     # Non-Android.
     sources += [
+      "../app/content_main_runner_impl_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_udp_browsertest.cc",
@@ -1846,6 +1847,7 @@ test("content_browsertests") {
     ]
     deps += [
       "//content/public/browser:proto",
+      "//sandbox/policy",
       "//ui/base/clipboard:clipboard_test_support",
     ]
     data += [ "//content/test/data/clipboard/" ]
