@@ -2517,13 +2517,13 @@ are declared in tools/grit/grit_rule.gni.
                desc="Footer link in the Download Bubble">
         Show all downloads
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR"
-               desc="A separator to place between download size and download time. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate them. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
-        ''' • '''
+      <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR"
+               desc="The download status and message are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
+        <ph name="STATUS">$1<ex>100/120 MB</ex></ph> • <ph name="MESSAGE">$2<ex>Opening in 10 seconds...</ex></ph>
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SYMBOL"
-               desc="A symbol for active downloads, in this case downward arrow ↓. If the downward arrow ↓ resembles another symbol in the language, please translate the downward arrow ↓ as a symbol that indicates a downward arrow">
-        '''↓ '''
+      <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_WITH_SYMBOL"
+               desc="Active downloads have a symbol associated with them, in this case a downward arrow ↓. If the downward arrow ↓ resembles another symbol in the language, please translate the downward arrow ↓ as a symbol that indicates a downward arrow">
+        ↓ <ph name="STATUS">$1<ex>100/120 MB</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_RESUMING"
                desc="When resuming a download, let the user know we're resuming the download.">

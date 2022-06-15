@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/observer_list.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1159,17 +1158,19 @@ std::u16string DownloadUIModel::StatusTextBuilder::GetInProgressStatusText()
 
 std::u16string
 DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
-  std::u16string prefix = base::StrCat(
-      {l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED),
-       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR)});
+  // If the detail message is "Malware", then this returns "Blocked • Malware"
+  auto get_blocked_warning = [](int detail_message_id) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_BLOCKED),
+        l10n_util::GetStringUTF16(detail_message_id));
+  };
 
   switch (model_->GetMixedContentStatus()) {
     case download::DownloadItem::MixedContentStatus::BLOCK:
     case download::DownloadItem::MixedContentStatus::WARN:
       // "Blocked • Insecure download"
-      return base::StrCat(
-          {prefix, l10n_util::GetStringUTF16(
-                       IDS_DOWNLOAD_BUBBLE_WARNING_STATUS_INSECURE)});
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_WARNING_STATUS_INSECURE);
     case download::DownloadItem::MixedContentStatus::UNKNOWN:
     case download::DownloadItem::MixedContentStatus::SAFE:
     case download::DownloadItem::MixedContentStatus::VALIDATED:
@@ -1181,30 +1182,24 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       // "Blocked • Unknown source"
       if (model_->IsExtensionDownload())
-        return base::StrCat(
-            {prefix, l10n_util::GetStringUTF16(
-                         IDS_DOWNLOAD_BUBBLE_STATUS_UNKNOWN_SOURCE)});
+        return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_UNKNOWN_SOURCE);
       [[fallthrough]];
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       // "Blocked • Dangerous"
-      return base::StrCat({prefix, l10n_util::GetStringUTF16(
-                                       IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS)});
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS);
 
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       // "Blocked • Encrypted"
-      return base::StrCat({prefix, l10n_util::GetStringUTF16(
-                                       IDS_DOWNLOAD_BUBBLE_STATUS_ENCRYPTED)});
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_ENCRYPTED);
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       // "Blocked • Malware"
-      return base::StrCat({prefix, l10n_util::GetStringUTF16(
-                                       IDS_DOWNLOAD_BUBBLE_STATUS_MALWARE)});
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_MALWARE);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
       // "Blocked • Too big"
-      return base::StrCat({prefix, l10n_util::GetStringUTF16(
-                                       IDS_DOWNLOAD_BUBBLE_STATUS_TOO_BIG)});
+      return get_blocked_warning(IDS_DOWNLOAD_BUBBLE_STATUS_TOO_BIG);
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
       bool request_ap_verdicts = false;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -1217,9 +1212,8 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
       return request_ap_verdicts
                  ? l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_STATUS_ADVANCED_PROTECTION)
-                 : base::StrCat(
-                       {prefix, l10n_util::GetStringUTF16(
-                                    IDS_DOWNLOAD_BUBBLE_STATUS_UNCOMMON_FILE)});
+                 : get_blocked_warning(
+                       IDS_DOWNLOAD_BUBBLE_STATUS_UNCOMMON_FILE);
     }
 
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
@@ -1231,13 +1225,17 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+      // "Scan before opening"
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT);
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
 #if BUILDFLAG(IS_ANDROID)
+      // "Scanning..."
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING);
 #else
+      // Either "Checking with your organization's security policies..." or
+      // "Scanning..."
       return download::IsDownloadConnectorEnabled(model_->profile())
                  ? l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING_ENTERPRISE)
@@ -1277,78 +1275,89 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
   std::u16string size_ratio = model_->GetProgressSizesString();
 
-  std::u16string size_ratio_prefix = base::StrCat(
-      {size_ratio,
-       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR)});
+  // If the detail message is "Paused" and the size_ratio is "100/120 MB", then
+  // this returns "100/120 MB • Paused".
+  auto get_size_ratio_string = [size_ratio](std::u16string detail_message) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR, size_ratio,
+        detail_message);
+  };
+  // If the detail message is "Opening in 10 seconds..." and the size_ratio is
+  // "100/120 MB", then this returns "↓ 100/120 MB • Opening in 10 seconds...".
+  auto get_active_download_size_ratio_string =
+      [size_ratio](std::u16string detail_message) {
+        return l10n_util::GetStringFUTF16(
+            IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
+            l10n_util::GetStringFUTF16(
+                IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_WITH_SYMBOL, size_ratio),
+            detail_message);
+      };
 
   const auto completed_bytes = model_->GetCompletedBytes();
   const auto total_bytes = model_->GetTotalBytes();
 
-  std::u16string total_prefix = base::StrCat(
-      {ui::FormatBytes(total_bytes),
-       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR)});
+  // If the detail message is "Done" and the total_byes is "120 MB", then
+  // this returns "120 MB • Done".
+  auto get_total_string = [total_bytes](std::u16string detail_message) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR,
+        ui::FormatBytes(total_bytes), detail_message);
+  };
 
   // The download is a CRX (app, extension, theme, ...) and it is being unpacked
   // and validated.
   if (model_->AllDataSaved() && model_->IsExtensionDownload()) {
-    return base::StrCat(
-        {total_prefix,
-         l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING)});
+    // "120 MB • Adding to Chrome..."
+    return get_total_string(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING));
   }
 
   // A paused download: "100/120 MB • Paused"
   if (model_->IsPaused()) {
-    return base::StrCat({size_ratio_prefix, l10n_util::GetStringUTF16(
-                                                IDS_DOWNLOAD_PROGRESS_PAUSED)});
+    return get_size_ratio_string(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_PROGRESS_PAUSED));
   }
 
   // A download scheduled to be opened when complete: "↓ 100/120 MB • Opening in
   // 10 seconds"
   if (web_drive.empty() && model_->GetOpenWhenComplete()) {
     if (!time_remaining_known)
-      return base::StrCat(
-          {size_ratio_prefix,
-           l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_OPEN_WHEN_COMPLETE)});
+      // "100/120 MB • Opening when complete"
+      return get_size_ratio_string(
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_OPEN_WHEN_COMPLETE));
 
-    return base::StrCat(
-        {l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SYMBOL),
-         size_ratio_prefix,
-         l10n_util::GetStringFUTF16(
-             IDS_DOWNLOAD_STATUS_OPEN_IN,
-             ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                                    ui::TimeFormat::LENGTH_LONG,
-                                    time_remaining))});
+    // "↓ 100/120 MB • Opening in 10 seconds..."
+    return get_active_download_size_ratio_string(l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_STATUS_OPEN_IN,
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_LONG, time_remaining)));
   }
 
   // In progress download with known time left: "↓ 100/120 MB • 10 seconds left"
   if (time_remaining_known) {
-    return base::StrCat(
-        {l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SYMBOL),
-         size_ratio_prefix,
-         ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
-                                ui::TimeFormat::LENGTH_LONG, time_remaining)});
+    return get_active_download_size_ratio_string(
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
+                               ui::TimeFormat::LENGTH_LONG, time_remaining));
   }
 
   if (completed_bytes == 0) {
     // "0/120 MB • Starting..."
-    return base::StrCat({size_ratio_prefix, l10n_util::GetStringUTF16(
-                                                IDS_DOWNLOAD_STATUS_STARTING)});
+    return get_size_ratio_string(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_STARTING));
   } else if (completed_bytes < total_bytes || total_bytes == 0) {
     // In progress download with no known time left and non-zero completed
     // bytes: "100/120 MB • Resuming..." or "100 MB • Resuming..."
-    return base::StrCat(
-        {size_ratio_prefix,
-         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_RESUMING)});
+    return get_size_ratio_string(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_RESUMING));
   } else if (web_drive.size()) {
     // If all bytes of the file has been downloaded and it is being rerouted:
     // "120 MB • Sending to <WEB_DRIVE>..."
-    return base::StrCat(
-        {total_prefix,
-         l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING, web_drive)});
+    return get_total_string(
+        l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_UPLOADING, web_drive));
   } else {
     // "120 MB • Done"
-    return base::StrCat({total_prefix, l10n_util::GetStringUTF16(
-                                           IDS_DOWNLOAD_BUBBLE_STATUS_DONE)});
+    return get_total_string(
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_STATUS_DONE));
   }
 }
 
@@ -1389,6 +1398,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
     std::u16string delta_str;
     if (model_->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE) {
+      // "2 B • Done, no issues found"
       delta_str = l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_DONE);
     } else {
@@ -1402,10 +1412,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
                                        ui::TimeFormat::LENGTH_LONG,
                                        time_elapsed);
     }
-    return base::StrCat(
-        {size_text,
-         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SEPERATOR),
-         delta_str});
+    return l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR, size_text,
+        delta_str);
   }
 }
 
