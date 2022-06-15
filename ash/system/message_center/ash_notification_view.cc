@@ -112,9 +112,9 @@ constexpr int kAppIconImageSize = 16;
 constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
-constexpr int kTitleLabelSize = 14;
+constexpr int kTitleLabelSize = 13;
 constexpr int kTimestampInCollapsedViewSize = 12;
-constexpr int kMessageLabelSize = 13;
+constexpr int kMessageLabelSize = 12;
 // The size for `icon_view_`, which is the icon within right content (between
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
