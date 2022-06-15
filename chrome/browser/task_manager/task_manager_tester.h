@@ -55,6 +55,9 @@ class TaskManagerTester {
   // Kill the process of |row|.
   void Kill(int row);
 
+  // Activate the task of |row|.
+  void Activate(int row);
+
   // Gets the start index and length of the group to which the task at
   // |row_index| belongs.
   void GetRowsGroupRange(int row, int* out_start, int* out_length);

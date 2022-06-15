@@ -24,6 +24,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
@@ -134,7 +135,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
   TabContentsTagTest() { EXPECT_TRUE(embedded_test_server()->Start()); }
   TabContentsTagTest(const TabContentsTagTest&) = delete;
   TabContentsTagTest& operator=(const TabContentsTagTest&) = delete;
-  ~TabContentsTagTest() override {}
+  ~TabContentsTagTest() override = default;
 
   void AddNewTestTabAt(int index, const char* test_page_file) {
     int tabs_count_before = tabs_count();
@@ -297,6 +298,11 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
           browser()->tab_strip_model()->GetActiveWebContents());
   FaviconWaiter waiter(favicon_driver);
   waiter.WaitForFaviconWithURL(GetUrlOfFile("/favicon/icon.png"));
+  const auto favicon_url = browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetSiteInstance()
+                               ->GetSiteURL();
 
   // Check that the task manager uses the specified favicon for the page.
   base::FilePath test_dir;
@@ -324,13 +330,18 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
     // same-site main frame navigations, we'll get a new task because we are
     // changing RenderFrameHosts. Note that the previous page's task might still
     // be around if the previous page is saved in the back-forward cache.
-    ASSERT_EQ(
-        content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
-            ? 2U
-            : 1U,
-        task_manager.tasks().size());
-    task = task_manager.tasks().front();
+    if (content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
+      ASSERT_EQ(2U, task_manager.tasks().size());
+      ASSERT_EQ(
+          l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX,
+                                     base::UTF8ToUTF16(favicon_url.spec())),
+          task_manager.tasks().front()->title());
+    } else {
+      ASSERT_EQ(1U, task_manager.tasks().size());
+    }
   }
+
+  task = task_manager.tasks().back();
   ASSERT_EQ(GetDefaultTitleForUrl(no_favicon_page_url), task->title());
 
   // Check that the task manager uses the default favicon for the page.

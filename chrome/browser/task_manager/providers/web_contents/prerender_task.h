@@ -14,14 +14,19 @@ class RenderFrameHost;
 
 namespace task_manager {
 
+class WebContentsTaskProvider;
+
 // Defines a task manager entry for a Prerender2 rule.
 class PrerenderTask : public RendererTask {
  public:
-  explicit PrerenderTask(content::RenderFrameHost* render_frame_host);
+  explicit PrerenderTask(content::RenderFrameHost* render_frame_host,
+                         WebContentsTaskProvider* task_provider);
   PrerenderTask(const PrerenderTask&) = delete;
   PrerenderTask& operator=(const PrerenderTask&) = delete;
   ~PrerenderTask() override;
 
+  // task_manager::Task:
+  const Task* GetParentTask() const override;
   // task_manager::RendererTask:
   void UpdateTitle() override;
   void UpdateFavicon() override {}
@@ -32,7 +37,9 @@ class PrerenderTask : public RendererTask {
   // prerender2 task is deleted at |WebContentsEntry::RenderFrameDeleted| and
   // |WebContentsEntry::RenderFrameHostStateChange|, and at both occasions the
   // RFH is still alive.
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
+  // The provider has the same lifespan as the task manager.
+  const raw_ptr<WebContentsTaskProvider> task_provider_;
 };
 
 }  // namespace task_manager

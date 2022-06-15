@@ -10,6 +10,7 @@
 
 namespace content {
 class RenderFrameHost;
+class SiteInstance;
 }  // namespace content
 
 namespace task_manager {
@@ -25,6 +26,7 @@ class FencedFrameTask : public RendererTask {
 
   // task_manager::Task:
   void Activate() override;
+  const task_manager::Task* GetParentTask() const override;
   // task_manager::RendererTask:
   void UpdateTitle() override;
   void UpdateFavicon() override {}
@@ -32,22 +34,17 @@ class FencedFrameTask : public RendererTask {
  private:
   std::u16string GetTitle() const;
 
+  // The site instance is owned by the RFH and the RFH always outlives the task.
   // A FencedFrame task is deleted when:
-  // 1, a navigation happens to the fenced frame, so
-  //    |WebContentsEntry::RenderFrameHostChanged| is fired. Clearly in this
-  //    case both the embedder frame (hence the task) as well as the FF's RFH
-  //    are always alive.
-  // 2, when the user closes the tab / terminates the embedder process from task
-  //    manager/ terminates the FF's process from task manager. In the three
-  //    cases the task will be deleted from
-  //    |WebContentsEntry::RenderFrameDeleted|. When the user closes the tab or
-  //    terminates the embedder process, the tasks will be deleted in a
-  //    bottom-up fashion, from FF to embedder FF; when the user terminates the
-  //    process of the FF, FF's frame is deleted. So in the three cases the RFH
-  //    and embedder task are also guaranteed to outlive the FF task.
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  // 1, a navigation happens to the FencedFrame (FF), so
+  //    |WebContentsEntry::RenderFrameHostChanged| is fired. Clearly the FF's
+  //    RFH is alive (thus the site instance).
+  // 2, when the fenced frame is destroyed (by either terminating the embedder
+  //    or FF's process). The |RenderFrameDeleted| will be triggered to delete
+  //    the task. At that point the RFH is still alive.
+  const raw_ptr<content::SiteInstance> site_instance_;
   // Allows us to focus on the embedder's tab.
-  raw_ptr<RendererTask> embedder_task_;
+  const raw_ptr<RendererTask> embedder_task_;
 };
 
 }  // namespace task_manager

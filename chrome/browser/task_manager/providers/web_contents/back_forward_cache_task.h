@@ -14,13 +14,16 @@ class RenderFrameHost;
 
 namespace task_manager {
 
+class WebContentsTaskProvider;
+
 // Defines a concrete renderer task that can represent processes stored in the
 // BackForwardCache. Tasks are added for each cached main frame, as well as for
 // each separate SiteInstance for subframes within a cached page.
 class BackForwardCacheTask : public RendererTask {
  public:
   BackForwardCacheTask(content::RenderFrameHost* render_frame_host,
-                       RendererTask* parent_task);
+                       RendererTask* parent_task,
+                       WebContentsTaskProvider* task_provider);
   BackForwardCacheTask(const BackForwardCacheTask&) = delete;
   BackForwardCacheTask& operator=(const BackForwardCacheTask&) = delete;
   ~BackForwardCacheTask() override = default;
@@ -41,6 +44,8 @@ class BackForwardCacheTask : public RendererTask {
   // task is not guaranteed.
   // For cached main frame tasks |parent_task_| is nullptr.
   raw_ptr<RendererTask> parent_task_;
+  // The provider has the same lifespan as the task manager.
+  const raw_ptr<WebContentsTaskProvider> task_provider_;
 };
 
 }  // namespace task_manager

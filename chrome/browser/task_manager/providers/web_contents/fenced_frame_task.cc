@@ -8,6 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -19,14 +20,17 @@ FencedFrameTask::FencedFrameTask(content::RenderFrameHost* render_frame_host,
           /*title=*/u"",
           /*icon=*/nullptr,
           /*subframe=*/render_frame_host),
-      render_frame_host_(render_frame_host),
+      site_instance_(render_frame_host->GetSiteInstance()),
       embedder_task_(embedder_task) {
   set_title(GetTitle());
 }
 
 void FencedFrameTask::Activate() {
-  DCHECK(embedder_task_);
   embedder_task_->Activate();
+}
+
+const task_manager::Task* FencedFrameTask::GetParentTask() const {
+  return embedder_task_;
 }
 
 void FencedFrameTask::UpdateTitle() {
@@ -34,13 +38,10 @@ void FencedFrameTask::UpdateTitle() {
 }
 
 std::u16string FencedFrameTask::GetTitle() const {
-  DCHECK(render_frame_host_);
-  const auto message_id =
-      render_frame_host_->GetBrowserContext()->IsOffTheRecord()
-          ? IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX
-          : IDS_TASK_MANAGER_FENCED_FRAME_PREFIX;
-  const auto title =
-      base::UTF8ToUTF16(render_frame_host_->GetLastCommittedURL().spec());
+  const auto message_id = site_instance_->GetBrowserContext()->IsOffTheRecord()
+                              ? IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX
+                              : IDS_TASK_MANAGER_FENCED_FRAME_PREFIX;
+  const auto title = base::UTF8ToUTF16(site_instance_->GetSiteURL().spec());
   return l10n_util::GetStringFUTF16(message_id, title);
 }
 

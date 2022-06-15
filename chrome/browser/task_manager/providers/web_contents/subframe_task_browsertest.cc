@@ -39,6 +39,14 @@ std::u16string GetExpectedSubframeTitlePrefix() {
                                     std::u16string());
 }
 
+std::u16string PrefixExpectedBFCacheTitle(const std::string& title,
+                                          bool is_subframe) {
+  const auto msg_id = is_subframe
+                          ? IDS_TASK_MANAGER_BACK_FORWARD_CACHE_SUBFRAME_PREFIX
+                          : IDS_TASK_MANAGER_BACK_FORWARD_CACHE_PREFIX;
+  return l10n_util::GetStringFUTF16(msg_id, base::UTF8ToUTF16(title));
+}
+
 std::u16string PrefixExpectedTabTitle(const std::string& title) {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
                                     base::UTF8ToUTF16(title));
@@ -133,7 +141,25 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
           ? 4U
           : 1U,
       task_manager.tasks().size());
-  const Task* simple_page_task = task_manager.tasks().front();
+
+  const auto& tasks = task_manager.tasks();
+  // Main page and two cross-origin iframes.
+  if (content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
+    EXPECT_EQ(
+        PrefixExpectedBFCacheTitle("http://a.com/", /*is_subframe=*/false),
+        tasks[0]->title());
+    EXPECT_EQ(PrefixExpectedBFCacheTitle("http://b.com/",
+                                         /*is_subframe=*/true),
+              tasks[1]->title());
+    EXPECT_EQ(PrefixExpectedBFCacheTitle("http://c.com/",
+                                         /*is_subframe=*/true),
+              tasks[2]->title());
+  }
+  // When navigation to |kSimplePageUrl| happens, tasks are first created for
+  // page a.com and two cross-origin iframes b.com and c.com from
+  // |RenderFrameHostStateChange|, then the task for |kSimplePageUrl| is created
+  // from |DidFinishNavigation| when the navigation completes. Thus |.back()|.
+  const Task* simple_page_task = tasks.back();
   EXPECT_EQ(Task::RENDERER, simple_page_task->GetType());
   EXPECT_EQ(PrefixExpectedTabTitle("Title Of Awesomeness"),
             simple_page_task->title());

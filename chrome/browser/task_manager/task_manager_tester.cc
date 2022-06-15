@@ -180,6 +180,10 @@ void TaskManagerTester::Kill(int row) {
   model_->KillTask(row);
 }
 
+void TaskManagerTester::Activate(int row) {
+  model_->ActivateTask(row);
+}
+
 void TaskManagerTester::GetRowsGroupRange(int row,
                                           int* out_start,
                                           int* out_length) {

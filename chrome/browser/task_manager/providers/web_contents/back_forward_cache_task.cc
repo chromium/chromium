@@ -7,10 +7,12 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -47,16 +49,20 @@ namespace task_manager {
 
 BackForwardCacheTask::BackForwardCacheTask(
     content::RenderFrameHost* render_frame_host,
-    RendererTask* parent_task)
+    RendererTask* parent_task,
+    WebContentsTaskProvider* task_provider)
     : RendererTask(
           GetTaskTitle(render_frame_host, parent_task),
           nullptr,  // TODO(crbug.com/1225508): Set Favicon for main frames.
           render_frame_host),
-      parent_task_(parent_task) {}
+      parent_task_(parent_task),
+      task_provider_(task_provider) {}
 
 // For the top level BackForwardCacheTask |parent_task_| is nullptr.
 Task* BackForwardCacheTask::GetParentTask() const {
-  return parent_task_;
+  return parent_task_ ? parent_task_
+                      : task_provider_->GetTaskOfFrame(
+                            web_contents()->GetPrimaryMainFrame());
 }
 
 // The top page calls the default Activate().
