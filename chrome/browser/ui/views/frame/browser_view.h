@@ -148,6 +148,8 @@ class BrowserView : public BrowserWindow,
   // (and hide immediately).
   static void SetDisableRevealerDelayForTesting(bool disable);
 
+  bool IsLoadingAnimationRunningForTesting() const;
+
   // Returns a Browser instance of this view.
   Browser* browser() { return browser_.get(); }
   const Browser* browser() const { return browser_.get(); }
@@ -627,6 +629,7 @@ class BrowserView : public BrowserWindow,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;

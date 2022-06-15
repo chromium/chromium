@@ -313,4 +313,8 @@ const base::Feature kWin10TabSearchCaptionButton{
 
 #endif
 
+// Reduce resource usage when view is hidden by not rendering loading animation.
+const base::Feature kStopRenderingLoadingAnimation{
+    "StopRenderingLoadingAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

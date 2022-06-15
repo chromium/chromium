@@ -210,6 +210,8 @@ int GetLocationPermissionsExperimentLabelPromptLimit();
 extern const base::Feature kWin10TabSearchCaptionButton;
 #endif
 
+extern const base::Feature kStopRenderingLoadingAnimation;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_
