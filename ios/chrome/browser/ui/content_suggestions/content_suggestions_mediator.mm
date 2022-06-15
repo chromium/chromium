@@ -684,16 +684,22 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
     }
   } else if (sectionInfo == self.singleCellSectionInfo) {
-    self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
+    if (!self.parentItem) {
+      self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
+    }
     if (_notificationPromo->CanShow() && !self.shouldHidePromoAfterTap) {
       ContentSuggestionsWhatsNewItem* item =
           [[ContentSuggestionsWhatsNewItem alloc] initWithType:0];
       item.icon = _notificationPromo->GetIcon();
       item.text = base::SysUTF8ToNSString(_notificationPromo->promo_text());
       self.parentItem.whatsNewItem = item;
+    } else {
+      self.parentItem.whatsNewItem = nil;
     }
     if (self.showMostRecentTabStartSurfaceTile) {
       self.parentItem.returnToRecentItem = self.returnToRecentTabItem;
+    } else {
+      self.parentItem.returnToRecentItem = nil;
     }
     self.parentItem.mostVisitedItems = self.mostVisitedItems;
     if (!ShouldHideShortcutsForStartSurface()) {
