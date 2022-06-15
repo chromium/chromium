@@ -1714,9 +1714,11 @@ crbug.com/1047176 [ Mac ] fast/events/wheel/wheelevent-ctrl.html [ Skip ]
 crbug.com/1061765 http/tests/inspector-protocol/trust-tokens/* [ Skip ]
 crbug.com/1061765 http/tests/loading/trust-tokens/* [ Skip ]
 crbug.com/1061765 external/wpt/trust-tokens/end-to-end/* [ Skip ]
+crbug.com/1061765 wpt_internal/trust-tokens/* [ Skip ]
 virtual/trust-tokens/http/tests/inspector-protocol/trust-tokens/* [ Pass ]
 virtual/trust-tokens/http/tests/loading/trust-tokens/* [ Pass ]
 virtual/trust-tokens/external/wpt/trust-tokens/end-to-end/* [ Pass ]
+virtual/trust-tokens/wpt_internal/trust-tokens/* [ Pass ]
 
 # Mac does not ever have fractional device scale factor.
 [ Mac ] virtual/scalefactor150/* [ Skip ]

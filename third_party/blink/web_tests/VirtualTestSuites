@@ -752,8 +752,17 @@
   {
     "prefix": "trust-tokens",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/trust-tokens/end-to-end", "http/tests/loading/trust-tokens", "http/tests/inspector-protocol/trust-tokens" ],
-    "args": [ "--enable-features=TrustTokens" ]
+    "bases": [
+        "external/wpt/trust-tokens/end-to-end",
+        "http/tests/loading/trust-tokens",
+        "http/tests/inspector-protocol/trust-tokens",
+        "wpt_internal/trust-tokens"
+    ],
+    "args": [
+        "--enable-features=TrustTokens",
+        "--enable-blink-features=TrustTokens,TrustTokensAlwaysAllowIssuance",
+        "--additional-trust-token-key-commitments={\"https://web-platform.test:8444\":{\"TrustTokenV3VOPRF\":{\"protocol_version\":\"TrustTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}"
+    ]
   },
   {
     "prefix": "weakrefs",
