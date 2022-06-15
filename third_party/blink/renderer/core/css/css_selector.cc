@@ -148,6 +148,11 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         case kPseudoSlotted:
           DCHECK(SelectorList()->HasOneSelector());
           return kClassLikeSpecificity + SelectorList()->First()->Specificity();
+        case kPseudoPageTransitionContainer:
+        case kPseudoPageTransitionImageWrapper:
+        case kPseudoPageTransitionOutgoingImage:
+        case kPseudoPageTransitionIncomingImage:
+          return Argument().IsNull() ? 0 : kClassLikeSpecificity;
         default:
           break;
       }
