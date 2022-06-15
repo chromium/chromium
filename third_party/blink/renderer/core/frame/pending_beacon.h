@@ -49,6 +49,8 @@ class CORE_EXPORT PendingBeacon : public ScriptWrappable {
 
   void setData(const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data);
 
+  void sendNow();
+
   void Trace(Visitor*) const override;
 
  private:

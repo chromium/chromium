@@ -12,6 +12,7 @@
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 
 namespace content {
@@ -36,6 +37,7 @@ class CONTENT_EXPORT PendingBeaconHost
                     base::TimeDelta timeout) override;
 
   void DeleteBeacon(Beacon* beacon);
+  void SendBeacon(Beacon* beacon);
 
   void SetReceiver(
       mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver);
@@ -43,12 +45,18 @@ class CONTENT_EXPORT PendingBeaconHost
  private:
   friend class DocumentUserData<PendingBeaconHost>;
 
-  explicit PendingBeaconHost(RenderFrameHost* rfh,
-                             PendingBeaconService* service);
+  explicit PendingBeaconHost(
+      RenderFrameHost* rfh,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_factory,
+      PendingBeaconService* service);
 
   std::vector<std::unique_ptr<Beacon>> beacons_;
 
   mojo::Receiver<blink::mojom::PendingBeaconHost> receiver_;
+
+  // A SharedURLLoaderFactory owned by the owning document's StoragePartition,
+  // to be used to send the document's beacons.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_factory_;
 
   // Service is a singleton object that has a lifetime longer than any
   // instance of PendingBeaconHost is expected to, so this pointer should be
@@ -58,6 +66,10 @@ class CONTENT_EXPORT PendingBeaconHost
   DOCUMENT_USER_DATA_KEY_DECL();
 };
 
+// Browser-side representation of a pending beacon. These are stored in
+// a PendingBeaconHost. Their lifetime is until they are sent - this happens
+// either when the PendingBeaconHost is destroyed, or the beacon's `SendNow`
+// method is called.
 class Beacon : public blink::mojom::PendingBeacon {
  public:
   // Browser-side pending beacon constructor. Parameters correspond to the
@@ -71,8 +83,14 @@ class Beacon : public blink::mojom::PendingBeacon {
          mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver);
   ~Beacon() override;
 
+  // Deletes this beacon from its containing PendingBeaconHost.
   void Deactivate() override;
   void SetData(const std::string& data) override;
+  // Sends the beacon immediately, and deletes it from its containing
+  // PendingBeaconHost.
+  void SendNow() override;
+
+  const GURL& url() const { return url_; }
 
  private:
   mojo::Receiver<blink::mojom::PendingBeacon> receiver_;

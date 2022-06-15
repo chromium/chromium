@@ -18,4 +18,5 @@
   [Measure] readonly attribute BeaconState state;
   [Measure] void deactivate();
   [Measure] void setData((ReadableStream or XMLHttpRequestBodyInit) data);
+  [Measure] void sendNow();
 };

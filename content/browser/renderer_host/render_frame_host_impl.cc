@@ -10375,7 +10375,8 @@ void RenderFrameHostImpl::GetGeolocationService(
 void RenderFrameHostImpl::GetPendingBeaconHost(
     mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver) {
   PendingBeaconHost::CreateForCurrentDocument(
-      this, PendingBeaconService::GetInstance());
+      this, GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
+      PendingBeaconService::GetInstance());
   PendingBeaconHost* pbh = PendingBeaconHost::GetForCurrentDocument(this);
   pbh->SetReceiver(std::move(receiver));
 }

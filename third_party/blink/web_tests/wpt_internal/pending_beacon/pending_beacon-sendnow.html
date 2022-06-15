@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="./resources/pending_beacon-helper.js"></script>
+</head>
+<body>
+<script>
+    promise_test(async t => {
+      const uuid = token();
+
+      const base_url = `${location.protocol}//${location.host}`;
+      // TODO: The UUID should be part of the beacon's data, not its target URL.
+      const beacon_endpoint = `${base_url}/wpt_internal/pending_beacon/resources/set_beacon_count.py?uuid=${uuid}`;
+      let beacon = new PendingBeacon(beacon_endpoint, {method: 'GET'});
+      beacon.sendNow();
+      // Wait for the beacon to have sent.
+      await wait(1000);
+      let beacon_count = await getBeaconCount(uuid);
+      assert_equals(beacon_count, 1);
+
+      // Try to send the beacon again, and verify no beacon arrives.
+      beacon.sendNow();
+      await wait(1000);
+      beacon_count = await getBeaconCount(uuid);
+      assert_equals(beacon_count, 1);
+
+      // Make a new beacon and send it, then verify that two beacons have been sent.
+      beacon = new PendingBeacon(beacon_endpoint, {method: 'GET'});
+      beacon.sendNow();
+      await wait(1000);
+      beacon_count = await getBeaconCount(uuid);
+      assert_equals(beacon_count, 2);
+    }, "Verify that SendNow sends a beacon immediately.");
+</script>
+</body>
+</html>

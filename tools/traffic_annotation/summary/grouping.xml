@@ -247,6 +247,7 @@ after discussions on the right group.
       <annotation id="fast_pair_image_decoder"/>
       <annotation id="drivefs_http_client"/>
       <annotation id="borealis_splash_logo_loader"/>
+      <annotation id="pending_beacon_api"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

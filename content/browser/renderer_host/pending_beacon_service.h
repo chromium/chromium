@@ -14,6 +14,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace content {
 
 class Beacon;
@@ -29,11 +33,11 @@ class CONTENT_EXPORT PendingBeaconService {
 
   ~PendingBeaconService();
 
-  void sendBeacons(const std::vector<std::unique_ptr<Beacon>>& beacons);
+  void SendBeacons(const std::vector<std::unique_ptr<Beacon>>& beacons,
+                   network::SharedURLLoaderFactory* shared_url_loader_factory);
 
  private:
   PendingBeaconService();
-
   friend struct base::DefaultSingletonTraits<PendingBeaconService>;
 };
 }  // namespace content

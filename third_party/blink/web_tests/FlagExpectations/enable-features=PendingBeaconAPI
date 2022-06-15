@@ -7,3 +7,4 @@
 
 crbug.com/1293679 pending_beacon/pending_beacon-basic.html [ Pass ]
 crbug.com/1293679 pending_beacon/pending_beacon-deactivate.html [ Pass ]
+crbug.com/1293679 wpt_internal/pending_beacon/* [ Pass ]

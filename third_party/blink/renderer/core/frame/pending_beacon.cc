@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/pending_beacon.h"
+
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_beacon_options.h"
@@ -147,6 +148,14 @@ void PendingBeacon::setData(
 void PendingBeacon::deactivate() {
   state_ = V8BeaconState(V8BeaconState::Enum::kDeactivated);
   remote_->Deactivate();
+}
+
+void PendingBeacon::sendNow() {
+  if (state_ ==
+      static_cast<WTF::String>(V8BeaconState(V8BeaconState::Enum::kPending))) {
+    remote_->SendNow();
+  }
+  state_ = V8BeaconState(V8BeaconState::Enum::kSent);
 }
 
 }  // namespace blink
