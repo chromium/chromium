@@ -137,6 +137,7 @@ try_.compilator_builder(
 
 try_.orchestrator_builder(
     name = "mac12-arm64-rel",
+    builderless = True,
     check_for_flakiness = True,
     compilator = "mac12-arm64-rel-compilator",
     mirrors = [
@@ -148,6 +149,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac12-arm64-rel-compilator",
+    builderless = True,
     check_for_flakiness = True,
     main_list_view = "try",
     os = os.MAC_12,
