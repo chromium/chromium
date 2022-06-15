@@ -8986,6 +8986,21 @@
             ]
         }
     ],
+    "Vp9kSVCHWDecoding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Vp9kSVCHWDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "Vulkan": [
         {
             "platforms": [
