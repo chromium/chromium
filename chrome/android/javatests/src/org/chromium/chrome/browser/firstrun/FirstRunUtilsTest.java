@@ -9,13 +9,16 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -24,15 +27,22 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Unit Test for {@link FirstRunUtils}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class FirstRunUtilsTest {
     private FakeAuthenticationAccountManager mAccountManager;
     private AdvancedMockContext mAccountTestingContext;
+
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
     @Before
     public void setUp() {
@@ -40,6 +50,12 @@ public class FirstRunUtilsTest {
         // constructor due to external dependencies.
         mAccountTestingContext =
                 new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+    }
+
+    @After
+    public void tearDown() {
+        FirstRunUtils.resetHasGoogleAccountAuthenticator();
+        AccountManagerFacadeProvider.setInstanceForTests(null);
     }
 
     private static class FakeAuthenticationAccountManager extends FakeAccountManagerDelegate {

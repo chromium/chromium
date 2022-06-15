@@ -93,6 +93,11 @@ public class FirstRunUtils {
     }
 
     @VisibleForTesting
+    static void resetHasGoogleAccountAuthenticator() {
+        sHasGoogleAccountAuthenticator = null;
+    }
+
+    @VisibleForTesting
     static boolean hasGoogleAccounts() {
         return !AccountUtils
                         .getAccountsIfFulfilledOrEmpty(
