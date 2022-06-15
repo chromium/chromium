@@ -587,12 +587,6 @@ static void UpdateCompositorViewportProperties(
     ids.overscroll_elasticity_transform =
         property_tree_manager.EnsureCompositorTransformNode(
             *properties.overscroll_elasticity_transform);
-
-    if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled()) {
-      property_tree_manager.SetOverscrollTransformNodeId(
-          ids.overscroll_elasticity_transform);
-      property_tree_manager.SetFixedElementsDontOverscroll(true);
-    }
   }
   if (properties.overscroll_elasticity_effect) {
     ids.overscroll_elasticity_effect =
@@ -616,6 +610,11 @@ static void UpdateCompositorViewportProperties(
     }
   }
 
+  if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled()) {
+    property_tree_manager.SetOverscrollTransformNodeId(
+        ids.overscroll_elasticity_transform);
+    property_tree_manager.SetFixedElementsDontOverscroll(true);
+  }
   layer_tree_host->RegisterViewportPropertyIds(ids);
 }
 
@@ -690,6 +689,10 @@ void PaintArtifactCompositor::Update(
     int clip_id = property_tree_manager.EnsureCompositorClipNode(clip);
     int effect_id = property_tree_manager.SwitchToEffectNodeWithSynthesizedClip(
         effect, clip, layer.draws_content());
+
+    if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled() &&
+        transform.RequiresCompositingForFixedToViewport())
+      property_tree_manager.SetOverscrollClipNodeId(clip_id);
 
     // We need additional bookkeeping for backdrop-filter mask.
     if (effect.RequiresCompositingForBackdropFilterMask() &&
