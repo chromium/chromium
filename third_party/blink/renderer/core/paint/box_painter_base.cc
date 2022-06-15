@@ -582,7 +582,8 @@ void DrawTiledBackground(LocalFrame* frame,
                          Image* image,
                          const BackgroundImageGeometry& geometry,
                          SkBlendMode op,
-                         RespectImageOrientationEnum respect_orientation) {
+                         RespectImageOrientationEnum respect_orientation,
+                         bool image_may_be_lcp_candidate) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
   const gfx::RectF dest_rect(geometry.SnappedDestRect());
@@ -598,7 +599,8 @@ void DrawTiledBackground(LocalFrame* frame,
     auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
         *frame, style, dest_rect, *single_tile_src);
     context.DrawImage(image, Image::kSyncDecode, image_auto_dark_mode,
-                      dest_rect, &*single_tile_src, op, respect_orientation);
+                      dest_rect, &*single_tile_src, op, respect_orientation,
+                      image_may_be_lcp_candidate);
     return;
   }
 
@@ -644,7 +646,7 @@ void DrawTiledBackground(LocalFrame* frame,
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
   context.DrawImageTiled(image, dest_rect, tiling_info, image_auto_dark_mode,
-                         op, respect_orientation);
+                         op, respect_orientation, image_may_be_lcp_candidate);
 }
 
 scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
@@ -705,7 +707,7 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   return true;
 }
 
-void DidDrawImage(
+bool WillDrawImage(
     Node* node,
     const Image& image,
     const StyleImage& style_image,
@@ -713,17 +715,19 @@ void DidDrawImage(
     const gfx::RectF& image_rect) {
   Node* generating_node = GeneratingNode(node);
   if (!generating_node || !style_image.IsImageResource())
-    return;
+    return false;
   const gfx::Rect enclosing_rect = gfx::ToEnclosingRect(image_rect);
-  PaintTimingDetector::NotifyBackgroundImagePaint(
-      *generating_node, image, To<StyleFetchedImage>(style_image),
-      current_paint_chunk_properties, enclosing_rect);
+  bool image_may_be_lcp_candidate =
+      PaintTimingDetector::NotifyBackgroundImagePaint(
+          *generating_node, image, To<StyleFetchedImage>(style_image),
+          current_paint_chunk_properties, enclosing_rect);
 
   LocalDOMWindow* window = node->GetDocument().domWindow();
   DCHECK(window);
   ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
       *generating_node, To<StyleFetchedImage>(style_image),
       current_paint_chunk_properties, enclosing_rect);
+  return image_may_be_lcp_candidate;
 }
 
 inline bool PaintFastBottomLayer(const Document* document,
@@ -826,17 +830,19 @@ inline bool PaintFastBottomLayer(const Document* document,
       inspector_paint_image_event::Data, node, *info.image,
       gfx::RectF(image->Rect()), gfx::RectF(image_border.Rect()));
 
+  bool may_be_lcp_candidate =
+      WillDrawImage(node, *image, *info.image,
+                    context.GetPaintController().CurrentPaintChunkProperties(),
+                    image_border.Rect());
+
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
       *document->GetFrame(), style, image_border.Rect(), src_rect);
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default.
   context.DrawImageRRect(image, Image::kSyncDecode, image_auto_dark_mode,
                          image_border, src_rect, composite_op,
-                         info.respect_image_orientation);
+                         info.respect_image_orientation, may_be_lcp_candidate);
 
-  DidDrawImage(node, *image, *info.image,
-               context.GetPaintController().CurrentPaintChunkProperties(),
-               image_border.Rect());
   return true;
 }
 
@@ -955,11 +961,13 @@ void PaintFillLayerBackground(const Document* document,
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
         inspector_paint_image_event::Data, node, *info.image,
         gfx::RectF(image->Rect()), gfx::RectF(scrolled_paint_rect));
+    bool may_be_lcp_candidate = WillDrawImage(
+        node, *image, *info.image,
+        context.GetPaintController().CurrentPaintChunkProperties(),
+        gfx::RectF(geometry.SnappedDestRect()));
     DrawTiledBackground(document->GetFrame(), context, style, image, geometry,
-                        composite_op, info.respect_image_orientation);
-    DidDrawImage(node, *image, *info.image,
-                 context.GetPaintController().CurrentPaintChunkProperties(),
-                 gfx::RectF(geometry.SnappedDestRect()));
+                        composite_op, info.respect_image_orientation,
+                        may_be_lcp_candidate);
   }
 }
 

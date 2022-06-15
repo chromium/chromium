@@ -71,6 +71,8 @@ bool PaintImage::operator==(const PaintImage& other) const {
     return false;
   if (paint_worklet_input_ != other.paint_worklet_input_)
     return false;
+  // Do not check may_be_lcp_candidate_ as it should not affect any rendering
+  // operation, only metrics collection.
   return true;
 }
 
@@ -397,6 +399,7 @@ std::string PaintImage::ToString() const {
       << " animation_type_: " << static_cast<int>(animation_type_)
       << " completion_state_: " << static_cast<int>(completion_state_)
       << " is_multipart_: " << is_multipart_
+      << " may_be_lcp_candidate_: " << may_be_lcp_candidate_
       << " is YUV: " << IsYuv(SkYUVAPixmapInfo::SupportedDataTypes::All());
   return str.str();
 }

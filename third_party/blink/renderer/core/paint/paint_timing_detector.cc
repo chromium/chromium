@@ -113,7 +113,7 @@ void PaintTimingDetector::NotifyPaintFinished() {
 }
 
 // static
-void PaintTimingDetector::NotifyBackgroundImagePaint(
+bool PaintTimingDetector::NotifyBackgroundImagePaint(
     const Node& node,
     const Image& image,
     const StyleFetchedImage& style_image,
@@ -122,48 +122,49 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   DCHECK(style_image.CachedImage());
   LayoutObject* object = node.GetLayoutObject();
   if (!object)
-    return;
+    return false;
   LocalFrameView* frame_view = object->GetFrameView();
   if (!frame_view)
-    return;
+    return false;
 
   ImagePaintTimingDetector* detector =
       frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
   if (!detector)
-    return;
+    return false;
 
   if (!IsBackgroundImageContentful(*object, image))
-    return;
+    return false;
 
   ImageResourceContent* cached_image = style_image.CachedImage();
   DCHECK(cached_image);
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
 
-  detector->RecordImage(*object, image.Size(), *cached_image,
-                        current_paint_chunk_properties, &style_image,
-                        image_border);
+  return detector->RecordImage(*object, image.Size(), *cached_image,
+                               current_paint_chunk_properties, &style_image,
+                               image_border);
 }
 
 // static
-void PaintTimingDetector::NotifyImagePaint(
+bool PaintTimingDetector::NotifyImagePaint(
     const LayoutObject& object,
     const gfx::Size& intrinsic_size,
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   if (IgnorePaintTimingScope::ShouldIgnore())
-    return;
+    return false;
   LocalFrameView* frame_view = object.GetFrameView();
   if (!frame_view)
-    return;
+    return false;
   ImagePaintTimingDetector* detector =
       frame_view->GetPaintTimingDetector().GetImagePaintTimingDetector();
   if (!detector)
-    return;
+    return false;
 
-  detector->RecordImage(object, intrinsic_size, media_timing,
-                        current_paint_chunk_properties, nullptr, image_border);
+  return detector->RecordImage(object, intrinsic_size, media_timing,
+                               current_paint_chunk_properties, nullptr,
+                               image_border);
 }
 
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,

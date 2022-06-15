@@ -751,7 +751,8 @@ void GraphicsContext::DrawImage(
     const gfx::RectF& dest,
     const gfx::RectF* src_ptr,
     SkBlendMode op,
-    RespectImageOrientationEnum should_respect_image_orientation) {
+    RespectImageOrientationEnum should_respect_image_orientation,
+    bool image_may_be_lcp_candidate) {
   if (!image)
     return;
 
@@ -764,7 +765,8 @@ void GraphicsContext::DrawImage(
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
   ImageDrawOptions draw_options(
       dark_mode_filter, sampling, should_respect_image_orientation,
-      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled);
+      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled,
+      image_may_be_lcp_candidate);
 
   image->Draw(canvas_, image_flags, dest, src, draw_options);
   paint_controller_.SetImagePainted();
@@ -777,13 +779,14 @@ void GraphicsContext::DrawImageRRect(
     const FloatRoundedRect& dest,
     const gfx::RectF& src_rect,
     SkBlendMode op,
-    RespectImageOrientationEnum respect_orientation) {
+    RespectImageOrientationEnum respect_orientation,
+    bool image_may_be_lcp_candidate) {
   if (!image)
     return;
 
   if (!dest.IsRounded()) {
     DrawImage(image, decode_mode, auto_dark_mode, dest.Rect(), &src_rect, op,
-              respect_orientation);
+              respect_orientation, image_may_be_lcp_candidate);
     return;
   }
 
@@ -803,7 +806,8 @@ void GraphicsContext::DrawImageRRect(
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
   ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
                                 Image::kClampImageToSourceRect, decode_mode,
-                                auto_dark_mode.enabled);
+                                auto_dark_mode.enabled,
+                                image_may_be_lcp_candidate);
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -865,7 +869,8 @@ void GraphicsContext::DrawImageTiled(
     const ImageTilingInfo& tiling_info,
     const ImageAutoDarkMode& auto_dark_mode,
     SkBlendMode op,
-    RespectImageOrientationEnum respect_orientation) {
+    RespectImageOrientationEnum respect_orientation,
+    bool image_may_be_lcp_candidate) {
   if (!image)
     return;
 
@@ -875,7 +880,8 @@ void GraphicsContext::DrawImageTiled(
   DarkModeFilter* dark_mode_filter = GetDarkModeFilterForImage(auto_dark_mode);
   ImageDrawOptions draw_options(dark_mode_filter, sampling, respect_orientation,
                                 Image::kClampImageToSourceRect,
-                                Image::kSyncDecode, auto_dark_mode.enabled);
+                                Image::kSyncDecode, auto_dark_mode.enabled,
+                                image_may_be_lcp_candidate);
 
   image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
   paint_controller_.SetImagePainted();

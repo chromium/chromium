@@ -87,6 +87,10 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.is_high_bit_depth_ = is_high_bit_depth;
     return std::move(*this);
   }
+  PaintImageBuilder&& set_may_be_lcp_candidate(bool may_be_lcp_candidate) {
+    paint_image_.may_be_lcp_candidate_ = may_be_lcp_candidate;
+    return std::move(*this);
+  }
   PaintImageBuilder&& set_repetition_count(int count) {
     paint_image_.repetition_count_ = count;
     return std::move(*this);

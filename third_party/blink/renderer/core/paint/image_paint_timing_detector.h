@@ -243,8 +243,10 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // Record an image paint. This method covers both img and background image. In
   // the case of a normal img, the last parameter will be nullptr. This
   // parameter is needed only for the purposes of plumbing the correct loadTime
-  // value to the ImageRecord.
-  void RecordImage(const LayoutObject&,
+  // value to the ImageRecord. The method returns true if the image is a
+  // candidate for LargestContentfulPaint. That is, if the image is larger
+  // on screen than the current best candidate.
+  bool RecordImage(const LayoutObject&,
                    const gfx::Size& intrinsic_size,
                    const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,

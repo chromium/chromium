@@ -85,6 +85,23 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
         dest_rect, src_rect);
   }
 
+  ImageResourceContent* image_content = image_resource.CachedImage();
+  bool image_may_be_lcp_candidate = false;
+  if (image_content->IsLoaded()) {
+    LocalDOMWindow* window = layout_svg_image_.GetDocument().domWindow();
+    DCHECK(window);
+    ImageElementTiming::From(*window).NotifyImagePainted(
+        layout_svg_image_, *image_content,
+        paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
+        gfx::ToEnclosingRect(dest_rect));
+  }
+  image_may_be_lcp_candidate = PaintTimingDetector::NotifyImagePaint(
+      layout_svg_image_, image->Size(), *image_content,
+      paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
+      gfx::ToEnclosingRect(dest_rect));
+  PaintTiming& timing = PaintTiming::From(layout_svg_image_.GetDocument());
+  timing.MarkFirstContentfulPaint();
+
   ScopedInterpolationQuality interpolation_quality_scope(
       paint_info.context,
       layout_svg_image_.StyleRef().GetInterpolationQuality());
@@ -95,23 +112,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       src_rect);
   paint_info.context.DrawImage(image.get(), decode_mode, image_auto_dark_mode,
                                dest_rect, &src_rect, SkBlendMode::kSrcOver,
-                               respect_orientation);
-
-  ImageResourceContent* image_content = image_resource.CachedImage();
-  if (image_content->IsLoaded()) {
-    LocalDOMWindow* window = layout_svg_image_.GetDocument().domWindow();
-    DCHECK(window);
-    ImageElementTiming::From(*window).NotifyImagePainted(
-        layout_svg_image_, *image_content,
-        paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
-        gfx::ToEnclosingRect(dest_rect));
-  }
-  PaintTimingDetector::NotifyImagePaint(
-      layout_svg_image_, image->Size(), *image_content,
-      paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
-      gfx::ToEnclosingRect(dest_rect));
-  PaintTiming& timing = PaintTiming::From(layout_svg_image_.GetDocument());
-  timing.MarkFirstContentfulPaint();
+                               respect_orientation, image_may_be_lcp_candidate);
 }
 
 gfx::SizeF SVGImagePainter::ComputeImageViewportSize() const {

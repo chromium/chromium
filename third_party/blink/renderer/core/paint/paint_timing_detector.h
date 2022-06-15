@@ -123,13 +123,19 @@ class CORE_EXPORT PaintTimingDetector
  public:
   PaintTimingDetector(LocalFrameView*);
 
-  static void NotifyBackgroundImagePaint(
+  // Returns true if the image might ultimately be a candidate for largest
+  // paint, otherwise false. When this method is called we do not know the
+  // largest status for certain, because we need to wait for presentation.
+  // Hence the "maybe" return value.
+  static bool NotifyBackgroundImagePaint(
       const Node&,
       const Image&,
       const StyleFetchedImage&,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
-  static void NotifyImagePaint(
+  // Returns true if the image is a candidate for largest paint, otherwise
+  // false. See the comment for NotifyBackgroundImagePaint(...).
+  static bool NotifyImagePaint(
       const LayoutObject&,
       const gfx::Size& intrinsic_size,
       const MediaTiming& media_timing,
