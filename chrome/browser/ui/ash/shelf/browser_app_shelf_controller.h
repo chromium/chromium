@@ -42,10 +42,12 @@ class ChromeShelfItemFactory;
 class BrowserAppShelfController : public apps::BrowserAppInstanceObserver,
                                   public ash::ShelfModelObserver {
  public:
-  BrowserAppShelfController(Profile* profile,
-                            ash::ShelfModel& model,
-                            ChromeShelfItemFactory& shelf_item_factory,
-                            ShelfSpinnerController& shelf_spinner_controller);
+  BrowserAppShelfController(
+      Profile* profile,
+      apps::BrowserAppInstanceRegistry& browser_app_instance_registry,
+      ash::ShelfModel& model,
+      ChromeShelfItemFactory& shelf_item_factory,
+      ShelfSpinnerController& shelf_spinner_controller);
 
   BrowserAppShelfController(const BrowserAppShelfController&) = delete;
   BrowserAppShelfController& operator=(const BrowserAppShelfController&) =
