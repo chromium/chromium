@@ -117,6 +117,7 @@ export function confirmationPageTest() {
         getElement(diagnosticsLink, '#startIcon').icon);
     assertEquals(
         'Diagnostics app', getElementContent(diagnosticsLink, '#label'));
+    assertTrue(page.i18nExists('diagnosticsAppLabel'));
     assertEquals(
         'Run tests and troubleshooting for hardware issues',
         getElementContent(diagnosticsLink, '#subLabel'));

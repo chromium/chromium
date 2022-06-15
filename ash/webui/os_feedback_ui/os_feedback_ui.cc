@@ -58,6 +58,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"shareDiagnosticDataLabel",
        IDS_FEEDBACK_TOOL_SHARE_DIAGNOSTIC_DATA_LABEL},
       {"confirmationTitleOnline", IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT},
+      {"diagnosticsAppLabel",
+       IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

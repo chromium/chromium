@@ -3420,6 +3420,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT" desc="Label showing a thank you message as the title of the confirmation page after a report has been sent.">
         Thanks for your feedback
       </message>
+      <message name="IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL" desc="Label of the diagnostics app">
+        Diagnostics app
+      </message>
       <!-- End of Feedback Tool -->
     </messages>
   </release>
