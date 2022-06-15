@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/backend/version_updater.h"
@@ -18,7 +17,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
@@ -105,14 +103,12 @@ ShimlessRmaService::ShimlessRmaService(
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate)) {
-    version_updater_.SetOsUpdateStatusCallback(
-        base::BindRepeating(&ShimlessRmaService::OnOsUpdateStatusCallback,
-                            weak_ptr_factory_.GetWeakPtr()));
-    // Check if an OS update is available to minimize delays if needed later.
-    if (HaveAllowedNetworkConnection()) {
-      version_updater_.CheckOsUpdateAvailable();
-    }
+  version_updater_.SetOsUpdateStatusCallback(
+      base::BindRepeating(&ShimlessRmaService::OnOsUpdateStatusCallback,
+                          weak_ptr_factory_.GetWeakPtr()));
+  // Check if an OS update is available to minimize delays if needed later.
+  if (HaveAllowedNetworkConnection()) {
+    version_updater_.CheckOsUpdateAvailable();
   }
 }
 
@@ -211,15 +207,10 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
                           /*can_exit=*/true, /*can_go_back=*/true,
                           rmad::RmadErrorCode::RMAD_ERROR_OK));
   } else {
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kShimlessRMAOsUpdate)) {
-      check_os_callback_ =
-          base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-      version_updater_.CheckOsUpdateAvailable();
-    } else {
-      TransitionNextStateGeneric(std::move(callback));
-    }
+    check_os_callback_ =
+        base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+    version_updater_.CheckOsUpdateAvailable();
   }
 }
 
@@ -323,8 +314,7 @@ void ShimlessRmaService::NetworkSelectionComplete(
     std::move(callback).Run(CreateStateResultForInvalidRequest());
     return;
   }
-  if (HaveAllowedNetworkConnection() &&
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate)) {
+  if (HaveAllowedNetworkConnection()) {
     check_os_callback_ =
         base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
@@ -336,16 +326,12 @@ void ShimlessRmaService::NetworkSelectionComplete(
 
 void ShimlessRmaService::GetCurrentOsVersion(
     GetCurrentOsVersionCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   // TODO(gavindodd): Decide whether to use full or short Chrome version.
   std::move(callback).Run(chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL));
 }
 
 void ShimlessRmaService::CheckForOsUpdates(CheckForOsUpdatesCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
       mojo_state_ != mojom::State::kUpdateOs) {
     LOG(ERROR) << "CheckForOsUpdates called from incorrect state "
@@ -364,8 +350,6 @@ void ShimlessRmaService::CheckForOsUpdates(CheckForOsUpdatesCallback callback) {
 }
 
 void ShimlessRmaService::UpdateOs(UpdateOsCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
       mojo_state_ != mojom::State::kUpdateOs) {
     LOG(ERROR) << "UpdateOs called from incorrect state "
@@ -379,8 +363,6 @@ void ShimlessRmaService::UpdateOs(UpdateOsCallback callback) {
 }
 
 void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   if (state_proto_.state_case() != rmad::RmadState::kWelcome ||
       mojo_state_ != mojom::State::kUpdateOs) {
     LOG(ERROR) << "UpdateOsSkipped called from incorrect state "
@@ -1069,8 +1051,6 @@ void ShimlessRmaService::Error(rmad::RmadErrorCode error) {
 void ShimlessRmaService::OsUpdateProgress(update_engine::Operation operation,
                                           double progress,
                                           update_engine::ErrorCode error_code) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   if (os_update_observer_.is_bound()) {
     os_update_observer_->OnOsUpdateProgressUpdated(operation, progress,
                                                    error_code);
@@ -1149,8 +1129,6 @@ void ShimlessRmaService::ObserveError(
 
 void ShimlessRmaService::ObserveOsUpdateProgress(
     ::mojo::PendingRemote<mojom::OsUpdateObserver> observer) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   os_update_observer_.Bind(std::move(observer));
 }
 
@@ -1355,8 +1333,6 @@ void ShimlessRmaService::OnOsUpdateStatusCallback(
     const std::string& version,
     int64_t update_size,
     update_engine::ErrorCode error_code) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
   if (check_os_callback_) {
     switch (operation) {
       // If IDLE is received when there is a callback it means no update is

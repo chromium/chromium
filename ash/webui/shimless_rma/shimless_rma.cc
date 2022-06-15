@@ -356,12 +356,6 @@ void AddDevicePlaceholderStrings(content::WebUIDataSource* html_source) {
       ui::SubstituteChromeOSDeviceType(IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE));
 }
 
-void AddFeatureFlags(content::WebUIDataSource* html_source) {
-  html_source->AddBoolean(
-      "osUpdateEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kShimlessRMAOsUpdate));
-}
-
 }  // namespace
 
 namespace shimless_rma {
@@ -415,7 +409,6 @@ ShimlessRMADialogUI::ShimlessRMADialogUI(
 
   AddShimlessRmaStrings(html_source);
   AddDevicePlaceholderStrings(html_source);
-  AddFeatureFlags(html_source);
 
   ui::network_element::AddLocalizedStrings(html_source);
   ui::network_element::AddOncLocalizedStrings(html_source);
