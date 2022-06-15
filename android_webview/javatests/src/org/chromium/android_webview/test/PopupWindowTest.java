@@ -28,6 +28,7 @@ import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptReq
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -494,6 +495,7 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1336342")
     public void testSingleWindowModeJsInjection() throws Throwable {
         // Choose a free port which is different from |mWebServer| so they have different origins.
         TestWebServer crossOriginWebServer = TestWebServer.startAdditional();
