@@ -85,6 +85,10 @@ if (enable_java_templates) {
   }
 }
 
+python_library("test_result_presentations_py") {
+  pydeps_file = "pylib/results/presentation/test_results_presentation.pydeps"
+}
+
 python_library("devil_chromium_py") {
   pydeps_file = "devil_chromium.pydeps"
   data = [

@@ -29,8 +29,11 @@ group("orchestrator_all") {
 
   if (use_jacoco_coverage) {
     data += [
-      "//third_party/jdk/current/bin/java",
       "//third_party/jacoco/lib/jacococli.jar",
+    ]
+    data_deps += [
+      "//third_party/jdk:java_data",
+      "//build/android:test_result_presentations_py",
     ]
   }
   write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"
