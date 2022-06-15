@@ -4032,6 +4032,19 @@
       "features": [
         "disable_direct_composition_video_overlays"
       ]
+    },
+    {
+      "id": 396,
+      "cr_bugs": [1327044],
+      "description": "Add fence to SharedImageBackingOzone::BeginAccess when on same GL context",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "ARM.*",
+      "gl_renderer": "Mali.*",
+      "features": [
+        "add_fence_for_same_gl_context"
+      ]
     }
   ]
 }

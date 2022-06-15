@@ -251,7 +251,8 @@ SharedImageBackingOzone::SharedImageBackingOzone(
     uint32_t usage,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
+    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
+    const GpuDriverBugWorkarounds& workarounds)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -264,7 +265,8 @@ SharedImageBackingOzone::SharedImageBackingOzone(
       plane_(plane),
       pixmap_(std::move(pixmap)),
       dawn_procs_(std::move(dawn_procs)),
-      context_state_(std::move(context_state)) {
+      context_state_(std::move(context_state)),
+      workarounds_(workarounds) {
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY);
   bool used_by_gl =
@@ -418,8 +420,9 @@ bool SharedImageBackingOzone::BeginAccess(
   }
 
   // If current stream is different than last_write_stream_ then wait on that
-  // stream's write_fence_.
-  if (last_write_stream_ != access_stream && !write_fence_.is_null()) {
+  // stream's write_fence_ (except on ARM Mali boards for ChromeOS).
+  if (!write_fence_.is_null() && (workarounds_.add_fence_for_same_gl_context ||
+                                  last_write_stream_ != access_stream)) {
     // For write access we expect new write_fence_ so we can move the old fence
     // here.
     if (!readonly)

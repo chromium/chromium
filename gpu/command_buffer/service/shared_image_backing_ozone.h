@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -48,7 +49,8 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       uint32_t usage,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
+      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
+      const GpuDriverBugWorkarounds& workarounds);
 
   SharedImageBackingOzone(const SharedImageBackingOzone&) = delete;
   SharedImageBackingOzone& operator=(const SharedImageBackingOzone&) = delete;
@@ -129,6 +131,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;
   scoped_refptr<SharedContextState> context_state_;
+  const GpuDriverBugWorkarounds workarounds_;
 };
 
 }  // namespace gpu

@@ -384,8 +384,8 @@ SharedImageFactory::SharedImageFactory(
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
   // Desktop Linux, not ChromeOS.
   if (ShouldUseOzoneFactory()) {
-    auto ozone_factory =
-        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
+        context_state, workarounds);
     factories_.push_back(std::move(ozone_factory));
   }
   if (gr_context_type_ == GrContextType::kVulkan &&
@@ -396,8 +396,8 @@ SharedImageFactory::SharedImageFactory(
   }
 #elif BUILDFLAG(IS_FUCHSIA)
   if (gr_context_type_ == GrContextType::kVulkan) {
-    auto ozone_factory =
-        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
+        context_state, workarounds);
     factories_.push_back(std::move(ozone_factory));
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageFactory>(context_state);
@@ -407,8 +407,8 @@ SharedImageFactory::SharedImageFactory(
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (gpu_preferences.enable_webgpu ||
       gr_context_type_ == GrContextType::kVulkan) {
-    auto ozone_factory =
-        std::make_unique<SharedImageBackingFactoryOzone>(context_state);
+    auto ozone_factory = std::make_unique<SharedImageBackingFactoryOzone>(
+        context_state, workarounds);
     factories_.push_back(std::move(ozone_factory));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

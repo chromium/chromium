@@ -44,8 +44,9 @@ gfx::BufferUsage GetBufferUsage(uint32_t usage) {
 }  // namespace
 
 SharedImageBackingFactoryOzone::SharedImageBackingFactoryOzone(
-    SharedContextState* shared_context_state)
-    : shared_context_state_(shared_context_state) {
+    SharedContextState* shared_context_state,
+    const GpuDriverBugWorkarounds& workarounds)
+    : shared_context_state_(shared_context_state), workarounds_(workarounds) {
 #if BUILDFLAG(USE_DAWN)
   dawn_procs_ = base::MakeRefCounted<base::RefCountedData<DawnProcTable>>(
       dawn::native::GetProcs());
@@ -88,7 +89,7 @@ SharedImageBackingFactoryOzone::CreateSharedImageInternal(
   return std::make_unique<SharedImageBackingOzone>(
       mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
       surface_origin, alpha_type, usage, shared_context_state_.get(),
-      std::move(pixmap), dawn_procs_);
+      std::move(pixmap), dawn_procs_, workarounds_);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -164,7 +165,7 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     backing = std::make_unique<SharedImageBackingOzone>(
         mailbox, plane_format, plane, plane_size, color_space, surface_origin,
         alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
-        dawn_procs_);
+        dawn_procs_, workarounds_);
     backing->SetCleared();
   } else if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
     SharedMemoryRegionWrapper shm_wrapper;
