@@ -68,44 +68,14 @@ struct RichAutocompletionParams {
   bool enabled;
   bool autocomplete_titles;
   bool autocomplete_titles_shortcut_provider;
-  bool autocomplete_titles_no_inputs_with_spaces;
   int autocomplete_titles_min_char;
   bool autocomplete_non_prefix_all;
   bool autocomplete_non_prefix_shortcut_provider;
-  bool autocomplete_non_prefix_no_inputs_with_spaces;
   int autocomplete_non_prefix_min_char;
-  bool split_title_completion;
-  bool split_url_completion;
-  int split_completion_min_char;
   bool autocomplete_shortcut_text;
-  bool autocomplete_shortcut_text_no_inputs_with_spaces;
   int autocomplete_shortcut_text_min_char;
   bool counterfactual;
   bool autocomplete_prefer_urls_over_prefixes;
-};
-
-// |SplitAutocompletion| helps track the autocompleted portions of a match's
-// text displayed when it is the default suggestion. It is used when the
-// autocompletions are between the user text; i.e. the user text is split. E.g.
-// given user text 'a c', |SplitAutocompletion| could represent 'a [b ]c'.
-struct SplitAutocompletion {
-  SplitAutocompletion(std::u16string display_text,
-                      std::vector<gfx::Range> selections);
-  SplitAutocompletion();
-  SplitAutocompletion(const SplitAutocompletion& copy);
-  SplitAutocompletion(SplitAutocompletion&&) noexcept;
-  SplitAutocompletion& operator=(const SplitAutocompletion&);
-  SplitAutocompletion& operator=(SplitAutocompletion&&) noexcept;
-
-  ~SplitAutocompletion();
-
-  bool Empty() const;
-  void Clear();
-
-  // The text including both the user input and autocompleted texts.
-  std::u16string display_text;
-  // The locations of the autocompleted texts.
-  std::vector<gfx::Range> selections;
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -212,11 +182,9 @@ struct AutocompleteMatch {
   enum class RichAutocompletionType {
     kNone = 0,
     kUrlNonPrefix = 1,
-    kUrlSplit = 2,
-    kTitlePrefix = 3,
-    kTitleNonPrefix = 4,
-    kTitleSplit = 5,
-    kShortcutTextPrefix = 6,
+    kTitlePrefix = 2,
+    kTitleNonPrefix = 3,
+    kShortcutTextPrefix = 4,
     kMaxValue = kShortcutTextPrefix,
   };
 
@@ -585,8 +553,7 @@ struct AutocompleteMatch {
                              const AutocompleteInput& input,
                              const std::u16string& shortcut_text = u"");
 
-  // True if |inline_autocompletion|, |prefix_autocompletion|, and
-  // |split_autocompletion| are all empty.
+  // True if `inline_autocompletion` and `prefix_autocompletion` are both empty.
   bool IsEmptyAutocompletion() const;
 
   // Serialise this object into a trace.
@@ -627,11 +594,11 @@ struct AutocompleteMatch {
   std::u16string inline_autocompletion;
   // Whether rich autocompletion triggered; i.e. this suggestion *is or could
   // have been* rich autocompleted. This is usually redundant and checking
-  // whether either of `prefix_autocompletion` or `split_autocompletion` are
-  // non-empty should be used instead to determine if this suggestion *is* rich
-  // autocompleted. But for counterfactual variations, the latter 2 aren't
-  // copied when deduping matches to avoid showing rich autocompletion and so
-  // can't be used to trigger logging.
+  // whether `prefix_autocompletion` is non-empty should be used instead to
+  // determine if this suggestion *is* rich autocompleted. But for
+  // counterfactual variations, `prefix_autocompletion` isn't copied when
+  // deduping matches to avoid showing rich autocompletion and so can't be used
+  // to trigger logging.
   // TODO(manukh): remove `rich_autocompletion_triggered` when counterfactual
   //  experiments end.
   RichAutocompletionType rich_autocompletion_triggered =
@@ -640,12 +607,6 @@ struct AutocompleteMatch {
   // omnibox, if this match becomes the default match. Always empty if
   // non-prefix autocompletion is disabled.
   std::u16string prefix_autocompletion;
-  // A representation of inline autocompletion that supports splitting the
-  // user input. See `SplitAutocompletion()` comments. Always empty if split
-  // autocompletion is disabled.
-  // TODO(manukh) If split rich autocompletion launches, all 3 autocompletions
-  //  can be represented by `split_autocompletion`.
-  SplitAutocompletion split_autocompletion;
 
   // If false, the omnibox should prevent this match from being the
   // default match.  Providers should set this to true only if the

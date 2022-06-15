@@ -613,7 +613,7 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
   input_.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete || just_deleted_text_ ||
       (has_selected_text && inline_autocompletion_.empty() &&
-       prefix_autocompletion_.empty() && split_autocompletion_.Empty()) ||
+       prefix_autocompletion_.empty()) ||
       paste_state_ != NONE);
   input_.set_prefer_keyword(is_keyword_selected());
   input_.set_allow_exact_keyword_match(is_keyword_selected() ||
@@ -1407,7 +1407,6 @@ void OmniboxEditModel::OnPopupDataChanged(
     bool is_temporary_text,
     const std::u16string& inline_autocompletion,
     const std::u16string& prefix_autocompletion,
-    const SplitAutocompletion& split_autocompletion,
     const std::u16string& keyword,
     bool is_keyword_hint,
     const std::u16string& additional_text) {
@@ -1449,7 +1448,6 @@ void OmniboxEditModel::OnPopupDataChanged(
       has_temporary_text_ = true;
       inline_autocompletion_.clear();
       prefix_autocompletion_.clear();
-      split_autocompletion_.Clear();
       view_->OnInlineAutocompleteTextCleared();
     }
     // Arrowing around the popup cancels control-enter.
@@ -1471,17 +1469,14 @@ void OmniboxEditModel::OnPopupDataChanged(
 
   inline_autocompletion_ = inline_autocompletion;
   prefix_autocompletion_ = prefix_autocompletion;
-  split_autocompletion_ = split_autocompletion;
-  if (inline_autocompletion_.empty() && prefix_autocompletion_.empty() &&
-      split_autocompletion_.Empty()) {
+  if (inline_autocompletion_.empty() && prefix_autocompletion_.empty()) {
     view_->OnInlineAutocompleteTextCleared();
   }
 
   const std::u16string& user_text =
       user_input_in_progress_ ? user_text_ : input_.text();
   if (keyword_state_changed && is_keyword_selected() &&
-      inline_autocompletion_.empty() && prefix_autocompletion_.empty() &&
-      split_autocompletion_.Empty()) {
+      inline_autocompletion_.empty() && prefix_autocompletion_.empty()) {
     // If we reach here, the user most likely entered keyword mode by inserting
     // a space between a keyword name and a search string (as pressing space or
     // tab after the keyword name alone would have been be handled in
@@ -1502,18 +1497,12 @@ void OmniboxEditModel::OnPopupDataChanged(
   } else {
     std::u16string display_text;
     std::vector<gfx::Range> selections = {};
-    if (split_autocompletion.Empty()) {
-      display_text =
-          prefix_autocompletion_ + user_text + inline_autocompletion_;
-      selections.emplace_back(
-          display_text.size(),
-          user_text.length() + prefix_autocompletion_.length());
-      if (prefix_autocompletion_.length())
-        selections.emplace_back(0, prefix_autocompletion_.length());
-    } else {
-      display_text = split_autocompletion.display_text;
-      selections = split_autocompletion.selections;
-    }
+    display_text = prefix_autocompletion_ + user_text + inline_autocompletion_;
+    selections.emplace_back(
+        display_text.size(),
+        user_text.length() + prefix_autocompletion_.length());
+    if (prefix_autocompletion_.length())
+      selections.emplace_back(0, prefix_autocompletion_.length());
     view_->OnInlineAutocompleteTextMaybeChanged(display_text, selections,
                                                 prefix_autocompletion_,
                                                 inline_autocompletion_);
@@ -1565,8 +1554,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // inline autocompletion, which results in a user text change.
   if (!state_changes.text_differs &&
       (!state_changes.selection_differs ||
-       (inline_autocompletion_.empty() && prefix_autocompletion_.empty() &&
-        split_autocompletion_.Empty()))) {
+       (inline_autocompletion_.empty() && prefix_autocompletion_.empty()))) {
     if (state_changes.keyword_differs) {
       // We won't need the below logic for creating a keyword by a space at the
       // end or in the middle, or by typing a '?', but we do need to update the
@@ -1662,12 +1650,11 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   // its value across the entire call.
   const std::u16string inline_autocompletion(match.inline_autocompletion);
   const std::u16string prefix_autocompletion(match.prefix_autocompletion);
-  const auto split_autocompletion(match.split_autocompletion);
   const std::u16string additional_text(match.additional_text);
   OnPopupDataChanged(std::u16string(),
                      /*is_temporary_text=*/false, inline_autocompletion,
-                     prefix_autocompletion, split_autocompletion, keyword,
-                     is_keyword_hint, additional_text);
+                     prefix_autocompletion, keyword, is_keyword_hint,
+                     additional_text);
 }
 
 void OmniboxEditModel::SetAccessibilityLabel(const AutocompleteMatch& match) {
@@ -1680,7 +1667,6 @@ void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
   just_deleted_text_ = false;
   inline_autocompletion_.clear();
   prefix_autocompletion_.clear();
-  split_autocompletion_.Clear();
   view_->OnInlineAutocompleteTextCleared();
 }
 
@@ -1879,7 +1865,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     // If the new selection is a Header, the temporary text is an empty string.
     OnPopupDataChanged(std::u16string(),
                        /*is_temporary_text=*/true, std::u16string(),
-                       std::u16string(), {}, keyword, is_keyword_hint,
+                       std::u16string(), keyword, is_keyword_hint,
                        std::u16string());
   } else if (old_selection.line != popup_selection_.line ||
              (old_selection.IsButtonFocused() &&
@@ -1889,15 +1875,15 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     // when the old selection was a button and we're not entering keyword mode.
     // Updating the edit model for every state change breaks keyword mode.
     if (reset_to_default) {
-      OnPopupDataChanged(
-          std::u16string(),
-          /*is_temporary_text=*/false, match.inline_autocompletion,
-          match.prefix_autocompletion, match.split_autocompletion, keyword,
-          is_keyword_hint, match.additional_text);
+      OnPopupDataChanged(std::u16string(),
+                         /*is_temporary_text=*/false,
+                         match.inline_autocompletion,
+                         match.prefix_autocompletion, keyword, is_keyword_hint,
+                         match.additional_text);
     } else {
       OnPopupDataChanged(match.fill_into_edit,
                          /*is_temporary_text=*/true, std::u16string(),
-                         std::u16string(), {}, keyword, is_keyword_hint,
+                         std::u16string(), keyword, is_keyword_hint,
                          std::u16string());
     }
   }

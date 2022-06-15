@@ -1258,32 +1258,6 @@ const FeatureEntry::FeatureVariation
         {"Hide Additional Text", kOmniboxRichAutocompletionAdditionalTextHide,
          std::size(kOmniboxRichAutocompletionAdditionalTextHide), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitlesUrls5[] = {
-    {"RichAutocompletionSplitTitleCompletion", "true"},
-    {"RichAutocompletionSplitUrlCompletion", "true"},
-    {"RichAutocompletionSplitCompletionMinChar", "5"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitlesUrls3[] = {
-    {"RichAutocompletionSplitTitleCompletion", "true"},
-    {"RichAutocompletionSplitUrlCompletion", "true"},
-    {"RichAutocompletionSplitCompletionMinChar", "3"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitles5[] = {
-    {"RichAutocompletionSplitTitleCompletion", "true"},
-    {"RichAutocompletionSplitCompletionMinChar", "5"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionTitles3[] = {
-    {"RichAutocompletionSplitTitleCompletion", "true"},
-    {"RichAutocompletionSplitCompletionMinChar", "3"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxRichAutocompletionSplitVariations[] = {
-        {"Titles & URLs, min char 5", kOmniboxRichAutocompletionTitlesUrls5,
-         std::size(kOmniboxRichAutocompletionTitlesUrls5), nullptr},
-        {"Titles & URLs, min char 3", kOmniboxRichAutocompletionTitlesUrls3,
-         std::size(kOmniboxRichAutocompletionTitlesUrls3), nullptr},
-        {"Titles, min char 5", kOmniboxRichAutocompletionTitles5,
-         std::size(kOmniboxRichAutocompletionTitles5), nullptr},
-        {"Titles, min char 3", kOmniboxRichAutocompletionTitles3,
-         std::size(kOmniboxRichAutocompletionTitles3), nullptr}};
-
 const FeatureEntry::FeatureParam kOmniboxRichAutocompletionPreferUrls[] = {
     {"RichAutocompletionAutocompletePreferUrlsOverPrefixes", "true"}};
 
@@ -5124,12 +5098,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kRichAutocompletion,
          kOmniboxRichAutocompletionShowAdditionalTextVariations,
          "OmniboxBundledExperimentV1")},
-    {"omnibox-rich-autocompletion-split",
-     flag_descriptions::kOmniboxRichAutocompletionSplitName,
-     flag_descriptions::kOmniboxRichAutocompletionSplitDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
-                                    kOmniboxRichAutocompletionSplitVariations,
-                                    "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-prefer-urls-over-prefixes",
      flag_descriptions::kOmniboxRichAutocompletionPreferUrlsOverPrefixesName,
      flag_descriptions::

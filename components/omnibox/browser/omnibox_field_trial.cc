@@ -749,12 +749,6 @@ const base::FeatureParam<bool>
         "RichAutocompletionAutocompleteTitlesShortcutProvider",
         false);
 
-const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteTitlesNoInputsWithSpaces(
-        &omnibox::kRichAutocompletion,
-        "RichAutocompletionAutocompleteTitlesNoInputsWithSpaces",
-        false);
-
 const base::FeatureParam<int> kRichAutocompletionAutocompleteTitlesMinChar(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteTitlesMinChar",
@@ -771,12 +765,6 @@ const base::FeatureParam<bool>
         "RichAutocompletionAutocompleteNonPrefixShortcutProvider",
         false);
 
-const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces(
-        &omnibox::kRichAutocompletion,
-        "RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
-        false);
-
 const base::FeatureParam<int> kRichAutocompletionAutocompleteNonPrefixMinChar(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteNonPrefixMinChar",
@@ -787,31 +775,10 @@ const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText(
     "RichAutocompletionAutocompleteShowAdditionalText",
     true);
 
-const base::FeatureParam<bool> kRichAutocompletionSplitTitleCompletion(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionSplitTitleCompletion",
-    false);
-
-const base::FeatureParam<bool> kRichAutocompletionSplitUrlCompletion(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionSplitUrlCompletion",
-    false);
-
-const base::FeatureParam<int> kRichAutocompletionSplitCompletionMinChar(
-    &omnibox::kRichAutocompletion,
-    "RichAutocompletionSplitCompletionMinChar",
-    0);
-
 const base::FeatureParam<bool> kRichAutocompletionAutocompleteShortcutText(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteShortcutText",
     false);
-
-const base::FeatureParam<bool>
-    kRichAutocompletionAutocompleteShortcutTextNoInputsWithSpaces(
-        &omnibox::kRichAutocompletion,
-        "RichAutocompletionAutocompleteShortcutTextNoInputsWithSpaces",
-        false);
 
 const base::FeatureParam<int>
     kRichAutocompletionAutocompleteShortcutTextMinChar(

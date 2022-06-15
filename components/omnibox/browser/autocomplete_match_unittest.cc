@@ -529,7 +529,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
               expected_inline_autocompletion);
     EXPECT_EQ(base::UTF16ToUTF8(match.prefix_autocompletion).c_str(),
               expected_prefix_autocompletion);
-    EXPECT_TRUE(match.split_autocompletion.Empty());
     EXPECT_EQ(base::UTF16ToUTF8(match.additional_text).c_str(),
               expected_additional_text);
     EXPECT_EQ(match.allowed_to_be_default_match,
@@ -546,8 +545,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         {
             {"RichAutocompletionAutocompleteTitles", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionSplitTitleCompletion", "true"},
-            {"RichAutocompletionSplitUrlCompletion", "true"},
+            {"", "true"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
 
@@ -588,9 +586,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     // because we rely on providers to not provide suggestions that only match
     // the input at non-wordbreaks.
 
-    // We test split autocompletion in separate test below since it has a few
-    // edge cases.
-
     // Otherwise, don't autocomplete but still set |additional_text|.
     {
       SCOPED_TRACE("no autocompletion applicable");
@@ -616,7 +611,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
-            {"RichAutocompletionSplitCompletionMinChar", "2"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
 
@@ -666,7 +660,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
-            {"RichAutocompletionSplitCompletionMinChar", "2"},
             {"RichAutocompletionCounterfactual", "true"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
@@ -717,24 +710,19 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     }
   }
 
-  // Autocomplete only shortcut suggestions and only inputs without spaces if
-  // appropriate params are set.
+  // Autocomplete only shortcut suggestions.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kRichAutocompletion,
         {
             {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
-            {"RichAutocompletionAutocompleteTitlesNoInputsWithSpaces", "true"},
             {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
-             "true"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
-    // Trigger if the suggestion is from the shortcut provider and the input
-    // contains no spaces.
+    // Trigger if the suggestion is from the shortcut provider.
     {
-      SCOPED_TRACE("shortcut, input contains no spaces");
+      SCOPED_TRACE("shortcut");
       test("x", false, "primary x x", "x x secondary", true, true,
            AutocompleteMatch::RichAutocompletionType::kTitlePrefix,
            " x secondary", "", "primary x x", true);
@@ -746,26 +734,16 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
       test("x", false, "primary x x", "x x secondary", false, false,
            AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
     }
-
-    // Don't trigger if the input contains spaces.
-    {
-      SCOPED_TRACE("input contains spaces");
-      test("x x", false, "primary x x", "x x secondary", true, false,
-           AutocompleteMatch::RichAutocompletionType::kNone, "", "", "", false);
-    }
   }
 
-  // Autocomplete inputs with spaces if the appropriate params are set.
+  // Autocomplete inputs with spaces.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kRichAutocompletion,
         {
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteTitlesNoInputsWithSpaces", "false"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"RichAutocompletionAutocompleteNonPrefixNoInputsWithSpaces",
-             "false"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
     {
@@ -774,79 +752,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
            AutocompleteMatch::RichAutocompletionType::kUrlNonPrefix, "",
            "primary ", "", true);
     }
-  }
-}
-
-TEST(AutocompleteMatchTest, TryRichAutocompletionSplit) {
-  auto test = [](const std::string input_text, const std::string primary_text,
-                 const std::string secondary_text, bool expected_return,
-                 const std::vector<gfx::Range> expected_split_autocompletion,
-                 const std::string expected_additional_text,
-                 bool expected_allowed_to_be_default_match) {
-    AutocompleteInput input(base::UTF8ToUTF16(input_text),
-                            metrics::OmniboxEventProto::OTHER,
-                            TestSchemeClassifier());
-
-    AutocompleteMatch match;
-    EXPECT_EQ(
-        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
-                                    base::UTF8ToUTF16(secondary_text), input),
-        expected_return);
-
-    EXPECT_TRUE(match.inline_autocompletion.empty());
-    EXPECT_TRUE(match.prefix_autocompletion.empty());
-    EXPECT_EQ(match.split_autocompletion.selections,
-              expected_split_autocompletion);
-    EXPECT_EQ(base::UTF16ToUTF8(match.additional_text).c_str(),
-              expected_additional_text);
-    EXPECT_EQ(match.allowed_to_be_default_match,
-              expected_allowed_to_be_default_match);
-  };
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kRichAutocompletion,
-      {
-          {"RichAutocompletionAutocompleteTitles", "true"},
-          {"RichAutocompletionSplitTitleCompletion", "true"},
-          {"RichAutocompletionSplitUrlCompletion", "true"},
-      });
-  RichAutocompletionParams::ClearParamsForTesting();
-
-  // Prefer primary text, match the first word break occurrence, match the
-  // delimiter, and match trailing delimiters.
-  {
-    SCOPED_TRACE("primary split");
-    test("x_z ", "y_mixd_x_x_primary_z_suf fix",
-         "y_mixd_x_x_secondary_z_suffix", true,
-         {{28, 25}, {24, 20}, {19, 9}, {7, 0}}, "", true);
-  }
-
-  // Match the secondary text if the primary text does not match.
-  {
-    SCOPED_TRACE("secondary split");
-    test("x_z", "y_mixd_x_x_primary_y_suffix", "y_mixd_x_x_secondary_z_suffix",
-         true, {{29, 22}, {21, 9}, {7, 0}}, "y_mixd_x_x_primary_y_suffix",
-         true);
-  }
-
-  // Match a distant delimiter if not found adjacent to the word match.
-  {
-    SCOPED_TRACE("primary split, distant delimiter");
-    test("x_z", "y_mixd_xx_primary_z_suffix", "y_mixd_x_x_secondary_z_suffix",
-         true, {{26, 19}, {18, 10}, {9, 8}, {7, 0}}, "", true);
-  }
-
-  // Don't match if the delimiter can't be matched.
-  {
-    SCOPED_TRACE("primary split, no delimiter");
-    test("x_z", "x z", "xz", false, {}, "", false);
-  }
-
-  // Don't match if word order is not preserved.
-  {
-    SCOPED_TRACE("primary split, incorrect order");
-    test("x_y_z", "z_y_x_", "x_z_y_", false, {}, "", false);
   }
 }
 
@@ -876,7 +781,6 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
     EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
               expected_inline_autocompletion);
     EXPECT_TRUE(match.prefix_autocompletion.empty());
-    EXPECT_TRUE(match.split_autocompletion.Empty());
     EXPECT_EQ(base::UTF16ToUTF8(match.additional_text).c_str(),
               expected_additional_text);
     EXPECT_EQ(match.allowed_to_be_default_match,

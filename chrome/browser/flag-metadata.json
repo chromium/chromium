@@ -4651,11 +4651,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "omnibox-rich-autocompletion-split",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "omnibox-short-bookmark-suggestions",
     "owners": [ "orinj", "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 115
