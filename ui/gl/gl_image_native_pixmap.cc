@@ -131,10 +131,12 @@ GLImageNativePixmap::GLImageNativePixmap(const gfx::Size& size,
     : GLImageEGL(size),
       format_(format),
       plane_(plane),
-      has_image_flush_external_(gl::GLSurfaceEGL::GetGLDisplayEGL()
-                                    ->ext->b_EGL_EXT_image_flush_external),
-      has_image_dma_buf_export_(gl::GLSurfaceEGL::GetGLDisplayEGL()
-                                    ->ext->b_EGL_MESA_image_dma_buf_export) {}
+      has_image_flush_external_(
+          gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
+              "EGL_EXT_image_flush_external")),
+      has_image_dma_buf_export_(
+          gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
+              "EGL_MESA_image_dma_buf_export")) {}
 
 GLImageNativePixmap::~GLImageNativePixmap() {}
 
@@ -172,8 +174,8 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
                                            EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
                                            EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT};
       bool has_dma_buf_import_modifier =
-          gl::GLSurfaceEGL::GetGLDisplayEGL()
-              ->ext->b_EGL_EXT_image_dma_buf_import_modifiers;
+          gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension(
+              "EGL_EXT_image_dma_buf_import_modifiers");
 
       for (size_t attrs_plane = 0; attrs_plane < pixmap->GetNumberOfPlanes();
            ++attrs_plane) {

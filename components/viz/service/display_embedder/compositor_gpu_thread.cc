@@ -20,7 +20,6 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/vulkan/buildflags.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
@@ -49,7 +48,7 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
   // that instead of enabling/disabling DrDc based on the extension.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE)
     DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()
-               ->ext->b_EGL_ANGLE_context_virtualization);
+               ->IsANGLEContextVirtualizationSupported());
 #endif
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider;

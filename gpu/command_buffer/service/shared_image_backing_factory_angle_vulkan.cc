@@ -597,7 +597,7 @@ SharedImageBackingFactoryAngleVulkan::SharedImageBackingFactoryAngleVulkan(
                                         context_state->progress_reporter()),
       context_state_(context_state) {
   DCHECK(context_state_->GrContextIsVulkan());
-  DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_ANGLE_vulkan_image);
+  DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->IsANGLEVulkanImageSupported());
 }
 
 SharedImageBackingFactoryAngleVulkan::~SharedImageBackingFactoryAngleVulkan() =

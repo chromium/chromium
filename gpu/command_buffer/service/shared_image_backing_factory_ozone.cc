@@ -22,7 +22,6 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -235,7 +234,7 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     return false;
   }
   if (used_by_gl &&
-      !gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_KHR_image) {
+      !gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension("EGL_KHR_image")) {
     return false;
   }
 #else

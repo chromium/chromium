@@ -19,7 +19,7 @@ EGLDeviceEXT GetEGLDeviceFromANGLE() {
     return nullptr;
   }
 
-  if (!gl::g_driver_egl.client_ext.b_EGL_EXT_device_query) {
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLQueryDeviceSupported()) {
     LOG(ERROR) << "EGL_EXT_device_query not supported";
     return nullptr;
   }

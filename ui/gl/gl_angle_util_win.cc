@@ -24,7 +24,7 @@ void* QueryDeviceObjectFromANGLE(int object_type) {
     return nullptr;
   }
 
-  if (!gl::g_driver_egl.client_ext.b_EGL_EXT_device_query) {
+  if (!gl::GLSurfaceEGL::GetGLDisplayEGL()->IsEGLQueryDeviceSupported()) {
     DVLOG(1) << "EGL_EXT_device_query not supported";
     return nullptr;
   }
