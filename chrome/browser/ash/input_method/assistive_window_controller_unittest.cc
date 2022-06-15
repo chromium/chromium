@@ -255,9 +255,7 @@ TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
       static_cast<views::BoxLayout*>(
-          controller_->GetSuggestionWindowViewForTesting()
-              ->multiple_candidate_area_for_testing()
-              ->GetLayoutManager())
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
           ->GetOrientation();
   EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
 }
@@ -276,9 +274,7 @@ TEST_F(AssistiveWindowControllerTest,
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
       static_cast<views::BoxLayout*>(
-          controller_->GetSuggestionWindowViewForTesting()
-              ->multiple_candidate_area_for_testing()
-              ->GetLayoutManager())
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
           ->GetOrientation();
   EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
 }
@@ -296,9 +292,7 @@ TEST_F(AssistiveWindowControllerTest, SetsMultiWordWindowOrientationVertical) {
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
       static_cast<views::BoxLayout*>(
-          controller_->GetSuggestionWindowViewForTesting()
-              ->multiple_candidate_area_for_testing()
-              ->GetLayoutManager())
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
           ->GetOrientation();
   EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
 }
@@ -318,9 +312,7 @@ TEST_F(AssistiveWindowControllerTest,
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
       static_cast<views::BoxLayout*>(
-          controller_->GetSuggestionWindowViewForTesting()
-              ->multiple_candidate_area_for_testing()
-              ->GetLayoutManager())
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
           ->GetOrientation();
   EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kHorizontal);
 }

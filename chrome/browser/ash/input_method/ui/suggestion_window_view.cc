@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
 #include "chrome/browser/ash/input_method/ui/colors.h"
-#include "chrome/browser/ash/input_method/ui/completion_suggestion_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
+#include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -35,7 +35,6 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -88,12 +87,12 @@ SuggestionWindowView::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 void SuggestionWindowView::Show(const SuggestionDetails& details) {
-  ResizeCandidateArea(0);
-
-  completion_view_->SetVisible(true);
-  completion_view_->SetView(details);
+  ResizeCandidateArea(1);
+  auto* const candidate =
+      static_cast<SuggestionView*>(candidate_area_->children().front());
+  candidate->SetView(details);
   if (details.show_setting_link)
-    completion_view_->SetMinWidth(setting_link_->GetPreferredSize().width());
+    candidate->SetMinWidth(setting_link_->GetPreferredSize().width());
 
   setting_link_->SetVisible(details.show_setting_link);
 
@@ -103,12 +102,14 @@ void SuggestionWindowView::Show(const SuggestionDetails& details) {
 void SuggestionWindowView::ShowMultipleCandidates(
     const ash::input_method::AssistiveWindowProperties& properties) {
   const std::vector<std::u16string>& candidates = properties.candidates;
-  completion_view_->SetVisible(false);
   ResizeCandidateArea(candidates.size());
   for (size_t i = 0; i < candidates.size(); ++i) {
-    auto* const candidate = static_cast<views::LabelButton*>(
-        multiple_candidate_area_->children()[i]);
-    candidate->SetText(candidates[i]);
+    auto* const candidate =
+        static_cast<SuggestionView*>(candidate_area_->children()[i]);
+    if (properties.show_indices)
+      candidate->SetViewWithIndex(base::FormatNumber(i + 1), candidates[i]);
+    else
+      candidate->SetView({.text = candidates[i]});
   }
 
   learn_more_button_->SetVisible(properties.show_setting_link);
@@ -120,16 +121,10 @@ void SuggestionWindowView::SetButtonHighlighted(
     const AssistiveWindowButton& button,
     bool highlighted) {
   if (button.id == ButtonId::kSuggestion) {
-    if (completion_view_->GetVisible()) {
-      completion_view_->SetHighlighted(highlighted);
-    } else {
-      const views::View::Views& candidates =
-          multiple_candidate_area_->children();
-      if (button.index < candidates.size()) {
-        SetCandidateHighlighted(
-            static_cast<views::LabelButton*>(candidates[button.index]),
-            highlighted);
-      }
+    const views::View::Views& candidates = candidate_area_->children();
+    if (button.index < candidates.size()) {
+      SetCandidateHighlighted(
+          static_cast<SuggestionView*>(candidates[button.index]), highlighted);
     }
   } else if (button.id == ButtonId::kSmartInputsSettingLink) {
     SetHighlighted(*setting_link_, highlighted);
@@ -139,11 +134,15 @@ void SuggestionWindowView::SetButtonHighlighted(
 }
 
 gfx::Rect SuggestionWindowView::GetBubbleBounds() {
-  // The bubble bounds must be shifted to align with the anchor if there is a
-  // completion view.
-  const gfx::Point anchor_origin = completion_view_->GetVisible()
-                                       ? completion_view_->GetAnchorOrigin()
-                                       : gfx::Point(0, 0);
+  // The bubble bounds must be shifted to align with the anchor.
+  // If there is more than one suggestion, use the anchor origin of the first
+  // (topmost) suggestion. This allows the alignment to work correctly for both
+  // vertical and horizontal orientations.
+  const views::View::Views& candidates = candidate_area_->children();
+  const gfx::Point anchor_origin =
+      !candidates.empty()
+          ? static_cast<SuggestionView*>(candidates[0])->GetAnchorOrigin()
+          : gfx::Point(0, 0);
   return BubbleDialogDelegateView::GetBubbleBounds() -
          anchor_origin.OffsetFromOrigin();
 }
@@ -194,19 +193,11 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
     }
   }
 
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
-  completion_view_ = AddChildView(
-      std::make_unique<CompletionSuggestionView>(base::BindRepeating(
-          &AssistiveDelegate::AssistiveWindowButtonClicked,
-          base::Unretained(delegate_),
-          AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
-                                .index = 0})));
-  completion_view_->SetVisible(false);
-  multiple_candidate_area_ = AddChildView(std::make_unique<views::View>());
-  multiple_candidate_area_->SetLayoutManager(
+  SetLayoutManager(std::make_unique<views::BoxLayout>(layout_orientation));
+
+  candidate_area_ = AddChildView(std::make_unique<views::View>());
+  candidate_area_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(layout_orientation));
-  multiple_candidate_area_->SetVisible(false);
 
   setting_link_ = AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_SUGGESTION_LEARN_MORE)));
@@ -251,27 +242,24 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
 SuggestionWindowView::~SuggestionWindowView() = default;
 
 void SuggestionWindowView::ResizeCandidateArea(size_t size) {
-  const views::View::Views& candidates = multiple_candidate_area_->children();
+  if (highlighted_candidate_)
+    SetCandidateHighlighted(highlighted_candidate_, false);
+
+  const views::View::Views& candidates = candidate_area_->children();
   while (candidates.size() > size) {
     subscriptions_.erase(
-        multiple_candidate_area_->RemoveChildViewT(candidates.back()).get());
+        candidate_area_->RemoveChildViewT(candidates.back()).get());
   }
 
   for (size_t index = candidates.size(); index < size; ++index) {
-    // TODO(b/217560706): Separate this into a CandidateView that will follow
-    // specs and contain an index.
-    auto* const candidate = multiple_candidate_area_->AddChildView(
-        std::make_unique<views::LabelButton>(
-            base::BindRepeating(
-                &AssistiveDelegate::AssistiveWindowButtonClicked,
-                base::Unretained(delegate_),
-                AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
-                                      .index = index}),
-            u""));
-    candidate->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 10)));
-
+    auto* const candidate = candidate_area_->AddChildView(
+        std::make_unique<SuggestionView>(base::BindRepeating(
+            &AssistiveDelegate::AssistiveWindowButtonClicked,
+            base::Unretained(delegate_),
+            AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
+                                  .index = index})));
     auto subscription = candidate->AddStateChangedCallback(base::BindRepeating(
-        [](SuggestionWindowView* window, views::LabelButton* button) {
+        [](SuggestionWindowView* window, SuggestionView* button) {
           window->SetCandidateHighlighted(button, ShouldHighlight(*button));
         },
         base::Unretained(this), base::Unretained(candidate)));
@@ -280,19 +268,24 @@ void SuggestionWindowView::ResizeCandidateArea(size_t size) {
 }
 
 void SuggestionWindowView::MakeVisible() {
-  multiple_candidate_area_->SetVisible(true);
+  candidate_area_->SetVisible(true);
   SizeToContents();
 }
 
-void SuggestionWindowView::SetCandidateHighlighted(views::LabelButton* view,
+void SuggestionWindowView::SetCandidateHighlighted(SuggestionView* candidate,
                                                    bool highlighted) {
-  // Clear all highlights if any exists.
-  for (auto* candidate : multiple_candidate_area_->children()) {
-    SetHighlighted(*candidate, false);
-  }
+  DCHECK(candidate);
+  DCHECK_EQ(candidate_area_, candidate->parent());
 
-  if (highlighted)
-    SetHighlighted(*view, highlighted);
+  // Can't highlight a highlighted candidate, or unhighlight an unhighlighted
+  // one.
+  if (highlighted == (candidate == highlighted_candidate_))
+    return;
+
+  if (highlighted && highlighted_candidate_)
+    highlighted_candidate_->SetHighlighted(false);
+  candidate->SetHighlighted(highlighted);
+  highlighted_candidate_ = highlighted ? candidate : nullptr;
 }
 
 BEGIN_METADATA(SuggestionWindowView, views::BubbleDialogDelegateView)

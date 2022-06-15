@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/ui/completion_suggestion_view.h"
+#include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 
 #include <stddef.h>
 
@@ -17,14 +17,13 @@ namespace ui {
 namespace ime {
 namespace {
 
-class CompletionSuggestionViewTest : public views::ViewsTestBase {
+class SuggestionViewTest : public views::ViewsTestBase {
  public:
-  CompletionSuggestionViewTest() = default;
+  SuggestionViewTest() = default;
 };
 
-TEST_F(CompletionSuggestionViewTest,
-       AnchorOriginIsPaddingWhenConfirmedLengthIsZero) {
-  CompletionSuggestionView suggestion({});
+TEST_F(SuggestionViewTest, AnchorOriginIsPaddingWhenConfirmedLengthIsZero) {
+  SuggestionView suggestion({});
   suggestion.SetView({
       .text = u"good",
       .confirmed_length = 0,
@@ -33,9 +32,9 @@ TEST_F(CompletionSuggestionViewTest,
   EXPECT_EQ(suggestion.GetAnchorOrigin(), gfx::Point(kPadding, 0));
 }
 
-TEST_F(CompletionSuggestionViewTest,
+TEST_F(SuggestionViewTest,
        AnchorOriginIsPaddingAndPrefixWidthWhenConfirmedLengthIsNonZero) {
-  CompletionSuggestionView suggestion({});
+  SuggestionView suggestion({});
   // "how a" is confirmed
   suggestion.SetView({
       .text = u"how are you",

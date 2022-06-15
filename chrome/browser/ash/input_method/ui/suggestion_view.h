@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_UI_COMPLETION_SUGGESTION_VIEW_H_
-#define CHROME_BROWSER_ASH_INPUT_METHOD_UI_COMPLETION_SUGGESTION_VIEW_H_
+#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_UI_SUGGESTION_VIEW_H_
+#define CHROME_BROWSER_ASH_INPUT_METHOD_UI_SUGGESTION_VIEW_H_
 
 #include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -41,16 +41,19 @@ constexpr char kTabKey[] = "tab";
 constexpr cros_styles::ColorName kButtonHighlightColor =
     cros_styles::ColorName::kRippleColor;
 
-// CompletionSuggestionView renders a suggestion.
-class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
+// SuggestionView renders a suggestion.
+class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
  public:
-  METADATA_HEADER(CompletionSuggestionView);
-  explicit CompletionSuggestionView(PressedCallback callback);
-  CompletionSuggestionView(const CompletionSuggestionView&) = delete;
-  CompletionSuggestionView& operator=(const CompletionSuggestionView&) = delete;
-  ~CompletionSuggestionView() override;
+  METADATA_HEADER(SuggestionView);
+  explicit SuggestionView(PressedCallback callback);
+  SuggestionView(const SuggestionView&) = delete;
+  SuggestionView& operator=(const SuggestionView&) = delete;
+  ~SuggestionView() override;
 
   void SetView(const SuggestionDetails& details);
+
+  void SetViewWithIndex(const std::u16string& index,
+                        const std::u16string& text);
 
   void SetHighlighted(bool highlighted);
   void SetMinWidth(int width);
@@ -83,6 +86,7 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
   void SetSuggestionText(const std::u16string& text,
                          const size_t confirmed_length);
 
+  views::Label* index_label_ = nullptr;
   // The suggestion label renders the suggestion text.
   CompletionSuggestionLabelView* suggestion_label_ = nullptr;
   // The annotation view renders annotations.
@@ -93,11 +97,12 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
   views::ImageView* arrow_icon_ = nullptr;
 
   int suggestion_width_ = 0;
+  int index_width_ = 0;
   int min_width_ = 0;
   bool highlighted_ = false;
 };
 
-BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT, CompletionSuggestionView, views::Button)
+BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT, SuggestionView, views::Button)
 VIEW_BUILDER_PROPERTY(const SuggestionDetails&, View)
 VIEW_BUILDER_PROPERTY(bool, Highlighted)
 VIEW_BUILDER_PROPERTY(int, MinWidth)
@@ -106,6 +111,6 @@ END_VIEW_BUILDER
 }  // namespace ime
 }  // namespace ui
 
-DEFINE_VIEW_BUILDER(UI_CHROMEOS_EXPORT, ui::ime::CompletionSuggestionView)
+DEFINE_VIEW_BUILDER(UI_CHROMEOS_EXPORT, ui::ime::SuggestionView)
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_UI_COMPLETION_SUGGESTION_VIEW_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_UI_SUGGESTION_VIEW_H_
