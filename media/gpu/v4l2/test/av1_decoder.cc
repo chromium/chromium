@@ -13,6 +13,7 @@
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/av1_pix_fmt.h"
+#include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
 
@@ -77,6 +78,54 @@ void FillLoopFilterDeltaParams(struct v4l2_av1_loop_filter* v4l2_lf,
 
   v4l2_lf->delta_lf_res = delta_lf.scale;
   v4l2_lf->delta_lf_multi = delta_lf.multi;
+}
+
+// Section 5.9.12. Quantization params syntax
+void FillQuantizationParams(struct v4l2_av1_quantization* v4l2_quant,
+                            const libgav1::QuantizerParameters& quant) {
+  conditionally_set_flags(&v4l2_quant->flags, quant.use_matrix,
+                          V4L2_AV1_QUANTIZATION_FLAG_USING_QMATRIX);
+
+  v4l2_quant->base_q_idx = quant.base_index;
+
+  // Note that quant.delta_ac[0] is useless as it is always 0 according to
+  // libgav1.
+  v4l2_quant->delta_q_y_dc = quant.delta_dc[0];
+
+  v4l2_quant->delta_q_u_dc = quant.delta_dc[1];
+  v4l2_quant->delta_q_u_ac = quant.delta_ac[1];
+
+  v4l2_quant->delta_q_v_dc = quant.delta_dc[2];
+  v4l2_quant->delta_q_v_ac = quant.delta_ac[2];
+
+  if (!quant.use_matrix)
+    return;
+
+  v4l2_quant->qm_y = base::checked_cast<uint8_t>(quant.matrix_level[0]);
+  v4l2_quant->qm_u = base::checked_cast<uint8_t>(quant.matrix_level[1]);
+  v4l2_quant->qm_v = base::checked_cast<uint8_t>(quant.matrix_level[2]);
+}
+
+// Section 5.9.17. Quantizer index delta parameters syntax
+void FillQuantizerIndexDeltaParams(
+    struct v4l2_av1_quantization* v4l2_quant,
+    const absl::optional<libgav1::ObuSequenceHeader>& seq_header,
+    const libgav1::ObuFrameHeader& frm_header) {
+  // |diff_uv_delta| in the spec doesn't exist in libgav1,
+  // because libgav1 infers it using the following logic.
+  const bool diff_uv_delta = (frm_header.quantizer.base_index != 0) &&
+                             (!seq_header->color_config.is_monochrome) &&
+                             (seq_header->color_config.separate_uv_delta_q);
+  conditionally_set_flags(&v4l2_quant->flags, diff_uv_delta,
+                          V4L2_AV1_QUANTIZATION_FLAG_DIFF_UV_DELTA);
+
+  conditionally_set_flags(&v4l2_quant->flags, frm_header.delta_q.present,
+                          V4L2_AV1_QUANTIZATION_FLAG_DELTA_Q_PRESENT);
+
+  // |scale| is used to store |delta_q_res| value. This is because libgav1 uses
+  // the same struct |Delta| both for quantizer index delta parameters and loop
+  // filter delta parameters.
+  v4l2_quant->delta_q_res = frm_header.delta_q.scale;
 }
 
 // Section 5.9.14. Segmentation params syntax
@@ -193,6 +242,110 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration* v4l2_lr,
       v4l2_lr->loop_restoration_size[0] >> v4l2_lr->lr_uv_shift;
   v4l2_lr->loop_restoration_size[2] =
       v4l2_lr->loop_restoration_size[0] >> v4l2_lr->lr_uv_shift;
+}
+
+// Section 5.9.15. Tile info syntax
+void FillTileInfo(v4l2_av1_tile_info* v4l2_ti, const libgav1::TileInfo& ti) {
+  conditionally_set_flags(&v4l2_ti->flags, ti.uniform_spacing,
+                          V4L2_AV1_TILE_INFO_FLAG_UNIFORM_TILE_SPACING);
+  static_assert(std::size(decltype(v4l2_ti->mi_col_starts){}) ==
+                    (libgav1::kMaxTileColumns + 1),
+                "Size of |mi_col_starts| array in |v4l2_av1_tile_info| struct "
+                "does not match libgav1 expectation");
+
+  for (size_t i = 0; i < libgav1::kMaxTileColumns + 1; i++)
+    v4l2_ti->mi_col_starts[i] =
+        base::checked_cast<uint32_t>(ti.tile_column_start[i]);
+
+  static_assert(std::size(decltype(v4l2_ti->mi_row_starts){}) ==
+                    (libgav1::kMaxTileRows + 1),
+                "Size of |mi_row_starts| array in |v4l2_av1_tile_info| struct "
+                "does not match libgav1 expectation");
+  for (size_t i = 0; i < libgav1::kMaxTileRows + 1; i++)
+    v4l2_ti->mi_row_starts[i] =
+        base::checked_cast<uint32_t>(ti.tile_row_start[i]);
+
+  if (!ti.uniform_spacing) {
+    // Confirmed that |kMaxTileColumns| is enough size for
+    // |width_in_sbs_minus_1| and |kMaxTileRows| is enough size for
+    // |height_in_sbs_minus_1|
+    // https://b.corp.google.com/issues/187828854#comment19
+    static_assert(
+        std::size(decltype(v4l2_ti->width_in_sbs_minus_1){}) ==
+            libgav1::kMaxTileColumns,
+        "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+        "does not match libgav1 expectation");
+    for (size_t i = 0; i < libgav1::kMaxTileColumns; i++) {
+      CHECK_GE(ti.tile_column_width_in_superblocks[i], 1);
+      v4l2_ti->width_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
+          ti.tile_column_width_in_superblocks[i] - 1);
+    }
+
+    static_assert(
+        std::size(decltype(v4l2_ti->height_in_sbs_minus_1){}) ==
+            libgav1::kMaxTileRows,
+        "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+        "does not match libgav1 expectation");
+    for (size_t i = 0; i < libgav1::kMaxTileRows; i++) {
+      CHECK_GE(ti.tile_row_height_in_superblocks[i], 1);
+      v4l2_ti->height_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
+          ti.tile_row_height_in_superblocks[i] - 1);
+    }
+  }
+
+  v4l2_ti->tile_size_bytes = ti.tile_size_bytes;
+  v4l2_ti->context_update_tile_id = ti.context_update_id;
+  v4l2_ti->tile_cols = ti.tile_columns;
+  v4l2_ti->tile_rows = ti.tile_rows;
+}
+
+// Section 5.9.24. Global motion params syntax
+void FillGlobalMotionParams(
+    v4l2_av1_global_motion* v4l2_gm,
+    const std::array<libgav1::GlobalMotion, libgav1::kNumReferenceFrameTypes>&
+        gm_array) {
+  // gm_array[0] (for kReferenceFrameIntra) is not used because global motion is
+  // not relevant for intra frames
+  for (size_t i = 1; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    // Copy |gm_array| to |gm| because SetupShear() updates the affine variables
+    // of the |gm_array|.
+    auto gm = gm_array[i];
+    switch (gm.type) {
+      case libgav1::kGlobalMotionTransformationTypeIdentity:
+        v4l2_gm->type[i] = V4L2_AV1_WARP_MODEL_IDENTITY;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeTranslation:
+        v4l2_gm->type[i] = V4L2_AV1_WARP_MODEL_TRANSLATION;
+        conditionally_set_flags(&v4l2_gm->flags[i], true,
+                                V4L2_AV1_GLOBAL_MOTION_FLAG_IS_TRANSLATION);
+        break;
+      case libgav1::kGlobalMotionTransformationTypeRotZoom:
+        v4l2_gm->type[i] = V4L2_AV1_WARP_MODEL_ROTZOOM;
+        conditionally_set_flags(&v4l2_gm->flags[i], true,
+                                V4L2_AV1_GLOBAL_MOTION_FLAG_IS_ROT_ZOOM);
+        break;
+      case libgav1::kGlobalMotionTransformationTypeAffine:
+        v4l2_gm->type[i] = V4L2_AV1_WARP_MODEL_AFFINE;
+        conditionally_set_flags(&v4l2_gm->flags[i], true,
+                                V4L2_AV1_WARP_MODEL_AFFINE);
+        break;
+      default:
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << v4l2_gm->type[i];
+    }
+
+    conditionally_set_flags(
+        &v4l2_gm->flags[i],
+        gm.type != libgav1::kGlobalMotionTransformationTypeIdentity,
+        V4L2_AV1_GLOBAL_MOTION_FLAG_IS_GLOBAL);
+
+    constexpr auto kNumGlobalMotionParams = std::size(decltype(gm.params){});
+
+    for (size_t j = 0; j < kNumGlobalMotionParams; ++j)
+      v4l2_gm->params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
+
+    v4l2_gm[i].invalid = !libgav1::SetupShear(&gm);
+  }
 }
 
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
@@ -464,6 +617,12 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   FillLoopFilterDeltaParams(&v4l2_frame_params.loop_filter,
                             current_frame_header.delta_lf);
 
+  FillQuantizationParams(&v4l2_frame_params.quantization,
+                         current_frame_header.quantizer);
+
+  FillQuantizerIndexDeltaParams(&v4l2_frame_params.quantization,
+                                current_sequence_header_, current_frame_header);
+
   FillSegmentationParams(&v4l2_frame_params.segmentation,
                          current_frame_header.segmentation);
 
@@ -473,6 +632,11 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   FillLoopRestorationParams(&v4l2_frame_params.loop_restoration,
                             current_frame_header.loop_restoration);
+
+  FillTileInfo(&v4l2_frame_params.tile_info, current_frame_header.tile_info);
+
+  FillGlobalMotionParams(&v4l2_frame_params.global_motion,
+                         current_frame_header.global_motion);
 
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
