@@ -325,24 +325,6 @@ bool GtkUi::Initialize() {
   return true;
 }
 
-bool GtkUi::GetTint(int id, color_utils::HSL* tint) const {
-  switch (id) {
-    // Tints for which the cross-platform default is fine. Before adding new
-    // values here, specifically verify they work well on Linux.
-    case ThemeProperties::TINT_BACKGROUND_TAB:
-    // TODO(estade): Return something useful for TINT_BUTTONS so that chrome://
-    // page icons are colored appropriately.
-    case ThemeProperties::TINT_BUTTONS:
-      break;
-    default:
-      // Assume any tints not specifically verified on Linux aren't usable.
-      // TODO(pkasting): Try to remove values from |colors_| that could just be
-      // added to the group above instead.
-      NOTREACHED();
-  }
-  return false;
-}
-
 bool GtkUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
   for (const ColorMap& color_map :
        {colors_,

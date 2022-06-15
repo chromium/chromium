@@ -46,7 +46,6 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
 
   // views::LinuxUI:
   bool Initialize() override;
-  bool GetTint(int id, color_utils::HSL* tint) const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   SkColor GetFocusRingColor() const override;

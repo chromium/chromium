@@ -38,10 +38,6 @@ namespace base {
 class TimeDelta;
 }
 
-namespace color_utils {
-struct HSL;
-}
-
 namespace gfx {
 class Image;
 }
@@ -128,7 +124,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.
   [[nodiscard]] virtual bool Initialize() = 0;
-  virtual bool GetTint(int id, color_utils::HSL* tint) const = 0;
   virtual bool GetColor(int id,
                         SkColor* color,
                         bool use_custom_frame) const = 0;

@@ -171,11 +171,6 @@ bool QtUi::Initialize() {
   return true;
 }
 
-bool QtUi::GetTint(int id, color_utils::HSL* tint) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
 bool QtUi::GetColor(int id, SkColor* color, bool use_custom_frame) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;

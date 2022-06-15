@@ -25,7 +25,6 @@ class SystemThemeLinux : public CustomThemeSupplier {
   // Overridden from CustomThemeSupplier:
   void StartUsingTheme() override;
   void StopUsingTheme() override;
-  bool GetTint(int id, color_utils::HSL* hsl) const override;
   bool GetColor(int id, SkColor* color) const override;
   bool GetDisplayProperty(int id, int* result) const override;
   gfx::Image GetImageNamed(int id) const override;
@@ -57,10 +56,6 @@ void SystemThemeLinux::StopUsingTheme() {
     linux_ui_->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
 }
 
-bool SystemThemeLinux::GetTint(int id, color_utils::HSL* hsl) const {
-  return linux_ui_ && linux_ui_->GetTint(id, hsl);
-}
-
 bool SystemThemeLinux::GetColor(int id, SkColor* color) const {
   return linux_ui_ && linux_ui_->GetColor(id, color,
                                           pref_service_->GetBoolean(
@@ -79,7 +74,7 @@ bool SystemThemeLinux::HasCustomImage(int id) const {
   return false;
 }
 
-SystemThemeLinux::~SystemThemeLinux() {}
+SystemThemeLinux::~SystemThemeLinux() = default;
 
 }  // namespace
 
