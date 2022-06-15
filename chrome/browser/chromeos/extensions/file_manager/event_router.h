@@ -208,6 +208,12 @@ class EventRouter
                     guest_os::GuestOsMountProvider* provider) override;
   void OnUnregistered(guest_os::GuestOsMountProviderRegistry::Id id) override;
 
+  // Use this method for unit tests to bypass checking if there are any SWA
+  // windows.
+  void ForceBroadcastingForTesting(bool enabled) {
+    force_broadcasting_for_testing_ = enabled;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
 
@@ -303,6 +309,9 @@ class EventRouter
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
+
+  // Set this to true to ignore the DoFilesSwaWindowsExist check for testing.
+  bool force_broadcasting_for_testing_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

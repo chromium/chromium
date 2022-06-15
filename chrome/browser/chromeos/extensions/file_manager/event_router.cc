@@ -1238,14 +1238,13 @@ base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {
 }
 
 void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
-  notification_manager_->HandleIOTaskProgress(status);
-  if (!DoFilesSwaWindowsExist(profile_)) {
-    return;
-  }
-
   // Send the progress report to the system notification regardless of whether
   // Files app window exists as we may need to remove an existing
   // notification.
+  notification_manager_->HandleIOTaskProgress(status);
+  if (!DoFilesSwaWindowsExist(profile_) && !force_broadcasting_for_testing_) {
+    return;
+  }
 
   // Send file watch notifications on I/O task completion. inotify is flaky on
   // some filesystems, so send these notifications so that at least operations
