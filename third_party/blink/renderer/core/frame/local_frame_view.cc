@@ -4726,12 +4726,20 @@ LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
 }
 
 void LocalFrameView::OnFirstContentfulPaint() {
-  GetPage()->GetChromeClient().StopDeferringCommits(
-      *frame_, cc::PaintHoldingCommitTrigger::kFirstContentfulPaint);
-  const bool is_main_frame = frame_->IsMainFrame();
-  if (frame_->GetDocument()->ShouldMarkFontPerformance())
-    FontPerformance::MarkFirstContentfulPaint();
-  EnsureUkmAggregator().DidReachFirstContentfulPaint(is_main_frame);
+  if (frame_->IsMainFrame()) {
+    // Restart commits that may have been deferred.
+    GetPage()->GetChromeClient().StopDeferringCommits(
+        *frame_, cc::PaintHoldingCommitTrigger::kFirstContentfulPaint);
+    if (frame_->GetDocument()->ShouldMarkFontPerformance())
+      FontPerformance::MarkFirstContentfulPaint();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kLocalFrameRootPrePostFCPMetrics)
+          ? frame_->IsLocalRoot()
+          : frame_->IsMainFrame()) {
+    // See crbug.com/1330675.
+    EnsureUkmAggregator().DidReachFirstContentfulPaint();
+  }
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(

@@ -778,6 +778,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kFileSystemUrlNavigation;
 BLINK_COMMON_EXPORT extern const base::Feature
     kEarlyExitOnNoopClassOrStyleChange;
 
+// Enables correct PreFCP and PostFCP metrics for non-main local frame roots.
+// See https://crbug.com/1330675.
+BLINK_COMMON_EXPORT extern const base::Feature kLocalFrameRootPrePostFCPMetrics;
+
 // TODO(https://crbug.com/1201109): temporary flag to disable new ArrayBuffer
 // size limits, so that tests can be written against code receiving these
 // buffers. Remove when the bindings code instituting these limits is removed.

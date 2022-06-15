@@ -6,12 +6,14 @@
 
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
+#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -159,7 +161,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
       auto timer = aggregator().GetScopedTimer(i);
       if (mark_fcp && i == static_cast<int>(LocalFrameUkmAggregator::kPaint))
-        aggregator().DidReachFirstContentfulPaint(true);
+        aggregator().DidReachFirstContentfulPaint();
       test_task_runner_->FastForwardBy(
           base::Milliseconds(millisecond_per_step));
     }
@@ -639,4 +641,34 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
           "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
       2);
 }
+
+static void TestLocalFrameRootPrePostFCPMetrics(
+    const LocalFrame& local_frame_root) {
+  ASSERT_FALSE(local_frame_root.IsMainFrame());
+  ASSERT_TRUE(local_frame_root.IsLocalRoot());
+  auto& ukm_aggregator = local_frame_root.View()->EnsureUkmAggregator();
+  EXPECT_TRUE(ukm_aggregator.IsBeforeFCPForTesting());
+  // Simulate the first contentful paint.
+  PaintTiming::From(*local_frame_root.GetDocument()).MarkFirstContentfulPaint();
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kLocalFrameRootPrePostFCPMetrics),
+      !ukm_aggregator.IsBeforeFCPForTesting());
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLocalFrameRootPrePostFCPMetrics);
+  InitializeRemote();
+  TestLocalFrameRootPrePostFCPMetrics(*LocalFrameRoot().GetFrame());
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest,
+       LocalFrameRootPrePostFCPMetricsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kLocalFrameRootPrePostFCPMetrics);
+  InitializeRemote();
+  TestLocalFrameRootPrePostFCPMetrics(*LocalFrameRoot().GetFrame());
+}
+
 }  // namespace blink

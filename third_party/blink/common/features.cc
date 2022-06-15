@@ -1532,6 +1532,9 @@ const base::Feature kFileSystemUrlNavigation{"FileSystemUrlNavigation",
 const base::Feature kEarlyExitOnNoopClassOrStyleChange{
     "EarlyExitOnNoopClassOrStyleChange", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kLocalFrameRootPrePostFCPMetrics{
+    "LocalFrameRootPrePostFCPMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDisableArrayBufferSizeLimitsForTesting{
     "DisableArrayBufferSizeLimitsForTesting",
     base::FEATURE_DISABLED_BY_DEFAULT};
