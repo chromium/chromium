@@ -107,7 +107,6 @@ mojom::LatinSettingsPtr CreateLatinSettings(
               .value_or(0) > 0;
   settings->predictive_writing =
       features::IsAssistiveMultiWordEnabled() &&
-      !base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport) &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
       IsUsEnglishEngine(engine_id);
   return settings;

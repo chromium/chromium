@@ -264,16 +264,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     });
   }
 
-  void EnableDefaultFeatureListWithMultiWordAndLacros() {
-    EnableFeatureList({
-        features::kAssistPersonalInfo,
-        features::kAssistPersonalInfoEmail,
-        features::kAssistPersonalInfoName,
-        features::kAssistMultiWord,
-        features::kLacrosSupport,
-    });
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
@@ -357,27 +347,6 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdEs);
-  engine.FlushForTesting();  // ensure input_method is connected.
-  EXPECT_FALSE(engine.IsConnectedForTesting());
-
-  InputMethodManager::Shutdown();
-}
-
-TEST_F(NativeInputMethodEngineTest,
-       PredictiveWritingDoesNotLaunchImeServiceWithLacrosEnabled) {
-  TestingProfile testing_profile;
-  EnableDefaultFeatureListWithMultiWordAndLacros();
-  SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
-                        /*predictive_writing_enabled=*/true);
-
-  testing::StrictMock<MockInputMethod> mock_input_method;
-  InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
-  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
-                    /*extension_id=*/"", &testing_profile);
-
-  engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
   EXPECT_FALSE(engine.IsConnectedForTesting());
 

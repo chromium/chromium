@@ -67,7 +67,7 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
 }
 
 TEST(CreateSettingsFromPrefsTest,
-     PredictiveWritingEnabledWhenMultiWordAllowedAndEnabledAndLacrosDisabled) {
+     PredictiveWritingEnabledWhenMultiWordAllowedAndEnabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({features::kAssistMultiWord}, {});
   TestingPrefServiceSimple prefs;
@@ -81,23 +81,6 @@ TEST(CreateSettingsFromPrefsTest,
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
   EXPECT_TRUE(latin_settings.predictive_writing);
-}
-
-TEST(CreateSettingsFromPrefsTest, PredictiveWritingDisabledWhenLacrosEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kAssistMultiWord, features::kLacrosSupport}, {});
-  TestingPrefServiceSimple prefs;
-  base::DictionaryValue dict;
-  RegisterTestingPrefs(prefs, dict);
-  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
-                                        true);
-
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
-
-  ASSERT_TRUE(settings->is_latin_settings());
-  const auto& latin_settings = *settings->get_latin_settings();
-  EXPECT_FALSE(latin_settings.predictive_writing);
 }
 
 TEST(CreateSettingsFromPrefsTest,

@@ -51,7 +51,6 @@ namespace {
 namespace mojom = ::ash::ime::mojom;
 
 struct InputFieldContext {
-  bool lacros_enabled = false;
   bool multiword_enabled = false;
   bool multiword_allowed = false;
 };
@@ -123,13 +122,9 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
   return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
 }
 
-bool IsLacrosEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
-}
-
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
                                 const std::string& engine_id) {
-  return (!IsLacrosEnabled() && features::IsAssistiveMultiWordEnabled() &&
+  return (features::IsAssistiveMultiWordEnabled() &&
           IsPredictiveWritingPrefEnabled(pref_service, engine_id) &&
           IsUsEnglishEngine(engine_id));
 }
@@ -455,7 +450,6 @@ void OnError(base::Time start) {
 InputFieldContext CreateInputFieldContext(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   return InputFieldContext{
-      .lacros_enabled = IsLacrosEnabled(),
       .multiword_enabled = features::IsAssistiveMultiWordEnabled(),
       .multiword_allowed = enabled_suggestions.multi_word_suggestions};
 }
@@ -464,9 +458,7 @@ mojom::TextPredictionMode GetTextPredictionMode(
     const std::string& engine_id,
     const InputFieldContext& context,
     const PrefService& prefs) {
-  // TODO(crbug.com/1263335): Enable text prediction for Lacros.
   return context.multiword_enabled && context.multiword_allowed &&
-                 !context.lacros_enabled &&
                  prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
                  IsUsEnglishEngine(engine_id)
              ? mojom::TextPredictionMode::kEnabled

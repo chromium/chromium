@@ -181,9 +181,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return chromeos::features::IsAssistiveMultiWordEnabled();
   }
   if (strcmp(feature_name, "AssistiveMultiWordLacrosSupport") == 0) {
-    return base::FeatureList::IsEnabled(
-               chromeos::features::kAssistMultiWordLacrosSupport) &&
-           chromeos::features::IsAssistiveMultiWordEnabled();
+    return true;
   }
   if (strcmp(feature_name, chromeos::features::kAutocorrectParamsTuning.name) ==
       0) {
