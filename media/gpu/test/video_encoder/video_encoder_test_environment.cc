@@ -97,6 +97,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     size_t num_spatial_layers,
     bool save_output_bitstream,
     absl::optional<uint32_t> encode_bitrate,
+    Bitrate::Mode bitrate_mode,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
     const std::vector<base::Feature>& enabled_features,
@@ -173,13 +174,18 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   combined_enabled_features.push_back(media::kVaapiVideoEncodeLinux);
 #endif
 
+  const bool use_vbr = bitrate_mode == Bitrate::Mode::kVariable;
   const uint32_t bitrate = encode_bitrate.value_or(
       GetDefaultTargetBitrate(video->Resolution(), video->FrameRate()));
+  if (use_vbr && VideoCodecProfileToVideoCodec(profile) != VideoCodec::kH264) {
+    LOG(ERROR) << "VBR is only supported for H264 encoding";
+    return nullptr;
+  }
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
-      num_temporal_layers, num_spatial_layers, bitrate, save_output_bitstream,
-      reverse, frame_output_config, combined_enabled_features,
-      combined_disabled_features);
+      num_temporal_layers, num_spatial_layers, bitrate, use_vbr,
+      save_output_bitstream, reverse, frame_output_config,
+      combined_enabled_features, combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -190,6 +196,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     size_t num_temporal_layers,
     size_t num_spatial_layers,
     uint32_t bitrate,
+    bool use_vbr,
     bool save_output_bitstream,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
@@ -205,7 +212,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers_,
                                                 num_temporal_layers_,
                                                 bitrate,
-                                                false)),
+                                                use_vbr)),
       spatial_layers_(GetDefaultSpatialLayers(bitrate_,
                                               video_.get(),
                                               num_spatial_layers_,

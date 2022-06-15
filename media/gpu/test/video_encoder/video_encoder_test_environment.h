@@ -45,6 +45,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       size_t num_spatial_layers,
       bool save_output_bitstream,
       absl::optional<uint32_t> output_bitrate,
+      Bitrate::Mode bitrate_mode,
       bool reverse,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
       const std::vector<base::Feature>& enabled_features = {},
@@ -86,6 +87,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   bool IsKeplerUsed() const;
 
  private:
+  // TODO(crbug.com/1335251): merge |use_vbr| and |bitrate| into a single
+  // Bitrate-typed field.
   VideoEncoderTestEnvironment(
       std::unique_ptr<media::test::Video> video,
       bool enable_bitstream_validator,
@@ -94,6 +97,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       size_t num_temporal_layers,
       size_t num_spatial_layers,
       uint32_t bitrate,
+      bool use_vbr,
       bool save_output_bitstream,
       bool reverse,
       const FrameOutputConfig& frame_output_config,

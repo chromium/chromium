@@ -849,7 +849,8 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
           codec, num_temporal_layers, num_spatial_layers,
-          false /* output_bitstream */, encode_bitrate, reverse,
+          false /* output_bitstream */, encode_bitrate,
+          media::Bitrate::Mode::kConstant, reverse,
           media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)

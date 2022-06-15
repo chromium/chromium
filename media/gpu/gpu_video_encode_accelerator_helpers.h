@@ -53,6 +53,8 @@ AllocateBitrateForDefaultEncoding(const VideoEncodeAccelerator::Config& config);
 // layers in the spatial layer based on the same bitrate division ratio as a
 // software encoder. If a variable bitrate is requested, the peak will be set
 // equal to the target.
+// TODO(crbug.com/1335250): merge |bitrate| and |uses_vbr| into a single Bitrate
+// field.
 MEDIA_GPU_EXPORT VideoBitrateAllocation
 AllocateDefaultBitrateForTesting(const size_t num_spatial_layers,
                                  const size_t num_temporal_layers,

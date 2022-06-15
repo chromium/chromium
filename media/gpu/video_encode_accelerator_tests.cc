@@ -42,8 +42,8 @@ namespace {
 constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_tests
            [--codec=<codec>] [--num_temporal_layers=<number>]
-           [--num_spatial_layers=<number>] [--reverse]
-           [--disable_validator] [--output_bitstream]
+           [--num_spatial_layers=<number>] [--bitrate_mode=(cbr|vbr)]
+           [--reverse] [--disable_validator] [--output_bitstream]
            [--output_images=(all|corrupt)] [--output_format=(png|yuv)]
            [--output_folder=<filepath>] [--output_limit=<number>]
            [--disable_vaapi_lock]
@@ -76,6 +76,8 @@ The following arguments are supported:
                         bitstream. Only used in --codec=vp9 currently.
                         Spatial SVC encoding is applied only in
                         NV12Dmabuf test cases.
+  --bitrate_mode        The rate control mode for encoding, one of "cbr"
+                        (default) or "vbr".
   --reverse             the stream plays backwards if the stream reaches
                         end of stream. So the input stream to be encoded
                         is consecutive. By default this is false.
@@ -113,6 +115,7 @@ constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
 constexpr size_t kNumFramesToEncodeForBitrateCheck = 300;
 // Tolerance factor for how encoded bitrate can differ from requested bitrate.
 constexpr double kBitrateTolerance = 0.1;
+constexpr double kVariableBitrateTolerance = 0.3;
 // The event timeout used in bitrate check tests because encoding 2160p and
 // validating |kNumFramesToEncodeBitrateCheck| frames take much time.
 constexpr base::TimeDelta kBitrateCheckEventTimeout = base::Seconds(180);
@@ -495,6 +498,11 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
 
   auto config = GetDefaultConfig();
+  const Bitrate::Mode bitrate_mode = config.bitrate_allocation.GetMode();
+  if (bitrate_mode == Bitrate::Mode::kVariable) {
+    config.bitrate_allocation.SetPeakBps(config.bitrate_allocation.GetSumBps() *
+                                         2);
+  }
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
   // Set longer event timeout than the default (30 sec) because encoding 2160p
@@ -507,14 +515,23 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+  // TODO(b/181797390): Reconsider bitrate check for VBR encoding if this fails
+  // on some boards.
+  const double tolerance = bitrate_mode == Bitrate::Mode::kConstant
+                               ? kBitrateTolerance
+                               : kVariableBitrateTolerance;
   EXPECT_NEAR(encoder->GetStats().Bitrate(),
               config.bitrate_allocation.GetSumBps(),
-              kBitrateTolerance * config.bitrate_allocation.GetSumBps());
+              tolerance * config.bitrate_allocation.GetSumBps());
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  if (g_env->Bitrate().GetMode() != Bitrate::Mode::kConstant) {
+    GTEST_SKIP()
+        << "Skip Dynamic bitrate change checks for non-CBR bitrate mode";
+  }
 
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
@@ -534,10 +551,11 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   // Encode the video with the second bitrate.
   const uint32_t second_bitrate = first_bitrate * 3 / 2;
   encoder->ResetStats();
-  encoder->UpdateBitrate(AllocateDefaultBitrateForTesting(
-                             config.num_spatial_layers,
-                             config.num_temporal_layers, second_bitrate, false),
-                         config.framerate);
+  encoder->UpdateBitrate(
+      AllocateDefaultBitrateForTesting(config.num_spatial_layers,
+                                       config.num_temporal_layers,
+                                       second_bitrate, /*uses_vbr=*/false),
+      config.framerate);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_NEAR(encoder->GetStats().Bitrate(), second_bitrate,
@@ -551,6 +569,10 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  if (g_env->Bitrate().GetMode() != Bitrate::Mode::kConstant) {
+    GTEST_SKIP()
+        << "Skip dynamic framerate change checks for non-CBR bitrate mode";
+  }
 
   if (auto skip_reason = SupportsDynamicFramerate())
     GTEST_SKIP() << *skip_reason;
@@ -640,10 +662,12 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
     spatial_layers[0].bitrate_bps /= 4;
     num_temporal_layers = spatial_layers[0].num_of_temporal_layers;
   }
+  bool uses_vbr = g_env->Bitrate().GetMode() == Bitrate::Mode::kVariable;
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers,
       AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
-                                       num_temporal_layers, new_bitrate, false),
+                                       num_temporal_layers, new_bitrate,
+                                       uses_vbr),
       g_env->Reverse());
   config.output_resolution = output_resolution;
   config.input_storage_type =
@@ -842,6 +866,7 @@ int main(int argc, char** argv) {
   size_t num_spatial_layers = 1u;
   bool output_bitstream = false;
   bool reverse = false;
+  media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   media::test::FrameOutputConfig frame_output_config;
   base::FilePath output_folder =
       base::FilePath(base::FilePath::kCurrentDirectory);
@@ -868,6 +893,14 @@ int main(int argc, char** argv) {
     } else if (it->first == "num_spatial_layers") {
       if (!base::StringToSizeT(it->second, &num_spatial_layers)) {
         std::cout << "invalid number of spatial layers: " << it->second << "\n";
+        return EXIT_FAILURE;
+      }
+    } else if (it->first == "bitrate_mode") {
+      if (it->second == "vbr") {
+        bitrate_mode = media::Bitrate::Mode::kVariable;
+      } else if (it->second != "cbr") {
+        std::cout << "unknown bitrate mode \"" << it->second
+                  << "\", possible values are \"cbr|vbr\"\n";
         return EXIT_FAILURE;
       }
     } else if (it->first == "disable_validator") {
@@ -924,7 +957,8 @@ int main(int argc, char** argv) {
           video_path, video_metadata_path, enable_bitstream_validator,
           output_folder, codec, num_temporal_layers, num_spatial_layers,
           output_bitstream,
-          /*output_bitrate=*/absl::nullopt, reverse, frame_output_config,
+          /*output_bitrate=*/absl::nullopt, bitrate_mode, reverse,
+          frame_output_config,
           /*enabled_features=*/{}, disabled_features);
 
   if (!test_environment)
