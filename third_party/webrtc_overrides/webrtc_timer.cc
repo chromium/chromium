@@ -9,17 +9,12 @@
 
 namespace blink {
 
-const base::Feature kWebRtcTimerUsesMetronome{"WebRtcTimerUsesMetronome",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 WebRtcTimer::SchedulableCallback::SchedulableCallback(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::RepeatingCallback<void()> callback,
-    bool use_metronome,
     base::TimeDelta repeated_delay)
     : task_runner_(std::move(task_runner)),
       callback_(std::move(callback)),
-      use_metronome_(use_metronome),
       repeated_delay_(std::move(repeated_delay)) {}
 
 WebRtcTimer::SchedulableCallback::~SchedulableCallback() {
@@ -32,11 +27,9 @@ void WebRtcTimer::SchedulableCallback::Schedule(
   DCHECK_EQ(scheduled_time_, base::TimeTicks::Max())
       << "The callback has already been scheduled.";
   scheduled_time_ = scheduled_time;
-  base::TimeTicks target_time = scheduled_time_;
-  if (use_metronome_) {
-    // Snap target time to metronome tick!
-    target_time = MetronomeSource::TimeSnappedToNextTick(target_time);
-  }
+  // Snap target time to metronome tick!
+  base::TimeTicks target_time =
+      MetronomeSource::TimeSnappedToNextTick(scheduled_time_);
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&WebRtcTimer::SchedulableCallback::MaybeRun, this),
@@ -88,9 +81,7 @@ void WebRtcTimer::SchedulableCallback::MaybeRun() {
 
 WebRtcTimer::WebRtcTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                          base::RepeatingCallback<void()> callback)
-    : callback_(std::move(callback)),
-      use_metronome_(base::FeatureList::IsEnabled(kWebRtcTimerUsesMetronome)),
-      task_runner_(std::move(task_runner)) {}
+    : callback_(std::move(callback)), task_runner_(std::move(task_runner)) {}
 
 WebRtcTimer::~WebRtcTimer() {
   DCHECK(is_shutdown_);
@@ -150,7 +141,7 @@ void WebRtcTimer::Stop() {
 void WebRtcTimer::ScheduleCallback(base::TimeTicks scheduled_time) {
   if (!schedulable_callback_) {
     schedulable_callback_ = base::MakeRefCounted<SchedulableCallback>(
-        task_runner_, callback_, use_metronome_, repeated_delay_);
+        task_runner_, callback_, repeated_delay_);
   }
   schedulable_callback_->Schedule(scheduled_time);
 }

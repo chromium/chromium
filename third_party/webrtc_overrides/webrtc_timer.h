@@ -18,18 +18,14 @@
 
 namespace blink {
 
-// Whether WebRtcTimer should use the metronome source. Default: false.
-RTC_EXPORT extern const base::Feature kWebRtcTimerUsesMetronome;
-
-// Implements a timer that is NOT guaranteed to have high precision.
+// Implements a low precision timer, expect it to fire up to ~16 ms late (plus
+// any OS or workload related delays).
 //
-// When a metronome source is available and kWebRtcTimerUsesMetronome is
-// enabled, the timer will fire on metronome ticks. This allows running the
-// timer without increasing Idle Wake Ups at the cost of reducing the timer
-// precision to the metronome tick frequency. When a metronome source isn't
-// available, the timer has high precision.
-//
-// Prefer this timer for WebRTC use cases that does not require high precision.
+// This timer only fires on metronome ticks as specified by
+// MetronomeSource::TimeSnappedToNextTick(). This allows running numerous timers
+// without increasing the Idle Wake Ups frequency beyond the metronome tick
+// frequency, i.e. when each tick is already scheduled adding a WebRtcTimer
+// should not add any Idle Wake Ups.
 class RTC_EXPORT WebRtcTimer final {
  public:
   WebRtcTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -64,7 +60,6 @@ class RTC_EXPORT WebRtcTimer final {
    public:
     SchedulableCallback(scoped_refptr<base::SequencedTaskRunner> task_runner,
                         base::RepeatingCallback<void()> callback,
-                        bool use_metronome,
                         base::TimeDelta repeated_delay);
     ~SchedulableCallback();
 
@@ -81,7 +76,6 @@ class RTC_EXPORT WebRtcTimer final {
 
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     const base::RepeatingCallback<void()> callback_;
-    const bool use_metronome_;
 
     // Only accessed on |task_runner_|.
     bool is_currently_running_ = false;
@@ -106,7 +100,6 @@ class RTC_EXPORT WebRtcTimer final {
   void RescheduleCallback() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   const base::RepeatingCallback<void()> callback_;
-  const bool use_metronome_;
   base::Lock lock_;
   bool is_shutdown_ GUARDED_BY(lock_) = false;
   scoped_refptr<base::SequencedTaskRunner> task_runner_ GUARDED_BY(lock_);
