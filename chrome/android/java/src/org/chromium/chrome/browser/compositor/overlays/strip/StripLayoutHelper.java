@@ -2240,6 +2240,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mAnimationsDisabledForTesting = true;
     }
 
+    @VisibleForTesting
+    protected Animator getRunningAnimatorForTesting() {
+        return mRunningAnimator;
+    }
+
+    @VisibleForTesting
+    protected boolean isMultiStepCloseAnimationsRunning() {
+        return mMultiStepTabCloseAnimRunning;
+    }
+
     private void setAccessibilityDescription(StripLayoutTab stripTab, Tab tab) {
         if (tab != null) setAccessibilityDescription(stripTab, tab.getTitle(), tab.isHidden());
     }

@@ -10,12 +10,16 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +39,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -827,6 +835,136 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getScrollOffset());
     }
 
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabClosing_NoTabResize() {
+        // Arrange
+        int tabCount = 10;
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(false, false, 9, tabCount);
+        StripLayoutTab[] tabs = getRealStripLayoutTabs(TAB_WIDTH_MEDIUM, tabCount);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        setupForAnimations();
+
+        // Assert: New tab button position before starting tab closure.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        assertEquals("Unexpected starting newTabButton position.", 764.f,
+                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
+
+        // Act: Call on close tab button handler.
+        mStripLayoutHelper.handleCloseButtonClick(tabs[9], TIMESTAMP);
+
+        // Assert: Animations started.
+        assertTrue("MultiStepAnimations should have started.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+
+        // Act: End the tab closing animations to apply final values.
+        CompositorAnimator runningAnimator =
+                (CompositorAnimator) mStripLayoutHelper.getRunningAnimatorForTesting();
+        runningAnimator.end();
+
+        // Assert: Tab is closed and animations are still running. New button position isn't
+        // modified.
+        int expectedTabCount = 9;
+        assertEquals("Unexpected tabs count.", expectedTabCount,
+                mStripLayoutHelper.getStripLayoutTabs().length);
+        assertTrue("MultiStepAnimations should still be running.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+        assertEquals("NewTabButton should not have moved.", 764.f,
+                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
+
+        // Act: End next set of animations to apply final values.
+        mStripLayoutHelper.getRunningAnimatorForTesting().end();
+
+        // Assert: Animations completed. The tab width is not resized and drawX does not change.
+        float expectedDrawX =
+                -460.f; // Since we are focused on the last tab, start tabs are off screen.
+        StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabs();
+        for (StripLayoutTab stripTab : updatedTabs) {
+            assertEquals("Unexpected tab width after resize.", 156.f, stripTab.getWidth(), 0.0);
+            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.0);
+            expectedDrawX += (TAB_WIDTH_MEDIUM - TAB_OVERLAP_WIDTH);
+        }
+        assertEquals("NewTabButton should not have moved.", 764.f,
+                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
+        assertFalse("MultiStepAnimations should have stopped running.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabClosing_NonLastTab_TabResize_NewTabButtonMoved() {
+        // Arrange
+        int tabCount = 4;
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
+        initializeTest(false, false, 4, tabCount);
+        StripLayoutTab[] tabs = getRealStripLayoutTabs(TAB_WIDTH_MEDIUM, tabCount);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        setupForAnimations();
+
+        // Assert: New tab button position before starting tab closure.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        assertEquals("Unexpected starting newTabButton position.", 764.f,
+                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
+
+        // Act: Call on close tab button handler.
+        mStripLayoutHelper.handleCloseButtonClick(tabs[2], TIMESTAMP);
+
+        // Assert: Animations started.
+        assertTrue("MultiStepAnimations should have started.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+
+        // Act: End the animations to apply final values.
+        CompositorAnimator runningAnimator =
+                (CompositorAnimator) mStripLayoutHelper.getRunningAnimatorForTesting();
+        runningAnimator.end();
+
+        // Assert: Tab is closed and animations are still running. New tab button position is not
+        // modified.
+        int expectedTabCount = 3;
+        assertEquals(expectedTabCount, mStripLayoutHelper.getStripLayoutTabs().length);
+        assertTrue("MultiStepAnimations should still be running.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+        assertEquals("NewTabButton should not have moved.", 764.f,
+                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
+
+        // Act: Set animation time forward by 250ms for next set of animations.
+        mStripLayoutHelper.getRunningAnimatorForTesting().end();
+
+        // Assert: Animations completed. The tab width is resized, tab.drawX is changed and
+        // newTabButton.drawX is also changed.
+        float expectedDrawX = 0.f;
+        float expectedWidthAfterResize = 265.f;
+        StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabs();
+        for (int i = 0; i < updatedTabs.length; i++) {
+            StripLayoutTab stripTab = updatedTabs[i];
+            assertEquals("Unexpected tab width after resize.", expectedWidthAfterResize,
+                    stripTab.getWidth(), 0.0);
+            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.0);
+            expectedDrawX += (expectedWidthAfterResize - TAB_OVERLAP_WIDTH);
+        }
+        assertEquals("NewTabButton position is incorrect.", 759.f,
+                mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
+        assertFalse("MultiStepAnimations should have ended.",
+                mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+    }
+
+    private void setupForAnimations() {
+        CompositorAnimationHandler mHandler = new CompositorAnimationHandler(() -> {});
+        // CompositorAnimationHandler.setTestingMode(true);
+        when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
+
+        // Update layout when updateHost.requestUpdate is called.
+        doAnswer(invocation -> {
+            mStripLayoutHelper.updateLayout(TIMESTAMP);
+            return null;
+        })
+                .when(mUpdateHost)
+                .requestUpdate();
+    }
+
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex, int numTabs) {
         mStripLayoutHelper = createStripLayoutHelper(rtl, incognito);
         mIncognito = incognito;
@@ -918,11 +1056,39 @@ public class StripLayoutHelperTest {
         return getMockedStripLayoutTabs(tabWidth, 0.f, 5);
     }
 
+    private StripLayoutTab[] getRealStripLayoutTabs(float tabWidth, int numTabs) {
+        StripLayoutTab[] tabs = new StripLayoutTab[mModel.getCount()];
+        for (int i = 0; i < numTabs; i++) {
+            tabs[i] = getRealStripTab(i, tabWidth, i * (tabWidth - TAB_OVERLAP_WIDTH));
+        }
+        return tabs;
+    }
+
     private StripLayoutTab mockStripTab(int id, float tabWidth, float mDrawX) {
         StripLayoutTab tab = mock(StripLayoutTab.class);
         when(tab.getWidth()).thenReturn(tabWidth);
         when(tab.getId()).thenReturn(id);
         when(tab.getDrawX()).thenReturn(mDrawX);
+        return tab;
+    }
+
+    private StripLayoutTab getRealStripTab(int id, float tabWidth, float mDrawX) {
+        Context context = mock(Context.class);
+        Resources res = mock(Resources.class);
+        DisplayMetrics dm = new DisplayMetrics();
+        dm.widthPixels = Math.round(SCREEN_WIDTH);
+        dm.heightPixels = Math.round(SCREEN_HEIGHT);
+        when(res.getDisplayMetrics()).thenReturn(dm);
+        when(context.getResources()).thenReturn(res);
+
+        StripLayoutTabDelegate delegate = mock(StripLayoutTabDelegate.class);
+        TabLoadTracker.TabLoadTrackerCallback loadTrackerCallback =
+                mock(TabLoadTrackerCallback.class);
+
+        StripLayoutTab tab = new StripLayoutTab(
+                context, id, delegate, loadTrackerCallback, mRenderHost, mUpdateHost, false);
+        tab.setWidth(tabWidth);
+        tab.setDrawX(mDrawX);
         return tab;
     }
 
