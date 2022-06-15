@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 
+import androidx.annotation.DrawableRes;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -28,17 +29,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties.SuggestionIcon;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,19 +59,24 @@ import java.util.Map;
 public class BasicSuggestionProcessorUnitTest {
     private static final GURL EXTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL INTERNAL_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+    private static final @DrawableRes int ICON_BOOKMARK = R.drawable.btn_star;
+    private static final @DrawableRes int ICON_GLOBE = R.drawable.ic_globe_24dp;
+    private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_googblue_24dp;
+    private static final @DrawableRes int ICON_MAGNIFIER = R.drawable.ic_suggestion_magnifier;
+    private static final @DrawableRes int ICON_TRENDS = R.drawable.trending_up_black_24dp;
+    private static final @DrawableRes int ICON_VOICE = R.drawable.btn_mic;
+    private static final @DrawableRes int ICON_FAVICON = 0; // Favicons do not come from resources.
 
-    private static final Map<Integer, String> ICON_TYPE_NAMES =
-            new HashMap<Integer, String>(SuggestionIcon.TOTAL_COUNT) {
-                {
-                    put(SuggestionIcon.UNSET, "UNSET");
-                    put(SuggestionIcon.BOOKMARK, "BOOKMARK");
-                    put(SuggestionIcon.HISTORY, "HISTORY");
-                    put(SuggestionIcon.GLOBE, "GLOBE");
-                    put(SuggestionIcon.MAGNIFIER, "MAGNIFIER");
-                    put(SuggestionIcon.VOICE, "VOICE");
-                    put(SuggestionIcon.FAVICON, "FAVICON");
-                }
-            };
+    private static final Map<Integer, String> ICON_TYPE_NAMES = new HashMap<Integer, String>() {
+        {
+            put(ICON_BOOKMARK, "BOOKMARK");
+            put(ICON_HISTORY, "HISTORY");
+            put(ICON_GLOBE, "GLOBE");
+            put(ICON_MAGNIFIER, "MAGNIFIER");
+            put(ICON_VOICE, "VOICE");
+            put(ICON_FAVICON, "FAVICON");
+        }
+    };
 
     private static final Map<Integer, String> SUGGESTION_TYPE_NAMES = new HashMap<Integer, String>(
             OmniboxSuggestionType.NUM_TYPES) {
@@ -101,9 +107,9 @@ public class BasicSuggestionProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock SuggestionHost mSuggestionHost;
-    private @Mock LargeIconBridge mIconBridge;
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
     private @Mock Bitmap mBitmap;
+    private @Mock FaviconFetcher mIconFetcher;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -124,7 +130,7 @@ public class BasicSuggestionProcessorUnitTest {
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlBarText, () -> mIconBridge, mIsBookmarked);
+                mSuggestionHost, mUrlBarText, mIconFetcher, mIsBookmarked);
     }
 
     /**
@@ -162,35 +168,37 @@ public class BasicSuggestionProcessorUnitTest {
     }
 
     private void assertSuggestionTypeAndIcon(
-            @OmniboxSuggestionType int expectedType, @SuggestionIcon int expectedIcon) {
-        int actualIcon = mModel.get(SuggestionViewProperties.SUGGESTION_ICON_TYPE);
+            @OmniboxSuggestionType int expectedType, @DrawableRes int expectedIconRes) {
+        SuggestionDrawableState sds = mModel.get(BaseSuggestionViewProperties.ICON);
+        @DrawableRes
+        int actualIconRes = shadowOf(sds.drawable).getCreatedFromResId();
         Assert.assertEquals(
                 String.format("%s: Want Icon %s, Got %s", SUGGESTION_TYPE_NAMES.get(expectedType),
-                        ICON_TYPE_NAMES.get(expectedIcon), ICON_TYPE_NAMES.get(actualIcon)),
-                expectedIcon, actualIcon);
+                        ICON_TYPE_NAMES.get(expectedIconRes), ICON_TYPE_NAMES.get(actualIconRes)),
+                expectedIconRes, actualIconRes);
     }
 
     @Test
     @SmallTest
     public void getSuggestionIconTypeForSearch_Default() {
         int[][] testCases = {
-                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.HISTORY_URL, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.HISTORY_TITLE, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.HISTORY_BODY, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.HISTORY_KEYWORD, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.NAVSUGGEST, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.SEARCH_HISTORY, SuggestionIcon.HISTORY},
-                {OmniboxSuggestionType.SEARCH_SUGGEST, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, SuggestionIcon.HISTORY},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.SEARCH_OTHER_ENGINE, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, SuggestionIcon.MAGNIFIER},
-                {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.VOICE},
-                {OmniboxSuggestionType.DOCUMENT_SUGGESTION, SuggestionIcon.MAGNIFIER},
+                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.HISTORY_URL, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.HISTORY_TITLE, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.HISTORY_BODY, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.HISTORY_KEYWORD, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.NAVSUGGEST, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.SEARCH_HISTORY, ICON_HISTORY},
+                {OmniboxSuggestionType.SEARCH_SUGGEST, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, ICON_HISTORY},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.SEARCH_OTHER_ENGINE, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, ICON_MAGNIFIER},
+                {OmniboxSuggestionType.VOICE_SUGGEST, ICON_VOICE},
+                {OmniboxSuggestionType.DOCUMENT_SUGGESTION, ICON_MAGNIFIER},
         };
 
         mProcessor.onNativeInitialized();
@@ -205,23 +213,23 @@ public class BasicSuggestionProcessorUnitTest {
     @SmallTest
     public void getSuggestionIconTypeForUrl_Default() {
         int[][] testCases = {
-                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.HISTORY_URL, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.HISTORY_TITLE, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.HISTORY_BODY, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.HISTORY_KEYWORD, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.NAVSUGGEST, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_HISTORY, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_SUGGEST, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.SEARCH_OTHER_ENGINE, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.GLOBE},
-                {OmniboxSuggestionType.DOCUMENT_SUGGESTION, SuggestionIcon.GLOBE},
+                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, ICON_GLOBE},
+                {OmniboxSuggestionType.HISTORY_URL, ICON_GLOBE},
+                {OmniboxSuggestionType.HISTORY_TITLE, ICON_GLOBE},
+                {OmniboxSuggestionType.HISTORY_BODY, ICON_GLOBE},
+                {OmniboxSuggestionType.HISTORY_KEYWORD, ICON_GLOBE},
+                {OmniboxSuggestionType.NAVSUGGEST, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_HISTORY, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_SUGGEST, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, ICON_GLOBE},
+                {OmniboxSuggestionType.SEARCH_OTHER_ENGINE, ICON_GLOBE},
+                {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, ICON_GLOBE},
+                {OmniboxSuggestionType.VOICE_SUGGEST, ICON_GLOBE},
+                {OmniboxSuggestionType.DOCUMENT_SUGGESTION, ICON_GLOBE},
         };
 
         mProcessor.onNativeInitialized();
@@ -236,23 +244,23 @@ public class BasicSuggestionProcessorUnitTest {
     @SmallTest
     public void getSuggestionIconTypeForBookmarks_Default() {
         int[][] testCases = {
-                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.HISTORY_URL, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.HISTORY_TITLE, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.HISTORY_BODY, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.HISTORY_KEYWORD, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.NAVSUGGEST, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_HISTORY, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_SUGGEST, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.SEARCH_OTHER_ENGINE, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.BOOKMARK},
-                {OmniboxSuggestionType.DOCUMENT_SUGGESTION, SuggestionIcon.BOOKMARK},
+                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, ICON_BOOKMARK},
+                {OmniboxSuggestionType.HISTORY_URL, ICON_BOOKMARK},
+                {OmniboxSuggestionType.HISTORY_TITLE, ICON_BOOKMARK},
+                {OmniboxSuggestionType.HISTORY_BODY, ICON_BOOKMARK},
+                {OmniboxSuggestionType.HISTORY_KEYWORD, ICON_BOOKMARK},
+                {OmniboxSuggestionType.NAVSUGGEST, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_HISTORY, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_SUGGEST, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PROFILE, ICON_BOOKMARK},
+                {OmniboxSuggestionType.SEARCH_OTHER_ENGINE, ICON_BOOKMARK},
+                {OmniboxSuggestionType.NAVSUGGEST_PERSONALIZED, ICON_BOOKMARK},
+                {OmniboxSuggestionType.VOICE_SUGGEST, ICON_BOOKMARK},
+                {OmniboxSuggestionType.DOCUMENT_SUGGESTION, ICON_BOOKMARK},
         };
 
         mIsBookmarked.mState = true;
@@ -269,12 +277,12 @@ public class BasicSuggestionProcessorUnitTest {
     @SmallTest
     public void getSuggestionIconTypeForTrendingQueries() {
         int[][] testCases = {
-                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.TRENDS},
-                {OmniboxSuggestionType.SEARCH_HISTORY, SuggestionIcon.HISTORY},
-                {OmniboxSuggestionType.SEARCH_SUGGEST, SuggestionIcon.TRENDS},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, SuggestionIcon.TRENDS},
-                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, SuggestionIcon.HISTORY},
-                {OmniboxSuggestionType.VOICE_SUGGEST, SuggestionIcon.VOICE},
+                {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, ICON_TRENDS},
+                {OmniboxSuggestionType.SEARCH_HISTORY, ICON_HISTORY},
+                {OmniboxSuggestionType.SEARCH_SUGGEST, ICON_TRENDS},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_TAIL, ICON_TRENDS},
+                {OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED, ICON_HISTORY},
+                {OmniboxSuggestionType.VOICE_SUGGEST, ICON_VOICE},
         };
 
         mProcessor.onNativeInitialized();
@@ -343,16 +351,16 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<LargeIconCallback> callback =
-                ArgumentCaptor.forClass(LargeIconCallback.class);
+        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
+                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconBridge)
-                .getLargeIconForUrl(eq(mSuggestion.getUrl()), anyInt(), callback.capture());
-        callback.getValue().onLargeIconAvailable(mBitmap, 0, false, 0);
+        verify(mIconFetcher)
+                .fetchFaviconWithBackoff(eq(mSuggestion.getUrl()), eq(false), callback.capture());
+        callback.getValue().onFaviconFetchComplete(mBitmap, FaviconType.REGULAR);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
@@ -363,16 +371,16 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<LargeIconCallback> callback =
-                ArgumentCaptor.forClass(LargeIconCallback.class);
+        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
+                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconBridge)
-                .getLargeIconForUrl(eq(mSuggestion.getUrl()), anyInt(), callback.capture());
-        callback.getValue().onLargeIconAvailable(null, 0, false, 0);
+        verify(mIconFetcher)
+                .fetchFaviconWithBackoff(eq(mSuggestion.getUrl()), eq(false), callback.capture());
+        callback.getValue().onFaviconFetchComplete(null, FaviconType.NONE);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 

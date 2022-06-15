@@ -8,13 +8,13 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -33,16 +33,16 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -64,34 +64,33 @@ public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final GURL SEARCH_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
     private static final int FALLBACK_COLOR = 0xACE0BA5E;
+    private static final int DESIRED_FAVICON_SIZE_PX = 100;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
     private PropertyModel mPropertyModel;
     private MostVisitedTilesProcessor mProcessor;
-    private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
-            ArgumentCaptor.forClass(LargeIconCallback.class);
     private AutocompleteMatch mMatch;
 
+    private ArgumentCaptor<FaviconFetchCompleteListener> mIconCallbackCaptor =
+            ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
+    private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
-    private @Mock LargeIconBridge mLargeIconBridge;
-    private @Mock RoundedIconGenerator mIconGenerator;
-    private @Mock Bitmap mGeneratedIconBitmap;
-    private @Mock Bitmap mLargeIconBitmap;
+    private @Mock FaviconFetcher mFaviconFetcher;
 
     @Before
     public void setUp() {
+        // Enable logs to be printed along with possible test failures.
+        ShadowLog.stream = System.out;
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mProcessor =
-                new MostVisitedTilesProcessor(mActivity, mSuggestionHost, () -> mLargeIconBridge);
-        mProcessor.setRoundedIconGeneratorForTesting(mIconGenerator);
 
-        when(mIconGenerator.generateIconForUrl(any(GURL.class))).thenReturn(mGeneratedIconBitmap);
-        when(mLargeIconBridge.getLargeIconForUrl(any(), anyInt(), mIconCallbackCaptor.capture()))
-                .thenReturn(true);
+        doNothing()
+                .when(mFaviconFetcher)
+                .fetchFaviconWithBackoff(any(), anyBoolean(), mIconCallbackCaptor.capture());
 
+        mProcessor = new MostVisitedTilesProcessor(mActivity, mSuggestionHost, mFaviconFetcher);
         mPropertyModel = mProcessor.createModel();
     }
 
@@ -111,8 +110,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     public void testDecorations_searchTile() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", SEARCH_URL, true));
-        verifyNoMoreInteractions(mIconGenerator);
-        verifyNoMoreInteractions(mLargeIconBridge);
+        verifyNoMoreInteractions(mFaviconFetcher);
 
         assertEquals(1, tileList.size());
         ListItem tileItem = tileList.get(0);
@@ -125,12 +123,13 @@ public final class MostVisitedTilesProcessorUnitTest {
     }
 
     @Test
-    public void testDecorations_navTile_generatedIconOnly() {
+    public void testDecorations_navTile() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
-        verify(mIconGenerator, times(1)).generateIconForUrl(eq(NAV_URL));
-        verify(mLargeIconBridge, times(1)).getLargeIconForUrl(eq(NAV_URL), anyInt(), any());
+        verify(mFaviconFetcher, times(1)).fetchFaviconWithBackoff(eq(NAV_URL), anyBoolean(), any());
+        mIconCallbackCaptor.getValue().onFaviconFetchComplete(mFaviconBitmap, 0);
 
+        // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
         assertEquals(1, tileList.size());
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
@@ -140,52 +139,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
         assertThat(drawable, instanceOf(BitmapDrawable.class));
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        assertEquals(mGeneratedIconBitmap, bitmap);
-    }
-
-    @Test
-    public void testDecorations_navTile_fallbackColor() {
-        List<ListItem> tileList =
-                populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
-        verify(mIconGenerator, times(1)).generateIconForUrl(eq(NAV_URL));
-        verify(mLargeIconBridge, times(1)).getLargeIconForUrl(eq(NAV_URL), anyInt(), any());
-        // Report no icon, only color.
-        mIconCallbackCaptor.getValue().onLargeIconAvailable(null, FALLBACK_COLOR, true, 0);
-
-        // The logic should ignore the fallback color and focus only on the presence of an
-        // actual icon. If no icon is available, we should retain the original generated icon.
-        assertEquals(1, tileList.size());
-        ListItem tileItem = tileList.get(0);
-        PropertyModel tileModel = tileItem.model;
-        Drawable drawable = tileModel.get(TileViewProperties.ICON);
-
-        assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
-        assertThat(drawable, instanceOf(BitmapDrawable.class));
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        assertEquals(mGeneratedIconBitmap, bitmap);
-    }
-
-    @Test
-    public void testDecorations_navTile_actualIcon() {
-        List<ListItem> tileList =
-                populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
-        verify(mIconGenerator, times(1)).generateIconForUrl(eq(NAV_URL));
-        verify(mLargeIconBridge, times(1)).getLargeIconForUrl(eq(NAV_URL), anyInt(), any());
-        // Report no icon, only color.
-        mIconCallbackCaptor.getValue().onLargeIconAvailable(
-                mLargeIconBitmap, FALLBACK_COLOR, true, 0);
-
-        // In the presence of actual icon we should expect to see that icon being applied to the
-        // model.
-        assertEquals(1, tileList.size());
-        ListItem tileItem = tileList.get(0);
-        PropertyModel tileModel = tileItem.model;
-        Drawable drawable = tileModel.get(TileViewProperties.ICON);
-
-        assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
-        assertThat(drawable, instanceOf(BitmapDrawable.class));
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        assertEquals(mLargeIconBitmap, bitmap);
+        assertEquals(mFaviconBitmap, bitmap);
     }
 
     @Test
@@ -214,8 +168,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .onSuggestionClicked(eq(mMatch), eq(3), eq(SEARCH_URL));
 
         verifyNoMoreInteractions(mSuggestionHost);
-        verifyNoMoreInteractions(mIconGenerator);
-        verifyNoMoreInteractions(mLargeIconBridge);
+        verifyNoMoreInteractions(mFaviconFetcher);
     }
 
     @Test
@@ -244,8 +197,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                 .onDeleteMatchElement(eq(mMatch), eq("search1"), eq(1), eq(0));
 
         verifyNoMoreInteractions(mSuggestionHost);
-        verifyNoMoreInteractions(mIconGenerator);
-        verifyNoMoreInteractions(mLargeIconBridge);
+        verifyNoMoreInteractions(mFaviconFetcher);
     }
 
     @Test
@@ -270,8 +222,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         ordered.verify(mSuggestionHost, times(1)).setOmniboxEditingText(eq(SEARCH_URL.getSpec()));
 
         verifyNoMoreInteractions(mSuggestionHost);
-        verifyNoMoreInteractions(mIconGenerator);
-        verifyNoMoreInteractions(mLargeIconBridge);
+        verifyNoMoreInteractions(mFaviconFetcher);
     }
 
     @Test

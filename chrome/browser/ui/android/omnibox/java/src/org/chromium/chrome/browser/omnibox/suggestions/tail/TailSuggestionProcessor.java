@@ -27,7 +27,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestionHost A handle to the object using the suggestions.
      */
     public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, null);
         mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 

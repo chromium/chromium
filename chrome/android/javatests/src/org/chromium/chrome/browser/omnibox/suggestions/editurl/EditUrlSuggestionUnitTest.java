@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -43,7 +44,6 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -108,7 +108,7 @@ public final class EditUrlSuggestionUnitTest {
     private View mSuggestionView;
 
     @Mock
-    private LargeIconBridge mIconBridge;
+    private FaviconFetcher mIconFetcher;
 
     @Mock
     private TemplateUrlService mTemplateUrlService;
@@ -140,8 +140,8 @@ public final class EditUrlSuggestionUnitTest {
             mModel = new PropertyModel.Builder(SuggestionViewProperties.ALL_KEYS).build();
 
             mProcessor = new EditUrlSuggestionProcessor(ContextUtils.getApplicationContext(),
-                    mSuggestionHost, mUrlBarDelegate,
-                    () -> mIconBridge, () -> mTab, () -> mShareDelegate);
+                    mSuggestionHost, mUrlBarDelegate, mIconFetcher,
+                    () -> mTab, () -> mShareDelegate);
         });
 
         doReturn(mTestUrl).when(mTab).getUrl();

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
@@ -27,10 +26,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,14 +44,10 @@ import org.chromium.url.GURL;
 public class BaseSuggestionProcessorTest {
     private class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
         private final Context mContext;
-        private final LargeIconBridge mLargeIconBridge;
-        private final Runnable mRunable;
-        public TestBaseSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-                LargeIconBridge largeIconBridge, Runnable runable) {
-            super(context, suggestionHost);
+        public TestBaseSuggestionProcessor(
+                Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
+            super(context, suggestionHost, faviconFetcher);
             mContext = context;
-            mLargeIconBridge = largeIconBridge;
-            mRunable = runable;
         }
 
         @Override
@@ -74,16 +70,12 @@ public class BaseSuggestionProcessorTest {
             super.populateModel(suggestion, model, position);
             setSuggestionDrawableState(model,
                     SuggestionDrawableState.Builder.forBitmap(mContext, mDefaultBitmap).build());
-            fetchSuggestionFavicon(model, suggestion.getUrl(), mLargeIconBridge, mRunable);
+            fetchSuggestionFavicon(model, suggestion.getUrl());
         }
     }
 
-    @Mock
-    SuggestionHost mSuggestionHost;
-    @Mock
-    LargeIconBridge mIconBridge;
-    @Mock
-    Runnable mRunnable;
+    private @Mock SuggestionHost mSuggestionHost;
+    private @Mock FaviconFetcher mFaviconFetcher;
 
     private TestBaseSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -96,7 +88,7 @@ public class BaseSuggestionProcessorTest {
         MockitoAnnotations.initMocks(this);
         mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
         mProcessor = new TestBaseSuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, mIconBridge, mRunnable);
+                ContextUtils.getApplicationContext(), mSuggestionHost, mFaviconFetcher);
     }
 
     /**
@@ -111,15 +103,15 @@ public class BaseSuggestionProcessorTest {
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<LargeIconCallback> callback =
-                ArgumentCaptor.forClass(LargeIconCallback.class);
+        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
+                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
         final GURL url = new GURL("http://url");
         createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, url);
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconBridge).getLargeIconForUrl(eq(url), anyInt(), callback.capture());
-        callback.getValue().onLargeIconAvailable(mBitmap, 0, false, 0);
+        verify(mFaviconFetcher).fetchFaviconWithBackoff(eq(url), eq(false), callback.capture());
+        callback.getValue().onFaviconFetchComplete(mBitmap, FaviconType.REGULAR);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 
@@ -130,15 +122,15 @@ public class BaseSuggestionProcessorTest {
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<LargeIconCallback> callback =
-                ArgumentCaptor.forClass(LargeIconCallback.class);
+        final ArgumentCaptor<FaviconFetchCompleteListener> callback =
+                ArgumentCaptor.forClass(FaviconFetchCompleteListener.class);
         final GURL url = new GURL("http://url");
         createSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, url);
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
-        verify(mIconBridge).getLargeIconForUrl(eq(url), anyInt(), callback.capture());
-        callback.getValue().onLargeIconAvailable(null, 0, false, 0);
+        verify(mFaviconFetcher).fetchFaviconWithBackoff(eq(url), eq(false), callback.capture());
+        callback.getValue().onFaviconFetchComplete(null, FaviconType.NONE);
         SuggestionDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon2);
 

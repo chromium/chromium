@@ -55,6 +55,7 @@ class DropdownItemViewInfoListBuilder {
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
+    private @Nullable FaviconFetcher mFaviconFetcher;
     private @Nullable LargeIconBridge mIconBridge;
     private @NonNull BookmarkState mBookmarkState;
     @Px
@@ -87,22 +88,23 @@ class DropdownItemViewInfoListBuilder {
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
 
+        mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
+
         mHeaderProcessor = new HeaderProcessor(context, host, delegate);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, iconBridgeSupplier, mActivityTabSupplier, shareSupplier));
+                context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
                 new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
-                new ClipboardSuggestionProcessor(context, host, iconBridgeSupplier));
+                new ClipboardSuggestionProcessor(context, host, mFaviconFetcher));
         registerSuggestionProcessor(
                 new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(
-                new MostVisitedTilesProcessor(context, host, iconBridgeSupplier));
+        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mFaviconFetcher));
         registerSuggestionProcessor(new PedalSuggestionProcessor(context, host, textProvider,
-                iconBridgeSupplier, mBookmarkState, mOmniboxPedalDelegate, delegate));
+                mFaviconFetcher, mBookmarkState, mOmniboxPedalDelegate, delegate));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
-                context, host, textProvider, iconBridgeSupplier, mBookmarkState));
+                context, host, textProvider, mFaviconFetcher, mBookmarkState));
     }
 
     void destroy() {
@@ -153,6 +155,10 @@ class DropdownItemViewInfoListBuilder {
             mImageFetcher = null;
         }
 
+        if (mFaviconFetcher != null) {
+            mFaviconFetcher.clearCache();
+        }
+
         mIconBridge = new LargeIconBridge(profile);
         mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
                 profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool(),
@@ -195,11 +201,9 @@ class DropdownItemViewInfoListBuilder {
      * @param hasFocus Indicates whether URL bar is now focused.
      */
     void onUrlFocusChange(boolean hasFocus) {
-        if (!hasFocus && mImageFetcher != null) {
-            mImageFetcher.clear();
-        }
-
         if (!hasFocus) {
+            if (mImageFetcher != null) mImageFetcher.clear();
+            if (mFaviconFetcher != null) mFaviconFetcher.clearCache();
             mBuiltListHasFullyConcealedElements = false;
         }
 

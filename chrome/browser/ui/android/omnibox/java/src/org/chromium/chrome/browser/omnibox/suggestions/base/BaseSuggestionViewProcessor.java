@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.style.StyleSpan;
@@ -16,10 +15,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -32,8 +31,9 @@ import java.util.List;
  * A class that handles base properties and model for most suggestions.
  */
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
-    private final Context mContext;
-    private final SuggestionHost mSuggestionHost;
+    private final @NonNull Context mContext;
+    private final @NonNull SuggestionHost mSuggestionHost;
+    private final @Nullable FaviconFetcher mFaviconFetcher;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
@@ -41,8 +41,10 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     /**
      * @param context Current context.
      * @param host A handle to the object using the suggestions.
+     * @param faviconFetcher A mechanism to use to retrieve favicons.
      */
-    public BaseSuggestionViewProcessor(Context context, SuggestionHost host) {
+    public BaseSuggestionViewProcessor(@NonNull Context context, @NonNull SuggestionHost host,
+            @Nullable FaviconFetcher faviconFetcher) {
         mContext = context;
         mSuggestionHost = host;
         mDesiredFaviconWidthPx = mContext.getResources().getDimensionPixelSize(
@@ -51,6 +53,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 R.dimen.omnibox_suggestion_decoration_image_size);
         mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_semicompact_height);
+        mFaviconFetcher = faviconFetcher;
     }
 
     /**
@@ -201,24 +204,15 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      *
      * @param model Model representing current suggestion.
      * @param url Target URL the suggestion points to.
-     * @param iconBridge A {@link LargeIconBridge} supplies site favicons.
-     * @param onIconFetched Optional callback that will be invoked after successful fetch of a
-     *         favicon.
      */
-    protected void fetchSuggestionFavicon(PropertyModel model, GURL url, LargeIconBridge iconBridge,
-            @Nullable Runnable onIconFetched) {
-        if (url == null || iconBridge == null) return;
-
-        iconBridge.getLargeIconForUrl(url, mDesiredFaviconWidthPx,
-                (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) -> {
-                    if (icon == null) return;
-
-                    setSuggestionDrawableState(model,
-                            SuggestionDrawableState.Builder.forBitmap(mContext, icon).build());
-                    if (onIconFetched != null) {
-                        onIconFetched.run();
-                    }
-                });
+    protected void fetchSuggestionFavicon(PropertyModel model, GURL url) {
+        assert mFaviconFetcher != null : "You must supply the FaviconFetcher in order to use it";
+        mFaviconFetcher.fetchFaviconWithBackoff(url, false, (icon, type) -> {
+            if (icon != null) {
+                setSuggestionDrawableState(
+                        model, SuggestionDrawableState.Builder.forBitmap(mContext, icon).build());
+            }
+        });
     }
 
     /**

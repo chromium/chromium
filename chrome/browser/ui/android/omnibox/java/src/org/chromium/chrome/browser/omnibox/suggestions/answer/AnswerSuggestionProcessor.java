@@ -45,7 +45,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public AnswerSuggestionProcessor(Context context, SuggestionHost suggestionHost,
             UrlBarEditingTextStateProvider editingTextProvider,
             Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost);
+        super(context, suggestionHost, null);
         mSuggestionHost = suggestionHost;
         mPendingAnswerRequestUrls = new HashMap<>();
         mUrlBarEditingTextProvider = editingTextProvider;
