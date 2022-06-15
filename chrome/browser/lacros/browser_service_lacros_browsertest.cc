@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -111,6 +112,20 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(web_content->GetVisibleURL(), kNavigationUrl);
   }
 
+  void NewWindowSync(bool incognito, bool should_trigger_session_restore) {
+    base::RunLoop run_loop;
+    browser_service()->NewWindow(incognito, should_trigger_session_restore,
+                                 run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void NewTabSync(bool should_trigger_session_restore) {
+    base::RunLoop run_loop;
+    browser_service()->NewTab(should_trigger_session_restore,
+                              run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   BrowserServiceLacros* browser_service() const {
     return browser_service_.get();
   }
@@ -156,37 +171,87 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   base::FilePath path_profile2 =
       profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
 
-  base::RunLoop run_loop;
-  Profile* profile2;
-  profile_manager->CreateProfileAsync(
-      path_profile2, base::BindLambdaForTesting(
-                         [&](Profile* profile, Profile::CreateStatus status) {
-                           if (status == Profile::CREATE_STATUS_INITIALIZED) {
-                             profile2 = profile;
-                             run_loop.Quit();
-                           }
-                         }));
-  run_loop.Run();
+  Profile* profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, path_profile2);
   // Open a browser window to make it the last used profile.
   chrome::NewEmptyWindow(profile2);
   ui_test_utils::WaitForBrowserToOpen();
 
   // Profile picker does _not_ open for incognito windows. Instead, the
   // incognito window for the last used profile is directly opened.
-  base::RunLoop run_loop2;
-  browser_service()->NewWindow(
-      /*incognito=*/true, /*should_trigger_session_restore=*/false,
-      /*callback=*/base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
-  run_loop2.Run();
+  NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false);
   EXPECT_FALSE(ProfilePicker::IsOpen());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
   // Main profile should be always used.
   EXPECT_EQ(profile->GetPath(), main_profile->GetPath());
   EXPECT_TRUE(profile->IsOffTheRecord());
 
-  browser_service()->NewWindow(
-      /*incognito=*/false, /*should_trigger_session_restore=*/false,
-      /*callback=*/base::BindLambdaForTesting([]() {}));
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+                       NewTab_OpensProfilePicker_SingleProfile) {
+  // Keep the browser process running during the test while the browser is
+  // closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  // Start in a state with no browser windows opened.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // `NewTab()` should create a new window if the system has only one
+  // profile.
+  NewTabSync(/*should_trigger_session_restore=*/true);
+  ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  auto* main_profile = profile_manager->GetProfileByPath(
+      profile_manager->GetPrimaryUserProfilePath());
+  auto* browser = chrome::FindBrowserWithProfile(main_profile);
+  auto* tab_strip = browser->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());
+
+  // Consequent `NewTab()` should add a new tab to an existing browser.
+  NewTabSync(/*should_trigger_session_restore=*/true);
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+                       NewTab_OpensProfilePicker_MultiProfile) {
+  // Keep the browser process running during the test while the browser is
+  // closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+
+  // Create and open an additional profile to move Chrome to the multi-profile
+  // mode.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile2_path =
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
+  Profile* profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile2_path);
+  chrome::NewEmptyWindow(profile2);
+  ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  auto* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());
+
+  // `NewTab()` should add a tab to the main profile window;
+  NewTabSync(/*should_trigger_session_restore=*/true);
+  EXPECT_EQ(2, tab_strip->count());
+
+  chrome::CloseAllBrowsers();
+  // Wait for two browsers to be closed.
+  ui_test_utils::WaitForBrowserToClose();
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // `NewTab()` should open the profile picker.
+  NewTabSync(/*should_trigger_session_restore=*/true);
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
@@ -232,11 +297,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // Opening a new window should suppress the profile picker and the crash
   // restore bubble should be showing.
-  base::RunLoop run_loop;
-  browser_service()->NewWindow(
-      /*incognito=*/false, /*should_trigger_session_restore=*/true,
-      /*callback=*/base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  run_loop.Run();
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/true);
 
   EXPECT_FALSE(ProfilePicker::IsOpen());
   views::BubbleDialogDelegate* crash_bubble_delegate =
@@ -431,9 +492,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   // Trigger a new tab with session restore.
   base::RunLoop run_loop;
   testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
-  browser_service()->NewTab(
-      /*should_trigger_session_restore=*/true,
-      /*callback=*/base::DoNothing());
+  NewTabSync(/*should_trigger_session_restore=*/true);
   run_loop.Run();
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
@@ -449,11 +508,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // A second call to NewTab() ignores session restore and adds a new tab to
   // the existing browser.
-  base::RunLoop run_loop2;
-  browser_service()->NewTab(
-      /*should_trigger_session_restore=*/true,
-      /*callback=*/run_loop2.QuitClosure());
-  run_loop2.Run();
+  NewTabSync(/*should_trigger_session_restore=*/true);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(3, new_tab_strip->count());
@@ -471,11 +526,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   IncognitoModePrefs::SetAvailability(
       main_profile->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
   // Request a new incognito window.
-  base::RunLoop run_loop;
-  browser_service()->NewWindow(
-      /*incognito=*/true, /*should_trigger_session_restore=*/false,
-      /*callback=*/base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  run_loop.Run();
+  NewWindowSync(/*incognito=*/true, /*should_trigger_session_restore=*/false);
   // A regular window opens instead.
   EXPECT_FALSE(ProfilePicker::IsOpen());
   Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();

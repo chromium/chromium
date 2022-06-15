@@ -258,6 +258,15 @@ void BrowserServiceLacros::NewWindowForDetachingTab(
 
 void BrowserServiceLacros::NewTab(bool should_trigger_session_restore,
                                   NewTabCallback callback) {
+  if (ProfilePicker::ShouldShowAtLaunch() &&
+      chrome::GetTotalBrowserCount() == 0) {
+    // The first browser window will trigger session restore if needed.
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+    std::move(callback).Run();
+    return;
+  }
+
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::NewTabWithProfile,
                      weak_ptr_factory_.GetWeakPtr(),
