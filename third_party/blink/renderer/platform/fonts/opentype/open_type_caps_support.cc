@@ -143,8 +143,8 @@ CaseMapIntend OpenTypeCapsSupport::NeedsCaseChange(
 
 OpenTypeCapsSupport::FontFormat OpenTypeCapsSupport::GetFontFormat() const {
   if (font_format_ == FontFormat::kUndetermined) {
-    hb_face_t* hb_face = hb_font_get_face(harfbuzz_face_->GetScaledFont(
-        nullptr, HarfBuzzFace::kNoVerticalLayout));
+    hb_face_t* const hb_face =
+        hb_font_get_face(harfbuzz_face_->GetScaledFont());
 
     HbScoped<hb_blob_t> morx_blob(
         hb_face_reference_table(hb_face, HB_TAG('m', 'o', 'r', 'x')));
@@ -177,8 +177,7 @@ bool OpenTypeCapsSupport::SupportsAatFeature(uint32_t tag) const {
     return false;
   }
 
-  hb_face_t* hb_face = hb_font_get_face(
-      harfbuzz_face_->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout));
+  hb_face_t* const hb_face = hb_font_get_face(harfbuzz_face_->GetScaledFont());
 
   Vector<hb_aat_layout_feature_type_t> aat_features;
   unsigned feature_count =

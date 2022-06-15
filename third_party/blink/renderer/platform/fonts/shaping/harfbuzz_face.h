@@ -70,7 +70,12 @@ class HarfBuzzFace final {
   // object will be used.
   hb_font_t* GetScaledFont(scoped_refptr<UnicodeRangeSet>,
                            VerticalLayoutCallbacks,
-                           float specified_size = -1) const;
+                           float specified_size) const;
+
+  // Returns `hb_font_t` as same as `GetScaledFont()` with null
+  // `UnicodeRangeSet`, `HarfBuzzFace::kNoVerticalLayout`, and
+  // `platform_data_.size()`.
+  hb_font_t* GetScaledFont() const;
 
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures);
   unsigned UnitsPerEmFromHeadTable();

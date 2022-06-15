@@ -485,6 +485,11 @@ hb_font_t* HarfBuzzFace::GetScaledFont(scoped_refptr<UnicodeRangeSet> range_set,
   return unscaled_font_;
 }
 
+hb_font_t* HarfBuzzFace::GetScaledFont() const {
+  return GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout,
+                       platform_data_->size());
+}
+
 void HarfBuzzFace::Init() {
   DCHECK(IsMainThread());
   HarfBuzzSkiaGetFontFuncs::Get();
