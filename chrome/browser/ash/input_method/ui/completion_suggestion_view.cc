@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/ui/suggestion_view.h"
+#include "chrome/browser/ash/input_method/ui/completion_suggestion_view.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -34,21 +34,6 @@ const int kArrowIconSize = 14;
 const int kDownIconHorizontalPadding = 2;
 const int kDownIconSize = 16;
 const int kEnterKeyHorizontalPadding = 2;
-
-// Creates the index label, and returns it (never returns nullptr).
-// The label text is not set in this function.
-std::unique_ptr<views::Label> CreateIndexLabel() {
-  auto index_label = std::make_unique<views::Label>();
-  index_label->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
-                                         kIndexFontSize,
-                                         gfx::Font::Weight::MEDIUM));
-  index_label->SetEnabledColor(
-      ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
-  index_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  index_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(kPadding / 2, 0)));
-  return index_label;
-}
 
 std::unique_ptr<views::ImageView> CreateDownIcon() {
   auto icon = std::make_unique<views::ImageView>();
@@ -97,10 +82,8 @@ std::unique_ptr<views::View> CreateKeyContainer() {
 
 }  // namespace
 
-SuggestionView::SuggestionView(PressedCallback callback)
+CompletionSuggestionView::CompletionSuggestionView(PressedCallback callback)
     : views::Button(std::move(callback)) {
-  index_label_ = AddChildView(CreateIndexLabel());
-  index_label_->SetVisible(false);
   suggestion_label_ =
       AddChildView(std::make_unique<CompletionSuggestionLabelView>());
   suggestion_label_->SetBorder(
@@ -123,9 +106,10 @@ SuggestionView::SuggestionView(PressedCallback callback)
   SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
-SuggestionView::~SuggestionView() = default;
+CompletionSuggestionView::~CompletionSuggestionView() = default;
 
-std::unique_ptr<views::View> SuggestionView::CreateAnnotationContainer() {
+std::unique_ptr<views::View>
+CompletionSuggestionView::CreateAnnotationContainer() {
   auto label = std::make_unique<views::View>();
   label->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
@@ -137,7 +121,7 @@ std::unique_ptr<views::View> SuggestionView::CreateAnnotationContainer() {
 }
 
 std::unique_ptr<views::View>
-SuggestionView::CreateDownAndEnterAnnotationLabel() {
+CompletionSuggestionView::CreateDownAndEnterAnnotationLabel() {
   auto label = std::make_unique<views::View>();
   label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kAnnotationPaddingLeft, 0, 0)));
@@ -152,7 +136,8 @@ SuggestionView::CreateDownAndEnterAnnotationLabel() {
   return label;
 }
 
-std::unique_ptr<views::View> SuggestionView::CreateTabAnnotationLabel() {
+std::unique_ptr<views::View>
+CompletionSuggestionView::CreateTabAnnotationLabel() {
   auto label = std::make_unique<views::View>();
   label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kAnnotationPaddingLeft, 0, 0)));
@@ -162,7 +147,7 @@ std::unique_ptr<views::View> SuggestionView::CreateTabAnnotationLabel() {
   return label;
 }
 
-void SuggestionView::SetView(const SuggestionDetails& details) {
+void CompletionSuggestionView::SetView(const SuggestionDetails& details) {
   SetSuggestionText(details.text, details.confirmed_length);
   suggestion_width_ = suggestion_label_->GetPreferredSize().width();
   down_and_enter_annotation_label_->SetVisible(details.show_accept_annotation);
@@ -171,22 +156,14 @@ void SuggestionView::SetView(const SuggestionDetails& details) {
                                     details.show_quick_accept_annotation);
 }
 
-void SuggestionView::SetViewWithIndex(const std::u16string& index,
-                                      const std::u16string& text) {
-  index_label_->SetText(index);
-  index_label_->SetVisible(true);
-  index_width_ = index_label_->GetPreferredSize().width();
-  suggestion_label_->SetPrefixAndPrediction(u"", text);
-  suggestion_width_ = suggestion_label_->GetPreferredSize().width();
-}
-
-void SuggestionView::SetSuggestionText(const std::u16string& text,
-                                       const size_t confirmed_length) {
+void CompletionSuggestionView::SetSuggestionText(
+    const std::u16string& text,
+    const size_t confirmed_length) {
   suggestion_label_->SetPrefixAndPrediction(text.substr(0, confirmed_length),
                                             text.substr(confirmed_length));
 }
 
-void SuggestionView::SetHighlighted(bool highlighted) {
+void CompletionSuggestionView::SetHighlighted(bool highlighted) {
   if (highlighted_ == highlighted)
     return;
 
@@ -202,7 +179,7 @@ void SuggestionView::SetHighlighted(bool highlighted) {
   SchedulePaint();
 }
 
-void SuggestionView::OnThemeChanged() {
+void CompletionSuggestionView::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
   down_icon_->SetImage(
       gfx::CreateVectorIcon(kKeyboardArrowDownIcon, kDownIconSize,
@@ -213,12 +190,8 @@ void SuggestionView::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
 
-void SuggestionView::Layout() {
+void CompletionSuggestionView::Layout() {
   int left = kPadding;
-  if (index_label_->GetVisible()) {
-    index_label_->SetBounds(left, 0, index_width_, height());
-    left += index_width_ + kPadding;
-  }
 
   suggestion_label_->SetBounds(left, 0, suggestion_width_, height());
 
@@ -232,13 +205,8 @@ void SuggestionView::Layout() {
   }
 }
 
-gfx::Size SuggestionView::CalculatePreferredSize() const {
+gfx::Size CompletionSuggestionView::CalculatePreferredSize() const {
   gfx::Size size;
-  if (index_label_->GetVisible()) {
-    size = index_label_->GetPreferredSize();
-    size.SetToMax(gfx::Size(index_width_, 0));
-    size.Enlarge(kPadding, 0);
-  }
   gfx::Size suggestion_size = suggestion_label_->GetPreferredSize();
   suggestion_size.SetToMax(gfx::Size(suggestion_width_, 0));
   size.Enlarge(suggestion_size.width() + 2 * kPadding, 0);
@@ -252,24 +220,24 @@ gfx::Size SuggestionView::CalculatePreferredSize() const {
   return size;
 }
 
-void SuggestionView::SetMinWidth(int min_width) {
+void CompletionSuggestionView::SetMinWidth(int min_width) {
   min_width_ = min_width;
 }
 
-gfx::Point SuggestionView::GetAnchorOrigin() const {
+gfx::Point CompletionSuggestionView::GetAnchorOrigin() const {
   return gfx::Point(suggestion_label_->GetPrefixWidthPx() + kPadding, 0);
 }
 
-std::u16string SuggestionView::GetSuggestionForTesting() {
+std::u16string CompletionSuggestionView::GetSuggestionForTesting() {
   return suggestion_label_->GetText();
 }
 
-CompletionSuggestionLabelView* SuggestionView::suggestion_label_for_testing()
-    const {
+CompletionSuggestionLabelView*
+CompletionSuggestionView::suggestion_label_for_testing() const {
   return suggestion_label_;
 }
 
-BEGIN_METADATA(SuggestionView, views::Button)
+BEGIN_METADATA(CompletionSuggestionView, views::Button)
 END_METADATA
 
 }  // namespace ime

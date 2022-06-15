@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_UI_GRAMMAR_SUGGESTION_WINDOW_H_
 
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
-#include "chrome/browser/ash/input_method/ui/suggestion_view.h"
+#include "chrome/browser/ash/input_method/ui/completion_suggestion_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -39,7 +39,7 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
 
   void SetBounds(gfx::Rect bounds);
 
-  SuggestionView* GetSuggestionButtonForTesting();
+  CompletionSuggestionView* GetSuggestionButtonForTesting();
   views::Button* GetIgnoreButtonForTesting();
 
  protected:
@@ -47,7 +47,7 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
 
  private:
   AssistiveDelegate* delegate_;
-  SuggestionView* suggestion_button_;
+  CompletionSuggestionView* suggestion_button_;
   views::ImageButton* ignore_button_;
 
   ButtonId current_highlighted_button_id_ = ButtonId::kNone;
