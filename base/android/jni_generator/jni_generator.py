@@ -319,10 +319,6 @@ def _StripGenerics(value):
   return ''.join(out)
 
 
-def _NameIsTestOnly(name):
-  return name.endswith('ForTest') or name.endswith('ForTesting')
-
-
 class JniParams(object):
   """Get JNI related parameters."""
 
@@ -685,7 +681,7 @@ RE_SCOPED_JNI_TYPES = re.compile('jobject|jclass|jstring|jthrowable|.*Array')
 
 # Regex to match a string like "@CalledByNative public void foo(int bar)".
 RE_CALLED_BY_NATIVE = re.compile(
-    r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))(?:\("(?P<annotation>.*)"\))?'
+    r'@CalledByNative(?P<Unchecked>(?:Unchecked)?)(?:\("(?P<annotation>.*)"\))?'
     r'(?:\s+@\w+(?:\(.*\))?)*'  # Ignore any other annotations.
     r'\s+(?P<prefix>('
     r'(private|protected|public|static|abstract|final|default|synchronized)'
@@ -896,20 +892,8 @@ class ProxyHelpers(object):
     if not isinstance(hash_b64, str):
       hash_b64 = hash_b64.decode()
 
-    long_hash = ('M' + hash_b64).rstrip('=')
-    hashed_name = long_hash[:ProxyHelpers.MAX_CHARS_FOR_HASHED_NATIVE_METHODS]
-
-    # If the method is a test-only method, we don't care about saving size on
-    # the method name, since it shouldn't show up in the binary. Additionally,
-    # if we just hash the name, our checkers which enforce that we have no
-    # "ForTesting" methods by checking for the suffix "ForTesting" will miss
-    # these. We could preserve the name entirely and not hash anything, but
-    # that risks collisions. So, instead, we just append "ForTesting" to any
-    # test-only hashes, to ensure we catch any test-only methods that
-    # shouldn't be in our final binary.
-    if _NameIsTestOnly(method_name):
-      return hashed_name + '_ForTesting'
-    return hashed_name
+    hashed_name = ('M' + hash_b64).rstrip('=')
+    return hashed_name[0:ProxyHelpers.MAX_CHARS_FOR_HASHED_NATIVE_METHODS]
 
   @staticmethod
   def CreateProxyMethodName(fully_qualified_class, old_name, use_hash=False):
@@ -927,18 +911,12 @@ class ProxyHelpers(object):
     return EscapeClassName(fully_qualified_class + '/' + old_name)
 
   @staticmethod
-  def ExtractStaticProxyNatives(fully_qualified_class,
-                                contents,
-                                ptr_type,
-                                include_test_only=True):
+  def ExtractStaticProxyNatives(fully_qualified_class, contents, ptr_type):
     methods = []
     for match in _NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents):
       interface_body = match.group('interface_body')
       for method in _EXTRACT_METHODS_REGEX.finditer(interface_body):
         name = method.group('name')
-        if not include_test_only and _NameIsTestOnly(name):
-          continue
-
         params = JniParams.Parse(method.group('params'), use_proxy_types=True)
         return_type = JavaTypeToProxyCast(method.group('return_type'))
         proxy_name = ProxyHelpers.CreateProxyMethodName(fully_qualified_class,
@@ -1636,9 +1614,6 @@ See SampleForTests.java for more details.
   parser.add_argument('--unchecked_exceptions',
                       action='store_true',
                       help='Do not check that no exceptions were thrown.')
-  parser.add_argument('--include_test_only',
-                      action='store_true',
-                      help='Whether to maintain ForTesting JNI methods.')
   parser.add_argument(
       '--use_proxy_hash',
       action='store_true',

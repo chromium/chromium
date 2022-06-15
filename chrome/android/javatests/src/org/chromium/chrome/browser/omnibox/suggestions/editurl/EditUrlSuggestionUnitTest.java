@@ -49,6 +49,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.ClipboardAndroidTestSupport;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -169,7 +170,7 @@ public final class EditUrlSuggestionUnitTest {
             ((ClipboardImpl) Clipboard.getInstance())
                     .overrideClipboardManagerForTesting(mOldClipboardManager);
         });
-        Clipboard.cleanupForTesting();
+        ClipboardAndroidTestSupport.cleanup();
     }
 
     /** Test that the suggestion is triggered. */

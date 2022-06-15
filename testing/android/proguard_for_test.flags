@@ -24,12 +24,6 @@
   *;
 }
 
-# This matches how we keep @CalledByNative.
--keep @interface org.chromium.base.annotations.CalledByNativeForTesting
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.chromium.base.annotations.CalledByNativeForTesting <methods>;
-}
-
 # Keep all classes that are in test packages. There is no benefit in testing
 # Proguarding of test classes, but this is as close as we can get to selecting
 # all classes from the test apk.
