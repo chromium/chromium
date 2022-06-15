@@ -35,8 +35,9 @@ enum SubmissionSource {
   NONE,                      // No submission signal was detected.
   SAME_DOCUMENT_NAVIGATION,  // The form was removed in same document
                              // navigation.
-  XHR_SUCCEEDED,             // The form was removed whem XHR succeeded.
-  FRAME_DETACHED,            // The subframe which has form was detached.
+  XHR_SUCCEEDED,             // The form was removed when XHR succeeded.
+  FRAME_DETACHED,            // The subframe or non primary main frame
+                             // containing the form was detached.
   DOM_MUTATION_AFTER_XHR,    // The form was removed after XHR.
   PROBABLY_FORM_SUBMITTED,   // The form was probably submitted since new page
                              // is loaded.

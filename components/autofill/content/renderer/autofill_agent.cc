@@ -519,8 +519,8 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
     WebLocalFrame* frame = render_frame()->GetWebFrame();
     std::vector<FormData> forms;
     forms.push_back(updated_form);
-    // Always communicate to browser process for topmost frame.
-    if (!forms.empty() || !frame->Parent()) {
+    // Always communicate to browser process for the outermost main frame.
+    if (!forms.empty() || frame->IsOutermostMainFrame()) {
       GetAutofillDriver().FormsSeen(forms, {});
     }
   }
@@ -977,9 +977,9 @@ void AutofillAgent::ProcessForms() {
   FormCache::UpdateFormCacheResult cache =
       form_cache_.UpdateFormCache(field_data_manager_.get());
 
-  // Always communicate to browser process for topmost frame.
+  // Always communicate to browser process for the outermost main frame.
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty() ||
-      !render_frame()->GetWebFrame()->Parent()) {
+      render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
     GetAutofillDriver().FormsSeen(cache.updated_forms,
                                   std::move(cache.removed_forms).extract());
   }
@@ -1262,19 +1262,13 @@ void AutofillAgent::OnFormSubmitted(const WebFormElement& form) {
 }
 
 void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
-  // Only handle iframe for FRAME_DETACHED or main frame for
-  // SAME_DOCUMENT_NAVIGATION.
-  if ((source == SubmissionSource::FRAME_DETACHED &&
-       !render_frame()->GetWebFrame()->Parent()) ||
-      (source == SubmissionSource::SAME_DOCUMENT_NAVIGATION &&
-       render_frame()->GetWebFrame()->Parent())) {
-    ResetLastInteractedElements();
-    OnFormNoLongerSubmittable();
-    SendPotentiallySubmittedFormToBrowser();
-    return;
-  }
-
-  if (source == SubmissionSource::FRAME_DETACHED) {
+  if (source == SubmissionSource::FRAME_DETACHED &&
+      render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
+    // No op.
+  } else if (source == SubmissionSource::SAME_DOCUMENT_NAVIGATION &&
+             !render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
+    // No op.
+  } else if (source == SubmissionSource::FRAME_DETACHED) {
     // Should not access the frame because it is now detached. Instead, use
     // |provisionally_saved_form_|.
     if (provisionally_saved_form_.has_value())
