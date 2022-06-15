@@ -456,6 +456,10 @@ vars = {
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
   'highway_revision': '424360251cdcfc314cfc528f53c872ecd63af0f0',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling ffmpeg
+  # and whatever else without interference from each other.
+  'ffmpeg_revision': 'abfc2628f25d283c27ffc960a8ff820ae8110467',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1172,7 +1176,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/farmhash.git' + '@' + '816a4ae622e964763ca0862d9dbd19324a1eaf45',
 
   'src/third_party/ffmpeg':
-    Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + 'abfc2628f25d283c27ffc960a8ff820ae8110467',
+    Var('chromium_git') + '/chromium/third_party/ffmpeg.git' + '@' + Var('ffmpeg_revision'),
 
   'src/third_party/flac':
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + 'af862024c8c8fa0ae07ced05e89013d881b00596',
