@@ -575,7 +575,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SkiaReadbackPixelTestNV12);
 class SkiaReadbackPixelTestNV12WithBlit
     : public SkiaReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<bool, LetterboxingBehavior>> {
+          std::tuple<bool, LetterboxingBehavior, bool>> {
  public:
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kNativeTextures;
@@ -592,6 +592,11 @@ class SkiaReadbackPixelTestNV12WithBlit
   LetterboxingBehavior GetLetterboxingBehavior() const {
     return std::get<1>(GetParam());
   }
+
+  // Test parameter that will return `true` if we'll claim that the textures we
+  // create come from GpuMemoryBuffer, `false` otherwise. This exercises a
+  // different code path in SkiaRenderer.
+  bool populates_gpu_memory_buffer() const { return std::get<2>(GetParam()); }
 };
 
 // Test that SkiaRenderer readback works correctly. This test will use the
@@ -675,9 +680,9 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
         request.set_result_selection(result_selection);
 
-        request.set_blit_request(BlitRequest(destination_subregion.origin(),
-                                             GetLetterboxingBehavior(),
-                                             mailboxes));
+        request.set_blit_request(BlitRequest(
+            destination_subregion.origin(), GetLetterboxingBehavior(),
+            mailboxes, populates_gpu_memory_buffer()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.
@@ -753,9 +758,12 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12WithBlit,
-    testing::Combine(testing::Bool(),  // Result scaling: Scale by half?
-                     testing::Values(LetterboxingBehavior::kDoNotLetterbox,
-                                     LetterboxingBehavior::kLetterbox)));
+    testing::Combine(
+        testing::Bool(),  // Result scaling: Scale by half?
+        testing::Values(LetterboxingBehavior::kDoNotLetterbox,
+                        LetterboxingBehavior::kLetterbox),
+        testing::Bool()  // Should behave as if COR is populating a GMB?
+        ));
 #else
 // Don't instantiate the NV12 tests when run on Android emulator, they won't
 // work since the SkiaRenderer currently does not support CopyOutputRequests

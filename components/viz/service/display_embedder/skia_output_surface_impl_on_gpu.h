@@ -42,6 +42,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
@@ -349,7 +350,9 @@ class SkiaOutputSurfaceImplOnGpu
   // to |surface| with |end_semaphores| and |end_state|.
   bool FlushSurface(SkSurface* surface,
                     std::vector<GrBackendSemaphore>& end_semaphores,
-                    std::unique_ptr<GrBackendSurfaceMutableState> end_state);
+                    std::unique_ptr<GrBackendSurfaceMutableState> end_state,
+                    GrGpuFinishedProc finished_proc = nullptr,
+                    GrGpuFinishedContext finished_context = nullptr);
 
   // Creates surfaces needed to store the data in NV12 format.
   // |plane_access_datas| will be populated with information needed to access
