@@ -89,9 +89,14 @@ DMStorage::~DMStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool DMStorage::DeregisterDevice() {
+bool DMStorage::InvalidateDMToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return token_service_->StoreDmToken(kInvalidTokenValue);
+}
+
+bool DMStorage::DeleteDMToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return token_service_->DeleteDmToken();
 }
 
 bool DMStorage::IsValidDMToken() const {

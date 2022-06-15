@@ -40,6 +40,9 @@ class TokenServiceInterface {
   // Writes |dm_token| into storage.
   virtual bool StoreDmToken(const std::string& dm_token) = 0;
 
+  // Deletes the DM token from storage.
+  virtual bool DeleteDmToken() = 0;
+
   // Returns the device management token from storage, or returns an empty
   // string if no device management token is found.
   virtual std::string GetDmToken() const = 0;
@@ -80,7 +83,10 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
 
   // Writes a special DM token to storage to mark current device as
   // deregistered.
-  bool DeregisterDevice();
+  bool InvalidateDMToken();
+
+  // Deletes the existing DM token for re-registration.
+  bool DeleteDMToken();
 
   // Returns true if the DM token is valid, where valid is defined as non-blank
   // and not de-registered.

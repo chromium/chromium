@@ -40,6 +40,10 @@ std::string GetPolicyValidationReportRequestData(
 // is unexpected.
 std::string ParseDeviceRegistrationResponse(const std::string& response_data);
 
+// Determines whether the DMToken is expected to be deleted based on the
+// DMServer response contents.
+bool ShouldDeleteDmToken(const std::string& response_data);
+
 // Parses and validates the DeviceManagementResponse for a policy fetch request,
 // and returns valid policies in the DMPolicyMap. All validation issues will be
 // put into the `validation_results`, if there's any. `policy_info`,

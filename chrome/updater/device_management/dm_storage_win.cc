@@ -30,6 +30,7 @@ class TokenService : public TokenServiceInterface {
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
   std::string GetEnrollmentToken() const override;
   bool StoreDmToken(const std::string& dm_token) override;
+  bool DeleteDmToken() override;
   std::string GetDmToken() const override;
 };
 
@@ -67,6 +68,27 @@ bool TokenService::StoreDmToken(const std::string& token) {
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment, Wow6432(KEY_WRITE));
   return key.WriteValue(kRegValueDmToken, base::SysUTF8ToWide(token).c_str()) ==
          ERROR_SUCCESS;
+}
+
+bool TokenService::DeleteDmToken() {
+  base::win::RegKey key;
+  auto result = key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
+                         Wow6432(KEY_SET_VALUE));
+
+  // The registry key which stores the DMToken value was not found, so deletion
+  // is not necessary.
+  if (result == ERROR_FILE_NOT_FOUND)
+    return true;
+
+  if (result == ERROR_SUCCESS)
+    result = key.DeleteValue(kRegValueDmToken);
+  else
+    return false;
+
+  // Delete the key if no other values are present.
+  base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_QUERY_VALUE))
+      .DeleteEmptyKey(kRegKeyCompanyEnrollment);
+  return true;
 }
 
 std::string TokenService::GetDmToken() const {

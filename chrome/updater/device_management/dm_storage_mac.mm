@@ -91,6 +91,7 @@ class TokenService : public TokenServiceInterface {
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
   bool StoreDmToken(const std::string& dm_token) override;
+  bool DeleteDmToken() override;
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
@@ -133,6 +134,15 @@ bool TokenService::StoreDmToken(const std::string& token) {
     return false;
   }
   dm_token_ = token;
+  return true;
+}
+
+bool TokenService::DeleteDmToken() {
+  const base::FilePath dm_token_path = GetDmTokenFilePath();
+  if (dm_token_path.empty() || !base::DeleteFile(dm_token_path)) {
+    return false;
+  }
+  dm_token_.clear();
   return true;
 }
 
