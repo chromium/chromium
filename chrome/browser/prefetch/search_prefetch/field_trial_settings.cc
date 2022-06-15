@@ -8,12 +8,16 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 
 const base::Feature kSearchPrefetchServicePrefetching{
     "SearchPrefetchServicePrefetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSearchPrefetchBlockBeforeHeaders{
     "SearchPrefetchBlockBeforeHeaders", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSearchPrefetchUpgradeToPrerender{
+    "SearchPrefetchUpgradeToPrerender", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
@@ -28,6 +32,12 @@ bool SearchPrefetchServicePrefetchingIsEnabled() {
          base::GetFieldTrialParamByFeatureAsInt(
              kSearchPrefetchServicePrefetching, "device_memory_threshold_MB",
              3000);
+}
+
+bool SearchPrefetchUpgradeToPrerenderIsEnabled() {
+  if (!prerender_utils::IsSearchSuggestionPrerenderEnabled())
+    return false;
+  return base::FeatureList::IsEnabled(kSearchPrefetchUpgradeToPrerender);
 }
 
 const base::Feature kSearchPrefetchUsesNetworkCache{

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
@@ -96,6 +98,13 @@ void RecordFinalStatus(SearchPrefetchStatus status, bool navigation_prefetch) {
         "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
         status);
   }
+}
+
+bool ShouldPrefetch(const AutocompleteMatch& match) {
+  // Prerender's threshold should definitely be higher than prefetch's. So a
+  // prerender hints can be treated as a prefetch hint.
+  return BaseSearchProvider::ShouldPrefetch(match) ||
+         BaseSearchProvider::ShouldPrerender(match);
 }
 
 }  // namespace
@@ -209,7 +218,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url,
 
   std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request =
       std::make_unique<StreamingSearchPrefetchRequest>(
-          url, navigation_prefetch,
+          search_terms, url, navigation_prefetch,
           base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                          base::Unretained(this)));
 
@@ -464,9 +473,18 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   for (const auto& kv_pair : prefetches_) {
     const auto& search_terms = kv_pair.first;
     auto& prefetch_request = kv_pair.second;
+
     if (prefetch_request->current_status() != SearchPrefetchStatus::kInFlight &&
         prefetch_request->current_status() !=
             SearchPrefetchStatus::kCanBeServed) {
+      // Reset all pending prerenders. It will be set soon if service still
+      // wants clients to prerender a SearchTerms.
+      // TODO(https://crbug.com/1295170): Unlike prefetch, which does not
+      // discard completed response to avoid wasting, prerender would like
+      // to cancel itself given the cost of a prerender. For now prenderer is
+      // canceled when the prerender hints changed, we need to revisit this
+      // decision.
+      prefetch_request->ResetPrerenderUpgrader();
       continue;
     }
     bool should_cancel_request = true;
@@ -486,16 +504,32 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     if (should_cancel_request) {
       prefetch_request->CancelPrefetch();
     }
+
+    // Reset all pending prerenders. It will be set soon if service still wants
+    // clients to prerender a SearchTerms.
+    prefetch_request->ResetPrerenderUpgrader();
   }
 
+  // Do not perform preloading if there is no active tab.
+  if (!web_contents)
+    return;
   for (const auto& match : result) {
+    if (SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+      if (!ShouldPrefetch(match))
+        continue;
+      CoordinatePrefetchWithPrerender(match, *web_contents,
+                                      template_url_service);
+      continue;
+    }
+
     if (BaseSearchProvider::ShouldPrefetch(match)) {
       MaybePrefetchURL(GetPrefetchURLFromMatch(match, template_url_service));
     }
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        BaseSearchProvider::ShouldPrerender(match) && web_contents) {
+        BaseSearchProvider::ShouldPrerender(match)) {
       PrerenderManager::CreateForWebContents(web_contents);
       auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+      DCHECK(prerender_manager);
       prerender_manager->StartPrerenderSearchSuggestion(match);
     }
   }
@@ -682,5 +716,25 @@ void SearchPrefetchService::ObserveTemplateURLService(
         OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
             base::BindRepeating(&SearchPrefetchService::OnURLOpenedFromOmnibox,
                                 base::Unretained(this)));
+  }
+}
+
+void SearchPrefetchService::CoordinatePrefetchWithPrerender(
+    const AutocompleteMatch& match,
+    content::WebContents& web_contents,
+    TemplateURLService* template_url_service) {
+  GURL prefetch_url = GetPrefetchURLFromMatch(match, template_url_service);
+  MaybePrefetchURL(prefetch_url);
+  if (!BaseSearchProvider::ShouldPrerender(match))
+    return;
+
+  if (auto prefetch_request_iter =
+          prefetches_.find(match.search_terms_args->search_terms);
+      prefetch_request_iter != prefetches_.end()) {
+    PrerenderManager::CreateForWebContents(&web_contents);
+    auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
+    DCHECK(prerender_manager);
+    prefetch_request_iter->second->MaybeStartPrerenderSearchResult(
+        *prerender_manager);
   }
 }

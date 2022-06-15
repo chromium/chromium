@@ -12,6 +12,8 @@ extern const base::Feature kSearchPrefetchServicePrefetching;
 
 extern const base::Feature kSearchPrefetchBlockBeforeHeaders;
 
+extern const base::Feature kSearchPrefetchUpgradeToPrerender;
+
 extern const base::Feature kSearchPrefetchUsesNetworkCache;
 
 // Whether matching prefetches can block navigation until they are determined to
@@ -20,6 +22,9 @@ bool SearchPrefetchBlockBeforeHeadersIsEnabled();
 
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
+
+// Whether supporting upgrading a prefetch response to prerender page.
+bool SearchPrefetchUpgradeToPrerenderIsEnabled();
 
 // Whether the search prefetch service uses the network cache instead of the in
 // memory cache.

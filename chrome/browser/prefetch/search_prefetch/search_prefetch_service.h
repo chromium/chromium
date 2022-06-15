@@ -22,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+struct AutocompleteMatch;
 struct OmniboxLog;
 class PrefRegistrySimple;
 class Profile;
@@ -178,6 +179,17 @@ class SearchPrefetchService : public KeyedService,
   // should be saved.
   bool LoadFromPrefs();
   void SaveToPrefs() const;
+
+  // Called when this receives preloadable hints, and iff the
+  // SearchPrefetchUpgradeToPrerender feature is enabled. The feature is running
+  // on the assumption that Prerender is triggered after Prefetch receives
+  // servable response, so some specific logic is required and implemented by
+  // this method, e.g., it prefetches a prerender hint regardless of whether it
+  // is a prefetch hint, since a prerenderable result should be prefetchable.
+  void CoordinatePrefetchWithPrerender(
+      const AutocompleteMatch& match,
+      content::WebContents& web_contents,
+      TemplateURLService* template_url_service);
 
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old

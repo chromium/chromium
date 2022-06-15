@@ -151,6 +151,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Marks the parent prefetch request as servable. Called as delayed task.
   void MarkPrefetchAsServable();
 
+  // Called on `this` receives servable response.
+  void OnServableResponseCodeReceived();
+
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_receiver_{this};

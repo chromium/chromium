@@ -104,6 +104,14 @@ void StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable() {
   streaming_prefetch_request_->MarkPrefetchAsServable();
 }
 
+void StreamingSearchPrefetchURLLoader::OnServableResponseCodeReceived() {
+  // This means that the navigation stack is already running for the navigation
+  // to this term, and chrome does not need to prerender.
+  if (!streaming_prefetch_request_)
+    return;
+  streaming_prefetch_request_->OnServableResponseCodeReceived();
+}
+
 SearchPrefetchURLLoader::RequestHandler
 StreamingSearchPrefetchURLLoader::ServingResponseHandlerImpl(
     std::unique_ptr<SearchPrefetchURLLoader> loader) {
@@ -244,6 +252,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   }
 
   MarkPrefetchAsServable();
+  OnServableResponseCodeReceived();
 
   // Store head and pause new messages until the forwarding client is set up.
   resource_response_ = std::move(head);

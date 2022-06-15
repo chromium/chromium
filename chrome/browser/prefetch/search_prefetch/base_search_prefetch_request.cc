@@ -6,10 +6,12 @@
 
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
+#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -106,10 +108,12 @@ std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
 }  // namespace
 
 BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
+    const std::u16string& prefetch_search_terms,
     const GURL& prefetch_url,
     bool navigation_prefetch,
     base::OnceCallback<void(bool)> report_error_callback)
-    : prefetch_url_(prefetch_url),
+    : prefetch_search_terms_(prefetch_search_terms),
+      prefetch_url_(prefetch_url),
       navigation_prefetch_(navigation_prefetch),
       report_error_callback_(std::move(report_error_callback)) {}
 
@@ -234,12 +238,6 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   auto* default_search = template_url_service->GetDefaultSearchProvider();
   DCHECK(default_search);
 
-  std::u16string prefetch_url_search_terms;
-
-  default_search->ExtractSearchTermsFromURL(
-      prefetch_url_, template_url_service->search_terms_data(),
-      &prefetch_url_search_terms);
-
   bool should_defer = false;
   {
     TRACE_EVENT0(
@@ -269,7 +267,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
           resource_request->url, template_url_service->search_terms_data(),
           &new_url_search_terms);
 
-      if (should_defer || new_url_search_terms != prefetch_url_search_terms ||
+      if (should_defer || new_url_search_terms != prefetch_search_terms_ ||
           cancel_or_pause_delegate.cancelled_or_paused()) {
         return false;
       }
@@ -291,6 +289,50 @@ void BaseSearchPrefetchRequest::CancelPrefetch() {
          current_status_ == SearchPrefetchStatus::kCanBeServed);
   current_status_ = SearchPrefetchStatus::kRequestCancelled;
   StopPrefetch();
+  StopPrerender();
+}
+
+void BaseSearchPrefetchRequest::MaybeStartPrerenderSearchResult(
+    PrerenderManager& prerender_manager) {
+  // Prerendering is supposed to be requested after prefetch received a servable
+  // response and take over the prefetched main resource response. When
+  // prerendering is requested while prefetching is still running, it has to
+  // wait until the completion of that. This procedure depends on the progress
+  // of prefetching as follows:
+  //    *1  |         *2     |    *3         | *4
+  //  prefetch started     received      prerender started
+
+  switch (current_status_) {
+    case SearchPrefetchStatus::kNotStarted:
+      // Case1: This request has been canceled before it starts sending network
+      // requests (see `StartPrefetchRequest`), so prerender should not be
+      // triggered.
+      return;
+    case SearchPrefetchStatus::kInFlight:
+    case SearchPrefetchStatus::kCanBeServed:
+    case SearchPrefetchStatus::kCanBeServedAndUserClicked:
+    case SearchPrefetchStatus::kComplete:
+      break;
+    case SearchPrefetchStatus::kRequestCancelled:
+    case SearchPrefetchStatus::kRequestFailed:
+      // Case N: The prefetch request failed, or has failed. Prerender cannot
+      // reuse the response and will fail for sure, so this does not start
+      // prerendering.
+      return;
+    case SearchPrefetchStatus::kServed:
+      NOTREACHED();
+  }
+
+  if (servable_response_code_received_) {
+    // Case 3, 4: This can start prerendering because it has received a
+    // response.
+    prerender_manager.StartPrerenderSearchResult(prefetch_search_terms_,
+                                                 prefetch_url_);
+  } else {
+    // Case 2: this will start prerendering after it receives a
+    // servable response.
+    prerender_manager_ = prerender_manager.GetWeakPtr();
+  }
 }
 
 void BaseSearchPrefetchRequest::ErrorEncountered() {
@@ -301,9 +343,21 @@ void BaseSearchPrefetchRequest::ErrorEncountered() {
   StopPrefetch();
 }
 
+void BaseSearchPrefetchRequest::OnServableResponseCodeReceived() {
+  servable_response_code_received_ = true;
+  if (prerender_manager_) {
+    prerender_manager_->StartPrerenderSearchResult(prefetch_search_terms_,
+                                                   prefetch_url_);
+  }
+}
+
 void BaseSearchPrefetchRequest::MarkPrefetchAsServable() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
   current_status_ = SearchPrefetchStatus::kCanBeServed;
+}
+
+void BaseSearchPrefetchRequest::ResetPrerenderUpgrader() {
+  prerender_manager_ = nullptr;
 }
 
 void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
@@ -328,4 +382,11 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
 
 void BaseSearchPrefetchRequest::RecordClickTime() {
   time_clicked_ = base::TimeTicks::Now();
+}
+
+void BaseSearchPrefetchRequest::StopPrerender() {
+  if (prerender_manager_) {
+    prerender_manager_->StopPrerenderSearchResult(prefetch_search_terms_);
+    prerender_manager_ = nullptr;
+  }
 }

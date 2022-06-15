@@ -11,10 +11,12 @@
 #include "net/base/load_flags.h"
 
 StreamingSearchPrefetchRequest::StreamingSearchPrefetchRequest(
+    const std::u16string& prefetch_search_terms,
     const GURL& prefetch_url,
     bool navigation_prefetch,
     base::OnceCallback<void(bool)> report_error_callback)
-    : BaseSearchPrefetchRequest(prefetch_url,
+    : BaseSearchPrefetchRequest(prefetch_search_terms,
+                                prefetch_url,
                                 navigation_prefetch,
                                 std::move(report_error_callback)) {}
 
