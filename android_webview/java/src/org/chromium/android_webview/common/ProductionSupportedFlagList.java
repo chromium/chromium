@@ -337,6 +337,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.EARLY_EXIT_ON_NOOP_CLASS_OR_STYLE_CHANGE,
                     "Early exit when the style or class attribute of a DOM element is set to the"
                             + " same value as before."),
+            Flag.baseFeature(BlinkFeatures.THREADED_PRELOAD_SCANNER,
+                    "If enabled, the HTMLPreloadScanner will run on a worker thread."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

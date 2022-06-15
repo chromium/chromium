@@ -55370,6 +55370,7 @@ from previous Chrome versions.
   <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
+  <int value="-1801515363" label="ThreadedPreloadScanner:enabled"/>
   <int value="-1799801575" label="CookieDeprecationMessages:enabled"/>
   <int value="-1798337879" label="enable-md-downloads"/>
   <int value="-1798258607" label="AdaptiveCharging:disabled"/>
@@ -58327,6 +58328,7 @@ from previous Chrome versions.
   <int value="128323385" label="WebUIOmniboxPopup:enabled"/>
   <int value="129246815" label="AudioSettingsPage:disabled"/>
   <int value="129458360" label="LiteVideo:disabled"/>
+  <int value="130059719" label="ThreadedPreloadScanner:disabled"/>
   <int value="130939792" label="FilesJsModules:disabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
   <int value="132560299"
