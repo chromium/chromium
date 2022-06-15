@@ -23,6 +23,8 @@ class POLICY_EXPORT MockPreferences : public MacPreferences {
                            CFStringRef application_id) override;
   Boolean IsManagedPolicyAvailableForMachineScope(CFStringRef key) override;
 
+  void LoadPolicyScopeDetectionPolicy(CFStringRef application_id) override;
+
   // Adds a preference item with the given info to the test set.
   void AddTestItem(CFStringRef key,
                    CFPropertyListRef value,

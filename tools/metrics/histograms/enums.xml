@@ -31643,11 +31643,11 @@ Called by update_document_policy_enum.py.-->
   <int value="969" label="FirstPartySetsOverrides"/>
   <int value="970" label="DownloadBubbleEnabled"/>
   <int value="971" label="DevicePowerAdaptiveChargingEnabled"/>
-  <int value="972" label="GetDisplayMediaSetSelectAllScreens"/>
+  <int value="972" label="GetDisplayMediaSetSelectAllScreensAllowedForUrls"/>
   <int value="973" label="WarnBeforeQuittingEnabled"/>
   <int value="974" label="SystemTerminalSshAllowed"/>
   <int value="975" label="InsightsExtensionEnabled"/>
-  <int value="976" label="EnterpriseAppLinkPolicy"/>
+  <int value="976" label="EnterpriseAuthenticationAppLinkPolicy"/>
   <int value="977" label="DefaultLocalFontsSetting"/>
   <int value="978" label="LocalFontsAllowedForUrls"/>
   <int value="979" label="LocalFontsBlockedForUrls"/>
@@ -31659,7 +31659,8 @@ Called by update_document_policy_enum.py.-->
   <int value="985" label="ClipboardBlockedForUrls"/>
   <int value="986" label="OsColorMode"/>
   <int value="987" label="RendererAppContainerEnabled"/>
-  <int value="988" label="UnthrottledNestedTimeout"/>
+  <int value="988" label="UnthrottledNestedTimeoutEnabled"/>
+  <int value="989" label="PolicyScopeDetection"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -76472,6 +76473,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="40" label="PrivateNetworkRequestSettings"/>
   <int value="41" label="ScreenCaptureSettings"/>
   <int value="42" label="WindowPlacementSettings"/>
+  <int value="43" label="LocalFontsSettings"/>
 </enum>
 
 <enum name="PolicyLoadStatus">

@@ -10275,6 +10275,40 @@
         This policy has no effect on already released policies.''',
     },
     {
+      'name': 'PolicyScopeDetection',
+      'owners': ['zmin@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.mac:105-107'],
+      'features': {
+        'per_profile': False,
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Allow Policy scope detection.''',
+        },
+        {
+          'value': False,
+          'caption': '''Block Policy scope detection.''',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 989,
+      'caption': '''Allow policy scope detection on <ph name="MAC_OS_NAME">macOS</ph>''',
+      'tags': [],
+      'desc': ''' Controls whether browser can detect mandatory policy scope on <ph name="MAC_OS_NAME">macOS</ph> or not.
+
+      If the policy is set to Enabled or not set, each policy's scope will be determined by the scope of <ph name="MAC_OS_NAME">macOS</ph> managed profile.
+      If the policy is set to Disabled, all policies will be reconized as machine scope policy.
+
+      This policy is temporary in order to facilitate smooth transition to properly scoped policies on <ph name="MAC_OS_NAME">macOS</ph> and will be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 107.
+
+      '''
+    },
+    {
       'name': 'OpenNetworkConfiguration',
       'owners': ['pmarko@chromium.org', 'file://components/policy/resources/OWNERS'],
       'type': 'string',
@@ -31164,7 +31198,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'default': None,
       'example_value': True,
       'id': 988,
-      'caption': '''Control the nesting threshold before which Javascript setTimeout() function start being clamped.''',
+      'caption': '''Control the nesting threshold before which Javascript setTimeout() function start being clamped''',
       'tags': [],
       'desc': '''setTimeout(…, 0) is commonly used to break down long Javascript tasks.
           When the policy is set to Enabled, setTimeouts and setIntervals with an interval smaller than 4ms are not clamped as aggressively.
@@ -31173,9 +31207,9 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
           This may change task ordering on a web page, leading to unexpected behavior on sites that are dependent on a certain ordering in some way.
           It also may affect sites with a lot of setTimeout() with a timeout of 0ms usage, e.g. increasing CPU load.
 
-          For users where this policy is unset, Chrome will roll out the change gradually on the stable channel.
+          For users where this policy is unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will roll out the change gradually on the stable channel.
 
-          This is a temporary policy that is planned be removed in Chrome 107. This deadline may be extended if there is a need for it among enterprises.
+          This is a temporary policy that is planned be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 107. This deadline may be extended if there is a need for it among enterprises.
           ''',
     },
   ],
@@ -32184,6 +32218,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 988,
+  'highest_id_currently_used': 989,
   'highest_atomic_group_id_currently_used': 43
 }
