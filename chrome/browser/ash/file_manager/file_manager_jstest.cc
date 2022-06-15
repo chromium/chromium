@@ -7,9 +7,8 @@
 
 class FileManagerJsTest : public FileManagerJsTestBase {
  protected:
-  FileManagerJsTest()
-      : FileManagerJsTestBase(
-            base::FilePath(FILE_PATH_LITERAL("file_manager"))) {}
+  FileManagerJsTest() : FileManagerJsTestBase(
+      base::FilePath(FILE_PATH_LITERAL("ui/file_manager/file_manager"))) {}
 };
 
 // Tests that draw to canvases and test pixels need pixel output turned on.

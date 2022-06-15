@@ -213,7 +213,16 @@ generate_grd("build_grd") {
       "//ui/file_manager/file_manager/foreground/js:build_worker",
     ]
   } else {
-    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+    manifest_files = [
+      "$target_gen_dir/manifest_preprocess_generated_image_loader.json",
+      "$target_gen_dir/manifest_preprocess_static_image_loader.json",
+      "$target_gen_dir/tsconfig.manifest",
+    ]
+
+    deps += [
+      ":preprocess_generated_image_loader",
+      ":preprocess_static_image_loader",
+    ]
   }
 }
 
@@ -249,39 +258,10 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_ts",
     ":preprocess_generated",
-    ":preprocess_generated_image_loader",
     ":preprocess_static",
-    ":preprocess_static_image_loader",
   ]
 
   deps = [ "//ui/webui/resources:library" ]
 
-  in_files = static_js_files + generated_js_files + ts_files +
-             image_loader_static_js_files + image_loader_generated_js_files
-}
-
-# GRD for test files.
-generate_grd("build_tests_grdp") {
-  testonly = true
-  grd_prefix = "file_manager_test"
-  out_grd = "$target_gen_dir/tests_resources.grdp"
-
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = unittest_files
-  deps = [ ":unit_test_data" ]
-}
-
-# GRD for the actual application files that are processed by TS compiler.
-generate_grd("build_tests_gen_grdp") {
-  testonly = true
-  grd_prefix = "file_manager_test"
-  out_grd = "$target_gen_dir/tests_gen_resources.grdp"
-
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = generated_test_htmls
-  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
-  deps = [
-    ":build_ts",
-    ":unit_test_data",
-  ]
+  in_files = static_js_files + generated_js_files + ts_files
 }

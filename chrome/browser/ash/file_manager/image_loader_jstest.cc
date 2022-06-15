@@ -9,9 +9,8 @@
 
 class ImageLoaderJsTest : public FileManagerJsTestBase {
  protected:
-  ImageLoaderJsTest()
-      : FileManagerJsTestBase(
-            base::FilePath(FILE_PATH_LITERAL("image_loader"))) {}
+  ImageLoaderJsTest() : FileManagerJsTestBase(
+      base::FilePath(FILE_PATH_LITERAL("ui/file_manager/image_loader"))) {}
 
   void SetUpCommandLine(base::CommandLine* command_lin) override {
     // Until Files SWA is fully launched Image Loader imports using
