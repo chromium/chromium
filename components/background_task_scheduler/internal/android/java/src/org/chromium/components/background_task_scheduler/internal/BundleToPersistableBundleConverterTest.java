@@ -8,27 +8,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
-/**
- * Tests for {@link BundleToPersistableBundleConverter}.
- */
-@RunWith(BaseJUnit4ClassRunner.class)
+/** Tests for {@link BundleToPersistableBundleConverter}. */
+@RunWith(BaseRobolectricTestRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BundleToPersistableBundleConverterTest {
     @Test
-    @SmallTest
     public void testAllValidConversions() {
         Bundle bundle = new Bundle();
         bundle.putString("s", "bar");
@@ -61,7 +56,6 @@ public class BundleToPersistableBundleConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testSomeBadConversions() {
         Bundle bundle = new Bundle();
         bundle.putString("s", "this should be there");
@@ -85,7 +79,6 @@ public class BundleToPersistableBundleConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testNullValue() {
         Bundle bundle = new Bundle();
         bundle.putString("foo", "value1");

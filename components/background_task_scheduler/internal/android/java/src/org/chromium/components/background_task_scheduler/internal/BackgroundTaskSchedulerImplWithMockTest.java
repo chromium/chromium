@@ -4,25 +4,27 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for {@link BackgroundTaskSchedulerImpl}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE,
+        shadows = {ShadowGcmNetworkManager.class, ShadowChromiumPlayServicesAvailability.class})
 public class BackgroundTaskSchedulerImplWithMockTest {
     private static final int TEST_MINUTES = 10;
 
@@ -37,7 +39,6 @@ public class BackgroundTaskSchedulerImplWithMockTest {
     }
 
     @Test
-    @SmallTest
     public void testOneOffTaskScheduling() {
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create()
@@ -53,7 +54,6 @@ public class BackgroundTaskSchedulerImplWithMockTest {
     }
 
     @Test
-    @SmallTest
     public void testPeriodicTaskScheduling() {
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.PeriodicInfo.create()
@@ -69,7 +69,6 @@ public class BackgroundTaskSchedulerImplWithMockTest {
     }
 
     @Test
-    @SmallTest
     public void testTaskCanceling() {
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create()
