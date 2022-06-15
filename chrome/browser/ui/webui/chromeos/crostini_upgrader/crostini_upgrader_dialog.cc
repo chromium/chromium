@@ -137,7 +137,7 @@ void RunLaunchClosure(base::WeakPtr<crostini::CrostiniManager> crostini_manager,
     return;
   }
   crostini_manager->RestartCrostini(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       base::BindOnce(
           [](base::OnceClosure launch_closure,
              crostini::CrostiniResult result) {

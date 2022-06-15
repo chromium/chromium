@@ -224,10 +224,6 @@ std::ostream& operator<<(std::ostream& ostream,
                  << container_id.container_name << "\")";
 }
 
-ContainerId ContainerId::GetDefault() {
-  return ContainerId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName);
-}
-
 bool IsUninstallable(Profile* profile, const std::string& app_id) {
   if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
     return false;
@@ -259,8 +255,7 @@ bool ShouldConfigureDefaultContainer(Profile* profile) {
 bool ShouldAllowContainerUpgrade(Profile* profile) {
   return CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile) &&
          crostini::CrostiniManager::GetForProfile(profile)
-             ->IsContainerUpgradeable(ContainerId(
-                 kCrostiniDefaultVmName, kCrostiniDefaultContainerName));
+             ->IsContainerUpgradeable(DefaultContainerId());
 }
 
 void AddSpinner(crostini::CrostiniManager::RestartId restart_id,
@@ -557,7 +552,7 @@ bool ShouldWarnAboutExpiredVersion(Profile* profile,
   if (!CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile)) {
     return false;
   }
-  if (container_id != ContainerId::GetDefault()) {
+  if (container_id != DefaultContainerId()) {
     return false;
   }
   // If the warning dialog is already open we can add more callbacks to it, but

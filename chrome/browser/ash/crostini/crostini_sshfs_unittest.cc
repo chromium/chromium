@@ -167,12 +167,12 @@ class CrostiniSshfsHelperTest : public testing::Test {
 };
 
 TEST_F(CrostiniSshfsHelperTest, MountDiskMountsDisk) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
   ExpectMountCalls(1);
   bool result = false;
 
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([&result](bool res) { result = res; }), true);
   task_environment_.RunUntilIdle();
 
@@ -193,7 +193,7 @@ TEST_F(CrostiniSshfsHelperTest, FailsIfContainerNotRunning) {
   EXPECT_CALL(*disk_manager_, MountPath).Times(0);
 
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([&result](bool res) { result = res; }), false);
   task_environment_.RunUntilIdle();
 
@@ -240,17 +240,17 @@ TEST_F(CrostiniSshfsHelperTest, RecordBackgroundMetricIfBackground) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
 
   ExpectMountCalls(1);
   int successes = 0;
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting(
           [&successes](bool result) { successes += result; }),
       false);
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting(
           [&successes](bool result) { successes += result; }),
       false);
@@ -270,7 +270,7 @@ TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
   ExpectMountCalls(2);
   EXPECT_CALL(*disk_manager_, UnmountPath)
       .WillOnce(testing::Invoke(
@@ -281,15 +281,15 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
           }));
 
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
   crostini_sshfs_->UnmountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }));
   task_environment_.RunUntilIdle();
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
 
@@ -308,16 +308,16 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, ContainerShutdownClearsMountStatus) {
-  SetContainerRunning(ContainerId::GetDefault());
+  SetContainerRunning(DefaultContainerId());
   ExpectMountCalls(2);
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);
   task_environment_.RunUntilIdle();
-  crostini_sshfs_->OnContainerShutdown(ContainerId::GetDefault());
+  crostini_sshfs_->OnContainerShutdown(DefaultContainerId());
   task_environment_.RunUntilIdle();
   crostini_sshfs_->MountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), true);
   task_environment_.RunUntilIdle();
 

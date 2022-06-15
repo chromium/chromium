@@ -147,7 +147,7 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerSuccess) {
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,
@@ -160,7 +160,7 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallFail) {
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
@@ -174,7 +174,7 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerInstallSignalFail) {
   SetInstallAnsibleStatus(false);
 
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
@@ -189,7 +189,7 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplyFail) {
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
 
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
@@ -205,7 +205,7 @@ TEST_F(AnsibleManagementServiceTest, ConfigureContainerApplySignalFail) {
   SetApplyAnsibleStatus(false);
 
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
@@ -221,12 +221,12 @@ TEST_F(AnsibleManagementServiceTest,
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
         ansible_management_service()->ConfigureContainer(
-            ContainerId::GetDefault(),
+            DefaultContainerId(),
             profile_->GetPrefs()->GetFilePath(
                 prefs::kCrostiniAnsiblePlaybookFilePath),
             base::BindOnce(&AnsibleManagementServiceTest::ExpectFalseResult,
@@ -243,7 +243,7 @@ TEST_F(AnsibleManagementServiceTest,
 
   // Unsuccessful sequence of events.
   ansible_management_service()->ConfigureContainer(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       profile_->GetPrefs()->GetFilePath(
           prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindOnce(&ExpectResult, base::BindLambdaForTesting([&]() {
@@ -253,7 +253,7 @@ TEST_F(AnsibleManagementServiceTest,
         test_helper_->SetUpPlaybookApplication(
             vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
         ansible_management_service()->ConfigureContainer(
-            ContainerId::GetDefault(),
+            DefaultContainerId(),
             profile_->GetPrefs()->GetFilePath(
                 prefs::kCrostiniAnsiblePlaybookFilePath),
             base::BindOnce(&AnsibleManagementServiceTest::ExpectTrueResult,

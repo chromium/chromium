@@ -59,9 +59,8 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
       signal.set_status(
           vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::SUCCEEDED);
-      signal.set_vm_name(crostini::ContainerId::GetDefault().vm_name);
-      signal.set_container_name(
-          crostini::ContainerId::GetDefault().container_name);
+      signal.set_vm_name(crostini::DefaultContainerId().vm_name);
+      signal.set_container_name(crostini::DefaultContainerId().container_name);
       ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
     } else {
       EXPECT_NE(nullptr, ActiveView());
@@ -69,9 +68,8 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
       signal.set_status(
           vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::FAILED);
-      signal.set_vm_name(crostini::ContainerId::GetDefault().vm_name);
-      signal.set_container_name(
-          crostini::ContainerId::GetDefault().container_name);
+      signal.set_vm_name(crostini::DefaultContainerId().vm_name);
+      signal.set_container_name(crostini::DefaultContainerId().container_name);
       signal.set_failure_details("apple");
       ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
     }
@@ -289,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        AnsibleConfigFlow_Successful) {
   ansible_management_service()->ConfigureContainer(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) { run_loop()->Quit(); }));
@@ -305,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   // there.
   SetInstallAnsibleStatus(false);
   ansible_management_service()->ConfigureContainer(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) { run_loop()->Quit(); }));
@@ -321,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
   // Set apply failure
   SetApplyAnsibleStatus(false);
   ansible_management_service()->ConfigureContainer(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting(

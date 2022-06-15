@@ -66,7 +66,7 @@ class FileWatcher::CrostiniFileWatcher
       : crostini_manager_(crostini_manager),
         crostini_mount_(std::move(crostini_mount)),
         crostini_path_(std::move(crostini_path)),
-        container_id_(crostini::ContainerId::GetDefault()) {}
+        container_id_(crostini::DefaultContainerId()) {}
 
   ~CrostiniFileWatcher() override {
     if (file_watcher_callback_) {

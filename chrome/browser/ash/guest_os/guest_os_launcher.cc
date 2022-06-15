@@ -61,7 +61,7 @@ void LaunchCrostini(Profile* profile,
                     LaunchCallback callback) {
   crostini::CrostiniManager::RestartOptions options;
   options.start_vm_only = just_termina;
-  auto container_id = crostini::ContainerId::GetDefault();
+  auto container_id = crostini::DefaultContainerId();
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
       container_id, std::move(options),
       base::BindOnce(

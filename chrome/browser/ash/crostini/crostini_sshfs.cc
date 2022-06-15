@@ -97,7 +97,7 @@ void CrostiniSshfs::MountCrostiniFiles(const ContainerId& container_id,
     return;
   }
 
-  if (container_id != ContainerId::GetDefault()) {
+  if (container_id != DefaultContainerId()) {
     LOG(ERROR) << "Unable to mount files for non-default container";
     Finish(CrostiniSshfsResult::kNotDefaultContainer);
     return;

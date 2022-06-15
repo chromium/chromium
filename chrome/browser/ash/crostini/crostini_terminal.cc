@@ -256,7 +256,7 @@ void LaunchTerminalWithIntent(Profile* profile,
   }
 
   // Look for vm_name and container_name in intent->extras.
-  ContainerId container_id = ContainerId::GetDefault();
+  ContainerId container_id = DefaultContainerId();
   std::string settings_profile;
   if (intent && intent->extras.has_value()) {
     for (const auto& extra : intent->extras.value()) {

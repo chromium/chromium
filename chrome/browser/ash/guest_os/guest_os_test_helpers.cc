@@ -11,7 +11,7 @@
 namespace guest_os {
 
 MockMountProvider::MockMountProvider()
-    : profile_(nullptr), container_id_(crostini::ContainerId::GetDefault()) {}
+    : profile_(nullptr), container_id_(crostini::DefaultContainerId()) {}
 
 MockMountProvider::MockMountProvider(Profile* profile,
                                      crostini::ContainerId container_id)

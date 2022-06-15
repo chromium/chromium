@@ -2397,7 +2397,7 @@ AutotestPrivateRunCrostiniInstallerFunction::Run() {
         installer_ui->ClickInstallForTesting();
       }));
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostini(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       base::BindOnce(
           &AutotestPrivateRunCrostiniInstallerFunction::CrostiniRestarted,
           this));
@@ -2473,7 +2473,7 @@ ExtensionFunction::ResponseAction AutotestPrivateExportCrostiniFunction::Run() {
   }
 
   crostini::CrostiniExportImport::GetForProfile(profile)->ExportContainer(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       file_manager::util::GetDownloadsFolderForProfile(profile).Append(path),
       base::BindOnce(&AutotestPrivateExportCrostiniFunction::CrostiniExported,
                      this));
@@ -2513,7 +2513,7 @@ ExtensionFunction::ResponseAction AutotestPrivateImportCrostiniFunction::Run() {
     return RespondNow(Error("Invalid import path must not reference parent"));
   }
   crostini::CrostiniExportImport::GetForProfile(profile)->ImportContainer(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       file_manager::util::GetDownloadsFolderForProfile(profile).Append(path),
       base::BindOnce(&AutotestPrivateImportCrostiniFunction::CrostiniImported,
                      this));

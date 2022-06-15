@@ -535,7 +535,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // Additional setup might be required in case of default Crostini container
   // such as installing Ansible in default container and applying
   // pre-determined configuration to the default container.
-  if (container_id_ == ContainerId::GetDefault() &&
+  if (container_id_ == DefaultContainerId() &&
       ShouldConfigureDefaultContainer(profile_)) {
     requests_[0].options.ansible_playbook = profile_->GetPrefs()->GetFilePath(
         prefs::kCrostiniAnsiblePlaybookFilePath);
@@ -555,7 +555,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // it's possible in tests to end up here without a running container. Don't
   // try mounting sshfs in that case.
   auto info = crostini_manager_->GetContainerInfo(container_id_);
-  if (container_id_ == ContainerId::GetDefault() && info) {
+  if (container_id_ == DefaultContainerId() && info) {
     crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
                                           true);
   }
@@ -1168,7 +1168,7 @@ bool CrostiniManager::ShouldPromptContainerUpgrade(
     // Already shown the upgrade dialog.
     return false;
   }
-  if (container_id != ContainerId::GetDefault()) {
+  if (container_id != DefaultContainerId()) {
     return false;
   }
   bool upgradable = IsContainerUpgradeable(container_id);
@@ -2561,7 +2561,7 @@ void CrostiniManager::OnStartTerminaVm(
   // The UI can only resize the default VM, so only (maybe) show the
   // notification for the default VM, if we got a value, and if the value isn't
   // an error (the API we call for space returns -1 on error).
-  if (vm_name == ContainerId::GetDefault().vm_name &&
+  if (vm_name == DefaultContainerId().vm_name &&
       response->free_bytes_has_value() && response->free_bytes() >= 0) {
     low_disk_notifier_->ShowNotificationIfAppropriate(response->free_bytes());
   }
@@ -3866,8 +3866,8 @@ void CrostiniManager::ActiveNetworksChanged(
 
 void CrostiniManager::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
-  auto info = GetContainerInfo(ContainerId::GetDefault());
-  if (!crostini_sshfs_->IsSshfsMounted(ContainerId::GetDefault())) {
+  auto info = GetContainerInfo(DefaultContainerId());
+  if (!crostini_sshfs_->IsSshfsMounted(DefaultContainerId())) {
     return;
   }
 
@@ -3875,7 +3875,7 @@ void CrostiniManager::SuspendImminent(
   auto token = base::UnguessableToken::Create();
   chromeos::PowerManagerClient::Get()->BlockSuspend(token, "CrostiniManager");
   crostini_sshfs_->UnmountCrostiniFiles(
-      ContainerId::GetDefault(),
+      DefaultContainerId(),
       base::BindOnce(&CrostiniManager::OnRemoveSshfsCrostiniVolume,
                      weak_ptr_factory_.GetWeakPtr(), token));
 }
@@ -3883,7 +3883,7 @@ void CrostiniManager::SuspendImminent(
 void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
   // https://crbug.com/968060.  Sshfs is unmounted before suspend,
   // call RestartCrostini to force remount if container is running.
-  ContainerId container_id = ContainerId::GetDefault();
+  ContainerId container_id = DefaultContainerId();
   if (GetContainerInfo(container_id)) {
     // TODO(crbug/1142321): Double-check if anything breaks if we change this
     // to just remount the sshfs mounts, in particular check 9p mounts.
@@ -3903,7 +3903,7 @@ void CrostiniManager::OnRemoveSshfsCrostiniVolume(
 
 void CrostiniManager::RemoveUncleanSshfsMounts() {
   // TODO(crbug/1142321): Success metrics
-  crostini_sshfs_->UnmountCrostiniFiles(ContainerId::GetDefault(),
+  crostini_sshfs_->UnmountCrostiniFiles(DefaultContainerId(),
                                         base::DoNothing());
 }
 

@@ -74,8 +74,6 @@ struct ContainerId {
   base::flat_map<std::string, std::string> ToMap() const;
   base::Value::Dict ToDictValue() const;
 
-  static ContainerId GetDefault();
-
   std::string vm_name;
   std::string container_name;
 };

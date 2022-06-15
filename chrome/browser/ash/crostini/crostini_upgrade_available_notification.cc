@@ -33,7 +33,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
         notification_(notification),
         closure_(std::move(closure)) {
     CrostiniManager::GetForProfile(profile_)->UpgradePromptShown(
-        ContainerId::GetDefault());
+        DefaultContainerId());
   }
 
   CrostiniUpgradeAvailableNotificationDelegate(

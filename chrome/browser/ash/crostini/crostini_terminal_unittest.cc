@@ -21,13 +21,12 @@ using CrostiniTerminalTest = testing::Test;
 TEST_F(CrostiniTerminalTest, GenerateTerminalURL) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  EXPECT_EQ(
-      GenerateTerminalURL(&profile, "", ContainerId::GetDefault(), "", {}),
-      "chrome-untrusted://terminal/html/terminal.html"
-      "?command=vmshell"
-      "&args[]=--vm_name%3Dtermina"
-      "&args[]=--target_container%3Dpenguin"
-      "&args[]=--owner_id%3Dtest");
+  EXPECT_EQ(GenerateTerminalURL(&profile, "", DefaultContainerId(), "", {}),
+            "chrome-untrusted://terminal/html/terminal.html"
+            "?command=vmshell"
+            "&args[]=--vm_name%3Dtermina"
+            "&args[]=--target_container%3Dpenguin"
+            "&args[]=--owner_id%3Dtest");
   EXPECT_EQ(GenerateTerminalURL(&profile, "red",
                                 ContainerId("test-vm", "test-container"),
                                 "/home/user", {"arg1"}),

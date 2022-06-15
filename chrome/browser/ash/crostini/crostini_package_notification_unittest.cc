@@ -71,8 +71,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithNoIcons) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   notification.UpdateProgress(PackageOperationStatus::SUCCEEDED, 100);
   EXPECT_EQ(notification.GetButtonCountForTesting(), 0);
@@ -82,8 +82,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithOneIcon) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   auto app = CrostiniTestHelper::BasicApp(kDefaultAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -96,8 +96,8 @@ TEST_F(CrostiniPackageNotificationTest, InstallWithTwoIcons) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, ContainerId::GetDefault(),
-      std::u16string(), kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
+      kNotificationId, service_.get());
 
   auto app = CrostiniTestHelper::BasicApp(kDefaultAppFileId);
   crostini_test_helper_->AddApp(app);

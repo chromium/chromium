@@ -1704,7 +1704,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
   std::string DisplayName() override { return name_; }
   Profile* profile() override { return profile_; }
   crostini::ContainerId ContainerId() override {
-    return crostini::ContainerId::GetDefault();
+    return crostini::DefaultContainerId();
   }
 
   guest_os::VmType vm_type() override {
@@ -1724,9 +1724,9 @@ class GuestOsTestVolume : public LocalTestVolume {
  public:
   explicit GuestOsTestVolume(Profile* profile,
                              MockGuestOsMountProvider* provider)
-      : LocalTestVolume(util::GetGuestOsMountPointName(
-            profile,
-            crostini::ContainerId::GetDefault())),
+      : LocalTestVolume(
+            util::GetGuestOsMountPointName(profile,
+                                           crostini::DefaultContainerId())),
         provider_(provider) {}
 
   GuestOsTestVolume(const GuestOsTestVolume&) = delete;

@@ -828,7 +828,7 @@ FileManagerPrivateMountCrostiniFunction::Run() {
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   DCHECK(crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostini(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       base::BindOnce(&FileManagerPrivateMountCrostiniFunction::RestartCallback,
                      this));
   return RespondLater();
@@ -847,7 +847,7 @@ void FileManagerPrivateMountCrostiniFunction::RestartCallback(
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   DCHECK(crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   crostini::CrostiniManager::GetForProfile(profile)->MountCrostiniFiles(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       base::BindOnce(&FileManagerPrivateMountCrostiniFunction::MountCallback,
                      this),
       false);
@@ -887,7 +887,7 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
           .path();
 
   crostini::CrostiniExportImport::GetForProfile(profile)->ImportContainer(
-      crostini::ContainerId::GetDefault(), path,
+      crostini::DefaultContainerId(), path,
       base::BindOnce(
           [](base::FilePath path, crostini::CrostiniResult result) {
             if (result != crostini::CrostiniResult::SUCCESS) {
@@ -1014,7 +1014,7 @@ FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
           profile, render_frame_host());
 
   crostini::CrostiniPackageService::GetForProfile(profile)->GetLinuxPackageInfo(
-      crostini::ContainerId::GetDefault(),
+      crostini::DefaultContainerId(),
       file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
       base::BindOnce(&FileManagerPrivateInternalGetLinuxPackageInfoFunction::
                          OnGetLinuxPackageInfo,
@@ -1055,7 +1055,7 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
 
   crostini::CrostiniPackageService::GetForProfile(profile)
       ->QueueInstallLinuxPackage(
-          crostini::ContainerId::GetDefault(),
+          crostini::DefaultContainerId(),
           file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
           base::BindOnce(
               &FileManagerPrivateInternalInstallLinuxPackageFunction::

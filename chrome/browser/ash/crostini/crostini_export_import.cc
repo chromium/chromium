@@ -128,7 +128,7 @@ CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
 
 CrostiniExportImport::OperationData* CrostiniExportImport::NewOperationData(
     ExportImportType type) {
-  return NewOperationData(type, ContainerId::GetDefault());
+  return NewOperationData(type, DefaultContainerId());
 }
 
 void CrostiniExportImport::ExportContainer(ContainerId container_id,

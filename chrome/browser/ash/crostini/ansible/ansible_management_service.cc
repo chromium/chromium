@@ -58,7 +58,7 @@ void AnsibleManagementService::ConfigureContainer(
     std::move(callback).Run(false);
     return;
   }
-  if (container_id == ContainerId::GetDefault() &&
+  if (container_id == DefaultContainerId() &&
       !ShouldConfigureDefaultContainer(profile_)) {
     LOG(ERROR) << "Trying to configure default Crostini container when it "
                << "should not be configured";
@@ -251,7 +251,7 @@ void AnsibleManagementService::OnConfigurationFinished(
     const ContainerId& container_id,
     bool success) {
   DCHECK_GT(configuration_tasks_.count(container_id), 0);
-  if (success && container_id == ContainerId::GetDefault()) {
+  if (success && container_id == DefaultContainerId()) {
     profile_->GetPrefs()->SetBoolean(prefs::kCrostiniDefaultContainerConfigured,
                                      true);
   }

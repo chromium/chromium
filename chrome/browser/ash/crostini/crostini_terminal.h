@@ -113,17 +113,16 @@ void RemoveTerminalFromRegistry(PrefService* prefs);
 const std::string& GetTerminalHomeUrl();
 
 // Generate URL to launch terminal.
-GURL GenerateTerminalURL(
-    Profile* profile,
-    const std::string& setings_profile,
-    const ContainerId& container_id = ContainerId::GetDefault(),
-    const std::string& cwd = "",
-    const std::vector<std::string>& terminal_args = {});
+GURL GenerateTerminalURL(Profile* profile,
+                         const std::string& setings_profile,
+                         const ContainerId& container_id = DefaultContainerId(),
+                         const std::string& cwd = "",
+                         const std::vector<std::string>& terminal_args = {});
 
 // Launches the terminal tabbed app.
 void LaunchTerminal(Profile* profile,
                     int64_t display_id = display::kInvalidDisplayId,
-                    const ContainerId& container_id = ContainerId::GetDefault(),
+                    const ContainerId& container_id = DefaultContainerId(),
                     const std::string& cwd = "",
                     const std::vector<std::string>& terminal_args = {});
 
