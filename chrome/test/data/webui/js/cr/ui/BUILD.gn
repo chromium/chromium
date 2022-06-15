@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("array_data_model_test") {
@@ -28,36 +29,38 @@ js_library("context_menu_handler_test") {
   ]
 }
 
-js_library("grid_test") {
-  deps = [
-    "../../..:chai_assert",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:grid.m",
-  ]
-}
+if (is_chromeos_ash) {
+  js_library("grid_test") {
+    deps = [
+      "../../..:chai_assert",
+      "//ui/webui/resources/js/cr/ui:array_data_model.m",
+      "//ui/webui/resources/js/cr/ui:grid.m",
+    ]
+  }
 
-js_library("list_selection_model_test") {
-  deps = [
-    ":list_selection_model_test_util",
-    "../../..:chai_assert",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-  ]
-}
+  js_library("list_selection_model_test") {
+    deps = [
+      ":list_selection_model_test_util",
+      "../../..:chai_assert",
+      "//ui/webui/resources/js/cr/ui:list_selection_model.m",
+    ]
+  }
 
-js_library("list_selection_model_test_util") {
-  deps = [
-    "../../..:chai_assert",
-    "//ui/webui/resources/js/cr/ui:list_selection_model.m",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
-  ]
-}
+  js_library("list_selection_model_test_util") {
+    deps = [
+      "../../..:chai_assert",
+      "//ui/webui/resources/js/cr/ui:list_selection_model.m",
+      "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+    ]
+  }
 
-js_library("list_single_selection_model_test") {
-  deps = [
-    ":list_selection_model_test_util",
-    "../../..:chai_assert",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
-  ]
+  js_library("list_single_selection_model_test") {
+    deps = [
+      ":list_selection_model_test_util",
+      "../../..:chai_assert",
+      "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
+    ]
+  }
 }
 
 js_library("list_test") {
@@ -109,14 +112,19 @@ js_type_check("closure_compile") {
     ":array_data_model_test",
     ":command_test",
     ":context_menu_handler_test",
-    ":grid_test",
-    ":list_selection_model_test",
-    ":list_selection_model_test_util",
-    ":list_single_selection_model_test",
     ":list_test",
     ":menu_button_test",
     ":menu_test",
     ":position_util_test",
     ":splitter_test",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      ":grid_test",
+      ":list_selection_model_test",
+      ":list_selection_model_test_util",
+      ":list_single_selection_model_test",
+    ]
+  }
 }
