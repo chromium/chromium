@@ -418,6 +418,7 @@ source_set("browsertest_core") {
     "test/frame_for_test.h",
     "test/scenic_test_helper.cc",
     "test/scenic_test_helper.h",
+    "test/scoped_connection_checker.h",
     "test/test_data.cc",
     "test/test_data.h",
     "test/web_engine_browser_test.cc",
@@ -596,6 +597,8 @@ test("web_engine_unittests") {
 
 test("web_engine_integration_tests") {
   sources = [
+    "test/context_provider_test_connector.cc",
+    "test/context_provider_test_connector.h",
     "test_debug_listener.cc",
     "test_debug_listener.h",
     "web_engine_debug_integration_test.cc",

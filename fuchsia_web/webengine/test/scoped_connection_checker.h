@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_TEST_SCOPED_CONNECTION_CHECKER_H_
-#define FUCHSIA_BASE_TEST_SCOPED_CONNECTION_CHECKER_H_
+#ifndef FUCHSIA_WEB_WEBENGINE_TEST_SCOPED_CONNECTION_CHECKER_H_
+#define FUCHSIA_WEB_WEBENGINE_TEST_SCOPED_CONNECTION_CHECKER_H_
 
 #include <lib/fdio/directory.h>
 #include <lib/vfs/cpp/service.h>
@@ -55,4 +55,4 @@ using NeverConnectedChecker = ScopedConnectionCheckerBase<Service, false>;
 template <typename Service>
 using EnsureConnectedChecker = ScopedConnectionCheckerBase<Service, true>;
 
-#endif  // FUCHSIA_BASE_TEST_SCOPED_CONNECTION_CHECKER_H_
+#endif  // FUCHSIA_WEB_WEBENGINE_TEST_SCOPED_CONNECTION_CHECKER_H_

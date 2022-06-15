@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/test/fake_component_context.h"
+#include "fuchsia_web/runners/cast/fake_component_context.h"
 
 #include <memory>
 #include <string>

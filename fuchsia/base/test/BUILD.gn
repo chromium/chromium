@@ -7,14 +7,9 @@ assert(is_fuchsia)
 source_set("test_support") {
   testonly = true
   sources = [
-    "context_provider_test_connector.cc",
-    "context_provider_test_connector.h",
-    "fake_component_context.cc",
-    "fake_component_context.h",
     "fit_adapter.h",
     "frame_test_util.cc",
     "frame_test_util.h",
-    "scoped_connection_checker.h",
     "test_devtools_list_fetcher.cc",
     "test_devtools_list_fetcher.h",
     "test_navigation_listener.cc",

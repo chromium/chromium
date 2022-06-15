@@ -222,7 +222,11 @@ test("cast_runner_unittests") {
 }
 
 test("cast_runner_integration_tests") {
-  sources = [ "cast/cast_runner_integration_test.cc" ]
+  sources = [
+    "cast/cast_runner_integration_test.cc",
+    "cast/fake_component_context.cc",
+    "cast/fake_component_context.h",
+  ]
   data = [ "cast/testdata" ]
   deps = [
     ":cast_runner_core",
