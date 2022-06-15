@@ -2622,13 +2622,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(1);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InitialForegroundTabChanged DISABLED_InitialForegroundTabChanged
-#else
-#define MAYBE_InitialForegroundTabChanged InitialForegroundTabChanged
-#endif
+// TODO(crbug.com/1336621): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
-                       MAYBE_InitialForegroundTabChanged) {
+                       DISABLED_InitialForegroundTabChanged) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
