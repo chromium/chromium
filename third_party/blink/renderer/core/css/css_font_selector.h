@@ -82,7 +82,6 @@ class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
   void DispatchInvalidationCallbacks(FontInvalidationReason);
 
   // `CSSFontSelectorBase` overrides
-  bool IsAlive() const override;
   FontMatchingMetrics* GetFontMatchingMetrics() const override;
   UseCounter* GetUseCounter() const override;
 

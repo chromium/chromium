@@ -23,10 +23,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
  public:
   enum Phase { kNoLimitExceeded, kShortLimitExceeded, kLongLimitExceeded };
 
-  RemoteFontFaceSource(CSSFontFace*,
-                       FontSelector*,
-                       FontDisplay,
-                       scoped_refptr<base::SingleThreadTaskRunner>);
+  RemoteFontFaceSource(CSSFontFace*, FontSelector*, FontDisplay);
   ~RemoteFontFaceSource() override;
 
   bool IsLoading() const override;
@@ -150,11 +147,6 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   // Our owning font face.
   Member<CSSFontFace> face_;
   Member<FontSelector> font_selector_;
-
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  // Post `BeginLoadIfNeeded()` unless context thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-#endif
 
   // |nullptr| if font is not loaded or failed to decode.
   scoped_refptr<FontCustomPlatformData> custom_font_data_;

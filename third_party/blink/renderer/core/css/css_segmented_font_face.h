@@ -27,10 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SEGMENTED_FONT_FACE_H_
 
 #include "base/callback.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
-#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -38,7 +36,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -54,18 +51,8 @@ class SegmentedFontData;
 // Note however, |Insert| has to be instructed which sub-list to insert it to.
 // Iterating over the combined set, behaves as if all non-CSS-connected
 // FontFaces were stored after the CSS-connected ones.
-class FontFaceList final {
-  DISALLOW_NEW();
-
-  // TODO(yosin): Once Oilpan allowed mixed thread heap, we should make
-  // |FontFaceList| as |HeapLinkedHashSet<T>|.
-  class FontFaceListPart : public LinkedHashSet<Member<FontFace>> {
-   public:
-    void Trace(Visitor* visitor) const {
-      for (auto& entry : *this)
-        visitor->Trace(*entry);
-    }
-  };
+class FontFaceList : public GarbageCollected<FontFaceList> {
+  using FontFaceListPart = HeapLinkedHashSet<Member<FontFace>>;
 
  public:
   bool IsEmpty() const;
@@ -99,13 +86,12 @@ class FontFaceList final {
   FontFaceListPart non_css_connected_face_;
 };
 
-// TODO(yosin): Once Oilpan allowed mixed thread heap, we should make
-// |CSSSegmentedFontFace| as |GarbageCollected<T>|.
-class CORE_EXPORT CSSSegmentedFontFace final
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<
-          CSSSegmentedFontFace> {
+class CSSSegmentedFontFace final
+    : public GarbageCollected<CSSSegmentedFontFace> {
  public:
-  static scoped_refptr<CSSSegmentedFontFace> Create(FontSelectionCapabilities);
+  static CSSSegmentedFontFace* Create(FontSelectionCapabilities);
+
+  explicit CSSSegmentedFontFace(FontSelectionCapabilities);
   ~CSSSegmentedFontFace();
 
   FontSelectionCapabilities GetFontSelectionCapabilities() const {
@@ -114,25 +100,18 @@ class CORE_EXPORT CSSSegmentedFontFace final
 
   // Called when status of a FontFace has changed (e.g. loaded or timed out)
   // so cached FontData must be discarded.
-  void FontFaceInvalidated() LOCKS_EXCLUDED(lock_);
+  void FontFaceInvalidated();
 
-  void AddFontFace(FontFace*, bool css_connected) LOCKS_EXCLUDED(lock_);
-  void RemoveFontFace(FontFace*) LOCKS_EXCLUDED(lock_);
-  bool IsEmpty() const LOCKS_EXCLUDED(lock_) {
-    AutoLockForParallelTextShaping guard(lock_);
-    return font_faces_.IsEmpty();
-  }
+  void AddFontFace(FontFace*, bool css_connected);
+  void RemoveFontFace(FontFace*);
+  bool IsEmpty() const { return font_faces_->IsEmpty(); }
 
-  scoped_refptr<FontData> GetFontData(const FontDescription&)
-      LOCKS_EXCLUDED(lock_);
+  scoped_refptr<FontData> GetFontData(const FontDescription&);
 
-  bool CheckFont(const String&) const LOCKS_EXCLUDED(lock_);
-  void Match(const String&, HeapVector<Member<FontFace>>*) const
-      LOCKS_EXCLUDED(lock_);
-  void WillUseFontData(const FontDescription&, const StringView& text)
-      LOCKS_EXCLUDED(lock_);
-  void WillUseRange(const FontDescription&, const blink::FontDataForRangeSet&)
-      LOCKS_EXCLUDED(lock_);
+  bool CheckFont(const String&) const;
+  void Match(const String&, HeapVector<Member<FontFace>>*) const;
+  void WillUseFontData(const FontDescription&, const String& text);
+  void WillUseRange(const FontDescription&, const blink::FontDataForRangeSet&);
   size_t ApproximateCharacterCount() const {
     return approximate_character_count_;
   }
@@ -140,19 +119,16 @@ class CORE_EXPORT CSSSegmentedFontFace final
   void Trace(Visitor*) const;
 
  private:
-  explicit CSSSegmentedFontFace(FontSelectionCapabilities);
-
-  void PruneTable() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  bool IsValid() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void PruneTable();
+  bool IsValid() const;
 
   FontSelectionCapabilities font_selection_capabilities_;
 
-  mutable LockForParallelTextShaping lock_;
-  WTF::LruCache<FontCacheKey, scoped_refptr<SegmentedFontData>> font_data_table_
-      GUARDED_BY(lock_);
+  WTF::LruCache<FontCacheKey, scoped_refptr<SegmentedFontData>>
+      font_data_table_;
 
   // All non-CSS-connected FontFaces are stored after the CSS-connected ones.
-  FontFaceList font_faces_ GUARDED_BY(lock_);
+  Member<FontFaceList> font_faces_;
 
   // Approximate number of characters styled with this CSSSegmentedFontFace.
   // LayoutText::StyleDidChange() increments this on the first

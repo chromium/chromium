@@ -343,10 +343,10 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   // There's only one font and it's bold and normal.
   EXPECT_EQ(1u, GetStyleEngine().GetFontSelector()->GetFontFaceCache()
                 ->GetNumSegmentedFacesForTesting());
-  scoped_refptr<CSSSegmentedFontFace> font_face =
-      GetStyleEngine().GetFontSelector()->GetFontFaceCache()->Get(
-          t4->GetComputedStyle()->GetFontDescription(),
-          AtomicString("Cool Font"));
+  CSSSegmentedFontFace* font_face =
+      GetStyleEngine().GetFontSelector()->GetFontFaceCache()
+      ->Get(t4->GetComputedStyle()->GetFontDescription(),
+            AtomicString("Cool Font"));
   EXPECT_TRUE(font_face);
   FontSelectionCapabilities capabilities =
       font_face->GetFontSelectionCapabilities();

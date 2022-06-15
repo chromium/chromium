@@ -40,11 +40,7 @@
 namespace blink {
 
 CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
-    : CSSFontSelectorBase(
-          tree_scope.GetDocument().GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalDefault)),
-      tree_scope_(&tree_scope) {
-  DCHECK(tree_scope.GetDocument().GetExecutionContext()->IsContextThread());
+    : tree_scope_(&tree_scope) {
   DCHECK(tree_scope.GetDocument().GetFrame());
   generic_font_family_settings_ = tree_scope.GetDocument()
                                       .GetFrame()
@@ -61,8 +57,7 @@ CSSFontSelector::CSSFontSelector(const TreeScope& tree_scope)
 CSSFontSelector::~CSSFontSelector() = default;
 
 UseCounter* CSSFontSelector::GetUseCounter() const {
-  auto* const context = GetExecutionContext();
-  return context && context->IsContextThread() ? context : nullptr;
+  return GetExecutionContext();
 }
 
 void CSSFontSelector::RegisterForInvalidationCallbacks(
@@ -129,7 +124,8 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   }
 
   if (!font_family.FamilyIsGeneric()) {
-    if (auto face = font_face_cache_->Get(request_description, family_name)) {
+    if (CSSSegmentedFontFace* face =
+            font_face_cache_->Get(request_description, family_name)) {
       ReportWebFontFamily(family_name);
       return face->GetFontData(request_description);
     }
@@ -152,7 +148,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
       FontCache::Get().GetFontData(request_description, settings_family_name);
 
   ReportFontLookupByUniqueOrFamilyName(settings_family_name,
-                                       request_description, font_data);
+                                       request_description, font_data.get());
 
   return font_data;
 }
@@ -167,10 +163,6 @@ void CSSFontSelector::UpdateGenericFontFamilySettings(Document& document) {
 
 FontMatchingMetrics* CSSFontSelector::GetFontMatchingMetrics() const {
   return GetDocument().GetFontMatchingMetrics();
-}
-
-bool CSSFontSelector::IsAlive() const {
-  return tree_scope_;
 }
 
 void CSSFontSelector::Trace(Visitor* visitor) const {

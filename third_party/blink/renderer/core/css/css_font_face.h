@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_source.h"
-#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -49,17 +48,16 @@ class SimpleFontData;
 
 class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
  public:
-  CSSFontFace(FontFace* font_face, Vector<UnicodeRange>& ranges);
+  CSSFontFace(FontFace* font_face, Vector<UnicodeRange>& ranges)
+      : ranges_(base::AdoptRef(new UnicodeRangeSet(ranges))),
+        font_face_(font_face) {
+    DCHECK(font_face_);
+  }
   CSSFontFace(const CSSFontFace&) = delete;
   CSSFontFace& operator=(const CSSFontFace&) = delete;
 
   // Front source is the first successfully loaded source.
-  const CSSFontFaceSource* FrontSource() const LOCKS_EXCLUDED(sources_lock_) {
-    AutoLockForParallelTextShaping guard(sources_lock_);
-    return sources_.IsEmpty() ? nullptr : sources_.front();
-  }
-  CSSFontFaceSource* FrontSource() LOCKS_EXCLUDED(sources_lock_) {
-    AutoLockForParallelTextShaping guard(sources_lock_);
+  const CSSFontFaceSource* FrontSource() const {
     return sources_.IsEmpty() ? nullptr : sources_.front();
   }
   FontFace* GetFontFace() const { return font_face_; }
@@ -69,57 +67,42 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   void AddSegmentedFontFace(CSSSegmentedFontFace*);
   void RemoveSegmentedFontFace(CSSSegmentedFontFace*);
 
-  bool IsValid() const { return FrontSource(); }
+  bool IsValid() const { return !sources_.IsEmpty(); }
   size_t ApproximateBlankCharacterCount() const;
 
-  void AddSource(CSSFontFaceSource*) LOCKS_EXCLUDED(sources_lock_);
+  void AddSource(CSSFontFaceSource*);
   void SetDisplay(FontDisplay);
 
   void DidBeginLoad();
   bool FontLoaded(CSSFontFaceSource*);
   bool FallbackVisibilityChanged(RemoteFontFaceSource*);
 
-  scoped_refptr<SimpleFontData> GetFontData(const FontDescription&)
-      LOCKS_EXCLUDED(sources_lock_);
+  scoped_refptr<SimpleFontData> GetFontData(const FontDescription&);
 
   FontFace::LoadStatusType LoadStatus() const {
     return font_face_->LoadStatus();
   }
-  bool MaybeLoadFont(const FontDescription&, const StringView&);
+  bool MaybeLoadFont(const FontDescription&, const String&);
   bool MaybeLoadFont(const FontDescription&, const FontDataForRangeSet&);
   void Load();
+  void Load(const FontDescription&);
 
   // Recalculate the font loading timeline period for the font face.
   // https://drafts.csswg.org/css-fonts-4/#font-display-timeline
   // Returns true if the display period is changed.
   bool UpdatePeriod();
 
-  bool HadBlankText() {
-    if (auto* source = FrontSource())
-      return source->HadBlankText();
-    return false;
-  }
+  bool HadBlankText() { return IsValid() && sources_.front()->HadBlankText(); }
 
   void Trace(Visitor*) const;
 
  private:
-  HeapVector<Member<CSSFontFaceSource>> GetSources() const
-      LOCKS_EXCLUDED(sources_lock_);
-  bool IsContextThread() const;
-  void LoadInternal(const FontDescription&) LOCKS_EXCLUDED(sources_lock_);
   void SetLoadStatus(FontFace::LoadStatusType);
-  void UpdateLoadStatusForActiveSource(CSSFontFaceSource*);
-  void UpdateLoadStatusForNoSource();
 
   scoped_refptr<UnicodeRangeSet> ranges_;
-  HashSet<scoped_refptr<CSSSegmentedFontFace>> segmented_font_faces_;
-  mutable LockForParallelTextShaping sources_lock_;
-  HeapDeque<Member<CSSFontFaceSource>> sources_ GUARDED_BY(sources_lock_);
-  const Member<FontFace> font_face_;
-#if defined(USE_PARALLEL_TEXT_SHAPING)
-  scoped_refptr<base::SequencedTaskRunner> GetCrossThreadTaskRunner() const;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-#endif
+  HeapHashSet<Member<CSSSegmentedFontFace>> segmented_font_faces_;
+  HeapDeque<Member<CSSFontFaceSource>> sources_;
+  Member<FontFace> font_face_;
 };
 
 }  // namespace blink
