@@ -81,7 +81,6 @@ class WorkerFetchContext final : public BaseFetchContext {
   void AddAdditionalRequestHeaders(ResourceRequest&) override;
   void AddResourceTiming(const ResourceTimingInfo&) override;
   void PopulateResourceRequest(ResourceType,
-                               const ClientHintsPreferences&,
                                const FetchParameters::ResourceWidth&,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;

@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class ClientHintsPreferences;
 class ConsoleMessage;
 class DOMWrapperWorld;
 class DetachableResourceFetcherProperties;

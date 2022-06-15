@@ -53,7 +53,6 @@ void FetchContext::AddResourceTiming(const ResourceTimingInfo&) {}
 
 void FetchContext::PopulateResourceRequest(
     ResourceType,
-    const ClientHintsPreferences&,
     const FetchParameters::ResourceWidth&,
     ResourceRequest&,
     const ResourceLoaderOptions&) {}

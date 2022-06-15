@@ -52,7 +52,6 @@
 namespace blink {
 
 enum class ResourceType : uint8_t;
-class ClientHintsPreferences;
 class PermissionsPolicy;
 class KURL;
 struct ResourceLoaderOptions;
@@ -142,7 +141,6 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // stored in the FetchContext implementation. Used by ResourceFetcher to
   // prepare a ResourceRequest instance at the start of resource loading.
   virtual void PopulateResourceRequest(ResourceType,
-                                       const ClientHintsPreferences&,
                                        const FetchParameters::ResourceWidth&,
                                        ResourceRequest&,
                                        const ResourceLoaderOptions&);

@@ -555,7 +555,6 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
                     const char* header_value,
                     float width = 0) {
     SCOPED_TRACE(testing::Message() << header_name);
-    ClientHintsPreferences hints_preferences;
 
     FetchParameters::ResourceWidth resource_width;
     if (width > 0) {
@@ -566,20 +565,19 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
 
-    GetFetchContext()->AddClientHintsIfNecessary(
-        hints_preferences, resource_width, resource_request);
+    GetFetchContext()->AddClientHintsIfNecessary(resource_width,
+                                                 resource_request);
 
     EXPECT_EQ(is_present ? String(header_value) : String(),
               resource_request.HttpHeaderField(header_name));
   }
 
   String GetHeaderValue(const char* input, const char* header_name) {
-    ClientHintsPreferences hints_preferences;
     FetchParameters::ResourceWidth resource_width;
     const KURL input_url(input);
     ResourceRequest resource_request(input_url);
-    GetFetchContext()->AddClientHintsIfNecessary(
-        hints_preferences, resource_width, resource_request);
+    GetFetchContext()->AddClientHintsIfNecessary(resource_width,
+                                                 resource_request);
     return resource_request.HttpHeaderField(header_name);
   }
 
@@ -1353,24 +1351,6 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
   const KURL url("https://www.example.com/");
   ResourceRequest request(url);
 
-  ClientHintsPreferences client_hints_preferences;
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDeviceMemory);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDpr_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kDpr);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED);
-  client_hints_preferences.SetShouldSend(
-      network::mojom::WebClientHintsType::kViewportWidth);
-
   FetchParameters::ResourceWidth resource_width;
   ResourceLoaderOptions options(nullptr /* world */);
 
@@ -1393,9 +1373,8 @@ TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw,
-                                             client_hints_preferences,
-                                             resource_width, request, options);
+  GetFetchContext()->PopulateResourceRequest(ResourceType::kRaw, resource_width,
+                                             request, options);
   // Should not crash.
 }
 

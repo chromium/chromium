@@ -30,7 +30,6 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
@@ -130,10 +129,6 @@ class PLATFORM_EXPORT FetchParameters {
   ResourceWidth GetResourceWidth() const { return resource_width_; }
   void SetResourceWidth(ResourceWidth);
 
-  ClientHintsPreferences& GetClientHintsPreferences() {
-    return client_hint_preferences_;
-  }
-
   bool IsSpeculativePreload() const {
     return speculative_preload_type_ != SpeculativePreloadType::kNotSpeculative;
   }
@@ -232,7 +227,6 @@ class PLATFORM_EXPORT FetchParameters {
   SpeculativePreloadType speculative_preload_type_;
   DeferOption defer_;
   ResourceWidth resource_width_;
-  ClientHintsPreferences client_hint_preferences_;
   ImageRequestBehavior image_request_behavior_;
   mojom::blink::ScriptType script_type_ = mojom::blink::ScriptType::kClassic;
   bool is_stale_revalidation_ = false;

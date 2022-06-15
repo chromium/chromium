@@ -233,7 +233,6 @@ void WorkerFetchContext::AddResourceTiming(const ResourceTimingInfo& info) {
 
 void WorkerFetchContext::PopulateResourceRequest(
     ResourceType type,
-    const ClientHintsPreferences& hints_preferences,
     const FetchParameters::ResourceWidth& resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
