@@ -267,9 +267,6 @@ config("compiler") {
     configs += [ "//build/config/android:compiler" ]
   } else if (is_linux || is_chromeos) {
     configs += [ "//build/config/linux:compiler" ]
-    if (is_chromeos) {
-      configs += [ "//build/config/chromeos:compiler" ]
-    }
   } else if (is_nacl) {
     configs += [ "//build/config/nacl:compiler" ]
   } else if (is_mac) {
@@ -889,6 +886,11 @@ config("compiler_cpu_abi") {
   cflags = []
   ldflags = []
   defines = []
+
+  configs = []
+  if (is_chromeos) {
+    configs += [ "//build/config/chromeos:compiler_cpu_abi" ]
+  }
 
   if ((is_posix && !is_apple) || is_fuchsia) {
     # CPU architecture. We may or may not be doing a cross compile now, so for

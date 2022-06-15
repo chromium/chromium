@@ -21,7 +21,7 @@ config("print_orderfile") {
   }
 }
 
-config("compiler") {
+config("compiler_cpu_abi") {
   # Lacros currently uses the *-generic-crosstoolchain.gni files generated
   # by the simplechrome sdk in build/args/chromeos. These target triples
   # match the target toolchain defaults in these directories. Passing them
