@@ -237146,6 +237146,45 @@
       }
      },
      "popups": {
+      "popup-animated-hide-display.tentative.html": [
+       "410639e67152c895d2ad09bcef33224333a8ce08",
+       [
+        null,
+        [
+         [
+          "/html/semantics/popups/popup-animated-display-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "popup-animated-hide-finishes.tentative.html": [
+       "88e37cb4e3bd7d18fb983c1c04d012ec9f6fde98",
+       [
+        null,
+        [
+         [
+          "/html/semantics/popups/popup-animated-hide-finishes-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "popup-animated-show-display.tentative.html": [
+       "deb7550926422983b684b01609c4e68a67a08b97",
+       [
+        null,
+        [
+         [
+          "/html/semantics/popups/popup-animated-display-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "popup-backdrop-appearance.tentative.html": [
        "0b348f85d0103c36ea71e6c7f420df3709c0bb9b",
        [
@@ -313274,6 +313313,14 @@
       }
      },
      "popups": {
+      "popup-animated-display-ref.tentative.html": [
+       "77f15441ae95dfd719065d47499866e68fa540e7",
+       []
+      ],
+      "popup-animated-hide-finishes-ref.tentative.html": [
+       "d8334f985ed51f3277d069838132876d8aad2ffc",
+       []
+      ],
       "popup-backdrop-appearance-ref.tentative.html": [
        "0327f3886fbceec18f21e2146a91a59053bfc954",
        []
@@ -379324,34 +379371,6 @@
         {}
        ]
       ],
-      "grid-template-columns-neutral-keyframe-001.html": [
-       "070539e2c0eda9cbc8585f8bd1fc4217485d97e4",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-columns-neutral-keyframe-002.html": [
-       "6cd163711ee599366280b352dcb808e83ea2899f",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-columns-neutral-keyframe-003.html": [
-       "80187cf68487bf3af4d39a0799b30886600e61f3",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-columns-neutral-keyframe-004.html": [
-       "a207aa713c971cda94052dc8abf810f1e1cb29fd",
-       [
-        null,
-        {}
-       ]
-      ],
       "grid-template-rows-composition.html": [
        "42f9c92e9ad6d2042553e7e4b440adeeddf09bab",
        [
@@ -379361,34 +379380,6 @@
       ],
       "grid-template-rows-interpolation.html": [
        "f749cbd832b0014cc5ec42e3df0066dbfc891a29",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-rows-neutral-keyframe-001.html": [
-       "ecbe0481eded5ede38ab482b9175555258f82861",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-rows-neutral-keyframe-002.html": [
-       "f63d45b4a71929ae703bd1dc51b875c0c843b12e",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-rows-neutral-keyframe-003.html": [
-       "5ffd67528ca91f27ae801fe8930745a27c61df0b",
-       [
-        null,
-        {}
-       ]
-      ],
-      "grid-template-rows-neutral-keyframe-004.html": [
-       "941e843624837b16506b9900cc0736f3ca8a5a5f",
        [
         null,
         {}
@@ -427799,6 +427790,69 @@
         }
        ]
       ],
+      "response-stream-bad-chunk.any.js": [
+       "d3d92e16772d10a8c91ee42d4c6bcaf0d4cc4fa0",
+       [
+        "fetch/api/response/response-stream-bad-chunk.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response causes TypeError from bad chunk type"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-bad-chunk.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response causes TypeError from bad chunk type"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-bad-chunk.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response causes TypeError from bad chunk type"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-stream-bad-chunk.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response causes TypeError from bad chunk type"
+          ]
+         ]
+        }
+       ]
+      ],
       "response-stream-disturbed-1.any.js": [
        "64f65f16f23e7d797451c634a2f472a51d6955c0",
        [
@@ -473840,6 +473894,15 @@
       ],
       "popup-anchor-nesting.tentative.html": [
        "ee903c48ed08e65a8a4c5b7ba7119bfa92f7e50e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "popup-animated-hide-cleanup.tentative.html": [
+       "762458ea669dda88b9f725c7d4dabf8179cf2b44",
        [
         null,
         {
@@ -545521,15 +545584,6 @@
       }
      ]
     ],
-    "createcredential-badargs-attestation.https.html": [
-     "1bdebbbf2b286f69eecd0774ac9bdfb96c20a50b",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "createcredential-badargs-authnrselection.https.html": [
      "85b0f9053866a878185b0a2aaf6bab068bd65b86",
      [
@@ -545631,7 +545685,7 @@
      ]
     ],
     "createcredential-passing.https.html": [
-     "2d8fb14fc796991291fd68d862f2aad9299d1646",
+     "2c744b25585552188253720882e919718ac5c1a3",
      [
       null,
       {
