@@ -184,7 +184,11 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testReceiveNewTilesWithDataChanges() {
+    @DisabledTest(
+            message =
+                    "https://crbug.com/1330627, https://crbug.com/1293208, https://crbug.com/1336742")
+    public void
+    testReceiveNewTilesWithDataChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
 
         // Notify the about different URLs, but the same number. #onTileCountChanged() should not be
