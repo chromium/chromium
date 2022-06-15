@@ -101,4 +101,6 @@
   START_STREAMING: 'start_streaming',
   // Message for stream action
   STREAM_ACTION: 'stream_action',
+  // Message for virtual keyboard state
+  IS_VIRTUAL_KEYBOARD_ENABLED: 'is_virtual_keyboard_enabled',
 };

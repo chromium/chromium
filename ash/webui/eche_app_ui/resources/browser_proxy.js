@@ -199,3 +199,17 @@ displayStreamHandler.setStreamActionObserver(
  }
 
 window.onhashchange = locationHashChanged;
+
+if ('virtualKeyboard' in navigator) {
+  navigator['virtualKeyboard'].overlaysContent = true;
+  navigator['virtualKeyboard'].addEventListener('geometrychange', (event) => {
+    const {x, y, width, height} = event.target['boundingRect'];
+    console.log('Virtual keyboard geometry:', x, y, width, height);
+    const isVirtualKeyboardEnabled = width > 0 && height > 0;
+    guestMessagePipe.sendMessage(
+        Message.IS_VIRTUAL_KEYBOARD_ENABLED,
+        {/** @type {boolean} */ isVirtualKeyboardEnabled});
+  });
+} else {
+  console.log('virtual keyboard is not supported!');
+}
