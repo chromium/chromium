@@ -1270,7 +1270,7 @@ void LayoutObject::SetNeedsCollectInlines() {
     return;
 
   if (UNLIKELY(IsSVGChild() && !IsNGSVGText() && !IsSVGInline() &&
-               !IsSVGInlineText()))
+               !IsSVGInlineText() && !IsNGSVGForeignObject()))
     return;
 
   // Don't mark |LayoutFlowThread| because |CollectInlines()| skips them.
