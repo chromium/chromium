@@ -22,6 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DnsExperimentalRecordExpectation">
+  <variant name="ExpectIntact" summary="Experimental record should exist."/>
+  <variant name="ExpectNoerror"
+      summary="Experimental record does not exist, RCODE should be NOERROR."/>
+</variants>
+
+<variants name="DnsExperimentalRecordTypes">
+  <variant name="RecordHttps" summary="HTTPS record."/>
+  <variant name="RecordIntegrity" summary="HTTPS record."/>
+</variants>
+
+<variants name="DnsOverHttpsSecure">
+  <variant name="Insecure" summary="DoH is not enabled"/>
+  <variant name="Secure" summary="DoH is enabled"/>
+</variants>
+
 <variants name="URLLoaderThrottleStages">
   <variant name="BeforeWillProcessResponse"/>
   <variant name="WillOnCompleteWithError"/>
@@ -869,128 +885,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2022-10-30">
+<histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.{expectation}.Parsable"
+    enum="BooleanValid" expires_after="2022-12-01">
   <owner>ericorth@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
     Indicates whether the result of an HTTPS query was validly parsable or
     mangled. Only recorded when DnsRcode indicates NoError. Histograms are
     emitted at the completion of a DnsTask's final transaction.
   </summary>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
+  <token key="expectation" variants="DnsExperimentalRecordExpectation"/>
 </histogram>
 
 <histogram
-    name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.RecordWithError"
-    enum="Boolean" expires_after="2022-08-14">
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
-  <summary>
-    Records true when we receive an HTTPS record and an error RCODE at the same
-    time. Only recorded for true. Histograms are emitted at the completion of a
-    DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Net.DNS.HTTPSSVC.RecordHttps.DnsRcode"
-    enum="HttpssvcDnsRcode" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-  name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
-  <summary>
-    Records which RCODE the DNS server specified when it responded to our HTTPS
-    query. If the query timed out before getting a response,
-    &quot;TimedOut&quot; is recorded instead of an RCODE value. Histograms are
-    emitted at the completion of a DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"
-    enum="BooleanValid" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-  name="DohProviderId" -->
-
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
-  <summary>
-    Indicates whether the result of an HTTPS query was validly parsable or
-    mangled. Only recorded when DnsRcode indicates NoError. Histograms are
-    emitted at the completion of a DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"
-    units="records" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-  name="DohProviderId" -->
-
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
-  <summary>
-    Records a sample of one when we receive an HTTPS record and an error RCODE
-    at the same time. Histograms are emitted at the completion of a DnsTask's
-    final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeHttpsRecord" units="ms"
-    expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-  name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
-  <summary>
-    Records how many ms the DNS server took to respond to an HTTPS query.
-    Histograms are emitted at the completion of a DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeRatio"
-    units="scaled ratio (% / 10)" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-  name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
-  <summary>
-    Records a ratio indicating the relative HTTPS resolve time compared to the
-    slower A or AAAA resolve time, where A/AAAA/HTTPS belong to the same
-    DnsTask. Multiply this value by 10 to obtain a percentage P. The HTTPS query
-    completed in roughly P% of the slower A/AAAA resolve time. Values smaller
-    than 10 indicate that HTTPS query was faster than A/AAAA. Values larger than
-    10 indicate that the HTTPS query was slower than A/AAAA. Histograms are
-    emitted at the completion of a DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"
-    enum="HttpssvcDnsRcode" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
-  <owner>dmcardle@chromium.org</owner>
-  <owner>ericorth@chromium.org</owner>
-  <summary>
-    Records which RCODE the DNS server specified when it responded to our
-    INTEGRITY query. If the query timed out before getting a response,
-    &quot;TimedOut&quot; is recorded instead of an RCODE value. Histograms are
-    emitted at the completion of a DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.Integrity"
-    enum="HttpssvcIntegrityJudgment" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" -->
-
+    name="Net.DNS.HTTPSSVC.RecordIntegrity.{secure}.ExpectIntact.Integrity"
+    enum="HttpssvcIntegrityJudgment" expires_after="2022-12-01">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -998,29 +909,12 @@ chromium-metrics-reviews@google.com.
     mangled (false). Only recorded when DnsRcode indicates NoError. Histograms
     are emitted at the completion of a DnsTask's final transaction.
   </summary>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
 </histogram>
 
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.RecordWithError"
-    units="records" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" -->
-
-  <owner>dmcardle@chromium.org</owner>
-  <owner>ericorth@chromium.org</owner>
-  <summary>
-    Records a sample of one when we receive an INTEGRITY record and an error
-    RCODE at the same time. Histograms are emitted at the completion of a
-    DnsTask's final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.RecordReceived"
-    units="records" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" -->
-
+<histogram
+    name="Net.DNS.HTTPSSVC.RecordIntegrity.{secure}.ExpectNoerror.RecordReceived"
+    units="records" expires_after="2022-12-01">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -1029,53 +923,90 @@ chromium-metrics-reviews@google.com.
     the response would be a surprise! Histograms are emitted at the completion
     of a DnsTask's final transaction.
   </summary>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
 </histogram>
 
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeIntegrityRecord"
-    units="ms" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
+<histogram name="Net.DNS.HTTPSSVC.{recordType}.{secure}.{expectation}.DnsRcode"
+    enum="HttpssvcDnsRcode" expires_after="2022-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records which RCODE the DNS server specified when it responded to our
+    experimental query. If the query timed out before getting a response,
+    &quot;TimedOut&quot; is recorded instead of an RCODE value. Histograms are
+    emitted at the completion of a DnsTask's final transaction.
+  </summary>
+  <token key="recordType" variants="DnsExperimentalRecordTypes"/>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
+  <token key="expectation" variants="DnsExperimentalRecordExpectation"/>
+</histogram>
+
+<histogram
+    name="Net.DNS.HTTPSSVC.{recordType}.{secure}.{expectation}.RecordWithError"
+    enum="Boolean" expires_after="2022-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records true when we receive an experimental record and an error RCODE at
+    the same time. Only recorded for true. Histograms are emitted at the
+    completion of a DnsTask's final transaction.
+  </summary>
+  <token key="recordType" variants="DnsExperimentalRecordTypes"/>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
+  <token key="expectation" variants="DnsExperimentalRecordExpectation"/>
+</histogram>
+
+<histogram
+    name="Net.DNS.HTTPSSVC.{recordType}.{secure}.{expectation}.ResolveTimeAddressRecord"
+    units="ms" expires_after="2022-12-01">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
-    Records how many ms the DNS server took to respond to an INTEGRITY query.
+    Records how many ms the DNS server took to respond to address queries.
     Histograms are emitted at the completion of a DnsTask's final transaction.
   </summary>
+  <token key="recordType" variants="DnsExperimentalRecordTypes"/>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
+  <token key="expectation" variants="DnsExperimentalRecordExpectation"/>
 </histogram>
 
-<histogram base="true"
-    name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeNonIntegrityRecord"
-    units="ms" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
-  <owner>dmcardle@chromium.org</owner>
+<histogram
+    name="Net.DNS.HTTPSSVC.{recordType}.{secure}.{expectation}.ResolveTimeExperimental"
+    units="ms" expires_after="2022-12-01">
   <owner>ericorth@chromium.org</owner>
-  <summary>
-    Records how many ms the DNS server took to respond to any query other than
-    an INTEGRITY query. Histograms are emitted at the completion of a DnsTask's
-    final transaction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeRatio"
-    units="%" expires_after="2022-08-14">
-<!-- Name completed by histogram_suffixes
-   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
-
+  <owner>davidben@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
-  <owner>ericorth@chromium.org</owner>
   <summary>
-    Records a ratio indicating the relative INTEGRITY resolve time compared to
-    the slower A or AAAA resolve time, where A/AAAA/INTEGRITY belong to the same
-    DnsTask. Multiply this value by 10 to obtain a percentage P. The INTEGRITY
-    query completed in roughly P% of the slower A/AAAA resolve time. Values
-    smaller than 10 indicate that INTEGRITY query was faster than A/AAAA. Values
-    larger than 10 indicate that the INTEGRITY query was slower than A/AAAA.
+    Records how many ms the DNS server took to respond to an experimental query.
     Histograms are emitted at the completion of a DnsTask's final transaction.
   </summary>
+  <token key="recordType" variants="DnsExperimentalRecordTypes"/>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
+  <token key="expectation" variants="DnsExperimentalRecordExpectation"/>
+</histogram>
+
+<histogram
+    name="Net.DNS.HTTPSSVC.{recordType}.{secure}.{expectation}.ResolveTimeRatio"
+    units="scaled ratio (% / 10)" expires_after="2022-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records a ratio indicating the relative experimental query resolve time
+    compared to the slower A or AAAA resolve time, where A/AAAA/experimental
+    belong to the same DnsTask. Multiply this value by 10 to obtain a percentage
+    P. The experimental query completed in roughly P% of the slower A/AAAA
+    resolve time. Values smaller than 10 indicate that experimental query was
+    faster than A/AAAA. Values larger than 10 indicate that the experimental
+    query was slower than A/AAAA. Histograms are emitted at the completion of a
+    DnsTask's final transaction.
+  </summary>
+  <token key="recordType" variants="DnsExperimentalRecordTypes"/>
+  <token key="secure" variants="DnsOverHttpsSecure"/>
+  <token key="expectation" variants="DnsExperimentalRecordExpectation"/>
 </histogram>
 
 <histogram name="Net.DNS.InsecureDnsTask.FailureTime" units="ms"

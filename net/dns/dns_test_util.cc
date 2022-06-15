@@ -544,30 +544,28 @@ class MockDnsTransactionFactory::MockTransaction
       case MockDnsClientRule::ResultType::kFail: {
         int error = result_.net_error.value_or(ERR_NAME_NOT_RESOLVED);
         DCHECK_NE(error, OK);
-        std::move(callback_).Run(
-            error, base::OptionalOrNullptr(result_.response), absl::nullopt);
+        std::move(callback_).Run(error,
+                                 base::OptionalOrNullptr(result_.response));
         break;
       }
       case MockDnsClientRule::ResultType::kEmpty:
       case MockDnsClientRule::ResultType::kOk:
       case MockDnsClientRule::ResultType::kMalformed:
         DCHECK(!result_.net_error.has_value());
-        std::move(callback_).Run(OK, base::OptionalOrNullptr(result_.response),
-                                 absl::nullopt);
+        std::move(callback_).Run(OK, base::OptionalOrNullptr(result_.response));
         break;
       case MockDnsClientRule::ResultType::kTimeout:
         DCHECK(!result_.net_error.has_value());
-        std::move(callback_).Run(ERR_DNS_TIMED_OUT, nullptr, absl::nullopt);
+        std::move(callback_).Run(ERR_DNS_TIMED_OUT, /*response=*/nullptr);
         break;
       case MockDnsClientRule::ResultType::kSlow:
         if (result_.response) {
           std::move(callback_).Run(
               result_.net_error.value_or(OK),
-              result_.response ? &result_.response.value() : nullptr,
-              absl::nullopt);
+              result_.response ? &result_.response.value() : nullptr);
         } else {
           DCHECK(!result_.net_error.has_value());
-          std::move(callback_).Run(ERR_DNS_TIMED_OUT, nullptr, absl::nullopt);
+          std::move(callback_).Run(ERR_DNS_TIMED_OUT, /*response=*/nullptr);
         }
         break;
       case MockDnsClientRule::ResultType::kUnexpected:
