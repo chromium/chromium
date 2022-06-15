@@ -145,10 +145,17 @@ int CalculateScoreFromFactors(size_t typed_length,
   DCHECK_GT(typed_length, 0u);
   DCHECK_LE(typed_length, shortcut_text_length);
   // The initial score is based on how much of the shortcut the user has typed.
-  // `shortcut.text` may be up to 3 chars longer than previous inputs navigating
-  // to the shortcut (see `ShortcutsBackend::AddOrUpdateShortcut`).
+  // Due to appending 3 chars when updating shortcuts, and expanding the last
+  // word when updating or creating shortcuts, the shortcut text can be longer
+  // than the user's previous inputs (see
+  // `ShortcutsBackend::AddOrUpdateShortcut()`). As an approximation, ignore the
+  // 10 chars in the shortcut text, though this can overestimate or
+  // underestimate the actual previous inputs. Shortcuts are often deduped with
+  // higher scoring history suggestions anyway.
+  const size_t adjustment =
+      OmniboxFieldTrial::IsShortcutExpandingEnabled() ? 10 : 3;
   const size_t adjusted_text_length =
-      std::max(shortcut_text_length, typed_length + 3) - 3;
+      std::max(shortcut_text_length, typed_length + adjustment) - adjustment;
   const double typed_fraction =
       static_cast<double>(typed_length) / adjusted_text_length;
 

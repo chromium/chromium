@@ -53,8 +53,7 @@ void InitializeBucketsFromString(const std::string& bucket_string,
       base::StringToInt(it->second, &bucket.second);
       score_buckets->buckets().push_back(bucket);
     }
-    std::sort(score_buckets->buckets().begin(),
-              score_buckets->buckets().end(),
+    std::sort(score_buckets->buckets().begin(), score_buckets->buckets().end(),
               std::greater<ScoreBuckets::CountMaxRelevance>());
   }
 }
@@ -159,16 +158,12 @@ std::string GetValueForRuleInContextFromVariationParams(
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
-    : relevance_cap_(-1),
-      half_life_days_(-1),
-      use_decay_factor_(false) {
-}
+    : relevance_cap_(-1), half_life_days_(-1), use_decay_factor_(false) {}
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets(const ScoreBuckets& other) =
     default;
 
-HUPScoringParams::ScoreBuckets::~ScoreBuckets() {
-}
+HUPScoringParams::ScoreBuckets::~ScoreBuckets() {}
 
 size_t HUPScoringParams::ScoreBuckets::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(buckets_);
@@ -197,8 +192,7 @@ size_t HUPScoringParams::EstimateMemoryUsage() const {
 
 int OmniboxFieldTrial::GetDisabledProviderTypes() {
   const std::string& types_string = variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kDisableProvidersRule);
+      kBundledExperimentFieldTrialName, kDisableProvidersRule);
   int types = 0;
   if (types_string.empty() || !base::StringToInt(types_string, &types)) {
     return 0;
@@ -300,8 +294,8 @@ void OmniboxFieldTrial::GetDemotionsByType(
     // score above 850 ( 1400 * 0.61 > 850).  850 is the maximum score for
     // queries when the input has been detected as URL-seeking.
 #if BUILDFLAG(IS_ANDROID)
-    if (current_page_classification == OmniboxEventProto::
-        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT)
+    if (current_page_classification ==
+        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT)
       demotion_rule = "1:61,2:61,3:61,4:61,16:61,24:61";
 #endif
     if (current_page_classification ==
@@ -425,9 +419,8 @@ void OmniboxFieldTrial::GetExperimentalHUPScoringParams(
 }
 
 float OmniboxFieldTrial::HQPBookmarkValue() {
-  std::string bookmark_value_str =
-      variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
-                                         kHQPBookmarkValueRule);
+  std::string bookmark_value_str = variations::GetVariationParamValue(
+      kBundledExperimentFieldTrialName, kHQPBookmarkValueRule);
   if (bookmark_value_str.empty())
     return 10;
   // This is a best-effort conversion; we trust the hand-crafted parameters
@@ -439,26 +432,25 @@ float OmniboxFieldTrial::HQPBookmarkValue() {
 }
 
 bool OmniboxFieldTrial::HQPAllowMatchInTLDValue() {
-  return variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kHQPAllowMatchInTLDRule) == "true";
+  return variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
+                                            kHQPAllowMatchInTLDRule) == "true";
 }
 
 bool OmniboxFieldTrial::HQPAllowMatchInSchemeValue() {
-  return variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kHQPAllowMatchInSchemeRule) == "true";
+  return variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
+                                            kHQPAllowMatchInSchemeRule) ==
+         "true";
 }
 
 void OmniboxFieldTrial::GetSuggestPollingStrategy(bool* from_last_keystroke,
                                                   int* polling_delay_ms) {
-  *from_last_keystroke = variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kMeasureSuggestPollingDelayFromLastKeystrokeRule) == "true";
+  *from_last_keystroke =
+      variations::GetVariationParamValue(
+          kBundledExperimentFieldTrialName,
+          kMeasureSuggestPollingDelayFromLastKeystrokeRule) == "true";
 
   const std::string& polling_delay_string = variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kSuggestPollingDelayMsRule);
+      kBundledExperimentFieldTrialName, kSuggestPollingDelayMsRule);
   if (polling_delay_string.empty() ||
       !base::StringToInt(polling_delay_string, polling_delay_ms) ||
       (*polling_delay_ms <= 0)) {
@@ -468,8 +460,7 @@ void OmniboxFieldTrial::GetSuggestPollingStrategy(bool* from_last_keystroke,
 
 std::string OmniboxFieldTrial::HQPExperimentalScoringBuckets() {
   return variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kHQPExperimentalScoringBucketsParam);
+      kBundledExperimentFieldTrialName, kHQPExperimentalScoringBucketsParam);
 }
 
 float OmniboxFieldTrial::HQPExperimentalTopicalityThreshold() {
@@ -580,15 +571,14 @@ size_t OmniboxFieldTrial::HQPNumTitleWordsToAllow() {
 }
 
 bool OmniboxFieldTrial::HQPAlsoDoHUPLikeScoring() {
-  return variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kHQPAlsoDoHUPLikeScoringRule) == "true";
+  return variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
+                                            kHQPAlsoDoHUPLikeScoringRule) ==
+         "true";
 }
 
 bool OmniboxFieldTrial::HUPSearchDatabase() {
   const std::string& value = variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kHUPSearchDatabaseRule);
+      kBundledExperimentFieldTrialName, kHUPSearchDatabaseRule);
   return value.empty() || (value == "true");
 }
 
@@ -909,6 +899,12 @@ const base::FeatureParam<int>
         &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
         "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
         3);
+
+// Shortcut Expanding
+
+bool IsShortcutExpandingEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kShortcutExpanding);
+}
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 const base::FeatureParam<bool> kZeroSuggestCacheCounterfactual(

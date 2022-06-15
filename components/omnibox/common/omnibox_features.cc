@@ -209,6 +209,11 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 const base::Feature kAggregateShortcuts{"OmniboxAggregateShortcuts",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, when updating or creating a shortcut, the last word of the input
+// is expanded, if possible, to a complete word in the suggestion description.
+const base::Feature kShortcutExpanding{"OmniboxShortcutExpanding",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path

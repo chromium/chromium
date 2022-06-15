@@ -1870,6 +1870,7 @@ const char kOmniboxRichAutocompletionPromisingName[] =
 const char kOmniboxRichAutocompletionPromisingDescription[] =
     "Allow autocompletion for titles and non-prefixes; see Omnibox Rich "
     "Autocompletion.";
+
 const char kOmniboxSiteSearchStarterPackName[] =
     "Omnibox Site Search Starter Pack";
 const char kOmniboxSiteSearchStarterPackDescription[] =
@@ -3944,6 +3945,11 @@ const char kOmniboxShortBookmarkSuggestionsName[] =
 const char kOmniboxShortBookmarkSuggestionsDescription[] =
     "Match very short input words to beginning of words in bookmark "
     "suggestions.";
+
+const char kOmniboxShortcutExpandingName[] = "Omnibox shortcut expanding";
+const char kOmniboxShortcutExpandingDescription[] =
+    "Expand the last word in the shortcut text to be a complete word from the "
+    "suggestion text.";
 
 const char kScreenAIName[] = "Screen AI";
 const char kScreenAIDescription[] =

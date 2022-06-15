@@ -1056,6 +1056,9 @@ extern const char kOmniboxOnFocusSuggestionsContextualWebDescription[];
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];
 
+extern const char kOmniboxShortcutExpandingName[];
+extern const char kOmniboxShortcutExpandingDescription[];
+
 extern const char kOmniboxSiteSearchStarterPackName[];
 extern const char kOmniboxSiteSearchStarterPackDescription[];
 

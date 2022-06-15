@@ -263,7 +263,12 @@ class ShortcutsProviderTest : public testing::Test {
   scoped_refptr<ShortcutsProvider> provider_;
 };
 
-ShortcutsProviderTest::ShortcutsProviderTest() = default;
+ShortcutsProviderTest::ShortcutsProviderTest() {
+  // `scoped_feature_list_` needs to be initialized as early as possible, to
+  // avoid data races caused by tasks on other threads accessing it.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(omnibox::kShortcutExpanding);
+};
 
 void ShortcutsProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
@@ -622,39 +627,39 @@ TEST_F(ShortcutsProviderTest, DaysAgoMatches) {
 }
 
 TEST_F(ShortcutsProviderTest, CalculateScore) {
-  auto shortcut = MakeShortcut(u"test123");
+  auto shortcut = MakeShortcut(u"test56789012345");
 
   // Maximal score.
-  const int kMaxScore = CalculateScore("test123", shortcut);
+  const int kMaxScore = CalculateScore("test56789012345", shortcut);
 
-  // Score does not decrease when the input is at most 3 chars shorter than the
-  // shortcut text.
-  EXPECT_EQ(CalculateScore("test12", shortcut), kMaxScore);
-  EXPECT_EQ(CalculateScore("test1", shortcut), kMaxScore);
-  EXPECT_EQ(CalculateScore("test", shortcut), kMaxScore);
+  // When creating or updating shortcuts, their text is set longer than the user
+  // input (see `ShortcutBackend::AddOrUpdateShortcut()`). So `CalculateScore()`
+  // permits up to 10 missing chars before beginning to decrease scores.
+  EXPECT_EQ(CalculateScore("test5678901234", shortcut), kMaxScore);
+  EXPECT_EQ(CalculateScore("test5", shortcut), kMaxScore);
 
   // Score decreases as percent of the match is decreased.
-  int score_three_quarters = CalculateScore("tes", shortcut);
-  EXPECT_LT(score_three_quarters, kMaxScore);
-  int score_one_half = CalculateScore("te", shortcut);
-  EXPECT_LT(score_one_half, score_three_quarters);
-  int score_one_quarter = CalculateScore("t", shortcut);
-  EXPECT_LT(score_one_quarter, score_one_half);
+  int score_4_chars = CalculateScore("test", shortcut);
+  EXPECT_LT(score_4_chars, kMaxScore);
+  int score_2_chars = CalculateScore("te", shortcut);
+  EXPECT_LT(score_2_chars, score_4_chars);
+  int score_1_char = CalculateScore("t", shortcut);
+  EXPECT_LT(score_1_char, score_2_chars);
 
   // Should decay with time - one week.
   shortcut.last_access_time = base::Time::Now() - base::Days(7);
-  int score_week_old = CalculateScore("test", shortcut);
+  int score_week_old = CalculateScore("test56789012345", shortcut);
   EXPECT_LT(score_week_old, kMaxScore);
 
   // Should decay more in two weeks.
   shortcut.last_access_time = base::Time::Now() - base::Days(14);
-  int score_two_weeks_old = CalculateScore("test", shortcut);
+  int score_two_weeks_old = CalculateScore("test56789012345", shortcut);
   EXPECT_LT(score_two_weeks_old, score_week_old);
 
   // But not if it was actively clicked on. 2 hits slow decaying power.
   shortcut.number_of_hits = 2;
   shortcut.last_access_time = base::Time::Now() - base::Days(14);
-  int score_popular_two_weeks_old = CalculateScore("test", shortcut);
+  int score_popular_two_weeks_old = CalculateScore("test56789012345", shortcut);
   EXPECT_LT(score_two_weeks_old, score_popular_two_weeks_old);
   // But still decayed.
   EXPECT_LT(score_popular_two_weeks_old, kMaxScore);
@@ -662,7 +667,8 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
   // 3 hits slow decaying power even more.
   shortcut.number_of_hits = 3;
   shortcut.last_access_time = base::Time::Now() - base::Days(14);
-  int score_more_popular_two_weeks_old = CalculateScore("test", shortcut);
+  int score_more_popular_two_weeks_old =
+      CalculateScore("test56789012345", shortcut);
   EXPECT_LT(score_two_weeks_old, score_more_popular_two_weeks_old);
   EXPECT_LT(score_popular_two_weeks_old, score_more_popular_two_weeks_old);
   // But still decayed.
@@ -826,12 +832,12 @@ TEST_F(ShortcutsProviderTest, CalculateAggregateScore) {
 
   // Aggregate score should consider the shortest text length, most recent visit
   // time, and sum of visit counts.
-  auto shortcut_a_short = MakeShortcut(u"size5", days_ago(3), 1);
-  auto shortcut_a_frequent = MakeShortcut(u"size____10", days_ago(3), 10);
-  auto shortcut_a_recent = MakeShortcut(u"size____10", days_ago(1), 1);
+  auto shortcut_a_short = MakeShortcut(u"size______12", days_ago(3), 1);
+  auto shortcut_a_frequent = MakeShortcut(u"size__________16", days_ago(3), 10);
+  auto shortcut_a_recent = MakeShortcut(u"size__________16", days_ago(1), 1);
   auto score_a = CalculateAggregateScore(
       "a", {&shortcut_a_short, &shortcut_a_frequent, &shortcut_a_recent});
-  auto shortcut_b = MakeShortcut(u"size5", days_ago(1), 12);
+  auto shortcut_b = MakeShortcut(u"size______12", days_ago(1), 12);
   auto score_b = CalculateAggregateScore("a", {&shortcut_b});
   EXPECT_EQ(score_a, score_b);
   EXPECT_GT(score_a, 0);
@@ -846,12 +852,12 @@ TEST_F(ShortcutsProviderTest, CalculateAggregateScore) {
   EXPECT_GT(score_b_long_query, score_b);
 
   // More recent shortcuts should be scored higher.
-  auto shortcut_b_old = MakeShortcut(u"size5", days_ago(2), 12);
+  auto shortcut_b_old = MakeShortcut(u"size______12", days_ago(2), 12);
   auto score_b_old = CalculateAggregateScore("a", {&shortcut_b_old});
   EXPECT_LT(score_b_old, score_b);
 
   // Shortcuts with higher visit counts should be scored higher.
-  auto shortcut_b_frequent = MakeShortcut(u"size5", days_ago(1), 13);
+  auto shortcut_b_frequent = MakeShortcut(u"size______12", days_ago(1), 13);
   auto score_b_frequent = CalculateAggregateScore("a", {&shortcut_b_frequent});
   EXPECT_GT(score_b_frequent, score_b);
 }

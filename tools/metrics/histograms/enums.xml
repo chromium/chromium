@@ -60895,6 +60895,7 @@ from previous Chrome versions.
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>
   <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
   <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>
+  <int value="1836916996" label="OmniboxShortcutExpanding:disabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>
   <int value="1838110766" label="PrivateNetworkAccessSendPreflights:disabled"/>
@@ -61029,6 +61030,7 @@ from previous Chrome versions.
   <int value="1927254377" label="MediaAppHandlesAudio:enabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
+  <int value="1927572319" label="OmniboxShortcutExpanding:enabled"/>
   <int value="1928944156" label="ReadLaterNewBadgePromo:disabled"/>
   <int value="1929174284" label="ChromeManagementPageAndroid:disabled"/>
   <int value="1929535031" label="LanguageSettingsUpdate2:enabled"/>

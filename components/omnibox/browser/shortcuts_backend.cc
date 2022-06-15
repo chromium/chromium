@@ -14,11 +14,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,8 +26,9 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
+#include "components/omnibox/browser/in_memory_url_index_types.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/shortcuts_database.h"
-#include "components/omnibox/common/omnibox_features.h"
 
 namespace {
 
@@ -62,8 +62,72 @@ AutocompleteMatch::Type GetTypeForShortcut(AutocompleteMatch::Type type) {
   }
 }
 
-}  // namespace
+// Get either `description_for_shortcuts` if non-empty or fallback to
+// `description`.
+std::u16string GetDescription(const AutocompleteMatch& match) {
+  return match.description_for_shortcuts.empty()
+             ? match.description
+             : match.description_for_shortcuts;
+}
 
+// Get either `description_class_for_shortcuts` if non-empty or fallback to
+// `description_class`.
+ACMatchClassifications GetDescriptionClass(const AutocompleteMatch& match) {
+  return match.description_class_for_shortcuts.empty()
+             ? match.description_class
+             : match.description_class_for_shortcuts;
+}
+
+// Expand the last word in `text` to a full word in `match`'s description.
+// E.g., if `text` is 'Cha Aznav' and the match description is
+// 'Charles Aznavour', will return 'Ch Aznavour'.
+std::u16string ExpandToFullWord(const std::u16string& text,
+                                const AutocompleteMatch& match) {
+  // Look at the description (i.e. title) only. Contents (i.e. URLs) and
+  // destination URLs both contain garble often; e.g.,
+  // 'docs.google.com/d/3SyB0Y83dG_WuxX'.
+  const auto description_words =
+      String16VectorFromString16(GetDescription(match), nullptr);
+  // Lower case `text` for case-insensitive matching with `description_words`.
+  const auto text_last_word =
+      base::i18n::ToLower(String16VectorFromString16(text, nullptr).back());
+
+  // Prioritize the 1st match that's at least 3 chars long. If none are found,
+  // fallback to the 1st match of any length. Don't simply find the 1st match of
+  // any length, as that could end up matching 'a', 'at', 'the', etc when a more
+  // likely candidate exists. Alternative approaches, e.g., longest match,
+  // shortest match, or the match closest to the previous word all have
+  // undesirable edge cases. E.g. if using longest match, the `text` 'singer C',
+  // with match description 'Singer Charles Aznavour Performs Les Comediens',
+  // would expand to 'singer Comédiens'.
+  std::u16string best_word;
+  // Iterate up to 100 `description_words` for performance.
+  for (size_t i = 0;
+       i < description_words.size() && i < 100 && best_word.length() < 3u;
+       ++i) {
+    if (description_words[i].length() < 3u && !best_word.empty())
+      continue;
+    if (!base::StartsWith(base::i18n::ToLower(description_words[i]),
+                          text_last_word, base::CompareCase::SENSITIVE))
+      continue;
+    best_word = description_words[i];
+  }
+
+  // Trim the `text` to 1) avoid expanding, e.g., the `text` 'Cha Aznav ' to
+  // 'Cha Aznav ur'; and 2) avoid truncating the shortcut e.g., 'Cha Aznavour'
+  // to 'Cha ' for the `text` 'C' when `AddOrUpdateShortcut()` appends 3 chars
+  // to `text`.
+  const auto trimmed_text =
+      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING);
+  // Add on the missing letters of `text_last_word`, rather than replace it with
+  // `best_word` to preserve capitalization.
+  return best_word.empty()
+             ? std::u16string(trimmed_text)
+             : base::StrCat(
+                   {trimmed_text, best_word.substr(text_last_word.length())});
+}
+
+}  // namespace
 
 // ShortcutsBackend -----------------------------------------------------------
 
@@ -123,7 +187,15 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
 #if DCHECK_IS_ON()
   match.Validate();
 #endif  // DCHECK_IS_ON()
-  const std::u16string text_lowercase(base::i18n::ToLower(text));
+  // Trim `text` since `ExpandToFullWord()` trims the shortcut text; otherwise,
+  // inputs with trailing whitespace wouldn't match a shortcut even if the user
+  // previously used the input with a trailing whitespace.
+  const auto text_trimmed =
+      OmniboxFieldTrial::IsShortcutExpandingEnabled()
+          ? base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING)
+          : text;
+  const std::u16string text_trimmed_lowercase(
+      base::i18n::ToLower(text_trimmed));
   const base::Time now(base::Time::Now());
 
   // Look for an existing shortcut to `match` prefixed by `text`. If there is
@@ -135,9 +207,9 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // arbitrary but seems to be fine. Deduping these shortcuts would stop the
   // input 'wil' from finding the 2nd shortcut.
   for (ShortcutMap::const_iterator it(
-           shortcuts_map_.lower_bound(text_lowercase));
+           shortcuts_map_.lower_bound(text_trimmed_lowercase));
        it != shortcuts_map_.end() &&
-       base::StartsWith(it->first, text_lowercase,
+       base::StartsWith(it->first, text_trimmed_lowercase,
                         base::CompareCase::SENSITIVE);
        ++it) {
     if (match.destination_url == it->second.match_core.destination_url) {
@@ -146,9 +218,13 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
       // plus an additional 3 chars to avoid unstable shortcuts. E.g. if the
       // user creates a shortcut with text 'google.com', then navigates
       // typing 'go', the shortcut text should be updated to 'googl'.
-      auto updated_shortcut_text = it->second.text.substr(0, text.length() + 3);
+      const auto text_and_3_chars = base::StrCat(
+          {text_trimmed, it->second.text.substr(text_trimmed.length(), 3)});
+      const auto expanded_text = OmniboxFieldTrial::IsShortcutExpandingEnabled()
+                                     ? ExpandToFullWord(text_and_3_chars, match)
+                                     : text_and_3_chars;
       UpdateShortcut(ShortcutsDatabase::Shortcut(
-          it->second.id, updated_shortcut_text,
+          it->second.id, expanded_text,
           MatchToMatchCore(match, template_url_service_,
                            search_terms_data_.get()),
           now, it->second.number_of_hits + 1));
@@ -157,8 +233,11 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   }
 
   // If no shortcuts to `match` prefixed by `text` were found, create one.
+  const auto expanded_text = OmniboxFieldTrial::IsShortcutExpandingEnabled()
+                                 ? ExpandToFullWord(text, match)
+                                 : text;
   AddShortcut(ShortcutsDatabase::Shortcut(
-      base::GenerateGUID(), text,
+      base::GenerateGUID(), expanded_text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
       now, 1));
 }
@@ -187,20 +266,13 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
     normalized_match = &temp;
   }
 
-  auto description = normalized_match->description_for_shortcuts.empty()
-                         ? normalized_match->description
-                         : normalized_match->description_for_shortcuts;
-  auto description_class =
-      normalized_match->description_class_for_shortcuts.empty()
-          ? normalized_match->description_class
-          : normalized_match->description_class_for_shortcuts;
-
   return ShortcutsDatabase::Shortcut::MatchCore(
       normalized_match->fill_into_edit, normalized_match->destination_url,
       normalized_match->document_type, normalized_match->contents,
-      StripMatchMarkers(normalized_match->contents_class), description,
-      StripMatchMarkers(description_class), normalized_match->transition,
-      match_type, normalized_match->keyword);
+      StripMatchMarkers(normalized_match->contents_class),
+      GetDescription(*normalized_match),
+      StripMatchMarkers(GetDescriptionClass(*normalized_match)),
+      normalized_match->transition, match_type, normalized_match->keyword);
 }
 
 void ShortcutsBackend::ShutdownOnUIThread() {

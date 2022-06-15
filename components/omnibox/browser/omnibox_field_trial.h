@@ -528,6 +528,9 @@ extern const base::FeatureParam<bool>
 extern const base::FeatureParam<int>
     kShortBookmarkSuggestionsByTotalInputLengthThreshold;
 
+// Shortcut Expanding.
+bool IsShortcutExpandingEnabled();
+
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 // Indicates whether the user is in the counterfactual group in the experiment
 // for prefetching zero prefix suggestions on the NTP. Users in the
