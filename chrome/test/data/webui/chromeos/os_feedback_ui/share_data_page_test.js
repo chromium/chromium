@@ -94,6 +94,7 @@ export function shareDataPageTestSuite() {
 
     // Verify the send button is in the page.
     assertEquals('Send', getElementContent('#buttonSend'));
+    assertTrue(page.i18nExists('sendButtonLabel'));
 
     // Verify the attach files label is in the page.
     assertTrue(page.i18nExists('attachFilesLabel'));
