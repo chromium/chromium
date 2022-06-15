@@ -255,7 +255,7 @@ views::Widget* PermissionPromptImpl::GetPromptBubbleWidgetForTesting() {
 
   LocationBarView* lbv = GetLocationBarView();
 
-  return lbv->chip()
+  return lbv->IsChipActive() && lbv->chip()->IsBubbleShowing()
              ? lbv->chip()->GetPromptBubbleWidgetForTesting()  // IN-TEST
              : nullptr;
 }

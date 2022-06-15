@@ -108,9 +108,9 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     // click on the chip to trigger showing the prompt.
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PermissionChip* chip = browser_view->toolbar()->location_bar()->chip();
-    if (chip) {
-      views::test::ButtonTestApi(chip->button())
+    LocationBarView* lbv = browser_view->toolbar()->location_bar();
+    if (lbv->IsChipActive() && !lbv->chip()->IsBubbleShowing()) {
+      views::test::ButtonTestApi(lbv->chip()->button())
           .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                       gfx::Point(), ui::EventTimeForNow(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0));

@@ -97,11 +97,15 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
   PermissionChip* GetChip() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar()->chip();
+    LocationBarView* lbv = browser_view->toolbar()->location_bar();
+
+    return lbv->chip();
   }
 
   void ClickOnChip(PermissionChip* chip) {
     ASSERT_TRUE(chip != nullptr);
+    ASSERT_TRUE(chip->IsActive());
+    ASSERT_TRUE(!chip->IsBubbleShowing());
     views::test::ButtonTestApi(chip->button())
         .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
