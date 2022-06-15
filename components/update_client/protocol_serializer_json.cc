@@ -33,8 +33,8 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node->SetKey("sessionid", Value(request.session_id));
   request_node->SetKey("requestid", Value(request.request_id));
   request_node->SetKey("@updater", Value(request.updatername));
-  request_node->SetKey("prodversion", Value(request.updaterversion));
-  request_node->SetKey("updaterversion", Value(request.prodversion));
+  request_node->SetKey("prodversion", Value(request.prodversion));
+  request_node->SetKey("updaterversion", Value(request.updaterversion));
   request_node->SetKey("@os", Value(request.operating_system));
   request_node->SetKey("arch", Value(request.arch));
   request_node->SetKey("nacl_arch", Value(request.nacl_arch));
