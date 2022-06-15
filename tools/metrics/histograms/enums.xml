@@ -24147,7 +24147,7 @@ Called by update_debug_scenarios.py.-->
 
 <enum name="DeleteStaleCookiesResult">
   <int value="0" label="Old directory was not found"/>
-  <int value="1" label="Deleted succsessfully"/>
+  <int value="1" label="Deleted successfully"/>
   <int value="2" label="Error when deleting"/>
 </enum>
 
