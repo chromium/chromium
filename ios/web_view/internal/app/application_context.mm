@@ -232,4 +232,11 @@ SafeBrowsingService* ApplicationContext::GetSafeBrowsingService() {
   return safe_browsing_service_.get();
 }
 
+void ApplicationContext::ShutdownSafeBrowsingServiceIfNecessary() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (safe_browsing_service_) {
+    safe_browsing_service_->ShutDown();
+  }
+}
+
 }  // namespace ios_web_view

@@ -99,6 +99,8 @@ void WebViewWebMainParts::PreMainMessageLoopRun() {
 }
 
 void WebViewWebMainParts::PostMainMessageLoopRun() {
+  ApplicationContext::GetInstance()->ShutdownSafeBrowsingServiceIfNecessary();
+
   // CWVWebViewConfiguration must destroy its WebViewBrowserStates before the
   // threads are stopped by ApplicationContext.
   [CWVWebViewConfiguration shutDown];
