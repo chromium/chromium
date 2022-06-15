@@ -88,7 +88,9 @@ void EducationalView::Init(views::View* parent) {
     // UI's banner.
     const gfx::ImageSkia* skia_banner =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION);
+            IsDarkModeEnabled()
+                ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK
+                : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION);
     CHECK(skia_banner);
     auto banner = std::make_unique<views::ImageView>(
         ui::ImageModel::FromImageSkia(*skia_banner));
