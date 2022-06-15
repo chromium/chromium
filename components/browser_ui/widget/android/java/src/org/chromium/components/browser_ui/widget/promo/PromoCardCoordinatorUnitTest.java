@@ -6,11 +6,9 @@ package org.chromium.components.browser_ui.widget.promo;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.test.InstrumentationRegistry;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -18,22 +16,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.LayoutStyle;
-import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Basic test for creating, using the promo component with {@link PromoCardCoordinator}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class PromoCardCoordinatorTest {
+@RunWith(BaseRobolectricTestRunner.class)
+public class PromoCardCoordinatorUnitTest {
     private Context mContext;
     private PropertyModel mModel;
     private PromoCardCoordinator mPromoCardCoordinator;
@@ -41,27 +35,19 @@ public class PromoCardCoordinatorTest {
 
     @Before
     public void setUp() {
-        mContext = InstrumentationRegistry.getInstrumentation().getContext();
-        mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build());
+        mContext = ApplicationProvider.getApplicationContext();
+        mModel = new PropertyModel.Builder(PromoCardProperties.ALL_KEYS).build();
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(mPromoCardCoordinator::destroy);
+        mPromoCardCoordinator.destroy();
     }
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
-        // TODO(https://crbug.com/1217140): Remove this theme wrapper after dummy ui activity
-        //  is based on material theme. For now we need the theme wrapper to inflate the layout;
-        //  because we are not setting our theme overlay for the test apk
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ContextThemeWrapper wrapperTheme =
-                    new ContextThemeWrapper(mContext, R.style.Theme_BrowserUI_DayNight);
-            mPromoCardCoordinator =
-                    new PromoCardCoordinator(wrapperTheme, mModel, "test-feature", layoutStyle);
-            mView = (PromoCardView) mPromoCardCoordinator.getView();
-        });
+        mPromoCardCoordinator =
+                new PromoCardCoordinator(mContext, mModel, "test-feature", layoutStyle);
+        mView = (PromoCardView) mPromoCardCoordinator.getView();
         Assert.assertNotNull("PromoCardView is null", mView);
     }
 
@@ -106,20 +92,17 @@ public class PromoCardCoordinatorTest {
     @SmallTest
     public void testTextImageBinding() {
         setupCoordinator(LayoutStyle.LARGE);
-        final Drawable testImage =
-                AppCompatResources.getDrawable(mContext, R.drawable.test_logo_avatar_anonymous);
+        final Drawable testImage = Mockito.mock(Drawable.class);
         final String titleString = "Some string for title";
         final String testString = "Some test string";
         final String primaryButtonString = "Primary button string";
         final String secondaryButtonString = "Secondary button string";
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(PromoCardProperties.TITLE, titleString);
-            mModel.set(PromoCardProperties.DESCRIPTION, testString);
-            mModel.set(PromoCardProperties.IMAGE, testImage);
-            mModel.set(PromoCardProperties.PRIMARY_BUTTON_TEXT, primaryButtonString);
-            mModel.set(PromoCardProperties.SECONDARY_BUTTON_TEXT, secondaryButtonString);
-        });
+        mModel.set(PromoCardProperties.TITLE, titleString);
+        mModel.set(PromoCardProperties.DESCRIPTION, testString);
+        mModel.set(PromoCardProperties.IMAGE, testImage);
+        mModel.set(PromoCardProperties.PRIMARY_BUTTON_TEXT, primaryButtonString);
+        mModel.set(PromoCardProperties.SECONDARY_BUTTON_TEXT, secondaryButtonString);
 
         Assert.assertEquals(
                 "Promo image drawable is different.", testImage, mView.mPromoImage.getDrawable());
@@ -134,8 +117,7 @@ public class PromoCardCoordinatorTest {
 
         // Change the description again
         final String testString2 = "Some other test string.";
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mModel.set(PromoCardProperties.DESCRIPTION, testString2); });
+        mModel.set(PromoCardProperties.DESCRIPTION, testString2);
         Assert.assertEquals(testString2, mView.mDescription.getText().toString());
     }
 
@@ -146,15 +128,13 @@ public class PromoCardCoordinatorTest {
         Assert.assertEquals(mView.mSecondaryButton.getVisibility(), View.VISIBLE);
 
         // Hide the secondary button
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mModel.set(PromoCardProperties.HAS_SECONDARY_BUTTON, false); });
+        mModel.set(PromoCardProperties.HAS_SECONDARY_BUTTON, false);
         Assert.assertEquals("Secondary button is still visible.", View.GONE,
                 mView.mSecondaryButton.getVisibility());
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/1232932")
     public void testActionBinding() throws Exception {
         setupCoordinator(LayoutStyle.LARGE);
         final CallbackHelper primaryClickCallback = new CallbackHelper();
@@ -165,12 +145,12 @@ public class PromoCardCoordinatorTest {
         mModel.set(PromoCardProperties.SECONDARY_BUTTON_CALLBACK,
                 (v) -> secondaryClickCallback.notifyCalled());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mView.mPrimaryButton.performClick());
+        mView.mPrimaryButton.performClick();
         primaryClickCallback.waitForCallback("Primary button callback is never called.", 0);
         Assert.assertEquals(
                 "Primary button should be clicked once.", 1, primaryClickCallback.getCallCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mView.mSecondaryButton.performClick());
+        mView.mSecondaryButton.performClick();
         secondaryClickCallback.waitForCallback("Secondary button callback is never called.", 0);
         Assert.assertEquals("Secondary button should be clicked once.", 1,
                 secondaryClickCallback.getCallCount());

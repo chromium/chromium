@@ -322,7 +322,6 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/widget/highlight/ViewHighlighterTest.java",
     "java/src/org/chromium/components/browser_ui/widget/listmenu/ListMenuButtonTest.java",
     "java/src/org/chromium/components/browser_ui/widget/listmenu/ListMenuRenderTest.java",
-    "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardCoordinatorTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardImpressionTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardViewRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/scrim/ScrimTest.java",
@@ -393,6 +392,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/InsetObserverViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardCoordinatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
     "java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinderTest.java",
   ]
@@ -403,6 +403,7 @@ robolectric_library("junit") {
     "//base/test:test_support_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
