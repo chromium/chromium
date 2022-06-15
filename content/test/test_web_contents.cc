@@ -86,10 +86,6 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
 
 TestWebContents::~TestWebContents() = default;
 
-TestRenderFrameHost* TestWebContents::GetMainFrame() {
-  return GetPrimaryMainFrame();
-}
-
 TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() {
   auto* instance = WebContentsImpl::GetPrimaryMainFrame();
   DCHECK(instance->IsTestRenderFrameHost())

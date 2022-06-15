@@ -54,7 +54,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   static TestWebContents* Create(const CreateParams& params);
 
   // WebContentsImpl overrides (returning the same values, but in Test* types)
-  TestRenderFrameHost* GetMainFrame() override;
   TestRenderFrameHost* GetPrimaryMainFrame() override;
   TestRenderViewHost* GetRenderViewHost() override;
   // Overrides to avoid establishing Mojo connection with renderer process.

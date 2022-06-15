@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogHeadlessBrowserTest, SelectFileDialog) {
   // third_party/blink/renderer/.../global_file_system_access.cc
   content::WebContents* content =
       HeadlessWebContentsImpl::From(web_contents)->web_contents();
-  content::RenderFrameHost* main_frame = content->GetMainFrame();
+  content::RenderFrameHost* main_frame = content->GetPrimaryMainFrame();
   main_frame->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kTest);
 

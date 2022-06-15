@@ -877,7 +877,7 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
   extensions::PermissionsManager::UserSiteSetting site_setting =
       extensions::PermissionsManager::Get(browser_->profile())
           ->GetUserSiteSetting(
-              web_contents->GetMainFrame()->GetLastCommittedOrigin());
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   extensions_controls_->UpdateControls(actions_, site_setting, web_contents);
 }
 
