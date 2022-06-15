@@ -9,6 +9,7 @@ import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
+import {DlpMetadataProvider} from './dlp_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
@@ -97,6 +98,12 @@ export function testMultiMetadataProviderBasic(callback) {
           ]);
         }
       }),
+      /** @type {!DlpMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
+        }
+      }),
       volumeManager);
 
   reportPromise(
@@ -155,6 +162,12 @@ export function testMultiMetadataProviderExternalAndContentProperty(callback) {
           return Promise.resolve([results[requests[0].entry.toURL()]]);
         },
       }),
+      /** @type {!DlpMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
+        }
+      }),
       volumeManager);
 
   reportPromise(
@@ -212,6 +225,12 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
           return Promise.resolve([]);
         },
       }),
+      /** @type {!DlpMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
+        }
+      }),
       volumeManager);
 
   reportPromise(
@@ -233,6 +252,50 @@ export function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
             assertEquals(true, results[0].canDelete);
             assertEquals(true, results[0].canRename);
             assertEquals(true, results[0].canAddChildren);
+          }),
+      callback);
+}
+
+export function testDlpMetadataProvider(callback) {
+  const model = new MultiMetadataProvider(
+      /** @type {!FileSystemMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
+        }
+      }),
+      /** @type {!ExternalMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
+        }
+      }),
+      /** @type {!ContentMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
+        },
+      }),
+      /** @type {!DlpMetadataProvider} */ ({
+        get: function(requests) {
+          assertEquals(1, requests.length);
+          return Promise.resolve([{
+            sourceUrl: 'url',
+            isDlpRestricted: true,
+          }]);
+        }
+      }),
+      volumeManager);
+
+  reportPromise(
+      model
+          .get([
+            new MetadataRequest(entryA, ['sourceUrl', 'isDlpRestricted']),
+          ])
+          .then(results => {
+            assertEquals(1, results.length);
+            assertEquals('url', results[0].sourceUrl);
+            assertEquals(true, results[0].isDlpRestricted);
           }),
       callback);
 }

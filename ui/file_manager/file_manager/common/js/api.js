@@ -101,6 +101,17 @@ export async function getDisallowedTransfers(entries, destinationEntry) {
 }
 
 /**
+ * Wrap the chrome.fileManagerPrivate.getDlpMetadata function in an async/await
+ * compatible style.
+ * @param {!Array<!Entry>} entries entries to be checked
+ * @return {!Promise<!Array<!chrome.fileManagerPrivate.DlpMetadata>>} list of
+ *     DlpMetadata
+ */
+export async function getDlpMetadata(entries) {
+  return promisify(chrome.fileManagerPrivate.getDlpMetadata, entries);
+}
+
+/**
  * Lists Guest OSs which support having their files mounted.
  * @return {!Promise<!Array<!chrome.fileManagerPrivate.MountableGuest>>}
  */

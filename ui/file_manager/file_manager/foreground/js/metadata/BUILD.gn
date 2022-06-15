@@ -112,6 +112,7 @@ js_library("dlp_metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_provider",
+    "//ui/file_manager/file_manager/common/js:api",
   ]
 }
 
@@ -314,6 +315,7 @@ js_library("mpeg_parser") {
 js_library("multi_metadata_provider") {
   deps = [
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":external_metadata_provider",
     ":file_system_metadata_provider",
     ":metadata_item",
@@ -328,6 +330,7 @@ js_library("multi_metadata_provider") {
 js_unittest("multi_metadata_provider_unittest.m") {
   deps = [
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":external_metadata_provider",
     ":file_system_metadata_provider",
     ":metadata_request",
