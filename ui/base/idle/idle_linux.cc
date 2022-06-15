@@ -45,11 +45,12 @@ struct {
     {"org.cinnamon.ScreenSaver", "/org/cinnamon/ScreenSaver",
      "org.cinnamon.ScreenSaver"},
     // gnome-screensaver
-    {"org.gnome.ScreenSaver", "/", "org.gnome.ScreenSaver"},
+    {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver",
+     "org.gnome.ScreenSaver"},
     // mate-screensaver
-    {"org.mate.ScreenSaver", "/", "org.mate.ScreenSaver"},
+    {"org.mate.ScreenSaver", "/org/mate/ScreenSaver", "org.mate.ScreenSaver"},
     // xfce4-screensaver
-    {"org.xfce.ScreenSaver", "/", "org.xfce.ScreenSaver"},
+    {"org.xfce.ScreenSaver", "/org/xfce/ScreenSaver", "org.xfce.ScreenSaver"},
 };
 
 constexpr size_t kServiceCount = sizeof(kServices) / sizeof(kServices[0]);
