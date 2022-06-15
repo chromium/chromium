@@ -86,6 +86,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
+#include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1092,6 +1093,12 @@ void BrowserManager::StartWithLogFile(
                                         base::SPLIT_WANT_NONEMPTY);
   for (const auto& flag : delimited_flags)
     argv.emplace_back(flag);
+
+  // Forward flag for zero copy video capture to Lacros if it is enabled.
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+    argv.emplace_back(
+        base::StringPrintf("--%s", switches::kVideoCaptureUseGpuMemoryBuffer));
+  }
 
   // If logfd is valid, enable logging and redirect stdout/stderr to logfd.
   if (params.logfd.is_valid()) {
