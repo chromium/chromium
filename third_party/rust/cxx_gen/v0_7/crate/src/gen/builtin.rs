@@ -28,6 +28,7 @@ pub struct Builtins<'a> {
     pub rust_slice_repr: bool,
     pub exception: bool,
     pub relocatable: bool,
+    pub relocatable_or_array: bool,
     pub friend_impl: bool,
     pub is_complete: bool,
     pub destroy: bool,
@@ -111,6 +112,11 @@ pub(super) fn write(out: &mut OutFile) {
     if builtin.rust_isize {
         include.basetsd = true;
         include.sys_types = true;
+    }
+
+    if builtin.relocatable_or_array {
+        include.cstddef = true;
+        builtin.relocatable = true;
     }
 
     if builtin.relocatable {
@@ -355,6 +361,17 @@ pub(super) fn write(out: &mut OutFile) {
             "  template <typename T> void operator()(T *ptr) {{ ptr->~T(); }}",
         );
         writeln!(out, "}};");
+    }
+
+    if builtin.relocatable_or_array {
+        out.next_section();
+        writeln!(out, "template <typename T>");
+        writeln!(out, "struct IsRelocatableOrArray : IsRelocatable<T> {{}};");
+        writeln!(out, "template <typename T, ::std::size_t N>");
+        writeln!(
+            out,
+            "struct IsRelocatableOrArray<T[N]> : IsRelocatableOrArray<T> {{}};",
+        );
     }
 
     out.end_block(Block::AnonymousNamespace);

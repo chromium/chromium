@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.48"
 name = "cxx-gen"
-version = "0.7.64"
+version = "0.7.68"
 authors = ["Adrian Taylor <adetaylor@chromium.org>"]
 exclude = ["build.rs"]
 description = "C++ code generator for integrating `cxx` crate into higher level tools."
