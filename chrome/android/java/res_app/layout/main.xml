@@ -130,13 +130,6 @@
             android:inflatedId="@+id/grid_tab_switcher_view_holder"
             android:layout="@layout/grid_tab_switcher_view_holder" />
 
-        <ViewStub
-            android:id="@+id/continuous_search_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout="@layout/continuous_search_container"/>
-
         <org.chromium.components.messages.MessageContainer
             android:id="@+id/message_container"
             android:layout_width="match_parent"

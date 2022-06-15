@@ -1773,9 +1773,6 @@ extern const char kChimeAlwaysShowNotificationName[];
 extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
-extern const char kContinuousSearchName[];
-extern const char kContinuousSearchDescription[];
-
 extern const char kChromeShareLongScreenshotName[];
 extern const char kChromeShareLongScreenshotDescription[];
 

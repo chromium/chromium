@@ -109,7 +109,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &embedder_support::kShowTrustedPublisherURL,
     &features::kAndroidPWAsDefaultOfflinePage,
     &features::kAnonymousUpdateChecks,
-    &features::kContinuousSearch,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
     &features::kHttpsOnlyMode,

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,12 +38,9 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
-import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -98,7 +94,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -128,7 +123,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.util.TokenHolder;
 
 /**
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
@@ -157,10 +151,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private LayoutManagerImpl mLayoutManager;
-    private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
-    private HeightObserver mContinuousSearchObserver;
-    private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
-    private FindToolbarObserver mContinuousSearchFindToolbarObserver;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final int mControlContainerHeightResource;
@@ -170,7 +160,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
 
     private int mStatusIndicatorHeight;
-    private int mContinuousSearchHeight;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -385,19 +374,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mHistoryNavigationCoordinator = null;
         }
 
-        if (mContinuousSearchContainerCoordinator != null) {
-            getTabObscuringHandler().removeObserver(mContinuousSearchTabObscuringHandlerObserver);
-            mContinuousSearchContainerCoordinator.removeHeightObserver(mContinuousSearchObserver);
-            if (mFindToolbarManager != null) {
-                mFindToolbarManager.removeObserver(mContinuousSearchFindToolbarObserver);
-            }
-            mContinuousSearchContainerCoordinator.destroy();
-            mContinuousSearchContainerCoordinator = null;
-            mContinuousSearchObserver = null;
-            mContinuousSearchTabObscuringHandlerObserver = null;
-            mContinuousSearchFindToolbarObserver = null;
-        }
-
         if (mUndoGroupSnackbarController != null) {
             mUndoGroupSnackbarController.destroy();
         }
@@ -544,7 +520,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mPwaBottomSheetController =
                 PwaBottomSheetControllerFactory.createPwaBottomSheetController(mActivity);
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
-        initContinuousSearchCoordinator();
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
     }
@@ -720,8 +695,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void updateTopControlsHeight(boolean animate) {
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
         final int resourceId = mControlContainerHeightResource;
-        final int topControlsNewHeight = mActivity.getResources().getDimensionPixelSize(resourceId)
-                + mStatusIndicatorHeight + mContinuousSearchHeight;
+        final int topControlsNewHeight =
+                mActivity.getResources().getDimensionPixelSize(resourceId) + mStatusIndicatorHeight;
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
@@ -797,51 +772,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarManager.getOmniboxStub() != null) {
             mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
-    }
-
-    private void initContinuousSearchCoordinator() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTINUOUS_SEARCH)) {
-            return;
-        }
-
-        Supplier<Integer> defaultTopContainerHeightSupplier = ()
-                -> mActivity.getResources().getDimensionPixelSize(mControlContainerHeightResource);
-        final ViewStub viewStub = mActivity.findViewById(R.id.continuous_search_container_stub);
-        final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
-        mContinuousSearchContainerCoordinator = new ContinuousSearchContainerCoordinator(viewStub,
-                mLayoutManager, mCompositorViewHolderSupplier.get().getResourceManager(),
-                mActivityTabProvider, browserControlsSizer, mCanAnimateBrowserControls,
-                defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(), mActivity,
-                mToolbarManager::setForceHideShadow);
-        mContinuousSearchObserver = (newHeight, animate) -> {
-            mContinuousSearchHeight = newHeight;
-            updateTopControlsHeight(animate);
-        };
-        mContinuousSearchContainerCoordinator.addHeightObserver(mContinuousSearchObserver);
-        mContinuousSearchTabObscuringHandlerObserver =
-                isObscured -> mContinuousSearchContainerCoordinator.updateTabObscured(isObscured);
-        getTabObscuringHandler().addObserver(mContinuousSearchTabObscuringHandlerObserver);
-
-        if (!mSupportsFindInPageSupplier.getAsBoolean()) return;
-
-        assert mFindToolbarManager != null;
-
-        mContinuousSearchFindToolbarObserver = new FindToolbarObserver() {
-            private int mToken = TokenHolder.INVALID_TOKEN;
-
-            @Override
-            public void onFindToolbarShown() {
-                assert mToken == TokenHolder.INVALID_TOKEN;
-                mToken = mContinuousSearchContainerCoordinator.hideContainer();
-            }
-
-            @Override
-            public void onFindToolbarHidden() {
-                mContinuousSearchContainerCoordinator.showContainer(mToken);
-                mToken = TokenHolder.INVALID_TOKEN;
-            }
-        };
-        mFindToolbarManager.addObserver(mContinuousSearchFindToolbarObserver);
     }
 
     /**

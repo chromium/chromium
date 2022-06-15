@@ -139,11 +139,6 @@ const base::Feature kClientStorageAccessContextAuditing{
 const base::Feature kConsolidatedSiteStorageControls{
     "ConsolidatedSiteStorageControls", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature kContinuousSearch{"ContinuousSearch",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables "usm" service in the list of user services returned by
 // userInfo Gaia message.

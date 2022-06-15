@@ -121,11 +121,6 @@ extern const base::Feature kClientStorageAccessContextAuditing;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kConsolidatedSiteStorageControls;
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kContinuousSearch;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kCrOSEnableUSMUserService;

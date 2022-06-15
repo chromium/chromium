@@ -952,7 +952,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
 
         // Required by MockTab.
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTINUOUS_SEARCH, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                 PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(value));
