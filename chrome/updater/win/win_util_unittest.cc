@@ -157,7 +157,6 @@ TEST(WinUtil, GetOSVersion) {
   EXPECT_EQ(rtl_os_version->wServicePackMinor, os.wServicePackMinor);
   EXPECT_EQ(rtl_os_version->wSuiteMask, os.wSuiteMask);
   EXPECT_EQ(rtl_os_version->wProductType, os.wProductType);
-  EXPECT_EQ(rtl_os_version->wReserved, os.wReserved);
 }
 
 TEST(WinUtil, CompareOSVersions_SameAsCurrent) {

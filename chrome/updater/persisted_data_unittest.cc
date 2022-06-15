@@ -160,7 +160,6 @@ TEST(PersistedDataTest, LastOSVersion) {
   EXPECT_EQ(metadata_os.wServicePackMinor, os.wServicePackMinor);
   EXPECT_EQ(metadata_os.wSuiteMask, os.wSuiteMask);
   EXPECT_EQ(metadata_os.wProductType, os.wProductType);
-  EXPECT_EQ(metadata_os.wReserved, os.wReserved);
 }
 #endif
 
