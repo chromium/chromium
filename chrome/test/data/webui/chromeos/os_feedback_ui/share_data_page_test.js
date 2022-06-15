@@ -90,6 +90,7 @@ export function shareDataPageTestSuite() {
 
     // Verify the back button is in the page.
     assertEquals('Back', getElementContent('#buttonBack'));
+    assertTrue(page.i18nExists('backButtonLabel'));
 
     // Verify the send button is in the page.
     assertEquals('Send', getElementContent('#buttonSend'));

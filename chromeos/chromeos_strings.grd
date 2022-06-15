@@ -3398,6 +3398,9 @@ Try tapping the mic to ask me anything.
         Tips on writing feedback
       </message>
       <!-- Share Data Page -->
+      <message name="IDS_FEEDBACK_TOOL_BACK_BUTTON_LABEL" desc="label for the back button to return to a prior page">
+        Back
+      </message>
       <message name="IDS_FEEDBACK_TOOL_DESCRIPTION_HINT" desc="Label for the hint in description textarea">
         Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
       </message>
