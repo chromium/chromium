@@ -1132,19 +1132,20 @@ public class TabGridDialogTest {
                     if (noMatchException != null) throw noMatchException;
                     Assert.assertTrue(v instanceof ListView);
                     ListView listView = (ListView) v;
+                    int menuItemCount = 1;
                     verifyTabGridDialogToolbarMenuItem(listView, 0,
                             cta.getString(R.string.tab_grid_dialog_toolbar_remove_from_group));
                     if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_SHARING.getValue()) {
-                        verifyTabGridDialogToolbarMenuItem(listView, 1,
+                        menuItemCount += 1;
+                        verifyTabGridDialogToolbarMenuItem(listView, menuItemCount - 1,
                                 cta.getString(R.string.tab_grid_dialog_toolbar_share_group));
                     }
                     if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                        assertEquals(3, listView.getCount());
-                        verifyTabGridDialogToolbarMenuItem(listView, 2,
+                        menuItemCount += 1;
+                        verifyTabGridDialogToolbarMenuItem(listView, menuItemCount - 1,
                                 cta.getString(R.string.tab_grid_dialog_toolbar_edit_group_name));
-                    } else {
-                        assertEquals(2, listView.getCount());
                     }
+                    assertEquals(menuItemCount, listView.getCount());
                 });
     }
 
