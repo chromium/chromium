@@ -506,6 +506,16 @@ void SynchronousCompositorHost::ReturnResources(
                                  std::move(resources));
 }
 
+void SynchronousCompositorHost::OnCompositorFrameTransitionDirectiveProcessed(
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  if (blink::mojom::SynchronousCompositor* compositor =
+          GetSynchronousCompositor()) {
+    compositor->OnCompositorFrameTransitionDirectiveProcessed(
+        layer_tree_frame_sink_id, sequence_id);
+  }
+}
+
 void SynchronousCompositorHost::DidPresentCompositorFrames(
     viz::FrameTimingDetailsMap timing_details,
     uint32_t frame_token) {

@@ -532,6 +532,15 @@ void SynchronousLayerTreeFrameSink::ReclaimResources(
       std::make_move_iterator(resources.end())));
 }
 
+void SynchronousLayerTreeFrameSink::
+    OnCompositorFrameTransitionDirectiveProcessed(
+        uint32_t layer_tree_frame_sink_id,
+        uint32_t sequence_id) {
+  if (layer_tree_frame_sink_id != layer_tree_frame_sink_id_)
+    return;
+  client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+}
+
 void SynchronousLayerTreeFrameSink::SetMemoryPolicy(size_t bytes_limit) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool became_zero = memory_policy_.bytes_limit_when_visible && !bytes_limit;

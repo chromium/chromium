@@ -315,6 +315,15 @@ void SynchronousCompositorProxy::ReclaimResources(
                                            std::move(resources));
 }
 
+void SynchronousCompositorProxy::OnCompositorFrameTransitionDirectiveProcessed(
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  if (!layer_tree_frame_sink_)
+    return;
+  layer_tree_frame_sink_->OnCompositorFrameTransitionDirectiveProcessed(
+      layer_tree_frame_sink_id, sequence_id);
+}
+
 void SynchronousCompositorProxy::SetSharedMemory(
     base::WritableSharedMemoryRegion shm_region,
     SetSharedMemoryCallback callback) {

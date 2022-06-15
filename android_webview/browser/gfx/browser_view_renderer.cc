@@ -888,6 +888,17 @@ void BrowserViewRenderer::ReturnResourcesFromViz(
                       layer_tree_frame_sink_id);
 }
 
+void BrowserViewRenderer::OnCompositorFrameTransitionDirectiveProcessed(
+    viz::FrameSinkId frame_sink_id,
+    uint32_t layer_tree_frame_sink_id,
+    uint32_t sequence_id) {
+  content::SynchronousCompositor* compositor = FindCompositor(frame_sink_id);
+  if (compositor) {
+    compositor->OnCompositorFrameTransitionDirectiveProcessed(
+        layer_tree_frame_sink_id, sequence_id);
+  }
+}
+
 void BrowserViewRenderer::OnInputEvent() {
   if (root_frame_sink_proxy_)
     root_frame_sink_proxy_->OnInputEvent();

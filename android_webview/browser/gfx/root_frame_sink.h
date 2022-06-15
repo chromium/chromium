@@ -36,6 +36,10 @@ class RootFrameSinkClient {
       viz::FrameSinkId frame_sink_id,
       uint32_t layer_tree_frame_sink_id,
       std::vector<viz::ReturnedResource> resources) = 0;
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) = 0;
 };
 
 // This class holds per-AwContents classes on the viz thread that do not need
@@ -97,6 +101,10 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void ReturnResources(viz::FrameSinkId frame_sink_id,
                        uint32_t layer_tree_frame_sink_id,
                        std::vector<viz::ReturnedResource> resources);
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id);
 
   bool HasPendingDependency(const viz::SurfaceId& surface_id);
   void UpdateNeedsBeginFrames(bool needs_begin_frame);

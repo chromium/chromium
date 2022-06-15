@@ -319,6 +319,11 @@ class InvalidateTest
     DCHECK(resources.empty());
   }
 
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) override {}
+
  protected:
   std::unique_ptr<ChildFrame> CreateChildFrame(
       std::unique_ptr<content::SynchronousCompositor::Frame> frame,
