@@ -82,6 +82,10 @@ interface NetworkingPrivateDelegateObserver {
   [MinVersion=2]
   OnPortalDetectionCompleted@3(string networkGuid,
                                CaptivePortalStatus status);
+
+  // Fired when any certificate list has changed.
+  [MinVersion=3]
+  OnCertificateListsChanged@4();
 };
 
 // This interface mirrors the NetworkingPrivateDelegate from Lacros to Ash to

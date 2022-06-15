@@ -32,6 +32,7 @@ class LacrosNetworkingPrivateObserver
   void OnPortalDetectionCompleted(
       const std::string& networkGuid,
       crosapi::mojom::CaptivePortalStatus status) override;
+  void OnCertificateListsChanged() override;
 
   void AddObserver(extensions::NetworkingPrivateDelegateObserver* observer);
   void RemoveObserver(extensions::NetworkingPrivateDelegateObserver* observer);

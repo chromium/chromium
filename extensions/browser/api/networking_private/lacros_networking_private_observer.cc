@@ -79,6 +79,12 @@ void LacrosNetworkingPrivateObserver::OnPortalDetectionCompleted(
   }
 }
 
+void LacrosNetworkingPrivateObserver::OnCertificateListsChanged() {
+  for (auto& observer : lacros_observers_) {
+    observer.OnCertificateListsChanged();
+  }
+}
+
 void LacrosNetworkingPrivateObserver::AddObserver(
     extensions::NetworkingPrivateDelegateObserver* observer) {
   lacros_observers_.AddObserver(observer);

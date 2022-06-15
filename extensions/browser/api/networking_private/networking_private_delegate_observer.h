@@ -39,6 +39,9 @@ class NetworkingPrivateDelegateObserver {
       std::string networkGuid,
       api::networking_private::CaptivePortalStatus status) = 0;
 
+  // Notifies observers when any certificate list has changed.
+  virtual void OnCertificateListsChanged() = 0;
+
  protected:
   virtual ~NetworkingPrivateDelegateObserver() {}
 };

@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
+#include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,8 +17,10 @@
 namespace crosapi {
 
 // The ash-chrome implementation of the NetworkingPrivate crosapi interface.
-class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
-                             public chromeos::NetworkStateHandlerObserver {
+class NetworkingPrivateAsh
+    : public mojom::NetworkingPrivate,
+      public chromeos::NetworkStateHandlerObserver,
+      public chromeos::NetworkCertificateHandler::Observer {
  public:
   NetworkingPrivateAsh();
   NetworkingPrivateAsh(const NetworkingPrivateAsh&) = delete;
@@ -98,6 +101,9 @@ class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
       const chromeos::NetworkState* default_network,
       chromeos::NetworkState::PortalState portal_state) override;
 
+  // NetworkCertificateHandler::Observer overrides:
+  void OnCertificatesChanged() override;
+
  private:
   void OnObserverDisconnected(mojo::RemoteSetElementId id);
 
@@ -107,6 +113,9 @@ class NetworkingPrivateAsh : public mojom::NetworkingPrivate,
   base::ScopedObservation<chromeos::NetworkStateHandler,
                           chromeos::NetworkStateHandlerObserver>
       network_state_observation_{this};
+  base::ScopedObservation<chromeos::NetworkCertificateHandler,
+                          chromeos::NetworkCertificateHandler::Observer>
+      network_certificate_observation_{this};
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::NetworkingPrivate> receivers_;
 };

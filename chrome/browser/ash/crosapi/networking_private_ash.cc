@@ -425,8 +425,10 @@ void NetworkingPrivateAsh::AddObserver(
       std::move(observer)));
 
   if (!is_listening_network_state) {
-    network_state_observation_.Observe(
-        NetworkHandler::Get()->network_state_handler());
+    auto* net_handler = NetworkHandler::Get();
+    network_state_observation_.Observe(net_handler->network_state_handler());
+    network_certificate_observation_.Observe(
+        net_handler->network_certificate_handler());
   }
 }
 
@@ -490,9 +492,16 @@ void NetworkingPrivateAsh::PortalStateChanged(
   }
 }
 
+void NetworkingPrivateAsh::OnCertificatesChanged() {
+  for (auto& observer : observers_) {
+    observer->OnCertificateListsChanged();
+  }
+}
+
 void NetworkingPrivateAsh::OnObserverDisconnected(mojo::RemoteSetElementId id) {
   if (observers_.empty()) {
     network_state_observation_.Reset();
+    network_certificate_observation_.Reset();
   }
 }
 

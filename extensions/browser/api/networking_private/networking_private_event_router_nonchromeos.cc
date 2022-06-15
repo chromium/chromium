@@ -46,6 +46,7 @@ class NetworkingPrivateEventRouterImpl
   void OnPortalDetectionCompleted(
       std::string networkGuid,
       api::networking_private::CaptivePortalStatus status) override;
+  void OnCertificateListsChanged() override;
 
  private:
   // Decide if we should listen for network changes or not. If there are any
@@ -191,6 +192,20 @@ void NetworkingPrivateEventRouterImpl::OnPortalDetectionCompleted(
   auto extension_event = std::make_unique<Event>(
       events::NETWORKING_PRIVATE_ON_PORTAL_DETECTION_COMPLETED,
       api::networking_private::OnPortalDetectionCompleted::kEventName,
+      std::move(args));
+  event_router->BroadcastEvent(std::move(extension_event));
+}
+
+void NetworkingPrivateEventRouterImpl::OnCertificateListsChanged() {
+  EventRouter* event_router = EventRouter::Get(browser_context_);
+  if (!event_router) {
+    return;
+  }
+
+  auto args(api::networking_private::OnCertificateListsChanged::Create());
+  auto extension_event = std::make_unique<Event>(
+      events::NETWORKING_PRIVATE_ON_CERTIFICATE_LISTS_CHANGED,
+      api::networking_private::OnCertificateListsChanged::kEventName,
       std::move(args));
   event_router->BroadcastEvent(std::move(extension_event));
 }
