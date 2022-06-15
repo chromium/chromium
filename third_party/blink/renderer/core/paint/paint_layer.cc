@@ -1211,21 +1211,6 @@ void PaintLayer::CollectFragments(
   const auto& first_root_fragment_data =
       root_layer->GetLayoutObject().FirstFragment();
 
-  // If both |this| and |root_layer| are fragmented and are inside the same
-  // pagination container, then try to match fragments from |root_layer| to
-  // |this|, so that any fragment clip for |root_layer|'s fragment matches
-  // |this|'s. Note we check both EnclosingPaginationLayer() and next
-  // fragment here because the former may return false even if |this| is
-  // fragmented, e.g. for fixed-position objects in paged media, and the next
-  // fragment can be null even if the first fragment is actually in a fragmented
-  // context when the current layer appears in only one of the multiple
-  // fragments of the pagination container.
-  bool is_fragmented =
-      EnclosingPaginationLayer() || first_fragment_data.NextFragment();
-  bool should_match_fragments =
-      is_fragmented &&
-      root_layer->EnclosingPaginationLayer() == EnclosingPaginationLayer();
-
   const LayoutBox* layout_box_with_fragments = GetLayoutBoxWithBlockFragments();
 
   // The inherited offset_from_root does not include any pagination offsets.
@@ -1245,21 +1230,7 @@ void PaintLayer::CollectFragments(
       root_fragment_data = root_fragment_arg;
     } else if (root_layer == this) {
       root_fragment_data = fragment_data;
-    } else if (should_match_fragments) {
-      for (root_fragment_data = &first_root_fragment_data; root_fragment_data;
-           root_fragment_data = root_fragment_data->NextFragment()) {
-        if (root_fragment_data->FragmentID() == fragment_data->FragmentID())
-          break;
-      }
     } else {
-      root_fragment_data = &first_root_fragment_data;
-    }
-
-    bool cant_find_fragment = !root_fragment_data;
-    if (cant_find_fragment) {
-      DCHECK(should_match_fragments);
-      // Fall back to the first fragment, in order to have
-      // PaintLayerClipper at least compute |fragment.layer_bounds|.
       root_fragment_data = &first_root_fragment_data;
     }
 
@@ -1272,13 +1243,6 @@ void PaintLayer::CollectFragments(
         .CalculateRects(clip_rects_context, fragment_data,
                         fragment.layer_offset, fragment.background_rect,
                         fragment.foreground_rect);
-
-    if (cant_find_fragment) {
-      // If we couldn't find a matching fragment when |should_match_fragments|
-      // was true, then fall back to no clip.
-      fragment.background_rect.Reset();
-      fragment.foreground_rect.Reset();
-    }
 
     fragment.fragment_data = fragment_data;
 
