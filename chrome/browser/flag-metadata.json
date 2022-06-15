@@ -6426,7 +6426,7 @@
   {
     "name": "zero-copy-tab-capture",
     "owners": [ "bialpio@chromium.org", "media-capture-dev@chromium.org" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 110
   },
   {
     "name": "zero-copy-video-capture",
