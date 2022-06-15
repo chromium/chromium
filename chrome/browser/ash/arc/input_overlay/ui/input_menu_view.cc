@@ -324,7 +324,7 @@ void InputMenuView::Init() {
 
 std::unique_ptr<views::View> InputMenuView::BuildSeparator() {
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColorId(ui::kColorAshArcInputMenuSeparator);
+  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 
   return std::move(separator);
 }
