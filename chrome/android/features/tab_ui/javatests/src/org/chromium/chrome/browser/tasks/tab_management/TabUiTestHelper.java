@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -67,7 +68,9 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -100,6 +103,23 @@ public class TabUiTestHelper {
         for (int i = 0; i < (isIncognito ? tabsCount : tabsCount - 1); i++) {
             ChromeTabUtils.newTabFromMenu(
                     InstrumentationRegistry.getInstrumentation(), cta, isIncognito, true);
+        }
+    }
+
+    /**
+     * Open additional tabs for the provided activity. The added tabs will be opened to
+     * "about:blank" and will not wait for the page to finish loading.
+     * @param cta The activity to add the tabs to.
+     * @param incognito Whether the tabs should be incognito.
+     * @param count The number of tabs to create.
+     */
+    public static void addBlankTabs(ChromeTabbedActivity cta, boolean incognito, int count) {
+        for (int i = 0; i < count; i++) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                cta.getTabCreator(incognito).createNewTab(
+                        new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL),
+                        TabLaunchType.FROM_CHROME_UI, null);
+            });
         }
     }
 
