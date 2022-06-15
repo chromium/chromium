@@ -104,7 +104,7 @@ AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
     : inner_icon_loader_(this),
       icon_coalescer_(&inner_icon_loader_),
       outer_icon_loader_(&icon_coalescer_,
-                         apps::IconCache::GarbageCollectionPolicy::kEager),
+                         IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile) {
   if (base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
     preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(
@@ -114,7 +114,10 @@ AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
 
 AppServiceProxyBase::~AppServiceProxyBase() = default;
 
-void AppServiceProxyBase::ReInitializeForTesting(Profile* profile) {
+void AppServiceProxyBase::ReInitializeForTesting(
+    Profile* profile,
+    base::OnceClosure read_completed_for_testing,
+    base::OnceClosure write_completed_for_testing) {
   // Some test code creates a profile and profile-linked services, like the App
   // Service, before the profile is fully initialized. Such tests can call this
   // after full profile initialization to ensure the App Service implementation
@@ -122,6 +125,13 @@ void AppServiceProxyBase::ReInitializeForTesting(Profile* profile) {
   app_service_.reset();
   profile_ = profile;
   is_using_testing_profile_ = true;
+  if (base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
+    preferred_apps_impl_ = std::make_unique<apps::PreferredAppsImpl>(
+        this, profile ? profile->GetPath() : base::FilePath(),
+        std::move(read_completed_for_testing),
+        std::move(write_completed_for_testing));
+  }
+  publishers_.clear();
   Initialize();
 }
 
@@ -218,7 +228,8 @@ void AppServiceProxyBase::OnPreferredAppSet(
     ReplacedAppPreferences replaced_app_preferences) {
   for (const auto& iter : publishers_) {
     iter.second->OnPreferredAppSet(
-        app_id, intent_filter->Clone(), intent->Clone(),
+        app_id, intent_filter ? intent_filter->Clone() : nullptr,
+        intent ? intent->Clone() : nullptr,
         CloneIntentFiltersMap(replaced_app_preferences));
   }
 }

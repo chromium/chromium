@@ -640,6 +640,67 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredApps) {
             GetPreferredAppsList().FindPreferredAppForUrl(another_filter_url));
 }
 
+// Tests that writing a preferred app value before the PreferredAppsList is
+// initialized queues the write for after initialization.
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsWriteBeforeInit) {
+  base::RunLoop run_loop_read;
+  proxy()->ReInitializeForTesting(proxy()->profile(),
+                                  run_loop_read.QuitClosure());
+  GURL filter_url("https://www.abc.com/");
+
+  std::string kAppId1 = "aaa";
+  std::string kAppId2 = "bbb";
+
+  proxy()->PreferredAppsImpl()->AddPreferredApp(
+      AppType::kArc, kAppId1,
+      apps_util::MakeIntentFilterForMimeType("image/png"), nullptr,
+      /*from_publisher=*/false);
+
+  IntentFilters filters;
+  filters.push_back(apps_util::MakeIntentFilterForUrlScope(filter_url));
+  proxy()->SetSupportedLinksPreference(kAppId2, std::move(filters));
+
+  // Wait for the preferred apps list initialization to read from disk.
+  run_loop_read.Run();
+
+  // Both changes to the PreferredAppsList should have been applied.
+  std::vector<GURL> filesystem_urls(
+      {GURL("filesystem:chrome://foo/image.png")});
+  std::vector<std::string> mime_types({"image/png"});
+  ASSERT_EQ(kAppId1,
+            GetPreferredAppsList().FindPreferredAppForIntent(
+                apps_util::MakeShareIntent(filesystem_urls, mime_types)));
+  ASSERT_EQ(kAppId2, GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+}
+
+TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsPersistency) {
+  const char kAppId1[] = "abcdefg";
+  GURL filter_url = GURL("https://www.google.com/abc");
+  auto intent_filter = apps_util::MakeIntentFilterForUrlScope(filter_url);
+  {
+    base::RunLoop run_loop_read;
+    base::RunLoop run_loop_write;
+    proxy()->ReInitializeForTesting(proxy()->profile(),
+                                    run_loop_read.QuitClosure(),
+                                    run_loop_write.QuitClosure());
+    run_loop_read.Run();
+    proxy()->PreferredAppsImpl()->AddPreferredApp(
+        AppType::kUnknown, kAppId1, intent_filter->Clone(),
+        std::make_unique<Intent>(apps_util::kIntentActionView, filter_url),
+        /*from_publisher=*/false);
+    run_loop_write.Run();
+  }
+  // Create a new impl to initialize preferred apps from the disk.
+  {
+    base::RunLoop run_loop_read;
+    proxy()->ReInitializeForTesting(proxy()->profile(),
+                                    run_loop_read.QuitClosure());
+    run_loop_read.Run();
+    EXPECT_EQ(kAppId1,
+              GetPreferredAppsList().FindPreferredAppForUrl(filter_url));
+  }
+}
+
 TEST_F(AppServiceProxyPreferredAppsTest,
        PreferredAppsSetSupportedLinksPublisher) {
   GetPreferredAppsList().Init();
