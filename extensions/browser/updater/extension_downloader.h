@@ -176,8 +176,7 @@ class ExtensionDownloader {
   // We need to keep track of some information associated with a url
   // when doing a fetch.
   struct ExtensionFetch {
-    ExtensionFetch();
-    ExtensionFetch(const std::string& id,
+    ExtensionFetch(ExtensionDownloaderTask task,
                    const GURL& url,
                    const std::string& package_hash,
                    const std::string& version,
@@ -189,8 +188,11 @@ class ExtensionDownloader {
     GURL url;
     std::string package_hash;
     base::Version version;
+    // TODO(b:235968596): Remove `request_ids` from this struct, as we have all
+    // data needed in the associated tasks.
     std::set<int> request_ids;
     DownloadFetchPriority fetch_priority;
+    std::vector<ExtensionDownloaderTask> associated_tasks;
 
     enum CredentialsMode {
       CREDENTIALS_NONE = 0,

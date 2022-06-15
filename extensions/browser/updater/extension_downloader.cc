@@ -187,24 +187,23 @@ UpdateDetails::UpdateDetails(const std::string& id,
 
 UpdateDetails::~UpdateDetails() = default;
 
-ExtensionDownloader::ExtensionFetch::ExtensionFetch()
-    : credentials(CREDENTIALS_NONE) {}
-
 ExtensionDownloader::ExtensionFetch::ExtensionFetch(
-    const std::string& id,
+    ExtensionDownloaderTask task,
     const GURL& url,
     const std::string& package_hash,
     const std::string& version,
     const std::set<int>& request_ids,
     const DownloadFetchPriority fetch_priority)
-    : id(id),
+    : id(task.id),
       url(url),
       package_hash(package_hash),
       version(version),
       request_ids(request_ids),
       fetch_priority(fetch_priority),
       credentials(CREDENTIALS_NONE),
-      oauth2_attempt_count(0) {}
+      oauth2_attempt_count(0) {
+  associated_tasks.emplace_back(std::move(task));
+}
 
 ExtensionDownloader::ExtensionFetch::~ExtensionFetch() = default;
 
@@ -654,15 +653,16 @@ bool ExtensionDownloader::TryFetchingExtensionsFromCache(
                            /*version not fetched*/ base::Version(),
                            /*manifest_fetch_failed*/ true);
     if (cached_crx_path) {
+      const ExtensionId id = task.id;
       delegate_->OnExtensionDownloadStageChanged(
-          task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
+          id, ExtensionDownloaderDelegate::Stage::FINISHED);
       auto extension_fetch_data(std::make_unique<ExtensionFetch>(
-          task.id, fetch_data->base_url(), /*hash not fetched*/ "",
+          std::move(task), fetch_data->base_url(), /*hash not fetched*/ "",
           /*version not fetched*/ "", fetch_data->request_ids(),
           fetch_data->fetch_priority()));
       NotifyDelegateDownloadFinished(std::move(extension_fetch_data), true,
                                      cached_crx_path.value(), false);
-      extensions_fetched_from_cache.insert(task.id);
+      extensions_fetched_from_cache.insert(id);
     } else {
       tasks_left.emplace_back(std::move(task));
     }
@@ -809,7 +809,7 @@ void ExtensionDownloader::HandleManifestResults(
   // which returns tasks back via its output arguments.
   DetermineUpdates(fetch_data->TakeAssociatedTasks(), *results, &to_update,
                    &failures);
-  for (const auto& update : to_update) {
+  for (auto& update : to_update) {
     const std::string& extension_id = update.first.id;
 
     GURL crx_url = update.second->crx_url;
@@ -820,7 +820,7 @@ void ExtensionDownloader::HandleManifestResults(
     }
     FetchUpdatedExtension(
         std::make_unique<ExtensionFetch>(
-            extension_id, crx_url, update.second->package_hash,
+            std::move(update.first), crx_url, update.second->package_hash,
             update.second->version, fetch_data->request_ids(),
             fetch_data->fetch_priority()),
         update.second->info);
@@ -1090,6 +1090,10 @@ void ExtensionDownloader::FetchUpdatedExtension(
     if (iter->id == fetch_data->id || iter->url == fetch_data->url) {
       delegate_->OnExtensionDownloadStageChanged(
           fetch_data->id, ExtensionDownloaderDelegate::Stage::QUEUED_FOR_CRX);
+      iter->associated_tasks.insert(
+          iter->associated_tasks.end(),
+          std::make_move_iterator(fetch_data->associated_tasks.begin()),
+          std::make_move_iterator(fetch_data->associated_tasks.end()));
       iter->request_ids.insert(fetch_data->request_ids.begin(),
                                fetch_data->request_ids.end());
       return;  // already scheduled
@@ -1100,6 +1104,10 @@ void ExtensionDownloader::FetchUpdatedExtension(
       extensions_queue_.active_request()->url == fetch_data->url) {
     delegate_->OnExtensionDownloadStageChanged(
         fetch_data->id, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX);
+    extensions_queue_.active_request()->associated_tasks.insert(
+        extensions_queue_.active_request()->associated_tasks.end(),
+        std::make_move_iterator(fetch_data->associated_tasks.begin()),
+        std::make_move_iterator(fetch_data->associated_tasks.end()));
     extensions_queue_.active_request()->request_ids.insert(
         fetch_data->request_ids.begin(), fetch_data->request_ids.end());
     return;

@@ -1507,7 +1507,11 @@ class ExtensionUpdaterTest : public testing::Test {
     std::set<int> requests({0});
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id, test_url, hash, version.GetString(), requests, fetch_priority);
+            ExtensionDownloaderTask(id, GURL() /*update_url*/,
+                                    ManifestLocation::kInternal,
+                                    false /*is_corrupt_reinstall*/,
+                                    0 /*request_id*/, fetch_priority),
+            test_url, hash, version.GetString(), requests, fetch_priority);
 
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
@@ -1550,7 +1554,11 @@ class ExtensionUpdaterTest : public testing::Test {
     requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id, test_url, hash, version.GetString(), requests,
+            ExtensionDownloaderTask(
+                id, GURL() /*update_url*/, ManifestLocation::kInternal,
+                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
+                DownloadFetchPriority::kBackground),
+            test_url, hash, version.GetString(), requests,
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
@@ -1824,7 +1832,11 @@ class ExtensionUpdaterTest : public testing::Test {
     requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> extension_fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id, test_url, hash, version.GetString(), requests,
+            ExtensionDownloaderTask(
+                id, GURL() /*update_url*/, ManifestLocation::kInternal,
+                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
+                DownloadFetchPriority::kBackground),
+            test_url, hash, version.GetString(), requests,
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(extension_fetch),
                                                absl::nullopt);
@@ -2046,11 +2058,19 @@ class ExtensionUpdaterTest : public testing::Test {
     // Start two fetches
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch1 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id1, url1, hash1, version1, requests,
+            ExtensionDownloaderTask(
+                id1, GURL() /*update_url*/, ManifestLocation::kInternal,
+                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
+                DownloadFetchPriority::kBackground),
+            url1, hash1, version1, requests,
             DownloadFetchPriority::kBackground);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch2 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            id2, url2, hash2, version2, requests,
+            ExtensionDownloaderTask(
+                id2, GURL() /*update_url*/, ManifestLocation::kInternal,
+                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
+                DownloadFetchPriority::kBackground),
+            url2, hash2, version2, requests,
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch1),
                                                absl::optional<std::string>());
