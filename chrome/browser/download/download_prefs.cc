@@ -146,18 +146,21 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   const char* const kPathPrefs[] = {prefs::kSaveFileDefaultDirectory,
                                     prefs::kDownloadDefaultDirectory};
   for (const char* path_pref : kPathPrefs) {
-    const base::FilePath current = prefs->GetFilePath(path_pref);
-    base::FilePath migrated;
-    if (!current.empty() &&
-        file_manager::util::MigratePathFromOldFormat(
-            profile_, GetDefaultDownloadDirectory(), current, &migrated)) {
-      prefs->SetFilePath(path_pref, migrated);
-    } else if (file_manager::util::MigrateToDriveFs(profile_, current,
-                                                    &migrated)) {
-      prefs->SetFilePath(path_pref, migrated);
-    } else if (download_dir_util::ExpandDrivePolicyVariable(profile_, current,
-                                                            &migrated)) {
-      prefs->SetFilePath(path_pref, migrated);
+    // Update the download directory if the pref is from user pref store.
+    if (prefs->FindPreference(path_pref)->IsUserControlled()) {
+      const base::FilePath current = prefs->GetFilePath(path_pref);
+      base::FilePath migrated;
+      if (!current.empty() &&
+          file_manager::util::MigratePathFromOldFormat(
+              profile_, GetDefaultDownloadDirectory(), current, &migrated)) {
+        prefs->SetFilePath(path_pref, migrated);
+      } else if (file_manager::util::MigrateToDriveFs(profile_, current,
+                                                      &migrated)) {
+        prefs->SetFilePath(path_pref, migrated);
+      } else if (download_dir_util::ExpandDrivePolicyVariable(profile_, current,
+                                                              &migrated)) {
+        prefs->SetFilePath(path_pref, migrated);
+      }
     }
   }
 
@@ -172,23 +175,26 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   should_open_pdf_in_system_reader_ =
       prefs->GetBoolean(prefs::kOpenPdfDownloadInSystemReader);
 #endif
-
-  base::FilePath current_download_dir =
-      prefs->GetFilePath(prefs::kDownloadDefaultDirectory);
-  if (!current_download_dir.IsAbsolute()) {
-    // If we have a relative path or an empty path, we should reset to a safe,
-    // well-known path.
-    prefs->SetFilePath(prefs::kDownloadDefaultDirectory,
-                       GetDefaultDownloadDirectoryForProfile());
-  } else if (!prefs->GetBoolean(prefs::kDownloadDirUpgraded)) {
-    // If the download path is dangerous we forcefully reset it. But if we do
-    // so we set a flag to make sure we only do it once, to avoid fighting
-    // the user if they really want it on an unsafe place such as the desktop.
-    if (DownloadPathIsDangerous(current_download_dir)) {
+  // Update the download directory if the pref is from user pref store.
+  if (prefs->FindPreference(prefs::kDownloadDefaultDirectory)
+          ->IsUserControlled()) {
+    base::FilePath current_download_dir =
+        prefs->GetFilePath(prefs::kDownloadDefaultDirectory);
+    if (!current_download_dir.IsAbsolute()) {
+      // If we have a relative path or an empty path, we should reset to a safe,
+      // well-known path.
       prefs->SetFilePath(prefs::kDownloadDefaultDirectory,
                          GetDefaultDownloadDirectoryForProfile());
+    } else if (!prefs->GetBoolean(prefs::kDownloadDirUpgraded)) {
+      // If the download path is dangerous we forcefully reset it. But if we do
+      // so we set a flag to make sure we only do it once, to avoid fighting
+      // the user if they really want it on an unsafe place such as the desktop.
+      if (DownloadPathIsDangerous(current_download_dir)) {
+        prefs->SetFilePath(prefs::kDownloadDefaultDirectory,
+                           GetDefaultDownloadDirectoryForProfile());
+      }
+      prefs->SetBoolean(prefs::kDownloadDirUpgraded, true);
     }
-    prefs->SetBoolean(prefs::kDownloadDirUpgraded, true);
   }
 
   prompt_for_download_.Init(prefs::kPromptForDownload, prefs);
@@ -631,6 +637,11 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
   base::FilePath migrated_drive_path;
   // Managed prefs may force a legacy Drive path as the download path. Ensure
   // the path is valid when DriveFS is enabled.
+  if (!path.empty() && file_manager::util::MigratePathFromOldFormat(
+                           profile_, GetDefaultDownloadDirectory(), path,
+                           &migrated_drive_path)) {
+    return SanitizeDownloadTargetPath(migrated_drive_path);
+  }
   if (file_manager::util::MigrateToDriveFs(profile_, path,
                                            &migrated_drive_path)) {
     return SanitizeDownloadTargetPath(migrated_drive_path);
