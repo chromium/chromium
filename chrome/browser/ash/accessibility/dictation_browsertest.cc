@@ -1211,7 +1211,7 @@ class DictationHiddenMacrosTest : public DictationTest {
     RunHiddenMacroWithTwoStringArgs(/* SMART_SELECT_BTWN_INCL */ 24,
                                     start_phrase, end_phrase);
     bounding_box_waiter.Wait();
-    std::ignore = selection_waiter.WaitForNotification();
+    ASSERT_TRUE(selection_waiter.WaitForNotification());
   }
 
  private:
