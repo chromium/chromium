@@ -31,12 +31,14 @@ class ToolbarActionViewController;
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
-class ExtensionsToolbarContainer : public ToolbarIconContainerView,
-                                   public ExtensionsContainer,
-                                   public TabStripModelObserver,
-                                   public ToolbarActionsModel::Observer,
-                                   public ToolbarActionView::Delegate,
-                                   public views::WidgetObserver {
+class ExtensionsToolbarContainer
+    : public ToolbarIconContainerView,
+      public ExtensionsContainer,
+      public TabStripModelObserver,
+      public ToolbarActionsModel::Observer,
+      public ToolbarActionView::Delegate,
+      public views::WidgetObserver,
+      public extensions::PermissionsManager::Observer {
  public:
   METADATA_HEADER(ExtensionsToolbarContainer);
 
@@ -239,6 +241,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
+  // PermissionsManager::Observer:
+  void UserPermissionsSettingsChanged(
+      const extensions::PermissionsManager::UserPermissionsSettings& settings)
+      override;
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -255,8 +262,13 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;
+
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
+
   // TODO(emiliapaz): Remove `extensions_button_` once
   // `extensions_features::kExtensionsMenuAccessControl` experiment is released.
   // Exactly one of `extensions_button_ and `extensions_controls_` is created;

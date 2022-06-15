@@ -120,6 +120,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   SetVisible(false);
 
   model_observation_.Observe(model_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(browser_->profile()));
 
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -536,6 +538,11 @@ void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void ExtensionsToolbarContainer::UserPermissionsSettingsChanged(
+    const extensions::PermissionsManager::UserPermissionsSettings& settings) {
+  UpdateControlsVisibility();
+}
+
 void ExtensionsToolbarContainer::ReorderViews() {
   const auto& pinned_action_ids = model_->pinned_action_ids();
   for (size_t i = 0; i < pinned_action_ids.size(); ++i)
@@ -864,17 +871,14 @@ void ExtensionsToolbarContainer::UpdateControlsVisibility() {
     return;
 
   content::WebContents* web_contents = GetCurrentWebContents();
+  if (!web_contents)
+    return;
 
-  extensions_controls_->UpdateSiteAccessButtonVisibility(
-      ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
-          actions_, web_contents));
-
-  std::vector<ToolbarActionViewController*> extensions_requesting_access;
-  for (const auto& action : actions_) {
-    if (action->IsRequestingSiteAccess(web_contents))
-      extensions_requesting_access.push_back(action.get());
-  }
-  extensions_controls_->UpdateRequestAccessButton(extensions_requesting_access);
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetMainFrame()->GetLastCommittedOrigin());
+  extensions_controls_->UpdateControls(actions_, site_setting, web_contents);
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

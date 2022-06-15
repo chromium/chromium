@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 ExtensionsToolbarControls::ExtensionsToolbarControls(
@@ -29,15 +31,48 @@ ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;
 
 void ExtensionsToolbarControls::UpdateAllIcons() {}
 
-void ExtensionsToolbarControls::UpdateSiteAccessButtonVisibility(
-    bool visibility) {
-  site_access_button_->SetVisible(visibility);
+void ExtensionsToolbarControls::UpdateControls(
+    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    content::WebContents* current_web_contents) {
+  UpdateSiteAccessButton(actions, current_web_contents);
+  UpdateRequestAccessButton(actions, site_setting, current_web_contents);
 
-  ResetLayout();
+  // Resets the layout since layout animation does not handle host view
+  // visibility changing. This should be called after any visibility changes.
+  GetAnimatingLayoutManager()->ResetLayout();
+}
+
+void ExtensionsToolbarControls::UpdateSiteAccessButton(
+    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+    content::WebContents* web_contents) {
+  site_access_button_->SetVisible(
+      ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+          actions, web_contents));
 }
 
 void ExtensionsToolbarControls::UpdateRequestAccessButton(
-    std::vector<ToolbarActionViewController*> extensions_requesting_access) {
+    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    content::WebContents* web_contents) {
+  // User site settings takes precedence over extension site access. If the user
+  // has allowed or blocked all extensions, individual extensions cannot grant
+  // access to the page and therefore the request access button is not
+  // displayed.
+  if (site_setting == extensions::PermissionsManager::UserSiteSetting::
+                          kGrantAllExtensions ||
+      site_setting == extensions::PermissionsManager::UserSiteSetting::
+                          kBlockAllExtensions) {
+    request_access_button_->SetVisible(false);
+    return;
+  }
+
+  // Request access button is displayed if any extension requests access.
+  std::vector<ToolbarActionViewController*> extensions_requesting_access;
+  for (const auto& action : actions) {
+    if (action->IsRequestingSiteAccess(web_contents))
+      extensions_requesting_access.push_back(action.get());
+  }
   if (extensions_requesting_access.empty()) {
     request_access_button_->SetVisible(false);
   } else {
@@ -50,12 +85,6 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
         extensions_requesting_access);
     request_access_button_->SetVisible(true);
   }
-
-  ResetLayout();
-}
-
-void ExtensionsToolbarControls::ResetLayout() {
-  GetAnimatingLayoutManager()->ResetLayout();
 }
 
 BEGIN_METADATA(ExtensionsToolbarControls, ToolbarIconContainerView)

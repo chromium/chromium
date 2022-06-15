@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -12,7 +14,9 @@
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "ui/views/view_utils.h"
+#include "url/origin.h"
 
 class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
  public:
@@ -305,4 +309,61 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   InstallExtensionWithPermissions("Extension", {"activeTab"});
   EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+// Test that request access button is visible based on the user site setting
+// selected.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       RequestAccessButtonVisibility_UserSiteSetting) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+  const GURL url("http://www.url.com");
+  auto url_origin = url::Origin::Create(url);
+
+  // Install an extension and withhold permissions so request access button can
+  // be visible.
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+
+  // A site has "customize by extensions" site setting by default,
+  ASSERT_EQ(
+      GetUserSiteSetting(url),
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+
+  auto* manager = extensions::PermissionsManager::Get(profile());
+  {
+    // Request access button is not visible in permitted sites.
+    extensions::PermissionsManagerWaiter manager_waiter(
+        extensions::PermissionsManager::Get(profile()));
+    manager->AddUserPermittedSite(url_origin);
+    manager_waiter.WaitForPermissionsChange();
+    WaitForAnimation();
+    EXPECT_FALSE(IsRequestAccessButtonVisible());
+  }
+
+  {
+    // Request access button is not visible in restricted sites.
+    extensions::PermissionsManagerWaiter manager_waiter(
+        extensions::PermissionsManager::Get(profile()));
+    manager->AddUserRestrictedSite(url_origin);
+    manager_waiter.WaitForPermissionsChange();
+    WaitForAnimation();
+    EXPECT_FALSE(IsRequestAccessButtonVisible());
+  }
+
+  {
+    // Request acesss button is visible if site is not permitted or restricted,
+    // and at least one extension is requesting access.
+    extensions::PermissionsManagerWaiter manager_waiter(
+        extensions::PermissionsManager::Get(profile()));
+    manager->RemoveUserRestrictedSite(url_origin);
+    manager_waiter.WaitForPermissionsChange();
+    WaitForAnimation();
+    EXPECT_TRUE(IsRequestAccessButtonVisible());
+  }
 }

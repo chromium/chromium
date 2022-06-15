@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -31,11 +32,10 @@ class ExtensionsRequestAccessButtonHoverCardBrowserTest
     auto controllerA = std::make_unique<TestToolbarActionViewController>("A");
     std::vector<ToolbarActionViewController*> extensions_requesting_access;
     extensions_requesting_access.push_back(controllerA.get());
-    extensions_container()
-        ->GetExtensionsToolbarControls()
-        ->UpdateRequestAccessButton(extensions_requesting_access);
+    request_access_button()->UpdateExtensionsRequestingAccess(
+        extensions_requesting_access);
+    request_access_button()->SetVisible(true);
 
-    EXPECT_TRUE(request_access_button()->GetVisible());
     request_access_button()->MaybeShowHoverCard();
   }
 
