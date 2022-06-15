@@ -999,6 +999,14 @@ dictionary ProgressStatus {
   [instanceOf=Entry] object[]? outputs;
 };
 
+dictionary DlpMetadata {
+  // The source URL of the file, if it's been downloaded.
+  DOMString sourceUrl;
+
+  // True if there is any DLP policy on the file, false otherwise.
+  boolean isDlpRestricted;
+};
+
 // A Guest OS that supports guest->host file sharing. This definition should
 // match the one in file_manager_private.js.
 dictionary MountableGuest {
@@ -1058,9 +1066,10 @@ callback GetVolumeMetadataListCallback =
 callback GetDisallowedTransfersCallback =
     void([instanceOf=Entry] object[] disallowedEntries);
 
-// |restrictedFiles| A list of files with any Data Leak Prevention restriction.
-callback GetFilesRestrictedByDlpCallback =
-    void([instanceOf=Entry] object[] restrictedFiles);
+// |dlpMetadata| A list of DlpMetadata containing DLP information about
+// the entries.
+callback GetDlpMetadataCallback =
+    void(DlpMetadata[] dlpMetadata);
 
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
@@ -1343,13 +1352,14 @@ interface Functions {
       [instanceOf=DirectoryEntry] object destinationEntry,
       GetDisallowedTransfersCallback callback);
 
-  // Returns the list of files that have any Data Leak Prevention restriction rule set.
+  // Returns the list of DlpMetadata containing DLP information
+  // about the entries.
   // |entries| List of the source entries to be checked.
   // |callback| Result callback.
   [nocompile]
-  static void getFilesRestrictedByDlp(
+  static void getDlpMetadata(
       [instanceOf=Entry] object[] entries,
-      GetFilesRestrictedByDlpCallback callback);
+      GetDlpMetadataCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.

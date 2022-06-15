@@ -225,9 +225,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       });
 
   apiFunctions.setHandleRequest(
-      'getFilesRestrictedByDlp', function(entries, callback) {
+      'getDlpMetadata', function(entries, callback) {
         var sourceUrls = entries.map(getEntryURL);
-        fileManagerPrivateInternal.getFilesRestrictedByDlp(
+        fileManagerPrivateInternal.getDlpMetadata(
             sourceUrls, callback);
       });
 

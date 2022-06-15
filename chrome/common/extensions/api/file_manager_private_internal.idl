@@ -36,8 +36,8 @@ namespace fileManagerPrivateInternal {
   callback GetUrlCallback = void(DOMString url);
   callback GetDisallowedTransfersCallback =
       void(EntryDescription[] entries);
-  callback GetFilesRestrictedByDlpCallback =
-      void(EntryDescription[] entries);
+  callback GetDlpMetadataCallback =
+      void(fileManagerPrivate.DlpMetadata[] entries);
   callback StartCopyCallback = void(long copyId);
   callback IOTaskIdCallback = void(long taskId);
   callback ZipSelectionCallback = void(long zipId, double totalBytes);
@@ -98,8 +98,8 @@ namespace fileManagerPrivateInternal {
     static void getDisallowedTransfers(DOMString[] entries,
                                        DOMString destinationEntry,
                                        GetDisallowedTransfersCallback callback);
-    static void getFilesRestrictedByDlp(DOMString[] entries,
-                                        GetFilesRestrictedByDlpCallback callback);
+    static void getDlpMetadata(DOMString[] entries,
+                               GetDlpMetadataCallback callback);
     static void startCopy(DOMString url,
                           DOMString parentUrl,
                           DOMString newName,

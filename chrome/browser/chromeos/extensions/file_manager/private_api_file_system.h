@@ -299,28 +299,24 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
   storage::FileSystemURL destination_url_;
 };
 
-// Implements the chrome.fileManagerPrivate.getFilesRestrictedByDlp method.
-class FileManagerPrivateInternalGetFilesRestrictedByDlpFunction
+// Implements the chrome.fileManagerPrivateInternal.getDlpMetadata method.
+class FileManagerPrivateInternalGetDlpMetadataFunction
     : public LoggedExtensionFunction {
  public:
-  FileManagerPrivateInternalGetFilesRestrictedByDlpFunction();
+  FileManagerPrivateInternalGetDlpMetadataFunction();
 
-  DECLARE_EXTENSION_FUNCTION(
-      "fileManagerPrivateInternal.getFilesRestrictedByDlp",
-      FILEMANAGERPRIVATEINTERNAL_GETFILESRESTRICTEDBYDLP)
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getDlpMetadata",
+                             FILEMANAGERPRIVATEINTERNAL_GETDLPMETADATA)
 
  protected:
-  ~FileManagerPrivateInternalGetFilesRestrictedByDlpFunction() override;
+  ~FileManagerPrivateInternalGetDlpMetadataFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
  private:
-  void OnGetFilesRestrictedByDlp(
-      std::vector<storage::FileSystemURL> restricted_files);
-  void OnConvertFileDefinitionListToEntryDefinitionList(
-      std::unique_ptr<file_manager::util::EntryDefinitionList>
-          entry_definition_list);
+  void OnGetDlpMetadata(
+      std::vector<policy::DlpFilesController::DlpFileMetadata> dlp_metadata);
 
   std::unique_ptr<policy::DlpFilesController> files_controller_;
   std::vector<storage::FileSystemURL> source_urls_;

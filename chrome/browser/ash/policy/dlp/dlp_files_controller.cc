@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 
+#include <sys/types.h>
 #include <string>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -29,6 +31,22 @@
 namespace policy {
 
 namespace {
+
+absl::optional<ino_t> GetInodeValue(const base::FilePath& path) {
+  struct stat file_stats;
+  if (stat(path.value().c_str(), &file_stats) != 0)
+    return absl::nullopt;
+  return file_stats.st_ino;
+}
+
+std::vector<absl::optional<ino_t>> GetFilesInodes(
+    const std::vector<storage::FileSystemURL>& files) {
+  std::vector<absl::optional<ino_t>> inodes;
+  for (const auto& file : files) {
+    inodes.push_back(GetInodeValue(file.path()));
+  }
+  return inodes;
+}
 
 // Maps |file_path| to DlpRulesManager::Component if possible.
 absl::optional<DlpRulesManager::Component> MapFilePathtoPolicyComponent(
@@ -61,6 +79,11 @@ absl::optional<DlpRulesManager::Component> MapFilePathtoPolicyComponent(
 }
 
 }  // namespace
+
+DlpFilesController::DlpFileMetadata::DlpFileMetadata(
+    const std::string& source_url,
+    bool is_dlp_restricted)
+    : source_url(source_url), is_dlp_restricted(is_dlp_restricted) {}
 
 DlpFilesController::DlpFilesController() = default;
 
@@ -100,16 +123,25 @@ void DlpFilesController::GetDisallowedTransfers(
                      std::move(result_callback)));
 }
 
-void DlpFilesController::GetFilesRestrictedByAnyRule(
+void DlpFilesController::GetDlpMetadata(
     std::vector<storage::FileSystemURL> files,
-    GetFilesRestrictedByAnyRuleCallback result_callback) {
+    GetDlpMetadataCallback result_callback) {
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
-    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
+    std::move(result_callback).Run(std::vector<DlpFileMetadata>());
     return;
   }
-  // TODO(aidazolic): Implement getting the restricted files by calling DLP
-  // daemon to check restrictions.
-  NOTIMPLEMENTED();
+
+  std::vector<absl::optional<ino_t>> inodes = GetFilesInodes(files);
+  dlp::GetFilesSourcesRequest request;
+  for (const auto& inode : inodes) {
+    if (inode.has_value()) {
+      request.add_files_inodes(inode.value());
+    }
+  }
+  chromeos::DlpClient::Get()->GetFilesSources(
+      request, base::BindOnce(&DlpFilesController::ReturnDlpMetadata,
+                              weak_ptr_factory_.GetWeakPtr(), std::move(inodes),
+                              std::move(result_callback)));
 }
 
 void DlpFilesController::FilterDisallowedUploads(
@@ -216,6 +248,50 @@ void DlpFilesController::ReturnAllowedUploads(
     filtered_files.push_back(std::move(file));
   }
   std::move(result_callback).Run(std::move(filtered_files));
+}
+
+void DlpFilesController::ReturnDlpMetadata(
+    std::vector<absl::optional<ino_t>> inodes,
+    GetDlpMetadataCallback result_callback,
+    const dlp::GetFilesSourcesResponse response) {
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to get files sources, error: "
+               << response.error_message();
+  }
+
+  policy::DlpRulesManager* dlp_rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!dlp_rules_manager) {
+    std::move(result_callback).Run(std::vector<DlpFileMetadata>());
+    return;
+  }
+
+  base::flat_map<ino_t, DlpFileMetadata> metadata_map;
+  for (const auto& metadata : response.files_metadata()) {
+    DlpRulesManager::Level level = dlp_rules_manager->IsRestrictedByAnyRule(
+        GURL(metadata.source_url()), DlpRulesManager::Restriction::kFiles);
+    bool is_dlp_restricted = level != DlpRulesManager::Level::kNotSet &&
+                             level != DlpRulesManager::Level::kAllow;
+    metadata_map.emplace(
+        metadata.inode(),
+        DlpFileMetadata(metadata.source_url(), is_dlp_restricted));
+  }
+
+  std::vector<DlpFileMetadata> result;
+  for (const auto& inode : inodes) {
+    if (!inode.has_value()) {
+      result.emplace_back("", false);
+      continue;
+    }
+    auto metadata_itr = metadata_map.find(inode.value());
+    if (metadata_itr == metadata_map.end()) {
+      result.emplace_back("", false);
+    } else {
+      result.emplace_back(metadata_itr->second);
+    }
+  }
+
+  std::move(result_callback).Run(std::move(result));
 }
 
 }  // namespace policy

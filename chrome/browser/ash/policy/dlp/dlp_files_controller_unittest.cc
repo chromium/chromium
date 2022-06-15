@@ -70,6 +70,10 @@ bool CreateDummyFile(const base::FilePath& path) {
 }  // namespace
 
 class DlpFilesControllerTest : public testing::Test {
+ public:
+  DlpFilesControllerTest(const DlpFilesControllerTest&) = delete;
+  DlpFilesControllerTest& operator=(const DlpFilesControllerTest&) = delete;
+
  protected:
   DlpFilesControllerTest()
       : profile_(std::make_unique<TestingProfile>()),
@@ -77,10 +81,7 @@ class DlpFilesControllerTest : public testing::Test {
         scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(user_manager_))) {}
 
-  DlpFilesControllerTest(const DlpFilesControllerTest&) = delete;
-  DlpFilesControllerTest& operator=(const DlpFilesControllerTest&) = delete;
-
-  ~DlpFilesControllerTest() override {}
+  ~DlpFilesControllerTest() override = default;
 
   void SetUp() override {
     AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
@@ -327,19 +328,58 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   EXPECT_EQ(filtered_uploads, future.Take());
 }
 
+TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
+  AddFilesToDlpClient();
+
+  std::vector<storage::FileSystemURL> files_to_check(
+      {file_url1_, file_url2_, file_url3_});
+  std::vector<DlpFilesController::DlpFileMetadata> dlp_metadata(
+      {DlpFilesController::DlpFileMetadata(kExample1, true),
+       DlpFilesController::DlpFileMetadata(kExample2, false),
+       DlpFilesController::DlpFileMetadata(kExample3, true)});
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+
+  base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
+      future;
+  files_controller_.GetDlpMetadata(files_to_check, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(dlp_metadata, future.Take());
+}
+
+TEST_F(DlpFilesControllerTest, GetDlpMetadata_FileNotAvailable) {
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+
+  std::vector<storage::FileSystemURL> files_to_check({file_url1_});
+  std::vector<DlpFilesController::DlpFileMetadata> dlp_metadata(
+      {DlpFilesController::DlpFileMetadata("", false)});
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
+      future;
+  files_controller_.GetDlpMetadata(files_to_check, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(dlp_metadata, future.Take());
+}
+
 class DlpFilesExternalDestinationTest
     : public DlpFilesControllerTest,
       public ::testing::WithParamInterface<
           std::tuple<std::string, std::string, DlpRulesManager::Component>> {
- protected:
-  DlpFilesExternalDestinationTest() = default;
-
+ public:
   DlpFilesExternalDestinationTest(const DlpFilesExternalDestinationTest&) =
       delete;
   DlpFilesExternalDestinationTest& operator=(
       const DlpFilesExternalDestinationTest&) = delete;
 
-  ~DlpFilesExternalDestinationTest() = default;
+ protected:
+  DlpFilesExternalDestinationTest() = default;
+
+  ~DlpFilesExternalDestinationTest() override = default;
 
   void SetUp() override {
     DlpFilesControllerTest::SetUp();
