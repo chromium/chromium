@@ -287,6 +287,7 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "sync/0x?/model_type/PASSWORD",
     "sync/0x?/model_type/PREFERENCE",
     "sync/0x?/model_type/PRINTER",
+    "sync/0x?/model_type/PRINTERS_AUTHORIZATION_SERVER",
     "sync/0x?/model_type/PRIORITY_PREFERENCE",
     "sync/0x?/model_type/READING_LIST",
     "sync/0x?/model_type/SEARCH_ENGINE",

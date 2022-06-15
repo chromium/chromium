@@ -30,7 +30,7 @@
 namespace {
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(39 == syncer::GetNumModelTypes(),
+  static_assert(40 == syncer::GetNumModelTypes(),
                 "Add new types below if they run in transport mode");
   // Only some special allowlisted types (and control types) are allowed in
   // standalone transport mode.
@@ -42,11 +42,12 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // OS sync types run in transport mode.
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    allowed_types.PutAll({syncer::APPS, syncer::APP_SETTINGS, syncer::APP_LIST,
-                          syncer::APP_SETTINGS, syncer::ARC_PACKAGE,
-                          syncer::PRINTERS, syncer::OS_PREFERENCES,
-                          syncer::OS_PRIORITY_PREFERENCES, syncer::WEB_APPS,
-                          syncer::WORKSPACE_DESK});
+    allowed_types.PutAll(
+        {syncer::APPS, syncer::APP_SETTINGS, syncer::APP_LIST,
+         syncer::APP_SETTINGS, syncer::ARC_PACKAGE, syncer::PRINTERS,
+         syncer::PRINTERS_AUTHORIZATION_SERVERS, syncer::OS_PREFERENCES,
+         syncer::OS_PRIORITY_PREFERENCES, syncer::WEB_APPS,
+         syncer::WORKSPACE_DESK});
   }
   allowed_types.Put(syncer::WIFI_CONFIGURATIONS);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

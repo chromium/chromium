@@ -51,6 +51,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
         // SyncSettingsCategorization makes Printers a separate OS setting.
         model_types.Put(PRINTERS);
+        model_types.Put(PRINTERS_AUTHORIZATION_SERVERS);
 
         // Workspace desk template is an OS-only feature. When
         // SyncSettingsCategorization is disabled, WORKSPACE_DESK should be
@@ -127,10 +128,10 @@ UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
               APPS,
               {APP_LIST, APPS, APP_SETTINGS, ARC_PACKAGE, WEB_APPS}};
     case UserSelectableOsType::kOsPreferences:
-      return {
-          kOsPreferencesTypeName,
-          OS_PREFERENCES,
-          {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS, WORKSPACE_DESK}};
+      return {kOsPreferencesTypeName,
+              OS_PREFERENCES,
+              {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
+               PRINTERS_AUTHORIZATION_SERVERS, WORKSPACE_DESK}};
     case UserSelectableOsType::kOsWifiConfigurations:
       return {kOsWifiConfigurationsTypeName,
               WIFI_CONFIGURATIONS,

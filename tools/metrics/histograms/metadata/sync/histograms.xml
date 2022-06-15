@@ -45,6 +45,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".PASSWORD" summary="PASSWORD"/>
   <variant name=".PREFERENCE" summary="PREFERENCE"/>
   <variant name=".PRINTERS" summary="PRINTERS"/>
+  <variant name=".PRINTERS_AUTHORIZATION_SERVERS"
+      summary="PRINTERS_AUTHORIZATION_SERVERS"/>
   <variant name=".PRIORITY_PREFERENCE" summary="PRIORITY_PREFERENCE"/>
   <variant name=".PROXY_TABS" summary="PROXY_TABS"/>
   <variant name=".READING_LIST" summary="READING_LIST"/>

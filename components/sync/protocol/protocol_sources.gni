@@ -47,6 +47,7 @@ sync_protocol_sources = [
   "persisted_entity_data.proto",
   "preference_specifics.proto",
   "printer_specifics.proto",
+  "printers_authorization_server_specifics.proto",
   "priority_preference_specifics.proto",
   "reading_list_specifics.proto",
   "search_engine_specifics.proto",

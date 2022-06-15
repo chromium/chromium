@@ -57,7 +57,7 @@ namespace {
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(39 == syncer::GetNumModelTypes(),
+static_assert(40 == syncer::GetNumModelTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -84,6 +84,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(os_priority_preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(password)
 DEFINE_SPECIFICS_TO_VALUE_TEST(preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(printer)
+DEFINE_SPECIFICS_TO_VALUE_TEST(printers_authorization_server)
 DEFINE_SPECIFICS_TO_VALUE_TEST(priority_preference)
 DEFINE_SPECIFICS_TO_VALUE_TEST(reading_list)
 DEFINE_SPECIFICS_TO_VALUE_TEST(search_engine)

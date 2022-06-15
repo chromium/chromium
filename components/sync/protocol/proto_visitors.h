@@ -33,6 +33,7 @@
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
+#include "components/sync/protocol/printers_authorization_server_specifics.pb.h"
 #include "components/sync/protocol/priority_preference_specifics.pb.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
@@ -462,7 +463,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(39 == GetNumModelTypes(),
+  static_assert(40 == GetNumModelTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -488,6 +489,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(password);
   VISIT(preference);
   VISIT(printer);
+  VISIT(printers_authorization_server);
   VISIT(priority_preference);
   VISIT(reading_list);
   VISIT(search_engine);
@@ -825,6 +827,10 @@ VISIT_PROTO_FIELDS(const sync_pb::PrinterSpecifics& proto) {
   VISIT(uuid);
   VISIT(ppd_reference);
   VISIT(make_and_model);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PrintersAuthorizationServerSpecifics& proto) {
+  VISIT(uri);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PriorityPreferenceSpecifics& proto) {

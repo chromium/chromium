@@ -82,7 +82,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(39 == syncer::GetNumModelTypes(),
+    static_assert(40 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -126,6 +126,7 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     }
     datatypes.Put(syncer::PRINTERS);
+    // TODO(pawliczek): Add PRINTERS_AUTHORIZATION_SERVERS when ready.
     datatypes.Put(syncer::WIFI_CONFIGURATIONS);
     datatypes.Put(syncer::WORKSPACE_DESK);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

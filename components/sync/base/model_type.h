@@ -136,6 +136,8 @@ enum ModelType {
   // WEBAUTHN_CREDENTIAL,
   // Synced history. An entity roughly corresponds to a navigation.
   HISTORY,
+  // Trusted Authorization Servers for printers. ChromeOS only.
+  PRINTERS_AUTHORIZATION_SERVERS,
 
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
@@ -233,7 +235,8 @@ enum class ModelTypeForHistograms {
   kAutofillWalletOffer = 49,
   kWorkspaceDesk = 50,
   kHistory = 51,
-  kMaxValue = kHistory
+  kPrintersAuthorizationServers = 52,
+  kMaxValue = kPrintersAuthorizationServers
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -256,7 +259,7 @@ constexpr ModelTypeSet ProtocolTypes() {
       ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
       SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
       OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK,
-      HISTORY);
+      HISTORY, PRINTERS_AUTHORIZATION_SERVERS);
 }
 
 // These are the normal user-controlled types. This is to distinguish from

@@ -295,7 +295,7 @@ constexpr const char* kLacrosOnlyPreferencesKeys[] = {
 };
 
 // List of data types in Sync Data that have to stay in Ash and Ash only.
-static_assert(39 == syncer::GetNumModelTypes(),
+static_assert(40 == syncer::GetNumModelTypes(),
               "If adding a new sync data type, update the lists below if"
               " you want to keep the new data type in Ash only.");
 constexpr syncer::ModelType kAshOnlySyncDataTypes[] = {
@@ -304,6 +304,7 @@ constexpr syncer::ModelType kAshOnlySyncDataTypes[] = {
     syncer::ModelType::OS_PREFERENCES,
     syncer::ModelType::OS_PRIORITY_PREFERENCES,
     syncer::ModelType::PRINTERS,
+    syncer::ModelType::PRINTERS_AUTHORIZATION_SERVERS,
     syncer::ModelType::WIFI_CONFIGURATIONS,
     syncer::ModelType::WORKSPACE_DESK,
 };

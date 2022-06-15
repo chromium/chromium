@@ -38,6 +38,7 @@ import "components/sync/protocol/os_priority_preference_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
 import "components/sync/protocol/printer_specifics.proto";
+import "components/sync/protocol/printers_authorization_server_specifics.proto";
 import "components/sync/protocol/priority_preference_specifics.proto";
 import "components/sync/protocol/reading_list_specifics.proto";
 import "components/sync/protocol/search_engine_specifics.proto";
@@ -155,6 +156,7 @@ message EntitySpecifics {
     // the server and by Play Services. (crbug.com/1223853)
     WebauthnCredentialSpecifics webauthn_credential = 895275;
     HistorySpecifics history = 963985;
+    PrintersAuthorizationServerSpecifics printers_authorization_server = 974304;
   }
   reserved 218175;
   reserved "wifi_credential";

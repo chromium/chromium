@@ -47,6 +47,7 @@ class PaymentsCustomerData;
 class PreferenceSpecifics;
 class PrinterPPDReference;
 class PrinterSpecifics;
+class PrintersAuthorizationServerSpecifics;
 class PriorityPreferenceSpecifics;
 class ReadingListSpecifics;
 class SearchEngineSpecifics;
@@ -183,6 +184,11 @@ std::unique_ptr<base::DictionaryValue> PrinterPPDReferenceToValue(
 
 std::unique_ptr<base::DictionaryValue> PrinterSpecificsToValue(
     const sync_pb::PrinterSpecifics& printer_specifics);
+
+std::unique_ptr<base::DictionaryValue>
+PrintersAuthorizationServerSpecificsToValue(
+    const sync_pb::PrintersAuthorizationServerSpecifics&
+        printers_authorization_server_specifics);
 
 std::unique_ptr<base::DictionaryValue> PriorityPreferenceSpecificsToValue(
     const sync_pb::PriorityPreferenceSpecifics& proto);

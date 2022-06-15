@@ -39,9 +39,9 @@ ModelTypeSet GetUserTypes() {
   }
 #else
   // Ignore all Chrome OS types on non-Chrome OS platforms.
-  user_types.RemoveAll({APP_LIST, ARC_PACKAGE, OS_PREFERENCES,
-                        OS_PRIORITY_PREFERENCES, PRINTERS, WIFI_CONFIGURATIONS,
-                        WORKSPACE_DESK});
+  user_types.RemoveAll(
+      {APP_LIST, ARC_PACKAGE, OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
+       PRINTERS_AUTHORIZATION_SERVERS, WIFI_CONFIGURATIONS, WORKSPACE_DESK});
 #endif
   return user_types;
 }
