@@ -125,7 +125,6 @@ js_type_check("ui_resources") {
     ":focus_manager",
     ":focus_outline_manager",
     ":focus_row",
-    ":focus_row_behavior",
     ":focus_without_ink",
     ":keyboard_shortcut_list",
     ":list",
@@ -140,7 +139,10 @@ js_type_check("ui_resources") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ ":grid" ]
+    deps += [
+      ":focus_row_behavior",
+      ":grid",
+    ]
   }
 }
 
@@ -185,11 +187,13 @@ js_library("focus_outline_manager") {
   deps = [ "../..:cr" ]
 }
 
-js_library("focus_row_behavior") {
-  deps = [
-    ":focus_row",
-    ":focus_without_ink",
-  ]
+if (is_chromeos_ash) {
+  js_library("focus_row_behavior") {
+    deps = [
+      ":focus_row",
+      ":focus_without_ink",
+    ]
+  }
 }
 
 js_library("focus_row") {
@@ -208,8 +212,10 @@ js_library("focus_without_ink") {
   ]
 }
 
-js_library("grid") {
-  deps = [ ":list" ]
+if (is_chromeos_ash) {
+  js_library("grid") {
+    deps = [ ":list" ]
+  }
 }
 
 js_library("keyboard_shortcut_list") {

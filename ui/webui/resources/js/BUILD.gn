@@ -164,18 +164,23 @@ js_type_check("js_resources") {
     ":assert",
     ":cr",
     ":event_tracker",
-    ":i18n_behavior",
     ":i18n_template_no_process",
-    ":list_property_update_behavior",
     ":load_time_data",
     ":parse_html_subset",
     ":promise_resolver",
     ":util",
-    ":web_ui_listener_behavior",
     ":webui_resource_test",
   ]
   if (is_ios) {
     deps += [ "ios:web_ui" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      ":i18n_behavior",
+      ":list_property_update_behavior",
+      ":web_ui_listener_behavior",
+    ]
   }
 }
 
@@ -201,14 +206,16 @@ js_library("i18n_template_no_process") {
   deps = [ ":load_time_data" ]
 }
 
-js_library("i18n_behavior") {
-  deps = [
-    ":load_time_data",
-    ":parse_html_subset",
-  ]
-}
+if (is_chromeos_ash) {
+  js_library("i18n_behavior") {
+    deps = [
+      ":load_time_data",
+      ":parse_html_subset",
+    ]
+  }
 
-js_library("list_property_update_behavior") {
+  js_library("list_property_update_behavior") {
+  }
 }
 
 js_library("load_time_data") {
@@ -231,8 +238,10 @@ js_library("util") {
 js_library("webview_manager") {
 }
 
-js_library("web_ui_listener_behavior") {
-  deps = [ ":cr" ]
+if (is_chromeos_ash) {
+  js_library("web_ui_listener_behavior") {
+    deps = [ ":cr" ]
+  }
 }
 
 js_library("webui_resource_test") {
