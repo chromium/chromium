@@ -622,7 +622,7 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
   if (!action_object->GetString("value", &raw_key))
     return Status(kUnknownError, "missing 'value'");
 
-  int32_t char_index = 0;
+  size_t char_index = 0;
   base_icu::UChar32 code_point;
   base::ReadUnicodeCharacter(raw_key.c_str(), raw_key.size(), &char_index,
                              &code_point);

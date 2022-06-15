@@ -43,8 +43,8 @@ template<class It>
 std::pair<char32_t, It> _utf8_decode(It it, It end) {
   assert(it != end);
   const char* src = &*it;
-  int32_t src_len = std::distance(it, end);
-  int32_t char_index = 0;
+  size_t src_len = static_cast<size_t>(std::distance(it, end));
+  size_t char_index = 0;
   base_icu::UChar32 code_point_out;
 
   base::ReadUnicodeCharacter(src, src_len, &char_index, &code_point_out);

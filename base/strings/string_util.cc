@@ -174,7 +174,8 @@ void TruncateUTF8ToByteSize(const std::string& input,
   while (char_index >= 0) {
     int32_t prev = char_index;
     base_icu::UChar32 code_point = 0;
-    CBU8_NEXT(data, char_index, truncation_length, code_point);
+    CBU8_NEXT(reinterpret_cast<const uint8_t*>(data), char_index,
+              truncation_length, code_point);
     if (!IsValidCharacter(code_point)) {
       char_index = prev - 1;
     } else {
@@ -183,7 +184,7 @@ void TruncateUTF8ToByteSize(const std::string& input,
   }
 
   if (char_index >= 0 )
-    *output = input.substr(0, char_index);
+    *output = input.substr(0, static_cast<size_t>(char_index));
   else
     output->clear();
 }

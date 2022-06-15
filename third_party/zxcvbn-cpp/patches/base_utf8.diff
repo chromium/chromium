@@ -56,8 +56,8 @@ index 107bce0af064..349c2a5448ae 100644
 +std::pair<char32_t, It> _utf8_decode(It it, It end) {
 +  assert(it != end);
 +  const char* src = &*it;
-+  int32_t src_len = std::distance(it, end);
-+  int32_t char_index = 0;
++  size_t src_len = static_cast<size_t>(std::distance(it, end));
++  size_t char_index = 0;
 +  base_icu::UChar32 code_point_out;
  
 -bool utf8_valid(std::string::const_iterator start,

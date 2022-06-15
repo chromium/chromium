@@ -336,8 +336,8 @@ DomKey KeycodeConverter::KeyStringToDomKey(base::StringPiece key) {
   }
   // Otherwise, if the string contains a single Unicode character,
   // the key value is that character.
-  const auto key_length = static_cast<int32_t>(key.length());
-  int32_t char_index = 0;
+  const size_t key_length = key.length();
+  size_t char_index = 0;
   base_icu::UChar32 character;
   if (base::ReadUnicodeCharacter(key.data(), key_length, &char_index,
                                  &character) &&

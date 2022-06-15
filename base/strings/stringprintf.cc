@@ -65,14 +65,14 @@ static void StringAppendVT(std::basic_string<CharT>* dst,
   int result = vsnprintfT(stack_buf, std::size(stack_buf), format, ap_copy);
   va_end(ap_copy);
 
-  if (result >= 0 && result < static_cast<int>(std::size(stack_buf))) {
+  if (result >= 0 && static_cast<size_t>(result) < std::size(stack_buf)) {
     // It fit.
-    dst->append(stack_buf, result);
+    dst->append(stack_buf, static_cast<size_t>(result));
     return;
   }
 
   // Repeatedly increase buffer size until it fits.
-  int mem_length = std::size(stack_buf);
+  size_t mem_length = std::size(stack_buf);
   while (true) {
     if (result < 0) {
 #if BUILDFLAG(IS_WIN)
@@ -88,7 +88,7 @@ static void StringAppendVT(std::basic_string<CharT>* dst,
 #endif
     } else {
       // We need exactly "result + 1" characters.
-      mem_length = result + 1;
+      mem_length = static_cast<size_t>(result) + 1;
     }
 
     if (mem_length > 32 * 1024 * 1024) {
@@ -107,9 +107,9 @@ static void StringAppendVT(std::basic_string<CharT>* dst,
     result = vsnprintfT(&mem_buf[0], mem_length, format, ap_copy);
     va_end(ap_copy);
 
-    if ((result >= 0) && (result < mem_length)) {
+    if ((result >= 0) && (static_cast<size_t>(result) < mem_length)) {
       // It fit.
-      dst->append(&mem_buf[0], result);
+      dst->append(&mem_buf[0], static_cast<size_t>(result));
       return;
     }
   }

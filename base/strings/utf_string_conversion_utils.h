@@ -49,21 +49,21 @@ inline bool IsValidCharacter(base_icu::UChar32 code_point) {
 //
 // Returns true on success. On false, |*code_point| will be invalid.
 BASE_EXPORT bool ReadUnicodeCharacter(const char* src,
-                                      int32_t src_len,
-                                      int32_t* char_index,
+                                      size_t src_len,
+                                      size_t* char_index,
                                       base_icu::UChar32* code_point_out);
 
 // Reads a UTF-16 character. The usage is the same as the 8-bit version above.
 BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
-                                      int32_t src_len,
-                                      int32_t* char_index,
+                                      size_t src_len,
+                                      size_t* char_index,
                                       base_icu::UChar32* code_point);
 
 #if defined(WCHAR_T_IS_UTF32)
 // Reads UTF-32 character. The usage is the same as the 8-bit version above.
 BASE_EXPORT bool ReadUnicodeCharacter(const wchar_t* src,
-                                      int32_t src_len,
-                                      int32_t* char_index,
+                                      size_t src_len,
+                                      size_t* char_index,
                                       base_icu::UChar32* code_point);
 #endif  // defined(WCHAR_T_IS_UTF32)
 
@@ -71,20 +71,21 @@ BASE_EXPORT bool ReadUnicodeCharacter(const wchar_t* src,
 
 // Appends a UTF-8 character to the given 8-bit string.  Returns the number of
 // bytes written.
-BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
+BASE_EXPORT size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
                                          std::string* output);
 
 // Appends the given code point as a UTF-16 character to the given 16-bit
 // string.  Returns the number of 16-bit values written.
-BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
+BASE_EXPORT size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
                                          std::u16string* output);
 
 #if defined(WCHAR_T_IS_UTF32)
 // Appends the given UTF-32 character to the given 32-bit string.  Returns the
 // number of 32-bit values written.
-inline size_t WriteUnicodeCharacter(uint32_t code_point, std::wstring* output) {
+inline size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
+                                    std::wstring* output) {
   // This is the easy case, just append the character.
-  output->push_back(code_point);
+  output->push_back(static_cast<wchar_t>(code_point));
   return 1;
 }
 #endif  // defined(WCHAR_T_IS_UTF32)
