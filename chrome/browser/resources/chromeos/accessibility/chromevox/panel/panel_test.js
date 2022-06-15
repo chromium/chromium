@@ -133,8 +133,8 @@ TEST_F('ChromeVoxPanelTest', 'FormControlsMenu', async function() {
 });
 
 
-// TODO(https://crbug.com/1333375): Flaky on MSAN builders.
-GEN('#if defined(MEMORY_SANITIZER)');
+// TODO(https://crbug.com/1333375): Flaky on MSAN and ASAN builders.
+GEN('#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)');
 GEN('#define MAYBE_SearchMenu DISABLED_SearchMenu');
 GEN('#else');
 GEN('#define MAYBE_SearchMenu SearchMenu');
