@@ -19,11 +19,13 @@
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_constants/constants.h"
@@ -52,7 +54,6 @@ std::string GetBrowserAppName(
              ? maybe_app_name.value()
              : app_id;
 }
-
 }  // namespace
 
 DesksTemplatesAppLaunchHandler::DesksTemplatesAppLaunchHandler(Profile* profile)
@@ -212,6 +213,11 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
                          /*foreground=*/
                          (active_tab_index &&
                           base::checked_cast<int32_t>(i) == *active_tab_index));
+      }
+
+      if (app_restore_data->tab_group_infos.has_value()) {
+        chrome_desks_util::AttachTabGroupsToBrowserInstance(
+            app_restore_data->tab_group_infos.value(), browser);
       }
 
       // We need to handle minimized windows separately since unlike other

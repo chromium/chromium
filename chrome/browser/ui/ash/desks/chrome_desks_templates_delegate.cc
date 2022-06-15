@@ -27,6 +27,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -39,6 +40,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
@@ -278,11 +280,17 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   if (tab_strip_model) {
     app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
     app_launch_info->active_tab_index = tab_strip_model->active_index();
+    if (tab_strip_model->SupportsTabGroups()) {
+      app_launch_info->tab_group_infos =
+          chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
+              tab_strip_model->group_model());
+    }
     std::move(callback).Run(std::move(app_launch_info));
     return;
   }
 
   if (app_id == app_constants::kLacrosAppId) {
+    // TODO(avynn): Add lacros support for tab groups.
     const std::string* lacros_window_id =
         window->GetProperty(app_restore::kLacrosWindowId);
     DCHECK(lacros_window_id);

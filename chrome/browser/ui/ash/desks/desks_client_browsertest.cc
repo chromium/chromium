@@ -49,12 +49,16 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
+#include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -69,11 +73,14 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/policy_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -86,6 +93,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "url/gurl.h"
@@ -111,6 +119,7 @@ constexpr char kTestAdminTemplateFormat[] =
     "[{\"version\":1,\"uuid\":\"%s\",\"name\": \"test admin template\","
     "\"created_time_usec\": \"1633535632\",\"updated_time_usec\": "
     "\"1633535632\",\"desk\":{}}]";
+constexpr char kTestTabGroupNameFormat[] = "test_tab_group_%u";
 
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -310,6 +319,25 @@ const std::vector<const ash::DeskTemplate*> GetAllEntries() {
   return templates;
 }
 
+// Creates a vector of tab groups based on the vector of GURLs passed into it.
+// A tab group will be created for each individual tab.
+std::vector<app_restore::TabGroupInfo> MakeExpectedTabGroupsBasedOnTabVector(
+    const std::vector<GURL>& urls) {
+  std::vector<app_restore::TabGroupInfo> tab_groups;
+
+  for (uint32_t index = 0; index < urls.size(); ++index) {
+    tab_groups.emplace_back(
+        gfx::Range(index, index + 1),
+        tab_groups::TabGroupVisualData(
+            base::UTF8ToUTF16(
+                base::StringPrintf(kTestTabGroupNameFormat, index)),
+            tab_groups::TabGroupColorId(
+                static_cast<tab_groups::TabGroupColorId>(index % 8))));
+  }
+
+  return tab_groups;
+}
+
 class MockDesksTemplatesAppLaunchHandler
     : public DesksTemplatesAppLaunchHandler {
  public:
@@ -399,18 +427,17 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   Browser* CreateBrowser(
       const std::vector<GURL>& urls,
       absl::optional<size_t> active_url_index = absl::nullopt) {
-    Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
-                                 /*user_gesture=*/false);
-    Browser* browser = Browser::Create(params);
-    // Create a new tab and make sure the urls have loaded.
-    for (size_t i = 0; i < urls.size(); i++) {
-      content::TestNavigationObserver navigation_observer(urls[i]);
-      navigation_observer.StartWatchingNewWebContents();
-      chrome::AddTabAt(
-          browser, urls[i], /*index=*/-1,
-          /*foreground=*/!active_url_index || active_url_index.value() == i);
-      navigation_observer.Wait();
-    }
+    Browser* browser = CreateBrowserImpl(urls, active_url_index);
+    browser->window()->Show();
+    return browser;
+  }
+
+  Browser* CreateBrowserWithTabGroups(
+      const std::vector<GURL>& urls,
+      const std::vector<app_restore::TabGroupInfo>& tab_groups) {
+    Browser* browser = CreateBrowserImpl(urls, absl::nullopt);
+
+    chrome_desks_util::AttachTabGroupsToBrowserInstance(tab_groups, browser);
     browser->window()->Show();
     return browser;
   }
@@ -443,6 +470,23 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   }
 
  private:
+  Browser* CreateBrowserImpl(const std::vector<GURL>& urls,
+                             absl::optional<size_t> active_url_index) {
+    Browser::CreateParams params(Browser::TYPE_NORMAL, profile(),
+                                 /*user_gesture=*/false);
+    Browser* browser = Browser::Create(params);
+    // Create a new tab and make sure the urls have loaded.
+    for (size_t i = 0; i < urls.size(); i++) {
+      content::TestNavigationObserver navigation_observer(urls[i]);
+      navigation_observer.StartWatchingNewWebContents();
+      chrome::AddTabAt(
+          browser, urls[i], /*index=*/-1,
+          /*foreground=*/!active_url_index || active_url_index.value() == i);
+      navigation_observer.Wait();
+    }
+    return browser;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -472,6 +516,49 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureBrowserUrlsTest) {
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the |desk_template|.
   EXPECT_EQ(data->urls.value(), urls);
+}
+
+// Tests that a browser's tab groups can be captured correctly in a saved desk.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureBrowserTabGroupsTest) {
+  std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
+  std::vector<app_restore::TabGroupInfo> expected_tab_groups =
+      MakeExpectedTabGroupsBasedOnTabVector(tabs);
+
+  // Create a new browser and add a few tabs to it.
+  Browser* browser = CreateBrowserWithTabGroups(tabs, expected_tab_groups);
+  aura::Window* window = browser->window()->GetNativeWindow();
+
+  const int32_t browser_window_id =
+      window->GetProperty(app_restore::kWindowIdKey);
+  // Get current tabs from browser.
+  std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  ASSERT_EQ(1u, templates.size());
+
+  const ash::DeskTemplate* desk_template = templates.front();
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, app_id_to_launch_list.size());
+
+  // Find `browser` window's app restore data.
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
+  ASSERT_TRUE(iter != app_id_to_launch_list.end());
+  auto app_restore_data_iter = iter->second.find(browser_window_id);
+  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
+  const auto& data = app_restore_data_iter->second;
+  // Check the urls are captured correctly in the `desk_template`.
+  EXPECT_EQ(urls, data->urls.value());
+
+  // We don't care about the order of the tab groups.
+  EXPECT_THAT(expected_tab_groups, testing::UnorderedElementsAreArray(
+                                       data->tab_group_infos.value()));
 }
 
 // Tests that incognito browser windows will NOT be captured in the desk
@@ -830,6 +917,51 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             browser_window->parent());
+}
+
+// Tests that launching a template that contains a browser window with tab
+// groups works as expected.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       LaunchTemplateWithBrowserWindowTabGroups) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  // Create a new browser and add a few tabs to it, and specify the active tab
+  // index.
+  std::vector<GURL> creation_urls = {GURL(kExampleUrl1), GURL(kExampleUrl2),
+                                     GURL(kExampleUrl3)};
+  std::vector<app_restore::TabGroupInfo> expected_tab_groups =
+      MakeExpectedTabGroupsBasedOnTabVector(creation_urls);
+
+  Browser* browser =
+      CreateBrowserWithTabGroups(creation_urls, expected_tab_groups);
+
+  // Get current tabs from browser.
+  const std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
+
+  // Enter overview and save the current desk as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  ClickFirstTemplateItem();
+
+  // Wait for the tabs to load.
+  content::RunAllTasksUntilIdle();
+
+  // Verify that the browser was launched with the correct urls and active tab.
+  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
+  ASSERT_TRUE(new_browser);
+
+  absl::optional<std::vector<app_restore::TabGroupInfo>> got_tab_groups =
+      chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
+          new_browser->tab_strip_model()->group_model());
+
+  EXPECT_TRUE(got_tab_groups.has_value());
+
+  // We don't care about the order of the tab groups.
+  EXPECT_THAT(expected_tab_groups,
+              testing::UnorderedElementsAreArray(got_tab_groups.value()));
 }
 
 // Tests that browser session restore isn't triggered when we launch a template
