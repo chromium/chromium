@@ -29,6 +29,8 @@ grit("ios_resources") {
     "grit/ios_resources.h",
     "ios_resources.pak",
   ]
+
+  deps = [ "//components/ukm/debug:build_ts" ]
 }
 
 group("packed_resources") {

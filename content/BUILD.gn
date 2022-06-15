@@ -94,6 +94,7 @@ grit("content_resources") {
     "content_resources.pak",
   ]
   deps = [
+    "//components/ukm/debug:build_ts",
     "//content/browser/resources/histograms:build_ts",
     "//gpu/ipc/common:vulkan_interface_webui_js",
     "//ui/base/mojom:mojom_js",

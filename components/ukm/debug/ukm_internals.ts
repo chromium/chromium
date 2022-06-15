@@ -4,80 +4,69 @@
 
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
+
 // </if>
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
 
-/**
- * @typedef {{
- *   name: string,
- *   value: !Array<number>
- * }}
- */
-let Metric;
+type Metric = {
+  name: string,
+  value: [number, number],
+};
 
-/**
- * @typedef {{
- *   name: string,
- *   metrics: !Array<!Metric>
- * }}
- */
-let UkmEntry;
+type UkmEntry = {
+  name: string,
+  metrics: Metric[],
+};
 
-/**
- * @typedef {{
- *   url: string,
- *   id: !Array<number>,
- *   entries: !Array<UkmEntry>,
- * }}
- */
-let UkmDataSource;
+type UkmDataSource = {
+  id: [number, number],
+  entries: UkmEntry[],
+  url?: string,
+};
 
 /**
  * The Ukm data sent from the browser.
- * @typedef {{
- *   state: boolean,
- *   client_id: !Array<number>,
- *   session_id: string,
- *   sources: !Array<!UkmDataSource>,
- *   is_sampling_enabled: boolean,
- * }}
  */
-let UkmData;
+type UkmData = {
+  state: boolean,
+  client_id: number[],
+  session_id: string,
+  sources: UkmDataSource[],
+  is_sampling_enabled: boolean,
+};
 
 /**
  * Stores source id and number of entries shown. If there is a new source id
  * or there are new entries in Ukm recorder, then all the entries for
  * the new source ID will be displayed.
- * @type{Map<string, number>}
  */
-const ClearedSources = new Map();
+const clearedSources: Map<string, number> = new Map();
 
 /**
  * Cached sources to persist beyond the log cut. This will ensure that the data
  * on the page don't disappear if there is a log cut. The caching will
  * start when the page is loaded and when the data is refreshed.
  * Stored data is sourceid -> UkmDataSource with array of distinct entries.
- * @type{Map<string, !UkmDataSource>}
  */
-const CachedSources = new Map();
+const cachedSources: Map<string, UkmDataSource> = new Map();
 
 /**
  * Text for empty url.
- * @type {string}
  */
-const URL_EMPTY = 'missing';
+const URL_EMPTY: string = 'missing';
 
 /**
  * Converts a pair of JS 32 bin number to 64 bit hex string. This is used to
  * pass 64 bit numbers from UKM like client id and 64 bit metrics to
  * the javascript.
- * @param {!Array<number>} num A pair of javascript signed int.
- * @return {string} unsigned int64 as hex number or a decimal number if the
+ * @param num A pair of javascript signed int.
+ * @return unsigned int64 as hex number or a decimal number if the
  *     value is smaller than 32bit.
  */
-function as64Bit(num) {
+function as64Bit(num: [number, number]): string {
   if (num.length !== 2) {
     return '0';
   }
@@ -93,19 +82,19 @@ function as64Bit(num) {
 /**
  * Sets the display option of all the elements in HtmlCollection to the value
  * passed.
- * @param {!HTMLCollection<!Element>} collection Collection of Elements.
  */
-function setDisplayStyle(collection, display_value) {
-  for (const el of collection) {
-    el.style.display = display_value;
+function setDisplayStyle(
+    elements: NodeListOf<HTMLElement>, displayValue: string) {
+  for (const el of elements) {
+    el.style.display = displayValue;
   }
 }
 
 /**
  * Remove all the child elements.
- * @param {!Element} parent Parent element whose children will get removed.
+ * @param parent Parent element whose children will get removed.
  */
-function removeChildren(parent) {
+function removeChildren(parent: Element) {
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
   }
@@ -113,13 +102,14 @@ function removeChildren(parent) {
 
 /**
  * Create card for URL.
- * @param {!Array<!UkmDataSource>} sourcesForUrl Sources that are for same URL.
- * @param {string} url URL or Source id as hex string if the URL is missing.
- * @param {!Element} sourcesDiv Sources div where this card will be added to.
- * @param {!Map<string, ?string>} displayState Map from source id to value
- *     of display property of the entries div.
+ * @param sourcesForUrl Sources that are for same URL.
+ * @param sourcesDiv Sources div where this card will be added to.
+ * @param displayState Map from source id to value of display property of the
+ *     entries div.
  */
-function createUrlCard(sourcesForUrl, url, sourcesDiv, displayState) {
+function createUrlCard(
+    sourcesForUrl: UkmDataSource[], sourcesDiv: Element,
+    displayState: Map<string, string>) {
   const sourceDiv = createElementWithClassName('div', 'url_card');
   sourcesDiv.appendChild(sourceDiv);
   if (!sourcesForUrl || sourcesForUrl.length === 0) {
@@ -127,8 +117,8 @@ function createUrlCard(sourcesForUrl, url, sourcesDiv, displayState) {
   }
   for (const source of sourcesForUrl) {
     // This div allows hiding of the metrics per URL.
-    const sourceContainer = /** @type {!Element} */ (createElementWithClassName(
-        'div', 'source_container'));
+    const sourceContainer = /** @type {!Element} */ (
+        createElementWithClassName('div', 'source_container'));
     sourceDiv.appendChild(sourceContainer);
     createUrlHeader(source.url, source.id, sourceContainer);
     createSourceCard(
@@ -138,22 +128,23 @@ function createUrlCard(sourcesForUrl, url, sourcesDiv, displayState) {
 
 /**
  * Create header containing URL and source ID data.
- * @param {?string} url URL.
- * @param {!Array<number>} id SourceId as hex.
- * @param {!Element} sourceDiv Div under which header will get added.
+ * @param id SourceId as hex.
+ * @param sourceDiv Div under which header will get added.
  */
-function createUrlHeader(url, id, sourceDiv) {
+function createUrlHeader(
+    url: string|undefined, id: [number, number], sourceDiv: Element) {
   const headerElement = createElementWithClassName('div', 'collapsible_header');
   sourceDiv.appendChild(headerElement);
-  const urlElement = createElementWithClassName('span', 'url');
+  const urlElement = createElementWithClassName('span', 'url') as HTMLElement;
   urlElement.innerText = url ? url : URL_EMPTY;
   headerElement.appendChild(urlElement);
-  const idElement = createElementWithClassName('span', 'sourceid');
+  const idElement =
+      createElementWithClassName('span', 'sourceid') as HTMLElement;
   idElement.innerText = as64Bit(id);
   headerElement.appendChild(idElement);
   // Make the click on header toggle entries div.
   headerElement.addEventListener('click', () => {
-    const content = headerElement.nextElementSibling;
+    const content = headerElement.nextElementSibling as HTMLElement;
     if (content.style.display === 'block') {
       content.style.display = 'none';
     } else {
@@ -164,14 +155,15 @@ function createUrlHeader(url, id, sourceDiv) {
 
 /**
  * Create a card with UKM Source data.
- * @param {!UkmDataSource} source UKM source data.
- * @param {!Element} sourceDiv Source div where this card will be added to.
- * @param {?string} displayState If display style of this source id is modified
+ * @param source UKM source data.
+ * @param sourceDiv Source div where this card will be added to.
+ * @param displayState If display style of this source id is modified
  *     then the state of the display style.
  */
-function createSourceCard(source, sourceDiv, displayState) {
+function createSourceCard(
+    source: UkmDataSource, sourceDiv: Element, displayState: string|undefined) {
   const metricElement =
-      /** @type {!Element} */ (createElementWithClassName('div', 'entries'));
+      createElementWithClassName('div', 'entries') as HTMLElement;
   sourceDiv.appendChild(metricElement);
   const sortedEntry =
       source.entries.sort((x, y) => x.name.localeCompare(y.name));
@@ -192,10 +184,10 @@ function createSourceCard(source, sourceDiv, displayState) {
 
 /**
  * Create UKM Entry Table.
- * @param {!UkmEntry} entry A Ukm metrics Entry.
- * @param {!Element} sourceDiv Element whose children will be the entries.
+ * @param entry A Ukm metrics Entry.
+ * @param sourceDiv Element whose children will be the entries.
  */
-function createEntryTable(entry, sourceDiv) {
+function createEntryTable(entry: UkmEntry, sourceDiv: Element) {
   // Add first column to the table.
   const entryTable = createElementWithClassName('table', 'entry_table');
   entryTable.setAttribute('value', entry.name);
@@ -203,7 +195,7 @@ function createEntryTable(entry, sourceDiv) {
   const firstRow = document.createElement('tr');
   entryTable.appendChild(firstRow);
   const entryName = createElementWithClassName('td', 'entry_name');
-  entryName.setAttribute('rowspan', 0);
+  entryName.setAttribute('rowspan', '0');
   entryName.textContent = entry.name;
   firstRow.appendChild(entryName);
 
@@ -229,11 +221,12 @@ function createEntryTable(entry, sourceDiv) {
  * urls alphabetically.
  * If the URL field is missing, the source ID will be used as the
  * URL for the purpose of grouping and sorting.
- * @param {!Array<!UkmDataSource>} sources List of UKM data for a source .
- * @return {!Map<string, !Array<!UkmDataSource>>} Mapping in the sorted
- *     order of URL from URL to list of sources for the URL.
+ * @param sources List of UKM data for a source .
+ * @return Mapping in the sorted order of URL from URL to list of sources for
+ *     the URL.
  */
-function urlToSourcesMapping(sources) {
+function urlToSourcesMapping(sources: UkmDataSource[]):
+    Map<string, UkmDataSource[]> {
   const unsorted = new Map();
   for (const source of sources) {
     const key = source.url ? source.url : as64Bit(source.id);
@@ -244,8 +237,8 @@ function urlToSourcesMapping(sources) {
     }
   }
   // Sort the map by URLs.
-  return new Map(Array.from(unsorted).sort(
-      (s1,s2) => s1[0].localeCompare(s2[0])));
+  return new Map(
+      Array.from(unsorted).sort((s1, s2) => s1[0].localeCompare(s2[0])));
 }
 
 
@@ -258,10 +251,12 @@ function addExpandToggleButton() {
   toggleExpand.addEventListener('click', () => {
     if (toggleExpand.textContent === 'Expand') {
       toggleExpand.textContent = 'Collapse';
-      setDisplayStyle(document.getElementsByClassName('entries'), 'block');
+      setDisplayStyle(
+          document.body.querySelectorAll<HTMLElement>('.entries'), 'block');
     } else {
       toggleExpand.textContent = 'Expand';
-      setDisplayStyle(document.getElementsByClassName('entries'), 'none');
+      setDisplayStyle(
+          document.body.querySelectorAll<HTMLElement>('.entries'), 'none');
     }
   });
 }
@@ -277,8 +272,8 @@ function addClearButton() {
     // Note it won't be able to clear if UKM logs got cut during this call.
     sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
       updateUkmCache(data);
-      for (const s of CachedSources.values()) {
-        ClearedSources.set(as64Bit(s.id), s.entries.length);
+      for (const s of cachedSources.values()) {
+        clearedSources.set(as64Bit(s.id), s.entries.length);
       }
     });
     $('toggle_expand').textContent = 'Expand';
@@ -288,10 +283,12 @@ function addClearButton() {
 
 /**
  * Populate thread ids from the high bit of source id in sources.
- * @param {!Array<!UkmDataSource>} sources Array of UKM source.
+ * @param sources Array of UKM source.
  */
-function populateThreadIds(sources) {
-  const threadIdSelect = $('thread_ids');
+function populateThreadIds(sources: UkmDataSource[]) {
+  const threadIdSelect =
+      document.body.querySelector<HTMLSelectElement>('#thread_ids');
+  assert(threadIdSelect);
   const currentOptions =
       new Set(Array.from(threadIdSelect.options).map(o => o.value));
   // The first 32 bit of the ID is the recorder ID, convert it to a positive
@@ -315,10 +312,10 @@ function populateThreadIds(sources) {
  * by name to ensure that two entries containing the same metrics and values in
  * different orders have identical string representation to avoid cache
  * duplication.
- * @param {UkmEntry} entry UKM entry to be stringified.
- * @return {string} Normalized string representation of the entry.
+ * @param entry UKM entry to be stringified.
+ * @return Normalized string representation of the entry.
  */
-function normalizeToString(entry) {
+function normalizeToString(entry: UkmEntry): string {
   entry.metrics.sort((x, y) => x.name.localeCompare(y.name));
   return JSON.stringify(entry);
 }
@@ -330,24 +327,25 @@ function normalizeToString(entry) {
  * timestamp with entries. So only distinct entries will be recorded in the
  * cache. i.e if two entries have exactly the same set of metrics then one
  * of the entry will not be kept in the cache.
- * @param {UkmData} data New UKM data to add to cache.
+ * @param data New UKM data to add to cache.
  */
-function updateUkmCache(data) {
+function updateUkmCache(data: UkmData) {
   for (const source of data.sources) {
     const key = as64Bit(source.id);
-    if (!CachedSources.has(key)) {
-      const mergedSource = {id: source.id, entries: source.entries};
+    if (!cachedSources.has(key)) {
+      const mergedSource:
+          UkmDataSource = {id: source.id, entries: source.entries};
       if (source.url) {
         mergedSource.url = source.url;
       }
-      CachedSources.set(key, mergedSource);
+      cachedSources.set(key, mergedSource);
     } else {
       // Merge distinct entries from the source.
-      const existingEntries = new Set(CachedSources.get(key).entries.map(
+      const existingEntries = new Set(cachedSources.get(key)!.entries.map(
           cachedEntry => normalizeToString(cachedEntry)));
       for (const sourceEntry of source.entries) {
         if (!existingEntries.has(normalizeToString(sourceEntry))) {
-          CachedSources.get(key).entries.push(sourceEntry);
+          cachedSources.get(key)!.entries.push(sourceEntry);
         }
       }
     }
@@ -361,10 +359,11 @@ function updateUkmCache(data) {
 function updateUkmData() {
   sendWithPromise('requestUkmData').then((/** @type {UkmData} */ data) => {
     updateUkmCache(data);
-    if ($('include_cache').checked) {
-      data.sources = [...CachedSources.values()];
+    if (document.body.querySelector<HTMLInputElement>(
+                         '#include_cache')!.checked) {
+      data.sources = [...cachedSources.values()];
     }
-    $('state').innerText = data.state? 'ENABLED' : 'DISABLED';
+    $('state').innerText = data.state ? 'ENABLED' : 'DISABLED';
     $('clientid').innerText = '0x' + data.client_id;
     $('sessionid').innerText = data.session_id;
     $('is_sampling_enabled').innerText = data.is_sampling_enabled;
@@ -384,14 +383,15 @@ function updateUkmData() {
     // for example, expanded state.
     const currentDisplayState = new Map();
     for (const el of document.getElementsByClassName('source_container')) {
-      currentDisplayState.set(el.querySelector('.sourceid').textContent,
-                              el.querySelector('.entries').style.display);
+      currentDisplayState.set(
+          el.querySelector<HTMLElement>('.sourceid')!.textContent,
+          el.querySelector<HTMLElement>('.entries')!.style.display);
     }
-    const urlToSources = urlToSourcesMapping(
-        filterSourcesUsingFormOptions(data.sources));
+    const urlToSources =
+        urlToSourcesMapping(filterSourcesUsingFormOptions(data.sources));
     for (const url of urlToSources.keys()) {
-      const sourcesForUrl = urlToSources.get(url);
-      createUrlCard(sourcesForUrl, url, sourcesDiv, currentDisplayState);
+      const sourcesForUrl = urlToSources.get(url)!;
+      createUrlCard(sourcesForUrl, sourcesDiv, currentDisplayState);
     }
     populateThreadIds(data.sources);
   });
@@ -400,23 +400,23 @@ function updateUkmData() {
 /**
  * Filter sources that have been recorded previously. If it sees a source id
  * where number of entries has decreased then it will add a warning.
- * @param {!Array<!UkmDataSource>} sources All the sources currently in
- *   UKM recorder.
- * @return {!Array<!UkmDataSource>} Sources which are new or have a new entry
- *   logged for them.
+ * @param sources All the sources currently in UKM recorder.
+ * @return Sources which are new or have a new entry logged for them.
  */
-function filterSourcesUsingFormOptions(sources) {
+function filterSourcesUsingFormOptions(sources: UkmDataSource[]):
+    UkmDataSource[] {
   // Filter sources based on if they have been cleared.
-  const newSources = sources.filter(source => (
-      // Keep sources if it is newly generated since clearing earlier.
-      !ClearedSources.has(as64Bit(source.id)) ||
-      // Keep sources if it has increased entities since clearing earlier.
-      (source.entries.length > ClearedSources.get(as64Bit(source.id)))
-  ));
+  const newSources = sources.filter(
+      source => (
+          // Keep sources if it is newly generated since clearing earlier.
+          !clearedSources.has(as64Bit(source.id)) ||
+          // Keep sources if it has increased entities since clearing earlier.
+          (source.entries.length > clearedSources.get(as64Bit(source.id))!)));
 
   // Applies the filter from Metrics selector.
   const newSourcesWithEntriesCleared = newSources.map(source => {
-    const metricsFilterValue = $('metrics_select').value;
+    const metricsFilterValue =
+        document.body.querySelector<HTMLInputElement>('#metrics_select')!.value;
     if (metricsFilterValue) {
       const metricsRe = new RegExp(metricsFilterValue);
       source.entries = source.entries.filter(e => metricsRe.test(e.name));
@@ -425,10 +425,21 @@ function filterSourcesUsingFormOptions(sources) {
   });
 
   // Filter sources based on the status of check-boxes.
-  const filteredSources = newSourcesWithEntriesCleared.filter(source => (
-      (!$('hide_no_url').checked || source.url) &&
-      (!$('hide_no_metrics').checked || source.entries.length)
-  ));
+  const filteredSources = newSourcesWithEntriesCleared.filter(source => {
+    const noUrlCheckbox =
+        document.body.querySelector<HTMLInputElement>('#hide_no_url');
+    assert(noUrlCheckbox);
+    const noMetricsCheckbox =
+        document.body.querySelector<HTMLInputElement>('#hide_no_metrics');
+    assert(noMetricsCheckbox);
+
+    return (!noUrlCheckbox.checked || source.url) &&
+        (!noMetricsCheckbox.checked || source.entries.length);
+  });
+
+  const threadIds =
+      document.body.querySelector<HTMLSelectElement>('#thread_ids');
+  assert(threadIds);
 
   // Filter sources based on thread id (High bits of UKM Recorder ID).
   const threadsFilteredSource = filteredSources.filter(source => {
@@ -439,8 +450,7 @@ function filterSourcesUsingFormOptions(sources) {
     //     If a UKM is recorded with a custom source id or in renderer, it will
     //     have a unique value for this shared by all metrics that use the
     //     same thread.
-    const selectedOption =
-        $('thread_ids').options[$('thread_ids').selectedIndex];
+    const selectedOption = threadIds.options[threadIds.selectedIndex];
     // Return true if either of the following is true -
     // No option is selected or selected option is "All" or the hexadecimal
     // representation of source id is matching.
@@ -449,8 +459,11 @@ function filterSourcesUsingFormOptions(sources) {
   });
 
   // Filter URLs based on URL selector input.
+  const urlSelect =
+      document.body.querySelector<HTMLInputElement>('#url_select');
+  assert(urlSelect);
   return threadsFilteredSource.filter(source => {
-    const urlFilterValue = $('url_select').value;
+    const urlFilterValue = urlSelect.value;
     if (urlFilterValue) {
       const urlRe = new RegExp(urlFilterValue);
       // Will also match missing URLs by default.
