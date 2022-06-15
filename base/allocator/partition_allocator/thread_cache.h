@@ -591,8 +591,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   slot_size_remaining_in_16_bytes = std::min(
       slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
 
-  static const uint32_t poison_16_bytes[4] = {0xdeadbeef, 0xdeadbeef,
-                                              0xdeadbeef, 0xdeadbeef};
+  static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
+                                              0xbadbad00, 0xbadbad00};
   uint32_t* address_aligned = reinterpret_cast<uint32_t*>(address);
 
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
