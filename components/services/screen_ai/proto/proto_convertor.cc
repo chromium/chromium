@@ -17,6 +17,9 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/clamped_math.h"
+#include "base/ranges/ranges.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "components/services/screen_ai/proto/dimension.pb.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
@@ -29,6 +32,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+
+namespace ranges = base::ranges;
 
 namespace {
 
@@ -43,6 +48,23 @@ constexpr float kScreenAIMinConfidenceThreshold = 0.1f;
 ui::AXNodeID GetNextNodeID() {
   static ui::AXNodeID next_node_id{1};
   return next_node_id++;
+}
+
+bool HaveIdenticalFormattingStyle(const chrome_screen_ai::WordBox& word_1,
+                                  const chrome_screen_ai::WordBox& word_2) {
+  if (word_1.language() != word_2.language())
+    return false;
+  if (word_1.estimate_color_success() && word_2.estimate_color_success()) {
+    if (word_1.foreground_rgb_value() != word_2.foreground_rgb_value())
+      return false;
+    if (word_1.background_rgb_value() != word_2.background_rgb_value())
+      return false;
+  }
+  if (word_1.direction() != word_2.direction())
+    return false;
+  if (word_1.content_type() != word_2.content_type())
+    return false;
+  return true;
 }
 
 // Returns whether the provided `predicted_type` is:
@@ -195,43 +217,145 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
 }
 
 void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
-                      const size_t index,
-                      ui::AXNodeData& parent_node,
-                      std::vector<ui::AXNodeData>& node_data) {
-  DCHECK_LT(index, node_data.size());
-  DCHECK_NE(parent_node.id, ui::kInvalidAXNodeID);
-  ui::AXNodeData& word_box_node = node_data[index];
-  DCHECK_EQ(word_box_node.role, ax::mojom::Role::kUnknown);
-  if (word_box.confidence() < 0.0f || word_box.confidence() > 1.0f) {
-    NOTREACHED() << "Unrecognized chrome_screen_ai::WordBox::confidence value: "
-                 << word_box.confidence();
-    return;  // Confidence is out of bounds.
-  }
-  if (word_box.confidence() < kScreenAIMinConfidenceThreshold)
-    return;
-  word_box_node.role = ax::mojom::Role::kInlineTextBox;
-  word_box_node.id = GetNextNodeID();
-  SerializeBoundingBox(word_box.bounding_box(), parent_node.id, word_box_node);
-  // Since the role is `kInlineTextBox`, NameFrom would automatically and
-  // correctly be set to `ax::mojom::NameFrom::kContents`.
+                      ui::AXNodeData& inline_text_box) {
+  DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
+  // TODO(nektar): What if the angles of orientation are different, would the
+  // following DCHECK unnecessarily? Do we need to apply the related transform,
+  // or is the fact that the transform is the same between line and word boxes
+  // results in no difference?
+  DCHECK(inline_text_box.relative_bounds.bounds.Contains(gfx::RectF(
+      word_box.bounding_box().x(), word_box.bounding_box().y(),
+      word_box.bounding_box().width(), word_box.bounding_box().height())));
+
+  std::vector<int32_t> character_offsets;
+  // TODO(nektar): Handle writing directions other than LEFT_TO_RIGHT.
+  int32_t line_offset =
+      base::ClampRound(inline_text_box.relative_bounds.bounds.x());
+  ranges::transform(word_box.symbols(), std::back_inserter(character_offsets),
+                    [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
+                      return symbol.bounding_box().x() - line_offset;
+                    });
+
+  std::string inner_text =
+      inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  inner_text += word_box.utf8_string();
+  size_t word_length = word_box.utf8_string().length();
   if (word_box.has_space_after()) {
-    word_box_node.SetName(word_box.utf8_string() + " ");
-  } else {
-    word_box_node.SetName(word_box.utf8_string());
+    inner_text += " ";
+    ++word_length;
   }
-  // TODO(nektar): DCHECK that line box's text is equal to the concatenation of
-  // the text found in all contained word boxes.
-  // TODO(nektar): Set character bounding box information.
+  inline_text_box.SetName(inner_text);
+
+  std::vector<int32_t> word_starts = inline_text_box.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kWordStarts);
+  std::vector<int32_t> word_ends = inline_text_box.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kWordEnds);
+  int32_t new_word_start = 0;
+  int32_t new_word_end = base::checked_cast<int32_t>(word_length);
+  if (!word_ends.empty()) {
+    new_word_start += word_ends[word_ends.size() - 1];
+    new_word_end += new_word_start;
+  }
+  word_starts.push_back(new_word_start);
+  word_ends.push_back(new_word_end);
+  inline_text_box.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                                      word_starts);
+  inline_text_box.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                                      word_ends);
+  DCHECK_LE(new_word_start, new_word_end);
+  DCHECK_LE(
+      new_word_end,
+      base::checked_cast<int32_t>(
+          inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName)
+              .length()));
+
+  DCHECK_EQ(inline_text_box.GetStringAttribute(
+                ax ::mojom::StringAttribute::kLanguage),
+            word_box.language())
+      << "A `WordBox` has a different language than its enclosing `LineBox`.";
+
   if (word_box.estimate_color_success()) {
-    word_box_node.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                  word_box.background_rgb_value());
-    word_box_node.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                  word_box.foreground_rgb_value());
+    if (!inline_text_box.HasIntAttribute(
+            ax::mojom::IntAttribute::kBackgroundColor)) {
+      inline_text_box.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
+                                      word_box.background_rgb_value());
+    } else {
+      DCHECK_EQ(inline_text_box.GetIntAttribute(
+                    ax::mojom::IntAttribute::kBackgroundColor),
+                word_box.background_rgb_value())
+          << "A `WordBox` has a different background color than its enclosing "
+             "`LineBox`.";
+    }
+    if (!inline_text_box.HasIntAttribute(ax::mojom::IntAttribute::kColor)) {
+      inline_text_box.AddIntAttribute(ax::mojom::IntAttribute::kColor,
+                                      word_box.foreground_rgb_value());
+    } else {
+      DCHECK_EQ(
+          inline_text_box.GetIntAttribute(ax::mojom::IntAttribute::kColor),
+          word_box.foreground_rgb_value())
+          << "A `WordBox` has a different foreground color than its enclosing "
+             "`LineBox`.";
+    }
   }
   SerializeDirection(
       static_cast<chrome_screen_ai::Direction>(word_box.direction()),
-      word_box_node);
-  parent_node.child_ids.push_back(word_box_node.id);
+      inline_text_box);
+}
+
+// Creates an inline text box for every style span in the provided
+// `static_text_node`, starting from `start_from_word_index` in the node's
+// `word_boxes`. Returns the number of inline text box nodes that have been
+// initialized in `node_data`.
+size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
+                              chrome_screen_ai::WordBox>& word_boxes,
+                          const int start_from_word_index,
+                          const size_t node_index,
+                          ui::AXNodeData& static_text_node,
+                          std::vector<ui::AXNodeData>& node_data) {
+  if (word_boxes.empty())
+    return 0u;
+  DCHECK_LT(start_from_word_index, word_boxes.size());
+  DCHECK_LT(node_index, node_data.size());
+  DCHECK_NE(static_text_node.id, ui::kInvalidAXNodeID);
+  ui::AXNodeData& inline_text_box_node = node_data[node_index];
+  DCHECK_EQ(inline_text_box_node.role, ax::mojom::Role::kUnknown);
+  inline_text_box_node.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_box_node.id = GetNextNodeID();
+  // TODO(nektar): Find the union of the bounding boxes in this formatting
+  // context and set it as the bounding box of `inline_text_box_node`.
+  inline_text_box_node.relative_bounds.bounds =
+      static_text_node.relative_bounds.bounds;
+
+  std::string language;
+  if (static_text_node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage,
+                                          &language)) {
+    // TODO(nektar): Only set language if different from parent node (i.e. the
+    // static text node), in order to minimize memory usage.
+    inline_text_box_node.AddStringAttribute(
+        ax::mojom::StringAttribute::kLanguage, language);
+  }
+  static_text_node.child_ids.push_back(inline_text_box_node.id);
+
+  const auto formatting_context_start =
+      std::cbegin(word_boxes) + start_from_word_index;
+  const auto formatting_context_end =
+      ranges::find_if_not(formatting_context_start, ranges::end(word_boxes),
+                          [formatting_context_start](const auto& word_box) {
+                            return HaveIdenticalFormattingStyle(
+                                *formatting_context_start, word_box);
+                          });
+  for (auto word_iter = formatting_context_start;
+       word_iter != formatting_context_end; ++word_iter) {
+    SerializeWordBox(*word_iter, inline_text_box_node);
+  }
+  if (formatting_context_end != std::cend(word_boxes)) {
+    return 1u +
+           SerializeWordBoxes(
+               word_boxes,
+               std::distance(std::cbegin(word_boxes), formatting_context_end),
+               (node_index + 1u), static_text_node, node_data);
+  }
+  return 1u;
 }
 
 void SerializeUIComponent(const chrome_screen_ai::UIComponent& ui_component,
@@ -249,35 +373,28 @@ void SerializeUIComponent(const chrome_screen_ai::UIComponent& ui_component,
   parent_node.child_ids.push_back(current_node.id);
 }
 
-void SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
-                      const size_t index,
-                      ui::AXNodeData& parent_node,
-                      std::vector<ui::AXNodeData>& node_data) {
+// Returns the number of accessibility nodes that have been initialized in
+// `node_data`. A single `line_box` may turn into a number of inline text boxes
+// depending on how many formatting contexts it contains. If `line_box` is of a
+// non-textual nature, only one node will be initialized.
+size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
+                        const size_t index,
+                        ui::AXNodeData& parent_node,
+                        std::vector<ui::AXNodeData>& node_data) {
   DCHECK_LT(index, node_data.size());
   DCHECK_NE(parent_node.id, ui::kInvalidAXNodeID);
   ui::AXNodeData& line_box_node = node_data[index];
   DCHECK_EQ(line_box_node.role, ax::mojom::Role::kUnknown);
-  if (line_box.confidence() < 0.0f || line_box.confidence() > 1.0f) {
-    NOTREACHED() << "Unrecognized chrome_screen_ai::LineBox::confidence value: "
-                 << line_box.confidence();
-    return;  // Confidence is out of bounds.
-  }
-  if (line_box.confidence() < kScreenAIMinConfidenceThreshold)
-    return;
+
   SerializeContentType(line_box.content_type(), line_box_node);
   line_box_node.id = GetNextNodeID();
-  if (ui::IsText(line_box_node.role)) {
-    size_t word_node_index = index + 1u;
-    for (const auto& word : line_box.words())
-      SerializeWordBox(word, word_node_index++, line_box_node, node_data);
-  }
   SerializeBoundingBox(line_box.bounding_box(), parent_node.id, line_box_node);
-  // Since the role is `kStaticText`, NameFrom would automatically and correctly
-  // be set to `ax::mojom::NameFrom::kContents`.
+  // `ax::mojom::NameFrom` should be set to the correct value based on the
+  // role.
   line_box_node.SetName(line_box.utf8_string());
   if (!line_box.language().empty()) {
-    // TODO(nektar): Only set language if different from parent node to
-    // minimize memory usage.
+    // TODO(nektar): Only set language if different from parent node (i.e. the
+    // page node), in order to minimize memory usage.
     line_box_node.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                      line_box.language());
   }
@@ -285,6 +402,12 @@ void SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
       static_cast<chrome_screen_ai::Direction>(line_box.direction()),
       line_box_node);
   parent_node.child_ids.push_back(line_box_node.id);
+
+  if (!ui::IsText(line_box_node.role))
+    return 1u;
+  return 1u + SerializeWordBoxes(line_box.words(),
+                                 /* start_from_word_index */ 0, (index + 1u),
+                                 line_box_node, node_data);
 }
 
 // Adds the subtree of |nodes[node_index_to_add]| to |nodes_order| with
@@ -319,26 +442,39 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
   // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the
   // update using AXTreeSerializer.
 
-  // Each `UIComponent` and `LineBox` will take up one node in the accessibility
+  // Each `UIComponent`, `LineBox`, as well as every `WordBox` that results in a
+  // different formatting context, will take up one node in the accessibility
   // tree, resulting in hundreds of nodes, making it inefficient to push_back
   // one node at a time. We pre-allocate the needed nodes making node creation
   // an O(n) operation.
-  const size_t word_count = std::accumulate(
-      std::begin(visual_annotation.lines()),
-      std::end(visual_annotation.lines()), 0u,
-      [](const size_t& count, const chrome_screen_ai::LineBox& line_box) {
-        return count + line_box.words().size();
-      });
+  size_t formatting_context_count = 0u;
+  for (const chrome_screen_ai::LineBox& line : visual_annotation.lines()) {
+    // By design, and same as in Blink, every line creates a separate formatting
+    // context regardless as to whether the format styles are identical with
+    // previous lines or not.
+    ++formatting_context_count;
+    DCHECK(!line.words().empty())
+        << "Empty lines should have been pruned in the Screen AI library.";
+    for (auto iter = std::cbegin(line.words());
+         std::next(iter) != std::cend(line.words()); ++iter) {
+      if (HaveIdenticalFormattingStyle(*iter, *std::next(iter)))
+        ++formatting_context_count;
+    }
+  }
 
-  // Each unique `chrome_screen_ai::LineBox::block_id` creates a new
-  // paragraph, each paragraph is placed in its correct reading order,
-  // and each paragraph has a sorted set of line boxes. Line boxes are sorted
-  // using their `chrome_screen_ai::LineBox::order_within_block` member and they
-  // are identified by their index in the container of line boxes. Use std::map
-  // to sort both paragraphs and lines, both operations having an O(n * log(n))
-  // complexity.
+  // Each unique `chrome_screen_ai::LineBox::block_id` signifies a different
+  // block of text, and so it creates a new static text node in the
+  // accessibility tree. Each block has a sorted set of line boxes, everyone of
+  // which is turned into one or more inline text box nodes in the accessibility
+  // tree. Line boxes are sorted using their
+  // `chrome_screen_ai::LineBox::order_within_block` member and are identified
+  // by their index in the container of line boxes. Use std::map to sort both
+  // text blocks and the line boxes that belong to each one, both operations
+  // having an O(n * log(n)) complexity.
+  // TODO(accessibility): Create separate paragraphs based on the blocks'
+  // spacing.
   // TODO(accessibility): Determine reading order based on visual positioning of
-  // paragraphs, not on their block IDs.
+  // text blocks, not on the order of their block IDs.
   std::map<int32_t, std::map<int32_t, int>> blocks_to_lines_map;
   for (int i = 0; i < visual_annotation.lines_size(); ++i) {
     const chrome_screen_ai::LineBox& line = visual_annotation.lines(i);
@@ -354,8 +490,7 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
 
   std::vector<ui::AXNodeData> nodes(
       rootnodes_count + visual_annotation.ui_component().size() +
-      blocks_to_lines_map.size() + visual_annotation.lines().size() +
-      word_count);
+      blocks_to_lines_map.size() + formatting_context_count);
   size_t index = 0u;
 
   if (!visual_annotation.ui_component().empty()) {
@@ -380,20 +515,22 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
            block_to_lines_pair.second) {
         const chrome_screen_ai::LineBox& line_box =
             visual_annotation.lines(line_sequence_number_to_index_pair.second);
-        SerializeLineBox(line_box, index++, page_node, nodes);
-        index += line_box.words().size();
+        // Every line with a textual accessibility role should turn into one or
+        // more inline text boxes, each one  representing a formatting context.
+        // If the line is not of a textual role, only one node is initialized
+        // having a more specific role such as `ax::mojom::Role::kImage`.
+        index += SerializeLineBox(line_box, index, page_node, nodes);
       }
     }
   }
 
   // Filter out invalid / unrecognized / unused nodes from the update.
   update.nodes.resize(nodes.size());
-  auto end_node_iter =
-      std::copy_if(std::begin(nodes), std::end(nodes), std::begin(update.nodes),
-                   [](const ui::AXNodeData& node_data) {
-                     return node_data.role != ax::mojom::Role::kUnknown &&
-                            node_data.id != ui::kInvalidAXNodeID;
-                   });
+  const auto end_node_iter = ranges::copy_if(
+      nodes, ranges::begin(update.nodes), [](const ui::AXNodeData& node_data) {
+        return node_data.role != ax::mojom::Role::kUnknown &&
+               node_data.id != ui::kInvalidAXNodeID;
+      });
   update.nodes.resize(std::distance(std::begin(update.nodes), end_node_iter));
 
   // TODO(https://crbug.com/1278249): Add UMA metrics to record the number of

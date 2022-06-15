@@ -125,6 +125,7 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     box_0_0->set_width(250);
     box_0_0->set_height(20);
     word_0_0->set_utf8_string("Hello");
+    word_0_0->set_language("en");
     word_0_0->set_has_space_after(true);
     word_0_0->set_confidence(0.9f);
     word_0_0->set_estimate_color_success(true);
@@ -139,6 +140,7 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     box_0_1->set_width(250);
     box_0_1->set_height(20);
     word_0_1->set_utf8_string("world");
+    word_0_1->set_language("en");
     // `word_0_1.has_space_after()` should be defaulted to false.
     word_0_1->set_confidence(0.9f);
     word_0_1->set_estimate_color_success(true);
@@ -158,6 +160,9 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     line_0->set_order_within_block(1);
 
     chrome_screen_ai::LineBox* line_1 = annotation.add_lines();
+    chrome_screen_ai::WordBox* word_1_0 = line_1->add_words();
+    word_1_0->set_language("en");
+    word_1_0->set_confidence(0.9f);
     line_1->set_confidence(0.0f);
     // Language, and the line as a whole,  should be ignored since the
     // confidence is zero.
@@ -166,6 +171,8 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
     line_1->set_order_within_block(0);
 
     chrome_screen_ai::LineBox* line_2 = annotation.add_lines();
+    chrome_screen_ai::WordBox* word_2_0 = line_2->add_words();
+    word_2_0->set_confidence(0.9f);
     line_2->set_confidence(0.7f);
     chrome_screen_ai::Rect* box_2 = line_2->mutable_bounding_box();
     // No bounding box should be created in the AXTree because the height is -5.
@@ -193,18 +200,21 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
         "  id=6 genericContainer offset_container_id=4 (0, 0)-(5, 5) "
         "role_description=Signature\n"
         "id=7 region (0, 0)-(800, 900) is_page_breaking_object=true "
-        "child_ids=8,9\n"
-        "  id=8 staticText (0, 0)-(5, 0) name_from=contents text_direction=ltr "
-        "name=\n"
-        "  id=9 staticText offset_container_id=7 (100, 100)-(500, 20) "
+        "child_ids=8,10,12\n"
+        "  id=8 staticText (0, 0)-(0, 0) name_from=contents text_direction=ltr "
+        "name= language=en child_ids=9\n"
+        "    id=9 inlineTextBox (0, 0)-(0, 0) name_from=contents "
+        "text_direction=ltr language=en name= word_starts=0 word_ends=0\n"
+        "  id=10 staticText (0, 0)-(5, 0) name_from=contents "
+        "text_direction=ltr name= child_ids=11\n"
+        "    id=11 inlineTextBox (0, 0)-(5, 0) name_from=contents "
+        "text_direction=ltr name= word_starts=0 word_ends=0\n"
+        "  id=12 staticText offset_container_id=7 (100, 100)-(500, 20) "
         "name_from=contents text_direction=rtl name=Hello world language=en "
-        "child_ids=10,11\n"
-        "    id=10 inlineTextBox offset_container_id=9 (100, 100)-(250, 20) "
-        "name_from=contents background_color=&C350 color=&61A8 "
-        "text_direction=rtl name=Hello \n"
-        "    id=11 inlineTextBox offset_container_id=9 (350, 100)-(250, 20) "
-        "name_from=contents background_color=&C350 color=&61A8 "
-        "text_direction=rtl name=world\n");
+        "child_ids=13\n"
+        "    id=13 inlineTextBox (100, 100)-(500, 20) name_from=contents "
+        "background_color=&C350 color=&61A8 text_direction=rtl language=en "
+        "name=Hello world word_starts=0,6 word_ends=6,11\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
