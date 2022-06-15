@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_view.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -69,9 +70,14 @@ const CGFloat kPreferredMaxWidth = 73;
     UIView* containerView = backgroundView;
 
     ApplyVisualConstraintsWithMetrics(
-        @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
+        @[ @"V:|[container]-(space)-[title]|" ],
         @{@"container" : containerView, @"title" : _titleLabel},
         @{@"space" : @(kSpaceIconTitle)});
+    [NSLayoutConstraint activateConstraints:@[
+      [_titleLabel.widthAnchor constraintEqualToConstant:kIconSize],
+      [_titleLabel.heightAnchor constraintGreaterThanOrEqualToConstant:9],
+      [_titleLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    ]];
 
     _imageBackgroundView = backgroundView;
 
@@ -88,10 +94,14 @@ const CGFloat kPreferredMaxWidth = 73;
 
 // Returns the font size for the location label.
 - (UIFont*)titleLabelFont {
-  return PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleCaption1,
-      self.traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryAccessibilityLarge);
+  if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+  } else {
+    return PreferredFontForTextStyleWithMaxCategory(
+        UIFontTextStyleCaption1,
+        self.traitCollection.preferredContentSizeCategory,
+        UIContentSizeCategoryAccessibilityLarge);
+  }
 }
 
 #pragma mark - UIView
