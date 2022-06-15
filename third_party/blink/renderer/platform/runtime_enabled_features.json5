@@ -2677,6 +2677,11 @@
       origin_trial_feature_name: "WebGPU",
     },
     {
+      // WebGPU developer features are deliberately not enabled by experimental
+      // web platform features.
+      name: "WebGPUDeveloperFeatures",
+    },
+    {
       // Requires both WebGPU and --enable-experimental-web-platform-features
       name: "WebGPUImportTexture",
       status: "experimental",

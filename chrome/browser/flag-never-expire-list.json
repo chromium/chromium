@@ -66,6 +66,7 @@
   "enable-webassembly-tiering",
   "enable-webgl-developer-extensions",
   "enable-webgl-draft-extensions",
+  "enable-webgpu-developer-features",
   "enable-zero-copy",
   "extensions-on-chrome-urls",
   "force-color-profile",

@@ -12,4 +12,5 @@
   readonly attribute DOMString architecture;
   readonly attribute DOMString device;
   readonly attribute DOMString description;
+  [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString driver;
 };

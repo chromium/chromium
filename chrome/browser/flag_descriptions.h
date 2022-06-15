@@ -1607,6 +1607,9 @@ extern const char kWebglDeveloperExtensionsDescription[];
 extern const char kWebglDraftExtensionsName[];
 extern const char kWebglDraftExtensionsDescription[];
 
+extern const char kWebGpuDeveloperFeaturesName[];
+extern const char kWebGpuDeveloperFeaturesDescription[];
+
 extern const char kWebPaymentsExperimentalFeaturesName[];
 extern const char kWebPaymentsExperimentalFeaturesDescription[];
 

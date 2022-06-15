@@ -2856,6 +2856,11 @@ const char kWebglDraftExtensionsDescription[] =
     "Enabling this option allows web applications to access the WebGL "
     "extensions that are still in draft status.";
 
+const char kWebGpuDeveloperFeaturesName[] = "WebGPU Developer Features";
+const char kWebGpuDeveloperFeaturesDescription[] =
+    "Enables web applications to access WebGPU features intended only for use "
+    "during development.";
+
 const char kWebPaymentsExperimentalFeaturesName[] =
     "Experimental Web Payments API features";
 const char kWebPaymentsExperimentalFeaturesDescription[] =

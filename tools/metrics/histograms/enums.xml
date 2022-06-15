@@ -58966,6 +58966,7 @@ from previous Chrome versions.
   <int value="549483647" label="EnableUnifiedMultiDeviceSettings:disabled"/>
   <int value="550378029" label="reset-app-list-install-state"/>
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
+  <int value="550411207" label="enable-webgpu-developer-features"/>
   <int value="550741462" label="WebAppBorderless:disabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>

@@ -43,6 +43,11 @@ const char kDisableGpuProcessForDX12InfoCollection[] =
 
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 
+// Enables WebGPU developer features which are not generally exposed to the web
+// platform.
+const char kEnableWebGPUDeveloperFeatures[] =
+    "enable-webgpu-developer-features";
+
 // Enable validation layers in Dawn backends.
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 

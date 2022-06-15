@@ -409,6 +409,10 @@ void WebRuntimeFeatures::EnableWebGPU(bool enable) {
   RuntimeEnabledFeatures::SetWebGPUEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebGPUDeveloperFeatures(bool enable) {
+  RuntimeEnabledFeatures::SetWebGPUDeveloperFeaturesEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebXR(bool enable) {
   RuntimeEnabledFeatures::SetWebXREnabled(enable);
 }

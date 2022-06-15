@@ -2991,6 +2991,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-webgpu-developer-features",
+    "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
+    // This flag is the only way for developers to use WebGPU features
+    // that are development-centric.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-webrtc-analog-agc-clipping-control",
     "owners": [ "alessiob", "silen", "minyue" ],
     "expiry_milestone": 103

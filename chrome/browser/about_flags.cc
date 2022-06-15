@@ -6443,6 +6443,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsLinux | kOsLacros | kOsWin | kOsFuchsia,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
+    {"enable-webgpu-developer-features",
+     flag_descriptions::kWebGpuDeveloperFeaturesName,
+     flag_descriptions::kWebGpuDeveloperFeaturesDescription,
+     kOsMac | kOsLinux | kOsLacros | kOsWin | kOsFuchsia,
+     SINGLE_VALUE_TYPE(switches::kEnableWebGPUDeveloperFeatures)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-use-mobile-label-disambiguation",
      flag_descriptions::kAutofillUseMobileLabelDisambiguationName,

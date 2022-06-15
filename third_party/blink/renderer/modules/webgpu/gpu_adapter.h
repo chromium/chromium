@@ -73,6 +73,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   String architecture_;
   String device_;
   String description_;
+  String driver_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 50;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

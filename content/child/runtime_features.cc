@@ -476,6 +476,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableWebGLDraftExtensions, switches::kEnableWebGLDraftExtensions,
        true},
       {wrf::EnableWebGPU, switches::kEnableUnsafeWebGPU, true},
+      {wrf::EnableWebGPUDeveloperFeatures,
+       switches::kEnableWebGPUDeveloperFeatures, true},
       {wrf::EnableDirectSockets, switches::kIsolatedAppOrigins, true},
   };
   for (const auto& mapping : switchToFeatureMapping) {
