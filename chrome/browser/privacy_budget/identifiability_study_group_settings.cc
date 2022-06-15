@@ -30,7 +30,8 @@ IdentifiabilityStudyGroupSettings::InitFromFeatureParams() {
                   features::kIdentifiabilityStudyActiveSurfaceBudget.Get(),
                   features::kIdentifiabilityStudyBlocks.Get(),
                   features::kIdentifiabilityStudyBlockWeights.Get(),
-                  features::kIdentifiabilityStudyAllowedRandomTypes.Get());
+                  features::kIdentifiabilityStudyAllowedRandomTypes.Get(),
+                  features::kIdentifiabilityStudyReidSurfaceBlocks.Get());
 }
 
 // static
@@ -40,25 +41,32 @@ IdentifiabilityStudyGroupSettings IdentifiabilityStudyGroupSettings::InitFrom(
     int surface_budget,
     const std::string& blocks,
     const std::string& blocks_weights,
-    const std::string& allowed_random_types) {
+    const std::string& allowed_random_types,
+    const std::string& reid_blocks) {
   return IdentifiabilityStudyGroupSettings(
-      enabled, !blocks.empty(), expected_surface_count, surface_budget,
+      enabled, !blocks.empty(), !reid_blocks.empty(), expected_surface_count,
+      surface_budget,
       DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(blocks),
       DecodeIdentifiabilityFieldTrialParam<std::vector<double>>(blocks_weights),
       DecodeIdentifiabilityFieldTrialParam<
-          std::vector<blink::IdentifiableSurface::Type>>(allowed_random_types));
+          std::vector<blink::IdentifiableSurface::Type>>(allowed_random_types),
+      DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(
+          reid_blocks));
 }
 
 IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     bool enabled,
     bool is_using_assigned_block_sampling,
+    bool is_using_reid_score_estimator,
     int expected_surface_count,
     int surface_budget,
     IdentifiableSurfaceBlocks blocks,
     std::vector<double> blocks_weights,
-    std::vector<blink::IdentifiableSurface::Type> allowed_random_types)
+    std::vector<blink::IdentifiableSurface::Type> allowed_random_types,
+    IdentifiableSurfaceBlocks reid_blocks)
     : enabled_(enabled),
       is_using_assigned_block_sampling_(is_using_assigned_block_sampling),
+      is_using_reid_score_estimator_(is_using_reid_score_estimator),
       expected_surface_count_(base::clamp<int>(
           expected_surface_count,
           0,
@@ -69,6 +77,7 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
           features::kMaxIdentifiabilityStudyActiveSurfaceBudget)),
       blocks_(std::move(blocks)),
       blocks_weights_(std::move(blocks_weights)),
+      reid_blocks_(std::move(reid_blocks)),
       allowed_random_types_(std::move(allowed_random_types)) {
   bool validates = Validate();
   UmaHistogramFinchConfigValidation(validates);
@@ -82,10 +91,20 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     IdentifiabilityStudyGroupSettings&&) = default;
 
 bool IdentifiabilityStudyGroupSettings::Validate() {
-  if (is_using_assigned_block_sampling_)
-    return ValidateAssignedBlockSampling();
-  else if (expected_surface_count_ == 0)
+  // Disabling the Identifiability Study feature flag is a valid configuration.
+  if (!enabled_)
+    return true;
+  // If the study is enabled, at least one of assigned-block-sampling or
+  // reid-score-estimation or random-surface-assignment should be enabled.
+  if (!is_using_assigned_block_sampling_ && !is_using_reid_score_estimator_ &&
+      expected_surface_count_ == 0) {
     return false;
+  }
+  if (is_using_assigned_block_sampling_ && !ValidateAssignedBlockSampling())
+    return false;
+  if (is_using_reid_score_estimator_ && !ValidateReidBlockEstimator())
+    return false;
+
   return true;
 }
 
@@ -125,6 +144,16 @@ bool IdentifiabilityStudyGroupSettings::ValidateAssignedBlockSampling() {
   return true;
 }
 
+bool IdentifiabilityStudyGroupSettings::ValidateReidBlockEstimator() {
+  // Currently return true if the Reid blocks is not empty.
+  // This validation will change once we introduce the offset value for every
+  // Reid block list.
+  if (!reid_blocks_.empty()) {
+    return true;
+  }
+  return false;
+}
+
 const IdentifiableSurfaceBlocks& IdentifiabilityStudyGroupSettings::blocks()
     const {
   DCHECK(is_using_assigned_block_sampling_);
@@ -135,6 +164,11 @@ const std::vector<double>& IdentifiabilityStudyGroupSettings::blocks_weights()
     const {
   DCHECK(is_using_assigned_block_sampling_);
   return blocks_weights_;
+}
+
+const IdentifiableSurfaceBlocks&
+IdentifiabilityStudyGroupSettings::reid_blocks() const {
+  return reid_blocks_;
 }
 
 const std::vector<blink::IdentifiableSurface::Type>&

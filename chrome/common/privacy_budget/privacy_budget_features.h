@@ -80,6 +80,10 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes;
 // bits of information. This is the number of potentially identifiable surfaces
 // that we expect will be sampled per client.
 //
+// * For now, allow (kIdentifiabilityStudyExpectedSurfaceCount or
+// kIdentifiabilityStudyBlocks) and kIdentifiabilityStudyReidSurfaceBlocks to be
+// specified at the same time.
+//
 // Parameter name: "Rho"
 // Parameter type: int
 extern const base::FeatureParam<int> kIdentifiabilityStudyExpectedSurfaceCount;
@@ -221,6 +225,10 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
 // * Specifying a surface that is blocked (either via `BlockedHashes` or
 //   `BlockedTypes`) is an error.
 //
+// * For now, allow (kIdentifiabilityStudyExpectedSurfaceCount or
+// kIdentifiabilityStudyBlocks) and kIdentifiabilityStudyReidSurfaceBlocks to be
+// specified at the same time.
+//
 // E.g.:
 //   * "1;2;3,4;5;6,7;8;9" : Defines three blocks: {1,2,3}, {4,5,6}, and
 //     {7,8,9}.
@@ -305,6 +313,25 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
 // probability higher than this threshold, the study will be deactivated for
 // this client and this client will not report any surface.
 constexpr double kMaxProbabilityPerSurface = 0.5;
+
+// Reid Surface Blocks.
+//
+// Parameter name: "ReidSurfaceBlocks"
+// Parameter type: Comma separated list of blocks. Each block is a semicolon
+//                 separated list of surfaces. See examples below.
+//
+// Each block is a list of surfaces for which we want to estimate the Reid
+// score. For each block, we will collect and send to the server 1 bit of data.
+//
+// * For now, allow (kIdentifiabilityStudyExpectedSurfaceCount or
+// kIdentifiabilityStudyBlocks) and kIdentifiabilityStudyReidSurfaceBlocks to be
+// specified at the same time.
+//
+// E.g.:
+//   * "1;2;3,4;5;6,7;8;9" : Defines three blocks: {1,2,3}, {4,5,6}, and
+//     {7,8,9}.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyReidSurfaceBlocks;
 
 }  // namespace features
 

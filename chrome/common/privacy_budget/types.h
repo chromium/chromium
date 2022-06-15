@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 // Common container and map types. In order to verify successful encoding and
 // decoding, each of these must be tested in
@@ -35,6 +36,10 @@ using IdentifiableSurfaceList = std::vector<blink::IdentifiableSurface>;
 
 using IdentifiableSurfaceTypeList =
     std::vector<blink::IdentifiableSurface::Type>;
+
+using SurfacesAndOptionalValues =
+    base::flat_map<blink::IdentifiableSurface,
+                   absl::optional<blink::IdentifiableToken>>;
 
 // Sampling rates are represented as the denominator of a quotient 1/R. I.e.
 // A sampling rate of 1 in 100 is represented using the integer 100.

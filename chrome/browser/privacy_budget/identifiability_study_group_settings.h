@@ -25,7 +25,8 @@ class IdentifiabilityStudyGroupSettings {
       int surface_budget,
       const std::string& blocks,
       const std::string& blocks_weights,
-      const std::string& allowed_random_types);
+      const std::string& allowed_random_types,
+      const std::string& reid_blocks);
 
   IdentifiabilityStudyGroupSettings(const IdentifiabilityStudyGroupSettings&) =
       delete;
@@ -45,7 +46,13 @@ class IdentifiabilityStudyGroupSettings {
     return is_using_assigned_block_sampling_;
   }
 
+  // Whether the study uses Reid estimator.
+  bool is_using_reid_score_estimator() const {
+    return is_using_reid_score_estimator_;
+  }
+
   const IdentifiableSurfaceBlocks& blocks() const;
+  const IdentifiableSurfaceBlocks& reid_blocks() const;
   const std::vector<double>& blocks_weights() const;
   const std::vector<blink::IdentifiableSurface::Type>& allowed_random_types()
       const;
@@ -57,20 +64,25 @@ class IdentifiabilityStudyGroupSettings {
   IdentifiabilityStudyGroupSettings(
       bool enabled,
       bool is_using_assigned_block_sampling_,
+      bool is_using_reid_block_estimator_,
       int surface_count,
       int surface_budget,
       IdentifiableSurfaceBlocks blocks,
       std::vector<double> blocks_weights,
-      std::vector<blink::IdentifiableSurface::Type> allowed_random_types);
+      std::vector<blink::IdentifiableSurface::Type> allowed_random_types,
+      IdentifiableSurfaceBlocks reid_blocks);
 
   bool Validate();
   bool ValidateAssignedBlockSampling();
+  bool ValidateReidBlockEstimator();
 
   // True if identifiability study is enabled. If this field is false, then none
   // of the other values are applicable.
   bool enabled_;
 
   const bool is_using_assigned_block_sampling_;
+
+  const bool is_using_reid_score_estimator_;
 
   const int expected_surface_count_;
 
@@ -79,6 +91,8 @@ class IdentifiabilityStudyGroupSettings {
   const IdentifiableSurfaceBlocks blocks_;
 
   const std::vector<double> blocks_weights_;
+
+  const IdentifiableSurfaceBlocks reid_blocks_;
 
   // Surface types to sample from when random surface sampling is enabled. If
   // this vector is empty all surface types are allowed to be sampled.

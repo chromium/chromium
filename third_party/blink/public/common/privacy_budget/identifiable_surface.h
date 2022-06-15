@@ -249,6 +249,11 @@ class IdentifiableSurface {
     // Output is the feature value
     kMediaFeature = 36,
 
+    // Type for synthetic surfaces used for reporting data with the goal of
+    // estimating the Reid score of set of surfaces. This type does not
+    // correspond to any Web APIs specifically.
+    kReidScoreEstimator = 37,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };
