@@ -220,7 +220,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://dino",
     // TODO(crbug.com/1113446): Test failure due to excessive output.
     // "chrome://discards",
-    "chrome://domain-reliability-internals",
     "chrome://download-internals",
     "chrome://downloads",
     "chrome://extensions",

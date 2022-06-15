@@ -117,7 +117,7 @@ group("resources") {
 
 if (enable_js_type_check) {
   group("closure_compile") {
-    deps = [ "domain_reliability_internals:closure_compile" ]
+    deps = []
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [
         "bluetooth_internals:closure_compile",

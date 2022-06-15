@@ -250,8 +250,6 @@ static_library("ui") {
     "webui/crashes_ui.h",
     "webui/device_log_ui.cc",
     "webui/device_log_ui.h",
-    "webui/domain_reliability_internals_ui.cc",
-    "webui/domain_reliability_internals_ui.h",
     "webui/download_internals/download_internals_ui.cc",
     "webui/download_internals/download_internals_ui.h",
     "webui/download_internals/download_internals_ui_message_handler.cc",
