@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
+#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 #include <string>
 #include <vector>
@@ -24,10 +24,9 @@ namespace {
 using ::webrtc::TaskQueueTest;
 
 // Test-only factory needed for the TaskQueueTest suite.
-class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
+class TestTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
-  TestMetronomeTaskQueueFactory()
-      : factory_(CreateWebRtcMetronomeTaskQueueFactory()) {}
+  TestTaskQueueFactory() : factory_(CreateWebRtcTaskQueueFactory()) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
@@ -42,16 +41,16 @@ class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
 // Instantiate suite to run all tests defined in
 // third_party/webrtc/api/task_queue/task_queue_test.h.
 INSTANTIATE_TEST_SUITE_P(
-    WebRtcMetronomeTaskQueue,
+    WebRtcTaskQueue,
     TaskQueueTest,
-    ::testing::Values(std::make_unique<TestMetronomeTaskQueueFactory>));
+    ::testing::Values(std::make_unique<TestTaskQueueFactory>));
 
 // Provider needed for the MetronomeLikeTaskQueueTest suite.
-class MetronomeTaskQueueProvider : public MetronomeLikeTaskQueueProvider {
+class TaskQueueProvider : public MetronomeLikeTaskQueueProvider {
  public:
   void Initialize() override {
-    task_queue_ = CreateWebRtcMetronomeTaskQueueFactory()->CreateTaskQueue(
-        "MetronomeTestTaskQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
+    task_queue_ = CreateWebRtcTaskQueueFactory()->CreateTaskQueue(
+        "TestTaskQueue", webrtc::TaskQueueFactory::Priority::NORMAL);
   }
 
   base::TimeDelta DeltaToNextTick() const override {
@@ -72,9 +71,9 @@ class MetronomeTaskQueueProvider : public MetronomeLikeTaskQueueProvider {
 // Instantiate suite to run all tests defined in
 // third_party/webrtc_overrides/test/metronome_like_task_queue_test.h
 INSTANTIATE_TEST_SUITE_P(
-    WebRtcMetronomeTaskQueue,
+    WebRtcTaskQueue,
     MetronomeLikeTaskQueueTest,
-    ::testing::Values(std::make_unique<MetronomeTaskQueueProvider>));
+    ::testing::Values(std::make_unique<TaskQueueProvider>));
 
 }  // namespace
 

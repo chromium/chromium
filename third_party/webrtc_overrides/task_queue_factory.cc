@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
+#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 #include <map>
 #include <memory>
@@ -20,9 +20,9 @@
 
 namespace blink {
 
-class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
+class WebRtcTaskQueue : public webrtc::TaskQueueBase {
  public:
-  explicit WebRtcMetronomeTaskQueue(base::TaskTraits traits);
+  explicit WebRtcTaskQueue(base::TaskTraits traits);
 
   // webrtc::TaskQueueBase implementation.
   void Delete() override;
@@ -34,14 +34,14 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
 
  private:
   // Runs a single PostTask-task.
-  static void MaybeRunTask(WebRtcMetronomeTaskQueue* metronome_task_queue,
+  static void MaybeRunTask(WebRtcTaskQueue* task_queue,
                            scoped_refptr<base::RefCountedData<bool>> is_active,
                            std::unique_ptr<webrtc::QueuedTask> task);
   void RunTask(std::unique_ptr<webrtc::QueuedTask> task);
   // Runs all ready PostDelayedTask-tasks that have been scheduled to run at
   // |scheduled_time_now|.
   static void MaybeRunCoalescedTasks(
-      WebRtcMetronomeTaskQueue* metronome_task_queue,
+      WebRtcTaskQueue* task_queue,
       scoped_refptr<base::RefCountedData<bool>> is_active,
       base::TimeTicks scheduled_time_now);
 
@@ -53,7 +53,7 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
   CoalescedTasks coalesced_tasks_;
 };
 
-WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue(base::TaskTraits traits)
+WebRtcTaskQueue::WebRtcTaskQueue(base::TaskTraits traits)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(std::move(traits))),
       is_active_(new base::RefCountedData<bool>(true)) {}
@@ -66,7 +66,7 @@ void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
   event->Signal();
 }
 
-void WebRtcMetronomeTaskQueue::Delete() {
+void WebRtcTaskQueue::Delete() {
   // Ensure there are no in-flight PostTask-tasks when deleting.
   base::WaitableEvent event;
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&Deactivate, is_active_,
@@ -75,27 +75,25 @@ void WebRtcMetronomeTaskQueue::Delete() {
   delete this;
 }
 
-void WebRtcMetronomeTaskQueue::PostTask(
-    std::unique_ptr<webrtc::QueuedTask> task) {
+void WebRtcTaskQueue::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
   // Delete() ensures there are no in-flight tasks at destruction, so passing an
   // unretained pointer to |this| is safe.
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcMetronomeTaskQueue::RunTask,
+      FROM_HERE, base::BindOnce(&WebRtcTaskQueue::RunTask,
                                 base::Unretained(this), std::move(task)));
 }
 
 // static
-void WebRtcMetronomeTaskQueue::MaybeRunTask(
-    WebRtcMetronomeTaskQueue* metronome_task_queue,
+void WebRtcTaskQueue::MaybeRunTask(
+    WebRtcTaskQueue* task_queue,
     scoped_refptr<base::RefCountedData<bool>> is_active,
     std::unique_ptr<webrtc::QueuedTask> task) {
   if (!is_active->data)
     return;
-  metronome_task_queue->RunTask(std::move(task));
+  task_queue->RunTask(std::move(task));
 }
 
-void WebRtcMetronomeTaskQueue::RunTask(
-    std::unique_ptr<webrtc::QueuedTask> task) {
+void WebRtcTaskQueue::RunTask(std::unique_ptr<webrtc::QueuedTask> task) {
   CurrentTaskQueueSetter set_current(this);
   if (!task->Run()) {
     task.release();
@@ -103,19 +101,18 @@ void WebRtcMetronomeTaskQueue::RunTask(
 }
 
 // static
-void WebRtcMetronomeTaskQueue::MaybeRunCoalescedTasks(
-    WebRtcMetronomeTaskQueue* metronome_task_queue,
+void WebRtcTaskQueue::MaybeRunCoalescedTasks(
+    WebRtcTaskQueue* task_queue,
     scoped_refptr<base::RefCountedData<bool>> is_active,
     base::TimeTicks scheduled_time_now) {
   if (!is_active->data)
     return;
-  CurrentTaskQueueSetter set_current(metronome_task_queue);
-  metronome_task_queue->coalesced_tasks_.RunScheduledTasks(scheduled_time_now);
+  CurrentTaskQueueSetter set_current(task_queue);
+  task_queue->coalesced_tasks_.RunScheduledTasks(scheduled_time_now);
 }
 
-void WebRtcMetronomeTaskQueue::PostDelayedTask(
-    std::unique_ptr<webrtc::QueuedTask> task,
-    uint32_t milliseconds) {
+void WebRtcTaskQueue::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
+                                      uint32_t milliseconds) {
   base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Milliseconds(milliseconds);
   base::TimeTicks snapped_target_time =
@@ -128,13 +125,13 @@ void WebRtcMetronomeTaskQueue::PostDelayedTask(
     // the ref-counted |is_active_| flag.
     task_runner_->PostDelayedTaskAt(
         base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-        base::BindOnce(&WebRtcMetronomeTaskQueue::MaybeRunCoalescedTasks,
+        base::BindOnce(&WebRtcTaskQueue::MaybeRunCoalescedTasks,
                        base::Unretained(this), is_active_, snapped_target_time),
         snapped_target_time, base::subtle::DelayPolicy::kPrecise);
   }
 }
 
-void WebRtcMetronomeTaskQueue::PostDelayedHighPrecisionTask(
+void WebRtcTaskQueue::PostDelayedHighPrecisionTask(
     std::unique_ptr<webrtc::QueuedTask> task,
     uint32_t milliseconds) {
   base::TimeTicks target_time =
@@ -143,8 +140,8 @@ void WebRtcMetronomeTaskQueue::PostDelayedHighPrecisionTask(
   // the ref-counted |is_active_| flag.
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-      base::BindOnce(&WebRtcMetronomeTaskQueue::MaybeRunTask,
-                     base::Unretained(this), is_active_, std::move(task)),
+      base::BindOnce(&WebRtcTaskQueue::MaybeRunTask, base::Unretained(this),
+                     is_active_, std::move(task)),
       target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
@@ -175,12 +172,12 @@ base::TaskTraits TaskQueuePriority2Traits(
   }
 }
 
-class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
+class WebrtcTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-        new WebRtcMetronomeTaskQueue(TaskQueuePriority2Traits(priority)));
+        new WebRtcTaskQueue(TaskQueuePriority2Traits(priority)));
   }
 };
 
@@ -188,15 +185,13 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
 
 }  // namespace blink
 
-std::unique_ptr<webrtc::TaskQueueFactory>
-CreateWebRtcMetronomeTaskQueueFactory() {
+std::unique_ptr<webrtc::TaskQueueFactory> CreateWebRtcTaskQueueFactory() {
   return std::unique_ptr<webrtc::TaskQueueFactory>(
-      new blink::WebrtcMetronomeTaskQueueFactory());
+      new blink::WebrtcTaskQueueFactory());
 }
 
 std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
 CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority priority) {
   return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-      new blink::WebRtcMetronomeTaskQueue(
-          blink::TaskQueuePriority2Traits(priority)));
+      new blink::WebRtcTaskQueue(blink::TaskQueuePriority2Traits(priority)));
 }

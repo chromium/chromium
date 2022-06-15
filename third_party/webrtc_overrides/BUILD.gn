@@ -208,9 +208,9 @@ source_set("task_queue_factory") {
     "metronome_source.h",
 
     # Tested in
-    # third_party/blink/renderer/platform/peerconnection/metronome_task_queue_factory_test.cc
-    "metronome_task_queue_factory.cc",
-    "metronome_task_queue_factory.h",
+    # third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc
+    "task_queue_factory.cc",
+    "task_queue_factory.h",
 
     # Tested in
     # third_party/blink/renderer/platform/peerconnection/low_precision_timer_test.cc

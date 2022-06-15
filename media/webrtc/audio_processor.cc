@@ -30,7 +30,7 @@
 #include "media/webrtc/helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
-#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
+#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace media {
 

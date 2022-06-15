@@ -5,7 +5,7 @@
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 
 #include "base/check.h"
-#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
+#include "third_party/webrtc_overrides/task_queue_factory.h"
 
 namespace blink {
 
