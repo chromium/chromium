@@ -33,8 +33,8 @@
   align-items: center;
   bottom: 0;
   display: flex;
-  flex-direction: row-reverse;
   flex-wrap: wrap;
+  gap: 16px;
   position: absolute;
   top: calc(100% - calc(var(--bottom-line) * 2));
 }
@@ -45,18 +45,6 @@
 
 .review-views .negative.button-group {
   left: calc(var(--left-line) * 2);
-}
-
-.review-views .button-group button {
-  margin: 0 8px;
-}
-
-.review-views .button-group button:first-child {
-  margin-inline-end: 0;
-}
-
-.review-views .button-group button:last-child {
-  margin-inline-start: 0;
 }
 
 .review-views .button-group button[i18n-text=label_share]::before {

@@ -49,6 +49,7 @@ export class OptionPanel extends View {
       span.setAttribute('i18n-aria', ariaLabel);
 
       const input = dom.getFrom(item, 'input', HTMLInputElement);
+      input.setAttribute('name', titleLabel);
       const stateEnabled = state.get(targetState);
       const checked = isDisableOption ? !stateEnabled : stateEnabled;
       input.checked = checked;

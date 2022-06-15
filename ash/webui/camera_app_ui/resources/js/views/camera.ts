@@ -749,21 +749,25 @@ export class Camera extends View implements CameraViewUI {
           nav.close(ViewName.FLASH);
         }
 
+        const negative = new review.OptionGroup({
+          template: review.ButtonGroupTemplate.NEGATIVE,
+          options: [
+            new review.Option({text: I18nString.LABEL_RETAKE}, {
+              callback: () => {
+                sendEvent(metrics.DocResultType.CANCELED);
+              },
+              exitValue: null,
+            }),
+            new review.Option({text: I18nString.LABEL_FIX_DOCUMENT}, {
+              callback: doRecrop,
+              hasPopup: true,
+            }),
+          ],
+        });
+
         const positive = new review.OptionGroup({
           template: review.ButtonGroupTemplate.POSITIVE,
           options: [
-            new review.Option({text: I18nString.LABEL_SAVE_PDF_DOCUMENT}, {
-              callback: () => {
-                sendEvent(metrics.DocResultType.SAVE_AS_PDF);
-              },
-              exitValue: MimeType.PDF,
-            }),
-            new review.Option({text: I18nString.LABEL_SAVE_PHOTO_DOCUMENT}, {
-              callback: () => {
-                sendEvent(metrics.DocResultType.SAVE_AS_PHOTO);
-              },
-              exitValue: MimeType.JPEG,
-            }),
             new review.Option({text: I18nString.LABEL_SHARE}, {
               callback: async () => {
                 sendEvent(metrics.DocResultType.SHARE);
@@ -772,26 +776,22 @@ export class Camera extends View implements CameraViewUI {
                 await util.share(new File([docBlob], name, {type}));
               },
             }),
-          ],
-        });
-
-        const negative = new review.OptionGroup({
-          template: review.ButtonGroupTemplate.NEGATIVE,
-          options: [
-            new review.Option({text: I18nString.LABEL_FIX_DOCUMENT}, {
-              callback: doRecrop,
-              hasPopup: true,
-            }),
-            new review.Option({text: I18nString.LABEL_RETAKE}, {
+            new review.Option({text: I18nString.LABEL_SAVE_PHOTO_DOCUMENT}, {
               callback: () => {
-                sendEvent(metrics.DocResultType.CANCELED);
+                sendEvent(metrics.DocResultType.SAVE_AS_PHOTO);
               },
-              exitValue: null,
+              exitValue: MimeType.JPEG,
             }),
+            new review.Option(
+                {text: I18nString.LABEL_SAVE_PDF_DOCUMENT, primary: true}, {
+                  callback: () => {
+                    sendEvent(metrics.DocResultType.SAVE_AS_PDF);
+                  },
+                  exitValue: MimeType.PDF,
+                }),
           ],
         });
-
-        const mimeType = await this.review.startReview(positive, negative);
+        const mimeType = await this.review.startReview(negative, positive);
         assert(mimeType !== undefined);
         if (mimeType !== null) {
           result = {docBlob, mimeType};
@@ -838,25 +838,26 @@ export class Camera extends View implements CameraViewUI {
     let result: boolean|null = false;
     await this.prepareReview(async () => {
       await this.review.setReviewPhoto(blob);
+      const negative = new review.OptionGroup({
+        template: review.ButtonGroupTemplate.NEGATIVE,
+        options: [new review.Option(
+            {text: I18nString.LABEL_RETAKE}, {exitValue: null})],
+      });
       const positive = new review.OptionGroup({
         template: review.ButtonGroupTemplate.POSITIVE,
         options: [
-          new review.Option({text: I18nString.LABEL_SAVE}, {exitValue: true}),
           new review.Option({text: I18nString.LABEL_SHARE}, {
             callback: async () => {
               sendEvent(metrics.GifResultType.SHARE);
               await util.share(new File([blob], name, {type: MimeType.GIF}));
             },
           }),
+          new review.Option(
+              {text: I18nString.LABEL_SAVE, primary: true}, {exitValue: true}),
         ],
       });
-      const negative = new review.OptionGroup({
-        template: review.ButtonGroupTemplate.NEGATIVE,
-        options: [new review.Option(
-            {text: I18nString.LABEL_RETAKE}, {exitValue: null})],
-      });
       nav.close(ViewName.FLASH);
-      result = (await this.review.startReview(positive, negative)) as boolean;
+      result = (await this.review.startReview(negative, positive)) as boolean;
     });
     if (result) {
       sendEvent(metrics.GifResultType.SAVE);

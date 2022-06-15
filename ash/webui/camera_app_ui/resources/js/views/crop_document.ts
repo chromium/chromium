@@ -349,8 +349,9 @@ export class CropDocument extends Review<boolean> {
     this.cornerSpaceSize = null;
     await super.startReview(new OptionGroup({
       template: ButtonGroupTemplate.POSITIVE,
-      options:
-          [new Option({text: I18nString.LABEL_CROP_DONE}, {exitValue: true})],
+      options: [new Option(
+          {text: I18nString.LABEL_CROP_DONE, primary: true},
+          {exitValue: true})],
     }));
     const newCorners = this.corners.map(({pt: {x, y}}) => {
       assert(this.cornerSpaceSize !== null);

@@ -18,6 +18,7 @@ interface UIArgs {
   text?: I18nString;
   label?: I18nString;
   templateId?: string;
+  primary?: boolean;
 }
 
 /**
@@ -158,8 +159,12 @@ export class Review<T> extends View {
     }
     for (const btnGroup of this.btnGroups) {
       const addButton =
-          ({uiArgs: {text, label, templateId}, exitValue, callback, hasPopup}:
-               Option<T|null>) => {
+          ({
+            uiArgs: {text, label, templateId, primary},
+            exitValue,
+            callback,
+            hasPopup,
+          }: Option<T|null>) => {
             const templ = instantiateTemplate(
                 templateId !== undefined ? `#${templateId}` :
                                            '#text-button-template');
@@ -170,7 +175,7 @@ export class Review<T> extends View {
             if (label !== undefined) {
               btn.setAttribute('i18n-label', label);
             }
-            if (this.primaryBtn === null) {
+            if (this.primaryBtn === null && primary === true) {
               btn.classList.add('primary');
               this.primaryBtn = btn;
             } else {
