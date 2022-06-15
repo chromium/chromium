@@ -213,7 +213,6 @@ public class TabGroupUiTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_BUG_FIX_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1142576")
     public void testVisibilityChangeWithOmnibox() throws Exception {
         // clang-format on
 
