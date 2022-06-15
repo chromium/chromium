@@ -68,7 +68,7 @@ robolectric_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",

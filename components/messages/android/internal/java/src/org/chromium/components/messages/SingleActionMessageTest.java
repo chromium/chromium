@@ -30,6 +30,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,6 +41,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
  * Tests for {@link SingleActionMessage}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class SingleActionMessageTest {
     @ClassRule
     public static DisableAnimationsTestRule sDisableAnimationsRule =
