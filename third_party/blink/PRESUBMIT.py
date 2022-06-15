@@ -142,8 +142,7 @@ def _FilterPaths(input_api):
     for f in input_api.AffectedFiles():
         file_path = f.LocalPath()
         # Filter out changes in web_tests/.
-        if ('web_tests' + input_api.os_path.sep in file_path
-                and 'TestExpectations' not in file_path):
+        if 'web_tests' + input_api.os_path.sep in file_path:
             continue
         if '/PRESUBMIT' in file_path:
             continue

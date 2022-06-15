@@ -41,7 +41,6 @@ from blinkpy.style.checkers.cpp import CppChecker
 from blinkpy.style.checkers.jsonchecker import JSONChecker
 from blinkpy.style.checkers.png import PNGChecker
 from blinkpy.style.checkers.python import PythonChecker
-from blinkpy.style.checkers.test_expectations import TestExpectationsChecker
 from blinkpy.style.checkers.text import TextChecker
 from blinkpy.style.checkers.xcodeproj import XcodeProjectFileChecker
 from blinkpy.style.checkers.xml import XMLChecker
@@ -196,7 +195,6 @@ def _all_categories():
     # Take the union across all checkers.
     categories = CommonCategories.union(CppChecker.categories)
     categories = categories.union(JSONChecker.categories)
-    categories = categories.union(TestExpectationsChecker.categories)
     categories = categories.union(PNGChecker.categories)
     return categories
 
@@ -360,14 +358,6 @@ class CheckerDispatcher(object):
         """Return whether the given file should be skipped without a warning."""
         if not self._file_type(file_path):  # FileType.NONE.
             return True
-        # Since "web_tests" is in _SKIPPED_FILES_WITHOUT_WARNING, make
-        # an exception to prevent files like 'TestExpectations' from being skipped.
-        #
-        # FIXME: Figure out a good way to avoid having to add special logic
-        #        for this special case.
-        basename = os.path.basename(file_path)
-        if basename == 'TestExpectations':
-            return False
         for skipped_file in _SKIPPED_FILES_WITHOUT_WARNING:
             if self._should_skip_file_path(file_path, skipped_file):
                 return True
@@ -399,8 +389,7 @@ class CheckerDispatcher(object):
             return FileType.XCODEPROJ
         elif file_extension == _PNG_FILE_EXTENSION:
             return FileType.PNG
-        elif (file_extension in _TEXT_FILE_EXTENSIONS
-              or os.path.basename(file_path) == 'TestExpectations'):
+        elif (file_extension in _TEXT_FILE_EXTENSIONS):
             return FileType.TEXT
         else:
             return FileType.NONE
@@ -425,12 +414,7 @@ class CheckerDispatcher(object):
         elif file_type == FileType.PNG:
             checker = PNGChecker(file_path, handle_style_error)
         elif file_type == FileType.TEXT:
-            basename = os.path.basename(file_path)
-            if basename == 'TestExpectations':
-                checker = TestExpectationsChecker(file_path,
-                                                  handle_style_error)
-            else:
-                checker = TextChecker(file_path, handle_style_error)
+            checker = TextChecker(file_path, handle_style_error)
         else:
             raise ValueError(
                 'Invalid file type "%(file_type)s": the only valid file types '

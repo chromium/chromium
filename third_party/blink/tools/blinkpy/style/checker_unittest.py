@@ -263,14 +263,9 @@ class CheckerDispatcherSkipTest(unittest.TestCase):
 
     def test_should_skip_without_warning__false(self):
         """Test should_skip_without_warning() for False return values."""
-        paths = [
-            'foo.txt',
-            os.path.join('web_tests', 'TestExpectations'),
-        ]
-
-        for path in paths:
-            self._assert_should_skip_without_warning(
-                path, is_checker_none=False, expected=False)
+        self._assert_should_skip_without_warning('foo.txt',
+                                                 is_checker_none=False,
+                                                 expected=False)
 
 
 class CheckerDispatcherCarriageReturnTest(unittest.TestCase):
