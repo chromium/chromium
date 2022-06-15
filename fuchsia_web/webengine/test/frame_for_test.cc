@@ -4,7 +4,7 @@
 
 #include "fuchsia_web/webengine/test/frame_for_test.h"
 
-#include "fuchsia/base/test/test_navigation_listener.h"
+#include "fuchsia_web/common/test/test_navigation_listener.h"
 
 namespace cr_fuchsia {
 

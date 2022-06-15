@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "fuchsia/base/test/url_request_rewrite_test_util.h"
+#include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

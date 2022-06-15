@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/webengine/test/context_provider_test_connector.h"
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
 

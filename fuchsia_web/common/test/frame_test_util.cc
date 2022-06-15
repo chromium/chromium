@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia_web/common/test/frame_test_util.h"
 
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
-#include "fuchsia/base/test/fit_adapter.h"
-#include "fuchsia/base/test/test_navigation_listener.h"
+#include "fuchsia_web/common/test/fit_adapter.h"
+#include "fuchsia_web/common/test/test_navigation_listener.h"
 
 namespace cr_fuchsia {
 

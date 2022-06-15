@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/runners/cast/application_controller_impl.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "testing/gmock/include/gmock/gmock.h"

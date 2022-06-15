@@ -5,9 +5,9 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/test/frame_test_util.h"
-#include "fuchsia/base/test/test_navigation_listener.h"
-#include "fuchsia/base/test/url_request_rewrite_test_util.h"
+#include "fuchsia_web/common/test/frame_test_util.h"
+#include "fuchsia_web/common/test/test_navigation_listener.h"
+#include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 #include "fuchsia_web/webengine/test/frame_for_test.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

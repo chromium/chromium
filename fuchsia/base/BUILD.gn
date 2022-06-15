@@ -13,6 +13,7 @@ source_set("modular") {
     ":cr_fuchsia_base_unittests__exec",
     "./test/*",
     "//chromecast/internal/*",
+    "//fuchsia_web/common/test/*",
     "//fuchsia_web/runners/*",
     "//fuchsia_web/webengine/*",
   ]
@@ -31,16 +32,6 @@ source_set("modular") {
   ]
 }
 
-static_library("run_all_integration_tests") {
-  testonly = true
-  visibility = [
-    "//fuchsia_web/runners/*",
-    "//fuchsia_web/webengine/*",
-  ]
-  sources = [ "run_all_integration_tests.cc" ]
-  deps = [ "//base/test:test_support" ]
-}
-
 # Unit-tests for all //fuchsia/base utilities.
 test("cr_fuchsia_base_unittests") {
   sources = [ "agent_impl_unittest.cc" ]
@@ -50,7 +41,7 @@ test("cr_fuchsia_base_unittests") {
     "//base:testfidl",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-    "//fuchsia/base/test:test_support",
+    "//fuchsia_web/common/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
-#define FUCHSIA_BASE_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
+#ifndef FUCHSIA_WEB_COMMON_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
+#define FUCHSIA_WEB_COMMON_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
 
 #include "base/values.h"
 
@@ -15,4 +15,4 @@ base::Value GetDevToolsListFromPort(uint16_t port);
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
+#endif  // FUCHSIA_WEB_COMMON_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_

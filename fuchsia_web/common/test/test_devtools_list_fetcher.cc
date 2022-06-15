@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/test/test_devtools_list_fetcher.h"
+#include "fuchsia_web/common/test/test_devtools_list_fetcher.h"
 
 #include "base/callback.h"
 #include "base/json/json_reader.h"

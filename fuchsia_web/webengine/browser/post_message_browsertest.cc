@@ -5,9 +5,9 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/test/fit_adapter.h"
-#include "fuchsia/base/test/frame_test_util.h"
-#include "fuchsia/base/test/test_navigation_listener.h"
+#include "fuchsia_web/common/test/fit_adapter.h"
+#include "fuchsia_web/common/test/frame_test_util.h"
+#include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/browser/frame_impl_browser_test_base.h"
 #include "fuchsia_web/webengine/test/frame_for_test.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_TEST_TEST_NAVIGATION_LISTENER_H_
-#define FUCHSIA_BASE_TEST_TEST_NAVIGATION_LISTENER_H_
+#ifndef FUCHSIA_WEB_COMMON_TEST_TEST_NAVIGATION_LISTENER_H_
+#define FUCHSIA_WEB_COMMON_TEST_TEST_NAVIGATION_LISTENER_H_
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <string>
@@ -103,4 +103,4 @@ class TestNavigationListener final
 
 }  // namespace cr_fuchsia
 
-#endif  // FUCHSIA_BASE_TEST_TEST_NAVIGATION_LISTENER_H_
+#endif  // FUCHSIA_WEB_COMMON_TEST_TEST_NAVIGATION_LISTENER_H_

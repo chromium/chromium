@@ -13,7 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/webengine/browser/cookie_manager_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_access_result.h"

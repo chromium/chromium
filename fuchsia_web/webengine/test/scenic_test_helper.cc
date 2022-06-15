@@ -10,7 +10,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/frame_window_tree_host.h"
 #include "fuchsia_web/webengine/test/test_data.h"
