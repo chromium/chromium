@@ -11,12 +11,11 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/task/thread_pool.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "cc/paint/paint_image_builder.h"
-#include "cc/test/cc_test_suite.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
 #include "cc/test/test_paint_worklet_input.h"
@@ -26,6 +25,78 @@
 
 namespace cc {
 namespace {
+
+class TestWorkerThread : public base::SimpleThread {
+ public:
+  TestWorkerThread()
+      : base::SimpleThread("test_worker_thread"), condition_(&lock_) {}
+
+  void Run() override {
+    for (;;) {
+      base::OnceClosure task;
+      {
+        base::AutoLock hold(lock_);
+        if (shutdown_)
+          break;
+
+        if (queue_.empty()) {
+          condition_.Wait();
+          continue;
+        }
+
+        task = std::move(queue_.front());
+        queue_.erase(queue_.begin());
+      }
+      std::move(task).Run();
+    }
+  }
+
+  void Shutdown() {
+    base::AutoLock hold(lock_);
+    shutdown_ = true;
+    condition_.Signal();
+  }
+
+  void PostTask(base::OnceClosure task) {
+    base::AutoLock hold(lock_);
+    queue_.push_back(std::move(task));
+    condition_.Signal();
+  }
+
+ private:
+  base::Lock lock_;
+  base::ConditionVariable condition_;
+  std::vector<base::OnceClosure> queue_;
+  bool shutdown_ = false;
+};
+
+class WorkerTaskRunner : public base::SequencedTaskRunner {
+ public:
+  WorkerTaskRunner() { thread_.Start(); }
+
+  bool PostNonNestableDelayedTask(const base::Location& from_here,
+                                  base::OnceClosure task,
+                                  base::TimeDelta delay) override {
+    return PostDelayedTask(from_here, std::move(task), delay);
+  }
+
+  bool PostDelayedTask(const base::Location& from_here,
+                       base::OnceClosure task,
+                       base::TimeDelta delay) override {
+    thread_.PostTask(std::move(task));
+    return true;
+  }
+
+  bool RunsTasksInCurrentSequence() const override { return false; }
+
+ protected:
+  ~WorkerTaskRunner() override {
+    thread_.Shutdown();
+    thread_.Join();
+  }
+
+  TestWorkerThread thread_;
+};
 
 // Image decode cache with introspection!
 class TestableCache : public StubDecodeCache {
@@ -192,16 +263,16 @@ class ImageControllerTest : public testing::Test {
   ~ImageControllerTest() override = default;
 
   void SetUp() override {
-    controller_ = std::make_unique<ImageController>(
-        task_runner_,
-        base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()));
+    worker_task_runner_ = base::MakeRefCounted<WorkerTaskRunner>();
+    controller_ = std::make_unique<ImageController>(task_runner_.get(),
+                                                    worker_task_runner_);
     cache_ = TestableCache();
     controller_->SetImageDecodeCache(&cache_);
   }
 
   void TearDown() override {
     controller_.reset();
-    CCTestSuite::RunUntilIdle();
+    worker_task_runner_ = nullptr;
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
 
@@ -248,6 +319,7 @@ class ImageControllerTest : public testing::Test {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<WorkerTaskRunner> worker_task_runner_;
   TestableCache cache_;
   std::unique_ptr<ImageController> controller_;
   DrawImage image_;
