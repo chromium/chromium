@@ -237,9 +237,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1313747",
-        supported_abis_includes = "x86")
+    @DisabledTest(message = "https://crbug.com/1300962")
     public void testRenderGrid_3WebTabs() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -258,9 +258,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature({"RenderTest"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1300962")
-    @DisableIf.Build(sdk_is_greater_than = O_MR1, message = "crbug.com/1077552")
     public void testRenderGrid_10WebTabs() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
