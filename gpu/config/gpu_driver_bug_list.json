@@ -3465,7 +3465,7 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
-      "device_id": ["0x98e4", "0x15d8", "0x15dd"],
+      "device_id": ["0x98e4", "0x15dd"],
       "features": [
         "disable_d3d11_video_decoder"
       ],
