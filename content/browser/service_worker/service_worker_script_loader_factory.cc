@@ -194,6 +194,10 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
     int64_t resource_id,
     base::OnceCallback<void(int64_t, net::Error)> callback,
     int64_t new_resource_id) {
+  if (!context_) {
+    std::move(callback).Run(new_resource_id, net::ERR_FAILED);
+    return;
+  }
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
   context_->registry()->GetRemoteStorageControl()->CreateResourceReader(
       resource_id, reader.BindNewPipeAndPassReceiver());
