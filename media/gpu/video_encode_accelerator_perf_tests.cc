@@ -41,8 +41,8 @@ namespace {
 constexpr const char* usage_msg =
     R"(usage: video_encode_accelerator_perf_tests
            [--codec=<codec>] [--num_spatial_layers=<number>]
-           [--num_temporal_layers=<number>] [--reverse]
-           [--bitrate=<bitrate>]
+           [--num_temporal_layers=<number>] [--bitrate_mode=(cbr|vbr)]
+           [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
            [--disable_vaapi_lock]
            [--gtest_help] [--help]
@@ -70,6 +70,8 @@ The following arguments are supported:
                         if --codec=vp9 currently.
   --num_temporal_layers the number of temporal layers of the encoded
                         bitstream. A default value is 1.
+  --bitrate_mode        The rate control mode for encoding, one of "cbr"
+                        (default) or "vbr".
   --reverse             the stream plays backwards if the stream reaches
                         end of stream. So the input stream to be encoded
                         is consecutive. By default this is false.
@@ -784,6 +786,7 @@ int main(int argc, char** argv) {
   std::string codec = "h264";
   size_t num_spatial_layers = 1u;
   size_t num_temporal_layers = 1u;
+  media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   bool reverse = false;
   absl::optional<uint32_t> encode_bitrate;
   std::vector<base::Feature> disabled_features;
@@ -823,6 +826,14 @@ int main(int argc, char** argv) {
                   << "\n";
         return EXIT_FAILURE;
       }
+    } else if (it->first == "bitrate_mode") {
+      if (it->second == "vbr") {
+        bitrate_mode = media::Bitrate::Mode::kVariable;
+      } else if (it->second != "cbr") {
+        std::cout << "unknown bitrate mode \"" << it->second
+                  << "\", possible values are \"cbr|vbr\"\n";
+        return EXIT_FAILURE;
+      }
     } else if (it->first == "reverse") {
       reverse = true;
     } else if (it->first == "bitrate") {
@@ -849,8 +860,7 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
           codec, num_temporal_layers, num_spatial_layers,
-          false /* output_bitstream */, encode_bitrate,
-          media::Bitrate::Mode::kConstant, reverse,
+          false /* output_bitstream */, encode_bitrate, bitrate_mode, reverse,
           media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)
