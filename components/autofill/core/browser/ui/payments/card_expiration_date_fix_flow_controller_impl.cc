@@ -24,18 +24,7 @@ CardExpirationDateFixFlowControllerImpl::
 
 CardExpirationDateFixFlowControllerImpl::
     ~CardExpirationDateFixFlowControllerImpl() {
-  if (card_expiration_date_fix_flow_view_)
-    card_expiration_date_fix_flow_view_->ControllerGone();
-
-  if (shown_ && !had_user_interaction_) {
-    AutofillMetrics::LogExpirationDateFixFlowPromptEvent(
-        AutofillMetrics::ExpirationDateFixFlowPromptEvent::
-            EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION);
-    LogSaveCreditCardPromptResult(
-        SaveCreditCardPromptResult::kInteractedAndIgnored, true,
-        AutofillClient::SaveCreditCardOptions()
-            .with_should_request_expiration_date_from_user(true));
-  }
+  MaybeDestroyExpirationDateFixFlowView(true);
 }
 
 void CardExpirationDateFixFlowControllerImpl::Show(
@@ -48,8 +37,7 @@ void CardExpirationDateFixFlowControllerImpl::Show(
 
   card_label_ = card.CardIdentifierStringForAutofillDisplay();
 
-  if (card_expiration_date_fix_flow_view_)
-    card_expiration_date_fix_flow_view_->ControllerGone();
+  MaybeDestroyExpirationDateFixFlowView(false);
   card_expiration_date_fix_flow_view_ = card_expiration_date_fix_flow_view;
 
   upload_save_card_callback_ = std::move(callback);
@@ -57,6 +45,7 @@ void CardExpirationDateFixFlowControllerImpl::Show(
   card_expiration_date_fix_flow_view_->Show();
   AutofillMetrics::LogExpirationDateFixFlowPromptShown();
   shown_ = true;
+  had_user_interaction_ = false;
 }
 
 void CardExpirationDateFixFlowControllerImpl::OnAccepted(
@@ -85,7 +74,7 @@ void CardExpirationDateFixFlowControllerImpl::OnDismissed() {
 }
 
 void CardExpirationDateFixFlowControllerImpl::OnDialogClosed() {
-  card_expiration_date_fix_flow_view_ = nullptr;
+  MaybeDestroyExpirationDateFixFlowView(false);
 }
 
 int CardExpirationDateFixFlowControllerImpl::GetIconId() const {
@@ -130,6 +119,24 @@ std::u16string CardExpirationDateFixFlowControllerImpl::GetInvalidDateError()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_ERROR_TRY_AGAIN);
+}
+
+void CardExpirationDateFixFlowControllerImpl::
+    MaybeDestroyExpirationDateFixFlowView(bool controller_gone) {
+  if (card_expiration_date_fix_flow_view_ == nullptr)
+    return;
+  if (controller_gone)
+    card_expiration_date_fix_flow_view_->ControllerGone();
+  if (shown_ && !had_user_interaction_) {
+    AutofillMetrics::LogExpirationDateFixFlowPromptEvent(
+        AutofillMetrics::ExpirationDateFixFlowPromptEvent::
+            EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION);
+    LogSaveCreditCardPromptResult(
+        SaveCreditCardPromptResult::kInteractedAndIgnored, true,
+        AutofillClient::SaveCreditCardOptions()
+            .with_should_request_expiration_date_from_user(true));
+  }
+  card_expiration_date_fix_flow_view_ = nullptr;
 }
 
 }  // namespace autofill

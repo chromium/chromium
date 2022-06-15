@@ -61,7 +61,9 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     }
 
     @Override
-    public void onUserDismiss() {}
+    public void onUserDismiss() {
+        AutofillNameFixFlowBridgeJni.get().onUserDismiss(mNativeCardNameFixFlowViewAndroid);
+    }
 
     @Override
     public void onUserAcceptCardholderName(String name) {
@@ -101,6 +103,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     interface Natives {
         void promptDismissed(
                 long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller);
+        void onUserDismiss(long nativeCardNameFixFlowViewAndroid);
         void onUserAccept(long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller,
                 String name);
     }
