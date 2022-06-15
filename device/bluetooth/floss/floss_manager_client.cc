@@ -100,6 +100,15 @@ const char FlossManagerClient::kExportedCallbacksPath[] =
 // static
 const char FlossManagerClient::kObjectManagerPath[] = "/";
 
+// static
+const int FlossManagerClient::kSetFlossRetryCount = 3;
+
+// static
+const int FlossManagerClient::kSetFlossRetryDelayMs = 500;
+
+// static
+const int FlossManagerClient::kSetFlossEnabledDBusTimeoutMs = 10000;
+
 FlossManagerClient::FlossManagerClient() = default;
 
 FlossManagerClient::~FlossManagerClient() {
@@ -147,24 +156,63 @@ bool FlossManagerClient::GetAdapterEnabled(int adapter) const {
   return false;
 }
 
-void FlossManagerClient::SetFlossEnabled(bool enabled) {
+void FlossManagerClient::GetFlossEnabledWithTarget(bool target,
+                                                   int retry,
+                                                   int retry_wait_ms) {
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
   if (!object_proxy) {
+    if (set_floss_enabled_callback_) {
+      set_floss_enabled_callback_->Run(absl::nullopt,
+                                       Error(kUnknownManagerError, ""));
+      set_floss_enabled_callback_.reset();
+    }
+    return;
+  }
+
+  DVLOG(2) << __func__;
+
+  dbus::MethodCall method_call(kManagerInterface, manager::kGetFlossEnabled);
+  dbus::MessageWriter writer(&method_call);
+
+  object_proxy->CallMethodWithErrorResponse(
+      &method_call, kDBusTimeoutMs,
+      base::BindOnce(&FlossManagerClient::HandleGetFlossEnabled,
+                     weak_ptr_factory_.GetWeakPtr(), target, retry,
+                     retry_wait_ms));
+}
+
+void FlossManagerClient::SetFlossEnabled(
+    bool enabled,
+    int retry,
+    int retry_wait_ms,
+    absl::optional<ResponseCallback<bool>> cb) {
+  dbus::ObjectProxy* object_proxy =
+      bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
+  if (!object_proxy) {
+    if (cb) {
+      std::move(*cb).Run(/*ret=*/absl::nullopt,
+                         /*err=*/Error(kUnknownManagerError, ""));
+    }
     return;
   }
 
   DVLOG(1) << __func__;
+
+  if (cb) {
+    set_floss_enabled_callback_ =
+        WeaklyOwnedCallback<bool>::Create(std::move(*cb));
+  }
 
   dbus::MethodCall method_call(kManagerInterface, manager::kSetFlossEnabled);
   dbus::MessageWriter writer(&method_call);
   writer.AppendBool(enabled);
 
   object_proxy->CallMethodWithErrorResponse(
-      &method_call, kDBusTimeoutMs,
-      base::BindOnce(&FlossManagerClient::DefaultResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     "FlossManagerClient::SetFlossEnabled"));
+      &method_call, kSetFlossEnabledDBusTimeoutMs,
+      base::BindOnce(&FlossManagerClient::HandleSetFlossEnabled,
+                     weak_ptr_factory_.GetWeakPtr(), enabled, retry,
+                     retry_wait_ms));
 }
 
 void FlossManagerClient::SetAdapterEnabled(int adapter,
@@ -203,7 +251,8 @@ void FlossManagerClient::OnSetAdapterEnabled(
     dbus::ErrorResponse* error_response) {
   // Only handle error cases since non-error called in OnHciEnabledChange
   if (powered_callback_ && (!response || error_response)) {
-    powered_callback_.release()->RunError();
+    powered_callback_->RunError();
+    powered_callback_.reset();
   }
 }
 
@@ -309,7 +358,11 @@ void FlossManagerClient::Init(dbus::Bus* bus,
   // Get manager ready.
   RegisterWithManager();
 
-  SetFlossEnabled(base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
+  // Enable Floss and retry a few times until it is set.
+  SetFlossEnabled(base::FeatureList::IsEnabled(floss::features::kFlossEnabled),
+                  kSetFlossRetryCount, kSetFlossRetryDelayMs,
+                  base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FlossManagerClient::HandleGetAvailableAdapters(
@@ -407,7 +460,8 @@ void FlossManagerClient::OnHciEnabledChange(
   }
 
   if (adapter == GetDefaultAdapter() && powered_callback_) {
-    powered_callback_.release()->RunNoError();
+    powered_callback_->RunNoError();
+    powered_callback_.reset();
   }
 
   adapter_to_powered_[adapter] = enabled;
@@ -417,6 +471,101 @@ void FlossManagerClient::OnHciEnabledChange(
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossManagerClient::HandleSetFlossEnabled(
+    bool target,
+    int retry,
+    int retry_wait_ms,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  // Failed to call |SetFlossEnabled| so first log the error and post a delayed
+  // set if there are retries left.
+  if (!response) {
+    FlossDBusClient::LogErrorResponse(
+        "FlossManagerClient::HandleSetFlossEnabled", error_response);
+    if (retry > 0) {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&FlossManagerClient::SetFlossEnabled,
+                         weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
+                         retry_wait_ms, absl::nullopt),
+          base::Milliseconds(retry_wait_ms));
+    } else if (set_floss_enabled_callback_) {
+      set_floss_enabled_callback_->Run(
+          /*ret=*/absl::nullopt,
+          ErrorResponseToError(kUnknownManagerError, "", error_response));
+      set_floss_enabled_callback_.reset();
+    }
+
+    return;
+  }
+
+  GetFlossEnabledWithTarget(target, retry, retry_wait_ms);
+}
+
+void FlossManagerClient::HandleGetFlossEnabled(
+    bool target,
+    int retry,
+    int retry_wait_ms,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  if (!response) {
+    FlossDBusClient::LogErrorResponse(
+        "FlossManagerClient::HandleGetFlossEnabled", error_response);
+    if (retry > 0) {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&FlossManagerClient::GetFlossEnabledWithTarget,
+                         weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
+                         retry_wait_ms),
+          base::Milliseconds(retry_wait_ms));
+    } else if (set_floss_enabled_callback_) {
+      set_floss_enabled_callback_->Run(
+          /*ret=*/absl::nullopt,
+          ErrorResponseToError(kUnknownManagerError, "", error_response));
+      set_floss_enabled_callback_.reset();
+    }
+
+    return;
+  }
+
+  bool floss_enabled = false;
+  dbus::MessageReader msg(response);
+  if (!msg.PopBool(&floss_enabled)) {
+    LOG(ERROR) << "Response to GetFlossEnabled was not a bool";
+    return;
+  }
+
+  // Target doesn't match reality. Retry |SetFlossEnabled|.
+  if (floss_enabled != target && retry > 0) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FlossManagerClient::SetFlossEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
+                       retry_wait_ms, absl::nullopt),
+        base::Milliseconds(kSetFlossRetryDelayMs));
+  } else {
+    DVLOG(1) << "Floss is currently "
+             << (floss_enabled ? "enabled" : "disabled") << " and target was "
+             << (target ? "enabled" : "disabled");
+    if (set_floss_enabled_callback_) {
+      set_floss_enabled_callback_->Run(floss_enabled,
+                                       /*err=*/absl::nullopt);
+      set_floss_enabled_callback_.reset();
+    }
+  }
+}
+
+void FlossManagerClient::CompleteSetFlossEnabled(
+    const absl::optional<bool>& ret,
+    const absl::optional<Error>& err) {
+  if (err) {
+    LOG(ERROR) << "Floss couldn't be enabled. Error=" << err->name << ", "
+               << err->message;
+  } else {
+    DVLOG(1) << "Completed SetFlossEnabled with value " << *ret;
+  }
 }
 
 dbus::PropertySet* FlossManagerClient::CreateProperties(

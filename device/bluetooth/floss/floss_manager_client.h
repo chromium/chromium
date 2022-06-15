@@ -104,12 +104,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Check whether the given adapter is present on the system.
   virtual bool GetAdapterPresent(int adapter) const;
 
-  // Enable or disable Floss at the platform level. This will only be used while
-  // Floss is being developed behind a feature flag. This api will be called on
-  // the manager to stop Bluez from running and let Floss manage the adapters
-  // instead.
-  virtual void SetFlossEnabled(bool enable);
-
   // Check whether an adapter is enabled.
   virtual bool GetAdapterEnabled(int adapter) const;
 
@@ -126,6 +120,24 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
  protected:
   friend class FlossManagerClientTest;
 
+  // Check whether Floss is currently enabled. If the response matches the
+  // target, continue. If it doesn't, retry setting the target value (with
+  // a short delay) until the number of retries is 0.
+  virtual void GetFlossEnabledWithTarget(bool target,
+                                         int retry,
+                                         int retry_wait_ms);
+
+  // Enable or disable Floss at the platform level. This will only be used while
+  // Floss is being developed behind a feature flag. This api will be called on
+  // the manager to stop Bluez from running and let Floss manage the adapters
+  // instead. If setting this value fails, it will be automatically retried
+  // several times with delays. Once the value of |GetFlossEnabled| matches
+  // |enable| (or an error occurs), the ResponseCallback will be called.
+  virtual void SetFlossEnabled(bool enable,
+                               int retry,
+                               int retry_wait_ms,
+                               absl::optional<ResponseCallback<bool>> cb);
+
   // Handle response to |GetAvailableAdapters| DBus method call.
   virtual void HandleGetAvailableAdapters(dbus::Response* response,
                                           dbus::ErrorResponse* error);
@@ -139,6 +151,24 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   virtual void OnHciEnabledChange(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle response to |SetFlossEnabled|.
+  virtual void HandleSetFlossEnabled(bool target,
+                                     int retry,
+                                     int retry_wait_ms,
+                                     dbus::Response* response,
+                                     dbus::ErrorResponse* error_response);
+
+  // Handle response to |GetFlossEnabled|.
+  virtual void HandleGetFlossEnabled(bool target,
+                                     int retry,
+                                     int retry_wait_ms,
+                                     dbus::Response* response,
+                                     dbus::ErrorResponse* error_response);
+
+  // Completion of |SetFlossEnabled|.
+  virtual void CompleteSetFlossEnabled(const absl::optional<bool>& ret,
+                                       const absl::optional<Error>& err);
 
   // Get active adapters and register for callbacks with manager object.
   void RegisterWithManager();
@@ -192,8 +222,23 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Floss Manager registers ObjectManager at this path.
   static const char kObjectManagerPath[];
 
+  // Retry SetFlossEnabled until the value sticks.
+  static const int kSetFlossRetryCount;
+
+  // Amount of time to wait when retrying |SetFlossEnabled|.
+  static const int kSetFlossRetryDelayMs;
+
+  // Custom timeout on DBus for |SetFlossEnabled| call. Since this call does
+  // multiple things synchronously, give it a little bit more time to complete
+  // (especially because it's crucial to set this correctly for Floss to be
+  // enabled).
+  static const int kSetFlossEnabledDBusTimeoutMs;
+
   // Powered callback called only when adapter actually powers on
   std::unique_ptr<PoweredCallback> powered_callback_;
+
+  // Callback sent for SetFlossEnabled completion.
+  std::unique_ptr<WeaklyOwnedCallback<bool>> set_floss_enabled_callback_;
 
   base::WeakPtrFactory<FlossManagerClient> weak_ptr_factory_{this};
 };
