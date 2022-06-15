@@ -16,7 +16,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "remoting/host/base/screen_resolution.h"
-#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
 
 namespace remoting {
@@ -133,12 +132,6 @@ ResizingHostObserver::~ResizingHostObserver() {
     RestoreScreenResolution();
 }
 
-void ResizingHostObserver::RegisterForDisplayChanges(
-    DesktopDisplayInfoMonitor& monitor) {
-  monitor.AddCallback(base::BindRepeating(
-      &ResizingHostObserver::OnDisplayInfoChanged, weak_factory_.GetWeakPtr()));
-}
-
 void ResizingHostObserver::SetScreenResolution(
     const ScreenResolution& resolution,
     absl::optional<webrtc::ScreenId> screen_id) {
@@ -215,12 +208,6 @@ void ResizingHostObserver::RestoreScreenResolution() {
     desktop_resizer_->RestoreResolution(original_resolution_, absl::nullopt);
     original_resolution_ = ScreenResolution();
   }
-}
-
-void ResizingHostObserver::OnDisplayInfoChanged(
-    const DesktopDisplayInfo& display_info) {
-  // TODO(crbug.com/1326339): Implement this as part of the cross-platform
-  // resizing logic.
 }
 
 }  // namespace remoting
