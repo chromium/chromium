@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, addWebUIListener, removeWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 
 import {findDifference} from './cups_printer_dialog_util.js';
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
@@ -28,12 +27,25 @@ let PrintersListWithDeltasCallback;
  */
 let PrintersListCallback;
 
+/** @type {?CupsPrintersEntryManager} */
+let instance = null;
+
 /**
  * Class for managing printer entries. Holds Saved, Nearby, Enterprise, Print
  * Server printers and notifies observers of any applicable changes to either
  * printer lists.
  */
 export class CupsPrintersEntryManager {
+  /** @return {!CupsPrintersEntryManager} */
+  static getInstance() {
+    return instance || (instance = new CupsPrintersEntryManager());
+  }
+
+  /** @param {!CupsPrintersEntryManager} obj */
+  static setInstanceForTesting(obj) {
+    instance = obj;
+  }
+
   constructor() {
     /** @private {!Array<!PrinterListEntry>} */
     this.savedPrinters_ = [];
@@ -249,5 +261,3 @@ export class CupsPrintersEntryManager {
         listener => listener(this.enterprisePrinters_));
   }
 }
-
-addSingletonGetter(CupsPrintersEntryManager);

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-
-import {findDifference} from './cups_printer_dialog_util.js';
-import {PrinterListEntry} from './cups_printer_types.js';
-import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
-
 /**
  * @fileoverview Polymer behavior for observing CupsPrintersEntryManager events.
  * Use this behavior if you want to receive a dynamically updated list of both
  * saved and nearby printers.
  */
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {findDifference} from './cups_printer_dialog_util.js';
+import {PrinterListEntry} from './cups_printer_types.js';
+import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
 
 /** @polymerBehavior */
 export const CupsPrintersEntryListBehavior = {
@@ -128,3 +128,23 @@ export const CupsPrintersEntryListBehavior = {
   /** @param{!Array<!PrinterListEntry>} removedPrinters */
   onSavedPrintersRemoved(removedPrinters) {},
 };
+
+/** @interface */
+export class CupsPrintersEntryListBehaviorInterface {
+  constructor() {
+    /** @type {!Array<!PrinterListEntry>} */
+    this.savedPrinters;
+
+    /** @type {!Array<!PrinterListEntry>} */
+    this.nearbyPrinters;
+
+    /** @type {!Array<!PrinterListEntry>} */
+    this.enterprisePrinters;
+  }
+
+  /** @param {!Array<!PrinterListEntry>} addedPrinters */
+  onSavedPrintersAdded(addedPrinters) {}
+
+  /** @param {!Array<!PrinterListEntry>} removedPrinters */
+  onSavedPrintersRemoved(removedPrinters) {}
+}
