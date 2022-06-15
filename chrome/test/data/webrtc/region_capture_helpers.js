@@ -65,12 +65,6 @@ async function createNewDivElement(targetFrame, divId) {
   }
 }
 
-function animate(element) {
-  const animationCallback = function() {
-    element.innerHTML = parseInt(element.innerHTML) + 1;
-  };
-  setInterval(animationCallback, 20);
-}
 
 /////////////////////////////////////////
 // Main actions from C++ test fixture. //
