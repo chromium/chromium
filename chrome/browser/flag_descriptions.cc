@@ -1875,7 +1875,7 @@ const char kOmniboxRichAutocompletionPromisingDescription[] =
 const char kOmniboxSiteSearchStarterPackName[] =
     "Omnibox Site Search Starter Pack";
 const char kOmniboxSiteSearchStarterPackDescription[] =
-    "Enables @history, @bookmarks, and @settings scopes in Omnibox Site "
+    "Enables @history, @bookmarks, and @tabs scopes in Omnibox Site "
     "Search/Keyword Mode";
 const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPName[] =
     "Allow Omnibox contextual web on-focus suggestions on the SRP";
