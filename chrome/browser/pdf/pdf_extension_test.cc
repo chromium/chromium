@@ -3423,14 +3423,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-// Flaky on Linux (https://crbug.com/1121446)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CombinedShiftArrowPresses DISABLED_CombinedShiftArrowPresses
-#else
-#define MAYBE_CombinedShiftArrowPresses CombinedShiftArrowPresses
-#endif
+// Flaky on multiple platforms (https://crbug.com/1121446)
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
-                       MAYBE_CombinedShiftArrowPresses) {
+                       DISABLED_CombinedShiftArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
   // Give the editable combo box focus.
