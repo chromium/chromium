@@ -31,7 +31,7 @@ public final class ChildAccountFeedbackReporter {
         new ChromeFeedbackCollector(activity, null /* categoryTag */, description,
                 new ScreenshotTask(activity),
                 new ChromeFeedbackCollector.InitParams(profile, url, null),
-                collector -> { sFeedbackReporter.reportFeedback(collector); });
+                collector -> { sFeedbackReporter.reportFeedback(collector); }, profile);
     }
 
     @CalledByNative

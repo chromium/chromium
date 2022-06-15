@@ -37,10 +37,10 @@ public class FeedFeedbackCollector
 
     public FeedFeedbackCollector(Activity activity, @Nullable String categoryTag,
             @Nullable String description, @Nullable ScreenshotSource screenshotSource,
-            InitParams initParams, Callback<FeedbackCollector> callback) {
+            InitParams initParams, Callback<FeedbackCollector> callback, Profile profile) {
         super(categoryTag, description, callback);
 
-        init(activity, screenshotSource, initParams);
+        init(activity, screenshotSource, initParams, profile);
     }
 
     @VisibleForTesting

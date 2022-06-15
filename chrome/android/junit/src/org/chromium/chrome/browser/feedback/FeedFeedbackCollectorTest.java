@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.feedback;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -35,7 +38,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,6 +64,8 @@ public class FeedFeedbackCollectorTest {
     private Activity mActivity;
     @Mock
     private Profile mProfile;
+    @Mock
+    private CoreAccountInfo mAccountInfo;
 
     // Test constants.
     private static final String CATEGORY_TAG = "category_tag";
@@ -90,7 +98,8 @@ public class FeedFeedbackCollectorTest {
                 @Nullable ScreenshotSource screenshotSource,
                 @Nullable Map<String, String> feedContext, Callback<FeedbackCollector> callback) {
             super(activity, categoryTag, description, screenshotSource,
-                    new FeedFeedbackCollector.InitParams(profile, url, feedContext), callback);
+                    new FeedFeedbackCollector.InitParams(profile, url, feedContext), callback,
+                    null);
         }
 
         // Override the async feedback sources to return an empty list, so we are only testing ths
@@ -105,11 +114,19 @@ public class FeedFeedbackCollectorTest {
     @Before
     public void setUp() {
         ThreadUtils.setUiThread(Looper.getMainLooper());
+        when(mAccountInfo.getEmail()).thenReturn(null);
+        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mock(IdentityManager.class));
+        when(IdentityServicesProvider.get().getIdentityManager(any()).getPrimaryAccountInfo(
+                     anyInt()))
+                .thenReturn(mAccountInfo);
     }
 
     @After
     public void tearDown() {
         ThreadUtils.setUiThread(null);
+        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test
