@@ -282,6 +282,16 @@ void ShellSurface::RemoveObserver(ShellSurfaceObserver* observer) {
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
+void ShellSurface::OnSetFrame(SurfaceFrameType type) {
+  ShellSurfaceBase::OnSetFrame(type);
+
+  if (!widget_)
+    return;
+  widget_->GetNativeWindow()->SetProperty(
+      aura::client::kUseWindowBoundsForShadow,
+      frame_type_ != SurfaceFrameType::SHADOW);
+}
+
 void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
   views::Widget* parent_widget =
       parent ? views::Widget::GetTopLevelWidgetForNativeView(parent->window())

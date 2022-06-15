@@ -1745,8 +1745,6 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
 
   gfx::Size size = widget->GetWindowBoundsInScreen().size();
   widget->SetBounds(gfx::Rect(size));
-  widget->GetNativeWindow()->SetProperty(
-      aura::client::kUseWindowBoundsForShadow, false);
 
   // Starts mouse event to make sure resize shadow is created.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1759,6 +1757,9 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   ASSERT_TRUE(resize_shadow);
   shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kUseWindowBoundsForShadow));
+
   ui::Shadow* normal_shadow =
       wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
   ASSERT_TRUE(normal_shadow);
@@ -1826,6 +1827,12 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   ASSERT_TRUE(resize_shadow);
   shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
+      aura::client::kUseWindowBoundsForShadow));
+  // Override the property to update the shadow bounds immediately.
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kUseWindowBoundsForShadow, true);
+
   ui::Shadow* normal_shadow =
       wm::ShadowController::GetShadowForWindow(widget->GetNativeWindow());
   ASSERT_TRUE(normal_shadow);
