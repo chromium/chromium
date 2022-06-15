@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_AUDIO_SOURCE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -58,18 +58,18 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     void OnSourceDestroyedOrStopped();
     void StopSourceOnMain();
 
-    WTF::Mutex mutex_;
-    // Source can only change its value on |main_task_runner_|. We use |mutex_|
+    base::Lock lock_;
+    // Source can only change its value on |main_task_runner_|. We use |lock_|
     // to guard it for value changes and for reads outside |main_task_runner_|.
-    // It is not necessary to guard it with |mutex_| to read its value on
+    // It is not necessary to guard it with |lock_| to read its value on
     // |main_task_runner_|. This helps avoid deadlocks in
     // Stop()/OnSourceDestroyedOrStopped() interactions.
     PushableMediaStreamAudioSource* source_;
     // The same apples to |is_running_|, but since it does not have complex
     // interactions with owners, like |source_| does, we always guard it for
     // simplicity.
-    bool is_running_ GUARDED_BY(mutex_) = false;
-    int num_clients_ GUARDED_BY(mutex_) = 0;
+    bool is_running_ GUARDED_BY(lock_) = false;
+    int num_clients_ GUARDED_BY(lock_) = 0;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   };
 

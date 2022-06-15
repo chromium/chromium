@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -19,7 +20,7 @@ PushableMediaStreamAudioSource::Broker::Broker(
 }
 
 void PushableMediaStreamAudioSource::Broker::OnClientStarted() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK_GE(num_clients_, 0);
   ++num_clients_;
 }
@@ -27,7 +28,7 @@ void PushableMediaStreamAudioSource::Broker::OnClientStarted() {
 void PushableMediaStreamAudioSource::Broker::OnClientStopped() {
   bool should_stop = false;
   {
-    WTF::MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     should_stop = --num_clients_ == 0;
     DCHECK_GE(num_clients_, 0);
   }
@@ -36,13 +37,13 @@ void PushableMediaStreamAudioSource::Broker::OnClientStopped() {
 }
 
 bool PushableMediaStreamAudioSource::Broker::IsRunning() {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return is_running_;
 }
 
 void PushableMediaStreamAudioSource::Broker::PushAudioData(
     scoped_refptr<media::AudioBuffer> data) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   if (!source_)
     return;
 
@@ -63,7 +64,7 @@ void PushableMediaStreamAudioSource::Broker::StopSource() {
 
 void PushableMediaStreamAudioSource::Broker::DeliverData(
     scoped_refptr<media::AudioBuffer> data) {
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   if (!source_)
     return;
 
@@ -75,13 +76,13 @@ void PushableMediaStreamAudioSource::Broker::OnSourceStarted() {
   if (!source_)
     return;
 
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   is_running_ = true;
 }
 
 void PushableMediaStreamAudioSource::Broker::OnSourceDestroyedOrStopped() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  WTF::MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   source_ = nullptr;
   is_running_ = false;
 }

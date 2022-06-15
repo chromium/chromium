@@ -76,7 +76,7 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
     ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     num_pending_pulls_++;
   }
   auto frame_queue = frame_queue_handle_.Queue();
@@ -130,7 +130,7 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
 
 template <typename NativeFrameType>
 bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return (num_pending_pulls_ > 0) && GetExecutionContext();
 }
 
@@ -160,7 +160,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   }
   bool should_clear_queue = true;
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     num_pending_pulls_ = 0;
     if (transferred_source_) {
       PostCrossThreadTask(
@@ -177,7 +177,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   if (frame_queue && should_clear_queue && MustUseMonitor()) {
     while (!frame_queue->IsEmpty()) {
       absl::optional<NativeFrameType> popped_frame = frame_queue->Pop();
-      MutexLocker monitor_locker(GetMonitorMutex());
+      base::AutoLock monitor_locker(GetMonitorLock());
       MonitorPopFrameLocked(popped_frame.value());
     }
   }
@@ -191,7 +191,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
     NativeFrameType media_frame) {
   bool should_send_frame_to_stream;
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     if (transferred_source_) {
       transferred_source_->QueueFrame(std::move(media_frame));
       return;
@@ -204,8 +204,8 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
     return;
 
   if (MustUseMonitor()) {
-    MutexLocker queue_locker(frame_queue->GetMutex());
-    MutexLocker monitor_locker(GetMonitorMutex());
+    base::AutoLock queue_locker(frame_queue->GetLock());
+    base::AutoLock monitor_locker(GetMonitorLock());
     absl::optional<NativeFrameType> oldest_frame = frame_queue->PeekLocked();
     NewFrameAction action = AnalyzeNewFrameLocked(media_frame, oldest_frame);
     switch (action) {
@@ -253,7 +253,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Trace(
 template <typename NativeFrameType>
 int FrameQueueUnderlyingSource<NativeFrameType>::NumPendingPullsForTesting()
     const {
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   return num_pending_pulls_;
 }
 
@@ -268,7 +268,7 @@ template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
     FrameQueueUnderlyingSource<NativeFrameType>* transferred_source) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  MutexLocker locker(mutex_);
+  base::AutoLock locker(lock_);
   DCHECK(!transferred_source_);
   transferred_source_ = transferred_source;
   CloseController();
@@ -293,7 +293,7 @@ void FrameQueueUnderlyingSource<
     return;
 
   {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     if (num_pending_pulls_ == 0)
       return;
   }
@@ -308,7 +308,7 @@ void FrameQueueUnderlyingSource<
     // temporarily removing the frame from the monitor.
     MaybeMonitorPopFrameId(frame_id);
     {
-      MutexLocker locker(mutex_);
+      base::AutoLock locker(lock_);
       if (--num_pending_pulls_ == 0)
         return;
     }
@@ -321,9 +321,9 @@ bool FrameQueueUnderlyingSource<NativeFrameType>::MustUseMonitor() const {
 }
 
 template <typename NativeFrameType>
-Mutex& FrameQueueUnderlyingSource<NativeFrameType>::GetMonitorMutex() {
+base::Lock& FrameQueueUnderlyingSource<NativeFrameType>::GetMonitorLock() {
   DCHECK(MustUseMonitor());
-  return VideoFrameMonitor::Instance().GetMutex();
+  return VideoFrameMonitor::Instance().GetLock();
 }
 
 template <typename NativeFrameType>
@@ -339,6 +339,9 @@ void FrameQueueUnderlyingSource<NativeFrameType>::MonitorPopFrameLocked(
     const NativeFrameType& media_frame) {
   DCHECK(MustUseMonitor());
   int frame_id = GetFrameId(media_frame);
+  // Note: This is GetMonitorLock(), which is required, but the static checker
+  // doesn't figure it out.
+  VideoFrameMonitor::Instance().GetLock().AssertAcquired();
   VideoFrameMonitor::Instance().OnCloseFrameLocked(device_id_, frame_id);
 }
 
@@ -347,6 +350,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::MonitorPushFrameLocked(
     const NativeFrameType& media_frame) {
   DCHECK(MustUseMonitor());
   int frame_id = GetFrameId(media_frame);
+  VideoFrameMonitor::Instance().GetLock().AssertAcquired();
   VideoFrameMonitor::Instance().OnOpenFrameLocked(device_id_, frame_id);
 }
 
@@ -361,6 +365,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::AnalyzeNewFrameLocked(
     oldest_frame_id = GetFrameId(oldest_frame.value());
 
   VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
+  monitor.GetLock().AssertAcquired();
   wtf_size_t num_total_frames = monitor.NumFramesLocked(device_id_);
   if (num_total_frames < frame_pool_size_) {
     // The limit is not reached yet.

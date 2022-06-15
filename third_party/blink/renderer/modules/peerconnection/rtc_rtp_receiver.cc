@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -211,11 +212,11 @@ void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
 
 void RTCRtpReceiver::ContextDestroyed() {
   {
-    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_depacketizer_underlying_source_.Clear();
   }
   {
-    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    base::AutoLock locker(audio_underlying_sink_lock_);
     audio_to_decoder_underlying_sink_.Clear();
   }
 }
@@ -361,7 +362,7 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
     return;
   }
   {
-    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_depacketizer_underlying_source_->OnSourceTransferStarted();
     audio_from_depacketizer_underlying_source_ = new_underlying_source;
   }
@@ -378,7 +379,7 @@ void RTCRtpReceiver::SetAudioUnderlyingSink(
     // continue.
     return;
   }
-  WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+  base::AutoLock locker(audio_underlying_sink_lock_);
   audio_to_decoder_underlying_sink_ = new_underlying_sink;
 }
 
@@ -390,7 +391,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
   encoded_audio_streams_ = RTCInsertableStreams::Create();
 
   {
-    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    base::AutoLock locker(audio_underlying_source_lock_);
     DCHECK(!audio_from_depacketizer_underlying_source_);
 
     // Set up readable.
@@ -422,7 +423,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
 
   WritableStream* writable_stream;
   {
-    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    base::AutoLock locker(audio_underlying_sink_lock_);
     DCHECK(!audio_to_decoder_underlying_sink_);
 
     // Set up writable.
@@ -448,7 +449,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
 
 void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
     std::unique_ptr<webrtc::TransformableFrameInterface> encoded_audio_frame) {
-  WTF::MutexLocker locker(audio_underlying_source_mutex_);
+  base::AutoLock locker(audio_underlying_source_lock_);
   if (audio_from_depacketizer_underlying_source_) {
     audio_from_depacketizer_underlying_source_->OnFrameFromSource(
         std::move(encoded_audio_frame));

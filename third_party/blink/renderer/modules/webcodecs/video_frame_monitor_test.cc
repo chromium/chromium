@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -46,7 +46,7 @@ class VideoFrameMonitorTest : public testing::Test {
     EXPECT_EQ(monitor.NumRefs(source_id, 20), 1);
 
     {
-      MutexLocker locker(monitor.GetMutex());
+      base::AutoLock locker(monitor.GetLock());
       monitor.OnOpenFrameLocked(source_id, 30);
       EXPECT_EQ(monitor.NumFramesLocked(source_id), 2u);
       EXPECT_EQ(monitor.NumRefsLocked(source_id, 30), 2);

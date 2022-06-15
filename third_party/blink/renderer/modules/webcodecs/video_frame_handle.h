@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_HANDLE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -97,23 +99,22 @@ class MODULES_EXPORT VideoFrameHandle
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
 
-  // |mutex_| must be held before calling into this.
-  void InvalidateLocked();
+  void InvalidateLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Inform the GPUExternalTexture that VideoFrame is closed and expire the
   // external texture. |mutex_| must be held before calling into this.
-  void NotifyExpiredLocked();
+  void NotifyExpiredLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void MaybeMonitorOpenFrame();
-  void MaybeMonitorCloseFrame();
+  void MaybeMonitorOpenFrame() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MaybeMonitorCloseFrame() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Flag that prevents the creation of a new handle during the next Clone()
   // call. Used as a temporary workaround for crbug.com/1182497.
-  bool close_on_clone_ = false;
+  bool close_on_clone_ GUARDED_BY(lock_) = false;
 
-  WTF::Mutex mutex_;
-  sk_sp<SkImage> sk_image_;
-  scoped_refptr<media::VideoFrame> frame_;
+  base::Lock lock_;
+  sk_sp<SkImage> sk_image_ GUARDED_BY(lock_);
+  scoped_refptr<media::VideoFrame> frame_ GUARDED_BY(lock_);
   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor_;
   Vector<WebGPUExternalTextureExpireCallback>
       webgpu_external_texture_expire_callbacks_;

@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -20,15 +20,15 @@ class FrameQueue
   explicit FrameQueue(wtf_size_t max_size)
       : max_size_(std::max(1u, max_size)) {}
 
-  Mutex& GetMutex() { return lock_; }
+  base::Lock& GetLock() { return lock_; }
 
   absl::optional<NativeFrameType> Push(NativeFrameType frame) {
-    MutexLocker locker_(lock_);
+    base::AutoLock locker_(GetLock());
     return PushLocked(std::move(frame));
   }
 
-  absl::optional<NativeFrameType> PushLocked(NativeFrameType frame) {
-    lock_.AssertAcquired();
+  absl::optional<NativeFrameType> PushLocked(NativeFrameType frame)
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
     absl::optional<NativeFrameType> ret;
     if (queue_.size() == max_size_)
       ret = queue_.TakeFirst();
@@ -37,44 +37,43 @@ class FrameQueue
   }
 
   absl::optional<NativeFrameType> Pop() {
-    MutexLocker locker_(lock_);
+    base::AutoLock locker_(GetLock());
     return PopLocked();
   }
 
-  absl::optional<NativeFrameType> PopLocked() {
-    lock_.AssertAcquired();
+  absl::optional<NativeFrameType> PopLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
     if (queue_.empty())
       return absl::nullopt;
     return queue_.TakeFirst();
   }
 
-  absl::optional<NativeFrameType> PeekLocked() {
-    lock_.AssertAcquired();
+  absl::optional<NativeFrameType> PeekLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
     if (queue_.empty())
       return absl::nullopt;
     return queue_.front();
   }
 
   bool IsEmpty() {
-    MutexLocker locker_(lock_);
+    base::AutoLock locker_(GetLock());
     return IsEmptyLocked();
   }
 
-  bool IsEmptyLocked() {
-    lock_.AssertAcquired();
+  bool IsEmptyLocked() EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
     return queue_.empty();
   }
 
   wtf_size_t MaxSize() const { return max_size_; }
 
   void Clear() {
-    MutexLocker locker_(lock_);
+    base::AutoLock locker_(GetLock());
     queue_.clear();
   }
 
  private:
-  Mutex lock_;
-  Deque<NativeFrameType> queue_ GUARDED_BY(lock_);
+  base::Lock lock_;
+  Deque<NativeFrameType> queue_ GUARDED_BY(GetLock());
   const wtf_size_t max_size_;
 };
 
@@ -98,19 +97,19 @@ class FrameQueueHandle {
   // Queue() multiple times.  Otherwise the queue could be destroyed
   // between calls.
   scoped_refptr<FrameQueue<NativeFrameType>> Queue() const {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     return queue_;
   }
 
   // Releases the internal FrameQueue reference.
   void Invalidate() {
-    MutexLocker locker(mutex_);
+    base::AutoLock locker(lock_);
     queue_.reset();
   }
 
  private:
-  mutable Mutex mutex_;
-  scoped_refptr<FrameQueue<NativeFrameType>> queue_ GUARDED_BY(mutex_);
+  mutable base::Lock lock_;
+  scoped_refptr<FrameQueue<NativeFrameType>> queue_ GUARDED_BY(lock_);
 };
 
 }  // namespace blink

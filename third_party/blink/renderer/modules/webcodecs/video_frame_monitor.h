@@ -8,11 +8,11 @@
 #include <map>
 #include <string>
 
+#include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -61,23 +61,27 @@ class MODULES_EXPORT VideoFrameMonitor {
   // Reports true if nothing is being monitored, false otherwise.
   bool IsEmpty();
 
-  // This function returns a mutex that can be used to lock the
+  // This function returns a lock that can be used to lock the
   // VideoFrameMonitor so that multiple invocations to the methods below
   // (suffixed with "Locked" can be done atomically, as a single update to
-  // the monitor. Locking the VideoFrameMonitor using GetMutex() must be done
-  // very carefully, as any invocation to any non-Locked method while the mutex
+  // the monitor. Locking the VideoFrameMonitor using GetLock() must be done
+  // very carefully, as any invocation to any non-Locked method while the lock
   // is acquired will result in deadlock.
   // For example, blink::VideoFrame objects may be automatically monitored, so
-  // they should not be created, cloned or closed while the mutex is acquired.
-  Mutex& GetMutex() { return mutex_; }
+  // they should not be created, cloned or closed while the lock is acquired.
+  base::Lock& GetLock() { return lock_; }
 
-  // The methods below can be called only when the mutex returned by GetMutex()
+  // The methods below can be called only when the mutex returned by GetLock()
   // has been acquired. Other than that, they are equivalent to their
   // corresponding non-locked version.
-  void OnOpenFrameLocked(const std::string& source_id, int frame_id);
-  void OnCloseFrameLocked(const std::string& source_id, int frame_id);
-  wtf_size_t NumFramesLocked(const std::string& source_id);
-  int NumRefsLocked(const std::string& source_id, int frame_id);
+  void OnOpenFrameLocked(const std::string& source_id, int frame_id)
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+  void OnCloseFrameLocked(const std::string& source_id, int frame_id)
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+  wtf_size_t NumFramesLocked(const std::string& source_id)
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+  int NumRefsLocked(const std::string& source_id, int frame_id)
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
  private:
   VideoFrameMonitor() = default;
@@ -95,9 +99,9 @@ class MODULES_EXPORT VideoFrameMonitor {
   // Using std::map because HashMap does not directly support std::string.
   using SourceMap = std::map<std::string, FrameMap>;
 
-  Mutex mutex_;
+  base::Lock lock_;
   // Contains all data for VideoFrameMonitor.
-  SourceMap map_ GUARDED_BY(mutex_);
+  SourceMap map_ GUARDED_BY(GetLock());
 };
 
 }  // namespace blink
