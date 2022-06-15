@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "crypto/mac_security_services_lock.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
@@ -282,6 +283,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
   const TrustStoreMac::TrustImplType trust_impl = std::get<0>(GetParam());
   const IsKnownRootTestOrder is_known_root_test_order = std::get<1>(GetParam());
   const TrustStoreMac::TrustDomains trust_domains = std::get<2>(GetParam());
+
+  base::HistogramTester histogram_tester;
   TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl,
                             kDefaultCacheSize, trust_domains);
 
@@ -402,6 +405,20 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
               trust_debug_data2->combined_trust_debug_info());
     EXPECT_EQ(trust_debug_data->trust_impl(), trust_debug_data2->trust_impl());
   }
+
+  if (trust_impl == TrustStoreMac::TrustImplType::kDomainCacheFullCerts) {
+    // Since this is testing the actual platform trust settings, we don't know
+    // what values the histogram should be for each domain, so just verify that
+    // the histogram is recorded (or not) depending on the requested trust
+    // domains.
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacTrustDomainCertCount.User", 1);
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacTrustDomainCertCount.Admin", 1);
+    histogram_tester.ExpectTotalCount(
+        "Net.CertVerifier.MacTrustDomainCertCount.System",
+        (trust_domains == TrustStoreMac::TrustDomains::kAll) ? 1 : 0);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -410,7 +427,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(TrustStoreMac::TrustImplType::kDomainCache,
                         TrustStoreMac::TrustImplType::kSimple,
-                        TrustStoreMac::TrustImplType::kLruCache),
+                        TrustStoreMac::TrustImplType::kLruCache,
+                        TrustStoreMac::TrustImplType::kDomainCacheFullCerts),
         // Some TrustImpls may calculate/cache IsKnownRoot values and trust
         // values independently, so test with calling IsKnownRoot both before
         // and after GetTrust to try to ensure there is no ordering issue with

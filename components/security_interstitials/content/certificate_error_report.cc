@@ -151,20 +151,20 @@ void AddMacPlatformDebugInfoToReport(
 chrome_browser_ssl::TrialVerificationInfo::MacTrustImplType
 TrustImplTypeFromMojom(
     cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
+  using mojom_MacTrustImplType =
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType;
+  using chrome_browser_ssl::TrialVerificationInfo;
   switch (input) {
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kUnknown:
-      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kDomainCache:
-      return chrome_browser_ssl::TrialVerificationInfo::
-          MAC_TRUST_IMPL_DOMAIN_CACHE;
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
-      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
-    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kLruCache:
-      return chrome_browser_ssl::TrialVerificationInfo::
-          MAC_TRUST_IMPL_MRU_CACHE;
+    case mojom_MacTrustImplType::kUnknown:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
+    case mojom_MacTrustImplType::kDomainCache:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_DOMAIN_CACHE;
+    case mojom_MacTrustImplType::kSimple:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
+    case mojom_MacTrustImplType::kLruCache:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE;
+    case mojom_MacTrustImplType::kDomainCacheFullCerts:
+      return TrialVerificationInfo::MAC_TRUST_IMPL_DOMAIN_CACHE_FULL_CERTS;
   }
 }
 #endif  // BUILDFLAG(IS_APPLE)

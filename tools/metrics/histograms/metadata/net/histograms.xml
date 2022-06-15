@@ -324,6 +324,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CertVerifier.MacTrustDomainCertCount.{Domain}"
+    units="certificates" expires_after="2023-02-01">
+  <owner>mattm@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <summary>
+    When the builtin certificate verifier is used on Mac and the platform
+    trusted certificates cache is initialized (or re-initialized if keychain
+    trust settings changed), records the number of certificates read from the
+    {Domain} trust domain. Only counts certificates that were successfully
+    parsed. Only recorded by the DomainCacheFullCerts implementation, which may
+    or may not be used depending on Finch trial parameters.
+  </summary>
+  <token key="Domain">
+    <variant name="Admin"/>
+    <variant name="System"/>
+    <variant name="User"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Net.CertVerifier.NameNormalizationPrivateRoots"
     enum="NetCertificateNameNormalization" expires_after="2022-11-13">
   <owner>mattm@chromium.org</owner>

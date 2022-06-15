@@ -217,6 +217,8 @@ namespace {
 TrustStoreMac::TrustImplType ParamToTrustImplType(
     int param,
     TrustStoreMac::TrustImplType default_impl) {
+  // These values are used in experiment configs, do not change or reuse the
+  // numbers.
   switch (param) {
     case 1:
       return TrustStoreMac::TrustImplType::kDomainCache;
@@ -224,6 +226,8 @@ TrustStoreMac::TrustImplType ParamToTrustImplType(
       return TrustStoreMac::TrustImplType::kSimple;
     case 3:
       return TrustStoreMac::TrustImplType::kLruCache;
+    case 4:
+      return TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
     default:
       return default_impl;
   }
@@ -310,7 +314,7 @@ namespace {
 
 TrustStoreMac* GetGlobalTrustStoreMacForCRS() {
   constexpr TrustStoreMac::TrustImplType kDefaultMacTrustImplForCRS =
-      TrustStoreMac::TrustImplType::kDomainCache;
+      TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
   static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
       kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultMacTrustImplForCRS),
       GetTrustStoreCacheSize(), TrustStoreMac::TrustDomains::kUserAndAdmin);

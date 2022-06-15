@@ -14,6 +14,10 @@ void CertIssuerSourceStatic::AddCert(scoped_refptr<ParsedCertificate> cert) {
       cert->normalized_subject().AsStringPiece(), std::move(cert)));
 }
 
+void CertIssuerSourceStatic::Clear() {
+  intermediates_.clear();
+}
+
 void CertIssuerSourceStatic::SyncGetIssuersOf(const ParsedCertificate* cert,
                                               ParsedCertificateList* issuers) {
   auto range =

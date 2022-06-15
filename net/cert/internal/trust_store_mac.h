@@ -74,11 +74,14 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     COPY_TRUST_SETTINGS_ERROR = 1 << 11,
   };
 
+  // NOTE: When updating this enum, also update ParamToTrustImplType in
+  // system_trust_store.cc
   enum class TrustImplType {
     kUnknown = 0,
     kDomainCache = 1,
     kSimple = 2,
     kLruCache = 3,
+    kDomainCacheFullCerts = 4,
   };
 
   enum class TrustDomains {
@@ -148,6 +151,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
  private:
   class TrustImpl;
   class TrustImplDomainCache;
+  class TrustImplDomainCacheFullCerts;
   class TrustImplNoCache;
   class TrustImplLRUCache;
 
