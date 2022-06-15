@@ -249,25 +249,18 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  if (codec != VideoCodec::kH264) {
-    switch (config.bitrate.mode()) {
-      case Bitrate::Mode::kConstant:
-        break;
-      case Bitrate::Mode::kVariable:
-        MEDIA_LOG(ERROR, media_log.get())
-            << "Variable bitrate is only supported with H264 encoding.";
-        return false;
-    }
+  if (codec != VideoCodec::kH264 &&
+      config.bitrate.mode() == Bitrate::Mode::kVariable) {
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Variable bitrate is only supported with H264 encoding.";
+    return false;
   }
 
-  switch (config.input_format) {
-    case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_NV12:
-      break;
-    default:
-      MEDIA_LOG(ERROR, media_log.get())
-          << "Unsupported input format: " << config.input_format;
-      return false;
+  if (config.input_format != PIXEL_FORMAT_I420 &&
+      config.input_format != PIXEL_FORMAT_NV12) {
+    MEDIA_LOG(ERROR, media_log.get())
+        << "Unsupported input format: " << config.input_format;
+    return false;
   }
 
   if (config.storage_type.value_or(Config::StorageType::kShmem) ==
@@ -329,10 +322,23 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   output_codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
   if (!IsConfiguredForTesting()) {
-    const auto mode =
-        (output_codec_ == VideoCodec::kVP9 || output_codec_ == VideoCodec::kVP8)
-            ? VaapiWrapper::kEncodeConstantQuantizationParameter
-            : VaapiWrapper::kEncodeConstantBitrate;
+    VaapiWrapper::CodecMode mode;
+    switch (output_codec_) {
+      case VideoCodec::kH264:
+        mode = config.bitrate.mode() == Bitrate::Mode::kConstant
+                   ? VaapiWrapper::kEncodeConstantBitrate
+                   : VaapiWrapper::kEncodeVariableBitrate;
+        break;
+      case VideoCodec::kVP8:
+      case VideoCodec::kVP9:
+        mode = VaapiWrapper::kEncodeConstantQuantizationParameter;
+        break;
+      default:
+        NOTIFY_ERROR(kInvalidArgumentError,
+                     "Unsupported codec: " + GetCodecName(output_codec_));
+        return;
+    }
+
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
         mode, config.output_profile, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,
