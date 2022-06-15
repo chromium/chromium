@@ -4146,6 +4146,28 @@
             ]
         }
     ],
+    "HTMLParamElementUrlSupport": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_20220615",
+                    "disable_features": [
+                        "HTMLParamElementUrlSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "HTTP2": [
         {
             "platforms": [
