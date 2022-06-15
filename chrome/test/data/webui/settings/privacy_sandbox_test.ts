@@ -267,7 +267,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertMainViewVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_, PrivacySandboxSettingsView.MAIN);
+        page.privacySandboxSettingsView, PrivacySandboxSettingsView.MAIN);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
     assertFalse(!!dialogWrapper);
@@ -275,7 +275,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertLearnMoreDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.LEARN_MORE_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -289,7 +289,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertAdPersonalizationDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -310,7 +310,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertAdPersonalizationRemovedDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -331,7 +331,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertAdMeasurementDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
@@ -345,7 +345,7 @@ suite('PrivacySandboxSettings3', function() {
 
   function assertSpamAndFraudDialogVisible() {
     assertEquals(
-        page.privacySandboxSettingsView_,
+        page.privacySandboxSettingsView,
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG);
     const dialogWrapper =
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');

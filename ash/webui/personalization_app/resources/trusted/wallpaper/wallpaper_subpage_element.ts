@@ -38,7 +38,7 @@ export class WallpaperSubpage extends WithPersonalizationStore {
 
   path: string;
   queryParams: Record<string, string>;
-  currentSelected_: CurrentWallpaper|null;
+  private currentSelected_: CurrentWallpaper|null;
 
   override connectedCallback(): void {
     super.connectedCallback();

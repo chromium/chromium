@@ -229,12 +229,12 @@
     </div>
     <template is="dom-if"
         if="[[!showFragment_(privacySandboxSettingsViewEnum_.MAIN,
-                privacySandboxSettingsView_)]]" restamp>
+                privacySandboxSettingsView)]]" restamp>
       <cr-dialog id="dialogWrapper" show-on-attach on-close="onDialogClose_">
         <template id="learnMoreDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.LEARN_MORE_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div slot="title">$i18n{privacySandboxLearnMoreDialogTitle}</div>
           <div slot="body">
             <div class="learn-more-section-title">
@@ -292,7 +292,7 @@
         <template id="adPersonalizationDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div class="ad-personalization-title" slot="title">
             $i18n{privacySandboxAdPersonalizationDialogTitle}
           </div>
@@ -384,7 +384,7 @@
         <template id="adPersonalizationRemovedDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_REMOVED_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div class="ad-personalization-title" slot="title">
             <cr-icon-button id="adPersonalizationBackButton"
                 class="icon-arrow-back" aria-label="$i18n{back}"
@@ -433,7 +433,7 @@
         <template id="adMeasurementDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_MEASUREMENT_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div slot="title">$i18n{privacySandboxAdMeasurementDialogTitle}</div>
           <div slot="body">
             <div class="dialog-description">
@@ -449,7 +449,7 @@
         <template id="spamAndFraudDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.SPAM_AND_FRAUD_DIALOG,
-                    privacySandboxSettingsView_)]]">
+                    privacySandboxSettingsView)]]">
           <div slot="title">$i18n{privacySandboxSpamAndFraudDialogTitle}</div>
           <div slot="body">
             <div class="dialog-description">

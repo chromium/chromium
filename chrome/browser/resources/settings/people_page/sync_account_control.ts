@@ -146,8 +146,8 @@ export class SettingsSyncAccountControlElement extends
   promoLabelWithNoAccount: string;
   promoSecondaryLabelWithAccount: string;
   promoSecondaryLabelWithNoAccount: string;
-  signedIn_: boolean;
-  storedAccounts_: Array<StoredAccount>;
+  private signedIn_: boolean;
+  private storedAccounts_: Array<StoredAccount>;
   private shownAccount_: StoredAccount|null;
   showingPromo: boolean;
   embeddedInSubpage: boolean;

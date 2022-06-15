@@ -58,7 +58,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       },
 
       /** The current view. */
-      privacySandboxSettingsView_: {
+      privacySandboxSettingsView: {
         type: String,
         value: PrivacySandboxSettingsView.MAIN,
       },
@@ -108,7 +108,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
   private privacySandboxSettings3Enabled_: boolean;
-  privacySandboxSettingsView_: PrivacySandboxSettingsView;
+  privacySandboxSettingsView: PrivacySandboxSettingsView;
   private topTopics_: Array<PrivacySandboxInterest>;
   private blockedTopics_: Array<PrivacySandboxInterest>;
   private joiningSites_: Array<PrivacySandboxInterest>;
@@ -153,10 +153,10 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       const view = new URLSearchParams(window.location.search).get('view');
       if (Object.values(PrivacySandboxSettingsView)
               .includes(view as PrivacySandboxSettingsView)) {
-        this.privacySandboxSettingsView_ = view as PrivacySandboxSettingsView;
+        this.privacySandboxSettingsView = view as PrivacySandboxSettingsView;
       } else {
         // If no view has been specified, then navigate to main page.
-        this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+        this.privacySandboxSettingsView = PrivacySandboxSettingsView.MAIN;
       }
     });
 
@@ -200,15 +200,15 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   }
 
   private showFragment_(view: PrivacySandboxSettingsView): boolean {
-    return this.privacySandboxSettingsView_ === view;
+    return this.privacySandboxSettingsView === view;
   }
 
   private onDialogClose_() {
     // This function will only be called once, regardless of how the dialog is
     // shut (either via ESC or via the button), as in the latter the dialog is
     // not "closed", but rather removed from the DOM.
-    const lastView = this.privacySandboxSettingsView_;
-    this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
+    const lastView = this.privacySandboxSettingsView;
+    this.privacySandboxSettingsView = PrivacySandboxSettingsView.MAIN;
     afterNextRender(this, async () => {
       switch (lastView) {
         case PrivacySandboxSettingsView.LEARN_MORE_DIALOG:
@@ -238,14 +238,14 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     e.stopPropagation();
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.LEARN_MORE_DIALOG;
   }
 
   private onAdPersonalizationRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdPersonalization.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
   }
 
@@ -265,19 +265,19 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onAdPersonalizationRemovedRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.RemovedInterests.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG;
   }
 
   private onAdPersonalizationBackButtonClick_() {
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG;
   }
 
   private onAdMeasurementRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdMeasurement.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG;
   }
 
@@ -291,7 +291,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onSpamAndFraudRowClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.SpamFraud.Opened');
-    this.privacySandboxSettingsView_ =
+    this.privacySandboxSettingsView =
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG;
   }
 

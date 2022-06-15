@@ -93,11 +93,22 @@ module.exports = {
         {
           selector: 'classProperty',
           format: ['UPPER_CASE'],
-          modifiers: ['static', 'readonly'],
+          modifiers: ['private', 'static', 'readonly'],
+        },
+        {
+          selector: 'classProperty',
+          format: ['UPPER_CASE'],
+          modifiers: ['public', 'static', 'readonly'],
         },
         {
           selector: 'classProperty',
           format: ['camelCase'],
+          modifiers: ['public'],
+        },
+        {
+          selector: 'classProperty',
+          format: ['camelCase'],
+          modifiers: ['private'],
           trailingUnderscore: 'allow',
         },
         {

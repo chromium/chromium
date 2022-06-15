@@ -15,7 +15,7 @@ class GuestOsInstallerApp extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  listenerIds_: number[] = [];
+  private listenerIds_: number[] = [];
 
   override connectedCallback() {
     this.listenerIds_ = [];

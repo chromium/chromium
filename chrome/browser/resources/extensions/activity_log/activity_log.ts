@@ -95,7 +95,7 @@ export class ExtensionsActivityLogElement extends
   extensionInfo: chrome.developerPrivate.ExtensionInfo|
       ActivityLogExtensionPlaceholder;
   delegate: ActivityLogDelegate;
-  selectedSubpage_: ActivityLogSubpage;
+  private selectedSubpage_: ActivityLogSubpage;
   private tabNames_: string[];
 
   override ready() {
