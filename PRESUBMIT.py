@@ -6014,3 +6014,56 @@ def CheckPythonShebang(input_api, output_api):
                 "Please use '#!/usr/bin/env python/2/3' as the shebang of %s" %
                 file))
     return result
+
+
+def CheckBatchAnnotation(input_api, output_api):
+    """Checks that tests have either @Batch or @DoNotBatch annotation. If this
+    is not an instrumentation test, disregard."""
+
+    batch_annotation = input_api.re.compile(r'^\s*@Batch')
+    do_not_batch_annotation = input_api.re.compile(r'^\s*@DoNotBatch')
+    robolectric_test = input_api.re.compile(r'[rR]obolectric')
+    test_class_declaration = input_api.re.compile(r'^\s*public\sclass.*Test')
+    uiautomator_test = input_api.re.compile(r'[uU]i[aA]utomator')
+
+    errors = []
+
+    def _FilterFile(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+            files_to_check=[r'.*Test\.java$'])
+
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        batch_matched = None
+        do_not_batch_matched = None
+        is_instrumentation_test = True
+        for line in f.NewContents():
+            if robolectric_test.search(line) or uiautomator_test.search(line):
+                # Skip Robolectric and UiAutomator tests.
+                is_instrumentation_test = False
+                break
+            if not batch_matched:
+                batch_matched = batch_annotation.search(line)
+            if not do_not_batch_matched:
+                do_not_batch_matched = do_not_batch_annotation.search(line)
+            test_class_declaration_matched = test_class_declaration.search(
+                line)
+            if test_class_declaration_matched:
+                break
+        if (is_instrumentation_test and
+            not batch_matched and
+            not do_not_batch_matched):
+          errors.append(str(f.LocalPath()))
+
+    results = []
+
+    if errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Instrumentation tests should use either @Batch or @DoNotBatch. If tests are not
+safe to run in batch, please use @DoNotBatch with reasons.
+""", errors))
+
+    return results

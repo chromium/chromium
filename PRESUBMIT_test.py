@@ -4546,5 +4546,68 @@ class VerifyDcheckParentheses(unittest.TestCase):
     for error in errors:
       self.assertRegex(error.message, r'DCHECK_IS_ON().+parentheses')
 
+class CheckBatchAnnotation(unittest.TestCase):
+  """Test the CheckBatchAnnotation presubmit check."""
+
+  def testTruePositives(self):
+    """Examples of when there is no @Batch or @DoNotBatch is correctly flagged.
+"""
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/OneTest.java', ['public class OneTest']),
+        MockFile('path/TwoTest.java', ['public class TwoTest']),
+    ]
+    errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
+    self.assertEqual(1, len(errors))
+    self.assertEqual(2, len(errors[0].items))
+    self.assertIn('OneTest.java', errors[0].items[0])
+    self.assertIn('TwoTest.java', errors[0].items[1])
+
+  def testAnnotationsPresent(self):
+    """Examples of when there is @Batch or @DoNotBatch is correctly flagged."""
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/OneTest.java',
+                 ['@Batch(Batch.PER_CLASS)', 'public class One {']),
+        MockFile('path/TwoTest.java',
+                 ['@DoNotBatch(reason = "dummy reasons.")', 'public class Two {'
+                 ]),
+        MockFile('path/ThreeTest.java',
+                 ['@Batch(Batch.PER_CLASS)',
+                  'public class Three extends BaseTestA {'],
+                 ['@Batch(Batch.PER_CLASS)',
+                  'public class Three extends BaseTestB {']),
+        MockFile('path/FourTest.java',
+                 ['@DoNotBatch(reason = "dummy reason 1")',
+                  'public class Four extends BaseTestA {'],
+                 ['@DoNotBatch(reason = "dummy reason 2")',
+                  'public class Four extends BaseTestB {']),
+        MockFile('path/FiveTest.java',
+                 ['import androidx.test.uiautomator.UiDevice;',
+                  'public class Five extends BaseTestA {'],
+                 ['import androidx.test.uiautomator.UiDevice;',
+                  'public class Five extends BaseTestB {']),
+        MockFile('path/SixTest.java',
+                 ['import org.chromium.base.test.BaseRobolectricTestRunner;',
+                  'public class Six extends BaseTestA {'],
+                 ['import org.chromium.base.test.BaseRobolectricTestRunner;',
+                  'public class Six extends BaseTestB {']),
+        MockFile('path/SevenTest.java',
+                 ['import org.robolectric.annotation.Config;',
+                  'public class Seven extends BaseTestA {'],
+                 ['import org.robolectric.annotation.Config;',
+                  'public class Seven extends BaseTestB {']),
+        MockFile(
+            'path/OtherClass.java',
+            ['public class OtherClass {'],
+        ),
+        MockFile('path/PRESUBMIT.py',
+                 ['@Batch(Batch.PER_CLASS)',
+                  '@DoNotBatch(reason = "dummy reason)']),
+    ]
+    errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
+    self.assertEqual(0, len(errors))
+
+
 if __name__ == '__main__':
   unittest.main()
