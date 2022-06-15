@@ -6,9 +6,6 @@ package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.pressKey;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -17,7 +14,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
@@ -25,14 +21,11 @@ import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
-import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -65,7 +58,6 @@ import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayo
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTestingRobot;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -285,198 +277,6 @@ public class StartSurfaceBackButtonTest {
                     "Tapping back button should close Chrome.", MAX_TIMEOUT_MS,
                     CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    @DisableIf.
-        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
-    public void testShow_SingleAsHomepage_BackButtonOnCarouselTabSwitcher() {
-        // clang-format on
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-
-        onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
-
-        TabUiTestHelper.mergeAllNormalTabsToAGroup(cta);
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-
-        StartSurfaceTestUtils.clickFirstTabInCarousel();
-        onViewWaiting(allOf(
-                withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view), isDisplayed()));
-
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        waitForView(withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view), VIEW_GONE);
-        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    public void testShow_SingleAsHomepage_BackButtonOnTabSwitcherWithDialogShowing() {
-        backButtonOnTabSwitcherWithDialogShowingImpl();
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/show_last_active_tab_only/true"})
-    public void testShow_SingleAsHomepageV2_BackButtonOnTabSwitcherWithDialogShowing() {
-        backButtonOnTabSwitcherWithDialogShowingImpl();
-    }
-
-    private void backButtonOnTabSwitcherWithDialogShowingImpl() {
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        onViewWaiting(withId(R.id.logo));
-
-        // Launches the first site in mv tiles.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-
-        List<Tab> tabs = getTabsInCurrentTabModel(cta.getCurrentTabModel());
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
-
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
-        TabUiTestHelper.enterTabSwitcher(cta);
-
-        waitForView(withId(R.id.secondary_tasks_surface_view));
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> startSurfaceCoordinator.showTabSelectionEditorForTesting(tabs));
-        robot.resultRobot.verifyTabSelectionEditorIsVisible()
-                .verifyToolbarActionButtonDisabled()
-                .verifyToolbarActionButtonWithResourceId(
-                        org.chromium.chrome.tab_ui.R.string.tab_selection_editor_group)
-                .verifyToolbarSelectionTextWithResourceId(
-                        org.chromium.chrome.tab_ui.R.string
-                                .tab_selection_editor_toolbar_select_tabs)
-                .verifyAdapterHasItemCount(tabs.size())
-                .verifyHasAtLeastNItemVisible(2);
-
-        // Verifies that tapping the back button will close the TabSelectionEditor.
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
-        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
-
-        // Groups the two tabs.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> startSurfaceCoordinator.showTabSelectionEditorForTesting(tabs));
-        robot.resultRobot.verifyToolbarActionButtonWithResourceId(
-                org.chromium.chrome.tab_ui.R.string.tab_selection_editor_group);
-        robot.actionRobot.clickItemAtAdapterPosition(0)
-                .clickItemAtAdapterPosition(1)
-                .clickToolbarActionButton();
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
-
-        // Opens the TabGridDialog by clicking the first group card.
-        onViewWaiting(Matchers.allOf(withParent(withId(R.id.tasks_surface_body)),
-                              withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        CriteriaHelper.pollUiThread(() -> isTabGridDialogShown(cta));
-
-        // Verifies that the TabGridDialog is closed by tapping back button.
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        CriteriaHelper.pollUiThread(() -> isTabGridDialogHidden(cta));
-        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    public void testShow_SingleAsHomepage_BackButtonOnHomepageWithGroupTabsDialog() {
-        backButtonOnHomepageWithGroupTabsDialogImpl();
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/show_last_active_tab_only/true"})
-    public void testShow_SingleAsHomepageV2_BackButtonOnHomepageWithGroupTabsDialog() {
-        backButtonOnHomepageWithGroupTabsDialogImpl();
-    }
-
-    private void backButtonOnHomepageWithGroupTabsDialogImpl() {
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        onViewWaiting(withId(R.id.logo));
-
-        // Launches the first site in MV tiles to create the second tab for grouping.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
-
-        // When show_last_active_tab_only is enabled, we need to enter the tab switcher first to
-        // initialize the secondary task surface which shows the TabSelectionEditor dialog.
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
-            // omnibox.
-            return;
-        }
-        TabUiTestHelper.enterTabSwitcher(cta);
-        waitForView(withId(R.id.secondary_tasks_surface_view));
-        List<Tab> tabs = getTabsInCurrentTabModel(cta.getCurrentTabModel());
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
-
-        // Enters the homepage, and shows the TabSelectionEditor dialog.
-        StartSurfaceTestUtils.pressHomePageButton(cta);
-        waitForView(withId(R.id.primary_tasks_surface_view));
-
-        StartSurfaceCoordinator startSurfaceCoordinator =
-                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> startSurfaceCoordinator.showTabSelectionEditorForTesting(tabs));
-        robot.resultRobot.verifyTabSelectionEditorIsVisible()
-                .verifyToolbarActionButtonDisabled()
-                .verifyToolbarActionButtonWithResourceId(
-                        org.chromium.chrome.tab_ui.R.string.tab_selection_editor_group)
-                .verifyToolbarSelectionTextWithResourceId(
-                        org.chromium.chrome.tab_ui.R.string
-                                .tab_selection_editor_toolbar_select_tabs)
-                .verifyAdapterHasItemCount(tabs.size())
-                .verifyHasAtLeastNItemVisible(2);
-
-        // Verifies that tapping the back button will close the TabSelectionEditor.
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
     }
 
     @Test
