@@ -67,6 +67,9 @@
     margin-bottom: 24px;
   }
 
+  .disabled-input-text {
+    color: var(--cros-text-color-disabled);
+  }
 </style>
 <div id="container">
   <div id="header">
@@ -100,6 +103,12 @@
         <option value$="[[feedbackContext.email]]">[[feedbackContext.email]]</option>
         <option value="">Don't include email address</option>
       </select>
+    </div>
+    <!-- User consent -->
+    <div id="userConsent" class="checkbox-field-container">
+      <input id="userConsentCheckbox" type="checkbox"
+          aria-labelledby="userConsentLabel">
+      <label id="userConsentLabel">[[i18n('userConsentLabel')]]</label>
     </div>
     <!-- Diagnostic data -->
     <div id="shareDiagnosticData">

@@ -85,6 +85,16 @@ bool ShouldAddAttachment(const AttachedFilePtr& attached_file) {
   return true;
 }
 
+// Key-value pair to be added to FeedbackData when user grants consent to Google
+// to follow-up on feedback report. See (go/feedback-user-consent-faq) for more
+// information.
+// Consent key matches cross-platform key.
+constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
+// Consent value matches JavaScript: `String(true)`.
+constexpr char kFeedbackUserConsentGrantedValue[] = "true";
+// Consent value matches JavaScript: `String(false)`.
+constexpr char kFeedbackUserConsentDeniedValue[] = "false";
+
 }  // namespace
 
 ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(Profile* profile)
@@ -172,6 +182,16 @@ void ChromeOsFeedbackDelegate::SendReport(
   if (report->include_screenshot && png_data && png_data.get()) {
     feedback_data->set_image(
         std::string(png_data->front_as<char>(), png_data->size()));
+  }
+
+  // Append consent value to report. For cross platform implementations see:
+  // extensions/browser/api/feedback_private/feedback_private_api.cc
+  if (report->contact_user_consent_granted) {
+    feedback_data->AddLog(kFeedbackUserConsentKey,
+                          kFeedbackUserConsentGrantedValue);
+  } else {
+    feedback_data->AddLog(kFeedbackUserConsentKey,
+                          kFeedbackUserConsentDeniedValue);
   }
 
   const AttachedFilePtr& attached_file = report->attached_file;

@@ -55,6 +55,9 @@ using testing::_;
 
 constexpr char kPageUrl[] = "https://www.google.com/?q=123";
 constexpr char kSignedInUserEmail[] = "test_user_email@gmail.com";
+constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
+constexpr char kFeedbackUserConsentGrantedValue[] = "true";
+constexpr char kFeedbackUserConsentDeniedValue[] = "false";
 const std::u16string kDescription = u"This is a fake description";
 
 }  // namespace
@@ -157,6 +160,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
 // passed to SendFeedback method of the feedback service.
 // - System logs and histograms are included.
 // - Screenshot is included.
+// - Consent granted.
 // TODO(xiangdongkong): Add tests for other flags once they are supported.
 // Currently, only load_system_info and send_histograms flags are implemented.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
@@ -165,6 +169,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->feedback_context = FeedbackContext::New();
   report->description = kDescription;
   report->include_screenshot = true;
+  report->contact_user_consent_granted = true;
 
   report->include_system_logs_and_histograms = true;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
@@ -181,12 +186,19 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
   // Verify screenshot is added to feedback data.
   EXPECT_GT(feedback_data->image().size(), 0);
+  // Verify consent data appended to sys_info map.
+  auto consent_granted =
+      feedback_data->sys_info()->find(kFeedbackUserConsentKey);
+  EXPECT_NE(feedback_data->sys_info()->end(), consent_granted);
+  EXPECT_EQ(kFeedbackUserConsentKey, consent_granted->first);
+  EXPECT_EQ(kFeedbackUserConsentGrantedValue, consent_granted->second);
 }
 
 // Test that feedback params and data are populated with correct data before
 // passed to SendFeedback method of the feedback service.
 // - System logs and histograms are not included.
 // - Screenshot is not included.
+// - Consent not granted.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
@@ -195,6 +207,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->feedback_context->page_url = GURL(kPageUrl);
   report->description = kDescription;
   report->include_screenshot = false;
+  report->contact_user_consent_granted = false;
 
   report->include_system_logs_and_histograms = false;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
@@ -211,6 +224,12 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
   // Verify no screenshot is added to feedback data.
   EXPECT_EQ("", feedback_data->image());
+  // Verify consent data appended to sys_info map.
+  auto consent_denied =
+      feedback_data->sys_info()->find(kFeedbackUserConsentKey);
+  EXPECT_NE(feedback_data->sys_info()->end(), consent_denied);
+  EXPECT_EQ(kFeedbackUserConsentKey, consent_denied->first);
+  EXPECT_EQ(kFeedbackUserConsentDeniedValue, consent_denied->second);
 }
 
 // Test GetScreenshot returns correct data when there is a screenshot.

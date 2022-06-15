@@ -56,6 +56,15 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.screenshotUrl;
   }
 
+  ready() {
+    super.ready();
+
+    // Set up event listener for email change to retarget |this| to be the
+    // ShareDataPageElement's context.
+    this.$.userEmailDropDown.addEventListener(
+        'change', this.handleUserEmailDropDownChanged_.bind(this));
+  }
+
   /**
    * @return {boolean}
    * @protected
@@ -70,6 +79,23 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    */
   hasScreenshot_() {
     return !!this.screenshotUrl;
+  }
+
+  /** @protected */
+  handleUserEmailDropDownChanged_() {
+    const email = this.$.userEmailDropDown.value;
+    const consentCheckbox = this.$.userConsentCheckbox;
+
+    // Update UI and state of #userConsentCheckbox base on if report will be
+    // anonymous.
+    if (email === '') {
+      consentCheckbox.disabled = true;
+      consentCheckbox.checked = false;
+      this.$.userConsentLabel.classList.add('disabled-input-text');
+    } else {
+      consentCheckbox.disabled = false;
+      this.$.userConsentLabel.classList.remove('disabled-input-text');
+    }
   }
 
   /**
@@ -125,7 +151,9 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       includeSystemLogsAndHistograms:
           this.getElement_('#sysInfoCheckbox').checked,
       includeScreenshot: this.getElement_('#screenshotCheckbox').checked &&
-          !!this.getElement_('#screenshotImage').src
+          !!this.getElement_('#screenshotImage').src,
+      contactUserConsentGranted:
+          this.getElement_('#userConsentCheckbox').checked,
     });
 
     report.attachedFile =
@@ -134,6 +162,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     const email = this.getElement_('#userEmailDropDown').value;
     if (email) {
       report.feedbackContext.email = email;
+    }
+
+    // Ensure consent granted is false when email not provided.
+    if (!email) {
+      report.contactUserConsentGranted = false;
     }
 
     if (this.getElement_('#pageUrlCheckbox').checked) {

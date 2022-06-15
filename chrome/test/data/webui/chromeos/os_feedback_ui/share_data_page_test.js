@@ -9,6 +9,7 @@ import {fakeEmptyFeedbackContext, fakeFeedbackContext} from 'chrome://os-feedbac
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
@@ -367,4 +368,92 @@ export function shareDataPageTestSuite() {
         fakeFileData,
         /** @type {!Array<Number>} */ (attachedFile.fileData.bytes));
   });
+
+  /**
+   * Test that when page initially loaded "user-consent" checkbox is false and
+   * expected localize message displayed.
+   */
+  test('UserConsentGrantedCheckbox_StartsFalse', async () => {
+    const expectedUserConsentMessage =
+        'We may email you for more information or updates';
+    await initializePage();
+
+    assertTrue(page.i18nExists('userConsentLabel'));
+
+    const userConsentCheckboxChecked =
+        getElement('#userConsentCheckbox').checked;
+    const userConsentText = getElementContent('#userConsentLabel');
+
+    assertFalse(userConsentCheckboxChecked);
+    assertEquals(expectedUserConsentMessage, userConsentText);
+  });
+
+  /**
+   * Test that report "contact_user_consent_granted" matches "user-consent"
+   * checkbox value.
+   */
+  test(
+      'UserConsentGrantedCheckbox_UpdatesReportContactUserConsentGranted',
+      async () => {
+        await initializePage();
+        page.feedbackContext = fakeFeedbackContext;
+        getElement('#userConsentCheckbox').checked = true;
+        await flushTasks();
+
+        const reportWithConsent = (await clickSendAndWait(page)).report;
+
+        assertTrue(reportWithConsent.contactUserConsentGranted);
+
+        page.reEnableSendReportButton();
+        page.feedbackContext = fakeFeedbackContext;
+        getElement('#userConsentCheckbox').checked = false;
+        await flushTasks();
+
+        const reportWithoutConsent = (await clickSendAndWait(page)).report;
+        assertFalse(reportWithoutConsent.contactUserConsentGranted);
+      });
+
+  /**
+   * Test that when report is anonymous (no email provided), "user-consent"
+   * checkbox is disabled and value is false.
+   */
+  test(
+      'UserConsentGrantedCheckbox_ReportAnonymous_FalseAndDisabled',
+      async () => {
+        await initializePage();
+        page.feedbackContext = fakeFeedbackContext;
+        const disabledInputClass = 'disabled-input-text';
+
+        const consentLabel = getElement('#userConsentLabel');
+        const consentCheckbox = getElement('#userConsentCheckbox');
+        const emailDropdown = getElement('#userEmailDropDown');
+
+        // Select the email.
+        emailDropdown.value = 'test.user2@test.com';
+        await flushTasks();
+
+        // With email selected and consent not granted.
+        assertFalse(consentCheckbox.disabled);
+        assertFalse(consentCheckbox.checked);
+        assertFalse(consentLabel.classList.contains(disabledInputClass));
+
+        // Check checkbox.
+        consentCheckbox.click();
+        await flushTasks();
+
+        // With email selected and consent granted.
+        assertFalse(consentCheckbox.disabled);
+        assertTrue(consentCheckbox.checked);
+        assertFalse(consentLabel.classList.contains(disabledInputClass));
+
+        // Select the "Do Not Provide Email" option.
+        emailDropdown.value = '';
+        emailDropdown.dispatchEvent(new CustomEvent('change'));
+        flush();
+
+        // With anonymous email selected and consent not granted.
+        assertTrue(consentCheckbox.disabled);
+        assertFalse(consentCheckbox.checked);
+        assertTrue(consentLabel.classList.contains(disabledInputClass));
+      });
 }

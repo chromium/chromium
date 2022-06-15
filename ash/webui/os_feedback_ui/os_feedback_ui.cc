@@ -60,6 +60,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"confirmationTitleOnline", IDS_FEEDBACK_TOOL_PAGE_TITLE_AFTER_SENT},
       {"diagnosticsAppLabel",
        IDS_FEEDBACK_TOOL_RESOURCES_DIAGNOSTICS_APP_LABEL},
+      {"userConsentLabel", IDS_FEEDBACK_TOOL_USER_CONSENT_LABEL},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

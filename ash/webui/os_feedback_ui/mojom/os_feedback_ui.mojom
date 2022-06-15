@@ -113,6 +113,9 @@ struct Report {
   // Whether or not to include the screenshot with this report. The screenshot
   // data should have been cached in C++ side.
   bool include_screenshot;
+  // Whether or not consent has been granted to Google for to contact user in
+  // reference to report. See (go/feedback-user-consent-faq).
+  bool contact_user_consent_granted;
 };
 
 // Provides services needed by the feedback UI to display data and send reports.
