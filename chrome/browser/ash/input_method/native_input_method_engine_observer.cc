@@ -399,12 +399,13 @@ mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
 }
 
 uint32_t Utf16ToCodepoint(const std::u16string& str) {
-  size_t index = 0;
+  int32_t index = 0;
   base_icu::UChar32 codepoint = 0;
   base::ReadUnicodeCharacter(str.data(), str.length(), &index, &codepoint);
 
   // Should only contain a single codepoint.
-  DCHECK_EQ(index, str.length() - 1);
+  DCHECK_GE(index, 0);
+  DCHECK_EQ(static_cast<size_t>(index), str.length() - 1);
   return codepoint;
 }
 

@@ -1400,11 +1400,12 @@ Status ProcessInputActionSequence(
         bool valid = action_item->GetString("value", &key);
         if (valid) {
           // check if key is a single unicode code point
-          size_t char_index = 0;
+          int32_t char_index = 0;
           base_icu::UChar32 code_point;
-          valid = base::ReadUnicodeCharacter(key.c_str(), key.size(),
-                                             &char_index, &code_point) &&
-                  char_index + 1 == key.size();
+          valid =
+              base::ReadUnicodeCharacter(key.c_str(), key.size(), &char_index,
+                                         &code_point) &&
+              static_cast<std::string::size_type>(char_index + 1) == key.size();
         }
         if (!valid)
           return Status(kInvalidArgument,

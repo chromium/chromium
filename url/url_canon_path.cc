@@ -101,11 +101,9 @@ enum DotDisposition {
 // If the input is "../foo", |after_dot| = 1, |end| = 6, and
 // at the end, |*consumed_len| = 2 for the "./" this function consumed. The
 // original dot length should be handled by the caller.
-template <typename CHAR>
-DotDisposition ClassifyAfterDot(const CHAR* spec,
-                                size_t after_dot,
-                                size_t end,
-                                size_t* consumed_len) {
+template<typename CHAR>
+DotDisposition ClassifyAfterDot(const CHAR* spec, int after_dot,
+                                int end, int* consumed_len) {
   if (after_dot == end) {
     // Single dot at the end.
     *consumed_len = 0;
@@ -117,9 +115,9 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
     return DIRECTORY_CUR;
   }
 
-  size_t second_dot_len = IsDot(spec, after_dot, end);
+  int second_dot_len = IsDot(spec, after_dot, end);
   if (second_dot_len) {
-    size_t after_second_dot = after_dot + second_dot_len;
+    int after_second_dot = after_dot + second_dot_len;
     if (after_second_dot == end) {
       // Double dot at the end.
       *consumed_len = second_dot_len;
@@ -195,10 +193,10 @@ void BackUpToPreviousSlash(int path_begin_in_output,
 // ends with a '%' followed by one or two characters, and the '%' is the one
 // pointed to by |last_invalid_percent_index|.  The last character in the string
 // was just unescaped.
-template <typename CHAR>
+template<typename CHAR>
 void CheckForNestedEscapes(const CHAR* spec,
-                           size_t next_input_index,
-                           size_t input_len,
+                           int next_input_index,
+                           int input_len,
                            int last_invalid_percent_index,
                            CanonOutput* output) {
   const int length = output->length();
@@ -220,10 +218,9 @@ void CheckForNestedEscapes(const CHAR* spec,
   }
 
   // Now output ends like "%cc".  Try to unescape this.
-  size_t begin = static_cast<size_t>(last_invalid_percent_index);
+  int begin = last_invalid_percent_index;
   unsigned char temp;
-  if (DecodeEscaped(output->data(), &begin,
-                    static_cast<size_t>(output->length()), &temp)) {
+  if (DecodeEscaped(output->data(), &begin, output->length(), &temp)) {
     // New escape sequence found.  Overwrite the characters following the '%'
     // with "25", and push_back() the one or two characters that were following
     // the '%' when we were called.
@@ -255,10 +252,7 @@ bool DoPartialPathInternal(const CHAR* spec,
                            const Component& path,
                            int path_begin_in_output,
                            CanonOutput* output) {
-  if (!path.is_nonempty())
-    return true;
-
-  size_t end = static_cast<size_t>(path.end());
+  int end = path.end();
 
   // We use this variable to minimize the amount of work done when unescaping --
   // we'll only call CheckForNestedEscapes() when this points at one of the last
@@ -266,7 +260,7 @@ bool DoPartialPathInternal(const CHAR* spec,
   int last_invalid_percent_index = INT_MIN;
 
   bool success = true;
-  for (size_t i = static_cast<size_t>(path.begin); i < end; i++) {
+  for (int i = path.begin; i < end; i++) {
     DCHECK_LT(last_invalid_percent_index, output->length());
     UCHAR uch = static_cast<UCHAR>(spec[i]);
     if (sizeof(CHAR) > 1 && uch >= 0x80) {
@@ -282,7 +276,7 @@ bool DoPartialPathInternal(const CHAR* spec,
       unsigned char flags = kPathCharLookup[out_ch];
       if (flags & SPECIAL) {
         // Needs special handling of some sort.
-        size_t dotlen;
+        int dotlen;
         if ((dotlen = IsDot(spec, i, end)) > 0) {
           // See if this dot was preceded by a slash in the output.
           //
@@ -293,7 +287,7 @@ bool DoPartialPathInternal(const CHAR* spec,
           if (output->length() > path_begin_in_output &&
               output->at(output->length() - 1) == '/') {
             // Slash followed by a dot, check to see if this is means relative
-            size_t consumed_len;
+            int consumed_len;
             switch (ClassifyAfterDot<CHAR>(spec, i + dotlen, end,
                                            &consumed_len)) {
               case NOT_A_DIRECTORY:

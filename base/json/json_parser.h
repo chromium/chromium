@@ -54,6 +54,7 @@ class BASE_EXPORT JSONParser {
     JSON_UNEXPECTED_DATA_AFTER_ROOT,
     JSON_UNSUPPORTED_ENCODING,
     JSON_UNQUOTED_DICTIONARY_KEY,
+    JSON_TOO_LARGE,
     JSON_UNREPRESENTABLE_NUMBER,
     JSON_PARSE_ERROR_COUNT
   };
@@ -67,6 +68,7 @@ class BASE_EXPORT JSONParser {
   static const char kUnexpectedDataAfterRoot[];
   static const char kUnsupportedEncoding[];
   static const char kUnquotedDictionaryKey[];
+  static const char kInputTooLarge[];
   static const char kUnrepresentableNumber[];
 
   explicit JSONParser(int options, size_t max_depth = kAbsoluteMaxDepth);
@@ -251,7 +253,7 @@ class BASE_EXPORT JSONParser {
   StringPiece input_;
 
   // The index in the input stream to which the parser is wound.
-  size_t index_;
+  int index_;
 
   // The number of times the parser has recursed (current stack depth).
   size_t stack_depth_;
@@ -260,7 +262,7 @@ class BASE_EXPORT JSONParser {
   int line_number_;
 
   // The last value of |index_| on the previous line.
-  size_t index_last_line_;
+  int index_last_line_;
 
   // Error information.
   JsonParseError error_code_;

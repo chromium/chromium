@@ -450,7 +450,7 @@ bool ParseUniversalString(Input in, std::string* out) {
     memcpy(in_32bit.data(), in.UnsafeData(), in.Length());
   for (const uint32_t c : in_32bit) {
     // UniversalString is UCS-4 in big-endian order.
-    auto codepoint = static_cast<base_icu::UChar32>(base::NetToHost32(c));
+    uint32_t codepoint = base::NetToHost32(c);
     if (!CBU_IS_UNICODE_CHAR(codepoint))
       return false;
 
@@ -469,7 +469,7 @@ bool ParseBmpString(Input in, std::string* out) {
     memcpy(in_16bit.data(), in.UnsafeData(), in.Length());
   for (const uint16_t c : in_16bit) {
     // BMPString is UCS-2 in big-endian order.
-    base_icu::UChar32 codepoint = base::NetToHost16(c);
+    uint32_t codepoint = base::NetToHost16(c);
 
     // BMPString only supports codepoints in the Basic Multilingual Plane;
     // surrogates are not allowed. CBU_IS_UNICODE_CHAR excludes the surrogate

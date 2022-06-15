@@ -32,7 +32,7 @@ namespace {
 // Replace non UTF8 characters in |str| with a replacement character.
 std::string ValidateUTF8(const std::string& str) {
   std::string result;
-  for (size_t index = 0; index < str.size(); ++index) {
+  for (int32_t index = 0; index < static_cast<int32_t>(str.size()); ++index) {
     base_icu::UChar32 code_point_out;
     bool is_unicode_char = base::ReadUnicodeCharacter(str.c_str(), str.size(),
                                                       &index, &code_point_out);

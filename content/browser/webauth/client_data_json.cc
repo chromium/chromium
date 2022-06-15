@@ -30,11 +30,12 @@ std::string ToJSONString(base::StringPiece in) {
   ret.push_back('"');
 
   const char* const in_bytes = in.data();
-  const size_t length = in.size();
-  size_t offset = 0;
+  // ICU uses |int32_t| for lengths.
+  const int32_t length = base::checked_cast<int32_t>(in.size());
+  int32_t offset = 0;
 
   while (offset < length) {
-    const size_t prior_offset = offset;
+    const int32_t prior_offset = offset;
     // Input strings must be valid UTF-8.
     base_icu::UChar32 codepoint;
     CHECK(base::ReadUnicodeCharacter(in_bytes, length, &offset, &codepoint));
