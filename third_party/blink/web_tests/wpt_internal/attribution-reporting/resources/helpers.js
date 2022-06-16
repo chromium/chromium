@@ -49,7 +49,7 @@ const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
  * Method that polls a particular URL every interval for reports. Once reports
  * are received, returns the payload as promise.
  */
-const pollAttributionReports = async (url, interval) => {
+const pollAttributionReports = async (url, interval = 100) => {
   const resp = await fetch(url);
   const payload = await resp.json();
   if (payload.reports.length === 0) {

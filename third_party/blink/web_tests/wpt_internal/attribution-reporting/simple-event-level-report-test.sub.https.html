@@ -5,7 +5,6 @@
 <script src="resources/helpers.js"></script>
 <script>
 promise_test(async t => {
-  const interval = 100;
   const sourceEvent = {
     source_event_id: '9153495207648170476',
     destination: `https://{{host}}`,
@@ -13,12 +12,8 @@ promise_test(async t => {
   const trigger = {event_trigger_data: [{'trigger_data': '2'}]};
   await resetEventLevelReports();
   registerAttributionSrc('Attribution-Reporting-Register-Source', sourceEvent);
-  // Adds delay to reduce chance of race condition between source registration and
-  // trigger registration.
-  await delay(interval);
-  registerAttributionSrc(
-      'Attribution-Reporting-Register-Trigger', trigger);
-  const payload = await pollEventLevelReports(interval);
+  registerAttributionSrc('Attribution-Reporting-Register-Trigger', trigger);
+  const payload = await pollEventLevelReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
   const headers = payload.reports[0].headers;
