@@ -84,6 +84,14 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   virtual void GetSettings(Settings& settings) {}
   virtual CaptureHandle GetCaptureHandle();
 
+  // Adds a one off callback that will be invoked when observing the first frame
+  // where |metadata.crop_version >= crop_version|.
+  virtual void AddCropVersionCallback(uint32_t crop_version,
+                                      base::OnceClosure callback) {}
+
+  // Removes the callback that was associated with this |crop_version|, if any.
+  virtual void RemoveCropVersionCallback(uint32_t crop_version) {}
+
   bool is_local_track() const { return is_local_track_; }
 
   enum class StreamType { kAudio, kVideo };

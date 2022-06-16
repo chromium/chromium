@@ -8,16 +8,22 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 namespace blink {
 
 namespace {
 
 using ::testing::_;
+using ::testing::Args;
+using ::testing::Invoke;
+using ::testing::Mock;
 using ::testing::Return;
 
 std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
@@ -30,12 +36,18 @@ std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
 BrowserCaptureMediaStreamTrack* MakeTrack(
     V8TestingScope& v8_scope,
     std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source) {
+  auto media_stream_video_track = std::make_unique<MediaStreamVideoTrack>(
+      media_stream_video_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+
   MediaStreamSource* const source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
       /*remote=*/false, std::move(media_stream_video_source));
 
   MediaStreamComponent* const component =
-      MakeGarbageCollected<MediaStreamComponent>(source);
+      MakeGarbageCollected<MediaStreamComponent>(
+          "component_id", source, std::move(media_stream_video_track));
 
   return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
       v8_scope.GetExecutionContext(), component, /*callback=*/base::DoNothing(),
@@ -46,13 +58,16 @@ BrowserCaptureMediaStreamTrack* MakeTrack(
 
 class BrowserCaptureMediaStreamTrackTest : public testing::Test {
  public:
-  ~BrowserCaptureMediaStreamTrackTest() override {
-    WebHeap::CollectAllGarbageForTesting();
-  }
+  ~BrowserCaptureMediaStreamTrackTest() override = default;
+
+  void TearDown() override { WebHeap::CollectAllGarbageForTesting(); }
+
+ protected:
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
+TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidIdResultFirst) {
   V8TestingScope v8_scope;
 
   const base::GUID valid_id = base::GUID::GenerateRandomV4();
@@ -65,7 +80,11 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
       .WillOnce(Return(absl::optional<uint32_t>(1)));
 
   EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
-      .Times(1);
+      .Times(1)
+      .WillOnce(::testing::WithArg<2>(::testing::Invoke(
+          [](base::OnceCallback<void(media::mojom::CropRequestResult)> cb) {
+            std::move(cb).Run(media::mojom::CropRequestResult::kSuccess);
+          })));
 
   BrowserCaptureMediaStreamTrack* const track =
       MakeTrack(v8_scope, std::move(media_stream_video_source));
@@ -75,6 +94,78 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToOnValidId) {
                     MakeGarbageCollected<CropTarget>(
                         WTF::String(valid_id.AsLowercaseString())),
                     v8_scope.GetExceptionState());
+
+  track->OnCropVersionObservedForTesting(/*crop_version=*/1);
+
+  ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
+  script_promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(script_promise_tester.IsFulfilled());
+}
+
+TEST_F(BrowserCaptureMediaStreamTrackTest,
+       CropToRejectsIfResultFromBrowserProcessIsNotSuccess) {
+  V8TestingScope v8_scope;
+
+  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+
+  std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
+      MakeMockMediaStreamVideoSource();
+
+  EXPECT_CALL(*media_stream_video_source, GetNextCropVersion)
+      .Times(1)
+      .WillOnce(Return(absl::optional<uint32_t>(1)));
+
+  EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
+      .Times(1)
+      .WillOnce(::testing::WithArg<2>(::testing::Invoke(
+          [](base::OnceCallback<void(media::mojom::CropRequestResult)> cb) {
+            std::move(cb).Run(media::mojom::CropRequestResult::kErrorGeneric);
+          })));
+
+  BrowserCaptureMediaStreamTrack* const track =
+      MakeTrack(v8_scope, std::move(media_stream_video_source));
+
+  const ScriptPromise promise =
+      track->cropTo(v8_scope.GetScriptState(),
+                    MakeGarbageCollected<CropTarget>(
+                        WTF::String(valid_id.AsLowercaseString())),
+                    v8_scope.GetExceptionState());
+
+  track->OnCropVersionObservedForTesting(/*crop_version=*/1);
+
+  ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
+  script_promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(script_promise_tester.IsRejected());
+}
+
+TEST_F(BrowserCaptureMediaStreamTrackTest,
+       CropToRejectsIfSourceReturnsNulloptForNextCropVersion) {
+  V8TestingScope v8_scope;
+
+  const base::GUID valid_id = base::GUID::GenerateRandomV4();
+
+  std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
+      MakeMockMediaStreamVideoSource();
+
+  EXPECT_CALL(*media_stream_video_source, GetNextCropVersion)
+      .Times(1)
+      .WillOnce(Return(absl::nullopt));
+
+  EXPECT_CALL(*media_stream_video_source, Crop(GUIDToToken(valid_id), _, _))
+      .Times(0);
+
+  BrowserCaptureMediaStreamTrack* const track =
+      MakeTrack(v8_scope, std::move(media_stream_video_source));
+
+  const ScriptPromise promise =
+      track->cropTo(v8_scope.GetScriptState(),
+                    MakeGarbageCollected<CropTarget>(
+                        WTF::String(valid_id.AsLowercaseString())),
+                    v8_scope.GetExceptionState());
+
+  ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
+  script_promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(script_promise_tester.IsRejected());
 }
 
 #else
@@ -97,7 +188,10 @@ TEST_F(BrowserCaptureMediaStreamTrackTest, CropToFailsOnAndroid) {
                     MakeGarbageCollected<CropTarget>(
                         WTF::String(valid_id.AsLowercaseString())),
                     v8_scope.GetExceptionState());
-  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
+
+  ScriptPromiseTester script_promise_tester(v8_scope.GetScriptState(), promise);
+  script_promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(script_promise_tester.IsRejected());
 }
 #endif
 

@@ -88,6 +88,9 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   void StopAndNotify(base::OnceClosure callback) override;
   void GetSettings(MediaStreamTrackPlatform::Settings& settings) override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
+  void AddCropVersionCallback(uint32_t crop_version,
+                              base::OnceClosure callback) override;
+  void RemoveCropVersionCallback(uint32_t crop_version) override;
 
   // Add |sink| to receive state changes on the main render thread and video
   // frames in the |callback| method on the IO-thread.
