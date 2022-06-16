@@ -4,6 +4,7 @@
 const messageSubject = {
   ERROR: "error",  // info field may contain more detail
   OBJECT_URL: "object url", // info field contains object URL
+  HANDLE: "handle", // info field contains the MediaSourceHandle
   STARTED_BUFFERING: "started buffering",
   FINISHED_BUFFERING: "finished buffering",
   VERIFY_DURATION: "verify duration", // info field contains expected duration

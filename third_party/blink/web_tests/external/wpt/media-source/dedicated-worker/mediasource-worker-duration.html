@@ -46,13 +46,12 @@ async_test(t => {
       case messageSubject.ERROR:
         assert_unreached("Worker error: " + e.data.info);
         break;
-      case messageSubject.OBJECT_URL:
-        const url = e.data.info;
-        assert_true(url.match(/^blob:.+/) !== null);
+      case messageSubject.HANDLE:
+        const handle = e.data.info;
         assert_equals(video.duration, NaN, "initial video duration before attachment should still be NaN");
         assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING,
                       "initial video readyState before attachment should still be HAVE_NOTHING");
-        video.src = url;
+        video.srcObject = handle;
         break;
       case messageSubject.VERIFY_DURATION:
         assert_equals(video.duration, e.data.info, "duration should match expectation");
@@ -73,7 +72,7 @@ async_test(t => {
         // This test is a worker-driven set of verifications, and it will send
         // this message when it is complete. See comment in the worker script
         // that describes the phases of this test case.
-        assert_not_equals(video.src, "", "test should at least have set src.");
+        assert_not_equals(video.srcObject, null, "test should at least have set srcObject.");
         t.done();
         break;
       default:
