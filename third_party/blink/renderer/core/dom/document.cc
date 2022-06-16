@@ -5050,7 +5050,13 @@ void Document::SendFocusNotification(Element* new_focused_element,
   bool is_editable = false;
   gfx::Rect element_bounds_in_dips;
   if (new_focused_element) {
-    is_editable = IsEditableElement(*new_focused_element);
+    auto* text_control = ToTextControlOrNull(new_focused_element);
+    is_editable =
+        IsEditable(*new_focused_element) ||
+        (text_control && !text_control->IsDisabledOrReadOnly()) ||
+        EqualIgnoringASCIICase(
+            new_focused_element->FastGetAttribute(html_names::kRoleAttr),
+            "textbox");
     gfx::Rect bounds_in_viewport;
 
     if (new_focused_element->IsSVGElement()) {

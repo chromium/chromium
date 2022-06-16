@@ -266,7 +266,15 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     }
 
     for (int dom_key : kDomKeysNotCancellabelUnlessInEditor) {
-      if (initial_key_event.dom_key == dom_key && !IsEditableElement(*node))
+      auto* text_control = ToTextControlOrNull(node);
+      auto* element = DynamicTo<Element>(node);
+      bool is_editable =
+          IsEditable(*node) ||
+          (text_control && !text_control->IsDisabledOrReadOnly()) ||
+          (element &&
+           EqualIgnoringASCIICase(
+               element->FastGetAttribute(html_names::kRoleAttr), "textbox"));
+      if (initial_key_event.dom_key == dom_key && !is_editable)
         event_cancellable = false;
     }
   } else {

@@ -398,26 +398,6 @@ bool IsRichlyEditable(const Node& node) {
   return HasEditableLevel(node, kRichlyEditable);
 }
 
-// This method is copied from WebElement::IsEditable.
-// TODO(dglazkov): Remove. Consumers of this code should use
-// Node:hasEditableStyle.  http://crbug.com/612560
-bool IsEditableElement(const Node& node) {
-  if (IsEditable(node))
-    return true;
-
-  if (auto* text_control = ToTextControlOrNull(&node)) {
-    if (!text_control->IsDisabledOrReadOnly())
-      return true;
-  }
-
-  if (auto* element = DynamicTo<Element>(&node)) {
-    return EqualIgnoringASCIICase(
-        element->FastGetAttribute(html_names::kRoleAttr), "textbox");
-  }
-
-  return false;
-}
-
 bool IsRootEditableElement(const Node& node) {
   return IsEditable(node) && node.IsElementNode() &&
          (!node.parentNode() || !IsEditable(*node.parentNode()) ||
