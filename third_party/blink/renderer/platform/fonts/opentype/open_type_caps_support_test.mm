@@ -10,11 +10,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
+
+class OpenTypeCapsSupportTest : public FontTestBase {};
 
 void ensureHasNativeSmallCaps(const String& font_family_name) {
   sk_sp<SkTypeface> test_typeface =
@@ -45,7 +48,7 @@ void ensureHasNativeSmallCaps(const String& font_family_name) {
   ASSERT_FALSE(caps_support.NeedsRunCaseSplitting());
 }
 
-TEST(OpenTypeCapsSupportTest, SmallCapsForMacAATFonts) {
+TEST_F(OpenTypeCapsSupportTest, SmallCapsForMacAATFonts) {
   Vector<String> test_fonts = {
       [[NSFont systemFontOfSize:12] familyName],  // has OpenType small-caps
       "Apple Chancery",  // has old-style (feature id 3,"Letter Case")
