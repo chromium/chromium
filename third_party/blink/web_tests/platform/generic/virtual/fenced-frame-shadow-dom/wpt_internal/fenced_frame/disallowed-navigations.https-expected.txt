@@ -7,37 +7,13 @@ PASS fenced frame mode=opaque-ads data: URL
 PASS fenced frame mode=opaque-ads blob: URL
 PASS fenced frame mode=opaque-ads javascript: URL
 PASS fenced frame mode=opaque-ads http: URL
-PASS fenced frame mode=opaque-ads dangling-markup URL with 'blo
-ck<ed'
-PASS fenced frame mode=opaque-ads dangling-markup URL with 'blo\rck<ed'
-PASS fenced frame mode=opaque-ads dangling-markup URL with 'blo	ck<ed'
-PASS fenced frame mode=opaque-ads dangling-markup URL with 'blo<ck
-ed'
-PASS fenced frame mode=opaque-ads dangling-markup URL with 'blo<ck\red'
-PASS fenced frame mode=opaque-ads dangling-markup URL with 'blo<ck	ed'
 PASS fenced frame mode=default data: URL
 PASS fenced frame mode=default blob: URL
 PASS fenced frame mode=default javascript: URL
 PASS fenced frame mode=default http: URL
-PASS fenced frame mode=default dangling-markup URL with 'blo
-ck<ed'
-PASS fenced frame mode=default dangling-markup URL with 'blo\rck<ed'
-PASS fenced frame mode=default dangling-markup URL with 'blo	ck<ed'
-PASS fenced frame mode=default dangling-markup URL with 'blo<ck
-ed'
-PASS fenced frame mode=default dangling-markup URL with 'blo<ck\red'
-PASS fenced frame mode=default dangling-markup URL with 'blo<ck	ed'
 PASS fenced frame opaque URN => data: URL
 PASS fenced frame opaque URN => blob: URL
 PASS fenced frame opaque URN => javascript: URL
 PASS fenced frame opaque URN => http: URL
-FAIL fenced frame opaque URN => https: URL with dangling markup 'blo
-ck<ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
-FAIL fenced frame opaque URN => https: URL with dangling markup 'blo\rck<ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
-FAIL fenced frame opaque URN => https: URL with dangling markup 'blo	ck<ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
-FAIL fenced frame opaque URN => https: URL with dangling markup 'blo<ck
-ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
-FAIL fenced frame opaque URN => https: URL with dangling markup 'blo<ck\red' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
-FAIL fenced frame opaque URN => https: URL with dangling markup 'blo<ck	ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
 Harness: the test ran to completion.
 
