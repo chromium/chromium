@@ -508,7 +508,12 @@ export class TabListElement extends CustomElement implements
   }
 
   private onTabActivating_(id: number) {
-    assert(this.activatingTabId_ === undefined);
+    // onTabActivating_() is called when the user clicks on a tab in JavaScript.
+    // We then expect a callback asynchronously from the browser after the tab
+    // we clicked on has finally activated. We may incur multiple calls to
+    // onTabActivating_()  before the active tab actually changes so we only
+    // consider the most recent activating action when recording metrics. (See
+    // crbug.com/1333405)
     const activeTab = this.getActiveTab_();
     if (activeTab && activeTab.tab.id === id) {
       return;
