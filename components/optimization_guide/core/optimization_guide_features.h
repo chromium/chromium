@@ -46,6 +46,7 @@ extern const base::Feature kPreventLongRunningPredictionModels;
 extern const base::Feature kOverrideNumThreadsForModelExecution;
 extern const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite;
 extern const base::Feature kRemotePageMetadata;
+extern const base::Feature kOptimizationHintsComponent;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -308,6 +309,9 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
 // Whether XNNPACK should be used with TFLite, on platforms where it is
 // supported. This is a no-op on unsupported platforms.
 bool TFLiteXNNPACKDelegateEnabled();
+
+// Whether to check the pref for whether a previous component version failed.
+bool ShouldCheckFailedComponentVersionPref();
 
 }  // namespace features
 }  // namespace optimization_guide

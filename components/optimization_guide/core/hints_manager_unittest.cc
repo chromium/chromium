@@ -285,9 +285,12 @@ class TestHintsFetcherFactory : public HintsFetcherFactory {
 class HintsManagerTest : public ProtoDatabaseProviderTestBase {
  public:
   HintsManagerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOptimizationHints,
-        GetOptimizationHintsDefaultFeatureParams());
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints,
+          GetOptimizationHintsDefaultFeatureParams()},
+         {features::kOptimizationHintsComponent,
+          {{"check_failed_component_version_pref", "true"}}}},
+        /*disabled_features=*/{});
 
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -3320,6 +3323,49 @@ TEST_F(HintsManagerFetchingNoBatchUpdateTest,
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   // Hints fetcher should not even be created.
   EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
+}
+
+class HintsManagerComponentSkipProcessingTest : public HintsManagerTest {
+ public:
+  HintsManagerComponentSkipProcessingTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kOptimizationHintsComponent,
+        {{"check_failed_component_version_pref", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HintsManagerComponentSkipProcessingTest, ProcessHintsWithExistingPref) {
+  // Write hints processing pref for version 2.0.0.
+  pref_service()->SetString(prefs::kPendingHintsProcessingVersion, "2.0.0");
+  CreateHintsManager(/*top_host_provider=*/nullptr);
+
+  // Verify config still processed even though pref is existing.
+  {
+    base::HistogramTester histogram_tester;
+    InitializeWithDefaultConfig("2.0.0");
+    histogram_tester.ExpectUniqueSample("OptimizationGuide.ProcessHintsResult",
+                                        ProcessHintsComponentResult::kSuccess,
+                                        1);
+    // If it processed correctly, it should clear the pref.
+    EXPECT_TRUE(pref_service()
+                    ->GetString(prefs::kPendingHintsProcessingVersion)
+                    .empty());
+  }
+
+  // Now verify config is processed for different version and pref cleared.
+  {
+    base::HistogramTester histogram_tester;
+    InitializeWithDefaultConfig("3.0.0");
+    EXPECT_TRUE(pref_service()
+                    ->GetString(prefs::kPendingHintsProcessingVersion)
+                    .empty());
+    histogram_tester.ExpectUniqueSample("OptimizationGuide.ProcessHintsResult",
+                                        ProcessHintsComponentResult::kSuccess,
+                                        1);
+  }
 }
 
 }  // namespace optimization_guide

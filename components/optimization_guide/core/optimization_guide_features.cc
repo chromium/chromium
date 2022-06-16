@@ -176,6 +176,9 @@ const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite{
     "OptGuideEnableXNNPACKDelegateWithTFLite",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kOptimizationHintsComponent{
+    "OptimizationHintsComponent", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -643,6 +646,12 @@ absl::optional<int> OverrideNumThreadsForOptTarget(
 
 bool TFLiteXNNPACKDelegateEnabled() {
   return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
+}
+
+bool ShouldCheckFailedComponentVersionPref() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOptimizationHintsComponent, "check_failed_component_version_pref",
+      false);
 }
 
 }  // namespace features
