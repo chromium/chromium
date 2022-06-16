@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -14,6 +16,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -31,7 +34,11 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
  */
 public class IncognitoReauthController
         implements IncognitoTabModelObserver.IncognitoReauthDialogDelegate,
-                   StartStopWithNativeObserver {
+                   StartStopWithNativeObserver, SaveInstanceStateObserver {
+    // A key that would be persisted in saved instance that would be true if there were
+    // incognito tabs present before Chrome went to background.
+    public static final String KEY_IS_INCOGNITO_REAUTH_PENDING = "incognitoReauthPending";
+
     // This callback is fired when the user clicks on "Unlock Incognito" option.
     // This contains the logic to not require further re-authentication if the last one was a
     // success. Please note, a re-authentication would be required again when Chrome is brought to
@@ -182,6 +189,18 @@ public class IncognitoReauthController
     @Override
     public void onStartWithNative() {
         showDialogIfRequired();
+    }
+
+    /**
+     * Override from {@link SaveInstanceStateObserver}. This is called just before activity begins
+     * to stop.
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        mIncognitoReauthPending = (mTabModelSelector.getModel(/*incognito=*/true).getCount() > 0);
+        if (mIncognitoReauthPending) {
+            outState.putBoolean(KEY_IS_INCOGNITO_REAUTH_PENDING, mIncognitoReauthPending);
+        }
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -233,8 +235,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private static final String HELP_URL_PREFIX = "https://support.google.com/chrome/";
 
     protected static final String WINDOW_INDEX = "window_index";
-
-    private static final String IS_INCOGNITO_SELECTED = "is_incognito_selected";
 
     private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_INDEX;
 

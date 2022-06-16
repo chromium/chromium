@@ -78,6 +78,11 @@ public class CipherFactory {
         LazyHolder.sInstance = new CipherFactory();
     }
 
+    @VisibleForTesting
+    public static void resetInstanceForTesting(CipherFactory cipherFactory) {
+        LazyHolder.sInstance = cipherFactory;
+    }
+
     /**
      * Synchronization primitive to prevent thrashing the cipher parameters between threads
      * attempting to restore previous parameters and generate new ones.
