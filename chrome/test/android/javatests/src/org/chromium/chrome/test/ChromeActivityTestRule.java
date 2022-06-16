@@ -433,6 +433,14 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(getActivity(), expectedScale);
     }
 
+    /**
+     * Waits till the WebContents receives a page scale factor different
+     * from the specified value and asserts that this happens.
+     */
+    public void assertWaitForPageScaleFactorChange(float initialScale) {
+        ChromeApplicationTestUtils.assertWaitForPageScaleFactorChange(getActivity(), initialScale);
+    }
+
     public String getName() {
         return mCurrentTestName;
     }

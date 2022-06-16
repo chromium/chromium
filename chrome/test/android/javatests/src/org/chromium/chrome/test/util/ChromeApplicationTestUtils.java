@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Log;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -142,6 +143,24 @@ public class ChromeApplicationTestUtils {
             float scale = coord.getPageScaleFactor();
             Criteria.checkThat(
                     (double) scale, Matchers.is(Matchers.closeTo(expectedScale, FLOAT_EPSILON)));
+        });
+    }
+
+    /**
+     * Waits till the WebContents receives a page scale factor different
+     * from the specified value and asserts that this happens.
+     */
+    public static void assertWaitForPageScaleFactorChange(
+            final ChromeActivity activity, final float initialScale) {
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = activity.getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+
+            Coordinates coord = Coordinates.createFor(tab.getWebContents());
+            float scale = coord.getPageScaleFactor();
+            Log.i(TAG, "PageScaleFactor = " + scale);
+            Criteria.checkThat(
+                    (double) scale, Matchers.not(Matchers.closeTo(initialScale, FLOAT_EPSILON)));
         });
     }
 }
