@@ -72,11 +72,11 @@ PalmFilterSample CreatePalmFilterSample(
   sample.time = time;
 
   sample.major_radius = ScaledRadius(
-      std::max(touch.major, touch.minor) * dev_info.major_radius_res,
+      std::max(touch.major, touch.minor) / dev_info.major_radius_res,
       model_config);
   if (dev_info.minor_radius_supported) {
     sample.minor_radius = ScaledRadius(
-        std::min(touch.major, touch.minor) * dev_info.minor_radius_res,
+        std::min(touch.major, touch.minor) / dev_info.minor_radius_res,
         model_config);
   } else {
     sample.minor_radius = ScaledRadius(touch.major, model_config);

@@ -62,8 +62,8 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, DistilledNocturneTest) {
 }
 
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, NoMinorResTest) {
-  // Nocturne has minor resolution: but lets pretend it didnt. we should recover
-  // "1" as the resolution.
+  // Nocturne has minor resolution, but let's pretend it doesn't. we should
+  // recover "1" as the resolution.
   auto abs_info = nocturne_touchscreen_.GetAbsInfoByCode(ABS_MT_TOUCH_MINOR);
   abs_info.resolution = 0;
   nocturne_touchscreen_.SetAbsInfo(ABS_MT_TOUCH_MINOR, abs_info);
@@ -189,6 +189,24 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest,
     EXPECT_FLOAT_EQ((2 + i) * (2 + i), no_minor_stroke.BiggestSize());
     EXPECT_EQ(std::min(3ul, 1ul + i), stroke.samples().size());
   }
+}
+
+TEST_F(NeuralStylusPalmDetectionFilterUtilTest, UnscaledMajorMinorResolution) {
+  model_config_.radius_polynomial_resize = {};
+  PalmFilterDeviceInfo device_info;
+  device_info.x_res = 2;
+  device_info.y_res = 5;
+  device_info.major_radius_res = 2;
+  device_info.minor_radius_res = 5;
+  device_info.minor_radius_supported = true;
+  touch_.major = 20;
+  touch_.minor = 10;
+  touch_.orientation = 0;
+  base::TimeTicks time = base::TimeTicks::UnixEpoch() + base::Seconds(30);
+  PalmFilterSample sample =
+      CreatePalmFilterSample(touch_, time, model_config_, device_info);
+  EXPECT_EQ(20 / 2, sample.major_radius);
+  EXPECT_EQ(10 / 5, sample.minor_radius);
 }
 
 TEST_F(NeuralStylusPalmDetectionFilterUtilTest, StrokeGetMaxMajorTest) {
