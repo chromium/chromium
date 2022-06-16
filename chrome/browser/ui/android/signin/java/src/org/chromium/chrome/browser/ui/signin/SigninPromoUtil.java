@@ -78,11 +78,11 @@ public final class SigninPromoUtil {
         if (IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
                     ConsentLevel.SYNC)
                 != null) {
-            // Don't show if user is signed in.
+            // Don't show if user is signed in and syncing.
             return false;
         }
 
-        if (TextUtils.isEmpty(
+        if (!TextUtils.isEmpty(
                     UserPrefs.get(profile).getString(Pref.GOOGLE_SERVICES_LAST_USERNAME))) {
             // Don't show if user has manually signed out.
             return false;

@@ -97,8 +97,7 @@ public class SigninPromoUtilLaunchSigninPromoTest {
                 .thenReturn(mIdentityManagerMock);
         when(mUserPrefsNativeMock.get(Profile.getLastUsedRegularProfile()))
                 .thenReturn(mPrefServiceMock);
-        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_USERNAME))
-                .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_USERNAME)).thenReturn("");
     }
 
     @After
@@ -149,9 +148,10 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     }
 
     @Test
-    public void whenWasSignedInShouldReturnFalse() {
+    public void manuallySignedOutReturnsFalse() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_USERNAME)).thenReturn("");
+        when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_USERNAME))
+                .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
