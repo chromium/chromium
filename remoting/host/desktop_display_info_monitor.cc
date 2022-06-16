@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/client_session_control.h"
+#include "remoting/proto/control.pb.h"
 
 namespace remoting {
 
@@ -26,10 +26,8 @@ constexpr base::TimeDelta kPollingInterval = base::Milliseconds(100);
 }  // namespace
 
 DesktopDisplayInfoMonitor::DesktopDisplayInfoMonitor(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    Callback callback)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ui_task_runner_(ui_task_runner),
-      callback_(callback),
       desktop_display_info_loader_(DesktopDisplayInfoLoader::Create()) {
   // The loader must be initialized and used on the UI thread (though it can be
   // created on any thread).
@@ -59,9 +57,20 @@ void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
   }
 }
 
+void DesktopDisplayInfoMonitor::AddCallback(
+    DesktopDisplayInfoMonitor::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Adding callbacks is not supported after displays have already been
+  // loaded.
+  DCHECK_EQ(desktop_display_info_.NumDisplays(), 0);
+
+  callback_list_.AddUnsafe(std::move(callback));
+}
+
 void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (callback_) {
+  if (!callback_list_.empty()) {
     ui_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&DesktopDisplayInfoLoader::GetCurrentDisplayInfo,
@@ -74,12 +83,12 @@ void DesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
 void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!callback_ || desktop_display_info_ == info) {
+  if (callback_list_.empty() || desktop_display_info_ == info) {
     return;
   }
 
   desktop_display_info_ = std::move(info);
-  callback_.Run(desktop_display_info_);
+  callback_list_.Notify(desktop_display_info_);
 }
 
 }  // namespace remoting
