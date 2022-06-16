@@ -4,6 +4,7 @@
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
   # Specify the current PGO phase.
@@ -11,8 +12,12 @@ declare_args() {
   #     0 : Means that PGO is turned off.
   #     1 : Used during the PGI (instrumentation) phase.
   #     2 : Used during the PGO (optimization) phase.
+  # PGO profiles are generated from `dcheck_always_on = false` builds. Mixing
+  # those profiles with `dcheck_always_on = true` builds can cause the compiler
+  # to think some code is hotter than it actually is, potentially causing very
+  # bad compile times.
   chrome_pgo_phase = 0
-  if (is_official_build &&
+  if (!dcheck_always_on && is_official_build &&
       # TODO(crbug.com/1052397): Remove chromeos_is_browser_only once
       # target_os switch for lacros-chrome is completed.
       (is_win || is_mac ||
