@@ -46,7 +46,6 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
   virtual V8CSSNumberish* duration();
 
-  String phase();
   TimelinePhase Phase() { return CurrentPhaseAndTime().phase; }
 
   virtual bool IsDocumentTimeline() const { return false; }

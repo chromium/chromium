@@ -70,19 +70,6 @@ V8CSSNumberish* AnimationTimeline::duration() {
   return nullptr;
 }
 
-String AnimationTimeline::phase() {
-  switch (CurrentPhaseAndTime().phase) {
-    case TimelinePhase::kInactive:
-      return "inactive";
-    case TimelinePhase::kBefore:
-      return "before";
-    case TimelinePhase::kActive:
-      return "active";
-    case TimelinePhase::kAfter:
-      return "after";
-  }
-}
-
 void AnimationTimeline::ClearOutdatedAnimation(Animation* animation) {
   DCHECK(!animation->Outdated());
   outdated_animation_count_--;
