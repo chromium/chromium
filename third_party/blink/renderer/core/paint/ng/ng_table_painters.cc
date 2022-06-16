@@ -523,8 +523,6 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     return;
   DrawingRecorder recorder(paint_info.context, layout_table, paint_info.phase,
                            visual_rect);
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      fragment_.Style(), DarkModeFilter::ElementRole::kBackground));
 
   const wtf_size_t edges_per_row = collapsed_borders->EdgesPerRow();
   const wtf_size_t total_row_count =
@@ -713,7 +711,8 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       }
       BoxBorderPainter::DrawBoxSide(
           paint_info.context, ToPixelSnappedRect(physical_border_rect),
-          box_side, edge.BorderColor(), edge.BorderStyle(), auto_dark_mode);
+          box_side, edge.BorderColor(), edge.BorderStyle(),
+          BorderPaintAutoDarkMode(fragment_.Style(), edge.BorderColor()));
     }
   }
 }

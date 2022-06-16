@@ -23,6 +23,15 @@ inline AutoDarkMode PaintAutoDarkMode(DarkModeFilter::ElementRole role,
   return AutoDarkMode(role, auto_dark_mode_enabled);
 }
 
+inline AutoDarkMode BorderPaintAutoDarkMode(const ComputedStyle& style,
+                                            Color border_color) {
+  SkColor background_color =
+      style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
+  return PaintAutoDarkMode(style,
+                           DarkModeFilter::DarkModeFilter::BorderElementRole(
+                               border_color.Rgb(), background_color));
+}
+
 class ImageClassifierHelper {
  public:
   CORE_EXPORT static ImageAutoDarkMode GetImageAutoDarkMode(
