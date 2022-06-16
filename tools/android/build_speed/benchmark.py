@@ -244,7 +244,9 @@ def _emulator(emulator_avd_name):
                         expected='no running emulators')
     avd_config = _AVD_CONFIG_DIR / emulator_avd_name
     is_verbose = logging.getLogger().isEnabledFor(logging.INFO)
-    cmd = [_AVD_SCRIPT, 'start', '--avd-config', avd_config]
+    # Always start with --wipe-data to get consistent results. It adds around
+    # 20 seconds to startup timing but is essential to avoid Timeout errors.
+    cmd = [_AVD_SCRIPT, 'start', '--wipe-data', '--avd-config', avd_config]
     if not is_verbose:
         cmd.append('-q')
     logging.debug('Running AVD cmd: %s', cmd)
