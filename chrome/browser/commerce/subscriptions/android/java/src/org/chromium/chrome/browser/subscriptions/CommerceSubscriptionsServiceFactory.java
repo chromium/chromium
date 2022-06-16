@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.subscriptions;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -62,8 +64,12 @@ public class CommerceSubscriptionsServiceFactory {
         Profile profile = Profile.getLastUsedRegularProfile();
         CommerceSubscriptionsService service = sProfileToSubscriptionsService.get(profile);
         if (service == null) {
-            service = new CommerceSubscriptionsService(new SubscriptionsManagerImpl(profile),
-                    IdentityServicesProvider.get().getIdentityManager(profile));
+            PriceDropNotificationManager priceDropNotificationManager =
+                    PriceDropNotificationManagerFactory.create();
+            service = new CommerceSubscriptionsService(
+                    new SubscriptionsManagerImpl(profile, priceDropNotificationManager),
+                    IdentityServicesProvider.get().getIdentityManager(profile),
+                    priceDropNotificationManager);
             sProfileToSubscriptionsService.put(profile, service);
         }
         return service;
