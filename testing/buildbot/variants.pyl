@@ -934,8 +934,8 @@
   'CROS_ATLAS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '102.0.5005.75',
-      'cros_img': 'atlas-release/R102-14695.85.0',
+      'cros_chrome_version': '102.0.5005.125',
+      'cros_img': 'atlas-release/R102-14695.107.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_STABLE',
