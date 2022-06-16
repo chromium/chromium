@@ -17,6 +17,9 @@ extern const char kForceEnableMetricsReporting[];
 extern const char kMetricsRecordingOnly[];
 extern const char kMetricsUploadIntervalSec[];
 extern const char kResetVariationState[];
+extern const char kUkmServerUrl[];
+extern const char kUmaServerUrl[];
+extern const char kUmaInsecureServerUrl[];
 
 }  // namespace switches
 

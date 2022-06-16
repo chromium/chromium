@@ -29,6 +29,19 @@ const char kMetricsUploadIntervalSec[] = "metrics-upload-interval";
 // known as the Chrome Variations state.
 const char kResetVariationState[] = "reset-variation-state";
 
+// Overrides the URL of the server that UKM reports are uploaded to. This can
+// only be used in debug builds.
+const char kUkmServerUrl[] = "ukm-server-url";
+
+// Overrides the URL of the server that UMA reports are uploaded to. This can
+// only be used in debug builds.
+const char kUmaServerUrl[] = "uma-server-url";
+
+// Overrides the URL of the server that UMA reports are uploaded to when the
+// connection to the default secure URL fails (see |kUmaServerUrl|). This can
+// only be used in debug builds.
+const char kUmaInsecureServerUrl[] = "uma-insecure-server-url";
+
 }  // namespace switches
 
 bool IsMetricsRecordingOnlyEnabled() {

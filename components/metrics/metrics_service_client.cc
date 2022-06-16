@@ -68,10 +68,26 @@ bool MetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
 }
 
 GURL MetricsServiceClient::GetMetricsServerUrl() {
+#ifndef NDEBUG
+  // Only allow overriding the server URL through the command line in debug
+  // builds. This is to prevent, for example, rerouting metrics due to malware.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kUmaServerUrl))
+    return GURL(command_line->GetSwitchValueASCII(switches::kUmaServerUrl));
+#endif  // NDEBUG
   return GURL(kNewMetricsServerUrl);
 }
 
 GURL MetricsServiceClient::GetInsecureMetricsServerUrl() {
+#ifndef NDEBUG
+  // Only allow overriding the server URL through the command line in debug
+  // builds. This is to prevent, for example, rerouting metrics due to malware.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kUmaInsecureServerUrl)) {
+    return GURL(
+        command_line->GetSwitchValueASCII(switches::kUmaInsecureServerUrl));
+  }
+#endif  // NDEBUG
   return GURL(kNewMetricsServerUrlInsecure);
 }
 
