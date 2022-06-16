@@ -2083,7 +2083,7 @@ bool LocalFrame::ClipsContent() const {
   if (ShouldUsePrintingLayout())
     return false;
 
-  if (IsMainFrame())
+  if (IsOutermostMainFrame())
     return GetSettings()->GetMainFrameClipsContent();
   // By default clip to viewport.
   return true;
