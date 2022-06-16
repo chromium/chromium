@@ -90,9 +90,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
                                  base::TimeTicks delay_timestamp,
                                  int prior_frames_skipped) = 0;
 
-    // Attempts to completely fill |dest|, zeroing |dest| if the request can not
-    // be fulfilled (due to timeout).
-    virtual void Read(media::AudioBus* dest) = 0;
+    // Attempts to completely fill `dest`, zeroing `dest` if the request can not
+    // be fulfilled (due to timeout). If `is_mixing` is set, the SyncReader
+    // might use a mixing-specific timeout.
+    virtual void Read(media::AudioBus* dest, bool is_mixing) = 0;
 
     // Close this synchronous reader.
     virtual void Close() = 0;
@@ -117,12 +118,12 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
           const media::AudioParameters&,
           base::OnceClosure on_device_change_callback)>;
 
-  // |audio_manager| and |handler| must outlive OutputController.  The
-  // |output_device_id| can be either empty (default device) or specify a
+  // `audio_manager` and `handler` must outlive OutputController.  The
+  // `output_device_id` can be either empty (default device) or specify a
   // specific hardware device for audio output.
-  // If |managed_device_output_stream_create_callback| is provided, it will be
+  // If `managed_device_output_stream_create_callback` is provided, it will be
   // used to create a device stream under control; otherwise the stream will be
-  // created using |audio_manager|.
+  // created using `audio_manager`.
   OutputController(media::AudioManager* audio_manager,
                    EventHandler* handler,
                    OutputStreamActivityMonitor* activity_monitor,
@@ -177,6 +178,11 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
                  base::TimeTicks delay_timestamp,
                  int prior_frames_skipped,
                  media::AudioBus* dest) override;
+  int OnMoreData(base::TimeDelta delay,
+                 base::TimeTicks delay_timestamp,
+                 int prior_frames_skipped,
+                 media::AudioBus* dest,
+                 bool is_mixing) override;
   void OnError(ErrorType type) override;
 
   // LoopbackGroupMember implementation.

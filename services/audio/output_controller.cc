@@ -27,7 +27,6 @@
 #include "services/audio/device_listener_output_stream.h"
 #include "services/audio/stream_monitor.h"
 
-
 namespace audio {
 
 namespace {
@@ -404,12 +403,20 @@ int OutputController::OnMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
                                  int prior_frames_skipped,
                                  media::AudioBus* dest) {
+  return OnMoreData(delay, delay_timestamp, prior_frames_skipped, dest, false);
+}
+
+int OutputController::OnMoreData(base::TimeDelta delay,
+                                 base::TimeTicks delay_timestamp,
+                                 int prior_frames_skipped,
+                                 media::AudioBus* dest,
+                                 bool is_mixing) {
   TRACE_EVENT_BEGIN1("audio", "OutputController::OnMoreData", "frames skipped",
                      prior_frames_skipped);
 
   stats_tracker_->OnMoreDataCalled();
 
-  sync_reader_->Read(dest);
+  sync_reader_->Read(dest, is_mixing);
 
   const base::TimeTicks reference_time = delay_timestamp + delay;
 

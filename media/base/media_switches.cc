@@ -375,6 +375,16 @@ const base::FeatureParam<int> kChromeWideEchoCancellationProcessingFifoSize{
 // audio capture device.
 const base::FeatureParam<bool> kChromeWideEchoCancellationMinimizeResampling{
     &kChromeWideEchoCancellation, "minimize_resampling", true};
+
+// Dynamically sets audio::SyncReader's timeout based off of a percentage of
+// buffer duration, in an attempt to minimize glitches.
+// The default negative value indicates that no experiment is running, and
+// we shouldn't use a mixing specific timeout value.
+// If the similar kDynamicAudioTimeout feature is enabled and this value is set,
+// this parameter will override kDynamicAudioTimeout values when we are mixing.
+const base::FeatureParam<double>
+    kChromeWideEchoCancellationDynamicMixingTimeout{
+        &kChromeWideEchoCancellation, "mixing_buffer_duration_percent", -1.0};
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under

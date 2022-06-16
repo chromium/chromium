@@ -128,6 +128,8 @@ MEDIA_EXPORT extern const base::FeatureParam<int>
     kChromeWideEchoCancellationProcessingFifoSize;
 MEDIA_EXPORT extern const base::FeatureParam<bool>
     kChromeWideEchoCancellationMinimizeResampling;
+MEDIA_EXPORT extern const base::FeatureParam<double>
+    kChromeWideEchoCancellationDynamicMixingTimeout;
 #endif
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderUseSharedHandle;
 MEDIA_EXPORT extern const base::Feature kEnableTabMuting;

@@ -54,6 +54,11 @@ class DeviceListenerOutputStream final
                  base::TimeTicks delay_timestamp,
                  int prior_frames_skipped,
                  media::AudioBus* dest) final;
+  int OnMoreData(base::TimeDelta delay,
+                 base::TimeTicks delay_timestamp,
+                 int prior_frames_skipped,
+                 media::AudioBus* dest,
+                 bool is_mixing) final;
   void OnError(ErrorType type) final;
 
   void ReportError(ErrorType type);

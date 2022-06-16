@@ -99,7 +99,7 @@ class MockOutputControllerSyncReader : public OutputController::SyncReader {
                void(base::TimeDelta delay,
                     base::TimeTicks delay_timestamp,
                     int prior_frames_skipped));
-  MOCK_METHOD1(Read, void(AudioBus* dest));
+  MOCK_METHOD2(Read, void(AudioBus* dest, bool is_mixing));
   MOCK_METHOD0(Close, void());
 };
 
@@ -379,8 +379,8 @@ class OutputControllerTest : public ::testing::Test {
     EXPECT_CALL(mock_sync_reader_, RequestMoreData(_, _, _))
         .WillOnce(RunClosure(barrier))
         .WillRepeatedly(Return());
-    EXPECT_CALL(mock_sync_reader_, Read(_))
-        .WillOnce(Invoke([barrier](AudioBus* data) {
+    EXPECT_CALL(mock_sync_reader_, Read(_, false))
+        .WillOnce(Invoke([barrier](AudioBus* data, bool /*is_mixing*/) {
           data->Zero();
           data->channel(0)[0] = kBufferNonZeroData;
           barrier.Run();
@@ -869,12 +869,28 @@ TEST_F(OutputControllerTest, ReportActivity) {
 class MockAudioOutputStreamForMixing : public AudioOutputStream {
  public:
   MOCK_METHOD0(Open, bool());
-  MOCK_METHOD1(Start, void(AudioSourceCallback*));
+  MOCK_METHOD0(DidStart, void());
   MOCK_METHOD0(Stop, void());
-  void SetVolume(double volume) override {}
-  void GetVolume(double* volume) override {}
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Flush, void());
+
+  void SetVolume(double volume) override {}
+  void GetVolume(double* volume) override {}
+
+  void Start(AudioSourceCallback* callback) override {
+    callback_ = callback;
+    DidStart();
+  };
+
+  void SimulateOnMoreDataCalled(const AudioParameters& params, bool is_mixing) {
+    DCHECK(callback_);
+    auto audio_bus = media::AudioBus::Create(params);
+    callback_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
+                          audio_bus.get(), is_mixing);
+  }
+
+ private:
+  raw_ptr<AudioSourceCallback> callback_;
 };
 
 TEST(OutputControllerMixingTest,
@@ -961,6 +977,74 @@ TEST(OutputControllerMixingTest,
   }
 
   EXPECT_CALL(mock_output_stream, Close()).Times(1);
+  controller.Close();
+  audio_manager.Shutdown();
+}
+
+TEST(OutputControllerMixingTest, ControllerForwardsMixingFlagToSyncReader) {
+  base::TestMessageLoop message_loop_;
+  // Controller creation parameters.
+  AudioManagerForControllerTest audio_manager;
+  NiceMock<MockOutputControllerEventHandler> mock_event_handler;
+  NiceMock<MockOutputStreamActivityMonitor> mock_stream_activity_monitor;
+  NiceMock<MockOutputControllerSyncReader> mock_sync_reader;
+  const std::string controller_device_id("device id");
+  const AudioParameters controller_params(GetTestParams());
+
+  // Mock outputstream which will be returned to the OutputController when it
+  // calls ManagedDeviceOutputStreamCreateCallback.
+  NiceMock<MockAudioOutputStreamForMixing> mock_output_stream;
+
+  // Mock to be used for ManagedDeviceOutputStreamCreateCallback implementation.
+  auto CreateStream =
+      [](const std::string& controller_device_id,
+         const AudioParameters& controller_params,
+         MockAudioOutputStreamForMixing* const mock_output_stream,
+         const std::string& device_id, const AudioParameters& params,
+         base::OnceClosure on_device_change_callback) -> AudioOutputStream* {
+    EXPECT_TRUE(params.Equals(controller_params));
+    EXPECT_EQ(device_id, controller_device_id);
+    return mock_output_stream;
+  };
+
+  ON_CALL(mock_output_stream, Open()).WillByDefault(Return(true));
+
+  OutputController::ManagedDeviceOutputStreamCreateCallback
+      mock_create_stream_cb =
+          base::BindRepeating(CreateStream, controller_device_id,
+                              controller_params, &mock_output_stream);
+
+  // Check that controller called |mock_create_stream_cb| on its CreateStream(),
+  // and uses the result AudioOutputStream.
+  EXPECT_CALL(mock_output_stream, Open()).Times(1);
+  EXPECT_CALL(mock_output_stream, DidStart()).Times(1);
+
+  OutputController controller(&audio_manager, &mock_event_handler,
+                              &mock_stream_activity_monitor, controller_params,
+                              controller_device_id, &mock_sync_reader,
+                              std::move(mock_create_stream_cb));
+
+  controller.CreateStream();
+  controller.Play();
+
+  // The stream should have been started.
+  Mock::VerifyAndClearExpectations(&mock_output_stream);
+  Mock::VerifyAndClearExpectations(&mock_sync_reader);
+
+  // Verify OutputController forwards the mixing flag from OnMoreDataCalled when
+  // it is true.
+  EXPECT_CALL(mock_sync_reader, Read(_, /*is_mixing=*/true)).Times(1);
+  mock_output_stream.SimulateOnMoreDataCalled(controller_params, true);
+
+  Mock::VerifyAndClearExpectations(&mock_sync_reader);
+
+  // Verify OutputController forwards the mixing flag from OnMoreDataCalled when
+  // it is false.
+  EXPECT_CALL(mock_sync_reader, Read(_, /*is_mixing=*/false)).Times(1);
+  mock_output_stream.SimulateOnMoreDataCalled(controller_params, false);
+
+  Mock::VerifyAndClearExpectations(&mock_sync_reader);
+
   controller.Close();
   audio_manager.Shutdown();
 }

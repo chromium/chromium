@@ -245,7 +245,7 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
           return client_bus->frames();
         })));
     env.reader->RequestMoreData(kDelay, env.time_stamp, kFramesSkipped);
-    env.reader->Read(test_bus.get());
+    env.reader->Read(test_bus.get(), false);
 
     Mock::VerifyAndClear(&env.render_callback);
     for (int frame = 0; frame < kFrames; ++frame) {
@@ -304,7 +304,7 @@ TEST_F(AudioServiceOutputDeviceTest, CreateBitStreamStream) {
           return renderer_bus->frames();
         })));
     env.reader->RequestMoreData(kDelay, env.time_stamp, kFramesSkipped);
-    env.reader->Read(test_bus.get());
+    env.reader->Read(test_bus.get(), false);
 
     Mock::VerifyAndClear(&env.render_callback);
     EXPECT_TRUE(test_bus->is_bitstream_format());
