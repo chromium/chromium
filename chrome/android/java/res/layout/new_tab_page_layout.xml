@@ -78,6 +78,13 @@
         android:inflatedId="@+id/tile_grid_placeholder"
         android:layout="@layout/new_tab_page_tile_grid_placeholder" />
 
+    <ViewStub
+        android:id="@+id/search_resumption_module_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/search_resumption_module_margin_top"
+        android:layout="@layout/search_resumption_module_layout" />
+
     <!-- Video tutorial IPH card -->
     <ViewStub
         android:id="@+id/video_iph_stub"

@@ -940,6 +940,11 @@
       <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_ITEM" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
         Even with eyes protected by the green spectacles Dorothy and her friends were at first dazzled by the
       </message>
+
+      <!-- Search resumption module strings -->
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">
+        Suggested searches based on your last tab
+      </message>
     </messages>
   </release>
 </grit>
