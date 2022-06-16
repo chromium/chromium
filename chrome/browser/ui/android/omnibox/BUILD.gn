@@ -348,6 +348,39 @@ proto_java_library("partner_location_descriptor_proto_java") {
   sources = [ "$proto_path/partner_location_descriptor.proto" ]
 }
 
+android_library("unit_device_javatests") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewRenderTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+  ]
+}
+
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextTest.java",

@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -51,6 +52,7 @@ import java.io.IOException;
  * Render tests for {@link StatusView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =

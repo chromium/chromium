@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -48,6 +49,7 @@ import org.chromium.ui.test.util.UiRestriction;
  * Tests for {@link StatusView} and {@link StatusViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class StatusViewTest extends BlankUiTestActivityTestCase {
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
