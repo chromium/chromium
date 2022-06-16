@@ -10,7 +10,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 

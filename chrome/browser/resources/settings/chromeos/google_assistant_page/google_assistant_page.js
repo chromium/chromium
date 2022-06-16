@@ -43,7 +43,7 @@ export const DspHotwordState = {
  * Indicates user's activity control consent status.
  *
  * Note: This should be kept in sync with ConsentStatus in
- * chromeos/ash/services/assistant/public/cpp/assistant_prefs.h
+ * chromeos/services/assistant/public/cpp/assistant_prefs.h
  * @enum {number}
  */
 export const ConsentStatus = {

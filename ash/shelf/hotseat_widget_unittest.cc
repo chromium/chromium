@@ -46,7 +46,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/presentation_time_recorder.h"
