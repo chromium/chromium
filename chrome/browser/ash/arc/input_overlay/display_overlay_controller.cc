@@ -112,15 +112,12 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
       ash::PillButton::Type::kIcon, &kTipIcon);
   nudge_view->SetSize(
       gfx::Size(nudge_view->GetPreferredSize().width(), kNudgeHeight));
-  nudge_view->SetButtonTextColor(GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
-  auto* color_provider = ash::AshColorProvider::Get();
-  DCHECK(color_provider);
-  // TODO(djacobo|cuicuiruan): Retrieve colors via a single provider.
-  nudge_view->SetBackgroundColor(color_provider->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
-  nudge_view->SetIconColor(GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kIconColorPrimary));
+  nudge_view->SetButtonTextColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kNudgeLabelColor, IsDarkModeEnabled()));
+  nudge_view->SetBackgroundColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kNudgeBackgroundColor, IsDarkModeEnabled()));
+  nudge_view->SetIconColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kNudgeIconColor, IsDarkModeEnabled()));
   nudge_view->SetPosition(CalculateNudgePosition(nudge_view->width()));
 
   auto* parent = overlay_widget->GetContentsView();
