@@ -6,6 +6,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-animations/support/testcommon.js"></script>
+<script src="/scroll-animations/scroll-timelines/testcommon.js"></script>
+
 <style>
   @keyframes anim {
     from { width: 100px; }
@@ -15,7 +17,6 @@
   @scroll-timeline timeline {
     source: auto;
     orientation: auto;
-    scroll-offsets: none;
   }
 
   .fill-vh {
@@ -28,21 +29,32 @@
 <script>
 'use strict';
 
-test(t => {
+promise_test(async t => {
   const div = addDiv(t, { style: 'width: 50px; height: 100px;' });
   const filling = addDiv(t, { class: 'fill-vh' });
   const scroller = document.scrollingElement;
-  getComputedStyle(document.scrollingElement).height;
+  scroller.scrollTop = 0;
+  await waitForNextFrame();
 
   div.style.animation = 'anim 100s linear timeline';
-  assert_equals(getComputedStyle(div).width, '100px');
+  const anim = div.getAnimations()[0];
+  await anim.ready;
+  assert_percents_equal(anim.timeline.currentTime, 0,
+                        'Timeline time when animation is ready');
+  assert_equals(getComputedStyle(div).width, '100px',
+                'Width at animation start');
 
+  await waitForNextFrame();
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = maxScroll;
-  assert_equals(getComputedStyle(div).width, '200px');
+  await waitForNextFrame();
+  assert_equals(getComputedStyle(div).width, '200px',
+                'Width at scroll limit');
 
   document.scrollingElement.scrollTop = 0;
-  assert_equals(getComputedStyle(div).width, '100px');
+  await waitForNextFrame();
+  assert_equals(getComputedStyle(div).width, '100px',
+                'Width after reset to scroll top');
 }, 'Test that the scroll animation is still responsive after moving from 100%');
 
 </script>
