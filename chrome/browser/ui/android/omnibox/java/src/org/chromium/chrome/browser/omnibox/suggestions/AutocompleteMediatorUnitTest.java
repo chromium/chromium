@@ -18,9 +18,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -33,16 +30,17 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
@@ -55,160 +53,52 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Tests for {@link AutocompleteMediator}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowLog.class, ShadowLooper.class, ShadowGURL.class})
 public class AutocompleteMediatorUnitTest {
     private static final int MINIMUM_NUMBER_OF_SUGGESTIONS_TO_SHOW = 5;
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;
 
-    /**
-     * Empty AutocompleteDelegate implementation for test. This is to work around an issue that
-     * mock doesn't work on inherited methods in some builds.
-     */
-    static class AutocompleteDelegateForTest implements AutocompleteDelegate {
-        @Override
-        public void setOmniboxEditingText(String text) {}
+    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
+    public @Rule JniMocker mJniMocker = new JniMocker();
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
-        @Override
-        public void clearOmniboxFocus() {}
+    private @Mock AutocompleteDelegate mAutocompleteDelegate;
+    private @Mock UrlBarEditingTextStateProvider mTextStateProvider;
+    private @Mock SuggestionProcessor mMockProcessor;
+    private @Mock HeaderProcessor mMockHeaderProcessor;
+    private @Mock AutocompleteController mAutocompleteController;
+    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
+    private @Mock LocationBarDataProvider mLocationBarDataProvider;
+    private @Mock ModalDialogManager mModalDialogManager;
+    private @Mock Profile mProfile;
+    private @Mock Tab mTab;
+    private @Mock TabModel mTabModel;
+    private @Mock TabWindowManager mTabManager;
+    private @Mock WindowAndroid mMockWindowAndroid;
+    private @Mock OmniboxPedalDelegate mPedalDelegate;
+    private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
 
-        @Override
-        public void onUrlTextChanged() {}
-
-        @Override
-        public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {}
-
-        @Override
-        public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {}
-
-        @Override
-        public boolean isKeyboardActive() {
-            return true;
-        }
-
-        @Override
-        public void loadUrl(String url, @PageTransition int transition, long inputStart) {}
-
-        @Override
-        public void loadUrlWithPostData(String url, @PageTransition int transition, long inputStart,
-                String postDataType, byte[] postData) {}
-
-        @Override
-        public boolean didFocusUrlFromFakebox() {
-            return false;
-        }
-
-        @Override
-        public boolean isUrlBarFocused() {
-            return false;
-        }
-    }
-
-    /**
-     * A variant of Handler, that schedules all delayed tasks for an immediate execution.
-     * The handler does not invoke the calls right away; instead, the test method should call
-     * `runQueuedTasks()` to flush the queue.
-     */
-    static class ImmediatePostingHandler extends Handler {
-        ImmediatePostingHandler() {
-            super(Looper.getMainLooper());
-        }
-
-        /**
-         * Schedule message for execution.
-         * Unlike normal loopers, this will place a supplied Message for immediate execution
-         * removing the need to wait for an arbitrary amount of time until all the delayed actions
-         * complete.
-         *
-         * @param msg Message to be scheduled.
-         * @param uptimeMillis The absolute time at which the message should be delivered. This
-         *         parameter is ignored and replaced with current time.
-         */
-        @Override
-        public boolean sendMessageAtTime(Message msg, long uptimeMillis) {
-            return super.sendMessageAtTime(msg, SystemClock.uptimeMillis());
-        }
-
-        /**
-         * Executes all tasks posted on this Handler and returns.
-         * Must be called from UI Thread.
-         */
-        public void runQueuedTasks() {
-            AtomicBoolean ranQueuedTasks = new AtomicBoolean(false);
-            post(() -> ranQueuedTasks.set(true));
-            CriteriaHelper.pollUiThreadNested(() -> ranQueuedTasks.get(), 100, 0);
-        }
-    }
-
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
-    @Mock
-    AutocompleteDelegateForTest mAutocompleteDelegate;
-
-    @Mock
-    UrlBarEditingTextStateProvider mTextStateProvider;
-
-    @Mock
-    SuggestionProcessor mMockProcessor;
-
-    @Mock
-    HeaderProcessor mMockHeaderProcessor;
-
-    @Mock
-    AutocompleteController mAutocompleteController;
-
-    @Mock
-    AutocompleteController.Natives mAutocompleteControllerJniMock;
-
-    @Mock
-    LocationBarDataProvider mLocationBarDataProvider;
-
-    @Mock
-    ModalDialogManager mModalDialogManager;
-
-    @Mock
-    Profile mProfile;
-
-    @Mock
-    Tab mTab;
-
-    @Mock
-    TabModel mTabModel;
-
-    @Mock
-    TabWindowManager mTabManager;
-
-    @Mock
-    WindowAndroid mMockWindowAndroid;
-
-    @Mock
-    OmniboxPedalDelegate mPedalDelegate;
-
-    private ImmediatePostingHandler mHandler;
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
@@ -217,12 +107,8 @@ public class AutocompleteMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-
-        mHandler = new ImmediatePostingHandler();
-
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJniMock);
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
         // clang-format off
@@ -235,7 +121,7 @@ public class AutocompleteMediatorUnitTest {
 
             mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
-                    mHandler, () -> mModalDialogManager, null, null,
+                    new Handler(), () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,
                     new DummyJankTracker(), mPedalDelegate);
             mMediator.setAutocompleteProfile(mProfile);
@@ -319,7 +205,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void updateSuggestionsList_worksWithNullList() {
         mMediator.onNativeInitialized();
 
@@ -334,7 +219,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void updateSuggestionsList_worksWithEmptyList() {
         mMediator.onNativeInitialized();
 
@@ -349,7 +233,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void updateSuggestionsList_scrolEventsWithConcealedItemsTogglesKeyboardVisibility() {
         mMediator.onNativeInitialized();
 
@@ -378,7 +261,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void updateSuggestionsList_updateHeightWhenHardwareKeyboardIsConnected() {
         // Simulates behavior of physical keyboard being attached to the device.
         // In this scenario, requesting keyboard to come up will not result with an actual
@@ -421,7 +303,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void updateSuggestionsList_rejectsHeightUpdatesWhenKeyboardIsHidden() {
         // Simulates scenario where we receive dropdown height update after software keyboard is
         // explicitly hidden. In this scenario the updates should be rejected when estimating
@@ -452,7 +333,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onTextChanged_emptyTextTriggersZeroSuggest() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -471,7 +351,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
         String url = "http://www.example.com";
         int pageClassification = PageClassification.BLANK_VALUE;
@@ -483,13 +362,12 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("test", "testing");
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController).start(url, pageClassification, "test", 4, false);
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onTextChanged_cancelsPendingRequests() {
         String url = "http://www.example.com";
         int pageClassification = PageClassification.BLANK_VALUE;
@@ -502,7 +380,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("test", "testing");
         mMediator.onTextChanged("nottest", "nottesting");
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mAutocompleteController, times(1))
                 .start(url, pageClassification, "nottest", 4, false);
         verify(mAutocompleteController, times(1))
@@ -511,7 +389,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onUrlFocusChange_onlyOneZeroSuggestRequestIsInvoked() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -527,19 +404,18 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onUrlFocusChange(true);
         mMediator.onUrlFocusChange(false);
         mMediator.onUrlFocusChange(true);
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         // Simulate native being inititalized. Make sure we only ever issue one request.
         mMediator.onNativeInitialized();
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, times(1))
                 .startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onUrlFocusChange_preventsZeroSuggestRequestOnFocusLost() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -554,18 +430,17 @@ public class AutocompleteMediatorUnitTest {
         // Simulate URL being focus changes.
         mMediator.onUrlFocusChange(true);
         mMediator.onUrlFocusChange(false);
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         // Simulate native being inititalized. Make sure no suggest requests are sent.
         mMediator.onNativeInitialized();
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onUrlFocusChange_textChangeCancelsOustandingZeroSuggestRequest() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -583,13 +458,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("", "");
         mMediator.onTextChanged("A", "Abc");
 
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
                 .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         mMediator.onNativeInitialized();
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, times(1)).start(url, pageClassification, "A", 0, true);
         verify(mAutocompleteController, times(1))
                 .start(any(), anyInt(), any(), anyInt(), anyBoolean());
@@ -598,7 +473,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onUrlFocusChange_textChangeCancelsIntermediateZeroSuggestRequests() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -614,13 +488,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("A", "Abc");
         mMediator.onTextChanged("", "");
 
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
                 .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         mMediator.onNativeInitialized();
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never())
                 .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, times(1)).startZeroSuggest(any(), any(), anyInt(), any());
@@ -628,7 +502,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionsReceived(
@@ -643,7 +516,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void setLayoutDirection_beforeInitialization() {
         mMediator.onNativeInitialized();
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -661,7 +533,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void setLayoutDirection_afterInitialization() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
@@ -688,7 +559,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onUrlFocusChange_triggersZeroSuggest_nativeInitialized() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -702,13 +572,12 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onNativeInitialized();
         mMediator.onUrlFocusChange(true);
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController).startZeroSuggest(url, url, pageClassification, title);
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onUrlFocusChange_triggersZeroSuggest_nativeNotInitialized() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -722,18 +591,17 @@ public class AutocompleteMediatorUnitTest {
 
         // Signal focus prior to initializing native; confirm that zero suggest is not triggered.
         mMediator.onUrlFocusChange(true);
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         // Initialize native and ensure zero suggest is triggered.
         mMediator.onNativeInitialized();
-        mHandler.runQueuedTasks();
+        ShadowLooper.runUiThreadTasks();
         verify(mAutocompleteController).startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void onTextChanged_editSessionActivatedByUserInput() {
         mMediator.onNativeInitialized();
         mMediator.onUrlFocusChange(true);
@@ -748,7 +616,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchToTab_noTargetTab() {
         // There is no Tab to switch to.
         doReturn(null).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
@@ -757,7 +624,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchToTab_noTabManager() {
         // We have a tab, but no tab manager.
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
@@ -766,7 +632,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchToTab_tabAttachedToStoppedActivity() {
         // We have a tab, and tab manager. The tab is part of the stopped activity.
         doReturn(mTab).when(mAutocompleteController).getMatchingTabForSuggestion(anyInt());
@@ -778,7 +643,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchToTab_noTabModelForTab() {
         // We have a tab, and tab manager. The tab is part of the running activity.
         // The tab is not a part of the model though (eg. it has just been closed).
@@ -793,7 +657,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchToTab_invalidTabModelAssociation() {
         // We have a tab, and tab manager. The tab is part of the running activity.
         // The tab reports association with an existing model, but the model thinks otherwise.
@@ -812,7 +675,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void switchToTab_validTabModelAssociation() {
         // We have a tab, and tab manager. The tab is part of the running activity.
         // The tab reports association with an existing model; the model confirms this.
