@@ -338,7 +338,8 @@ general rules of thumb can be helpful in navigating how to structure changes:
   that do not increase the cost of maintaining Chromium's supported
   architectures / platforms (e.g., adding one ifdef branch for an unsupported
   architecture / platform is fine but introducing new abstractions in the
-  codebase is problematic).
+  codebase is problematic). See the [new port policy](new_port_policy.md) for
+  further guidance.
 
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
