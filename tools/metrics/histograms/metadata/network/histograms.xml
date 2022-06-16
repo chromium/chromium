@@ -2804,6 +2804,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.ClearStaleDataDirectoryResult"
+    enum="DeleteStaleCookiesResult" expires_after="M105">
+  <owner>wfh@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    The result of an attempt to delete stale network context data directory
+    (e.g. cookies). Recorded during construction of network context for Chrome
+    and Safebrowsing. Android only.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.ConcerningRequestHeader.AddedOnRedirect"
     enum="ConcerningHeaderPresent" expires_after="2019-11-01">
   <owner>mmenke@chromium.org</owner>
