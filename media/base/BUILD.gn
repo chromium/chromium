@@ -407,7 +407,7 @@ source_set("base") {
     deps += [ "//third_party/libvpx" ]
   }
 
-  if (is_linux && !is_castos) {
+  if (is_linux && !is_chromecast) {
     sources += [ "user_input_monitor_linux.cc" ]
   } else if (is_mac) {
     sources += [ "user_input_monitor_mac.cc" ]
@@ -446,9 +446,11 @@ source_set("base") {
     ]
   }
 
+  # TODO(ziyangch): Check |is_chromecast| first when using cast media pipeline
+  # on Android cast devices.
   if (is_android) {
     sources += [ "demuxer_memory_limit_android.cc" ]
-  } else if (is_castos) {
+  } else if (is_chromecast) {
     sources += [ "demuxer_memory_limit_cast.cc" ]
   } else if (is_fuchsia) {
     sources += [ "demuxer_memory_limit_low.cc" ]
@@ -661,7 +663,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_castos) {
+  if (is_chromecast && !is_android) {
     sources += [ "demuxer_memory_limit_cast_unittest.cc" ]
   }
 }

@@ -117,10 +117,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = false,
                     .experimental_automatic_gain_control = false});
-
-// TODO(crbug.com/1336055): Make this check non-conditional following the launch
-// of AGC2.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(IS_CHROMECAST)
   // Override the default config since on Chromecast AGC1 is explicitly
   // disabled.
   auto expected_config = kDefaultApmConfig.gain_controller1;
@@ -128,7 +125,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   EXPECT_EQ(config.gain_controller1, expected_config);
 #else
   EXPECT_EQ(config.gain_controller1, kDefaultApmConfig.gain_controller1);
-#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+#endif
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,

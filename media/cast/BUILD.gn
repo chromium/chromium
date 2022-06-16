@@ -316,7 +316,7 @@ static_library("test_support") {
 
   # FFMPEG software video decoders are not available on Android and/or
   # Chromecast content_shell builds.
-  if (!is_android && !is_castos) {
+  if (!is_android && !is_chromecast) {
     sources += [
       "test/fake_media_source.cc",
       "test/fake_media_source.h",

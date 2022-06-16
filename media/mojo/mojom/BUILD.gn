@@ -61,9 +61,7 @@ mojom("mojom") {
     sources += [ "speech_recognition_service.mojom" ]
   }
 
-  # TODO(crbug.com/1293520): Revisit this after the cast renderer has been
-  # deprecated and removed.
-  if (is_castos || is_cast_android) {
+  if (is_chromecast) {
     sources += [ "cast_application_media_info_manager.mojom" ]
   }
 
