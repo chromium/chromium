@@ -22,17 +22,6 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
 
   PrefService* prefs = profile->GetPrefs();
 
-  // TODO(crbug.com/1307021): Enable download bubble for enterprise connector
-  // users once it supports enterprise deep scanning workflow.
-  auto* connector_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
-  if (connector_service &&
-      connector_service->IsConnectorEnabled(
-          enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED)) {
-    return false;
-  }
-
   // If the download bubble policy is managed by enterprise admins and it is
   // set to false, disable download bubble.
   if (prefs->IsManagedPreference(prefs::kDownloadBubbleEnabled) &&

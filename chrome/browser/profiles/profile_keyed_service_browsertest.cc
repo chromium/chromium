@@ -127,9 +127,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_WIN)
-              enterprise_connectors::kEnterpriseConnectorsEnabled,
-#endif  // !BUILDFLAG(IS_WIN)
               breadcrumbs::kLogBreadcrumbs
         },
         {});
@@ -212,9 +209,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                        SystemProfileParent_NeededServices) {
   // clang-format off
   std::set<std::string> system_active_services {
-#if BUILDFLAG(IS_WIN)
-    "ConnectorsService",
-#endif // !BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     "ChildAccountService",
     "CleanupManagerLacros",
