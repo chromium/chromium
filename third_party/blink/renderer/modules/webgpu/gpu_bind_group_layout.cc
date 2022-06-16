@@ -27,7 +27,7 @@ WGPUBindGroupLayoutEntry AsDawnType(
 
   dawn_binding.binding = webgpu_binding->binding();
   dawn_binding.visibility =
-      AsDawnFlags<WGPUShaderStageFlags>(webgpu_binding->visibility());
+      AsDawnFlags<WGPUShaderStage>(webgpu_binding->visibility());
 
   if (webgpu_binding->hasBuffer()) {
     dawn_binding.buffer.type = AsDawnEnum(webgpu_binding->buffer()->type());
