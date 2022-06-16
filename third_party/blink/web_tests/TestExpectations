@@ -7076,3 +7076,6 @@ crbug.com/1335002 [ Linux ] external/wpt/event-timing/first-input-interactionid-
 
 # Flaky on multiple platforms
 crbug.com/1277696 fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
+
+# Flaky on Windows
+crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
