@@ -175,6 +175,7 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
         waitForOptionsMenu();

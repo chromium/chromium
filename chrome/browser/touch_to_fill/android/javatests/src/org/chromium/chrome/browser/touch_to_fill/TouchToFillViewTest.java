@@ -127,8 +127,10 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
-    public void testSingleCredentialTitleDisplayedWithSubmissionDisabled() {
+    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    public void
+    testSingleCredentialTitleDisplayedWithSubmissionDisabled() {
         // TODO(crbug.com/1283004): Remove the test once TOUCH_TO_FILL_PASSWORD_SUBMISSION is fully
         // launched.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -153,8 +155,10 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
-    public void testMultiCredentialTitleDisplayedWithSubmissionDisabled() {
+    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    public void
+    testMultiCredentialTitleDisplayedWithSubmissionDisabled() {
         // TODO(crbug.com/1283004): Remove the test once TOUCH_TO_FILL_PASSWORD_SUBMISSION is fully
         // launched.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -180,6 +184,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testSingleCredentialTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
@@ -204,6 +209,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testMultiCredentialTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)

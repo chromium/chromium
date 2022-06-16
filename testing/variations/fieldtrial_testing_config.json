@@ -8374,10 +8374,7 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "min_gms_core_version_no_dots": "221500000",
-                        "stage": "2"
-                    },
+                    "params": {},
                     "enable_features": [
                         "UnifiedPasswordManagerAndroid"
                     ]
