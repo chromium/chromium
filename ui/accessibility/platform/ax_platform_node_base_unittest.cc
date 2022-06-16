@@ -7,21 +7,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
+#include "ui/accessibility/platform/test_ax_tree_update.h"
+
+using ax::mojom::Role;
+using ax::mojom::State;
 
 namespace ui {
 namespace {
-
-void MakeStaticText(AXNodeData* node, int id, const std::string& text) {
-  node->id = id;
-  node->role = ax::mojom::Role::kStaticText;
-  node->SetName(text);
-}
-
-void MakeGroup(AXNodeData* node, int id, std::vector<int> child_ids) {
-  node->id = id;
-  node->role = ax::mojom::Role::kGroup;
-  node->child_ids = child_ids;
-}
 
 void SetIsInvisible(AXTree* tree, int id, bool invisible) {
   AXTreeUpdate update;
@@ -45,33 +37,18 @@ void SetRole(AXTree* tree, int id, ax::mojom::Role role) {
 }  // namespace
 
 TEST_F(AXPlatformNodeTest, GetHypertext) {
-  AXTreeUpdate update;
-
   // RootWebArea #1
   // ++++StaticText "text1" #2
   // ++++StaticText "text2" #3
   // ++++StaticText "text3" #4
-
-  update.root_id = 1;
-  update.nodes.resize(4);
-
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
-  update.nodes[0].child_ids = {2, 3, 4};
-
-  MakeStaticText(&update.nodes[1], 2, "text1");
-  MakeStaticText(&update.nodes[2], 3, "text2");
-  MakeStaticText(&update.nodes[3], 4, "text3");
-
-  Init(update);
-  AXTree& tree = *GetTree();
+  AXTree* tree = Init({Role::kRootWebArea, {{"text1"}, {"text2"}, {"text3"}}});
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
   testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
 
   AXPlatformNodeBase* root = static_cast<AXPlatformNodeBase*>(
-      TestAXNodeWrapper::GetOrCreate(&tree, tree.root())->ax_platform_node());
+      TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
 
   EXPECT_EQ(root->GetHypertext(), u"text1text2text3");
 
@@ -89,8 +66,6 @@ TEST_F(AXPlatformNodeTest, GetHypertext) {
 }
 
 TEST_F(AXPlatformNodeTest, GetHypertextIgnoredContainerSiblings) {
-  AXTreeUpdate update;
-
   // RootWebArea #1
   // ++genericContainer IGNORED #2
   // ++++StaticText "text1" #3
@@ -98,41 +73,18 @@ TEST_F(AXPlatformNodeTest, GetHypertextIgnoredContainerSiblings) {
   // ++++StaticText "text2" #5
   // ++genericContainer IGNORED #6
   // ++++StaticText "text3" #7
+  AXTree* tree =
+      Init({Role::kRootWebArea,
+            {{Role::kGenericContainer, State::kIgnored, {{"text1"}}},
+             {Role::kGenericContainer, State::kIgnored, {{"text2"}}},
+             {Role::kGenericContainer, State::kIgnored, {{"text3"}}}}});
 
-  update.root_id = 1;
-  update.nodes.resize(7);
-
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
-  update.nodes[0].child_ids = {2, 4, 6};
-
-  update.nodes[1].id = 2;
-  update.nodes[1].child_ids = {3};
-  update.nodes[1].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[1].AddState(ax::mojom::State::kIgnored);
-  MakeStaticText(&update.nodes[2], 3, "text1");
-
-  update.nodes[3].id = 4;
-  update.nodes[3].child_ids = {5};
-  update.nodes[3].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[3].AddState(ax::mojom::State::kIgnored);
-  MakeStaticText(&update.nodes[4], 5, "text2");
-
-  update.nodes[5].id = 6;
-  update.nodes[5].child_ids = {7};
-  update.nodes[5].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[5].AddState(ax::mojom::State::kIgnored);
-  MakeStaticText(&update.nodes[6], 7, "text3");
-
-  Init(update);
-
-  AXTree& tree = *GetTree();
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
   ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
 
   AXPlatformNodeBase* root = static_cast<AXPlatformNodeBase*>(
-      TestAXNodeWrapper::GetOrCreate(&tree, tree.root())->ax_platform_node());
+      TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
 
   EXPECT_EQ(root->GetHypertext(), u"text1text2text3");
 
@@ -153,25 +105,16 @@ TEST_F(AXPlatformNodeTest, GetHypertextIgnoredContainerSiblings) {
 }
 
 TEST_F(AXPlatformNodeTest, GetTextContentIgnoresInvisibleAndIgnored) {
-  AXTreeUpdate update;
-
-  update.root_id = 1;
-  update.nodes.resize(6);
-
-  MakeStaticText(&update.nodes[1], 2, "a");
-  MakeStaticText(&update.nodes[2], 3, "b");
-
-  MakeStaticText(&update.nodes[4], 5, "d");
-  MakeStaticText(&update.nodes[5], 6, "e");
-
-  MakeGroup(&update.nodes[3], 4, {5, 6});
-  MakeGroup(&update.nodes[0], 1, {2, 3, 4});
-
-  Init(update);
-
-  AXTree& tree = *GetTree();
+  // kGroup
+  // ++kStaticText "a"
+  // ++kStaticText "b"
+  // ++kGroup
+  // ++++kStaticText "d"
+  // ++++kStaticText "e"
+  AXTree* tree =
+      Init({Role::kGroup, {{"a"}, {"b"}, {Role::kGroup, {{"d"}, {"e"}}}}});
   auto* root = static_cast<AXPlatformNodeBase*>(
-      TestAXNodeWrapper::GetOrCreate(&tree, tree.root())->ax_platform_node());
+      TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
@@ -182,26 +125,26 @@ TEST_F(AXPlatformNodeTest, GetTextContentIgnoresInvisibleAndIgnored) {
   // Setting invisible or ignored on a static text node causes it to be included
   // or excluded from the root node's text content:
   {
-    SetIsInvisible(&tree, 2, true);
+    SetIsInvisible(tree, 2, true);
     EXPECT_EQ(root->GetTextContentUTF16(), u"bde");
 
-    SetIsInvisible(&tree, 2, false);
+    SetIsInvisible(tree, 2, false);
     EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
 
-    SetRole(&tree, 2, ax::mojom::Role::kNone);
+    SetRole(tree, 2, ax::mojom::Role::kNone);
     EXPECT_EQ(root->GetTextContentUTF16(), u"bde");
 
-    SetRole(&tree, 2, ax::mojom::Role::kStaticText);
+    SetRole(tree, 2, ax::mojom::Role::kStaticText);
     EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
   }
 
   // Setting invisible or ignored on a group node has no effect on the
   // text content:
   {
-    SetIsInvisible(&tree, 4, true);
+    SetIsInvisible(tree, 4, true);
     EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
 
-    SetRole(&tree, 4, ax::mojom::Role::kNone);
+    SetRole(tree, 4, ax::mojom::Role::kNone);
     EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
   }
 }

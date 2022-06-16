@@ -218,6 +218,8 @@ source_set("ax_assistant") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "platform/test_ax_tree_update.cc",
+    "platform/test_ax_tree_update.h",
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
     "tree_generator.cc",
