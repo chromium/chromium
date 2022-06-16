@@ -47,7 +47,11 @@ class FontPlatformData;
 // to `FontPlatformData`.
 class FontPlatformDataCache final {
  public:
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  static FontPlatformDataCache* Create();
+#else
   static std::unique_ptr<FontPlatformDataCache> Create();
+#endif
 
   FontPlatformDataCache();
   ~FontPlatformDataCache();

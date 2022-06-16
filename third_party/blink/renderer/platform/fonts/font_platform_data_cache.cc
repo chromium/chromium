@@ -43,10 +43,19 @@ const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 }
 
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+// static
+FontPlatformDataCache* FontPlatformDataCache::Create() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(FontPlatformDataCache,
+                                  shared_font_platform_data_cache, ());
+  return &shared_font_platform_data_cache;
+}
+#else
 // static
 std::unique_ptr<FontPlatformDataCache> FontPlatformDataCache::Create() {
   return std::make_unique<FontPlatformDataCache>();
 }
+#endif
 
 FontPlatformDataCache::FontPlatformDataCache()
     : font_size_limit_(std::nextafter(
