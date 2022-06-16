@@ -53,8 +53,6 @@ class FileManagerApp {
       console.warn('Failed to get the app ID', e);
     }
 
-    await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
-
     // Temporarily remove window.cr.webUI* while the foreground script loads.
     const origWebUIResponse = window.webUIResponse;
     const origWebUIListenerCallback = window.webUIListenerCallback;

@@ -30,7 +30,6 @@ class ResourceLoaderTest : public testing::Test {
 TEST_F(ResourceLoaderTest, AddFilesAppResources) {
   const webui::ResourcePath kTestResources[] = {
       {"file_manager/images/icon192.png", 8},
-      {"file_manager_fakes.js", 9},
       {"file_manager/untrusted_resources_files_img_content.css", 10},
       {"file_manager/untrusted_resources/files_img_content.css", 11},
   };
@@ -41,7 +40,6 @@ TEST_F(ResourceLoaderTest, AddFilesAppResources) {
                        kTestResourcesSize);
 
   EXPECT_EQ(8, source()->PathToIdrOrDefault("images/icon192.png"));
-  EXPECT_EQ(-1, source()->PathToIdrOrDefault("file_manager_fakes.js"));
   EXPECT_EQ(10, source()->PathToIdrOrDefault(
                     "untrusted_resources_files_img_content.css"));
   EXPECT_EQ(-1, source()->PathToIdrOrDefault(

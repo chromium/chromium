@@ -149,10 +149,7 @@ generate_grd("build_static_grdp") {
 
   input_files_base_dir = rebase_path(".", "//")
 
-  input_files = [
-    "images/icon192.png",
-    "file_manager_fakes.js",
-  ]
+  input_files = [ "images/icon192.png" ]
 }
 
 grd_prefix = "file_manager_swa"
