@@ -4,10 +4,15 @@
 
 package org.chromium.ui.dragdrop;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.Context;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -64,6 +69,40 @@ public class DropDataAndroidUnitTest {
         Assert.assertEquals(
                 "Image extension does not match.", imageExtension, data.imageContentExtension);
         Assert.assertEquals("Image filename does not match.", IMAGE_FILENAME, data.imageFilename);
+    }
+
+    @Test
+    public void testClipSupported() {
+        ClipDescription descriptionText = new ClipDescription("text", new String[] {"text/plain"});
+        ClipDescription descriptionImage =
+                new ClipDescription("image", new String[] {"image/webp"});
+        ClipDescription descriptionVideo = new ClipDescription("video", new String[] {"video/mp4"});
+        ClipDescription descriptionApplication =
+                new ClipDescription("intent", new String[] {"application/octet-stream"});
+
+        Assert.assertTrue("Text dragging is supported.",
+                DropDataAndroid.isClipContentSupported(descriptionText));
+        Assert.assertTrue("Image dragging is supported.",
+                DropDataAndroid.isClipContentSupported(descriptionImage));
+
+        Assert.assertFalse("Video dragging is not supported.",
+                DropDataAndroid.isClipContentSupported(descriptionVideo));
+        Assert.assertFalse("Application dragging is not supported.",
+                DropDataAndroid.isClipContentSupported(descriptionApplication));
+    }
+
+    // TODO(https://crbug.com/1261249): Add more test case for link / image once dropping these are
+    // supported.
+    @Test
+    public void testCreateFromClipData_Text() {
+        String text = "text";
+
+        Context appContext = RuntimeEnvironment.getApplication().getApplicationContext();
+        ClipData textClip = ClipData.newPlainText("label", text);
+        DropDataAndroid dropData = DropDataAndroid.createFromClipData(textClip, appContext);
+
+        assertDragData(dropData, /*isPlainText=*/true, /*hasLink=*/false, /*hasImage=*/false);
+        Assert.assertEquals("DropData Text is different.", text, dropData.text);
     }
 
     private void assertDragData(

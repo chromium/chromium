@@ -4,8 +4,6 @@
 
 package org.chromium.ui.base;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.os.Build;
 import android.view.DragEvent;
 import android.view.InputDevice;
@@ -21,6 +19,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 
 /**
  * Class used to forward view, input events down to native.
@@ -325,32 +324,15 @@ public class EventForwarder {
             return false;
         }
 
-        ClipDescription clipDescription = event.getClipDescription();
-
-        // text/* will match text/uri-list, text/html, text/plain.
-        String[] mimeTypes =
-                clipDescription == null ? new String[0] : clipDescription.filterMimeTypes("text/*");
-        // mimeTypes is null iff there is no matching text MIME type.
-        // Try if there is any matching image MIME type.
-        if (mimeTypes == null) {
-            mimeTypes = clipDescription.filterMimeTypes("image/*");
-        }
-
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            return mimeTypes != null && mimeTypes.length > 0 && mIsDragDropEnabled;
+            return mIsDragDropEnabled
+                    && DropDataAndroid.isClipContentSupported(event.getClipDescription());
         }
 
-        StringBuilder content = new StringBuilder("");
-        if (event.getAction() == DragEvent.ACTION_DROP) {
-            // TODO(hush): obtain dragdrop permissions, when dragging files into Chrome/WebView is
-            // supported. Not necessary to do so for now, because only text dragging is supported.
-            ClipData clipData = event.getClipData();
-            final int itemCount = clipData.getItemCount();
-            for (int i = 0; i < itemCount; i++) {
-                ClipData.Item item = clipData.getItemAt(i);
-                content.append(item.coerceToStyledText(containerView.getContext()));
-            }
-        }
+        DropDataAndroid dropDataAndroid = event.getAction() == DragEvent.ACTION_DROP
+                ? DropDataAndroid.createFromClipData(
+                        event.getClipData(), containerView.getContext())
+                : DropDataAndroid.emptyInstance();
 
         int[] locationOnScreen = new int[2];
         containerView.getLocationOnScreen(locationOnScreen);
@@ -365,7 +347,7 @@ public class EventForwarder {
 
         EventForwarderJni.get().onDragEvent(mNativeEventForwarder, EventForwarder.this,
                 event.getAction(), x / scale, y / scale, screenX / scale, screenY / scale,
-                mimeTypes, content.toString());
+                dropDataAndroid.mimeTypes, dropDataAndroid);
         return true;
     }
 
@@ -481,7 +463,7 @@ public class EventForwarder {
                 float x, float y, int pointerId, float pressure, float orientation, float tilt,
                 int changedButton, int buttonState, int metaState, int toolType);
         void onDragEvent(long nativeEventForwarder, EventForwarder caller, int action, float x,
-                float y, float screenX, float screenY, String[] mimeTypes, String content);
+                float y, float screenX, float screenY, String[] mimeTypes, DropDataAndroid content);
         boolean onGestureEvent(long nativeEventForwarder, EventForwarder caller, int type,
                 long timeMs, float delta);
         boolean onGenericMotionEvent(

@@ -19,19 +19,14 @@ DragEventAndroid::DragEventAndroid(
     const gfx::PointF& location,
     const gfx::PointF& screen_location,
     const std::vector<std::u16string>& mime_types,
-    jstring content)
+    DropDataAndroid drop_data_android)
     : action_(action),
       location_(location),
       screen_location_(screen_location),
-      mime_types_(mime_types) {
-  content_.Reset(env, content);
-}
+      mime_types_(mime_types),
+      drop_data_android_(drop_data_android) {}
 
 DragEventAndroid::~DragEventAndroid() {}
-
-ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaContent() const {
-  return ScopedJavaLocalRef<jstring>(content_);
-}
 
 std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
     const gfx::PointF& new_location) const {
@@ -40,7 +35,7 @@ std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
   JNIEnv* env = AttachCurrentThread();
   return std::make_unique<DragEventAndroid>(env, action_, new_location,
                                             new_screen_location, mime_types_,
-                                            content_.obj());
+                                            drop_data_android_);
 }
 
 }  // namespace ui

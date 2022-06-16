@@ -70,15 +70,16 @@ class EventForwarder {
                     jint android_meta_state,
                     jint tool_type);
 
-  void OnDragEvent(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jobj,
-                   jint action,
-                   jfloat x,
-                   jfloat y,
-                   jfloat screen_x,
-                   jfloat screen_y,
-                   const base::android::JavaParamRef<jobjectArray>& j_mimeTypes,
-                   const base::android::JavaParamRef<jstring>& j_content);
+  void OnDragEvent(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jobj,
+      jint action,
+      jfloat x,
+      jfloat y,
+      jfloat screen_x,
+      jfloat screen_y,
+      const base::android::JavaParamRef<jobjectArray>& j_mimeTypes,
+      const base::android::JavaParamRef<jobject>& j_drag_data_android);
 
   jboolean OnGestureEvent(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& jobj,

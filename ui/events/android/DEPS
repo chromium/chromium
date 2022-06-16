@@ -1,3 +1,4 @@
 include_rules = [
+  "+ui/android/ui_android_jni_headers",
   "+ui/events/motionevent_jni_headers",
 ]

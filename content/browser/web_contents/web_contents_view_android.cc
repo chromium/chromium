@@ -16,7 +16,7 @@
 #include "cc/layers/layer.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/android/content_ui_event_handler.h"
-#include "content/browser/android/drop_data_android.h"
+#include "content/browser/android/drop_data_android_helper.h"
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/android/select_popup.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
@@ -400,9 +400,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
     case JNI_DragEvent::ACTION_DROP: {
       DropData drop_data;
       drop_data.did_originate_from_renderer = false;
-      JNIEnv* env = AttachCurrentThread();
-      std::u16string drop_content =
-          ConvertJavaStringToUTF16(env, event.GetJavaContent());
+      std::u16string drop_content = event.drop_data_android().text();
       for (const std::u16string& mime_type : event.mime_types()) {
         if (base::EqualsASCII(mime_type, ui::kMimeTypeURIList)) {
           drop_data.url = GURL(drop_content);
