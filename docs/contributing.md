@@ -327,19 +327,20 @@ general rules of thumb can be helpful in navigating how to structure changes:
   Chromium project.** This is important so developers can understand the
   constraints informing a design decision. Those constraints should be apparent
   from the scope of code within the boundary of the project and its various
-  repositories. In other words, for each line of code, you should be able to
-  find a product in the Chromium repositories that depends on that line of code
-  or else the line of code should be removed.
+  repositories. In general, for each line of code, you should be able to find a
+  product in the Chromium repositories that depends on that line of code or else
+  the line of code should be removed.
 
   Completely new additions to the project (e.g., support for a new OS or
   architecture, or a new top-level directory for a new sub-project) must be
   approved by chrome-eng-review@google.com. For long-term maintenance reasons,
   we will accept only things that are used by the Chromium project and things
-  that do not increase the cost of maintaining Chromium's supported
-  architectures / platforms (e.g., adding one ifdef branch for an unsupported
-  architecture / platform is fine but introducing new abstractions in the
-  codebase is problematic). See the [new port policy](new_port_policy.md) for
-  further guidance.
+  whose benefit to Chromium outweighs any cost increase in maintaining
+  Chromium's supported architectures / platforms (e.g. adding one ifdef branch
+  for an unsupported architecture / platform has negligible cost and is likely
+  fine, but introducing new abstractions in the code has a high cost and would
+  need to provide Chromium with corresponding benefit). See the
+  [new port policy](new_port_policy.md) for further guidance.
 
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
