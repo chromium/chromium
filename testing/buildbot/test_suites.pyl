@@ -4498,7 +4498,11 @@
       'storage_unittests': {},
       'ui_base_unittests': {},
       'ui_touch_selection_unittests': {},
-      'unit_tests': {},
+      'unit_tests': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'url_unittests': {},
       'webkit_unit_tests': {
         'test': 'blink_unittests',
