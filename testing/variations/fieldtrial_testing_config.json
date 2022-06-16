@@ -6010,7 +6010,7 @@
             ]
         }
     ],
-    "OptimizeNetworkBuffers": [
+    "OptimizeNetworkBuffers2": [
         {
             "platforms": [
                 "android",
@@ -6026,7 +6026,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OptimizeNetworkBuffers"
+                        "OptimizeNetworkBuffers2"
                     ]
                 }
             ]

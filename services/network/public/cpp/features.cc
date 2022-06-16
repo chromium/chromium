@@ -288,8 +288,11 @@ constexpr base::FeatureParam<std::string> kCacheTransparencyPervasivePayloads{
     &kPervasivePayloadsList, "pervasive-payloads", ""};
 
 // Read as much of the net::URLRequest as there is space in the Mojo data pipe.
-const base::Feature kOptimizeNetworkBuffers{"OptimizeNetworkBuffers",
+const base::Feature kOptimizeNetworkBuffers{"OptimizeNetworkBuffers2",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kOptimizeNetworkBuffersBytesReadLimit{
+    &kOptimizeNetworkBuffers, "bytes_read_limit", 64 * 1024};
 
 // Enables support for the `Variants` response header and reduce
 // accept-language. https://github.com/Tanych/accept-language
