@@ -31,7 +31,10 @@ import {MultiDeviceFeature, PhoneHubPermissionsSetupAction, PhoneHubPermissionsS
 /**
  * Numerical values should not be changed because they must stay in sync with
  * notification_access_setup_operation.h and apps_access_setup_operation.h,
- * with the exception of CONNECTION_REQUESTED.
+ * with the exception of CONNECTION_REQUESTED. If PermissionsSetupStatus is
+ * FAILED_OR_CANCELLED, we will abort all setup processes. If
+ * PermissionsSetupStatus is COMPLETED_USER_REJECTED, we will proceed to the
+ * next setup process.
  * @enum {number}
  */
 export const PermissionsSetupStatus = {
@@ -42,6 +45,8 @@ export const PermissionsSetupStatus = {
   SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE: 4,
   COMPLETED_SUCCESSFULLY: 5,
   NOTIFICATION_ACCESS_PROHIBITED: 6,
+  COMPLETED_USER_REJECTED: 7,
+  FAILED_OR_CANCELLED: 8,
 };
 
 /**
@@ -55,6 +60,21 @@ export const SetupFlowStatus = {
   WAIT_FOR_PHONE_APPS: 3,
   WAIT_FOR_PHONE_COMBINED: 4,
 };
+
+/**
+ * Indicates that the onboarding flow includes Phone Hub Notification feature.
+ */
+export const NOTIFICATION_FEATURE = 1 << 0;
+
+/**
+ * Indicates that the onboarding flow includes Phone Hub Camera Roll feature.
+ */
+export const CAMERA_ROLL_FEATURE = 1 << 1;
+
+/**
+ * Indicates that the onboarding flow includes Phone Hub Apps feature.
+ */
+export const APPS_FEATURE = 1 << 2;
 
 /**
  * @constructor
@@ -138,9 +158,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       },
 
       /** @private */
-      hasCompletedSetupSuccessfully_: {
+      hasCompletedSetup_: {
         type: Boolean,
-        computed: 'computeHasCompletedSetupSuccessfully_(setupState_)',
+        computed: 'computeHasCompletedSetup_(setupState_)',
         reflectToAttribute: true,
       },
 
@@ -207,6 +227,28 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       showAppStreaming: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * Indicates that the features we want to handle during setup flow.
+       * It is constructed using the bitwise _FEATURE values (ex:
+       * NOTIFICATION_FEATURE) declared at the top.
+       * @private
+       */
+      setupMode_: {
+        type: Number,
+        value: 0,
+      },
+
+      /**
+       * Indicates that the features we have completed after setup flow.
+       * It is constructed using the bitwise _FEATURE values (ex:
+       * NOTIFICATION_FEATURE) declared at the top.
+       * @private
+       */
+      completedMode_: {
+        type: Number,
+        value: 0,
       },
 
       /** @private */
@@ -289,75 +331,127 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   }
 
   /**
-   * @param {!PermissionsSetupStatus} setupState
+   * @param {!PermissionsSetupStatus} notificationSetupState
    * @private
    */
-  onNotificationSetupStateChanged_(setupState) {
+  onNotificationSetupStateChanged_(notificationSetupState) {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_NOTIFICATION) {
       return;
     }
 
-    this.setupState_ = setupState;
-    if (this.setupState_ !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
+    // When the notificationSetupState is COMPLETED_SUCCESSFULLY or
+    // COMPLETED_USER_REJECTED we should continue on with the setup flow if
+    // there are additional features, all other results will change the screen
+    // that is shown and pause or terminate the setup flow.
+    if (notificationSetupState !==
+            PermissionsSetupStatus.COMPLETED_SUCCESSFULLY &&
+        notificationSetupState !==
+            PermissionsSetupStatus.COMPLETED_USER_REJECTED) {
+      this.setupState_ = notificationSetupState;
       return;
     }
 
-    this.browserProxy_.setFeatureEnabledState(
-        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+    // Note: we can only update this.setupState_ after assigning
+    // this.completeMode_. Otherwise, we cannot use the final
+    // this.completedMode_ to determine the completed title.
+    if (notificationSetupState ===
+        PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
+      if (this.setupMode_ & NOTIFICATION_FEATURE && !this.showNotifications) {
+        this.completedMode_ |= NOTIFICATION_FEATURE;
+        this.browserProxy_.setFeatureEnabledState(
+            MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+      }
+    }
 
     if (this.showAppStreaming) {
+      // We still need to process the apps steaming onboarding flow, update
+      // this.setupState_ to CONNECTION_REQUESTED first and wait for
+      // onAppsSetupStateChanged_() callback to update this.setupState_.
       this.browserProxy_.attemptAppsSetup();
       this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_APPS;
       this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
+    } else {
+      this.setupState_ = notificationSetupState;
+      // We don't need to deal with the apps streaming onboarding flow, so we
+      // can log completed case here.
+      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+          this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
     }
   }
 
   /**
-   * @param {!PermissionsSetupStatus} setupState
+   * @param {!PermissionsSetupStatus} appsSetupResult
    * @private
    */
-  onAppsSetupStateChanged_(setupState) {
+  onAppsSetupStateChanged_(appsSetupResult) {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_APPS) {
       return;
     }
 
-    this.setupState_ = setupState;
-
-    if (this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
+    // Note: If appsSetupResult is COMPLETED_SUCCESSFULLY, we can only update
+    // this.setupState_ after assigning this.completeMode_. Otherwise, we cannot
+    // use the final this.completedMode_ to determine the completed title.
+    if (appsSetupResult === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY &&
+        !this.showAppStreaming) {
+      this.completedMode_ |= APPS_FEATURE;
       this.browserProxy_.setFeatureEnabledState(MultiDeviceFeature.ECHE, true);
+      this.setupState_ = appsSetupResult;
+      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+          this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
     }
+    this.setupState_ = appsSetupResult;
   }
 
   /**
-   * @param {!PermissionsSetupStatus} setupState
+   * @param {!PermissionsSetupStatus} combinedSetupResult
    * @private
    */
-  onCombinedSetupStateChanged_(setupState) {
+  onCombinedSetupStateChanged_(combinedSetupResult) {
     if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_PHONE_COMBINED) {
       return;
     }
 
-    this.setupState_ = setupState;
-    if (this.setupState_ !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
+    // When the combinedSetupResult is COMPLETED_SUCCESSFULLY or
+    // COMPLETED_USER_REJECTED we should continue on with the setup flow if
+    // there are additional features, all other results will change the screen
+    // that is shown and pause or terminate the setup flow.
+    if (combinedSetupResult !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY &&
+        combinedSetupResult !==
+            PermissionsSetupStatus.COMPLETED_USER_REJECTED) {
+      this.setupState_ = combinedSetupResult;
       return;
     }
 
-    this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
-        this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
+    // Note: we can only update this.setupState_ after assigning
+    // this.completeMode_. Otherwise, we cannot use the final
+    // this.completedMode_ to determine the completed title.
+    if (combinedSetupResult === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
+      if (this.setupMode_ & CAMERA_ROLL_FEATURE && !this.showCameraRoll) {
+        this.completedMode_ |= CAMERA_ROLL_FEATURE;
+        this.browserProxy_.setFeatureEnabledState(
+            MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, true);
+      }
 
-    if (this.showCameraRoll) {
-      this.browserProxy_.setFeatureEnabledState(
-          MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, true);
-    }
-    if (this.showNotifications) {
-      this.browserProxy_.setFeatureEnabledState(
-          MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+      if (this.setupMode_ & NOTIFICATION_FEATURE && !this.showNotifications) {
+        this.completedMode_ |= NOTIFICATION_FEATURE;
+        this.browserProxy_.setFeatureEnabledState(
+            MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+      }
     }
 
     if (this.showAppStreaming) {
+      // We still need to process the apps steaming onboarding flow, update
+      // this.setupState_ to CONNECTION_REQUESTED first and wait for
+      // onAppsSetupStateChanged_() callback to update this.setupState_.
       this.browserProxy_.attemptAppsSetup();
       this.flowState_ = SetupFlowStatus.WAIT_FOR_PHONE_APPS;
       this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
+    } else {
+      this.setupState_ = combinedSetupResult;
+      // We don't need to deal with the apps streaming onboarding flow, so we
+      // can log completed case here.
+      this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
+          this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
     }
   }
 
@@ -392,8 +486,10 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
    * @return {boolean}
    * @private
    */
-  computeHasCompletedSetupSuccessfully_() {
-    return this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY;
+  computeHasCompletedSetup_() {
+    return this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY ||
+        this.setupState_ === PermissionsSetupStatus.COMPLETED_USER_REJECTED ||
+        this.setupState_ === PermissionsSetupStatus.FAILED_OR_CANCELLED;
   }
 
   /**
@@ -424,6 +520,15 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         this.isScreenLockRequired_();
     switch (this.flowState_) {
       case SetupFlowStatus.INTRO:
+        if (this.showCameraRoll) {
+          this.setupMode_ |= CAMERA_ROLL_FEATURE;
+        }
+        if (this.showNotifications) {
+          this.setupMode_ |= NOTIFICATION_FEATURE;
+        }
+        if (this.showAppStreaming) {
+          this.setupMode_ |= APPS_FEATURE;
+        }
         if (isScreenLockRequired) {
           this.flowState_ = SetupFlowStatus.SET_LOCKSCREEN;
           return;
@@ -533,6 +638,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         return PhoneHubPermissionsSetupFlowScreens.FINISH_SET_UP_ON_PHONE;
       case Status.COMPLETED_SUCCESSFULLY:
+      case Status.COMPLETED_USER_REJECTED:
+      case Status.FAILED_OR_CANCELLED:
         return PhoneHubPermissionsSetupFlowScreens.CONNECTED;
       case Status.TIMED_OUT_CONNECTING:
         return PhoneHubPermissionsSetupFlowScreens.CONNECTION_TIME_OUT;
@@ -563,7 +670,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
         return this.i18n('multidevicePermissionsSetupAwaitingResponseTitle');
       case Status.COMPLETED_SUCCESSFULLY:
-        return this.i18n('multidevicePermissionsSetupCompletedTitle');
+      case Status.COMPLETED_USER_REJECTED:
+      case Status.FAILED_OR_CANCELLED:
+        return this.getSetupCompleteTitle_();
       case Status.TIMED_OUT_CONNECTING:
         return this.i18n(
             'multidevicePermissionsSetupCouldNotEstablishConnectionTitle');
@@ -594,7 +703,12 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     const Status = PermissionsSetupStatus;
     switch (this.setupState_) {
       case Status.COMPLETED_SUCCESSFULLY:
-        return this.i18n('multidevicePermissionsSetupCompletedSummary');
+      case Status.COMPLETED_USER_REJECTED:
+      case Status.FAILED_OR_CANCELLED:
+        return (this.setupMode_ === this.completedMode_) ?
+            '' :
+            this.i18n(
+                'multidevicePermissionsSetupCompletedMoreFeaturesSummary');
       case Status.TIMED_OUT_CONNECTING:
         return this.i18n('multidevicePermissionsSetupEstablishFailureSummary');
       case Status.CONNECTION_DISCONNECTED:
@@ -629,6 +743,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
    */
   shouldShowCancelButton_() {
     return this.setupState_ !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY &&
+        this.setupState_ !== PermissionsSetupStatus.COMPLETED_USER_REJECTED &&
+        this.setupState_ !== PermissionsSetupStatus.FAILED_OR_CANCELLED &&
         this.setupState_ !==
         PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED;
   }
@@ -675,6 +791,36 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
    */
   getLearnMoreButtonAriaLabel_() {
     return this.i18n('multidevicePhoneHubLearnMoreAriaLabel');
+  }
+
+  /**
+   * @return {string} The finish title of the dialog.
+   * @private
+   */
+  getSetupCompleteTitle_() {
+    switch (this.completedMode_) {
+      case NOTIFICATION_FEATURE:
+        return this.i18n(
+            'multidevicePermissionsSetupNotificationsCompletedTitle');
+      case CAMERA_ROLL_FEATURE:
+        return this.i18n('multidevicePermissionsSetupCameraRollCompletedTitle');
+      case NOTIFICATION_FEATURE|CAMERA_ROLL_FEATURE:
+        return this.i18n(
+            'multidevicePermissionsSetupCameraRollAndNotificationsCompletedTitle');
+      case APPS_FEATURE:
+        return this.i18n('multidevicePermissionsSetupAppssCompletedTitle');
+      case NOTIFICATION_FEATURE|APPS_FEATURE:
+        return this.i18n(
+            'multidevicePermissionsSetupNotificationsAndAppsCompletedTitle');
+      case CAMERA_ROLL_FEATURE|APPS_FEATURE:
+        return this.i18n(
+            'multidevicePermissionsSetupCameraRollAndAppsCompletedTitle');
+      case NOTIFICATION_FEATURE|CAMERA_ROLL_FEATURE|APPS_FEATURE:
+        return this.i18n('multidevicePermissionsSetupAllCompletedTitle');
+      default:
+        return this.i18n(
+            'multidevicePermissionsSetupAppssCompletedFailedTitle');
+    }
   }
 }
 

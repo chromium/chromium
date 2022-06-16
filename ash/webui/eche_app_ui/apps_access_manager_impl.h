@@ -75,6 +75,7 @@ class AppsAccessManagerImpl
   bool IsWaitingForAccessToInitiallyEnableApps() const;
   bool IsEligibleForOnboarding(FeatureStatus feature_status) const;
   void UpdateSetupOperationState();
+  void LogAppsSetupResponse(proto::Result apps_setup_result);
 
   AccessStatus ComputeAppsAccessState();
 

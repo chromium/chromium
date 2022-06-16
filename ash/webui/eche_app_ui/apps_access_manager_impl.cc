@@ -113,36 +113,14 @@ void AppsAccessManagerImpl::OnSendAppsSetupResponseReceived(
     current_apps_access_state_ = apps_setup_response.apps_access_state();
     AccessStatus access_status = ComputeAppsAccessState();
     SetAccessStatusInternal(access_status);
-
-    if (access_status == AccessStatus::kAccessGranted) {
-      base::UmaHistogramEnumeration(
-          "Eche.Onboarding.UserAction",
-          OnboardingUserActionMetric::kUserActionPermissionGranted);
-    }
-  } else if (apps_setup_response.result() ==
-             proto::Result::RESULT_ERROR_USER_REJECTED) {
-    base::UmaHistogramEnumeration(
-        "Eche.Onboarding.UserAction",
-        OnboardingUserActionMetric::kUserActionPermissionRejected);
-  } else if (apps_setup_response.result() ==
-             proto::Result::RESULT_ERROR_ACTION_TIMEOUT) {
-    base::UmaHistogramEnumeration(
-        "Eche.Onboarding.UserAction",
-        OnboardingUserActionMetric::kUserActionTimeout);
-  } else if (apps_setup_response.result() ==
-             proto::Result::RESULT_ERROR_ACTION_CANCELED) {
-    base::UmaHistogramEnumeration(
-        "Eche.Onboarding.UserAction",
-        OnboardingUserActionMetric::kUserActionCanceled);
-  } else if (apps_setup_response.result() ==
-             proto::Result::RESULT_ERROR_SYSTEM) {
-    base::UmaHistogramEnumeration("Eche.Onboarding.UserAction",
-                                  OnboardingUserActionMetric::kSystemError);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Eche.Onboarding.UserAction",
-        OnboardingUserActionMetric::kUserActionUnknown);
+  } else if (IsSetupOperationInProgress()) {
+    SetAppsSetupOperationStatus(
+        (apps_setup_response.result() ==
+         proto::Result::RESULT_ERROR_USER_REJECTED)
+            ? AppsAccessSetupOperation::Status::kCompletedUserRejected
+            : AppsAccessSetupOperation::Status::kOperationFailedOrCancelled);
   }
+  LogAppsSetupResponse(apps_setup_response.result());
 }
 
 void AppsAccessManagerImpl::OnAppPolicyStateChange(
@@ -241,6 +219,7 @@ void AppsAccessManagerImpl::SetAccessStatusInternal(
           AppsAccessSetupOperation::Status::kCompletedSuccessfully);
       break;
     case AccessStatus::kProhibited:
+      [[fallthrough]];
     case AccessStatus::kAvailableButNotGranted:
       // Intentionally blank; the operation status should not change.
       break;
@@ -273,6 +252,7 @@ void AppsAccessManagerImpl::UpdateFeatureEnabledState(
       }
       break;
     case AccessStatus::kProhibited:
+      [[fallthrough]];
     case AccessStatus::kAvailableButNotGranted:
       // Disable Apps if apps access has been revoked
       // by the phone.
@@ -351,5 +331,43 @@ bool AppsAccessManagerImpl::IsEligibleForOnboarding(
          feature_status == FeatureStatus::kDisconnected ||
          feature_status == FeatureStatus::kDisabled;
 }
+
+void AppsAccessManagerImpl::LogAppsSetupResponse(
+    proto::Result apps_setup_result) {
+  switch (apps_setup_result) {
+    case proto::Result::RESULT_NO_ERROR:
+      if (GetAccessStatus() == AccessStatus::kAccessGranted) {
+        base::UmaHistogramEnumeration(
+            kEcheOnboardingHistogramName,
+            OnboardingUserActionMetric::kUserActionPermissionGranted);
+      }
+      break;
+    case proto::Result::RESULT_ERROR_USER_REJECTED:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionPermissionRejected);
+      break;
+    case proto::Result::RESULT_ERROR_ACTION_TIMEOUT:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionTimeout);
+      break;
+    case proto::Result::RESULT_ERROR_ACTION_CANCELED:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionCanceled);
+      break;
+    case proto::Result::RESULT_ERROR_SYSTEM:
+      base::UmaHistogramEnumeration(kEcheOnboardingHistogramName,
+                                    OnboardingUserActionMetric::kSystemError);
+      break;
+    default:
+      base::UmaHistogramEnumeration(
+          kEcheOnboardingHistogramName,
+          OnboardingUserActionMetric::kUserActionUnknown);
+      break;
+  }
+}
+
 }  // namespace eche_app
 }  // namespace ash

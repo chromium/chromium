@@ -229,6 +229,7 @@ TEST_F(AppsAccessManagerImplTest, OnFeatureStatusChanged) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   // Set another feature status, expect status to be updated.
   SetFeatureStatus(FeatureStatus::kIneligible);
@@ -238,17 +239,20 @@ TEST_F(AppsAccessManagerImplTest, OnFeatureStatusChanged) {
   EXPECT_EQ(2u, GetAppsSetupRequestCount());
   EXPECT_EQ(AppsAccessSetupOperation::Status::kConnectionDisconnected,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 
   auto operation1 = StartSetupOperation();
   EXPECT_TRUE(operation1);
   EXPECT_EQ(2u, GetAppsSetupRequestCount());
   EXPECT_EQ(AppsAccessSetupOperation::Status::kConnecting,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(2u, GetAppsSetupRequestCount());
   EXPECT_EQ(AppsAccessSetupOperation::Status::kTimedOutConnecting,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
@@ -277,6 +281,7 @@ TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   // Simulate getting a response back from the phone.
   FakeSendAppsSetupResponse(eche_app::proto::Result::RESULT_NO_ERROR,
@@ -284,6 +289,7 @@ TEST_F(AppsAccessManagerImplTest, StartDisconnectedAndNoAccess) {
   VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
@@ -309,6 +315,7 @@ TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
   EXPECT_EQ(AppsAccessSetupOperation::Status::
                 kSentMessageToPhoneAndWaitingForResponse,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_TRUE(IsSetupOperationInProgress());
 
   // Simulate getting a response back from the phone.
   FakeSendAppsSetupResponse(eche_app::proto::Result::RESULT_NO_ERROR,
@@ -316,6 +323,7 @@ TEST_F(AppsAccessManagerImplTest, StartConnectingAndNoAccess) {
   VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, StartConnectedAndNoAccess) {
@@ -344,6 +352,119 @@ TEST_F(AppsAccessManagerImplTest, StartConnectedAndNoAccess) {
   VerifyAppsAccessGrantedState(AccessStatus::kAccessGranted);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedSuccessfully,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+}
+
+TEST_F(AppsAccessManagerImplTest, SimulateUserRejectedError) {
+  // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_USER_REJECTED,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kCompletedUserRejected,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+}
+
+TEST_F(AppsAccessManagerImplTest, SimulateOperationFailedOrCancelled) {
+  // Set initial state to connected.
+  SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);
+  SetFeatureStatus(FeatureStatus::kConnected);
+
+  Initialize(AccessStatus::kAvailableButNotGranted);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation = StartSetupOperation();
+  EXPECT_TRUE(operation);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(1u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_ACTION_TIMEOUT,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+
+  // Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation1 = StartSetupOperation();
+  EXPECT_TRUE(operation1);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(2u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_ACTION_CANCELED,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
+
+  // Simulate flipping the access state to not granted.
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+
+  // Start a setup operation with enabled and connected status and access
+  // not granted.
+  auto operation2 = StartSetupOperation();
+  EXPECT_TRUE(operation2);
+
+  // Verify that the request message has been sent and our operation status
+  // is updated.
+  EXPECT_EQ(3u, GetAppsSetupRequestCount());
+  EXPECT_EQ(AppsAccessSetupOperation::Status::
+                kSentMessageToPhoneAndWaitingForResponse,
+            GetAppsAccessSetupOperationStatus());
+
+  // Simulate getting a response back from the phone.
+  FakeSendAppsSetupResponse(
+      eche_app::proto::Result::RESULT_ERROR_SYSTEM,
+      eche_app::proto::AppsAccessState::ACCESS_NOT_GRANTED);
+  VerifyAppsAccessGrantedState(AccessStatus::kAvailableButNotGranted);
+  EXPECT_EQ(AppsAccessSetupOperation::Status::kOperationFailedOrCancelled,
+            GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectingToDisconnected) {
@@ -363,6 +484,7 @@ TEST_F(AppsAccessManagerImplTest, SimulateConnectingToDisconnected) {
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kTimedOutConnecting,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDisconnected) {
@@ -385,6 +507,7 @@ TEST_F(AppsAccessManagerImplTest, SimulateConnectedToDisconnected) {
   SetFeatureStatus(FeatureStatus::kDisconnected);
   EXPECT_EQ(AppsAccessSetupOperation::Status::kConnectionDisconnected,
             GetAppsAccessSetupOperationStatus());
+  EXPECT_FALSE(IsSetupOperationInProgress());
 }
 
 TEST_F(AppsAccessManagerImplTest, OnConnectionStatusChanged) {

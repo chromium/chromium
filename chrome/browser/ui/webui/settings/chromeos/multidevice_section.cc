@@ -478,8 +478,6 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS},
       {"multidevicePermissionsSetupOperationsInstructions",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS},
-      {"multidevicePermissionsSetupCompletedSummary",
-       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY},
       {"multidevicePermissionsSetupAwaitingResponseTitle",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
       {"multidevicePermissionsSetupCouldNotEstablishConnectionTitle",
@@ -490,6 +488,24 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY},
       {"multidevicePermissionsSetupNotificationAccessProhibitedTitle",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_TITLE},
+      {"multidevicePermissionsSetupCompletedMoreFeaturesSummary",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_MORE_FEATURES_SUMMARY},
+      {"multidevicePermissionsSetupAllCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ALL_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupCameraRollAndNotificationsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_NOTIFICATIONS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupNotificationsAndAppsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_AND_APPS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupCameraRollAndAppsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_APPS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupCameraRollCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupNotificationsCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupAppssCompletedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_COMPLETED_TITLE},
+      {"multidevicePermissionsSetupAppssCompletedFailedTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_FAILED_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -598,10 +614,6 @@ void MultiDeviceSection::AddLoadTimeData(
       "multidevicePermissionsSetupAckSubtitle",
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_SUBTITLE));
-  html_source->AddString(
-      "multidevicePermissionsSetupCompletedTitle",
-      ui::SubstituteChromeOSDeviceType(
-          IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE));
   html_source->AddString(
       "multidevicePermissionsSetupNotificationAccessProhibitedSummary",
       l10n_util::GetStringFUTF16(

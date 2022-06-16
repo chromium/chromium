@@ -17,6 +17,9 @@
 namespace ash {
 namespace eche_app {
 
+// Histogram for tracking Phone Hub Apps setup requests.
+constexpr char kEcheOnboardingHistogramName[] = "Eche.Onboarding.UserAction";
+
 using AccessStatus =
     ash::phonehub::MultideviceFeatureAccessManager::AccessStatus;
 // Tracks the status of whether the user has enabled apps access on

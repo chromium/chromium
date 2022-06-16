@@ -3262,11 +3262,32 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ACCESS_PROHIBITED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow when the phone's account notification streaming is prohibited.">
     You can't view your phone's notifications on this managed account. Try again with a different account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when the feature is successfully turned on.">
-    Your phone and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> are connected
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ALL_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when all features are successfully turned on.">
+    You can now view your phone's recent photos, media, notifications, and apps 
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that dismiss notifications on the Chromebook will also dismiss them on the phone.">
-    Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_NOTIFICATIONS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' and 'Notifications' are successfully turned on.">
+    You can now view your phone's recent photos, media, and notifications
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_AND_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Notifications' and 'Apps' are successfully turned on.">
+    You can now view your phone's notifications and apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_AND_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' and 'Apps' are successfully turned on.">
+    You can now view your phone's recent photos, media, and apps 
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Recent photos' is successfully turned on.">
+    You can now view your phone's recent photos and media
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATIONS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Notifications' is successfully turned on.">
+    You can now view your phone's notifications 
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when Phone Hub 'Apps' is successfully turned on.">
+    You can now view your phone's apps 
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_MORE_FEATURES_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Reminds users that some features have not been successfully turned on, and users can set it in the Phone Hub settings.">
+    You can set up more features in Phone Hub settings
+  </message> 
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_FAILED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when permission was not successfully turned on.">
+    Permission still needed to complete setup 
   </message>
   <message name="IDS_SETTINGS_PHONE_HUB_LEARN_MORE_ARIA_LABEL" desc="The aria label (used by screen readers, not shown in UI) for the phone permissions opt-in flow.">
     Learn more about Phone Hub
