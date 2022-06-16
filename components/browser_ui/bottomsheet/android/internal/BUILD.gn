@@ -44,7 +44,7 @@ robolectric_library("junit_tests") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserverTest.java" ]

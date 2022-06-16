@@ -16,14 +16,19 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -39,6 +44,7 @@ import java.util.concurrent.TimeoutException;
 /** This class tests the functionality of the {@link BottomSheetObserver}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // Bottom sheet is only used on phones.
+@Batch(Batch.PER_CLASS)
 public class BottomSheetObserverTest {
     /** An observer used to record events that occur with respect to the bottom sheet. */
     public static class TestSheetObserver extends EmptyBottomSheetObserver {
@@ -100,22 +106,28 @@ public class BottomSheetObserverTest {
     }
 
     @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> mTestRule =
+    public static BaseActivityTestRule<BlankUiTestActivity> sTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     private TestSheetObserver mObserver;
     private TestBottomSheetContent mSheetContent;
-    private BottomSheetController mBottomSheetController;
+    private BottomSheetControllerImpl mBottomSheetController;
+    private ScrimCoordinator mScrimCoordinator;
     private BottomSheetTestSupport mTestSupport;
+
+    @BeforeClass
+    public static void setUpSuite() {
+        sTestRule.launchActivity(null);
+        BottomSheetTestSupport.setSmallScreen(false);
+    }
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.launchActivity(null);
+        ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
+        TestThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
-        BottomSheetTestSupport.setSmallScreen(false);
-
-        ViewGroup rootView = mTestRule.getActivity().findViewById(android.R.id.content);
-        ScrimCoordinator scrim = new ScrimCoordinator(
-                mTestRule.getActivity(), new ScrimCoordinator.SystemUiScrimDelegate() {
+        mScrimCoordinator = new ScrimCoordinator(
+                sTestRule.getActivity(), new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
                         // Intentional noop
@@ -127,23 +139,30 @@ public class BottomSheetObserverTest {
                     }
                 }, rootView, Color.WHITE);
 
-        mBottomSheetController = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> new BottomSheetControllerImpl(()
-                                                                 -> scrim,
-                                (v)
-                                        -> {},
-                                mTestRule.getActivity().getWindow(),
-                                KeyboardVisibilityDelegate.getInstance(), () -> rootView));
+        mBottomSheetController = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
+            Callback<View> initializedCallback = (v) -> {};
+            return new BottomSheetControllerImpl(scrimSupplier, initializedCallback,
+                    sTestRule.getActivity().getWindow(), KeyboardVisibilityDelegate.getInstance(),
+                    () -> rootView);
+        });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetContent = new TestBottomSheetContent(
-                    mTestRule.getActivity(), BottomSheetContent.ContentPriority.HIGH, false);
+                    sTestRule.getActivity(), BottomSheetContent.ContentPriority.HIGH, false);
             mBottomSheetController.requestShowContent(mSheetContent, false);
 
             mObserver = new TestSheetObserver();
             mBottomSheetController.addObserver(mObserver);
+        });
+    }
+
+    @After
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBottomSheetController.destroy();
+            mScrimCoordinator.destroy();
         });
     }
 
@@ -366,14 +385,14 @@ public class BottomSheetObserverTest {
             // View with a specific height on its own as View::onMeasure will by
             // default set its height/width to be the minimum height/width of its
             // background (if any) or expand as much as it can.
-            final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
-            View child = new View(mTestRule.getActivity());
+            final ViewGroup contentView = new FrameLayout(sTestRule.getActivity());
+            View child = new View(sTestRule.getActivity());
             child.setLayoutParams(new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, wrappedContentHeight));
             contentView.addView(child);
 
             mTestSupport.showContent(new TestBottomSheetContent(
-                    mTestRule.getActivity(), BottomSheetContent.ContentPriority.HIGH, false) {
+                    sTestRule.getActivity(), BottomSheetContent.ContentPriority.HIGH, false) {
                 @Override
                 public View getContentView() {
                     return contentView;
