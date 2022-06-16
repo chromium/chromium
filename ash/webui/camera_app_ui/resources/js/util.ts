@@ -81,6 +81,9 @@ export function getShortcutIdentifier(event: KeyboardEvent): string {
       case 'ArrowUp':
         identifier += 'Up';
         break;
+      case ' ':
+        identifier += 'Space';
+        break;
       case 'a':
       case 'p':
       case 's':

@@ -255,9 +255,6 @@ export class Camera extends View implements CameraViewUI {
           state.set(state.State.MODE_SWITCHING, true);
           const isSuccess = await this.cameraManager.switchMode(mode);
           state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
-          if (isSuccess) {
-            this.focusShutterButton();
-          }
         }
       });
     }
@@ -908,6 +905,15 @@ export class Camera extends View implements CameraViewUI {
         this.endTake();
       } else {
         this.beginTake(metrics.ShutterType.VOLUME_KEY);
+      }
+      return true;
+    }
+    if (key === 'Space') {
+      this.focusShutterButton();
+      if (state.get(state.State.TAKING)) {
+        this.endTake();
+      } else {
+        this.beginTake(metrics.ShutterType.KEYBOARD);
       }
       return true;
     }
