@@ -20,6 +20,7 @@
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -51,6 +52,7 @@
 // - Initial empty document in iframes.
 // - Navigation in an iframe, to about:blank, renderer initiated.
 // - Navigation in an iframe, to embedder defined url, renderer initiated.
+// - Interactions with crossOriginIsolated pages.
 // - Some bug reproducers, testing things like races and history navigations.
 
 namespace content {
@@ -114,7 +116,8 @@ class UnassignedSiteInstanceBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
  public:
-  UnassignedSiteInstanceBrowserTest() {
+  UnassignedSiteInstanceBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
                                        std::get<0>(GetParam()));
     InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,
@@ -133,15 +136,27 @@ class UnassignedSiteInstanceBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    // Allow all hosts on HTTPS.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(https_server_.Start());
 
-    regular_url_ = embedded_test_server()->GetURL("a.test", "/title1.html");
+    regular_url_ = https_server_.GetURL("a.test", "/title1.html");
+    cross_origin_isolated_url_ =
+        https_server_.GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
     unassigned_url_ = GURL("about:blank");
     embedder_defined_unassigned_url_ = GURL(kEmptySchemeForTesting + "://test");
     embedder_defined_nonempty_unassigned_url_ =
-        embedded_test_server()->GetURL("b.test", "/title1.html");
+        https_server_.GetURL("b.test", "/title1.html");
+
+    regular_http_url_ =
+        embedded_test_server()->GetURL("a.test", "/title1.html");
 
     // Set up a URL for which ShouldAssignSiteForURL will return false. The
     // corresponding SiteInstance's site will be left unassigned, and its
@@ -160,9 +175,23 @@ class UnassignedSiteInstanceBrowserTest
       SetBrowserClientForTesting(old_content_browser_client_);
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
   WebContentsImpl* web_contents() {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   void DisableBackForwardCache(
       BackForwardCacheImpl::DisableForTestingReason reason) const {
@@ -174,6 +203,12 @@ class UnassignedSiteInstanceBrowserTest
 
   // Returns an url that assigns a site to the SiteInstance it lives in.
   const GURL& regular_url() const { return regular_url_; }
+
+  // Returns an url that assigns a site to the SiteInstance it lives in and is
+  // crossOriginIsolated.
+  const GURL& cross_origin_isolated_url() const {
+    return cross_origin_isolated_url_;
+  }
 
   // Returns an url that does not assign a site to the SiteInstance it lives in.
   const GURL& unassigned_url() const { return unassigned_url_; }
@@ -192,11 +227,24 @@ class UnassignedSiteInstanceBrowserTest
     return embedder_defined_nonempty_unassigned_url_;
   }
 
+  // Returns an url that assigns a site to the SiteInstance it lives in, and
+  // that is served using HTTP.
+  const GURL& regular_http_url() const { return regular_http_url_; }
+
  private:
+  net::EmbeddedTestServer https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
+
   GURL regular_url_;
+  GURL cross_origin_isolated_url_;
   GURL unassigned_url_;
   GURL embedder_defined_unassigned_url_;
   GURL embedder_defined_nonempty_unassigned_url_;
+
+  // This is the only URL that uses HTTP instead of HTTPS, because
+  // IsolateOriginsForTesting() has a hardcoded HTTP filter in it. It should
+  // only be used for that specific purpose.
+  GURL regular_http_url_;
 
   std::unique_ptr<DontAssignSiteContentBrowserClient>
       content_browser_client_override_;
@@ -585,6 +633,48 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_FALSE(post_navigation_si->IsRelatedSiteInstance(original_si.get()));
 }
 
+IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
+                       CrossOriginIsolated_BrowserInitiatedNavigationTo) {
+  // Get a base crossOriginIsolated page with a site.
+  EXPECT_TRUE(NavigateToURL(web_contents(), cross_origin_isolated_url()));
+  scoped_refptr<SiteInstanceImpl> initial_si =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(initial_si->HasSite());
+  EXPECT_TRUE(initial_si->IsCrossOriginIsolated());
+
+  // Do a browser initiated navigation to an unassigned url.
+  EXPECT_TRUE(NavigateToURL(shell(), unassigned_url()));
+  scoped_refptr<SiteInstanceImpl> unassigned_si =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+
+  // We explicitly disable SiteInstance reuse for now. Restricting which custom
+  // sites are allowed to be described by the embedder as unassigned might
+  // change that in the future.
+  EXPECT_FALSE(unassigned_si->HasSite());
+  EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
+}
+
+IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
+                       CrossOriginIsolated_BrowserInitiatedNavigationFrom) {
+  // Get a base page without a site.
+  EXPECT_TRUE(NavigateToURL(web_contents(), unassigned_url()));
+  scoped_refptr<SiteInstanceImpl> unassigned_si =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+  EXPECT_FALSE(unassigned_si->HasSite());
+
+  // Do a browser-initiated navigation to a crossOriginIsolated assigned url. We
+  // should not reuse the unassigned SiteInstance currently, because we have no
+  // guarantee that the unassigned page won't load content in the process.
+  // Restricting which custom sites are allowed to be described by the embedder
+  // as unassigned might change that in the future.
+  EXPECT_TRUE(NavigateToURL(shell(), cross_origin_isolated_url()));
+  scoped_refptr<SiteInstanceImpl> initial_si =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(initial_si->HasSite());
+  EXPECT_TRUE(initial_si->IsCrossOriginIsolated());
+  EXPECT_FALSE(initial_si->IsRelatedSiteInstance(unassigned_si.get()));
+}
+
 // Regression test for https://crbug.com/1324407.
 // TODO(https://crbug.com/1296173): Require unassigned SiteInstances to have
 // empty document schemes, making the bug exercised in this test impossible.
@@ -596,8 +686,7 @@ IN_PROC_BROWSER_TEST_P(
     // Isolate a.test so that regular_url() is expected to be in a dedicated
     // process, but also so that embedder_defined_nonempty_unassigned_url
     // (i.e., b.test) does not expect a dedicated process on Android.
-    IsolateOriginsForTesting(embedded_test_server(), web_contents(),
-                             {"a.test"});
+    IsolateOriginsForTesting(https_server(), web_contents(), {"a.test"});
   }
 
   // Get a base page with an embedder-defined non-empty unassigned url.
@@ -627,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(
   // This used to reuse the unassigned SiteInstance, even though the process had
   // already loaded a real page and the new URL requires a dedicated process.
   EXPECT_TRUE(NavigateToURLFromRenderer(
-      popup_web_contents->GetPrimaryMainFrame(), regular_url()));
+      popup_web_contents->GetPrimaryMainFrame(), regular_http_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
       popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_NE(original_si, post_navigation_si);
@@ -682,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   // In the popup, do a browser-initiated navigation to a regular url. This used
   // to reuse the unassigned SiteInstance, even though the process had already
   // loaded a real page and the new URL requires a dedicated process.
-  EXPECT_TRUE(NavigateToURL(popup_web_contents, regular_url()));
+  EXPECT_TRUE(NavigateToURL(popup_web_contents, regular_http_url()));
   scoped_refptr<SiteInstanceImpl> post_navigation_si =
       popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_NE(original_si, post_navigation_si);
@@ -821,7 +910,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
   } else {
-    EXPECT_EQ(GURL("http://a.test"), instance1->GetSiteURL());
+    EXPECT_EQ(GURL("https://a.test"), instance1->GetSiteURL());
   }
 
   // The previously committed entry should get a new, related instance to avoid
@@ -840,7 +929,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
 
   // Navigate to bar.com, which destroys the previous RenderProcessHost.
   GURL other_regular_url(
-      embedded_test_server()->GetURL("another.test", "/title1.html"));
+      https_server()->GetURL("another.test", "/title1.html"));
   RenderProcessHostWatcher exit_observer(
       process1, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
@@ -937,7 +1026,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   auto& current_isolation_context =
       root->current_frame_host()->GetSiteInstance()->GetIsolationContext();
   auto site_info = SiteInfo::CreateForTesting(current_isolation_context,
-                                              GURL("http://a.test"));
+                                              GURL("https://a.test"));
   EXPECT_TRUE(site_info.RequiresDedicatedProcess(current_isolation_context));
 
   // Set up the work to be done after the renderer is asked to commit
@@ -1020,11 +1109,11 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(process1, process2);
   EXPECT_EQ(
-      GURL("http://a.test"),
+      GURL("https://a.test"),
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
   EXPECT_EQ(
       ProcessLock::FromSiteInfo(SiteInfo(
-          GURL("http://a.test"), GURL("http://a.test"),
+          GURL("https://a.test"), GURL("https://a.test"),
           false /* requires_origin_keyed_process */, false /* is_sandboxed */,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
