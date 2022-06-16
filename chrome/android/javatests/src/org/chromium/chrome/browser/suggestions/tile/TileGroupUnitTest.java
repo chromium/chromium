@@ -66,6 +66,7 @@ import java.util.List;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisabledTest(message = "https://crbug.com/1330627")
 public class TileGroupUnitTest {
     private static final int MAX_TILES_TO_FETCH = 4;
     private static final int TILE_TITLE_LINES = 1;
@@ -184,11 +185,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(
-            message =
-                    "https://crbug.com/1330627, https://crbug.com/1293208, https://crbug.com/1336742")
-    public void
-    testReceiveNewTilesWithDataChanges() {
+    public void testReceiveNewTilesWithDataChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
 
         // Notify the about different URLs, but the same number. #onTileCountChanged() should not be
