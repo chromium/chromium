@@ -1187,14 +1187,18 @@ class CONTENT_EXPORT RenderProcessHostImpl
   friend class IOThreadHostImpl;
   absl::optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
 
-  // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() run.
+  // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() is run.
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost
-  // is recycled.
+  // is used for a new renderer process or prepares for deletion.
+  // Most cases should use this factory, so the resulting WeakPtrs are no longer
+  // valid after DeleteSoon is called, when the RenderProcessHost is in a partly
+  // torn-down state.
   base::WeakPtrFactory<RenderProcessHostImpl> instance_weak_factory_{this};
 
-  // A WeakPtrFactory that doesn't get reset, unlike |instance_weak_factory_|
-  // above. This is used to create SafeRefs.
-  base::WeakPtrFactory<RenderProcessHostImpl> weak_ptr_factory_{this};
+  // A WeakPtrFactory which should only be used for creating SafeRefs. All other
+  // weak pointers should use |instance_weak_factory_|. This WeakPtrFactory
+  // doesn't get reset until this RenderProcessHost object is actually deleted.
+  base::WeakPtrFactory<RenderProcessHostImpl> safe_ref_factory_{this};
 };
 
 }  // namespace content

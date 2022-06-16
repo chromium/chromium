@@ -3649,7 +3649,7 @@ int RenderProcessHostImpl::GetID() const {
 }
 
 base::SafeRef<RenderProcessHost> RenderProcessHostImpl::GetSafeRef() const {
-  return weak_ptr_factory_.GetSafeRef();
+  return safe_ref_factory_.GetSafeRef();
 }
 
 bool RenderProcessHostImpl::IsInitializedAndNotDead() {
