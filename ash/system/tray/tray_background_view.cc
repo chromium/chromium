@@ -532,6 +532,10 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 
 void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
 
+void TrayBackgroundView::OnAnyBubbleVisibilityChanged(
+    views::Widget* bubble_widget,
+    bool visible) {}
+
 void TrayBackgroundView::UpdateBackground() {
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
   layer()->SetIsFastRoundedCorner(true);

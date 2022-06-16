@@ -252,6 +252,17 @@ void EcheTray::OnVirtualKeyboardVisibilityChanged() {
   TrayBackgroundView::OnVirtualKeyboardVisibilityChanged();
 }
 
+void EcheTray::OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
+                                            bool visible) {
+  // We only care about "other" bubbles being shown.
+  if (!bubble_ || bubble_widget == GetBubbleWidget())
+    return;
+
+  // Another bubble has become visible, so minimize this one.
+  if (visible && bubble_->bubble_view()->GetVisible())
+    HideBubble();
+}
+
 std::u16string EcheTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }

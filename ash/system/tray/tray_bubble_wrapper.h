@@ -18,7 +18,6 @@ class TrayBubbleView;
 // Creates and manages the Widget and EventFilter components of a bubble.
 // TODO(tetsui): Remove this and use TrayBubbleBase for all bubbles.
 class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
-                                     public views::WidgetObserver,
                                      public ::wm::ActivationChangeObserver {
  public:
   // `event_handling` When set to false disables the tray's event filtering

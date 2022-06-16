@@ -179,6 +179,57 @@ TEST_F(EcheTrayTest, EcheTrayIconResize) {
   EXPECT_EQ(image_width, new_image_width + 2);
 }
 
+TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged) {
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // When any other bubble is shown we need to hide Eche.
+  eche_tray()->OnAnyBubbleVisibilityChanged(
+      reinterpret_cast<views::Widget*>(12345L), true);
+
+  EXPECT_FALSE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  EXPECT_FALSE(is_web_content_unloaded_);
+}
+
+// OnAnyBubbleVisibilityChanged() is called on the current bubble and hence
+// should be ignored.
+TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_SameWidget) {
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  eche_tray()->OnAnyBubbleVisibilityChanged(eche_tray()->GetBubbleWidget(),
+                                            true);
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+}
+
+// OnAnyBubbleVisibilityChanged() is called on some other bubble but the
+// visible parameter is false, hence we should not do anything.
+TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_NonVisible) {
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  eche_tray()->OnAnyBubbleVisibilityChanged(
+      reinterpret_cast<views::Widget*>(12345L), false);
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+}
+
 TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   // Verify the eche tray button is not active, and the eche tray bubble
   // is not shown initially.

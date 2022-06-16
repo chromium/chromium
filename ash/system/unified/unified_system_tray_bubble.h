@@ -41,7 +41,6 @@ class UnifiedSystemTrayView;
 class ASH_EXPORT UnifiedSystemTrayBubble
     : public TrayBubbleBase,
       public ScreenLayoutObserver,
-      public views::WidgetObserver,
       public ShelfObserver,
       public ::wm::ActivationChangeObserver,
       public TimeToClickRecorder::Delegate,

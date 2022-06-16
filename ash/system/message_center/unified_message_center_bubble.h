@@ -29,8 +29,7 @@ class ASH_EXPORT UnifiedMessageCenterBubble
       public TrayBubbleBase,
       public TrayBubbleView::Delegate,
       public TimeToClickRecorder::Delegate,
-      public views::ViewObserver,
-      public views::WidgetObserver {
+      public views::ViewObserver {
  public:
   explicit UnifiedMessageCenterBubble(UnifiedSystemTray* tray);
 
