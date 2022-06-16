@@ -208,6 +208,7 @@ source_set("chromeos") {
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/nearby:bluetooth_adapter_manager",
     "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/browser/browsing_data:constants",
@@ -585,6 +586,7 @@ source_set("chromeos") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/policy:onc",
   ]
 
@@ -2798,6 +2800,7 @@ static_library("test_support") {
     "//ash/services/multidevice_setup/public/cpp:test_support",
     "//ash/webui/personalization_app/mojom",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/test:test_support",
@@ -3757,6 +3760,7 @@ source_set("unit_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser/ash:arc_test_support",
     "//chrome/browser/ash/crosapi:unit_tests",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ash_test_support",
     "//chrome/browser/web_applications",

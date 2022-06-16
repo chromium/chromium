@@ -1,0 +1,57 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+# TODO(crbug.com/1321984): Make SystemWebAppManager an ash-only object and
+# move all the GN dependencies under `if (is_chromeos_ash)` section.
+# assert(is_chromeos_ash)
+
+source_set("system_web_apps") {
+  sources = [
+    "system_web_app_background_task.cc",
+    "system_web_app_background_task.h",
+    "system_web_app_manager.cc",
+    "system_web_app_manager.h",
+    "system_web_app_manager_factory.cc",
+    "system_web_app_manager_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps/types:types",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications:web_applications",
+    "//chrome/common",
+    "//components/keyed_service/content:content",
+    "//components/pref_registry:pref_registry",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//ui/base/idle:idle",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/public/cpp",
+      "//ash/webui/camera_app_ui",
+      "//ash/webui/connectivity_diagnostics",
+      "//ash/webui/eche_app_ui",
+      "//ash/webui/file_manager:file_manager_ui",
+      "//ash/webui/firmware_update_ui",
+      "//ash/webui/help_app_ui",
+      "//ash/webui/media_app_ui",
+      "//ash/webui/os_feedback_ui",
+      "//ash/webui/personalization_app",
+      "//ash/webui/shimless_rma",
+      "//ash/webui/shortcut_customization_ui",
+    ]
+
+    if (!is_official_build) {
+      deps += [ "//ash/webui/sample_system_web_app_ui" ]
+    }
+  }
+}
