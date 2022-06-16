@@ -43,7 +43,7 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
   if (tmp_exit_code == STILL_ACTIVE) {
     DWORD wait_result = WaitForSingleObject(handle, 0);
     if (wait_result == WAIT_TIMEOUT) {
-      *exit_code = wait_result;
+      *exit_code = static_cast<int>(wait_result);
       return TERMINATION_STATUS_STILL_RUNNING;
     }
 
@@ -59,7 +59,7 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
     return TERMINATION_STATUS_ABNORMAL_TERMINATION;
   }
 
-  *exit_code = tmp_exit_code;
+  *exit_code = static_cast<int>(tmp_exit_code);
 
   // clang-format off
   switch (tmp_exit_code) {
