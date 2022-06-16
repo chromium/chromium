@@ -620,16 +620,9 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
       CropTo(kCropTarget0, Frame::kTopLevelDocument, Track::kOriginal));
 }
 
-// TODO(crbug.com/1336974): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CannotRecropTrackThatHasClone \
-  DISABLED_CannotRecropTrackThatHasClone
-#else
-#define MAYBE_CannotRecropTrackThatHasClone CannotRecropTrackThatHasClone
-#endif  //  BUILDFLAG(IS_LINUX)
 // Restrictions on original track that has a clone 2/3.
 IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
-                       MAYBE_CannotRecropTrackThatHasClone) {
+                       CannotRecropTrackThatHasClone) {
   ManualSetUp();
 
   ASSERT_TRUE(CropTo(kCropTarget0, Frame::kTopLevelDocument, Track::kOriginal));
@@ -776,9 +769,8 @@ IN_PROC_BROWSER_TEST_P(RegionCaptureMultiCaptureBrowserTest,
   EXPECT_TRUE(StartSecondCapture());
 }
 
-// TODO(crbug.com/1336503): Re-enable this test
 IN_PROC_BROWSER_TEST_P(RegionCaptureMultiCaptureBrowserTest,
-                       DISABLED_CannotSelfCaptureAgainIfCropped) {
+                       CannotSelfCaptureAgainIfCropped) {
   ManualSetUp();
 
   ASSERT_TRUE(CropTo(kCropTarget1, Frame::kTopLevelDocument, Track::kOriginal));
