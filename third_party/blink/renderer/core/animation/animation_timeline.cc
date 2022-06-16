@@ -79,7 +79,8 @@ wtf_size_t AnimationTimeline::AnimationsNeedingUpdateCount() const {
   wtf_size_t count = 0;
   for (const auto& animation : animations_needing_update_) {
     // Exclude animations which are not actively generating frames.
-    if ((!animation->CompositorPending() && !animation->Playing()) ||
+    if ((!animation->CompositorPending() && !animation->Playing() &&
+         !IsScrollTimeline()) ||
         animation->AnimationHasNoEffect()) {
       continue;
     }
