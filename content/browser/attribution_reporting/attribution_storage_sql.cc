@@ -1930,14 +1930,13 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
     }
   } else {
     const base::FilePath& dir = path_to_database_.DirName();
-    const bool dir_exists_or_was_created =
-        base::DirectoryExists(dir) || base::CreateDirectory(dir);
-    if (dir_exists_or_was_created == false) {
+    const bool dir_exists_or_was_created = base::CreateDirectory(dir);
+    if (!dir_exists_or_was_created) {
       DLOG(ERROR) << "Failed to create directory for Conversion database";
       HandleInitializationFailure(InitStatus::kFailedToCreateDir);
       return false;
     }
-    if (db_->Open(path_to_database_) == false) {
+    if (!db_->Open(path_to_database_)) {
       HandleInitializationFailure(InitStatus::kFailedToOpenDbFile);
       return false;
     }
