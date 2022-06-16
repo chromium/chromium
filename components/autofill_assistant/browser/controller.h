@@ -235,13 +235,7 @@ class Controller : public ScriptExecutorDelegate,
   // execution with an error.
   void MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
 
-  void DisableAutostart();
-
   void InitFromParameters();
-
-  // Called when a script is selected.
-  void OnScriptSelected(const ScriptHandle& handle,
-                        std::unique_ptr<TriggerContext> context);
 
   // Overrides ScriptTracker::Listener:
   void OnNoRunnableScriptsForPage() override;

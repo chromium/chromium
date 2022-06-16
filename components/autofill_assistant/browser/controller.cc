@@ -908,14 +908,6 @@ AutofillAssistantState Controller::GetState() const {
 bool Controller::ShouldSuppressKeyboard() const {
   return ShouldSuppressKeyboardForState(state_);
 }
-void Controller::OnScriptSelected(const ScriptHandle& handle,
-                                  std::unique_ptr<TriggerContext> context) {
-  ExecuteScript(handle.path, handle.start_message, handle.needs_ui,
-                std::move(context),
-                state_ == AutofillAssistantState::TRACKING
-                    ? AutofillAssistantState::TRACKING
-                    : AutofillAssistantState::PROMPT);
-}
 
 base::Value Controller::GetDebugContext() {
   base::Value dict(base::Value::Type::DICTIONARY);
