@@ -200,6 +200,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Update the UI depending on `dialog_state_`. This also triggers resizes and
   // fires some events. It's meant to be called to update the entire dialog when
   // it's already showing.
+  // This function can only be called after the dialog widget is initialized.
   void UpdateDialog();
 
   // Resizes the already shown dialog to accommodate changes in its content.
