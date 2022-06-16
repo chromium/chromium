@@ -895,9 +895,6 @@ void Controller::ShowFirstMessageAndStart() {
 }
 
 void Controller::Shutdown(Metrics::DropOutReason reason) {
-  for (ControllerObserver& observer : observers_) {
-    observer.OnShutdown(reason);
-  }
   client_->Shutdown(reason);
 }
 

@@ -97,9 +97,6 @@ class ControllerObserver : public base::CheckedObserver {
 
   // Called whenever the UI is shown or hidden.
   virtual void OnUiShownChanged(bool shown) = 0;
-
-  // Called before shutting down the Controller.
-  virtual void OnShutdown(Metrics::DropOutReason reason) = 0;
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CONTROLLER_OBSERVER_H_
