@@ -36,6 +36,25 @@ class RestoreIOTaskTest : public TrashBaseTest {
 
   RestoreIOTaskTest(const RestoreIOTaskTest&) = delete;
   RestoreIOTaskTest& operator=(const RestoreIOTaskTest&) = delete;
+
+  // The source_urls are collections of .trashinfo files. For the purpose of
+  // testing, all files are restored to the root of the filesystem.
+  // For example if source_urls contains a file .Trash/info/foo.txt.trashinfo
+  // this will return restore paths of /foo.txt.
+  const std::vector<std::string> CreateRestorePathsFromSourceURLs(
+      const base::FilePath& base_path,
+      const std::vector<storage::FileSystemURL>& source_urls) {
+    std::vector<std::string> restore_paths;
+    for (const auto& url : source_urls) {
+      // source_urls are made relative for testing purposes so we expect these
+      // to not be absolute.
+      EXPECT_FALSE(url.path().IsAbsolute());
+      restore_paths.push_back(base::FilePath("/")
+                                  .Append(url.path().RemoveFinalExtension())
+                                  .value());
+    }
+    return restore_paths;
+  }
 };
 
 TEST_F(RestoreIOTaskTest, URLsWithInvalidSuffixShouldError) {
@@ -47,6 +66,8 @@ TEST_F(RestoreIOTaskTest, URLsWithInvalidSuffixShouldError) {
   std::vector<storage::FileSystemURL> source_urls = {
       CreateFileSystemURL(file_path),
   };
+  std::vector<std::string> restore_paths =
+      CreateRestorePathsFromSourceURLs(temp_dir_.GetPath(), source_urls);
 
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
@@ -61,8 +82,8 @@ TEST_F(RestoreIOTaskTest, URLsWithInvalidSuffixShouldError) {
               Run(Field(&ProgressStatus::state, State::kError)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
-                     temp_dir_.GetPath());
+  RestoreIOTask task(source_urls, restore_paths, profile_.get(),
+                     file_system_context_, temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 }
@@ -77,6 +98,8 @@ TEST_F(RestoreIOTaskTest, FilesNotInProperLocationShouldError) {
   std::vector<storage::FileSystemURL> source_urls = {
       CreateFileSystemURL(file_path),
   };
+  std::vector<std::string> restore_paths =
+      CreateRestorePathsFromSourceURLs(temp_dir_.GetPath(), source_urls);
 
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
@@ -90,8 +113,8 @@ TEST_F(RestoreIOTaskTest, FilesNotInProperLocationShouldError) {
               Run(Field(&ProgressStatus::state, State::kError)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
-                     temp_dir_.GetPath());
+  RestoreIOTask task(source_urls, restore_paths, profile_.get(),
+                     file_system_context_, temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 }
@@ -109,6 +132,8 @@ TEST_F(RestoreIOTaskTest, MetadataWithNoCorrespondingFileShouldError) {
   std::vector<storage::FileSystemURL> source_urls = {
       CreateFileSystemURL(file_path),
   };
+  std::vector<std::string> restore_paths =
+      CreateRestorePathsFromSourceURLs(downloads_dir_, source_urls);
 
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
@@ -123,8 +148,75 @@ TEST_F(RestoreIOTaskTest, MetadataWithNoCorrespondingFileShouldError) {
               Run(Field(&ProgressStatus::state, State::kError)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
-                     temp_dir_.GetPath());
+  RestoreIOTask task(source_urls, restore_paths, profile_.get(),
+                     file_system_context_, temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(RestoreIOTaskTest, RestorePathsShouldNotReferenceParent) {
+  EnsureTrashDirectorySetup(downloads_dir_);
+
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath info_file_path =
+      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(info_file_path, foo_contents));
+  const base::FilePath files_path =
+      trash_path.Append(kFilesFolderName).Append("foo.txt");
+  ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(info_file_path),
+  };
+  std::vector<std::string> illegal_paths{"/../../../bad/actor/foo.txt"};
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+
+  // We should get one complete callback when the restore path is found to have
+  // parent path traversal, i.e. ".." characters.
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kError)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, illegal_paths, profile_.get(),
+                     file_system_context_, temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceed) {
+  EnsureTrashDirectorySetup(downloads_dir_);
+
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath info_file_path =
+      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(info_file_path, foo_contents));
+  const base::FilePath files_path =
+      trash_path.Append(kFilesFolderName).Append("foo.txt");
+  ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(info_file_path),
+  };
+  std::vector<std::string> restore_paths{"/bar/foo.txt"};
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kSuccess)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, restore_paths, profile_.get(),
+                     file_system_context_, temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 }

@@ -14,12 +14,14 @@ namespace io_task {
 
 RestoreIOTask::RestoreIOTask(
     std::vector<storage::FileSystemURL> file_urls,
+    std::vector<std::string> restore_paths,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath base_path)
     : file_system_context_(file_system_context),
       profile_(profile),
-      base_path_(base_path) {
+      base_path_(base_path),
+      restore_paths_(restore_paths) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kRestore;
   progress_.bytes_transferred = 0;
@@ -48,6 +50,15 @@ void RestoreIOTask::Execute(IOTask::ProgressCallback progress_callback,
                             IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
+
+  // The list of restore paths is passed as metadata to the RestoreIOTask and
+  // thus is a 1:1 mapping of storage::FileSystemURL to the final restore path.
+  // This path still has to be validated and represents a relative (to the
+  // source filesystem) path to move the file to.
+  if (restore_paths_.size() != progress_.sources.size()) {
+    Complete(State::kError);
+    return;
+  }
 
   enabled_trash_locations_ =
       GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
@@ -102,14 +113,29 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
     return;
   }
 
-  ParseTrashInfoFile(idx, trash_info);
-}
+  // The leading character is "/", which needs to be removed to ensure it can be
+  // appended to the parent path.
+  // TODO(b/231830250): Remove this once the UI trashing logic has been enabled
+  // to conform to having no leading "/" character.
+  if (!restore_paths_[idx].empty() &&
+      base::StartsWith(restore_paths_[idx], "/",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    restore_paths_[idx].erase(0, 1);
+  }
 
-void RestoreIOTask::ParseTrashInfoFile(
-    size_t idx,
-    const base::FilePath& trash_info_file_path) {
-  // TODO(b/231830250): Add parsing logic here on a base::MayBlock thread to
-  // enable restoration.
+  // The path to restore is expected to be relative to the source filesystem
+  // (the previous condition enforces this) and not have any references to it's
+  // parent (i.e. no ".." path traversals).
+  base::FilePath restore_path(restore_paths_[idx]);
+  if (restore_path.empty() || restore_path.IsAbsolute() ||
+      restore_path.ReferencesParent()) {
+    progress_.sources[idx].error = base::File::FILE_ERROR_INVALID_OPERATION;
+    Complete(State::kError);
+    return;
+  }
+
+  // TODO(b/231830250): Implement the logic to make sure the enclosing path is
+  // setup and move the actual item to it's final location.
   Complete(State::kSuccess);
 }
 

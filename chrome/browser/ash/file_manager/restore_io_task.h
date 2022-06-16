@@ -30,6 +30,7 @@ namespace io_task {
 class RestoreIOTask : public IOTask {
  public:
   RestoreIOTask(std::vector<storage::FileSystemURL> file_urls,
+                std::vector<std::string> restore_paths,
                 Profile* profile,
                 scoped_refptr<storage::FileSystemContext> file_system_context,
                 const base::FilePath base_path);
@@ -51,12 +52,6 @@ class RestoreIOTask : public IOTask {
   //   - Has an identical item in the files directory with no .trashinfo suffix
   void ValidateTrashInfo(size_t idx);
 
-  // Parse the .trashinfo file and ensure it conforms to the XDG specification
-  // before restoring the file.
-  // TODO(b/231830250): Finish implementation of this method.
-  void ParseTrashInfoFile(size_t idx,
-                          const base::FilePath& trash_info_file_path);
-
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<Profile> profile_;
 
@@ -67,6 +62,11 @@ class RestoreIOTask : public IOTask {
 
   // A map containing paths which are enabled for trashing.
   TrashPathsMap enabled_trash_locations_;
+
+  // The list of paths to restore each item to. These are strings which are
+  // relative to each of the trash parent paths and all contain a leading "/"
+  // character.
+  std::vector<std::string> restore_paths_;
 
   // Stores the id of the restore operation if one is in progress. Used so the
   // restore can be cancelled.
