@@ -265,6 +265,8 @@ TEST_P(DocumentTransitionTest, AdditionalStartAbortsTransition) {
 TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
       div { width: 100px; height: 100px; contain: paint }
       #e1 { page-transition-tag: e1; }
       #e3 { page-transition-tag: e3; }
@@ -326,7 +328,11 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
 
 TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
   SetHtmlInnerHTML(R"HTML(
-    <style>#e1 { width: 100px; height: 100px; contain: paint }</style>
+    <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
+      #e1 { width: 100px; height: 100px; contain: paint }
+    </style>
     <div id=e1 style="page-transition-tag: e1"></div>
     <div id=e2 style="page-transition-tag: e2"></div>
     <div id=e3 style="page-transition-tag: e3"></div>
@@ -370,6 +376,8 @@ TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
 TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
       div { contain: paint; width: 100px; height: 100px; background: blue; }
     </style>
     <div id=e1></div>
@@ -635,6 +643,8 @@ TEST_P(DocumentTransitionTest, Abandon) {
 TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
       div { width: 100px; height: 100px; contain: paint; background: blue }
     </style>
 
@@ -694,6 +704,8 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   UpdateAllLifecyclePhasesAndFinishDirectives();
   SetHtmlInnerHTML(R"HTML(
     <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
       div { width: 200px; height: 200px; contain: paint }
     </style>
 
@@ -719,6 +731,8 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
 TEST_P(DocumentTransitionTest, DocumentTransitionSharedElementInvalidation) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
       div {
         width: 100px;
         height: 100px;
@@ -776,6 +790,8 @@ TEST_P(DocumentTransitionTest, DocumentTransitionSharedElementInvalidation) {
 TEST_P(DocumentTransitionTest, InspectorStyleResolver) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      /* TODO(crbug.com/1336462): html.css is parsed before runtime flags are enabled */
+      html { page-transition-tag: root; }
       ::page-transition {
         background-color: red;
       }

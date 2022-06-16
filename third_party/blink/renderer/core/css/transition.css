@@ -25,11 +25,6 @@ html::page-transition-container(*) {
   transform-origin: top left;
 }
 
-html::page-transition-container(root) {
-  right: 0;
-  bottom: 0;
-}
-
 ::page-transition-image-wrapper(*) {
   position: absolute;
   inset: 0;
@@ -45,3 +40,4 @@ html::page-transition-container(root) {
   mix-blend-mode: plus-lighter;
   will-change: opacity;
 }
+

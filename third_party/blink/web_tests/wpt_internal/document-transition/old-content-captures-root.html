@@ -41,6 +41,7 @@ async function runTest() {
   let t = document.createDocumentTransition();
   t.start(() => {
     e1.classList.add("dst");
+    document.body.style.background = "red";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

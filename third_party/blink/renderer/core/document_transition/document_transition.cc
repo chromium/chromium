@@ -313,9 +313,8 @@ DocumentTransition::TakePendingRequest() {
 
 bool DocumentTransition::IsTransitionParticipant(
     const LayoutObject& object) const {
-  // The layout view is always a participant if there is a transition.
   if (auto* layout_view = DynamicTo<LayoutView>(object))
-    return state_ != State::kIdle;
+    return style_tracker_ && style_tracker_->IsRootTransitioning();
 
   // Otherwise check if the layout object has an active shared element.
   auto* element = DynamicTo<Element>(object.GetNode());

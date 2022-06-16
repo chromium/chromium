@@ -112,12 +112,11 @@ class DocumentTransitionStyleTracker
   int CapturedTagCount() const { return captured_tag_count_; }
 
   bool IsSharedElement(Element* element) const;
+  bool IsRootTransitioning() const;
 
   std::vector<viz::SharedElementResourceId> TakeCaptureResourceIds() {
     return std::move(capture_resource_ids_);
   }
-
-  static bool IsReservedTransitionTag(const StringView& value);
 
  private:
   class ImageWrapperPseudoElement;
@@ -171,21 +170,37 @@ class DocumentTransitionStyleTracker
     WritingMode container_writing_mode = WritingMode::kHorizontalTb;
   };
 
+  struct RootData {
+    viz::SharedElementResourceId snapshot_id;
+    VectorOf<AtomicString> tags;
+  };
+
   void InvalidateStyle();
   bool HasLiveNewContent() const;
   void EndTransition();
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
-  bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
+  bool FlattenAndVerifyElements(VectorOf<Element>&,
+                                VectorOf<AtomicString>&,
+                                absl::optional<RootData>&);
 
   void AddSharedElementsFromCSSRecursive(PaintLayer*);
+
+  int OldRootDataTagSize() const {
+    return old_root_data_ ? old_root_data_->tags.size() : 0;
+  }
+  int NewRootDataTagSize() const {
+    return new_root_data_ ? new_root_data_->tags.size() : 0;
+  }
+  absl::optional<RootData> GetCurrentRootData() const;
+  HashSet<AtomicString> AllRootTags() const;
 
   Member<Document> document_;
   State state_ = State::kIdle;
   int captured_tag_count_ = 0;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
-  viz::SharedElementResourceId old_root_snapshot_id_;
-  viz::SharedElementResourceId new_root_snapshot_id_;
+  absl::optional<RootData> old_root_data_;
+  absl::optional<RootData> new_root_data_;
   scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
   absl::optional<String> ua_style_sheet_;
 

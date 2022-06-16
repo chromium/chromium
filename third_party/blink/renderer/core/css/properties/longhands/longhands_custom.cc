@@ -5604,10 +5604,6 @@ const CSSValue* PageTransitionTag::ParseSingleValue(
     const CSSParserLocalContext&) const {
   if (range.Peek().Id() == CSSValueID::kNone)
     return css_parsing_utils::ConsumeIdent(range);
-  if (DocumentTransitionStyleTracker::IsReservedTransitionTag(
-          range.Peek().Value())) {
-    return nullptr;
-  }
   return css_parsing_utils::ConsumeCustomIdent(range, context);
 }
 
