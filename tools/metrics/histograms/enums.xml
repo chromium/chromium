@@ -55115,6 +55115,7 @@ from previous Chrome versions.
   <int value="-1961071650" label="InterestFeedV2Autoplay:disabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
   <int value="-1960567385" label="KeepPrefetchedContentSuggestions:enabled"/>
+  <int value="-1959602781" label="ShimlessRMADisableDarkMode:disabled"/>
   <int value="-1959563554" label="ChromeOSAccountManager:enabled"/>
   <int value="-1958364669" label="QueryTilesSegmentation:enabled"/>
   <int value="-1958315092" label="EnableGamepadButtonAxisEvents:disabled"/>
@@ -57619,6 +57620,7 @@ from previous Chrome versions.
   <int value="-351127770" label="enable-offline-pages-as-bookmarks"/>
   <int value="-350336634"
       label="ExperimentalAccessibilityDictationExtension:enabled"/>
+  <int value="-349505266" label="ShimlessRMADisableDarkMode:enabled"/>
   <int value="-349437334" label="UseDdljsonApi:disabled"/>
   <int value="-349380607" label="AndroidNightMode:disabled"/>
   <int value="-349057743" label="extensions-on-chrome-urls"/>

@@ -5528,6 +5528,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "shimless-rma-disable-dark-mode",
+    "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "shimless-rma-enable-standalone",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 108

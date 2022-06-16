@@ -3094,6 +3094,9 @@ extern const char kShimlessRMAEnableStandaloneDescription[];
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 
+extern const char kShimlessRMADisableDarkModeName[];
+extern const char kShimlessRMADisableDarkModeDescription[];
+
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];

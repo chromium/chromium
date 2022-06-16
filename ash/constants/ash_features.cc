@@ -1369,6 +1369,10 @@ const base::Feature kShimlessRMAEnableStandalone{
 const base::Feature kShimlessRMAOsUpdate{"ShimlessRMAOsUpdate",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the dark mode in the shimless RMA flow.
+const base::Feature kShimlessRMADisableDarkMode{
+    "ShimlessRMADisableDarkMode", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables or disables a toggle to enable Bluetooth debug logs.
 const base::Feature kShowBluetoothDebugLogToggle{
     "ShowBluetoothDebugLogToggle", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2278,6 +2282,10 @@ bool IsShimlessRMAStandaloneAppEnabled() {
 
 bool IsShimlessRMAOsUpdateEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAOsUpdate);
+}
+
+bool IsShimlessRMADarkModeDisabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMADisableDarkMode);
 }
 
 bool IsSimLockPolicyEnabled() {
