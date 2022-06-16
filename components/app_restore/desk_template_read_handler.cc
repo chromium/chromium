@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "components/app_restore/app_launch_info.h"
@@ -259,13 +260,12 @@ ArcReadHandler* DeskTemplateReadHandler::GetArcReadHandlerForLaunch(
 RestoreData* DeskTemplateReadHandler::GetMostRecentRestoreDataForApp(
     const std::string& app_id) {
   // Go from newest to oldest.
-  for (auto it = restore_data_.rbegin(); it != restore_data_.rend(); ++it) {
-    auto& restore_data = it->second;
+  for (const auto& entry : base::Reversed(restore_data_)) {
+    const std::unique_ptr<RestoreData>& restore_data = entry.second;
     if (restore_data->app_id_to_launch_list().count(app_id)) {
       return restore_data.get();
     }
   }
   return nullptr;
 }
-
 }  // namespace app_restore
