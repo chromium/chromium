@@ -11,6 +11,7 @@
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/visibility.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "url/origin.h"
 
@@ -52,7 +53,10 @@ class TabUsageScenarioTracker : public TabStatsObserver,
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& new_display) override;
+  // Note: It would be incorrect to override OnDisplayRemoved() instead of
+  // OnDidRemoveDisplays() because the former may be invoked *before* the number
+  // of displays is updated.
+  void OnDidRemoveDisplays() override;
 
  private:
   using VisibleTabsMap = base::flat_map<content::WebContents*,
@@ -70,6 +74,9 @@ class TabUsageScenarioTracker : public TabStatsObserver,
 
   void InsertContentsInMapOfVisibleTabs(content::WebContents* web_contents);
 
+  // Invoked when displays are added or removed.
+  void OnNumDisplaysChanged();
+
   // Non-owning. Needs to outlive this class.
   raw_ptr<UsageScenarioDataStoreImpl> usage_scenario_data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -77,6 +84,9 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   // Keep track of the WebContents currently playing video.
   base::flat_set<content::WebContents*> contents_playing_video_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The last reading of the number of displays.
+  absl::optional<int> last_num_displays_;
 
   // Keep track of the visible WebContents and the navigation data associated to
   // them. The associated sourceID for tabs that don't have committed a main
