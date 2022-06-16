@@ -486,6 +486,22 @@ class PageLoadMetricsObserverInterface {
   virtual void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) = 0;
 
+  // OnRenderFrameDeleted is called when RenderFrameHost for a frame is deleted.
+  // OnSubFrameDeleted is called when FrameTreeNode for a subframe is deleted.
+  // The differences are:
+  //
+  // - OnRenderFrameDeleted is called for all frames. OnSubFrameDeleted is not
+  //   called for main frames. This is because PageLoadTracker is bound with
+  //   RenderFrameHost of the main frame and destruction of PageLoadTracker is
+  //   earlier than one of FrameTreeNode in some cases.
+  // - OnRenderFrameDeleted can be called in navigation commit to discard the
+  //   previous RenderFrameHost. At that timing, there are two RenderFrameHost
+  //   that have the same RenderFrameHost::GetFrameNodeId.
+  //
+  // TODO(https://crbug.com/1301880): Make it clear when
+  // MetricsWebContentsObserver::FrameDeleted is not called and make
+  // PageLoadMetricsObserverInterface::OnSubFrameDeleted called for fenced
+  // frame's root if possible.
   virtual void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) = 0;
   virtual void OnSubFrameDeleted(int frame_tree_node_id) = 0;

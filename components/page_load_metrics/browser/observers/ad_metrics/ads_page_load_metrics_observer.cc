@@ -669,6 +669,18 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #endif
 }
 
+// OnSubFrameDeleted is not called for main frames, including fenced frames.
+// As an approximation, we regard deletion of RenderFrameHost as one of
+// FrameTreeNode for non primary main frames.
+// TODO(https://crbug.com/1301880): Verify that this is legitimate.
+void AdsPageLoadMetricsObserver::OnRenderFrameDeleted(
+    content::RenderFrameHost* rfh) {
+  if (rfh->IsInPrimaryMainFrame() || rfh->GetParent())
+    return;
+
+  OnSubFrameDeleted(rfh->GetFrameTreeNodeId());
+}
+
 void AdsPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
   const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
   if (id_and_data == ad_frames_data_.end())

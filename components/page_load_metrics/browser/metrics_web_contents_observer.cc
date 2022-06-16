@@ -181,7 +181,7 @@ void MetricsWebContentsObserver::FrameDeleted(int frame_tree_node_id) {
   if (!rfh || !rfh->GetParent())
     return;
   if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
-    tracker->SubFrameDeleted(frame_tree_node_id);
+    tracker->FrameTreeNodeDeleted(frame_tree_node_id);
 }
 
 void MetricsWebContentsObserver::RenderFrameDeleted(
@@ -1191,6 +1191,21 @@ void MetricsWebContentsObserver::OnV8MemoryChanged(
     map_pair.first->OnV8MemoryChanged(map_pair.second);
 }
 
+// This contains some bugs. RenderFrameHost::IsActive is not relevant to
+// determine what members we have to search.
+//
+// There are some known wrong cases:
+//
+// 1. rfh->GetLifecycleState() == kReadyToBeDeleted && rfh is in active_pages_.
+//    In this case, this method returns null. This case can occur, e.g.
+//    navigation on a FF root node.
+// 2. rfh->GetLifecycleState() == kActive && rfh is already deleted via
+//    RenderFrameDeleted.
+//    In this case, this method returns primary_page's PageLeadTracker. This
+//    case can occur if the caller is FrameDeleted and, e.g. deletion of a FF
+//    root node.
+//
+// TODO(https://crbug.com/1301880): Fix it.
 PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTracker(
     content::RenderFrameHost* rfh) {
   if (!rfh)

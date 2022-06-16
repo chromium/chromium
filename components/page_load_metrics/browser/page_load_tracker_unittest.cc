@@ -18,12 +18,13 @@ namespace {
 const char kTestUrl[] = "https://a.test/";
 
 struct PageLoadMetricsObserverEvents final {
-  bool was_ready_to_commit_next_navigation = false;
+  size_t ready_to_commit_next_navigation_count = 0;
   bool was_started = false;
   bool was_fenced_frames_started = false;
   bool was_prerender_started = false;
   bool was_committed = false;
-  bool was_sub_frame_deleted = false;
+  size_t render_frame_deleted_count = 0;
+  size_t sub_frame_deleted_count = 0;
   bool was_prerendered_page_activated = false;
   size_t sub_frame_navigation_count = 0;
 };
@@ -39,8 +40,7 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
  private:
   void ReadyToCommitNextNavigation(
       content::NavigationHandle* navigation_handle) override {
-    EXPECT_FALSE(events_->was_ready_to_commit_next_navigation);
-    events_->was_ready_to_commit_next_navigation = true;
+    events_->ready_to_commit_next_navigation_count++;
   }
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
@@ -72,8 +72,11 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
       content::NavigationHandle* navigation_handle) override {
     events_->sub_frame_navigation_count++;
   }
+  void OnRenderFrameDeleted(content::RenderFrameHost* rfh) override {
+    events_->render_frame_deleted_count++;
+  }
   void OnSubFrameDeleted(int frame_tree_node_id) override {
-    events_->was_sub_frame_deleted = true;
+    events_->sub_frame_deleted_count++;
   }
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override {
@@ -152,28 +155,36 @@ TEST_F(PageLoadTrackerTest, PrimaryPageType) {
   tester()->NavigateToUntrackedUrl();
 
   // Check observer behaviors.
-  EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
+  EXPECT_EQ(1u, GetEvents().ready_to_commit_next_navigation_count);
 
   // Check ukm::SourceId.
   EXPECT_NE(ukm::kInvalidSourceId, GetObservedUkmSourceIdFor(kTestUrl));
 }
 
 TEST_F(PageLoadTrackerTest, EventForwarding) {
+  // In the end, we'll construct frame trees as the following:
+  //
+  //   A     : primary main frame
+  //   +- B' : outer dummy node of B
+  //
+  //   B     : fenced frame
+  //   +- C  : iframe
+
   // Target URL to monitor the tracker via the test observer.
   SetTargetUrl(kTestUrl);
   StopObservingOnFencedFrames();
 
-  // Navigate in.
+  // A: Navigate in.
   NavigateAndCommit(GURL(kTestUrl));
 
-  // Add a fenced frame.
-  content::RenderFrameHost* fenced_frame_root =
+  // B: Add and navigate in.
+  content::RenderFrameHost* rfh_b =
       content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendFencedFrame();
   {
-    const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
+    const char kURL[] = "https://a.test/fenced_frames";
     auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-        GURL(kFencedFramesUrl), fenced_frame_root);
+        GURL(kURL), rfh_b);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();
   }
@@ -185,24 +196,87 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   EXPECT_FALSE(GetEvents().was_fenced_frames_started);
   EXPECT_FALSE(GetEvents().was_prerender_started);
   EXPECT_TRUE(GetEvents().was_committed);
-  EXPECT_FALSE(GetEvents().was_sub_frame_deleted);
   EXPECT_EQ(1u, GetEvents().sub_frame_navigation_count);
+  // MetricsWebContentsObserver::RenderFrameDeleted is called in the first
+  // navigation for iframes but not for fenced frames.
+  // TODO(https://crbug.com/1301880): Make a reason clear.
+  EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
+  EXPECT_EQ(0u, GetEvents().sub_frame_deleted_count);
 
-  // Navigate out.
+  // B: Navigate out.
+  content::RenderFrameHost* rfh_b_last = nullptr;
   {
-    const char kFencedFramesNavigationUrl[] = "https://b.test/fenced_frames";
+    const char kURL[] = "https://b.test/fenced_frames";
     auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-        GURL(kFencedFramesNavigationUrl), fenced_frame_root);
+        GURL(kURL), rfh_b);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();
+
+    rfh_b_last = simulator->GetFinalRenderFrameHost();
   }
 
-  // Check observer behaviors again after the render frame's deletion.
-  // TODO(https://crbug.com/1301880): RenderFrameDeleted() doesn't seem called
-  // and following check fails. Revisit this issue later to clarify the
-  // expectations.
-  // EXPECT_TRUE(GetEvents().was_sub_frame_deleted);
-  EXPECT_EQ(2u, GetEvents().sub_frame_navigation_count);
+  // "0" is wrong, "1" is correct.
+  // See comment of MetricsWebContentsObserver::GetPageLoadTracker.
+  EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
+  EXPECT_EQ(0u, GetEvents().sub_frame_deleted_count);
+
+  // C: Add and navigate in.
+  content::RenderFrameHost* rfh_c =
+      content::RenderFrameHostTester::For(rfh_b_last)->AppendChild("c");
+  content::RenderFrameHost* rfh_c_last = nullptr;
+  {
+    const char kURL[] = "https://a.test/iframe";
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+        GURL(kURL), rfh_c);
+    ASSERT_NE(nullptr, simulator);
+    simulator->Commit();
+
+    rfh_c_last = simulator->GetFinalRenderFrameHost();
+  }
+
+  // Note that deletion of RenderFrameHost depends on some conditions, e.g. Site
+  // Isolation and Back/Forward Cache. In unit tests, NavigationSimulator does
+  // delete them when a navigation commits. On Android, the two RenderFrameHost
+  // has same SiteInstance and the old one will be not deleted.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
+#else
+  EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
+#endif
+  EXPECT_EQ(0u, GetEvents().sub_frame_deleted_count);
+
+  // Remove C.
+  content::RenderFrameHostTester::For(rfh_c_last)->Detach();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
+#else
+  EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
+#endif
+  EXPECT_EQ(1u, GetEvents().sub_frame_deleted_count);
+
+  // Remove B.
+  content::RenderFrameHostTester::For(rfh_b_last)->Detach();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
+#else
+  EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
+#endif
+  // "2" may look good, but it is wrong, indeed. "1" is correct.
+  //
+  // When deleting a FF root node, methods of MetricsWebContentsObserver will be
+  // called in the order RenderFrameDeleted -> FrameDeleted. The former
+  // unregister PageLoadTracker corresponding to the given RenderFrameHost. The
+  // later shouldn't trigger an event because the target PageLoadTracker has
+  // gone already. Although, `sub_frame_deleted_count` is incremented because
+  // the logic of MetricsWebContentsObserver::GetPageLoadTracker is wrong: See
+  // comment of the method. (This behavior can be observerved by putting printf
+  // in PageLoadTracker::FrameTreeNodeDeleted and inspecting forwarding doesn't
+  // occur.)
+  // TODO(https://crbug.com/1301880): Fix
+  // MetricsWebContentsObserver::GetPageLoadTracker
+  EXPECT_EQ(2u, GetEvents().sub_frame_deleted_count);
 }
 
 TEST_F(PageLoadTrackerTest, PrerenderPageType) {
@@ -284,7 +358,7 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
   }
 
   // Check observer behaviors.
-  EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
+  EXPECT_EQ(1u, GetEvents().ready_to_commit_next_navigation_count);
 }
 
 TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
