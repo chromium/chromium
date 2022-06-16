@@ -64,7 +64,11 @@ config("runtime_library") {
   # The Windows component build fails to link with libc++'s debug mode. See
   # https://crbug.com/923166#c33, https://crbug.com/923166#c44, and
   # https://llvm.org/PR41018.
-  if (!(is_win && is_component_build)) {
+  #
+  # TODO(https://crbug.com/1327706): Figure out why thinlto builds fail to link
+  # with libc++'s debug mode after https://reviews.llvm.org/D103964, and then
+  # remove the !use_thin_lto`)
+  if (!(is_win && is_component_build) && !use_thin_lto) {
     # libc++ has two levels of debug mode. Setting _LIBCPP_DEBUG to zero
     # enables most assertions. Setting it to one additionally enables iterator
     # debugging. See https://libcxx.llvm.org/docs/DesignDocs/DebugMode.html
