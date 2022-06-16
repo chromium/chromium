@@ -4,22 +4,22 @@
 
 #include "ui/base/cocoa/text_services_context_menu.h"
 
+#import <AppKit/AppKit.h>
+
 #include <utility>
 
-#include <ApplicationServices/ApplicationServices.h>
-#include <CoreAudio/CoreAudio.h>
-
-#include "base/mac/mac_logging.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
 
-// The speech channel used for speaking. This is shared to check if a speech
-// channel is currently speaking.
-SpeechChannel g_speech_channel;
+NSSpeechSynthesizer* SpeechSynthesizer() {
+  static NSSpeechSynthesizer* speech_synthesizer =
+      [[NSSpeechSynthesizer alloc] initWithVoice:nil];
+
+  return speech_synthesizer;
+}
 
 // Returns the TextDirection associated associated with the given BiDi
 // |command_id|.
@@ -60,27 +60,37 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
       kWritingDirectionRtl, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL);
 }
 
+// A note about the Speech submenu.
+//
+// All standard AppKit implementations of `-(IBAction)startSpeaking:(id)sender`
+// and `-(IBAction)stopSpeaking:(id)sender` funnel into messages to
+// `NSApplication`:
+//
+// @interface NSApplication ()
+// - (void)speakString:(NSString*)string;
+// - (IBAction)stopSpeaking:(id)sender;
+// - (BOOL)isSpeaking;
+// @end
+//
+// However, it is an explicit decision to not use these messages, and to keep an
+// independent `NSSpeechSynthesizer`, as Chromium tries to avoid the use of SPI
+// when it's reasonably straightforward to do so. This does mean that speech
+// initiated within Chromium doesn't interoperate with speech initiated with
+// any native controls (if there are any left) via this submenu.
+
 void TextServicesContextMenu::SpeakText(const std::u16string& text) {
   if (IsSpeaking())
-    StopSpeaking();
+    [SpeechSynthesizer() stopSpeaking];
 
-  if (!g_speech_channel) {
-    OSErr result = NewSpeechChannel(nullptr, &g_speech_channel);
-    OSSTATUS_DCHECK(result == noErr, result);
-  }
-
-  SpeakCFString(g_speech_channel, base::SysUTF16ToCFStringRef(text), nullptr);
+  [SpeechSynthesizer() startSpeakingString:base::SysUTF16ToNSString(text)];
 }
 
 void TextServicesContextMenu::StopSpeaking() {
-  DCHECK(g_speech_channel);
-  StopSpeechAt(g_speech_channel, kImmediate);
-  DisposeSpeechChannel(g_speech_channel);
-  g_speech_channel = nullptr;
+  [SpeechSynthesizer() stopSpeaking];
 }
 
 bool TextServicesContextMenu::IsSpeaking() {
-  return SpeechBusy();
+  return SpeechSynthesizer().speaking;
 }
 
 void TextServicesContextMenu::AppendToContextMenu(SimpleMenuModel* model) {
