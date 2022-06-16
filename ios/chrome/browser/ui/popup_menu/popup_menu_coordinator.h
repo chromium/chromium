@@ -13,6 +13,16 @@
 @class BubblePresenter;
 @protocol PopupMenuUIUpdating;
 
+// Delegate that noitfies about pop up menu appearance change.
+@protocol PopupMenuAppearanceDelegate
+
+// Noitfies delegate that pop up menu did appear.
+- (void)popupMenuDidAppear;
+// Noitfies delegate that pop up menu did disappear.
+- (void)popupMenuDidDisappear;
+
+@end
+
 // Coordinator for the popup menu, handling the commands.
 @interface PopupMenuCoordinator : ChromeCoordinator<PopupMenuLongPressDelegate>
 
@@ -21,8 +31,8 @@
 // Bubble view presenter for the incognito tip.
 @property(nonatomic, weak) BubblePresenter* bubblePresenter;
 
-// Returns whether this coordinator is showing a popup menu.
-- (BOOL)isShowingPopupMenu;
+@property(nonatomic, weak) id<PopupMenuAppearanceDelegate>
+    popupMenuAppearanceDelegate;
 
 @end
 

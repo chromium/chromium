@@ -134,12 +134,6 @@ enum class IOSOverflowMenuActionType {
   self.viewController = nil;
 }
 
-#pragma mark - Public
-
-- (BOOL)isShowingPopupMenu {
-  return self.presenter != nil;
-}
-
 #pragma mark - PopupMenuCommands
 
 - (void)showNavigationHistoryBackPopupMenu {
@@ -212,6 +206,7 @@ enum class IOSOverflowMenuActionType {
   }
   [self.presenter dismissAnimated:animated];
   self.presenter = nil;
+  [self.popupMenuAppearanceDelegate popupMenuDidDisappear];
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
@@ -486,6 +481,8 @@ enum class IOSOverflowMenuActionType {
 
   [self.presenter prepareForPresentation];
   [self.presenter presentAnimated:YES];
+
+  [self.popupMenuAppearanceDelegate popupMenuDidAppear];
 
   // Scrolls happen during prepareForPresentation, so only attach the metrics
   // handler after presentation is done.

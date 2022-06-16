@@ -95,7 +95,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
@@ -338,9 +337,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The updater that adjusts the toolbar's layout for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 
-  // Popup Menu UI Updater.
-  id<PopupMenuUIUpdating> _UIUpdater;
-
   // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
   // from BVC Coordinator for the Download Manager UI.
   DownloadManagerCoordinator* _downloadManagerCoordinator;
@@ -370,6 +366,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // one single drag gesture.  When NO, full screen disabler is reset when
   // the thumb strip animation ends.
   BOOL _deferEndFullscreenDisabler;
+
+  BOOL _isShowingPopupMenu;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -429,9 +427,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Returns the header views, all the chrome on top of the page, including the
 // ones that cannot be scrolled off screen by full screen.
 @property(nonatomic, strong, readonly) NSArray<HeaderDefinition*>* headerViews;
-
-// Coordinator for the popup menus.
-@property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
 
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
@@ -534,7 +529,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1331229): Remove all use of the download manager
     // coordinator from BVC
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
-    _UIUpdater = dependencies.UIUpdater;
     self.toolbarInterface = dependencies.toolbarInterface;
     self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
     self.secondaryToolbarCoordinator = dependencies.secondaryToolbarCoordinator;
@@ -1112,8 +1106,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   for (int index = 0; index < webStateList->count(); ++index)
     [self uninstallDelegatesForWebState:webStateList->GetWebStateAt(index)];
 
-  // Disconnect child coordinators.
-  [self.popupMenuCoordinator stop];
   if (base::FeatureList::IsEnabled(kModernTabStrip)) {
     [self.tabStripCoordinator stop];
     self.tabStripCoordinator = nil;
@@ -1763,21 +1755,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
-  // TODO(crbug.com/1329094): Move this coordinator to BrowserCoordinator
-  self.popupMenuCoordinator =
-      [[PopupMenuCoordinator alloc] initWithBaseViewController:self
-                                                       browser:self.browser];
-  self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
-  self.popupMenuCoordinator.UIUpdater = _UIUpdater;
-  [self.popupMenuCoordinator start];
-
   self.primaryToolbarCoordinator.delegate = self;
   self.primaryToolbarCoordinator.popupPresenterDelegate = self;
-  self.primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
   [self.primaryToolbarCoordinator start];
-
-  self.secondaryToolbarCoordinator.longPressDelegate =
-      self.popupMenuCoordinator;
 
   // TODO(crbug.com/880672): Finish ToolbarContainer work.
   if (base::FeatureList::IsEnabled(
@@ -1814,8 +1794,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [self.tabStripCoordinator start];
     } else {
       self.legacyTabStripCoordinator.presentationProvider = self;
-      self.legacyTabStripCoordinator.longPressDelegate =
-          self.popupMenuCoordinator;
 
       [self.legacyTabStripCoordinator start];
     }
@@ -2006,13 +1984,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1329089): Inject this handler.
   self.helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
-
-  // TODO(crbug.com/1329098): Assuming all of the coordinators are in
-  // BrowserCoordinator, move this setup there as well.
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    self.legacyTabStripCoordinator.longPressDelegate =
-        self.popupMenuCoordinator;
-  }
 
   // TODO(crbug.com/1329089): Inject this handler.
   self.omniboxHandler =
@@ -4273,7 +4244,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // TODO(crbug.com/1329105): Federate side swipe logic.
 - (BOOL)preventSideSwipe {
-  if ([self.popupMenuCoordinator isShowingPopupMenu])
+  if (_isShowingPopupMenu)
     return YES;
 
   if (_voiceSearchController.visible)
@@ -4494,6 +4465,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return self.presentedViewController;
   }
   return self;
+}
+
+#pragma mark - PopupMenuAppearanceDelegate
+
+- (void)popupMenuDidAppear {
+  _isShowingPopupMenu = YES;
+}
+
+- (void)popupMenuDidDisappear {
+  _isShowingPopupMenu = NO;
 }
 
 #pragma mark - Getters

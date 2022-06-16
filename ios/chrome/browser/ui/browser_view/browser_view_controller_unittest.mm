@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
@@ -224,6 +225,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                    keyCommandsProvider:key_commands_provider_
                           dependencies:dependencies];
 
+    popup_menu_coordinator_ = [[PopupMenuCoordinator alloc]
+        initWithBaseViewController:bvc_
+                           browser:browser_.get()];
+    [popup_menu_coordinator_ start];
+
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];
     [window addSubview:[bvc_ view]];
@@ -266,6 +272,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   SecondaryToolbarCoordinator* secondary_toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
+  PopupMenuCoordinator* popup_menu_coordinator_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
