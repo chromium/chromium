@@ -722,6 +722,20 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.ChildMismatch.AppInfoError" enum="ChildAppInfoError"
     expires_after="2022-11-01">
+  <obsolete>
+    Replaced by Android.ChildMismatch.AppInfoError2; the previous implementation
+    did not record the metric correctly in all cases.
+  </obsolete>
+  <owner>torne@chromium.org</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Records what error (if any) was encountered verifying the child process's
+    app info each time a child process is started via ChildProcessConnection.
+  </summary>
+</histogram>
+
+<histogram name="Android.ChildMismatch.AppInfoError2" enum="ChildAppInfoError"
+    expires_after="2022-12-01">
   <owner>torne@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -732,6 +746,23 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.ChildMismatch.BrowserVersionChanged"
     enum="BooleanChanged" expires_after="2022-11-01">
+  <obsolete>
+    Replaced by Android.ChildMismatch.BrowserVersionChanged2; the previous
+    implementation did not record the metric correctly in all cases.
+  </obsolete>
+  <owner>torne@chromium.org</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Records if the installed browser version appears to have changed since the
+    browser process was launched. Recorded each time a child process is started
+    via ChildProcessConnection, but only if the child's ApplicationInfo did not
+    match (i.e. when Android.ChildMismatch.AppInfoError is recorded as something
+    other than no error).
+  </summary>
+</histogram>
+
+<histogram name="Android.ChildMismatch.BrowserVersionChanged2"
+    enum="BooleanChanged" expires_after="2022-12-01">
   <owner>torne@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
