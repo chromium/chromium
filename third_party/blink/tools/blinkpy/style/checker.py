@@ -42,7 +42,6 @@ from blinkpy.style.checkers.jsonchecker import JSONChecker
 from blinkpy.style.checkers.png import PNGChecker
 from blinkpy.style.checkers.python import PythonChecker
 from blinkpy.style.checkers.text import TextChecker
-from blinkpy.style.checkers.xcodeproj import XcodeProjectFileChecker
 from blinkpy.style.checkers.xml import XMLChecker
 from blinkpy.style.error_handlers import DefaultStyleErrorHandler
 from blinkpy.style.filter import FilterConfiguration
@@ -158,8 +157,6 @@ _TEXT_FILE_EXTENSIONS = [
     'xhtml',
     'y',
 ]
-
-_XCODEPROJ_FILE_EXTENSION = 'pbxproj'
 
 _XML_FILE_EXTENSIONS = [
     'vcproj',
@@ -333,7 +330,6 @@ class FileType:
     TEXT = 6
     # WATCHLIST = 7
     XML = 8
-    XCODEPROJ = 9
 
 
 class CheckerDispatcher(object):
@@ -385,8 +381,6 @@ class CheckerDispatcher(object):
             return FileType.PYTHON
         elif file_extension in _XML_FILE_EXTENSIONS:
             return FileType.XML
-        elif file_extension == _XCODEPROJ_FILE_EXTENSION:
-            return FileType.XCODEPROJ
         elif file_extension == _PNG_FILE_EXTENSION:
             return FileType.PNG
         elif (file_extension in _TEXT_FILE_EXTENSIONS):
@@ -409,8 +403,6 @@ class CheckerDispatcher(object):
             checker = PythonChecker(file_path, handle_style_error)
         elif file_type == FileType.XML:
             checker = XMLChecker(file_path, handle_style_error)
-        elif file_type == FileType.XCODEPROJ:
-            checker = XcodeProjectFileChecker(file_path, handle_style_error)
         elif file_type == FileType.PNG:
             checker = PNGChecker(file_path, handle_style_error)
         elif file_type == FileType.TEXT:
