@@ -239,6 +239,7 @@ android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinderTest.java",
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayoutBinderTest.java",
   ]
@@ -250,12 +251,14 @@ android_library("unit_device_javatests") {
     "//chrome/android/features/tab_ui:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_java_test_support",
