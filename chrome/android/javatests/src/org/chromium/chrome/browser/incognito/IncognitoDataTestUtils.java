@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createMinimalCustomTabIntent;
-import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent;
+import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
+import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent;
 
 import android.app.Activity;
 import android.content.Context;

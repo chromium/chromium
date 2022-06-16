@@ -54,7 +54,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataTestHelper.ViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
@@ -102,8 +102,9 @@ public class AutofillAssistantCollectUserDataUiTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), "about:blank"));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(), "about:blank"));
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
 
         mDefaultContactSummaryOptions =

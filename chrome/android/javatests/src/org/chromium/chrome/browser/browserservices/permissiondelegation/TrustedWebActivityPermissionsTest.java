@@ -28,7 +28,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -79,7 +79,7 @@ public class TrustedWebActivityPermissionsTest {
         mPackage = InstrumentationRegistry.getTargetContext().getPackageName();
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
 
         mPermissionManager = ChromeApplicationImpl.getComponent().resolvePermissionManager();

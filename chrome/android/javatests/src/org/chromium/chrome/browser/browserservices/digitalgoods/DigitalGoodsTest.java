@@ -34,7 +34,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule;
@@ -84,7 +84,7 @@ public class DigitalGoodsTest {
         mTestPage = mTestServer.getURL(TEST_PAGE);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
     }
 

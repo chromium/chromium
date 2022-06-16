@@ -60,7 +60,7 @@ public class CustomTabActivityIncognitoMetricTest {
     }
 
     private Intent createMinimalIncognitoCustomTabIntent() {
-        return CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
+        return CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), mTestPage);
     }
 

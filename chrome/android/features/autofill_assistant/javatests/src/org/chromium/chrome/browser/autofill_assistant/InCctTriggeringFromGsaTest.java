@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -59,7 +59,7 @@ public class InCctTriggeringFromGsaTest {
     @Before
     public void setUp() {
         mTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils
+                CustomTabsIntentTestUtils
                         .createMinimalCustomTabIntent(InstrumentationRegistry.getTargetContext(),
                                 getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED))
                         .putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA));

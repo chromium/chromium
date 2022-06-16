@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
@@ -42,7 +42,7 @@ public class MediaViewerUtilsTest {
     @MediumTest
     public void testCustomTabActivityInLightMode() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntentWithTheme(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, /* inNightMode= */ false));
 
@@ -57,7 +57,7 @@ public class MediaViewerUtilsTest {
     @MediumTest
     public void testCustomTabActivityInDarkMode() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntentWithTheme(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
                         InstrumentationRegistry.getTargetContext(),
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, /* inNightMode= */ true));
 

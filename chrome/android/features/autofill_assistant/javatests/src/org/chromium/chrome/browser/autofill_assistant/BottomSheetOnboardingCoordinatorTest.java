@@ -57,7 +57,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill_assistant.AssistantBottomSheetContent;
@@ -107,7 +107,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     @Before
     public void setUp() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), "about:blank"));
         mActivity = mCustomTabActivityTestRule.getActivity();
         mBottomSheetController = TestThreadUtils.runOnUiThreadBlocking(

@@ -383,7 +383,7 @@ public class DetachedResourceRequestTest {
         });
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -420,7 +420,7 @@ public class DetachedResourceRequestTest {
         });
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -450,7 +450,7 @@ public class DetachedResourceRequestTest {
         });
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -540,7 +540,7 @@ public class DetachedResourceRequestTest {
         customTabsCallback.waitForCompletion(0, 1);
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -563,8 +563,8 @@ public class DetachedResourceRequestTest {
             MockSafeBrowsingApiHandler.addMockResponse(
                     url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
 
-            Intent intent =
-                    CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, url.toString());
+            Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                    mContext, url.toString());
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
             Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -605,7 +605,8 @@ public class DetachedResourceRequestTest {
                     url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
 
             String pageUrl = mServer.getURL("/chrome/test/data/android/cacheable_subresource.html");
-            Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, pageUrl);
+            Intent intent =
+                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, pageUrl);
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
             Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();

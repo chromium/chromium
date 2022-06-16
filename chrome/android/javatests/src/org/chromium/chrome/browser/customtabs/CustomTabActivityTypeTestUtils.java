@@ -70,7 +70,7 @@ public class CustomTabActivityTypeTestUtils {
 
     private static void launchCct(CustomTabActivityTestRule activityTestRule, String url) {
         activityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), url));
     }
 

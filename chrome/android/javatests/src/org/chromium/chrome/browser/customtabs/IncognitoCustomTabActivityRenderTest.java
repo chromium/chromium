@@ -86,7 +86,7 @@ public class IncognitoCustomTabActivityRenderTest {
 
     private void prepareCCTIntent() {
         String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        mIntent = CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
+        mIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), url);
     }
 

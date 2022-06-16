@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.embedder_support.util.Origin;
@@ -55,7 +56,7 @@ public class TrustedWebActivityTestUtil {
 
     /** Creates an Intent that will launch a Custom Tab to the given |url|. */
     public static Intent createTrustedWebActivityIntent(String url) {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), url);
         intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
         return intent;

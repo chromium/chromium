@@ -49,7 +49,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -724,7 +724,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         // Create an Intent that causes Chrome to run.
         Intent intent =
-                CustomTabsTestUtils.createMinimalCustomTabIntent(context, "https://test.com");
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, "https://test.com");
 
         // Start the FRE.
         final ActivityMonitor freMonitor =

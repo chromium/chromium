@@ -67,7 +67,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
@@ -278,7 +278,8 @@ public class FirstRunIntegrationTest {
     }
 
     private void launchCustomTabs(String url) {
-        mContext.startActivity(CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, url));
+        mContext.startActivity(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, url));
     }
 
     private void launchViewIntent(String url) {
@@ -651,7 +652,7 @@ public class FirstRunIntegrationTest {
     public void testExitFirstRunWithPolicy() throws Exception {
         initializePreferences(new FirstRunPagesTestCase().withCctTosDisabled());
 
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
 
         FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
@@ -676,7 +677,7 @@ public class FirstRunIntegrationTest {
         // policy set in this test case.
         FirstRunStatus.setFirstRunSkippedByPolicy(true);
 
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 mContext, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         mContext.startActivity(intent);
         CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
@@ -718,7 +719,7 @@ public class FirstRunIntegrationTest {
         skipTosDialogViaPolicy();
         FirstRunStatus.setSkipWelcomePage(true);
 
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
 
         FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
@@ -739,7 +740,7 @@ public class FirstRunIntegrationTest {
     public void testFastDestroy() {
         // Inspired by crbug.com/1119548, where onDestroy() before triggerLayoutInflation() caused
         // a crash.
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
         mContext.startActivity(intent);
     }
 

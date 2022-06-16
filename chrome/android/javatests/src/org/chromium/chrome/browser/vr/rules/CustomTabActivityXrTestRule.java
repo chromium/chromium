@@ -10,7 +10,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 
 /**
@@ -23,8 +23,9 @@ public class CustomTabActivityXrTestRule extends CustomTabActivityTestRule imple
         return super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(), "about:blank"));
+                startCustomTabActivityWithIntent(
+                        CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                                InstrumentationRegistry.getTargetContext(), "about:blank"));
                 base.evaluate();
             }
         }, desc);

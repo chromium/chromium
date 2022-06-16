@@ -363,7 +363,8 @@ public class TrustedCdnPublisherUrlTest {
         }
         String testUrl = mWebServer.setResponse("/test.html", PAGE_WITH_TITLE, headers);
         Context targetContext = InstrumentationRegistry.getTargetContext();
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);

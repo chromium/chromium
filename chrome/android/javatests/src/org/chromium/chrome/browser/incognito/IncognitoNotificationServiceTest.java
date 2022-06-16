@@ -33,7 +33,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -229,7 +229,7 @@ public class IncognitoNotificationServiceTest {
         launchIncognitoTabAndEnsureNotificationDisplayed();
 
         // Create an Incognito CCT now.
-        Intent customTabIntent = CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
+        Intent customTabIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
 

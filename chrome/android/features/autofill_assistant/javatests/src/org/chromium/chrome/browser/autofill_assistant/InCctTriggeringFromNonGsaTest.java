@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsResponseProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -83,7 +83,7 @@ public class InCctTriggeringFromNonGsaTest {
     public void
     doNotTriggerForExternalCct() throws InterruptedException {
         mTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils
+                CustomTabsIntentTestUtils
                         .createMinimalCustomTabIntent(InstrumentationRegistry.getTargetContext(),
                                 getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED))
                         .putExtra(Browser.EXTRA_APPLICATION_ID, "com.example"));
@@ -116,9 +116,10 @@ public class InCctTriggeringFromNonGsaTest {
     // clang-format on
     public void
     doNotTriggerForCctWithUnknownOrigin() throws InterruptedException {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED)));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        InstrumentationRegistry.getTargetContext(),
+                        getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED)));
         enableMsbb();
 
         AutofillAssistantTestServiceRequestSender testServiceRequestSender =

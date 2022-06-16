@@ -1235,6 +1235,7 @@ android_library("chrome_unit_test_util_java") {
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelManagerWrapper.java",
+    "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsIntentTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/download/MockDownloadNotificationService.java",
     "javatests/src/org/chromium/chrome/browser/homepage/HomepageTestRule.java",
     "javatests/src/org/chromium/chrome/browser/tabmodel/TestTabModelDirectory.java",
@@ -1242,6 +1243,7 @@ android_library("chrome_unit_test_util_java") {
 
   deps = [
     "//base:base_java",
+    "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
@@ -1251,6 +1253,7 @@ android_library("chrome_unit_test_util_java") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/junit:junit",
     "//url:gurl_java",
   ]
@@ -1312,6 +1315,7 @@ android_library("chrome_unit_test_java") {
   resources_package = "org.chromium.chrome.test"
   sources = [
     "javatests/src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
+    "javatests/src/org/chromium/chrome/browser/IntentHandlerUnitTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkItemRowTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRowTest.java",
     "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkUtilsTest.java",
@@ -1339,6 +1343,7 @@ android_library("chrome_unit_test_java") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android/features/autofill_assistant:unit_test_java",
+    "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/first_run/android:java",
@@ -1379,6 +1384,7 @@ android_library("chrome_unit_test_java") {
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/hamcrest:hamcrest_library_java",

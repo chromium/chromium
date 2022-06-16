@@ -120,10 +120,10 @@ public class TabReparentingTest {
     }
 
     /**
-     * @see CustomTabsTestUtils#createMinimalCustomTabIntent(Context, String).
+     * @see CustomTabsIntentTestUtils#createMinimalCustomTabIntent(Context, String).
      */
     private Intent createMinimalCustomTabIntent() {
-        return CustomTabsTestUtils.createMinimalCustomTabIntent(
+        return CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), mTestPage);
     }
 
@@ -204,7 +204,7 @@ public class TabReparentingTest {
     public void testTabReparentingInfoBar() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         mTestServer.getURL(POPUP_PAGE)));
         CriteriaHelper.pollUiThread(
@@ -230,7 +230,7 @@ public class TabReparentingTest {
     public void testTabReparentingSelectPopup() throws TimeoutException {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(),
                         mTestServer.getURL(SELECT_POPUP_PAGE)));
         CriteriaHelper.pollUiThread(() -> {

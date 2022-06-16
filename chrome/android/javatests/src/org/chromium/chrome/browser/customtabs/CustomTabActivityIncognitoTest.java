@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
-import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.addActionButtonToIntent;
+import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.addActionButtonToIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 
 import android.app.NotificationManager;
@@ -59,7 +59,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -127,7 +127,7 @@ public class CustomTabActivityIncognitoTest {
     }
 
     private Intent createMinimalIncognitoCustomTabIntent() {
-        return CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
+        return CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), mTestPage);
     }
 
@@ -262,7 +262,7 @@ public class CustomTabActivityIncognitoTest {
     @Test
     @MediumTest
     public void toolbarHasRegularProfile_ForRegularCCT() {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CustomTabToolbar customTabToolbar =
@@ -367,7 +367,7 @@ public class CustomTabActivityIncognitoTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void ensureAddCustomMenuItemHasNoEffect() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
-        CustomTabsTestUtils.addMenuEntriesToIntent(intent, 3, TEST_MENU_TITLE);
+        CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, 3, TEST_MENU_TITLE);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 

@@ -25,7 +25,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -97,7 +97,7 @@ public class SigninHeaderTest {
     @MediumTest
     public void testXChromeConnectedHeader_In_CCT_ReturnsModeValueWithIncognitoOff()
             throws TimeoutException {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 ContextUtils.getApplicationContext(), mGAIAUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
