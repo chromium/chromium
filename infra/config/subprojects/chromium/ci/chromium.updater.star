@@ -414,6 +414,7 @@ ci.builder(
         category = "debug|win (32)",
         short_name = "bld",
     ),
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT * 2,
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
     reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
