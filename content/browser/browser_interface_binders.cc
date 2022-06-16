@@ -618,8 +618,8 @@ BindServiceWorkerReceiverForStorageKey(
 template <typename Interface>
 void EmptyBinderForFrame(RenderFrameHost* host,
                          mojo::PendingReceiver<Interface> receiver) {
-  DLOG(ERROR) << "Empty binder for interface " << Interface::Name_
-              << " for the frame/document scope";
+  DVLOG(1) << "Empty binder for interface " << Interface::Name_
+           << " for the frame/document scope";
 }
 
 BatteryMonitorBinder& GetBatteryMonitorBinderOverride() {
