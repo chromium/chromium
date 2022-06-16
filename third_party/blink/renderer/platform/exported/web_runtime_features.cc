@@ -667,4 +667,8 @@ void WebRuntimeFeatures::EnableSpeculationRulesPrefetchProxy(bool enable) {
   RuntimeEnabledFeatures::SetSpeculationRulesPrefetchProxyEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableEventPath(bool enable) {
+  RuntimeEnabledFeatures::SetEventPathEnabled(enable);
+}
+
 }  // namespace blink

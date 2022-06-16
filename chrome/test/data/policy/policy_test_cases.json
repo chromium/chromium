@@ -18540,5 +18540,45 @@
         }
       }
     ]
+  },
+  "EventPathEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EventPathEnabled": true
+        },
+        "prefs": {
+          "policy.event_path_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "EventPathEnabled": false
+        },
+        "prefs": {
+          "policy.event_path_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.event_path_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
   }
 }

@@ -1672,7 +1672,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif
   { key::kUrlParamFilterEnabled,
     policy_prefs::kUrlParamFilterEnabled,
-    base::Value::Type::BOOLEAN}
+    base::Value::Type::BOOLEAN},
+  { key::kEventPathEnabled,
+    policy_prefs::kEventPathEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

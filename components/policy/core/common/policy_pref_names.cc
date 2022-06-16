@@ -123,5 +123,10 @@ const char kUserPolicyNotificationWasShown[] =
     "policy.user_policy_notification_was_shown";
 #endif
 
+// A boolean indicating whether the deprecated API Event.path is enabled. It
+// should eventually be disabled and removed.
+// https://chromestatus.com/feature/5726124632965120
+const char kEventPathEnabled[] = "policy.event_path_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy

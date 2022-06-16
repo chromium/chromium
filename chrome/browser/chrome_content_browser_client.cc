@@ -1381,6 +1381,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
           embedder_support::ForceMajorVersionToMinorPosition::kDefault));
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
+
+  // TODO(crbug.com/1277431): Disable it by default in M109.
+  registry->RegisterBooleanPref(policy::policy_prefs::kEventPathEnabled, true);
 }
 
 // static
@@ -2403,6 +2406,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                 ? blink::switches::kUnthrottledNestedTimeoutPolicy_ForceEnable
                 : blink::switches::
                       kUnthrottledNestedTimeoutPolicy_ForceDisable);
+      }
+      // Override EventPath feature if its Enterprise Policy is specified.
+      if (prefs->HasPrefPath(policy::policy_prefs::kEventPathEnabled)) {
+        command_line->AppendSwitchASCII(
+            blink::switches::kEventPathPolicy,
+            prefs->GetBoolean(policy::policy_prefs::kEventPathEnabled)
+                ? blink::switches::kEventPathPolicy_ForceEnable
+                : blink::switches::kEventPathPolicy_ForceDisable);
       }
 
       // The IntensiveWakeUpThrottling feature is typically managed via a

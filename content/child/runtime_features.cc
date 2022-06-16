@@ -312,6 +312,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableRemoveMobileViewportDoubleTap,
      features::kRemoveMobileViewportDoubleTap},
     {wf::EnableZeroCopyTabCapture, blink::features::kZeroCopyTabCapture},
+    {wf::EnableEventPath, blink::features::kEventPath},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
@@ -411,7 +412,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WindowPlacement", blink::features::kWindowPlacement},
           {"WindowPlacementFullscreenOnScreensChange",
            blink::features::kWindowPlacementFullscreenOnScreensChange},
-          {"EventPath", blink::features::kEventPath},
           {"MediaStreamTrackTransfer", features::kMediaStreamTrackTransfer}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
@@ -500,6 +500,18 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
     if (base::StringToInt(port_str, &port) && port == 0) {
       WebRuntimeFeatures::EnableAutomationControlled(true);
     }
+  }
+
+  // Enable or disable EventPath if Enterprise Policy passes
+  // --event-path-policy=0 or =1 on the command line. This overrides any
+  // existing setting via base::Feature.
+  if (command_line.HasSwitch(blink::switches::kEventPathPolicy)) {
+    const std::string value =
+        command_line.GetSwitchValueASCII(blink::switches::kEventPathPolicy);
+    if (value == blink::switches::kEventPathPolicy_ForceEnable)
+      WebRuntimeFeatures::EnableEventPath(true);
+    if (value == blink::switches::kEventPathPolicy_ForceDisable)
+      WebRuntimeFeatures::EnableEventPath(false);
   }
 }
 

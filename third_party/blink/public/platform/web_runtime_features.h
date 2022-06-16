@@ -106,6 +106,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableDisplayCutoutAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableDocumentPolicy(bool);
   BLINK_PLATFORM_EXPORT static void EnableDocumentPolicyNegotiation(bool);
+  BLINK_PLATFORM_EXPORT static void EnableEventPath(bool);
   BLINK_PLATFORM_EXPORT static void EnableFedCm(bool);
   BLINK_PLATFORM_EXPORT static void EnableFedCmIdpSignout(bool);
   BLINK_PLATFORM_EXPORT static void EnableFedCmIframeSupport(bool);

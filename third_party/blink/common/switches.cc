@@ -161,5 +161,14 @@ const char kJavaScriptFlags[] = "js-flags";
 // Controls whether WebSQL is force enabled.
 const char kWebSQLAccess[] = "web-sql-access";
 
+// Used to communicate managed policy for the EventPath feature. This feature is
+// typically controlled by base::Feature (see blink/common/features.*) but
+// requires an enterprise policy override. This is implicitly a tri-state, and
+// can be either unset, or set to "1" for force enable, or "0" for force
+// disable.
+extern const char kEventPathPolicy[] = "event-path-policy";
+extern const char kEventPathPolicy_ForceDisable[] = "0";
+extern const char kEventPathPolicy_ForceEnable[] = "1";
+
 }  // namespace switches
 }  // namespace blink

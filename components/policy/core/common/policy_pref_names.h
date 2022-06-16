@@ -47,7 +47,7 @@ POLICY_EXPORT extern const char kLastPolicyCheckTime[];
 #if BUILDFLAG(IS_IOS)
 POLICY_EXPORT extern const char kUserPolicyNotificationWasShown[];
 #endif
-
+POLICY_EXPORT extern const char kEventPathEnabled[];
 }  // namespace policy_prefs
 }  // namespace policy
 
