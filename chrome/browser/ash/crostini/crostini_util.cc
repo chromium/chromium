@@ -253,8 +253,8 @@ bool IsUninstallable(Profile* profile, const std::string& app_id) {
 }
 
 bool IsCrostiniRunning(Profile* profile) {
-  return crostini::CrostiniManager::GetForProfile(profile)->IsVmRunning(
-      kCrostiniDefaultVmName);
+  auto* manager = crostini::CrostiniManager::GetForProfile(profile);
+  return manager && manager->IsVmRunning(kCrostiniDefaultVmName);
 }
 
 bool ShouldConfigureDefaultContainer(Profile* profile) {
