@@ -1301,27 +1301,12 @@ source_set("unit_tests") {
     "mobile_metrics/mobile_friendliness_checker_test.cc",
     "navigation_api/navigation_api_test.cc",
     "origin_trials/origin_trial_context_test.cc",
-    "permissions_policy/document_policy_parser_test.cc",
-    "permissions_policy/document_policy_sim_test.cc",
-    "permissions_policy/permissions_policy_devtools_support_test.cc",
-    "permissions_policy/permissions_policy_test.cc",
-    "permissions_policy/policy_test.cc",
     "resize_observer/resize_observer_test.cc",
     "scheduler_integration_tests/frame_scheduler_test.cc",
     "scheduler_integration_tests/frame_throttling_test.cc",
     "scheduler_integration_tests/scheduler_affecting_features_test.cc",
     "scheduler_integration_tests/throttling_test.cc",
     "scheduler_integration_tests/virtual_time_test.cc",
-    "script/document_modulator_impl_test.cc",
-    "script/dynamic_module_resolver_test.cc",
-    "script/module_map_test.cc",
-    "script/module_record_resolver_impl_test.cc",
-    "script/module_script_test.cc",
-    "script/script_runner_test.cc",
-    "speculation_rules/speculation_rule_set_test.cc",
-    "speculation_rules/speculation_rules_origin_trial_test.cc",
-    "speculation_rules/stub_speculation_host.cc",
-    "speculation_rules/stub_speculation_host.h",
     "trustedtypes/trusted_types_util_test.cc",
     "typed_arrays/array_buffer/array_buffer_contents_test.cc",
     "typed_arrays/dom_array_buffer_test.cc",
@@ -1353,7 +1338,12 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_loader, "", "loader")
   sources += rebase_path(blink_core_tests_page, "", "page")
   sources += rebase_path(blink_core_tests_paint, "", "paint")
+  sources +=
+      rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
+  sources += rebase_path(blink_core_tests_script, "", "script")
   sources += rebase_path(blink_core_tests_scroll, "", "scroll")
+  sources +=
+      rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
   sources += rebase_path(blink_core_tests_streams, "", "streams")
   sources += rebase_path(blink_core_tests_style, "", "style")
   sources += rebase_path(blink_core_tests_svg, "", "svg")
