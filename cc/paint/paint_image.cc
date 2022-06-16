@@ -232,7 +232,7 @@ bool PaintImage::DecodeYuv(const SkYUVAPixmaps& pixmaps,
   DCHECK(paint_image_generator_);
   const uint32_t lazy_pixel_ref = stable_id();
   return paint_image_generator_->GetYUVAPlanes(pixmaps, frame_index,
-                                               lazy_pixel_ref);
+                                               lazy_pixel_ref, client_id);
 }
 
 bool PaintImage::DecodeFromGenerator(void* memory,

@@ -49160,6 +49160,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="12" label="Load image metadata"/>
 </enum>
 
+<enum name="ImageHasMultipleGeneratorClientIds">
+  <int value="0" label="Image decode is requested by at least one client"/>
+  <int value="1" label="Image decode is requested by more than one client"/>
+</enum>
+
 <enum name="ImageSelectionOutcome">
   <int value="0" label="Image node was the topmost node."/>
   <int value="1" label="Image node was below topmost node"/>

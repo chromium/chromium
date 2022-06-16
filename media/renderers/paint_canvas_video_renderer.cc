@@ -747,7 +747,8 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
   bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                      size_t frame_index,
-                     uint32_t lazy_pixel_ref) override {
+                     uint32_t lazy_pixel_ref,
+                     cc::PaintImage::GeneratorClientId client_id) override {
     DCHECK_EQ(frame_index, 0u);
     DCHECK_EQ(pixmaps.numPlanes(), 3);
 

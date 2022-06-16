@@ -1471,6 +1471,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ImageDecoders.ImageHasMultipleGeneratorClientIds"
+    enum="ImageHasMultipleGeneratorClientIds" expires_after="2022-09-30">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    This histogram records whether an image has been decoded by a single client
+    or by multiple clients during decoding. For an image to be decoded, it is
+    always requested by a client with a client_id. If an image has been
+    requested by multiple clients, it would be decoded more than once. The
+    histogram value is recorded at most two times per image (once per bucket).
+    There will be overlap for two buckets, but we can get the the number of an
+    image decodeded by only one client with the difference between two buckets.
+    This helps us to know how often images get duplicated decoding in real life.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ImageDecoders.IncrementalDecodeNeeded"
     enum="IncrementalDecodeNeeded" expires_after="2022-09-15">
   <owner>andrescj@chromium.org</owner>

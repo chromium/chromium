@@ -76,9 +76,11 @@ bool FakePaintImageGenerator::QueryYUVA(
   return yuva_pixmap_info->isSupported(supported_data_types);
 }
 
-bool FakePaintImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
-                                            size_t frame_index,
-                                            uint32_t lazy_pixel_ref) {
+bool FakePaintImageGenerator::GetYUVAPlanes(
+    const SkYUVAPixmaps& pixmaps,
+    size_t frame_index,
+    uint32_t lazy_pixel_ref,
+    PaintImage::GeneratorClientId client_id) {
   CHECK(is_yuv_);
   CHECK(!expect_fallback_to_rgb_);
   if (image_backing_memory_.empty())
