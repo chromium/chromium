@@ -256,12 +256,6 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kResizeDiskImageMethod, request, std::move(callback));
   }
 
-  void SetVmId(const vm_tools::concierge::SetVmIdRequest& request,
-               DBusMethodCallback<vm_tools::concierge::SetVmIdResponse>
-                   callback) override {
-    CallMethod(concierge::kSetVmIdMethod, request, std::move(callback));
-  }
-
   void ReclaimVmMemory(
       const vm_tools::concierge::ReclaimVmMemoryRequest& request,
       DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)

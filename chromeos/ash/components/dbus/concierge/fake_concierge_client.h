@@ -129,10 +129,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       DBusMethodCallback<vm_tools::concierge::ResizeDiskImageResponse> callback)
       override;
 
-  void SetVmId(const vm_tools::concierge::SetVmIdRequest& request,
-               DBusMethodCallback<vm_tools::concierge::SetVmIdResponse>
-                   callback) override;
-
   void ReclaimVmMemory(
       const vm_tools::concierge::ReclaimVmMemoryRequest& request,
       DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)
@@ -298,10 +294,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           resize_disk_image_response) {
     resize_disk_image_response_ = resize_disk_image_response;
   }
-  void set_set_vm_id_response(
-      absl::optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response) {
-    set_vm_id_response_ = set_vm_id_response;
-  }
   void set_reclaim_vm_memory_response(
       absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
           reclaim_vm_memory_response) {
@@ -413,7 +405,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       detach_usb_device_response_;
   absl::optional<vm_tools::concierge::ResizeDiskImageResponse>
       resize_disk_image_response_;
-  absl::optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response_;
   absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
       reclaim_vm_memory_response_;
   absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response_;
