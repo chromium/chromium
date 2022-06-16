@@ -1249,6 +1249,10 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
   // will be deleted.
   if (layer_tree_impl()->IsSyncTree() && layer_tree_impl()->IsReadyToActivate())
     return false;
+  // To reduce memory usage, don't recreate highres tiling during scroll
+  if (ScrollInteractionInProgress())
+    return false;
+
   return true;
 }
 
