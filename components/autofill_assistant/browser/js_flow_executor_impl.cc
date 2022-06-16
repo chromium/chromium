@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/js_flow_util.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/parse_jspb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "content/public/browser/browser_context.h"
@@ -137,8 +138,12 @@ void JsFlowExecutorImpl::Start(
     const std::string& js_flow,
     base::OnceCallback<void(const ClientStatus&, std::unique_ptr<base::Value>)>
         callback) {
+  Metrics::RecordJsFlowStartedEvent(
+      Metrics::JsFlowStartedEvent::EXECUTOR_STARTED);
   if (callback_) {
     LOG(ERROR) << "Invoked " << __func__ << " while already running";
+    Metrics::RecordJsFlowStartedEvent(
+        Metrics::JsFlowStartedEvent::FAILED_ALREADY_RUNNING);
     std::move(callback).Run(ClientStatus(INVALID_ACTION), nullptr);
     return;
   }
@@ -159,6 +164,8 @@ void JsFlowExecutorImpl::OnGetFrameTree(
     std::unique_ptr<page::GetFrameTreeResult> result) {
   if (!result) {
     LOG(ERROR) << "Failed to retrieve frame tree";
+    Metrics::RecordJsFlowStartedEvent(
+        Metrics::JsFlowStartedEvent::FAILED_TO_GET_FRAME_TREE);
     std::move(callback_).Run(
         JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
         nullptr);
@@ -179,6 +186,8 @@ void JsFlowExecutorImpl::OnIsolatedWorldCreated(
     std::unique_ptr<page::CreateIsolatedWorldResult> result) {
   if (!result) {
     LOG(ERROR) << "Failed to create isolated world";
+    Metrics::RecordJsFlowStartedEvent(
+        Metrics::JsFlowStartedEvent::FAILED_TO_CREATE_ISOLATED_WORLD);
     std::move(callback_).Run(
         JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
         nullptr);
@@ -203,6 +212,9 @@ void JsFlowExecutorImpl::InternalStart() {
   // JS API to call native functionality. Also adds the js_flow_library.
   js_flow_ = std::make_unique<std::string>(base::StrCat(
       {kLeadingWrapper, *js_flow_library_, *js_flow_, kTrailingWrapper}));
+
+  Metrics::RecordJsFlowStartedEvent(
+      Metrics::JsFlowStartedEvent::SCRIPT_STARTED);
 
   // Run the wrapped js_flow in the sandbox and serve potential native action
   // requests as they arrive.

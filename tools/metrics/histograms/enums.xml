@@ -5971,6 +5971,14 @@ others/histograms.xml -->
   <int value="25" label="FIND_COUPONS"/>
 </enum>
 
+<enum name="AutofillAssistantJsFlowStartedEvent">
+  <int value="0" label="EXECUTOR_STARTED"/>
+  <int value="1" label="FAILED_ALREADY_RUNNING"/>
+  <int value="2" label="FAILED_TO_GET_FRAME_TREE"/>
+  <int value="3" label="FAILED_TO_CREATE_ISOLATED_WORLD"/>
+  <int value="4" label="SCRIPT_STARTED"/>
+</enum>
+
 <enum name="AutofillAssistantLiteScriptFinished">
   <int value="0" label="Unknown failure"/>
   <int value="1" label="Service deleted"/>

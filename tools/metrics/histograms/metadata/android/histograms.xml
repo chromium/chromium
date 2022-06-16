@@ -391,6 +391,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AutofillAssistant.JsFlowStartedEvent"
+    enum="AutofillAssistantJsFlowStartedEvent" expires_after="2023-06-05">
+  <owner>fga@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Reports notable events that occur before, during or after the execution of a
+    Autofill Assistant JS flow. Events are reported as they happen.
+    EXECUTOR_STARTED is always recorded and serves as the baseline. Afterwards
+    multiple additional events can be emitted during the execution of the JS
+    flow.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.OnboardingFetcher.ResultStatus"
     enum="AutofillAssistantOnboardingFetcherResultStatus"
     expires_after="2022-10-16">

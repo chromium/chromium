@@ -388,6 +388,8 @@ class ScriptExecutor : public ActionDelegate,
   absl::optional<DomObjectFrameStack> last_focused_element_;
   std::unique_ptr<ElementAreaProto> touchable_element_area_;
 
+  std::unique_ptr<content::WebContents> web_contents_for_js_execution_;
+
   // Steps towards the requirements for calling |on_expected_navigation_done_|
   // to be fulfilled.
   enum class ExpectedNavigationStep {

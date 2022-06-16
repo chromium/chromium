@@ -43,6 +43,8 @@ const char kPaymentRequestFirstNameOnly[] =
     "Android.AutofillAssistant.PaymentRequest.FirstNameOnly";
 const char kCupRpcVerificationEvent[] =
     "Android.AutofillAssistant.CupRpcVerificationEvent";
+const char kJsFlowStartedEvent[] =
+    "Android.AutofillAssistant.JsFlowStartedEvent";
 const char kDependenciesInvalidated[] =
     "Android.AutofillAssistant.DependenciesInvalidated";
 const char kOnboardingFetcherResultStatus[] =
@@ -556,6 +558,12 @@ void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
 void Metrics::RecordCupRpcVerificationEvent(CupRpcVerificationEvent event) {
   DCHECK_LE(event, CupRpcVerificationEvent::kMaxValue);
   base::UmaHistogramEnumeration(kCupRpcVerificationEvent, event);
+}
+
+// static
+void Metrics::RecordJsFlowStartedEvent(JsFlowStartedEvent event) {
+  DCHECK_LE(event, JsFlowStartedEvent::kMaxValue);
+  base::UmaHistogramEnumeration(kJsFlowStartedEvent, event);
 }
 
 // static

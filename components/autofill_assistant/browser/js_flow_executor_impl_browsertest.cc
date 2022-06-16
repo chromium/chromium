@@ -9,6 +9,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -17,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/base_browsertest.h"
@@ -24,6 +26,7 @@
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/script.h"
@@ -96,6 +99,7 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
                                 base::Unretained(this), run_loop.QuitClosure(),
                                 &status, std::ref(result_value)));
     run_loop.Run();
+
     return status;
   }
 
@@ -113,16 +117,31 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
   NiceMock<MockJsFlowExecutorImplDelegate> mock_delegate_;
   std::unique_ptr<JsFlowExecutorImpl> flow_executor_;
   std::string js_flow_library_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, SmokeTest) {
   EXPECT_THAT(RunTest(std::string()),
               Property(&ClientStatus::proto_status, ACTION_APPLIED));
+
+  histogram_tester_.ExpectBucketCount(
+      "Android.AutofillAssistant.JsFlowStartedEvent",
+      Metrics::JsFlowStartedEvent::EXECUTOR_STARTED, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Android.AutofillAssistant.JsFlowStartedEvent",
+      Metrics::JsFlowStartedEvent::SCRIPT_STARTED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, InvalidJs) {
   EXPECT_THAT(RunTest("Not valid Javascript"),
               Property(&ClientStatus::proto_status, UNEXPECTED_JS_ERROR));
+
+  histogram_tester_.ExpectBucketCount(
+      "Android.AutofillAssistant.JsFlowStartedEvent",
+      Metrics::JsFlowStartedEvent::EXECUTOR_STARTED, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Android.AutofillAssistant.JsFlowStartedEvent",
+      Metrics::JsFlowStartedEvent::SCRIPT_STARTED, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionWithReturnValue) {
@@ -406,6 +425,13 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, StartWhileAlreadyRunningFails) {
       result);
   ASSERT_EQ(status.proto_status(), ACTION_APPLIED);
   EXPECT_EQ(*result, base::Value(2));
+
+  histogram_tester_.ExpectBucketCount(
+      "Android.AutofillAssistant.JsFlowStartedEvent",
+      Metrics::JsFlowStartedEvent::EXECUTOR_STARTED, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Android.AutofillAssistant.JsFlowStartedEvent",
+      Metrics::JsFlowStartedEvent::FAILED_ALREADY_RUNNING, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,

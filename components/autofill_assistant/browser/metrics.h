@@ -718,6 +718,31 @@ class Metrics {
     kMaxValue = kInvalidData
   };
 
+  // Reports notable events that occur before, during or after the execution
+  // of a Autofill Assistant JS flow.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantJsFlowStartedEvent enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/histograms/metadata/android/histograms.xml as necessary.
+  enum class JsFlowStartedEvent {
+    // The JS flow executer was started.
+    EXECUTOR_STARTED = 0,
+    // A JS flow was attempting to start before the previous one had finished.
+    // This is a client bug.
+    FAILED_ALREADY_RUNNING = 1,
+    // Failed to get the frame tree of the WebContents the JS flow was attached
+    // to.
+    FAILED_TO_GET_FRAME_TREE = 2,
+    // Failed to create the isolated world.
+    FAILED_TO_CREATE_ISOLATED_WORLD = 3,
+    // The JS flow execution was started.
+    SCRIPT_STARTED = 4,
+
+    kMaxValue = SCRIPT_STARTED
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(
       bool initially_complete,
@@ -795,6 +820,7 @@ class Metrics {
   static void RecordOnboardingFetcherResult(
       OnboardingFetcherResultStatus status);
   static void RecordCupRpcVerificationEvent(CupRpcVerificationEvent event);
+  static void RecordJsFlowStartedEvent(JsFlowStartedEvent event);
   static void RecordServiceRequestRetryCount(int count, bool success);
 
   // Intended for debugging: writes string representation of |reason| to
