@@ -592,7 +592,7 @@ void SerialPort::OnSendError(device::mojom::blink::SerialSendError error) {
   if (SendErrorIsFatal(error))
     write_fatal_ = true;
   if (underlying_sink_)
-    underlying_sink_->SignalErrorOnClose(DOMExceptionFromSendError(error));
+    underlying_sink_->SignalError(DOMExceptionFromSendError(error));
 }
 
 bool SerialPort::CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
@@ -640,7 +640,7 @@ void SerialPort::OnConnectionError() {
   }
 
   if (underlying_sink_) {
-    underlying_sink_->SignalErrorOnClose(
+    underlying_sink_->SignalError(
         DOMExceptionFromSendError(SerialSendError::DISCONNECTED));
   }
 }
