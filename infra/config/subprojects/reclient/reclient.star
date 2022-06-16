@@ -223,6 +223,7 @@ fyi_reclient_test_builder(
     console_view_category = "ios",
     os = os.MAC_DEFAULT,
     builderless = True,
+    cores = None,
 )
 
 fyi_reclient_staging_builder(
@@ -244,4 +245,5 @@ fyi_reclient_staging_builder(
     console_view_category = "ios",
     os = os.MAC_DEFAULT,
     builderless = True,
+    cores = None,
 )

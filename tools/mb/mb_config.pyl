@@ -652,8 +652,8 @@
       'Simple Chrome Builder reclient test': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'Win x64 Builder reclient staging': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder reclient test': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'ios-simulator reclient staging': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
-      'ios-simulator reclient test': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator reclient staging': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
+      'ios-simulator reclient test': 'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient',
     },
 
     'chromium.rust': {
@@ -2788,6 +2788,10 @@
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest': [
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation',
+    ],
+
+    'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
+      'use_clang_coverage', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation', 'release_bot_reclient',
     ],
 
     'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [
