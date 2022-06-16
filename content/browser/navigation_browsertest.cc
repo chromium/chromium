@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -6085,6 +6086,64 @@ IN_PROC_BROWSER_TEST_F(
             second_tab_handle->GetReloadType());
   EXPECT_EQ(first_tab_handle->GetRedirectChain(),
             second_tab_handle->GetRedirectChain());
+}
+
+class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
+ public:
+  CacheTransparencyNavigationBrowserTest() {
+    EXPECT_TRUE(embedded_test_server()->Start());
+
+    pervasive_payload_url_ = embedded_test_server()->GetURL(kPervasivePayload);
+    std::string pervasive_payloads_params = base::StrCat(
+        {"1,", pervasive_payload_url_.spec(),
+         ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"});
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kNetworkServiceInProcess, {}},
+         {network::features::kPervasivePayloadsList,
+          {{"pervasive-payloads", pervasive_payloads_params}}},
+         {network::features::kCacheTransparency, {}},
+         {net::features::kSplitCacheByNetworkIsolationKey, {}}},
+        {/* disabled_features */});
+  }
+
+  void ExpectCacheUsed() const {
+    histogram_tester_.ExpectUniqueSample(kCacheUsedHistogram, 0, 1);
+  }
+
+  void ExpectCacheNotUsed() const {
+    histogram_tester_.ExpectTotalCount(kCacheUsedHistogram, 0);
+  }
+
+ private:
+  static constexpr char kPervasivePayload[] =
+      "/cache_transparency/pervasive.js";
+  static constexpr char kCacheUsedHistogram[] =
+      "Network.CacheTransparency.SingleKeyedCacheIsUsed";
+
+  base::test::ScopedFeatureList feature_list_;
+  GURL pervasive_payload_url_;
+  base::HistogramTester histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(CacheTransparencyNavigationBrowserTest,
+                       SuccessfulPervasivePayload) {
+  GURL url_main_document =
+      embedded_test_server()->GetURL("/cache_transparency/pervasive.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_main_document));
+
+  ExpectCacheUsed();
+}
+
+IN_PROC_BROWSER_TEST_F(CacheTransparencyNavigationBrowserTest,
+                       NotAPervasivePayload) {
+  GURL url_main_document =
+      embedded_test_server()->GetURL("/cache_transparency/cacheable.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_main_document));
+
+  ExpectCacheNotUsed();
 }
 
 }  // namespace content
