@@ -1177,6 +1177,8 @@ component("platform") {
     "mediastream/media_stream_audio_track.h",
     "mediastream/media_stream_component.cc",
     "mediastream/media_stream_component.h",
+    "mediastream/media_stream_component_impl.cc",
+    "mediastream/media_stream_component_impl.h",
     "mediastream/media_stream_descriptor.cc",
     "mediastream/media_stream_descriptor.h",
     "mediastream/media_stream_source.cc",

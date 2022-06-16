@@ -12,7 +12,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -141,7 +141,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
         false /* remote */, std::move(pushable_audio_source));
-    stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
+    stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         stream_source_->Id(), stream_source_,
         std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   }

@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
@@ -31,7 +31,7 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
     auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("dummy_source_name"), false /* remote */);
-    component_ = MakeGarbageCollected<MediaStreamComponent>(
+    component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         String::FromUTF8("audio_track"), audio_source,
         std::make_unique<MediaStreamAudioTrack>(true));
     source_provider_ = std::make_unique<WebAudioMediaStreamAudioSink>(

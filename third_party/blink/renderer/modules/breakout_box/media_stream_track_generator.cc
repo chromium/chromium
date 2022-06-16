@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -110,7 +110,7 @@ MediaStreamComponent* MediaStreamTrackGenerator::MakeMediaStreamComponent(
   }
 
   const String track_id = WTF::CreateCanonicalUUIDString();
-  return MakeGarbageCollected<MediaStreamComponent>(
+  return MakeGarbageCollected<MediaStreamComponentImpl>(
       MakeGarbageCollected<MediaStreamSource>(track_id, type, track_id,
                                               /*remote=*/false,
                                               std::move(platform_source)),

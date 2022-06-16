@@ -20,7 +20,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
@@ -91,7 +91,7 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
         String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("audio_track"), false /* remote */,
         std::move(capture_source));
-    media_stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
+    media_stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         media_stream_source_->Id(), media_stream_source_);
 
     ASSERT_TRUE(source()->ConnectToTrack(media_stream_component_.Get()));

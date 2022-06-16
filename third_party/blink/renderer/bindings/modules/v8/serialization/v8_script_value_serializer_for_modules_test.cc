@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -1196,7 +1196,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */, std::move(mock_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>("component_id", source);
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
   component->SetMuted(true);
   component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
@@ -1242,7 +1242,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */, std::move(mock_source));
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>("component_id", source);
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source);
   component->SetContentHint(
       static_cast<WebMediaStreamTrack::ContentHintType>(666));
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
@@ -1270,7 +1270,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
       "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
       false /* remote */);
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponent>(source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
       scope.GetExecutionContext(), component);
 

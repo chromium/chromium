@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
@@ -112,7 +112,7 @@ void CreateHTMLAudioElementCapturer(
       track_id, MediaStreamSource::StreamType::kTypeAudio, track_id,
       false /* is_remote */, base::WrapUnique(media_stream_audio_source));
   auto* media_stream_component =
-      MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
+      MakeGarbageCollected<MediaStreamComponentImpl>(media_stream_source);
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = track_id;

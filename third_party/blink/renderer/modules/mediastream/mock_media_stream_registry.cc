@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
@@ -69,7 +69,7 @@ MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
       "mock video source id", MediaStreamSource::kTypeVideo,
       "mock video source name", false /* remote */, std::move(native_source));
 
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
       track_id, source,
       std::make_unique<MediaStreamVideoTrack>(
           native_source_ptr, adapter_settings, noise_reduction, is_screencast,
@@ -95,7 +95,7 @@ void MockMediaStreamRegistry::AddAudioTrack(const String& track_id) {
       "mock audio source id", MediaStreamSource::kTypeAudio,
       "mock audio source name", false /* remote */, std::move(audio_source));
 
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
       source,
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   CHECK(audio_source_ptr->ConnectToInitializedTrack(component));

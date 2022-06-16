@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
@@ -109,7 +109,7 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
           MediaStreamSource::StreamType::kTypeAudio,
           String::FromUTF8("remoteAudioName"), true /* remote */);
       component_ =
-          MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
+          MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
     } else {
       DCHECK_EQ(type, MediaStreamSource::StreamType::kTypeVideo);
       auto* source = MakeGarbageCollected<MediaStreamSource>(
@@ -117,7 +117,7 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
           MediaStreamSource::StreamType::kTypeVideo,
           String::FromUTF8("remoteVideoName"), true /* remote */);
       component_ =
-          MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
+          MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
     }
   }
   DummyRTCRtpReceiverPlatform(const DummyRTCRtpReceiverPlatform& other)

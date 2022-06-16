@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -285,7 +285,7 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
       track_id, preferred_formats, mojom::blink::FacingMode::NONE,
       false /* is_device_capture */));
 
-  *component = MakeGarbageCollected<MediaStreamComponent>(
+  *component = MakeGarbageCollected<MediaStreamComponentImpl>(
       stream_source,
       std::make_unique<MediaStreamVideoTrack>(
           stream_video_source_ptr,

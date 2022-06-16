@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
@@ -76,7 +76,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
         String::FromUTF8("local_audio_track"), false, std::move(audio_source));
 
     auto* component =
-        MakeGarbageCollected<MediaStreamComponent>(source->Id(), source);
+        MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
     audio_source_ptr->ConnectToTrack(component);
     return component;
   }

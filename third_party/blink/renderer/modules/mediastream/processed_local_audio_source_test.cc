@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 using ::testing::_;
@@ -142,7 +142,7 @@ class ProcessedLocalAudioSourceTest
     audio_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
         String::FromUTF8("audio_track"), false /* remote */, std::move(source));
-    audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
+    audio_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         audio_source_->Id(), audio_source_);
   }
 

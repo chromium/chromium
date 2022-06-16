@@ -19,7 +19,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -485,7 +485,7 @@ WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
     MediaStreamVideoSource* source,
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
     bool enabled) {
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
       source->Owner(), std::make_unique<MediaStreamVideoTrack>(
                            source, std::move(callback), enabled));
   return WebMediaStreamTrack(component);
@@ -505,7 +505,7 @@ WebMediaStreamTrack MediaStreamVideoTrack::CreateVideoTrack(
     MediaStreamVideoSource::ConstraintsOnceCallback callback,
     bool enabled) {
   WebMediaStreamTrack track;
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
       source->Owner(),
       std::make_unique<MediaStreamVideoTrack>(
           source, adapter_settings, noise_reduction, is_screencast,

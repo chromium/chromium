@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -1646,7 +1646,7 @@ MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
   MediaStreamSource* source =
       InitializeAudioSourceObject(overriden_audio_device, &is_pending);
   Member<MediaStreamComponent> component =
-      MakeGarbageCollected<MediaStreamComponent>(
+      MakeGarbageCollected<MediaStreamComponentImpl>(
           source,
           std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
   current_request_info_->StartAudioTrack(component, is_pending);

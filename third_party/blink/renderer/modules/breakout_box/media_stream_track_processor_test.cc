@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -77,9 +78,10 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
           "source_id", MediaStreamSource::kTypeAudio, "source_name",
           /*remote=*/false, std::move(source));
 
-  MediaStreamComponent* component = MakeGarbageCollected<MediaStreamComponent>(
-      media_stream_source,
-      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          media_stream_source,
+          std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */));
 
   source_ptr->ConnectToInitializedTrack(component);
 

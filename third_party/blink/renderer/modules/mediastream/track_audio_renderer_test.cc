@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -105,7 +106,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
     auto platform_track =
         std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
 
-    auto* audio_component = MakeGarbageCollected<MediaStreamComponent>(
+    auto* audio_component = MakeGarbageCollected<MediaStreamComponentImpl>(
         MakeGarbageCollected<MediaStreamSource>(
             String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
             String::FromUTF8("audio_track"), false /* remote */,

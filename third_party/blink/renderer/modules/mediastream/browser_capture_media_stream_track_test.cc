@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
@@ -46,7 +47,7 @@ BrowserCaptureMediaStreamTrack* MakeTrack(
       /*remote=*/false, std::move(media_stream_video_source));
 
   MediaStreamComponent* const component =
-      MakeGarbageCollected<MediaStreamComponent>(
+      MakeGarbageCollected<MediaStreamComponentImpl>(
           "component_id", source, std::move(media_stream_video_track));
 
   return MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(

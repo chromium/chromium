@@ -34,6 +34,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
@@ -145,12 +146,12 @@ MediaStreamDescriptor::MediaStreamDescriptor(
   DCHECK(id_.length());
   for (MediaStreamSource* source : audio_sources) {
     audio_components_.push_back(
-        MakeGarbageCollected<MediaStreamComponent>(source));
+        MakeGarbageCollected<MediaStreamComponentImpl>(source));
   }
 
   for (MediaStreamSource* source : video_sources) {
     video_components_.push_back(
-        MakeGarbageCollected<MediaStreamComponent>(source));
+        MakeGarbageCollected<MediaStreamComponentImpl>(source));
   }
 }
 
