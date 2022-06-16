@@ -537,13 +537,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.D3D12HighestShaderModel" enum="D3DShaderModel"
+<histogram name="GPU.D3D12HighestShaderModel2" enum="D3DShaderModel"
     expires_after="2022-12-11">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>amaiorano@google.com</owner>
   <summary>
     The maximum supported D3D shader model version on a D3D12 device. It is
-    recorded in the browser process 120 seconds after the browser launch.
+    recorded in the browser process 120 seconds after the browser launch. Note
+    that the &quot;2&quot; suffix was added when a fix was made in how this stat
+    is collected: the previous unsuffixed version would store
+    &quot;unknown/unsupported&quot; on systems that supported shader model 5.1
+    to 6.5, but were unaware of 6.6. The suffixed version correctly stores the
+    highest supported shader model.
   </summary>
 </histogram>
 

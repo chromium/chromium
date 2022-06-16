@@ -398,14 +398,25 @@ void GetGpuSupportedD3D12Version(uint32_t& d3d12_feature_level,
 
   // Query the maximum supported shader model version.
   if (d3d12_device) {
-    D3D12_FEATURE_DATA_SHADER_MODEL shader_model_data = {};
-    // TODO(crbug.com/1312519): Setting the HighestShaderModel to 6_7 will cause
-    // failure in CheckFeatureSupport(). Use D3D_SHADER_MODEL_6_6 for now.
-    shader_model_data.HighestShaderModel = D3D_SHADER_MODEL_6_6;
-    if (SUCCEEDED(d3d12_device->CheckFeatureSupport(
-            D3D12_FEATURE_SHADER_MODEL, &shader_model_data,
-            sizeof(shader_model_data)))) {
-      highest_shader_model_version = shader_model_data.HighestShaderModel;
+    // As per the documentation, CheckFeatureSupport will return E_INVALIDARG if
+    // the shader model is not known by the current runtime, so we loop in
+    // decreasing shader model version to determine the highest supported model:
+    // https://docs.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_feature_data_shader_model.
+    const D3D_SHADER_MODEL shader_models[] = {
+        D3D_SHADER_MODEL_6_7, D3D_SHADER_MODEL_6_6, D3D_SHADER_MODEL_6_5,
+        D3D_SHADER_MODEL_6_4, D3D_SHADER_MODEL_6_3, D3D_SHADER_MODEL_6_2,
+        D3D_SHADER_MODEL_6_1, D3D_SHADER_MODEL_6_0, D3D_SHADER_MODEL_5_1,
+    };
+
+    for (auto model : shader_models) {
+      D3D12_FEATURE_DATA_SHADER_MODEL shader_model_data = {};
+      shader_model_data.HighestShaderModel = model;
+      if (SUCCEEDED(d3d12_device->CheckFeatureSupport(
+              D3D12_FEATURE_SHADER_MODEL, &shader_model_data,
+              sizeof(shader_model_data)))) {
+        highest_shader_model_version = shader_model_data.HighestShaderModel;
+        break;
+      }
     }
   }
 }
@@ -638,7 +649,7 @@ void RecordGpuSupportedDx12VersionHistograms(
       ConvertToHistogramFeatureLevel(d3d12_feature_level));
 
   UMA_HISTOGRAM_ENUMERATION(
-      "GPU.D3D12HighestShaderModel",
+      "GPU.D3D12HighestShaderModel2",
       ConvertToHistogramShaderVersion(highest_shader_model_version));
 }
 
