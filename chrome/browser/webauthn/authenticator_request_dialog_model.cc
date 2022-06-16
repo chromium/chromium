@@ -1035,17 +1035,24 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   }
 
   if (include_add_phone_option) {
-    // If there's no other priority mechanism, no phones, and nothing on the
-    // platform authenticator, jump directly to showing a QR code.
-    const bool is_priority =
-        std::none_of(mechanisms_.begin(), mechanisms_.end(),
-                     [](const Mechanism& m) { return m.priority; }) &&
-        paired_phone_names().empty() && is_get_assertion &&
-        transport_availability_.has_empty_allow_list &&
-        transport_availability_.has_platform_authenticator_credential !=
-            device::FidoRequestHandlerBase::RecognizedCredential::
-                kHasRecognizedCredential &&
-        base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI);
+    // If there's no other priority mechanism, and no phones, jump directly to
+    // showing a QR code.
+    bool is_priority = false;
+    if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
+      if (std::any_of(mechanisms_.begin(), mechanisms_.end(),
+                      [](const Mechanism& m) { return m.priority; })) {
+        LOG(ERROR) << "Not jumping to QR because of other priority";
+      } else if (!paired_phone_names().empty()) {
+        LOG(ERROR) << "Not jumping to QR because linked phones exist";
+      } else if (!is_get_assertion) {
+        LOG(ERROR)
+            << "Not jumping to QR because this is not a getAssertion request";
+      } else if (!transport_availability_.has_empty_allow_list) {
+        LOG(ERROR) << "Not jumping to QR because of non-empty allow list";
+      } else {
+        is_priority = true;
+      }
+    }
 
     const std::u16string label =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
