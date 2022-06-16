@@ -184,43 +184,7 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
   return beacon_file_contents;
 }
 
-// Returns the channel to use for setting up the Extended Variations Safe Mode
-// experiment.
-//
-// This is needed for tests in which there is a mismatch between (a) the channel
-// on which the bot is running (and thus the channel plumbed through to the
-// CleanExitBeacon's ctor) and (b) the channel that we wish to use for running a
-// particular test. This mismatch can cause failures (crbug/1259550) when (a)
-// the channel on which the bot is running is a channel to which the Extended
-// Variations Safe Mode experiment does not apply and (b) a test uses a channel
-// on which the experiment does apply.
-//
-// TODO(crbug/1241702): Clean up this function once the experiment is over.
-version_info::Channel GetChannel(version_info::Channel channel) {
-  const std::string forced_channel =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          variations::switches::kFakeVariationsChannel);
-
-  if (!forced_channel.empty()) {
-    if (forced_channel == "stable")
-      return version_info::Channel::STABLE;
-    if (forced_channel == "beta")
-      return version_info::Channel::BETA;
-    if (forced_channel == "dev")
-      return version_info::Channel::DEV;
-    if (forced_channel == "canary")
-      return version_info::Channel::CANARY;
-    DVLOG(1) << "Invalid channel provided: " << forced_channel;
-  }
-  return channel;
-}
-
-// Sets up the Extended Variations Safe Mode experiment, whose groups have
-// platform- and channel-specific weights. Returns the name of the client's
-// experiment group name, e.g. "Control".
-// TODO(crbug/1241702): Remove this once the experiment launches on Android
-// Chrome.
-std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
+std::string SetUpExtendedSafeModeTrial() {
   int default_group;
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
@@ -244,7 +208,7 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
       local_state_(local_state),
       initial_browser_last_live_timestamp_(
           local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)),
-      channel_(GetChannel(channel)) {
+      channel_(channel) {
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
 }
@@ -256,7 +220,7 @@ void CleanExitBeacon::Initialize() {
   if (!user_data_dir_.empty()) {
     // Platforms that pass an empty path do so deliberately. They should not
     // participate in this experiment.
-    group = SetUpExtendedSafeModeTrial(channel_);
+    group = SetUpExtendedSafeModeTrial();
   }
 
   if (group == kEnabledGroup) {

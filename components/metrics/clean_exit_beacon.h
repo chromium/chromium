@@ -203,7 +203,7 @@ class CleanExitBeacon {
   // The client's channel, e.g. Canary. Used to help determine whether the
   // client should participate in the Extended Variations Safe Mode experiment.
   // TODO(crbug/1241702): Remove at the end of the experiment.
-  const version_info::Channel channel_;
+  [[maybe_unused]] const version_info::Channel channel_;
 
   bool did_previous_session_exit_cleanly_ = false;
 
