@@ -769,8 +769,9 @@ IN_PROC_BROWSER_TEST_P(RegionCaptureMultiCaptureBrowserTest,
   EXPECT_TRUE(StartSecondCapture());
 }
 
+// TODO(crbug.com/1336503): Re-enable this test
 IN_PROC_BROWSER_TEST_P(RegionCaptureMultiCaptureBrowserTest,
-                       CannotSelfCaptureAgainIfCropped) {
+                       DISABLED_CannotSelfCaptureAgainIfCropped) {
   ManualSetUp();
 
   ASSERT_TRUE(CropTo(kCropTarget1, Frame::kTopLevelDocument, Track::kOriginal));
