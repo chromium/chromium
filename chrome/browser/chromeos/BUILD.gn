@@ -3142,6 +3142,7 @@ source_set("unit_tests") {
     "../ash/file_system_provider/service_unittest.cc",
     "../ash/file_system_provider/throttled_file_system_unittest.cc",
     "../ash/fusebox/fusebox_util_unittest.cc",
+    "../ash/guest_os/guest_id_unittest.cc",
     "../ash/guest_os/guest_os_diagnostics_builder_unittest.cc",
     "../ash/guest_os/guest_os_external_protocol_handler_unittest.cc",
     "../ash/guest_os/guest_os_mime_types_service_unittest.cc",

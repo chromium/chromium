@@ -94,17 +94,19 @@ class AnsibleManagementServiceTest : public testing::Test,
 
   // AnsibleManagementService::Observer
   void OnAnsibleSoftwareConfigurationStarted(
-      const ContainerId& container_id) override {}
-  void OnAnsibleSoftwareConfigurationFinished(const ContainerId& container_id,
-                                              bool success) override {}
-  void OnAnsibleSoftwareInstall(const ContainerId& container_id) override {
+      const guest_os::GuestId& container_id) override {}
+  void OnAnsibleSoftwareConfigurationFinished(
+      const guest_os::GuestId& container_id,
+      bool success) override {}
+  void OnAnsibleSoftwareInstall(
+      const guest_os::GuestId& container_id) override {
     if (is_install_ansible_success_) {
       test_helper_->SendSucceededInstallSignal();
     } else {
       test_helper_->SendFailedInstallSignal();
     }
   }
-  void OnApplyAnsiblePlaybook(const ContainerId& container_id) override {
+  void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) override {
     if (is_apply_ansible_success_) {
       test_helper_->SendSucceededApplySignal();
     } else {

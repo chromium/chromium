@@ -45,7 +45,7 @@ class CrostiniPortForwarder : public KeyedService {
   struct PortRuleKey {
     uint16_t port_number;
     Protocol protocol_type;
-    ContainerId container_id;
+    guest_os::GuestId container_id;
 
     bool operator==(const PortRuleKey& other) const {
       return port_number == other.port_number &&
@@ -74,20 +74,20 @@ class CrostiniPortForwarder : public KeyedService {
   // pass. This means a port setting has been successfully updated in the
   // iptables and the profile preference setting has also been successfully
   // updated.
-  void ActivatePort(const ContainerId& container_id,
+  void ActivatePort(const guest_os::GuestId& container_id,
                     uint16_t port_number,
                     const Protocol& protocol_type,
                     ResultCallback result_callback);
-  void AddPort(const ContainerId& container_id,
+  void AddPort(const guest_os::GuestId& container_id,
                uint16_t port_number,
                const Protocol& protocol_type,
                const std::string& label,
                ResultCallback result_callback);
-  void DeactivatePort(const ContainerId& container_id,
+  void DeactivatePort(const guest_os::GuestId& container_id,
                       uint16_t port_number,
                       const Protocol& protocol_type,
                       ResultCallback result_callback);
-  void RemovePort(const ContainerId& container_id,
+  void RemovePort(const guest_os::GuestId& container_id,
                   uint16_t port_number,
                   const Protocol& protocol_type,
                   ResultCallback result_callback);
@@ -97,12 +97,12 @@ class CrostiniPortForwarder : public KeyedService {
 
   // Deactivate all ports belonging to the container_id and removes them from
   // the preferences.
-  void RemoveAllPorts(const ContainerId& container_id);
+  void RemoveAllPorts(const guest_os::GuestId& container_id);
 
   // Deactivate all active ports belonging to the container_id and set their
   // preference to inactive such that these ports will not be automatically
   // re-forwarded on re-startup. This is called on container shutdown.
-  void DeactivateAllActivePorts(const ContainerId& container_id);
+  void DeactivateAllActivePorts(const guest_os::GuestId& container_id);
 
   base::ListValue GetActivePorts();
 
@@ -128,7 +128,7 @@ class CrostiniPortForwarder : public KeyedService {
   void SignalActivePortsChanged();
   bool MatchPortRuleDict(const base::Value& dict, const PortRuleKey& key);
   bool MatchPortRuleContainerId(const base::Value& dict,
-                                const ContainerId& container_id);
+                                const guest_os::GuestId& container_id);
   void AddNewPortPreference(const PortRuleKey& key, const std::string& label);
   bool RemovePortPreference(const PortRuleKey& key);
   absl::optional<base::Value> ReadPortPreference(const PortRuleKey& key);
@@ -140,10 +140,10 @@ class CrostiniPortForwarder : public KeyedService {
                                          PortRuleKey key,
                                          bool success);
   void TryDeactivatePort(const PortRuleKey& key,
-                         const ContainerId& container_id,
+                         const guest_os::GuestId& container_id,
                          base::OnceCallback<void(bool)> result_callback);
   void TryActivatePort(const PortRuleKey& key,
-                       const ContainerId& container_id,
+                       const guest_os::GuestId& container_id,
                        base::OnceCallback<void(bool)> result_callback);
   void UpdateActivePortInterfaces();
 

@@ -111,8 +111,8 @@ void OnSharePathForLaunchApplication(
         "failed to share paths to launch " + app_id + ":" + failure_reason,
         CrostiniResult::SHARE_PATHS_FAILED);
   }
-  const crostini::ContainerId container_id(registration.VmName(),
-                                           registration.ContainerName());
+  const guest_os::GuestId container_id(registration.VmName(),
+                                       registration.ContainerName());
   crostini::CrostiniManager::GetForProfile(profile)->LaunchContainerApplication(
       container_id, registration.DesktopFileId(), args, registration.IsScaled(),
       base::BindOnce(OnApplicationLaunched, app_id, std::move(callback),
@@ -179,51 +179,6 @@ void LaunchApplication(
 
 }  // namespace
 
-ContainerId::ContainerId(std::string vm_name,
-                         std::string container_name) noexcept
-    : vm_name(std::move(vm_name)), container_name(std::move(container_name)) {}
-
-ContainerId::ContainerId(const base::Value& value) noexcept {
-  const base::Value::Dict* dict = value.GetIfDict();
-  const std::string* vm = nullptr;
-  const std::string* container = nullptr;
-  if (dict != nullptr) {
-    vm = dict->FindString(prefs::kVmKey);
-    container = dict->FindString(prefs::kContainerKey);
-  }
-  vm_name = vm ? *vm : "";
-  container_name = container ? *container : "";
-}
-
-base::flat_map<std::string, std::string> ContainerId::ToMap() const {
-  base::flat_map<std::string, std::string> extras;
-  extras[prefs::kVmKey] = vm_name;
-  extras[prefs::kContainerKey] = container_name;
-  return extras;
-}
-
-base::Value::Dict ContainerId::ToDictValue() const {
-  base::Value::Dict dict;
-  dict.Set(prefs::kVmKey, vm_name);
-  dict.Set(prefs::kContainerKey, container_name);
-  return dict;
-}
-
-bool operator<(const ContainerId& lhs, const ContainerId& rhs) noexcept {
-  const auto result = lhs.vm_name.compare(rhs.vm_name);
-  return result < 0 || (result == 0 && lhs.container_name < rhs.container_name);
-}
-
-bool operator==(const ContainerId& lhs, const ContainerId& rhs) noexcept {
-  return lhs.vm_name == rhs.vm_name && lhs.container_name == rhs.container_name;
-}
-
-std::ostream& operator<<(std::ostream& ostream,
-                         const ContainerId& container_id) {
-  return ostream << "(vm: \"" << container_id.vm_name << "\" container: \""
-                 << container_id.container_name << "\")";
-}
-
 bool IsUninstallable(Profile* profile, const std::string& app_id) {
   if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
     return false;
@@ -274,7 +229,7 @@ void LaunchCrostiniAppImpl(
     Profile* profile,
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
-    const ContainerId container_id,
+    const guest_os::GuestId container_id,
     int64_t display_id,
     const std::vector<LaunchArg>& args,
     CrostiniSuccessCallback callback) {
@@ -341,8 +296,8 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
     return std::move(callback).Run(
         false, "LaunchCrostiniApp called with an unknown app_id: " + app_id);
   }
-  ContainerId container_id(registration->VmName(),
-                           registration->ContainerName());
+  guest_os::GuestId container_id(registration->VmName(),
+                                 registration->ContainerName());
 
   if (crostini_manager->IsUncleanStartup()) {
     VLOG(1) << "Unclean startup for " << container_id
@@ -407,7 +362,7 @@ base::FilePath ContainerChromeOSBaseDirectory() {
 namespace {
 
 bool MatchContainerDict(const base::Value& dict,
-                        const ContainerId& container_id) {
+                        const guest_os::GuestId& container_id) {
   const std::string* vm_name = dict.FindStringKey(prefs::kVmKey);
   const std::string* container_name = dict.FindStringKey(prefs::kContainerKey);
   return (vm_name && *vm_name == container_id.vm_name) &&
@@ -419,10 +374,10 @@ bool MatchContainerDict(const base::Value& dict,
 void RemoveDuplicateContainerEntries(PrefService* prefs) {
   ListPrefUpdate updater(prefs, crostini::prefs::kCrostiniContainers);
 
-  std::set<ContainerId> seen_containers;
+  std::set<guest_os::GuestId> seen_containers;
   auto& containers = updater->GetList();
   for (auto it = containers.begin(); it != containers.end();) {
-    ContainerId containerId(*it);
+    guest_os::GuestId containerId(*it);
     if (seen_containers.find(containerId) == seen_containers.end()) {
       seen_containers.insert(containerId);
       it++;
@@ -432,14 +387,14 @@ void RemoveDuplicateContainerEntries(PrefService* prefs) {
   }
 }
 
-std::vector<ContainerId> GetContainers(Profile* profile) {
-  std::vector<ContainerId> result;
+std::vector<guest_os::GuestId> GetContainers(Profile* profile) {
+  std::vector<guest_os::GuestId> result;
   const base::Value::List& container_list =
       profile->GetPrefs()
           ->GetList(crostini::prefs::kCrostiniContainers)
           ->GetList();
   for (const auto& container : container_list) {
-    crostini::ContainerId id(container);
+    guest_os::GuestId id(container);
     if (!id.vm_name.empty() && !id.container_name.empty()) {
       result.push_back(std::move(id));
     }
@@ -448,7 +403,7 @@ std::vector<ContainerId> GetContainers(Profile* profile) {
 }
 
 void AddNewLxdContainerToPrefs(Profile* profile,
-                               const ContainerId& container_id) {
+                               const guest_os::GuestId& container_id) {
   ListPrefUpdate updater(profile->GetPrefs(),
                          crostini::prefs::kCrostiniContainers);
   auto it = std::find_if(
@@ -469,7 +424,7 @@ void AddNewLxdContainerToPrefs(Profile* profile,
 }
 
 void RemoveLxdContainerFromPrefs(Profile* profile,
-                                 const ContainerId& container_id) {
+                                 const guest_os::GuestId& container_id) {
   auto* pref_service = profile->GetPrefs();
   ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
   updater->EraseListIter(
@@ -487,7 +442,7 @@ void RemoveLxdContainerFromPrefs(Profile* profile,
 }
 
 const base::Value* GetContainerPrefValue(Profile* profile,
-                                         const ContainerId& container_id,
+                                         const guest_os::GuestId& container_id,
                                          const std::string& key) {
   const base::Value* containers =
       profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
@@ -502,7 +457,7 @@ const base::Value* GetContainerPrefValue(Profile* profile,
 }
 
 void UpdateContainerPref(Profile* profile,
-                         const ContainerId& container_id,
+                         const guest_os::GuestId& container_id,
                          const std::string& key,
                          base::Value value) {
   ListPrefUpdate updater(profile->GetPrefs(),
@@ -516,7 +471,7 @@ void UpdateContainerPref(Profile* profile,
 }
 
 SkColor GetContainerBadgeColor(Profile* profile,
-                               const ContainerId& container_id) {
+                               const guest_os::GuestId& container_id) {
   const base::Value* badge_color_value =
       GetContainerPrefValue(profile, container_id, prefs::kContainerColorKey);
   if (badge_color_value) {
@@ -527,7 +482,7 @@ SkColor GetContainerBadgeColor(Profile* profile,
 }
 
 void SetContainerBadgeColor(Profile* profile,
-                            const ContainerId& container_id,
+                            const guest_os::GuestId& container_id,
                             SkColor badge_color) {
   UpdateContainerPref(profile, container_id, prefs::kContainerColorKey,
                       base::Value(static_cast<int>(badge_color)));
@@ -537,7 +492,7 @@ void SetContainerBadgeColor(Profile* profile,
 }
 
 bool IsContainerVersionExpired(Profile* profile,
-                               const ContainerId& container_id) {
+                               const guest_os::GuestId& container_id) {
   auto* value = GetContainerPrefValue(profile, container_id,
                                       prefs::kContainerOsVersionKey);
   if (!value)
@@ -548,7 +503,7 @@ bool IsContainerVersionExpired(Profile* profile,
 }
 
 bool ShouldWarnAboutExpiredVersion(Profile* profile,
-                                   const ContainerId& container_id) {
+                                   const guest_os::GuestId& container_id) {
   if (!CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile)) {
     return false;
   }
@@ -584,8 +539,8 @@ std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
   }
 }
 
-const ContainerId& DefaultContainerId() {
-  static const base::NoDestructor<ContainerId> container_id(
+const guest_os::GuestId& DefaultContainerId() {
+  static const base::NoDestructor<guest_os::GuestId> container_id(
       kCrostiniDefaultVmName, kCrostiniDefaultContainerName);
   return *container_id;
 }
@@ -626,14 +581,14 @@ void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
   }
 }
 
-bool ShouldStopVm(Profile* profile, const ContainerId& container_id) {
+bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
   bool is_last_container = true;
   base::Value::ConstListView containers =
       profile->GetPrefs()
           ->GetList(prefs::kCrostiniContainers)
           ->GetListDeprecated();
   for (const auto& dict : containers) {
-    ContainerId container(dict);
+    guest_os::GuestId container(dict);
     if (container.container_name != container_id.container_name &&
         container.vm_name == container_id.vm_name) {
       if (CrostiniManager::GetForProfile(profile)->GetContainerInfo(

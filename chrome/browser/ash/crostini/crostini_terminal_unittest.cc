@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,7 +29,7 @@ TEST_F(CrostiniTerminalTest, GenerateTerminalURL) {
             "&args[]=--target_container%3Dpenguin"
             "&args[]=--owner_id%3Dtest");
   EXPECT_EQ(GenerateTerminalURL(&profile, "red",
-                                ContainerId("test-vm", "test-container"),
+                                guest_os::GuestId("test-vm", "test-container"),
                                 "/home/user", {"arg1"}),
             "chrome-untrusted://terminal/html/terminal.html"
             "?command=vmshell"
@@ -48,7 +49,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdForSSH) {
 TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  ContainerId id("test-vm", "test-container");
+  guest_os::GuestId id("test-vm", "test-container");
   EXPECT_EQ(ShortcutIdFromContainerId(&profile, id),
             R"({"container_name":"test-container","shortcut":"terminal",)"
             R"("vm_name":"test-vm"})");

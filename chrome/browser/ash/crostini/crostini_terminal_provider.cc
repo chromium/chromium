@@ -9,7 +9,8 @@
 
 namespace crostini {
 
-CrostiniTerminalProvider::CrostiniTerminalProvider(ContainerId container_id)
+CrostiniTerminalProvider::CrostiniTerminalProvider(
+    guest_os::GuestId container_id)
     : container_id_(container_id) {}
 CrostiniTerminalProvider::~CrostiniTerminalProvider() = default;
 
@@ -21,7 +22,7 @@ std::string CrostiniTerminalProvider::Label() {
       {container_id_.vm_name, ":", container_id_.container_name});
 }
 
-absl::optional<crostini::ContainerId>
+absl::optional<guest_os::GuestId>
 CrostiniTerminalProvider::CrostiniContainerId() {
   return container_id_;
 }

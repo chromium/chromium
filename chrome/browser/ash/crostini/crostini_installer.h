@@ -106,9 +106,10 @@ class CrostiniInstaller : public KeyedService,
 
   // AnsibleManagementService::Observer:
   void OnAnsibleSoftwareConfigurationStarted(
-      const ContainerId& container_id) override;
-  void OnAnsibleSoftwareConfigurationFinished(const ContainerId& container_id,
-                                              bool success) override;
+      const guest_os::GuestId& container_id) override;
+  void OnAnsibleSoftwareConfigurationFinished(
+      const guest_os::GuestId& container_id,
+      bool success) override;
 
   // Return true if internal state allows starting installation.
   bool CanInstall();

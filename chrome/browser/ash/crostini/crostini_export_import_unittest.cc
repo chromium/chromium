@@ -46,13 +46,13 @@ struct ImportProgressOptionalArguments {
 class CrostiniExportImportTest : public testing::Test {
  public:
   base::WeakPtr<CrostiniExportImportNotificationController> GetController(
-      const ContainerId& container_id) {
+      const guest_os::GuestId& container_id) {
     return crostini_export_import_->GetNotificationControllerForTesting(
         container_id);
   }
 
   const message_center::Notification& GetNotification(
-      const ContainerId& container_id) {
+      const guest_os::GuestId& container_id) {
     // Assertions in this function are wrap in IILEs because you cannot assert
     // in a function with a non-void return type.
     const base::WeakPtr<CrostiniExportImportNotificationController>&
@@ -89,7 +89,7 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   void SendExportProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       vm_tools::cicerone::ExportLxdContainerProgressSignal_Status status,
       const ExportProgressOptionalArguments& arguments = {}) {
     vm_tools::cicerone::ExportLxdContainerProgressSignal signal;
@@ -105,7 +105,7 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   void SendImportProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       vm_tools::cicerone::ImportLxdContainerProgressSignal_Status status,
       const ImportProgressOptionalArguments& arguments = {}) {
     vm_tools::cicerone::ImportLxdContainerProgressSignal signal;
@@ -196,8 +196,8 @@ class CrostiniExportImportTest : public testing::Test {
       notification_display_service_tester_;
   StubNotificationDisplayService* notification_display_service_;
 
-  ContainerId default_container_id_;
-  ContainerId custom_container_id_;
+  guest_os::GuestId default_container_id_;
+  guest_os::GuestId custom_container_id_;
   base::FilePath tarball_;
 
   content::BrowserTaskEnvironment task_environment_;

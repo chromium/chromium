@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 
@@ -86,7 +87,7 @@ class FileWatcher::CrostiniFileWatcher
 
  private:
   // crostini::CrostiniFileChangeObserver overrides
-  void OnCrostiniFileChanged(const crostini::ContainerId& container_id,
+  void OnCrostiniFileChanged(const guest_os::GuestId& container_id,
                              const base::FilePath& path) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (container_id != container_id_) {
@@ -100,7 +101,7 @@ class FileWatcher::CrostiniFileWatcher
   crostini::CrostiniManager* crostini_manager_;
   const base::FilePath crostini_mount_;
   const base::FilePath crostini_path_;
-  const crostini::ContainerId container_id_;
+  const guest_os::GuestId container_id_;
   base::FilePathWatcher::Callback file_watcher_callback_;
 };
 

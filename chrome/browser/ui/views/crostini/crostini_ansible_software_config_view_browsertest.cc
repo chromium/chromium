@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
@@ -47,13 +48,12 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
 
   // crostini::AnsibleManagementService::Observer
   void OnAnsibleSoftwareConfigurationStarted(
-      const crostini::ContainerId& container_id) override {}
+      const guest_os::GuestId& container_id) override {}
   void OnAnsibleSoftwareConfigurationFinished(
-      const crostini::ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       bool success) override {}
 
-  void OnApplyAnsiblePlaybook(
-      const crostini::ContainerId& container_id) override {
+  void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) override {
     if (is_apply_ansible_success_) {
       EXPECT_NE(nullptr, ActiveView());
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
@@ -75,7 +75,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
     }
   }
   void OnAnsibleSoftwareInstall(
-      const crostini::ContainerId& container_id) override {
+      const guest_os::GuestId& container_id) override {
     if (is_install_ansible_success_) {
       EXPECT_NE(nullptr, ActiveView());
       EXPECT_TRUE(IsDefaultDialog());
@@ -155,7 +155,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
     is_install_ansible_success_ = success;
   }
 
-  crostini::ContainerId container_id_;
+  guest_os::GuestId container_id_;
 
  private:
   bool HasAcceptButton() { return ActiveView()->GetOkButton() != nullptr; }

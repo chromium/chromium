@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TEST_HELPERS_H_
@@ -14,7 +15,7 @@ MockMountProvider::MockMountProvider()
     : profile_(nullptr), container_id_(crostini::DefaultContainerId()) {}
 
 MockMountProvider::MockMountProvider(Profile* profile,
-                                     crostini::ContainerId container_id)
+                                     guest_os::GuestId container_id)
     : profile_(profile), container_id_(container_id) {}
 
 std::string MockMountProvider::DisplayName() {
@@ -25,7 +26,7 @@ Profile* MockMountProvider::profile() {
   return profile_;
 }
 
-crostini::ContainerId MockMountProvider::ContainerId() {
+guest_os::GuestId MockMountProvider::GuestId() {
   return container_id_;
 }
 

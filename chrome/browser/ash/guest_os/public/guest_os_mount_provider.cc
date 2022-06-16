@@ -79,7 +79,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
  public:
   explicit GuestOsMountProviderInner(Profile* profile,
                                      std::string display_name,
-                                     crostini::ContainerId container_id,
+                                     guest_os::GuestId container_id,
                                      int cid,
                                      int port,
                                      base::FilePath homedir,
@@ -130,7 +130,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 
   Profile* profile_;
   std::string display_name_;
-  crostini::ContainerId container_id_;
+  guest_os::GuestId container_id_;
   std::string mount_label_;
   int cid_;
   int port_;  // vsock port
@@ -145,7 +145,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
   if (!callback_) {
     callback_ = std::make_unique<GuestOsMountProviderInner>(
-        profile(), DisplayName(), ContainerId(), cid(), port(), homedir(),
+        profile(), DisplayName(), GuestId(), cid(), port(), homedir(),
         vm_type());
   }
   callback_->Get(base::BindOnce(

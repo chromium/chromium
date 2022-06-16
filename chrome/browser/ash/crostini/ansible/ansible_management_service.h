@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -41,12 +42,14 @@ class AnsibleManagementService : public KeyedService,
    public:
     ~Observer() override = default;
     virtual void OnAnsibleSoftwareConfigurationStarted(
-        const ContainerId& container_id) = 0;
+        const guest_os::GuestId& container_id) = 0;
     virtual void OnAnsibleSoftwareConfigurationFinished(
-        const ContainerId& container_id,
+        const guest_os::GuestId& container_id,
         bool success) = 0;
-    virtual void OnAnsibleSoftwareInstall(const ContainerId& container_id) {}
-    virtual void OnApplyAnsiblePlaybook(const ContainerId& container_id) {}
+    virtual void OnAnsibleSoftwareInstall(
+        const guest_os::GuestId& container_id) {}
+    virtual void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) {
+    }
   };
 
   static AnsibleManagementService* GetForProfile(Profile* profile);
@@ -59,16 +62,16 @@ class AnsibleManagementService : public KeyedService,
   ~AnsibleManagementService() override;
 
   // Preconfigures a container with a specified Ansible playbook.
-  void ConfigureContainer(const ContainerId& container_id,
+  void ConfigureContainer(const guest_os::GuestId& container_id,
                           base::FilePath playbook,
                           base::OnceCallback<void(bool success)> callback);
 
   // LinuxPackageOperationProgressObserver:
-  void OnInstallLinuxPackageProgress(const ContainerId& container_id,
+  void OnInstallLinuxPackageProgress(const guest_os::GuestId& container_id,
                                      InstallLinuxPackageProgressStatus status,
                                      int progress_percent,
                                      const std::string& error_message) override;
-  void OnUninstallPackageProgress(const ContainerId& container_id,
+  void OnUninstallPackageProgress(const guest_os::GuestId& container_id,
                                   UninstallPackageProgressStatus status,
                                   int progress_percent) override;
 
@@ -79,23 +82,24 @@ class AnsibleManagementService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
  private:
-  void OnInstallAnsibleInContainer(const ContainerId& container_id,
+  void OnInstallAnsibleInContainer(const guest_os::GuestId& container_id,
                                    CrostiniResult result);
-  void GetAnsiblePlaybookToApply(const ContainerId& container_id);
-  void OnAnsiblePlaybookRetrieved(const ContainerId& container_id,
+  void GetAnsiblePlaybookToApply(const guest_os::GuestId& container_id);
+  void OnAnsiblePlaybookRetrieved(const guest_os::GuestId& container_id,
                                   bool success);
-  void ApplyAnsiblePlaybook(const ContainerId& container_id);
+  void ApplyAnsiblePlaybook(const guest_os::GuestId& container_id);
   void OnApplyAnsiblePlaybook(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       absl::optional<vm_tools::cicerone::ApplyAnsiblePlaybookResponse>
           response);
 
   // Helper function that runs relevant callback and notifies observers.
-  void OnConfigurationFinished(const ContainerId& container_id, bool success);
+  void OnConfigurationFinished(const guest_os::GuestId& container_id,
+                               bool success);
 
   Profile* profile_;
   base::ObserverList<Observer> observers_;
-  std::map<ContainerId, std::unique_ptr<AnsibleConfiguration>>
+  std::map<guest_os::GuestId, std::unique_ptr<AnsibleConfiguration>>
       configuration_tasks_;
 
   base::WeakPtrFactory<AnsibleManagementService> weak_ptr_factory_;

@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -110,7 +110,7 @@ std::string GetCrostiniMountPointName(Profile* profile);
 
 // The canonical mount point name for the Guest OS `id`.
 std::string GetGuestOsMountPointName(Profile* profile,
-                                     crostini::ContainerId id);
+                                     const guest_os::GuestId& id);
 
 // The actual directory the crostini "Linux files" folder is mounted.
 base::FilePath GetCrostiniMountDirectory(Profile* profile);

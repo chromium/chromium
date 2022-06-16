@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"

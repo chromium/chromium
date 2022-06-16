@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -319,7 +320,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     GetSwitch(params_args, &cmdline, kSwitchCurrentWorkingDir, "");
     std::string startup_id = params_args.GetSwitchValueASCII(kSwitchStartupId);
     container_id_ =
-        std::make_unique<crostini::ContainerId>(vm_name, container_name);
+        std::make_unique<guest_os::GuestId>(vm_name, container_name);
     VLOG(1) << "Starting " << *container_id_
             << ", cmdline=" << cmdline.GetCommandLineString();
 

@@ -145,7 +145,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
             Invoke(this, &CrostiniSshfsHelperTest::NotifyMountEvent));
   }
 
-  void SetContainerRunning(ContainerId container) {
+  void SetContainerRunning(guest_os::GuestId container) {
     auto* manager = CrostiniManager::GetForProfile(profile());
     ContainerInfo info(container.container_name, "username", "homedir",
                        "1.2.3.4");
@@ -206,7 +206,7 @@ TEST_F(CrostiniSshfsHelperTest, FailsIfContainerNotRunning) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, OnlyDefaultContainerSupported) {
-  auto not_default = ContainerId("vm_name", "container_name");
+  auto not_default = guest_os::GuestId("vm_name", "container_name");
   SetContainerRunning(not_default);
   EXPECT_CALL(*disk_manager_, MountPath).Times(0);
 
@@ -224,7 +224,7 @@ TEST_F(CrostiniSshfsHelperTest, OnlyDefaultContainerSupported) {
 }
 
 TEST_F(CrostiniSshfsHelperTest, RecordBackgroundMetricIfBackground) {
-  auto not_default = ContainerId("vm_name", "container_name");
+  auto not_default = guest_os::GuestId("vm_name", "container_name");
   SetContainerRunning(not_default);
   EXPECT_CALL(*disk_manager_, MountPath).Times(0);
 

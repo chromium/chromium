@@ -18,9 +18,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace crostini {
+namespace guest_os {
+struct GuestId;
+}
 
-struct ContainerId;
+namespace crostini {
 
 class CrostiniUpgraderUIObserver {
  public:
@@ -56,17 +58,17 @@ class CrostiniUpgraderUIDelegate {
   // Back up the current container before upgrading. If |show_file_chooser|
   // is true, the user will be able to select the backup location via a file
   // chooser.
-  virtual void Backup(const ContainerId& container_id,
+  virtual void Backup(const guest_os::GuestId& container_id,
                       bool show_file_chooser,
                       base::WeakPtr<content::WebContents> web_contents) = 0;
 
   virtual void StartPrechecks() = 0;
 
   // Start the upgrade.
-  virtual void Upgrade(const ContainerId& container_id) = 0;
+  virtual void Upgrade(const guest_os::GuestId& container_id) = 0;
 
   // Restore the container to the backed up state if an upgrade has failed.
-  virtual void Restore(const ContainerId& container_id,
+  virtual void Restore(const guest_os::GuestId& container_id,
                        base::WeakPtr<content::WebContents> web_contents) = 0;
 
   // Cancel the ongoing upgrade.

@@ -165,7 +165,7 @@ const std::string& GetTerminalHomeUrl() {
 
 GURL GenerateTerminalURL(Profile* profile,
                          const std::string& settings_profile,
-                         const ContainerId& container_id,
+                         const guest_os::GuestId& container_id,
                          const std::string& cwd,
                          const std::vector<std::string>& terminal_args) {
   auto escape = [](std::string param) {
@@ -205,7 +205,7 @@ GURL GenerateTerminalURL(Profile* profile,
 
 void LaunchTerminal(Profile* profile,
                     int64_t display_id,
-                    const ContainerId& container_id,
+                    const guest_os::GuestId& container_id,
                     const std::string& cwd,
                     const std::vector<std::string>& terminal_args) {
   GURL url = GenerateTerminalURL(profile, /*settings_profile=*/std::string(),
@@ -256,7 +256,7 @@ void LaunchTerminalWithIntent(Profile* profile,
   }
 
   // Look for vm_name and container_name in intent->extras.
-  ContainerId container_id = DefaultContainerId();
+  guest_os::GuestId container_id = DefaultContainerId();
   std::string settings_profile;
   if (intent && intent->extras.has_value()) {
     for (const auto& extra : intent->extras.value()) {
@@ -476,7 +476,7 @@ std::string ShortcutIdForSSH(const std::string& profileId) {
 }
 
 std::string ShortcutIdFromContainerId(Profile* profile,
-                                      const crostini::ContainerId& id) {
+                                      const guest_os::GuestId& id) {
   base::Value::Dict dict = id.ToDictValue();
   dict.Set(kShortcutKey, base::Value(kShortcutValueTerminal));
 

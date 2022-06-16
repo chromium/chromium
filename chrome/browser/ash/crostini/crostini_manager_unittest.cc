@@ -280,7 +280,7 @@ class CrostiniManagerTest : public testing::Test {
   base::RunLoop* run_loop() { return run_loop_.get(); }
   Profile* profile() { return profile_.get(); }
   CrostiniManager* crostini_manager() { return crostini_manager_; }
-  const ContainerId& container_id() { return container_id_; }
+  const guest_os::GuestId& container_id() { return container_id_; }
 
   ash::FakeChromeUserManager* fake_user_manager() const {
     return static_cast<ash::FakeChromeUserManager*>(
@@ -296,7 +296,8 @@ class CrostiniManagerTest : public testing::Test {
       run_loop_;  // run_loop_ must be created on the UI thread.
   std::unique_ptr<TestingProfile> profile_;
   CrostiniManager* crostini_manager_;
-  const ContainerId container_id_ = ContainerId(kVmName, kContainerName);
+  const guest_os::GuestId container_id_ =
+      guest_os::GuestId(kVmName, kContainerName);
   device::FakeUsbDeviceManager fake_usb_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -2387,17 +2388,19 @@ class CrostiniManagerAnsibleInfraTest
 
   // AnsibleManagementService::Observer
   void OnAnsibleSoftwareConfigurationStarted(
-      const ContainerId& container_id) override {}
-  void OnAnsibleSoftwareConfigurationFinished(const ContainerId& container_id,
-                                              bool success) override {}
-  void OnAnsibleSoftwareInstall(const ContainerId& container_id) override {
+      const guest_os::GuestId& container_id) override {}
+  void OnAnsibleSoftwareConfigurationFinished(
+      const guest_os::GuestId& container_id,
+      bool success) override {}
+  void OnAnsibleSoftwareInstall(
+      const guest_os::GuestId& container_id) override {
     if (is_install_ansible_success_) {
       ansible_management_test_helper_->SendSucceededInstallSignal();
     } else {
       ansible_management_test_helper_->SendFailedInstallSignal();
     }
   }
-  void OnApplyAnsiblePlaybook(const ContainerId& container_id) override {
+  void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) override {
     if (is_apply_ansible_success_) {
       ansible_management_test_helper_->SendSucceededApplySignal();
     } else {
@@ -2527,7 +2530,7 @@ class CrostiniManagerUpgradeContainerTest
  protected:
   // UpgradeContainerProgressObserver
   void OnUpgradeContainerProgress(
-      const ContainerId& container_id,
+      const guest_os::GuestId& container_id,
       UpgradeContainerProgressStatus status,
       const std::vector<std::string>& messages) override {
     if (status == final_status_) {
@@ -2535,7 +2538,7 @@ class CrostiniManagerUpgradeContainerTest
     }
   }
 
-  ContainerId container_id_ = ContainerId(kVmName, kContainerName);
+  guest_os::GuestId container_id_ = guest_os::GuestId(kVmName, kContainerName);
 
   UpgradeContainerProgressStatus final_status_ =
       UpgradeContainerProgressStatus::FAILED;

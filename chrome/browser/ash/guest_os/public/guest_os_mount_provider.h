@@ -8,7 +8,7 @@
 #include <string>
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
 class Profile;
@@ -30,8 +30,7 @@ class GuestOsMountProvider {
   // The localised name to show in UI elements such as the files app sidebar.
   virtual std::string DisplayName() = 0;
 
-  // TODO(crbug/1293229): Make ContainerId generic and in guest_os namespace.
-  virtual crostini::ContainerId ContainerId() = 0;
+  virtual guest_os::GuestId GuestId() = 0;
 
   // TODO(crbug/1293229): How exactly we perform an SFTP mount is TBD, so these
   // are subject to change. For now we put random fake values in so we don't

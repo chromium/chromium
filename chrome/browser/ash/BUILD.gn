@@ -1116,6 +1116,8 @@ source_set("ash") {
     "floating_workspace/floating_workspace_util.h",
     "fusebox/fusebox_util.cc",
     "fusebox/fusebox_util.h",
+    "guest_os/guest_id.cc",
+    "guest_os/guest_id.h",
     "guest_os/guest_os_capabilities.cc",
     "guest_os/guest_os_capabilities.h",
     "guest_os/guest_os_diagnostics_builder.cc",

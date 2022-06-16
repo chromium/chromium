@@ -387,7 +387,7 @@ std::string GetCrostiniMountPointName(Profile* profile) {
 }
 
 std::string GetGuestOsMountPointName(Profile* profile,
-                                     crostini::ContainerId id) {
+                                     const guest_os::GuestId& id) {
   return base::JoinString(
       {"guestos", ash::ProfileHelper::GetUserIdHashFromProfile(profile),
        base::EscapeAllExceptUnreserved(id.vm_name),

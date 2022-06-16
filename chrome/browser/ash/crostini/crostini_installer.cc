@@ -402,14 +402,14 @@ void CrostiniInstaller::OnContainerSetup(bool success) {
 // configurations currently work as configure on every startup, we'll have a
 // potential overlap which will cause this to signal too many times.
 void CrostiniInstaller::OnAnsibleSoftwareConfigurationStarted(
-    const ContainerId& container_id) {
+    const guest_os::GuestId& container_id) {
   DCHECK_EQ(installing_state_, InstallerState::kStartContainer);
   UpdateInstallingState(InstallerState::kConfigureContainer);
 }
 
 // TODO(justinhuang): Similar to the above.
 void CrostiniInstaller::OnAnsibleSoftwareConfigurationFinished(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     bool success) {
   DCHECK_EQ(installing_state_, InstallerState::kConfigureContainer);
   DCHECK(ansible_management_service_observation_.IsObservingSource(

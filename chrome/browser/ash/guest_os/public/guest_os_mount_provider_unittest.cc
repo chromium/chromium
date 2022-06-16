@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
@@ -52,8 +53,7 @@ class GuestOsMountProviderTest : public testing::Test {
     // DiskMountManager::InitializeForTesting takes ownership and works with
     // a raw pointer, hence the new with no matching delete.
     disk_manager_ = new ash::disks::MockDiskMountManager;
-    provider_ =
-        std::make_unique<MockMountProvider>(profile_.get(), kContainerId);
+    provider_ = std::make_unique<MockMountProvider>(profile_.get(), kGuestId);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildVolumeManager));
 
@@ -104,10 +104,9 @@ class GuestOsMountProviderTest : public testing::Test {
             Invoke(this, &GuestOsMountProviderTest::NotifyMountEvent));
   }
 
-  // guestos_${UserHash}_${encode(kContainerId.ToString())}. Note that UserHash
+  // guestos_${UserHash}_${encode(kGuestId.ToString())}. Note that UserHash
   // is an empty string in these tests.
-  const crostini::ContainerId kContainerId =
-      crostini::ContainerId("cow", "ptery/daccy");
+  const guest_os::GuestId kGuestId = guest_os::GuestId("cow", "ptery/daccy");
   const std::string kMountName = std::string{"guestos++cow+ptery%2Fdaccy"};
 
   content::BrowserTaskEnvironment task_environment_;

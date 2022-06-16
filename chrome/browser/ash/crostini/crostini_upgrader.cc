@@ -196,7 +196,7 @@ void CrostiniUpgrader::StatusTracker::SetStatusFailedWithMessageUI(
 }
 
 void CrostiniUpgrader::Backup(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     bool show_file_chooser,
     base::WeakPtr<content::WebContents> web_contents) {
   if (show_file_chooser) {
@@ -215,7 +215,7 @@ void CrostiniUpgrader::Backup(
 }
 
 void CrostiniUpgrader::OnBackupPathChecked(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents,
     base::FilePath path,
     bool path_exists) {
@@ -306,7 +306,7 @@ void CrostiniUpgrader::DoPrechecks() {
   }
 }
 
-void CrostiniUpgrader::Upgrade(const ContainerId& container_id) {
+void CrostiniUpgrader::Upgrade(const guest_os::GuestId& container_id) {
   container_id_ = container_id;
 
   if (!current_log_file_.has_value()) {
@@ -358,7 +358,7 @@ void CrostiniUpgrader::OnUpgrade(CrostiniResult result) {
 }
 
 void CrostiniUpgrader::Restore(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents) {
   if (!backup_path_.has_value()) {
     CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
@@ -374,7 +374,7 @@ void CrostiniUpgrader::Restore(
 }
 
 void CrostiniUpgrader::OnRestorePathChecked(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents,
     base::FilePath path,
     bool path_exists) {
@@ -429,7 +429,7 @@ void CrostiniUpgrader::CancelBeforeStart() {
 }
 
 void CrostiniUpgrader::OnUpgradeContainerProgress(
-    const ContainerId& container_id,
+    const guest_os::GuestId& container_id,
     UpgradeContainerProgressStatus status,
     const std::vector<std::string>& messages) {
   if (container_id != container_id_) {

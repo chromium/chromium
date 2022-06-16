@@ -48,7 +48,7 @@ CrostiniExportImportNotificationController::
         ExportImportType type,
         const std::string& notification_id,
         base::FilePath path,
-        ContainerId container_id)
+        guest_os::GuestId container_id)
     : CrostiniExportImportStatusTracker(type, std::move(path)),
       profile_(profile),
       container_id_(std::move(container_id)),
@@ -94,8 +94,8 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
   }
 
   delegate_->SetCallback(base::BindRepeating(
-      [](Profile* profile, ExportImportType type, ContainerId container_id,
-         absl::optional<int> button_index) {
+      [](Profile* profile, ExportImportType type,
+         guest_os::GuestId container_id, absl::optional<int> button_index) {
         if (!button_index.has_value()) {
           return;
         }

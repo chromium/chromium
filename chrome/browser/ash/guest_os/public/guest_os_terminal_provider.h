@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TERMINAL_PROVIDER_H_
 
 #include <string>
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace guest_os {
@@ -25,7 +25,7 @@ class GuestOsTerminalProvider {
   // TODO(b/233287586): While we're migrating, some Crostini-specific code still
   // needs a ContainerId. Eventually this should always be nullopt and then
   // removed.
-  virtual absl::optional<crostini::ContainerId> CrostiniContainerId() = 0;
+  virtual absl::optional<guest_os::GuestId> CrostiniContainerId() = 0;
 
  private:
 };

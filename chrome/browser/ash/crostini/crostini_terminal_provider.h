@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TERMINAL_PROVIDER_H_
 
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 
 namespace crostini {
 
 class CrostiniTerminalProvider : public guest_os::GuestOsTerminalProvider {
  public:
-  explicit CrostiniTerminalProvider(ContainerId container_id_);
+  explicit CrostiniTerminalProvider(guest_os::GuestId container_id_);
   ~CrostiniTerminalProvider() override;
 
   std::string Label() override;
@@ -20,10 +21,10 @@ class CrostiniTerminalProvider : public guest_os::GuestOsTerminalProvider {
   // TODO(b/233287586): While we're migrating some Crostini-specific code still
   // needs a ContainerId. Eventually this should always be nullopt and then
   // removed.
-  absl::optional<crostini::ContainerId> CrostiniContainerId() override;
+  absl::optional<guest_os::GuestId> CrostiniContainerId() override;
 
  private:
-  ContainerId container_id_;
+  guest_os::GuestId container_id_;
 };
 
 }  // namespace crostini

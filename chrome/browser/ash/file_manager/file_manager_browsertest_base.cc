@@ -73,6 +73,7 @@
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -1703,7 +1704,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
 
   std::string DisplayName() override { return name_; }
   Profile* profile() override { return profile_; }
-  crostini::ContainerId ContainerId() override {
+  guest_os::GuestId GuestId() override {
     return crostini::DefaultContainerId();
   }
 

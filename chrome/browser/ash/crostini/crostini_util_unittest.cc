@@ -110,28 +110,6 @@ class CrostiniUtilTest : public testing::Test {
   BrowserProcessPlatformPartTestApi browser_part_;
 };
 
-TEST_F(CrostiniUtilTest, ContainerIdEquality) {
-  auto container1 = ContainerId{"test1", "test2"};
-  auto container2 = ContainerId{"test1", "test2"};
-  auto container3 = ContainerId{"test2", "test1"};
-
-  ASSERT_TRUE(container1 == container2);
-  ASSERT_FALSE(container1 == container3);
-  ASSERT_FALSE(container2 == container3);
-}
-
-TEST_F(CrostiniUtilTest, ContainerIdFromDictValue) {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetStringKey(prefs::kVmKey, "foo");
-  dict.SetStringKey(prefs::kContainerKey, "bar");
-  EXPECT_TRUE(ContainerId(dict) == ContainerId("foo", "bar"));
-}
-
-TEST_F(CrostiniUtilTest, ContainerIdFromNonDictValue) {
-  base::Value non_dict("not a dict value");
-  EXPECT_TRUE(ContainerId(non_dict) == ContainerId("", ""));
-}
-
 TEST_F(CrostiniUtilTest, LaunchCallbackRunsOnRestartError) {
   // Set Restart to fail.
   fake_concierge_client_->set_start_vm_response({});
@@ -148,17 +126,17 @@ TEST_F(CrostiniUtilTest, LaunchCallbackRunsOnRestartError) {
 }
 
 TEST_F(CrostiniUtilTest, DuplicateContainerNamesInPrefsAreRemoved) {
-  ContainerId container1("test1", "test1");
+  guest_os::GuestId container1("test1", "test1");
   base::Value::Dict dictionary1 = container1.ToDictValue();
   dictionary1.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 1");
   dictionary1.Set(prefs::kContainerOsVersionKey, 1);
 
-  ContainerId container2("test1", "test2");
+  guest_os::GuestId container2("test1", "test2");
   base::Value::Dict dictionary2 = container2.ToDictValue();
   dictionary2.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 2");
   dictionary2.Set(prefs::kContainerOsVersionKey, 2);
 
-  ContainerId container3("test2", "test1");
+  guest_os::GuestId container3("test2", "test1");
   base::Value::Dict dictionary3 = container3.ToDictValue();
   dictionary3.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 3");
   dictionary3.Set(prefs::kContainerOsVersionKey, 3);
@@ -186,8 +164,8 @@ TEST_F(CrostiniUtilTest, DuplicateContainerNamesInPrefsAreRemoved) {
 
 TEST_F(CrostiniUtilTest, ShouldStopVm) {
   CrostiniManager* manager = CrostiniManager::GetForProfile(profile_.get());
-  ContainerId containera("apple", "banana");
-  ContainerId containerb("potato", "strawberry");
+  guest_os::GuestId containera("apple", "banana");
+  guest_os::GuestId containerb("potato", "strawberry");
   base::Value::List containers;
   containers.Append(containera.ToDictValue().Clone());
   containers.Append(containerb.ToDictValue().Clone());
@@ -210,8 +188,8 @@ TEST_F(CrostiniUtilTest, ShouldStopVm) {
 
 TEST_F(CrostiniUtilTest, ShouldNotStopVm) {
   CrostiniManager* manager = CrostiniManager::GetForProfile(profile_.get());
-  ContainerId containera("apple", "banana");
-  ContainerId containerb("apple", "strawberry");
+  guest_os::GuestId containera("apple", "banana");
+  guest_os::GuestId containerb("apple", "strawberry");
   base::Value::List containers;
   containers.Append(containera.ToDictValue().Clone());
   containers.Append(containerb.ToDictValue().Clone());
@@ -238,8 +216,8 @@ TEST_F(CrostiniUtilTest, GetContainers) {
   ])");
   ASSERT_TRUE(pref.has_value());
   profile_->GetPrefs()->Set(prefs::kCrostiniContainers, std::move(*pref));
-  std::vector<ContainerId> expected = {ContainerId("vm1", "c1"),
-                                       ContainerId("vm2", "c2")};
+  std::vector<guest_os::GuestId> expected = {guest_os::GuestId("vm1", "c1"),
+                                             guest_os::GuestId("vm2", "c2")};
   EXPECT_EQ(GetContainers(profile_.get()), expected);
 }
 }  // namespace crostini

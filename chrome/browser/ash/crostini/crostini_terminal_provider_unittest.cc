@@ -12,10 +12,10 @@ namespace crostini {
 class CrostiniTerminalProviderTest : public testing::Test {};
 
 TEST_F(CrostiniTerminalProviderTest, Label) {
-  ContainerId id1("vm_name", "container");
+  guest_os::GuestId id1("vm_name", "container");
   ASSERT_EQ(CrostiniTerminalProvider(id1).Label(), "vm_name:container");
 
-  ContainerId id2("termina", "notpenguin");
+  guest_os::GuestId id2("termina", "notpenguin");
   ASSERT_EQ(CrostiniTerminalProvider(id2).Label(), "notpenguin");
 
   // Leave the VM name off the label if it's the default VM.
