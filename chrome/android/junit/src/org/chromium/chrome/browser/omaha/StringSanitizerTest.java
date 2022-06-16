@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,6 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 public class StringSanitizerTest {
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testSanitizeStrings() {
         Assert.assertEquals("normal string", StringSanitizer.sanitize("Normal string"));

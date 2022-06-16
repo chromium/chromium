@@ -18,8 +18,8 @@ public class MockExponentialBackoffScheduler extends ExponentialBackoffScheduler
     private long mAlarmTimestamp;
     private long mCurrentTimestamp;
 
-    public MockExponentialBackoffScheduler(String packageName, Context context,
-            long baseMilliseconds, long maxMilliseconds) {
+    public MockExponentialBackoffScheduler(
+            String packageName, Context context, long baseMilliseconds, long maxMilliseconds) {
         super(packageName, context, baseMilliseconds, maxMilliseconds);
     }
 

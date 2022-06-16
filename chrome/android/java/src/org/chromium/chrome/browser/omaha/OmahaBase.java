@@ -178,7 +178,7 @@ public class OmahaBase {
     public @UpdateStatus int checkForUpdates() {
         // Since this update check is synchronous and blocking on the network
         // connection, it should not be run on the UI thread.
-        assert !ThreadUtils.runningOnUiThread();
+        ThreadUtils.assertOnBackgroundThread();
         Log.i(TAG,
                 "OmahaBase::checkForUpdates(): Current version String: \"" + getInstalledVersion()
                         + "\"");

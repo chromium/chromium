@@ -9,37 +9,32 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.omaha.AttributeFinder;
-import org.chromium.chrome.test.omaha.MockRequestGenerator;
-import org.chromium.chrome.test.omaha.MockRequestGenerator.DeviceType;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
  * Unit tests for the RequestGenerator class.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class RequestGeneratorTest {
     private static final String INSTALL_SOURCE = "install_source";
 
@@ -58,7 +53,6 @@ public class RequestGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testInstallAgeNewInstallation() {
         long currentTimestamp = 201207310000L;
@@ -69,7 +63,6 @@ public class RequestGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testInstallAge() {
         long currentTimestamp = 201207310000L;
@@ -82,25 +75,21 @@ public class RequestGeneratorTest {
     /**
      * Checks whether the install age function is behaving according to spec.
      */
-    void checkInstallAge(long currentTimestamp, long installTimestamp, boolean installing,
-            long expectedAge) {
-        long actualAge = RequestGenerator.installAge(currentTimestamp, installTimestamp,
-                installing);
+    void checkInstallAge(
+            long currentTimestamp, long installTimestamp, boolean installing, long expectedAge) {
+        long actualAge =
+                RequestGenerator.installAge(currentTimestamp, installTimestamp, installing);
         Assert.assertEquals("Install ages differed.", expectedAge, actualAge);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testConstructorRegistersIdentificationGenerator() {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        AdvancedMockContext context = new AdvancedMockContext(targetContext);
-
         // First clear the current set of generators.
         UniqueIdentificationGeneratorFactory.clearGeneratorMapForTest();
 
         // Creating a RequestGenerator should register the identification generator.
-        new MockRequestGenerator(context, DeviceType.HANDSET);
+        new MockRequestGenerator(RuntimeEnvironment.getApplication(), DeviceType.HANDSET);
 
         // Verify the identification generator exists and is of the correct type.
         UniqueIdentificationGenerator instance = UniqueIdentificationGeneratorFactory.getInstance(
@@ -109,35 +98,30 @@ public class RequestGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testHandsetXMLCreationWithInstall() {
         createAndCheckXML(DeviceType.HANDSET, true);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testHandsetXMLCreationWithoutInstall() {
         createAndCheckXML(DeviceType.HANDSET, false);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testTabletXMLCreationWithInstall() {
         createAndCheckXML(DeviceType.TABLET, true);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testTabletXMLCreationWithoutInstall() {
         createAndCheckXML(DeviceType.TABLET, false);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testXMLCreationWithUID() {
         CachedFeatureFlags.setForTesting(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, false);
@@ -146,9 +130,8 @@ public class RequestGeneratorTest {
                 .thenReturn(mock(IdentityManager.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
                 .thenReturn(true);
-        MockRequestGenerator generator = new MockRequestGenerator(
-                new AdvancedMockContext(InstrumentationRegistry.getTargetContext()),
-                DeviceType.TABLET);
+        MockRequestGenerator generator =
+                new MockRequestGenerator(RuntimeEnvironment.getApplication(), DeviceType.TABLET);
         String xml = null;
         try {
             xml = generator.generateXML(
@@ -163,9 +146,6 @@ public class RequestGeneratorTest {
      * Checks that the XML is being created properly.
      */
     private RequestGenerator createAndCheckXML(DeviceType deviceType, boolean sendInstallEvent) {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
-        AdvancedMockContext context = new AdvancedMockContext(targetContext);
-
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));
@@ -178,7 +158,8 @@ public class RequestGeneratorTest {
         long installAge = 42;
         int dateLastActive = 4088;
 
-        MockRequestGenerator generator = new MockRequestGenerator(context, deviceType);
+        MockRequestGenerator generator =
+                new MockRequestGenerator(RuntimeEnvironment.getApplication(), deviceType);
 
         String xml = null;
         try {

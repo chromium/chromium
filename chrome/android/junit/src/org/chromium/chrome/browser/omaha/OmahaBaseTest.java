@@ -6,25 +6,25 @@ package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.IntDef;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FeatureList;
-import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.omaha.MockRequestGenerator;
-import org.chromium.chrome.test.omaha.MockRequestGenerator.DeviceType;
+import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +47,8 @@ import java.util.List;
  * provides a way to hook into functions to return values that would normally be provided by the
  * system, such as whether Chrome was installed through the system image.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class OmahaBaseTest {
     private static class TimestampPair {
         public long timestampNextRequest;
@@ -149,6 +150,17 @@ public class OmahaBaseTest {
         }
     }
 
+    private static class ClosableThreadAssertsDisabler implements AutoCloseable {
+        ClosableThreadAssertsDisabler() {
+            ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        }
+
+        @Override
+        public void close() throws Exception {
+            ThreadUtils.setThreadAssertsDisabledForTesting(false);
+        }
+    }
+
     @IntDef({InstallSource.SYSTEM_IMAGE, InstallSource.ORGANIC})
     @Retention(RetentionPolicy.SOURCE)
     private @interface InstallSource {
@@ -170,7 +182,7 @@ public class OmahaBaseTest {
         int TIMES_OUT = 1;
     }
 
-    private AdvancedMockContext mContext;
+    private InMemorySharedPreferencesContext mContext;
     private MockOmahaDelegate mDelegate;
     private MockOmahaBase mOmahaBase;
 
@@ -187,9 +199,8 @@ public class OmahaBaseTest {
 
     @Before
     public void setUp() {
-        Context targetContext = InstrumentationRegistry.getTargetContext();
         OmahaBase.setIsDisabledForTesting(false);
-        mContext = new AdvancedMockContext(targetContext);
+        mContext = new InMemorySharedPreferencesContext(RuntimeEnvironment.getApplication());
         FeatureList.TestValues overrides = new FeatureList.TestValues();
         overrides.addFeatureFlagOverride(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
         FeatureList.setTestValues(overrides);
@@ -279,7 +290,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testPipelineFreshInstall() {
         final long now = 11684;
@@ -308,7 +318,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testPipelineRegularPing() {
         final long now = 11684;
@@ -342,7 +351,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testPipelineFreshInstallUpdatedAvailable_crbug_1095755() {
         final long now = 11684;
@@ -368,7 +376,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testPipelineRegularPingUpdateAvailable_crbug_1095755() {
         final long now = 11684;
@@ -401,7 +408,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testTooEarlyToPing() {
         final long now = 0;
@@ -430,7 +436,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testTooEarlyToPostExistingRequest() {
         final long timeGeneratedRequest = 0L;
@@ -473,7 +478,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testPostExistingRequestSuccessfully() {
         final long timeGeneratedRequest = 0L;
@@ -518,7 +522,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testPostExistingButFails() {
         final long timeGeneratedRequest = 0L;
@@ -565,7 +568,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testTimestampWithinBounds() {
         final long now = 0L;
@@ -603,7 +605,6 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
     public void testOverdueRequestCausesNewRegistration() {
         final long timeGeneratedRequest = 0L;
@@ -648,9 +649,8 @@ public class OmahaBaseTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
-    public void testCheckForUpdatesConnectionTimesOut() {
+    public void testCheckForUpdatesConnectionTimesOut() throws Exception {
         final long now = 10000L;
 
         mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
@@ -659,14 +659,16 @@ public class OmahaBaseTest {
                 ServerResponse.FAILURE, ConnectionStatus.TIMES_OUT, DeviceType.HANDSET);
 
         @OmahaBase.UpdateStatus
-        int status = mOmahaBase.checkForUpdates();
+        int status;
+        try (ClosableThreadAssertsDisabler ignored = new ClosableThreadAssertsDisabler()) {
+            status = mOmahaBase.checkForUpdates();
+        }
         Assert.assertEquals(OmahaBase.UpdateStatus.OFFLINE, status);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
-    public void testCheckForUpdatesUpdated() {
+    public void testCheckForUpdatesUpdated() throws Exception {
         final long now = 10000L;
         final String version = "89.0.12.5342";
 
@@ -677,14 +679,16 @@ public class OmahaBaseTest {
         mOmahaBase.setUpdateVersion(version);
 
         @OmahaBase.UpdateStatus
-        int status = mOmahaBase.checkForUpdates();
+        int status;
+        try (ClosableThreadAssertsDisabler ignored = new ClosableThreadAssertsDisabler()) {
+            status = mOmahaBase.checkForUpdates();
+        }
         Assert.assertEquals(OmahaBase.UpdateStatus.UPDATED, status);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
-    public void testCheckForUpdatesOutdated() {
+    public void testCheckForUpdatesOutdated() throws Exception {
         final long now = 10000L;
         final String oldVersion = "89.0.12.5342";
         final String newVersion = "89.0.13.1242";
@@ -696,14 +700,16 @@ public class OmahaBaseTest {
         mOmahaBase.setUpdateVersion(newVersion);
 
         @OmahaBase.UpdateStatus
-        int status = mOmahaBase.checkForUpdates();
+        int status;
+        try (ClosableThreadAssertsDisabler ignored = new ClosableThreadAssertsDisabler()) {
+            status = mOmahaBase.checkForUpdates();
+        }
         Assert.assertEquals(OmahaBase.UpdateStatus.OUTDATED, status);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
-    public void testCheckForUpdatesFailedIncorrectNewVersion() {
+    public void testCheckForUpdatesFailedIncorrectNewVersion() throws Exception {
         final long now = 10000L;
         final String oldVersion = "89.0.12.5342";
         final String newVersion = "Unknown";
@@ -715,14 +721,16 @@ public class OmahaBaseTest {
         mOmahaBase.setUpdateVersion(newVersion);
 
         @OmahaBase.UpdateStatus
-        int status = mOmahaBase.checkForUpdates();
+        int status;
+        try (ClosableThreadAssertsDisabler ignored = new ClosableThreadAssertsDisabler()) {
+            status = mOmahaBase.checkForUpdates();
+        }
         Assert.assertEquals(OmahaBase.UpdateStatus.FAILED, status);
     }
 
     @Test
-    @SmallTest
     @Feature({"Omaha"})
-    public void testCheckForUpdatesFailedIncorrectOldVersion() {
+    public void testCheckForUpdatesFailedIncorrectOldVersion() throws Exception {
         final long now = 10000L;
         final String oldVersion = "Unknown";
         final String newVersion = "89.0.13.1242";
@@ -734,7 +742,10 @@ public class OmahaBaseTest {
         mOmahaBase.setUpdateVersion(newVersion);
 
         @OmahaBase.UpdateStatus
-        int status = mOmahaBase.checkForUpdates();
+        int status;
+        try (ClosableThreadAssertsDisabler ignored = new ClosableThreadAssertsDisabler()) {
+            status = mOmahaBase.checkForUpdates();
+        }
         Assert.assertEquals(OmahaBase.UpdateStatus.FAILED, status);
     }
 
