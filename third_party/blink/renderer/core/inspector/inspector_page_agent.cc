@@ -1761,15 +1761,16 @@ void InspectorPageAgent::DidProduceCompilationCache(
 
 void InspectorPageAgent::FileChooserOpened(LocalFrame* frame,
                                            HTMLInputElement* element,
+                                           bool multiple,
                                            bool* intercepted) {
   *intercepted |= intercept_file_chooser_.Get();
   if (!intercept_file_chooser_.Get())
     return;
-  bool multiple = element->Multiple();
   GetFrontend()->fileChooserOpened(
-      IdentifiersFactory::FrameId(frame), DOMNodeIds::IdForNode(element),
+      IdentifiersFactory::FrameId(frame),
       multiple ? protocol::Page::FileChooserOpened::ModeEnum::SelectMultiple
-               : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle);
+               : protocol::Page::FileChooserOpened::ModeEnum::SelectSingle,
+      element ? Maybe<int>(DOMNodeIds::IdForNode(element)) : Maybe<int>());
 }
 
 Response InspectorPageAgent::produceCompilationCache(

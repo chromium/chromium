@@ -239,6 +239,7 @@ class CORE_EXPORT InspectorPageAgent final
                                   v8::Local<v8::Script> script);
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,
+                         bool multiple,
                          bool* intercepted);
 
   // Inspector Controller API
