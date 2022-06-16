@@ -2208,68 +2208,58 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Handles back press events for Chrome in various states. */
     protected final void handleOnBackPressed() {
+        assert !BackPressManager.isEnabled()
+            : "Back press should be handled by implementors of BackPressHandler if enabled";
         if (mNativeInitialized) RecordUserAction.record("SystemBack");
 
-        if (!BackPressManager.isEnabled()) {
-            if (TextBubble.getCountSupplier().get() != null
-                    && TextBubble.getCountSupplier().get() > 0) {
-                // TODO(crbug.com/1279941): should this stop propagating the event?
-                TextBubble.dismissBubbles();
-                BackPressManager.record(Type.TEXT_BUBBLE);
-            }
+        if (TextBubble.getCountSupplier().get() != null
+                && TextBubble.getCountSupplier().get() > 0) {
+            // TODO(crbug.com/1279941): should this stop propagating the event?
+            TextBubble.dismissBubbles();
+            BackPressManager.record(Type.TEXT_BUBBLE);
+        }
 
-            if (VrModuleProvider.getDelegate().onBackPressed()) {
-                BackPressManager.record(Type.VR_DELEGATE);
-                return;
-            };
+        if (VrModuleProvider.getDelegate().onBackPressed()) {
+            BackPressManager.record(Type.VR_DELEGATE);
+            return;
+        }
 
-            ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-            if (arDelegate != null && arDelegate.onBackPressed()) {
-                BackPressManager.record(Type.AR_DELEGATE);
-                return;
-            };
+        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
+        if (arDelegate != null && arDelegate.onBackPressed()) {
+            BackPressManager.record(Type.AR_DELEGATE);
+            return;
+        }
 
-            if (mCompositorViewHolderSupplier.hasValue()) {
-                LayoutManagerImpl layoutManager =
-                        mCompositorViewHolderSupplier.get().getLayoutManager();
-                if (layoutManager != null && layoutManager.onBackPressed()) {
-                    // Back press metrics recording is handled by LayoutManagerImpl internally.
-                    return;
-                };
-            }
-
-            SelectionPopupController controller = getSelectionPopupController();
-            if (controller != null && controller.isSelectActionBarShowing()) {
-                controller.clearSelection();
-                BackPressManager.record(Type.SELECTION_POPUP);
+        if (mCompositorViewHolderSupplier.hasValue()) {
+            LayoutManagerImpl layoutManager =
+                    mCompositorViewHolderSupplier.get().getLayoutManager();
+            if (layoutManager != null && layoutManager.onBackPressed()) {
+                // Back press metrics recording is handled by LayoutManagerImpl internally.
                 return;
             }
+        }
 
-            if (getManualFillingComponent().onBackPressed()) {
-                BackPressManager.record(Type.MANUAL_FILLING);
-                return;
-            }
+        SelectionPopupController controller = getSelectionPopupController();
+        if (controller != null && controller.isSelectActionBarShowing()) {
+            controller.clearSelection();
+            BackPressManager.record(Type.SELECTION_POPUP);
+            return;
+        }
 
-            if (exitFullscreenIfShowing()) {
-                BackPressManager.record(Type.FULLSCREEN);
-                return;
-            }
+        if (getManualFillingComponent().onBackPressed()) {
+            BackPressManager.record(Type.MANUAL_FILLING);
+            return;
+        }
+
+        if (exitFullscreenIfShowing()) {
+            BackPressManager.record(Type.FULLSCREEN);
+            return;
         }
 
         handleBackPressed();
     }
 
     private void initializeBackPressHandling() {
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                ChromeActivity.this.handleOnBackPressed();
-            }
-        };
-        // Order matters here: first-come, last-served.
-        // TODO(crbug.com/1279941): remove this line when all contents of handleOnBackPressed are
-        // migrated to BackGestureManager.
-        getOnBackPressedDispatcher().addCallback(this, callback);
         if (BackPressManager.isEnabled()) {
             getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
@@ -2304,6 +2294,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         new FullscreenBackPressHandler(controlManager.getFullscreenManager()),
                         BackPressHandler.Type.FULLSCREEN);
             });
+        } else {
+            OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    ChromeActivity.this.handleOnBackPressed();
+                }
+            };
+            getOnBackPressedDispatcher().addCallback(this, callback);
         }
     }
 
