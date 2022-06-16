@@ -4,10 +4,18 @@
 
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/gfx/canvas.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
+
+namespace {
+
+constexpr int kSizeInDip = 5;
+
+}  // namespace
 
 class EcheIconLoadingIndicatorViewTest : public AshTestBase {
  public:
@@ -26,6 +34,9 @@ class EcheIconLoadingIndicatorViewTest : public AshTestBase {
     icon_ = std::make_unique<views::ImageView>();
     eche_icon_loading_indicatior_view_ =
         std::make_unique<EcheIconLoadingIndicatorView>(icon_.get());
+
+    const gfx::Rect initial_bounds(0, 0, kSizeInDip, kSizeInDip);
+    eche_icon_loading_indicatior_view_->SetBoundsRect(initial_bounds);
   }
 
   void TearDown() override {
@@ -68,6 +79,29 @@ TEST_F(EcheIconLoadingIndicatorViewTest, SetAnimating) {
   eche_icon_loading_indicatior_view()->SetAnimating(false);
   EXPECT_FALSE(eche_icon_loading_indicatior_view()->GetVisible());
   EXPECT_FALSE(eche_icon_loading_indicatior_view()->GetAnimating());
+}
+
+TEST_F(EcheIconLoadingIndicatorViewTest, OnPaintAnimating) {
+  gfx::Canvas canvas(gfx::Size(kSizeInDip, kSizeInDip), /*image_scale=*/1.0f,
+                     /*is_opaque=*/false);
+
+  eche_icon_loading_indicatior_view()->SetAnimating(true);
+  eche_icon_loading_indicatior_view()->OnPaint(&canvas);
+
+  // Expect the center of animation should be the same as controls layer color.
+  EXPECT_EQ(AshColorProvider::Get()->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::kFocusRingColor),
+            canvas.GetBitmap().getColor(kSizeInDip / 2, kSizeInDip / 2));
+}
+
+TEST_F(EcheIconLoadingIndicatorViewTest, OnPaintNotAnimating) {
+  gfx::Canvas canvas(gfx::Size(kSizeInDip, kSizeInDip), /*image_scale=*/1.0f,
+                     /*is_opaque=*/false);
+
+  eche_icon_loading_indicatior_view()->OnPaint(&canvas);
+
+  // No paint if not animating.
+  EXPECT_EQ(0u, canvas.GetBitmap().getColor(kSizeInDip / 2, kSizeInDip / 2));
 }
 
 }  // namespace ash
