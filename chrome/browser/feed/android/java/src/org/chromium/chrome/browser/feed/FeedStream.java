@@ -282,6 +282,9 @@ public class FeedStream implements Stream {
     class FeedActionsHandlerImpl implements FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
+        // This is based on the menu animation time (218ms) from BottomSheet.java.
+        // It is private to an internal target, so we can't link, to it here.
+        private static final int MENU_DISMISS_TASK_DELAY = 318;
 
         @VisibleForTesting
         static final String FEEDBACK_REPORT_TYPE =
@@ -302,9 +305,6 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportOtherUserAction(
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_SEND_FEEDBACK);
 
-            // Make sure the bottom sheet is dismissed before we take a snapshot.
-            dismissBottomSheet();
-
             Profile profile = Profile.getLastUsedRegularProfile();
             if (profile == null) {
                 return;
@@ -314,11 +314,19 @@ public class FeedStream implements Stream {
 
             Map<String, String> feedContext = convertNameFormat(productSpecificDataMap);
 
+            // We want to hide the bottom sheet before sending feedback so the snapshot doesn't show
+            // the menu covering the article.  However the menu is animating down, we need to wait
+            // for the animation to finish.  We post a task to wait for the duration of the
+            // animation, then call send feedback.
+
             // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
             // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
             // matching an allow list rule.
-            mHelpAndFeedbackLauncher.showFeedback(
-                    mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext);
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                    ()
+                            -> mHelpAndFeedbackLauncher.showFeedback(
+                                    mActivity, profile, url, FEEDBACK_REPORT_TYPE, feedContext),
+                    MENU_DISMISS_TASK_DELAY);
         }
 
         @Override

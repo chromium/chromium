@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -772,39 +771,6 @@ public class FeedStreamTest {
         handler.navigateCrow(TEST_URL);
 
         verify(mActionDelegate).openCrow(TEST_URL);
-    }
-
-    @Test
-    @SmallTest
-    public void testSendFeedback() {
-        final String testUrl = TEST_URL;
-        final String testTitle = "Chromium based browsers for the win!";
-        final String xSurfaceCardTitle = "Card Title";
-        final String cardTitle = "CardTitle";
-        final String cardUrl = "CardUrl";
-        // Arrange.
-        Map<String, String> productSpecificDataMap = new HashMap<>();
-        productSpecificDataMap.put(FeedStream.FeedActionsHandlerImpl.XSURFACE_CARD_URL, testUrl);
-        productSpecificDataMap.put(xSurfaceCardTitle, testTitle);
-
-        mFeedStream.setHelpAndFeedbackLauncherForTest(mHelpAndFeedbackLauncher);
-        bindToView();
-        FeedStream.FeedActionsHandlerImpl handler =
-                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
-                        FeedActionsHandler.KEY);
-
-        // Act.
-        handler.sendFeedback(productSpecificDataMap);
-
-        // Assert.
-        verify(mHelpAndFeedbackLauncher)
-                .showFeedback(any(), any(), eq(testUrl),
-                        eq(FeedStream.FeedActionsHandlerImpl.FEEDBACK_REPORT_TYPE),
-                        mMapCaptor.capture());
-
-        // Check that the map contents are as expected.
-        assertThat(mMapCaptor.getValue(), hasEntry(cardUrl, testUrl));
-        assertThat(mMapCaptor.getValue(), hasEntry(cardTitle, testTitle));
     }
 
     @Test
