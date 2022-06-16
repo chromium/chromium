@@ -20,6 +20,9 @@ struct TokenMojomTraitsHelper {
     base::UnguessableToken token;
     if (!input.ReadValue(&token))
       return false;
+    // UnguessableToken's StructTraits ensures that `token` will never be
+    // empty.
+    CHECK(!token.is_empty());
     *output = TokenType(token);
     return true;
   }
