@@ -122,7 +122,7 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(0u, controller_->GetConfirmedLength());
+  EXPECT_EQ(controller_->GetConfirmedLength(), 0u);
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
@@ -130,8 +130,8 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   bounds.caret = caret_bounds;
   controller_->SetBounds(bounds);
 
-  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
-  EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_NE(suggestion_view->GetAnchorRect(), current_bounds);
+  EXPECT_EQ(suggestion_view->GetAnchorRect(), caret_bounds);
 }
 
 TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
@@ -141,7 +141,7 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
   controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(1u, controller_->GetConfirmedLength());
+  EXPECT_EQ(controller_->GetConfirmedLength(), 1u);
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
@@ -149,8 +149,8 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
   bounds.caret = caret_bounds;
   controller_->SetBounds(bounds);
 
-  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
-  EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_NE(suggestion_view->GetAnchorRect(), current_bounds);
+  EXPECT_EQ(suggestion_view->GetAnchorRect(), caret_bounds);
 }
 
 TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
@@ -178,7 +178,7 @@ TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
   controller_->SetBounds(Bounds{.caret = caret_bounds_after_two_key});
 
   // Anchor should track the new caret position.
-  EXPECT_EQ(caret_bounds_after_two_key, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(suggestion_view->GetAnchorRect(), caret_bounds_after_two_key);
 }
 
 TEST_F(AssistiveWindowControllerTest,
@@ -188,7 +188,7 @@ TEST_F(AssistiveWindowControllerTest,
   details.text = suggestion_;
   details.confirmed_length = 1;
   controller_->ShowSuggestion(details);
-  EXPECT_EQ(1u, controller_->GetConfirmedLength());
+  EXPECT_EQ(controller_->GetConfirmedLength(), 1u);
 
   gfx::Rect current_bounds =
       controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect();
@@ -206,8 +206,8 @@ TEST_F(AssistiveWindowControllerTest,
   Bounds bounds;
   bounds.caret = new_caret_bounds;
   controller_->SetBounds(bounds);
-  EXPECT_EQ(new_caret_bounds,
-            controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect());
+  EXPECT_EQ(controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect(),
+            new_caret_bounds);
 }
 
 TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
@@ -226,8 +226,8 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
 
   ASSERT_TRUE(controller_->GetUndoWindowForTesting() != nullptr);
   autocorrect_bounds.Inset(-4);
-  EXPECT_EQ(autocorrect_bounds,
-            controller_->GetUndoWindowForTesting()->GetAnchorRect());
+  EXPECT_EQ(controller_->GetUndoWindowForTesting()->GetAnchorRect(),
+            autocorrect_bounds);
 }
 
 TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
