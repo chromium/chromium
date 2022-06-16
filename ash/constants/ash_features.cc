@@ -1111,7 +1111,7 @@ const base::Feature kOobeQuickStart{"OobeQuickStart",
 
 // If enabled, the new recommend apps screen is shown.
 const base::Feature kOobeNewRecommendApps{"OobeNewRecommendApps",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Removes "Shut down" button from OOBE, except first login screen and
 // successful enrollment step.
