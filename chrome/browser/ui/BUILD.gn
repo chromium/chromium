@@ -5702,6 +5702,8 @@ static_library("test_support") {
       "autofill_assistant/password_change/mock_assistant_onboarding_controller.h",
       "autofill_assistant/password_change/mock_assistant_onboarding_prompt.cc",
       "autofill_assistant/password_change/mock_assistant_onboarding_prompt.h",
+      "autofill_assistant/password_change/mock_assistant_side_panel_coordinator.cc",
+      "autofill_assistant/password_change/mock_assistant_side_panel_coordinator.h",
       "autofill_assistant/password_change/mock_password_change_run_controller.cc",
       "autofill_assistant/password_change/mock_password_change_run_controller.h",
       "autofill_assistant/password_change/mock_password_change_run_display.cc",

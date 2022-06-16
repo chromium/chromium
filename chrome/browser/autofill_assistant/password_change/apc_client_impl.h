@@ -42,13 +42,17 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   bool IsRunning() const override;
 
  protected:
-  // Creates an onboarding coordinator. Protected to allow for overrides
-  // by test classes.
+  // The following protected methods are factory functions that may be
+  // overridden in tests.
+
+  // Creates an onboarding coordinator.
   virtual std::unique_ptr<ApcOnboardingCoordinator>
   CreateOnboardingCoordinator();
 
-  // Creates an external script controller. Protected to allow for overrides
-  // by test classes.
+  // Creates a side panel coordinator.
+  virtual std::unique_ptr<AssistantSidePanelCoordinator> CreateSidePanel();
+
+  // Creates an external script controller.
   virtual std::unique_ptr<autofill_assistant::ExternalScriptController>
   CreateExternalScriptController();
 

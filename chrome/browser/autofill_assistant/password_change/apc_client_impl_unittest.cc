@@ -9,12 +9,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl.h"
 #include "chrome/browser/autofill_assistant/password_change/mock_apc_onboarding_coordinator.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_side_panel_coordinator.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill_assistant/browser/public/mock_external_script_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,6 +31,7 @@ constexpr char kSourcePasswordChangeSettings[] = "11";
 }  // namespace
 
 using ::testing::DoAll;
+using ::testing::SaveArg;
 using ::testing::StrEq;
 
 class TestApcClientImpl : public ApcClientImpl {
@@ -46,6 +47,10 @@ class TestApcClientImpl : public ApcClientImpl {
     return std::move(coordinator_);
   }
 
+  std::unique_ptr<AssistantSidePanelCoordinator> CreateSidePanel() override {
+    return std::move(side_panel_);
+  }
+
   std::unique_ptr<autofill_assistant::ExternalScriptController>
   CreateExternalScriptController() override {
     return std::move(external_script_controller_);
@@ -59,6 +64,11 @@ class TestApcClientImpl : public ApcClientImpl {
     coordinator_ = std::move(coordinator);
   }
 
+  void InjectSidePanelForTesting(
+      std::unique_ptr<AssistantSidePanelCoordinator> side_panel) {
+    side_panel_ = std::move(side_panel);
+  }
+
   // Allows setting an ExternalScriptController. Must be called at least once
   // before every expected call to `CreateExternalScriptController()`.
   void InjectExternalScriptControllerForTesting(
@@ -69,6 +79,7 @@ class TestApcClientImpl : public ApcClientImpl {
 
  private:
   std::unique_ptr<ApcOnboardingCoordinator> coordinator_;
+  std::unique_ptr<AssistantSidePanelCoordinator> side_panel_;
   std::unique_ptr<autofill_assistant::ExternalScriptController>
       external_script_controller_;
 };
@@ -82,13 +93,15 @@ TestApcClientImpl* TestApcClientImpl::CreateForWebContents(
   return static_cast<TestApcClientImpl*>(web_contents->GetUserData(key));
 }
 
-class ApcClientImplTest : public testing::Test {
+class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
  public:
-  ApcClientImplTest()
-      : web_contents_(web_contents_factory_.CreateWebContents(&profile_)) {
+  ApcClientImplTest() {
     feature_list_.InitWithFeatures({features::kUnifiedSidePanel}, {});
-    // Make sure that a `TestApcClientImpl` is registered for that
-    // `WebContents`.
+  }
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+
     test_apc_client_ = TestApcClientImpl::CreateForWebContents(web_contents());
 
     // Prepare the coordinator.
@@ -97,6 +110,16 @@ class ApcClientImplTest : public testing::Test {
     test_apc_client_->InjectOnboardingCoordinatorForTesting(
         std::move(coordinator));
 
+    // Prepare the side panel.
+    auto side_panel = std::make_unique<MockAssistantSidePanelCoordinator>();
+    side_panel_ref_ = side_panel.get();
+    test_apc_client_->InjectSidePanelForTesting(std::move(side_panel));
+
+    // Register the observer of the side panel. During testing, we implicitly
+    // assume that there is only one.
+    ON_CALL(*side_panel_ref_, AddObserver)
+        .WillByDefault(SaveArg<0>(&side_panel_observer_));
+
     // Prepare the ExternalScriptController.
     auto external_script_controller =
         std::make_unique<autofill_assistant::MockExternalScriptController>();
@@ -104,26 +127,34 @@ class ApcClientImplTest : public testing::Test {
     test_apc_client_->InjectExternalScriptControllerForTesting(
         std::move(external_script_controller));
   }
+
   TestApcClientImpl* apc_client() { return test_apc_client_; }
   MockApcOnboardingCoordinator* coordinator() { return coordinator_ref_; }
+  MockAssistantSidePanelCoordinator* side_panel() { return side_panel_ref_; }
+  AssistantSidePanelCoordinator::Observer* side_panel_observer() {
+    return side_panel_observer_;
+  }
   autofill_assistant::MockExternalScriptController*
   external_script_controller() {
     return external_script_controller_ref_;
   }
-  content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  // Supporting members to create the testing environment.
-  content::BrowserTaskEnvironment task_environment_;
+  // Necessary to turn on the unified sidepanel.
   base::test::ScopedFeatureList feature_list_;
-  TestingProfile profile_;
-  content::TestWebContentsFactory web_contents_factory_;
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<MockApcOnboardingCoordinator> coordinator_ref_;
+
+  // Pointers to mocked components that are injected into the `ApcClientImpl`.
+  raw_ptr<MockApcOnboardingCoordinator> coordinator_ref_ = nullptr;
+  raw_ptr<MockAssistantSidePanelCoordinator> side_panel_ref_ = nullptr;
   raw_ptr<autofill_assistant::MockExternalScriptController>
-      external_script_controller_ref_;
+      external_script_controller_ref_ = nullptr;
+
+  // The last registered side panel observer - may be null or dangling.
+  raw_ptr<AssistantSidePanelCoordinator::Observer> side_panel_observer_ =
+      nullptr;
+
   // The object that is tested.
-  raw_ptr<TestApcClientImpl> test_apc_client_;
+  raw_ptr<TestApcClientImpl> test_apc_client_ = nullptr;
 };
 
 TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
@@ -244,4 +275,27 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithUnifiedSidePanelDisabled) {
   // Starting it does not work.
   EXPECT_FALSE(client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
   EXPECT_FALSE(client->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
+  ASSERT_FALSE(side_panel_observer());
+
+  // Prepare to extract the callback to the coordinator.
+  ApcOnboardingCoordinator::Callback coordinator_callback;
+  EXPECT_CALL(*coordinator(), PerformOnboarding)
+      .Times(1)
+      .WillOnce(MoveArg<0>(&coordinator_callback));
+
+  EXPECT_TRUE(
+      apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true));
+  std::move(coordinator_callback).Run(true);
+  EXPECT_TRUE(apc_client()->IsRunning());
+
+  // The `ApcClientImpl` is registered as an observer to the side panel.
+  ASSERT_EQ(side_panel_observer(), apc_client());
+
+  // Simulate hiding the side panel.
+  side_panel_observer()->OnHidden();
+
+  EXPECT_FALSE(apc_client()->IsRunning());
 }

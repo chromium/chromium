@@ -90,6 +90,9 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
     return;
   }
 
+  side_panel_coordinator_ = CreateSidePanel();
+  side_panel_coordinator_->AddObserver(this);
+
   base::flat_map<std::string, std::string> params_map;
   params_map[kPasswordChangeUsername] = username_;
   params_map[kIntentParameter] = kIntent;
@@ -116,13 +119,12 @@ void ApcClientImpl::OnRunComplete(
 }
 
 void ApcClientImpl::OnHidden() {
-  // The side panel was hidden, so we need to destroy it.
-  side_panel_coordinator_.reset();
-
-  // TODO(crbug.com/1324089): Destroy the ApcExternalAction delegate and decide
-  // whether to log any data about the shutdown.
-
   Stop();
+
+  // The two resets below are not included in `Stop()`, since we may wish to
+  // render content in the side panel even for a stopped flow.
+  apc_external_action_delegate_.reset();
+  side_panel_coordinator_.reset();
 }
 
 std::unique_ptr<ApcOnboardingCoordinator>
@@ -130,10 +132,13 @@ ApcClientImpl::CreateOnboardingCoordinator() {
   return ApcOnboardingCoordinator::Create(&GetWebContents());
 }
 
+std::unique_ptr<AssistantSidePanelCoordinator>
+ApcClientImpl::CreateSidePanel() {
+  return AssistantSidePanelCoordinator::Create(&GetWebContents());
+}
+
 std::unique_ptr<autofill_assistant::ExternalScriptController>
 ApcClientImpl::CreateExternalScriptController() {
-  side_panel_coordinator_ =
-      AssistantSidePanelCoordinator::Create(&GetWebContents());
   apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
       side_panel_coordinator_.get());
   apc_external_action_delegate_->SetupDisplay();
