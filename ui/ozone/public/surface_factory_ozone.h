@@ -78,6 +78,10 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   // GL implementation doesn't exist.
   virtual GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation);
 
+  // Returns the current GLOzone based on the OzonePlatform and
+  // GLImplementationParts currently in use.
+  GLOzone* GetCurrentGLOzone();
+
 #if BUILDFLAG(ENABLE_VULKAN)
   // Creates the vulkan implementation. This object should be capable of
   // creating surfaces that swap to a platform window.

@@ -234,8 +234,10 @@ bool SharedImageBackingFactoryOzone::IsSupported(
   if (used_by_webgpu && !CanImportNativePixmapToWebGPU()) {
     return false;
   }
-  if (used_by_gl &&
-      !gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_KHR_image) {
+  if (used_by_gl && !ui::OzonePlatform::GetInstance()
+                         ->GetSurfaceFactoryOzone()
+                         ->GetCurrentGLOzone()
+                         ->CanImportNativePixmap()) {
     return false;
   }
 #endif

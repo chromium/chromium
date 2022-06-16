@@ -91,6 +91,8 @@ component("ozone_base") {
     "public/hardware_capabilities.h",
     "public/input_controller.cc",
     "public/input_controller.h",
+    "public/native_pixmap_gl_binding.cc",
+    "public/native_pixmap_gl_binding.h",
     "public/overlay_candidates_ozone.cc",
     "public/overlay_candidates_ozone.h",
     "public/overlay_manager_ozone.h",

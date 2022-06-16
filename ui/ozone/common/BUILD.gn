@@ -21,6 +21,8 @@ source_set("common") {
     "gl_ozone_egl.h",
     "gl_surface_egl_readback.cc",
     "gl_surface_egl_readback.h",
+    "native_pixmap_egl_binding.cc",
+    "native_pixmap_egl_binding.h",
     "stub_overlay_manager.cc",
     "stub_overlay_manager.h",
   ]

@@ -32,6 +32,14 @@ class GLOzoneEGL : public GLOzone {
   bool InitializeExtensionSettingsOneOffPlatform(
       gl::GLDisplay* display) override;
   void ShutdownGL(gl::GLDisplay* display) override;
+  bool CanImportNativePixmap() override;
+  std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      gfx::BufferFormat plane_format,
+      gfx::BufferPlane plane,
+      gfx::Size plane_size,
+      GLenum target,
+      GLuint texture_id) override;
   bool GetGLWindowSystemBindingInfo(
       const gl::GLVersionInfo& gl_info,
       gl::GLWindowSystemBindingInfo* info) override;
