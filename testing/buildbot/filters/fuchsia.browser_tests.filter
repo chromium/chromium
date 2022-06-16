@@ -101,10 +101,6 @@
 # TODO(crbug.com/1326678): Dialog not focused as expected
 -ExternalProtocolDialogBrowserTest.TestFocus
 
-# TODO(crbug.com/1326682): Failed to read file to string
--I18nProcessTest.All
-
-
 # TODO(crbug.com/1326681):
 # ../../chrome/browser/infobars/infobars_browsertest.cc:215: Failure
 # Unexpected infobar hung_plugin
