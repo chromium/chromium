@@ -14,19 +14,13 @@ js_type_check("closure_compile") {
 }
 
 js_library("fake_personalization_search_handler") {
-  deps = [
-    "//ash/webui/personalization_app/search:mojo_bindings_js_library_for_compile",
-  ]
+  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_js_library_for_compile" ]
 }
 
 js_library("fake_settings_search_handler") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
-  ]
+  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
 }
 
 js_library("fake_user_action_recorder") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
-  ]
+  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
 }

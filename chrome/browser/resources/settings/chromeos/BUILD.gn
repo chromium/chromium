@@ -91,6 +91,16 @@ if (optimize_webui) {
   }
 }
 
+copy("ash_search_mojo_bindings") {
+  sources = [
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search.mojom-lite.js",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-lite.js",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-lite.js",
+  ]
+  outputs = [ "$root_gen_dir/chrome/browser/ui/webui/settings/chromeos/search/{{source_file_part}}" ]
+  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js" ]
+}
+
 copy("personalization_search_mojo_bindings") {
   sources = [
     "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-lite.js",
@@ -102,9 +112,9 @@ copy("personalization_search_mojo_bindings") {
 # OS Settings specific mojo files, bundled in optimized builds.
 preprocess_if_expr("preprocess_mojo_v3") {
   deps = [
+    ":ash_search_mojo_bindings",
     ":personalization_search_mojo_bindings",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js",
   ]
   in_folder = get_path_info("../../../ui/webui/settings/chromeos/", "gen_dir")
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
@@ -727,7 +737,7 @@ js_library("global_scroll_target_behavior") {
 }
 
 js_library("metrics_recorder") {
-  deps = [ "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile" ]
+  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
 }
 
 js_library("os_icons") {
@@ -797,7 +807,7 @@ js_library("personalization_search_handler") {
 
 js_library("settings_search_handler") {
   deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }

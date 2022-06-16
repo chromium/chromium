@@ -15,7 +15,7 @@ mojom("mojo_bindings") {
   ]
 
   public_deps = [
-    "../constants:mojom",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
     "//mojo/public/mojom/base",
   ]
 }

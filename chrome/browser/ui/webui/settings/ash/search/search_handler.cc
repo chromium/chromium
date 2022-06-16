@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 
 #include <algorithm>
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_result_icon.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"

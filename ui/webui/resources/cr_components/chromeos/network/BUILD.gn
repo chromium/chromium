@@ -384,7 +384,7 @@ js_library("network_config.m") {
     ":network_listener_behavior.m",
     ":network_password_input.m",
     ":network_shared_css.m",
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
