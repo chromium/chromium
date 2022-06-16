@@ -54,7 +54,7 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   return new device_signals::UserPermissionServiceImpl(
-      identity_manager, management_service,
+      management_service,
       std::make_unique<UserDelegateImpl>(profile, identity_manager));
 }
 

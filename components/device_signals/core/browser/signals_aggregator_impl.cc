@@ -29,7 +29,8 @@ SignalCollectionError PermissionToError(const UserPermission permission) {
       return SignalCollectionError::kConsentRequired;
     case UserPermission::kConsumerUser:
     case UserPermission::kUnknownUser:
-      return SignalCollectionError::kUnsupported;
+    case UserPermission::kMissingUser:
+      return SignalCollectionError::kInvalidUser;
     case UserPermission::kGranted:
       NOTREACHED();
       return SignalCollectionError::kUnsupported;

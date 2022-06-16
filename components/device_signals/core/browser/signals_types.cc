@@ -20,6 +20,8 @@ const std::string ErrorToString(SignalCollectionError error) {
       return errors::kMissingSystemService;
     case SignalCollectionError::kMissingBundle:
       return errors::kMissingBundle;
+    case SignalCollectionError::kInvalidUser:
+      return errors::kInvalidUser;
   }
 }
 

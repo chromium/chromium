@@ -24,12 +24,15 @@ enum class UserPermission {
   // Returned when the user is not part of any organization.
   kConsumerUser = 2,
 
-  // Returned when the given user context does not represent any currently
-  // logged-in user.
+  // Returned when the given user context does not represent the current browser
+  // user (e.g. Profile user).
   kUnknownUser = 3,
 
+  // Returned when the no user information was given.
+  kMissingUser = 4,
+
   // Returned when the user is granted permission to the device's signals.
-  kGranted = 4,
+  kGranted = 5,
 };
 
 // Service that can be used to conduct permission checks on given users. The

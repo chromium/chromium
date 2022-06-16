@@ -148,9 +148,11 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_InvalidUserPermissions) {
   permission_to_error_map[UserPermission::kMissingConsent] =
       SignalCollectionError::kConsentRequired;
   permission_to_error_map[UserPermission::kConsumerUser] =
-      SignalCollectionError::kUnsupported;
+      SignalCollectionError::kInvalidUser;
   permission_to_error_map[UserPermission::kUnknownUser] =
-      SignalCollectionError::kUnsupported;
+      SignalCollectionError::kInvalidUser;
+  permission_to_error_map[UserPermission::kMissingUser] =
+      SignalCollectionError::kInvalidUser;
 
   for (const auto& test_case : permission_to_error_map) {
     EXPECT_CALL(mock_permission_service_, CanCollectSignals(user_context_, _))

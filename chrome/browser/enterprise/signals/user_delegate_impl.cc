@@ -26,16 +26,20 @@ bool UserDelegateImpl::IsAffiliated() const {
   return chrome::enterprise_util::IsProfileAffiliated(profile_);
 }
 
-bool UserDelegateImpl::IsSameManagedUser(const AccountInfo& user) const {
+bool UserDelegateImpl::IsManaged() const {
   const auto* profile_policy_connector = profile_->GetProfilePolicyConnector();
 
   if (!profile_policy_connector) {
     return false;
   }
 
-  return profile_policy_connector->IsManaged() &&
-         identity_manager_->GetPrimaryAccountInfo(
-             signin::ConsentLevel::kSignin) == user;
+  return profile_policy_connector->IsManaged();
+}
+
+bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
+  return identity_manager_->GetPrimaryAccountId(
+             signin::ConsentLevel::kSignin) ==
+         identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id).account_id;
 }
 
 }  // namespace enterprise_signals

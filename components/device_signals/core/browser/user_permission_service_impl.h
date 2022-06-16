@@ -15,18 +15,13 @@ namespace policy {
 class ManagementService;
 }  // namespace policy
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace device_signals {
 
 class UserDelegate;
 
 class UserPermissionServiceImpl : public UserPermissionService {
  public:
-  UserPermissionServiceImpl(signin::IdentityManager* identity_manager,
-                            policy::ManagementService* management_service,
+  UserPermissionServiceImpl(policy::ManagementService* management_service,
                             std::unique_ptr<UserDelegate> user_delegate);
 
   UserPermissionServiceImpl(const UserPermissionServiceImpl&) = delete;
@@ -40,7 +35,6 @@ class UserPermissionServiceImpl : public UserPermissionService {
                          CanCollectCallback callback) override;
 
  private:
-  base::raw_ptr<signin::IdentityManager> identity_manager_;
   base::raw_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<UserDelegate> user_delegate_;
 

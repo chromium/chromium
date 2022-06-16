@@ -144,6 +144,10 @@ namespace errors {
 // to be collected.
 const char kConsentRequired[] = "CONSENT_REQUIRED";
 
+// Returned when the user does not represent the current browser user, or is
+// not managed.
+const char kInvalidUser[] = "INVALID_USER";
+
 // Returned when the user is not affiliated with the organization managing the
 // browser.
 const char kUnaffiliatedUser[] = "UNAFFILIATED_USER";

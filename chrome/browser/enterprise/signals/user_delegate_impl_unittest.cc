@@ -32,18 +32,25 @@ class UserDelegateImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
-// Tests that IsSameManagedUser returns false when the user is not managed.
-TEST_F(UserDelegateImplTest, IsSameManagedUser_UnmanagedUser) {
+// Tests that IsManaged returns false when the user is not managed.
+TEST_F(UserDelegateImplTest, IsManaged_False) {
   auto test_profile = CreateProfile(/*is_managed=*/false);
-  auto account = identity_test_env_.MakePrimaryAccountAvailable(
-      kUserEmail, signin::ConsentLevel::kSignin);
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsSameManagedUser(account));
+  EXPECT_FALSE(user_delegate.IsManaged());
 }
 
-// Tests that IsSameManagedUser returns false when given a different user.
+// Tests that IsManaged returns true when the user is managed.
+TEST_F(UserDelegateImplTest, IsManaged_True) {
+  auto test_profile = CreateProfile(/*is_managed=*/true);
+
+  UserDelegateImpl user_delegate(test_profile.get(),
+                                 identity_test_env_.identity_manager());
+  EXPECT_TRUE(user_delegate.IsManaged());
+}
+
+// Tests that IsSameUser returns false when given a different user.
 TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
   auto test_profile = CreateProfile(/*is_managed=*/true);
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
@@ -53,42 +60,42 @@ TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsSameManagedUser(other_account));
+  EXPECT_FALSE(user_delegate.IsSameUser(kOtherUserGaiaId));
 }
 
-// Tests that IsSameManagedUser returns false when there is no primary user.
-TEST_F(UserDelegateImplTest, IsSameManagedUser_NoPrimaryUser) {
+// Tests that IsSameUser returns false when there is no primary user.
+TEST_F(UserDelegateImplTest, IsSameUser_NoPrimaryUser) {
   auto test_profile = CreateProfile(/*is_managed=*/true);
   auto other_account = identity_test_env_.MakeAccountAvailableWithCookies(
       kOtherUserEmail, kOtherUserGaiaId);
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsSameManagedUser(other_account));
+  EXPECT_FALSE(user_delegate.IsSameUser(kOtherUserGaiaId));
 }
 
-// Tests that IsSameManagedUser returns true when given the same user, and the
+// Tests that IsSameUser returns true when given the same user, and the
 // user did not give Sync consent.
-TEST_F(UserDelegateImplTest, IsSameManagedUser_SameUser_Signin) {
+TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Signin) {
   auto test_profile = CreateProfile(/*is_managed=*/true);
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_TRUE(user_delegate.IsSameManagedUser(account));
+  EXPECT_TRUE(user_delegate.IsSameUser(account.gaia));
 }
 
-// Tests that IsSameManagedUser returns true when given the same user, and the
+// Tests that IsSameUser returns true when given the same user, and the
 // user gave Sync consent.
-TEST_F(UserDelegateImplTest, IsSameManagedUser_SameUser_Sync) {
+TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Sync) {
   auto test_profile = CreateProfile(/*is_managed=*/true);
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSync);
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_TRUE(user_delegate.IsSameManagedUser(account));
+  EXPECT_TRUE(user_delegate.IsSameUser(account.gaia));
 }
 
 }  // namespace enterprise_signals

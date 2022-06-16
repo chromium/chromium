@@ -6,7 +6,6 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_USER_DELEGATE_H_
 
 #include "components/device_signals/core/browser/user_delegate.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace device_signals {
@@ -17,7 +16,8 @@ class MockUserDelegate : public UserDelegate {
   ~MockUserDelegate() override;
 
   MOCK_METHOD(bool, IsAffiliated, (), (const, override));
-  MOCK_METHOD(bool, IsSameManagedUser, (const AccountInfo&), (const, override));
+  MOCK_METHOD(bool, IsManaged, (), (const, override));
+  MOCK_METHOD(bool, IsSameUser, (const std::string&), (const, override));
 };
 
 }  // namespace device_signals

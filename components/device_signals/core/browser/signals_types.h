@@ -35,7 +35,8 @@ enum class SignalCollectionError {
   kUnsupported,
   kMissingSystemService,
   kMissingBundle,
-  kMaxValue = kMissingBundle
+  kInvalidUser,
+  kMaxValue = kInvalidUser
 };
 
 const std::string ErrorToString(SignalCollectionError error);
