@@ -525,12 +525,12 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
        base::BindRepeating(&FusionAlgorithmCopyLowLevelValues)},
 
       // Test set 2
-      // Triggers low-level reading event, but not fusion sensor reading event
-      // as fusion sensor values are not changed compared to test set 1.
+      // Doesn't trigger low-level reading event as rounded value is same as
+      // earlier. Because of that fusion sensor event is not either triggered.
       {// Low-level sensor
        {{kTestValueX + kEpsilon, kTestValueY, kTestValueZ},
         {kTestValueX, kTestValueY, kTestValueZ},
-        true},
+        false},
        // Fusion sensor
        {{kTestValueX, kTestValueY, kTestValueZ},
         {kTestValueX, kTestValueY, kTestValueZ},
@@ -538,19 +538,6 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
        base::BindRepeating(&FusionAlgorithmSubtractEpsilonFromX)},
 
       // Test set 3
-      // Test set has same values as previous values so low-level and fusion
-      // reading event is not expected.
-      {// Low-level sensor
-       {{kTestValueX + kEpsilon, kTestValueY, kTestValueZ},
-        {kTestValueX, kTestValueY, kTestValueZ},
-        false},
-       // Fusion sensor
-       {{kTestValueX, kTestValueY, kTestValueZ},
-        {kTestValueX, kTestValueY, kTestValueZ},
-        false},
-       base::BindRepeating(&FusionAlgorithmSubtractEpsilonFromX)},
-
-      // Test set 4
       // In current code as fusion sensor values are rounded before
       // PlatformSensorFusionAlgorithm::IsReadingSignificantlyDifferent() call
       // the difference between values must much bigger than threshold value.

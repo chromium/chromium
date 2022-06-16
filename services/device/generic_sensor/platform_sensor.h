@@ -153,7 +153,9 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   raw_ptr<PlatformSensorProvider> provider_;
   bool is_active_ = false;
   absl::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
-  mutable base::Lock lock_;  // Protect last_raw_reading_.
+  absl::optional<SensorReading> last_rounded_reading_ GUARDED_BY(lock_);
+  // Protect last_raw_reading_ & last_rounded_reading_.
+  mutable base::Lock lock_;
   base::WeakPtrFactory<PlatformSensor> weak_factory_{this};
 };
 

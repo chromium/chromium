@@ -166,7 +166,7 @@ TEST_F(PlatformSensorAndProviderTest, SharedBufferCleared) {
 
 // Rounding to nearest 50 (see kAlsRoundingMultiple). 25 (see
 // kAlsSignificanceThreshold) difference in values reported in significance
-// test.
+// test, if rounded values differs from previous rounded value.
 TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAmbientLight) {
   scoped_refptr<FakePlatformSensor> fake_sensor =
       CreateSensorSync(SensorType::AMBIENT_LIGHT);
@@ -193,13 +193,15 @@ TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAmbientLight) {
   // 7. New value is set to 24. And test checks it is correctly rounded to 0.
   //    New value is allowed as it is significantly different compared to old
   //    value (49).
+  // 8. Last two values test that if rounded values are same, new reading event
+  //    is not triggered.
   const struct {
     const double attempted_als_value;
     const double expected_als_value;
     const bool expect_reading_changed_event;
   } kTestSteps[] = {
-      {24, 0, true},   {35, 0, false}, {49, 50, true},
-      {35, 50, false}, {24, 0, true},
+      {24, 0, true}, {35, 0, false}, {49, 50, true},  {35, 50, false},
+      {24, 0, true}, {50, 50, true}, {25, 50, false},
   };
 
   for (const auto& test_case : kTestSteps) {
@@ -257,8 +259,8 @@ TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckPressure) {
   }
 }
 
-// Rounding to nearest 0.1 (see kAccelerometerRoundingMultiple). Any change in
-// values reported in significance test.
+// Rounding to nearest 0.1 (see kAccelerometerRoundingMultiple). New reading
+// event is triggered if rounded values differs from previous rounded value.
 TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAccelerometer) {
   const double kTestValue = 10.0;  // Made up test value.
   scoped_refptr<FakePlatformSensor> fake_sensor =
@@ -275,12 +277,11 @@ TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAccelerometer) {
   } kTestSteps[] = {
       {kTestValue, kTestValue, true},
       {kTestValue, kTestValue, false},
-      {kTestValue + kEpsilon, kTestValue, true},
-      {kTestValue, kTestValue, true},
+      {kTestValue + kEpsilon, kTestValue, false},
       {kTestValue + kAccelerometerRoundingMultiple - kEpsilon,
        kTestValue + kAccelerometerRoundingMultiple, true},
       {kTestValue + kAccelerometerRoundingMultiple + kEpsilon,
-       kTestValue + kAccelerometerRoundingMultiple, true},
+       kTestValue + kAccelerometerRoundingMultiple, false},
   };
 
   for (const auto& test_case : kTestSteps) {
