@@ -426,7 +426,7 @@ SearchPrefetchService::TakePrefetchResponseFromDiskCache(
 
   return std::make_unique<CacheAliasSearchPrefetchURLLoader>(
       profile_, BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch(),
-      prefetch_cache_[navigation_url_without_ref].first, nullptr);
+      prefetch_cache_[navigation_url_without_ref].first);
 }
 
 void SearchPrefetchService::ClearPrefetches() {

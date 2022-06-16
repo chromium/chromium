@@ -14,8 +14,6 @@ extern const base::Feature kSearchPrefetchBlockBeforeHeaders;
 
 extern const base::Feature kSearchPrefetchUpgradeToPrerender;
 
-extern const base::Feature kSearchPrefetchUsesNetworkCache;
-
 // Whether matching prefetches can block navigation until they are determined to
 // be serve-able or not based on headers.
 bool SearchPrefetchBlockBeforeHeadersIsEnabled();
@@ -25,10 +23,6 @@ bool SearchPrefetchServicePrefetchingIsEnabled();
 
 // Whether supporting upgrading a prefetch response to prerender page.
 bool SearchPrefetchUpgradeToPrerenderIsEnabled();
-
-// Whether the search prefetch service uses the network cache instead of the in
-// memory cache.
-bool SearchPrefetchUsesNetworkCache();
 
 // The amount of time a response is considered valid after the prefetch starts.
 base::TimeDelta SearchPrefetchCachingLimit();

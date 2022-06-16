@@ -40,13 +40,6 @@ bool SearchPrefetchUpgradeToPrerenderIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchUpgradeToPrerender);
 }
 
-const base::Feature kSearchPrefetchUsesNetworkCache{
-    "SearchPrefetchUsesNetworkCache", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool SearchPrefetchUsesNetworkCache() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchUsesNetworkCache);
-}
-
 base::TimeDelta SearchPrefetchCachingLimit() {
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "prefetch_caching_limit_ms", 60000));

@@ -30,15 +30,13 @@
 CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     Profile* profile,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    const GURL& prefetch_url,
-    std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader)
+    const GURL& prefetch_url)
     : url_loader_factory_(profile->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()),
       search_prefetch_service_(
           SearchPrefetchServiceFactory::GetForProfile(profile)->GetWeakPtr()),
       network_traffic_annotation_(network_traffic_annotation),
-      prefetch_url_(prefetch_url),
-      prefetch_loader_(std::move(prefetch_loader)) {}
+      prefetch_url_(prefetch_url) {}
 
 CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() =
     default;
@@ -71,25 +69,7 @@ void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(
       weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
 
-  // The prefetch is already in the disk cache when there is no prefetch loader.
-  if (!prefetch_loader_) {
-    StartPrefetchRequest();
-    return;
-  }
-
-  prefetch_loader_->RecordNavigationURLHistogram(resource_request_->url);
-
-  // Either use the prefetch, restart to the direct URL, or wait for headers to
-  // complete.
-  if (prefetch_loader_->ReadyToServe()) {
-    StartPrefetchRequest();
-  } else if (prefetch_loader_->ReceivedError()) {
-    RestartDirect();
-  } else {
-    prefetch_loader_->SetHeadersReceivedCallback(
-        base::BindOnce(&CacheAliasSearchPrefetchURLLoader::HeadersReceived,
-                       base::Unretained(this)));
-  }
+  StartPrefetchRequest();
 }
 
 void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
@@ -108,17 +88,6 @@ void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch,
       base::Unretained(this)));
-}
-
-void CacheAliasSearchPrefetchURLLoader::HeadersReceived() {
-  DCHECK(receiver_.is_bound());
-
-  if (prefetch_loader_->ReadyToServe()) {
-    StartPrefetchRequest();
-  } else {
-    DCHECK(prefetch_loader_->ReceivedError());
-    RestartDirect();
-  }
 }
 
 void CacheAliasSearchPrefetchURLLoader::RestartDirect() {

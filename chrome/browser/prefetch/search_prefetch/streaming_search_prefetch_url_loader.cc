@@ -193,19 +193,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveEarlyHints(
   // Do nothing.
 }
 
-void StreamingSearchPrefetchURLLoader::SetHeadersReceivedCallback(
-    base::OnceClosure headers_received_callback) {
-  headers_received_callback_ = std::move(headers_received_callback);
-}
-
-bool StreamingSearchPrefetchURLLoader::ReadyToServe() {
-  return can_be_served_.has_value() && can_be_served_.value();
-}
-
-bool StreamingSearchPrefetchURLLoader::ReceivedError() {
-  return can_be_served_.has_value() && !(can_be_served_.value());
-}
-
 void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
@@ -217,23 +204,15 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     return;
   }
 
-  can_be_served_ = CanServePrefetchRequest(head->headers);
+  bool can_be_served = CanServePrefetchRequest(head->headers);
 
   // Don't report errors for navigation prefetch.
   if (!navigation_prefetch_)
-    std::move(report_error_callback_).Run(!can_be_served_.value());
-
-  if (headers_received_callback_) {
-    // Stop future messages, this object just needs to keep the request alive in
-    // the network service until it is served elsewhere.
-    url_loader_receiver_.Pause();
-    std::move(headers_received_callback_).Run();
-    return;
-  }
+    std::move(report_error_callback_).Run(!can_be_served);
 
   // If there is an error, either cancel the request or fallback depending on
   // whether we still have a parent pointer.
-  if (!can_be_served_.value()) {
+  if (!can_be_served) {
     if ((navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) &&
         !streaming_prefetch_request_) {
       Fallback();
