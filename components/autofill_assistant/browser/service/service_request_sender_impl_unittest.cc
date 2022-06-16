@@ -34,9 +34,12 @@
 namespace autofill_assistant {
 
 using ::base::test::RunOnceCallback;
+using ::network::URLLoaderCompletionStatus;
 using ::testing::_;
+using ::testing::Field;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::ReturnRef;
 
 namespace {
 
@@ -65,6 +68,8 @@ class ServiceRequestSenderImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   NiceMock<MockAccessTokenFetcher> mock_access_token_fetcher_;
+
+  absl::optional<URLLoaderCompletionStatus> completion_status_ = absl::nullopt;
 
   void InitCupFeatures(bool enableSigning, bool enableVerifying) {
     std::vector<base::Feature> enabled_features;
@@ -115,6 +120,8 @@ TEST_F(ServiceRequestSenderImplTest, SendUnauthenticatedRequest) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
@@ -151,6 +158,8 @@ TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
@@ -196,6 +205,8 @@ TEST_F(ServiceRequestSenderImplTest, ForceAuthenticatedRequest) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
@@ -239,6 +250,8 @@ TEST_F(ServiceRequestSenderImplTest,
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
@@ -279,6 +292,8 @@ TEST_F(ServiceRequestSenderImplTest,
   auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
@@ -305,6 +320,8 @@ TEST_F(ServiceRequestSenderImplTest,
   EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
       .Times(0);
   EXPECT_CALL(*loader, ResponseInfo).Times(0);
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(false, /*access_token = */ ""));
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
@@ -346,6 +363,8 @@ TEST_F(ServiceRequestSenderImplTest, SignsGetActionsRequestWhenFeatureEnabled) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   EXPECT_CALL(*cup_factory,
@@ -390,6 +409,8 @@ TEST_F(ServiceRequestSenderImplTest, ValidatesGetActionsResponsesWhenEnabled) {
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   EXPECT_CALL(*cup_factory,
@@ -430,6 +451,8 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupSigningDisabledEvent) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
 
@@ -467,6 +490,8 @@ TEST_F(ServiceRequestSenderImplTest, RecordsCupVerificationDisabledEvent) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   EXPECT_CALL(*cup_factory,
@@ -508,6 +533,8 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupEnabled) {
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, "", _));
   EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
@@ -550,6 +577,8 @@ TEST_F(ServiceRequestSenderImplTest, RecordsHttpFailureEventWithCupDisabled) {
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_NOT_FOUND, "", _));
   EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
@@ -591,6 +620,8 @@ TEST_F(ServiceRequestSenderImplTest,
           RunOnceCallback<1>(std::make_unique<std::string>("packed_response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   EXPECT_CALL(*cup_factory, CreateInstance).WillOnce([&]() {
     return std::move(cup);
@@ -641,6 +672,8 @@ TEST_F(ServiceRequestSenderImplTest, DoesNotRecordCupEventForNonSupportedRpcs) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
   ServiceRequestSenderImpl request_sender{
@@ -680,6 +713,8 @@ TEST_F(ServiceRequestSenderImplTest,
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
 
   auto cup_factory =
@@ -713,6 +748,8 @@ TEST_F(ServiceRequestSenderImplTest, TestRetryLoggingForGetUserData) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader_ptr, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(*loader_ptr, GetNumRetries).WillOnce(Return(1));
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
@@ -749,6 +786,8 @@ TEST_F(ServiceRequestSenderImplTest, TestNoRetryLoggingForSupportsScripts) {
       .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
   EXPECT_CALL(*loader_ptr, ResponseInfo)
       .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status_));
   EXPECT_CALL(*loader_ptr, GetNumRetries).Times(0);
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .WillOnce(RunOnceCallback<0>(true, "access_token"));
@@ -769,6 +808,47 @@ TEST_F(ServiceRequestSenderImplTest, TestNoRetryLoggingForSupportsScripts) {
       "Android.AutofillAssistant.ServiceRequestSender.SuccessRetryCount", 0);
   histogram_tester.ExpectTotalCount(
       "Android.AutofillAssistant.ServiceRequestSender.FailureRetryCount", 0);
+}
+
+TEST_F(ServiceRequestSenderImplTest, EncodedBodyLengthSet) {
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+
+  EXPECT_CALL(*loader,
+              AttachStringForUpload(std::string("request"),
+                                    std::string("application/x-protobuffer")));
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+
+  auto completion_status = absl::make_optional<URLLoaderCompletionStatus>();
+  completion_status->encoded_body_length = 1337;
+  EXPECT_CALL(*loader, CompletionStatus)
+      .WillRepeatedly(ReturnRef(completion_status));
+
+  EXPECT_CALL(
+      mock_response_callback_,
+      Run(_, _,
+          Field(&ServiceRequestSender::ResponseInfo::encoded_body_length,
+                1337)));
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      RpcType::GET_TRIGGER_SCRIPTS);
 }
 
 // TODO(b/170934170): Add tests for full unit test coverage of

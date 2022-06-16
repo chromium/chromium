@@ -57,16 +57,20 @@ void OnURLLoaderComplete(
   }
 
   int response_code = 0;
-  autofill_assistant::ServiceRequestSender::ResponseInfo response_info;
-  if (loader->ResponseInfo()) {
-    response_info.encoded_body_length =
-        loader->ResponseInfo()->encoded_body_length;
-    if (loader->ResponseInfo()->headers) {
-      response_code = loader->ResponseInfo()->headers->response_code();
-    }
+  if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
+    response_code = loader->ResponseInfo()->headers->response_code();
   }
+
+  autofill_assistant::ServiceRequestSender::ResponseInfo response_info;
+  if (loader->CompletionStatus().has_value()) {
+    response_info.encoded_body_length =
+        loader->CompletionStatus()->encoded_body_length;
+  }
+
   VLOG(3) << "Received response: status=" << response_code << ", "
-          << response_str.length() << " bytes";
+          << "encoded: " << response_info.encoded_body_length << " bytes, "
+          << "decoded: " << response_str.length() << " bytes";
+
   if (max_retries > 0) {
     autofill_assistant::Metrics::RecordServiceRequestRetryCount(
         loader->GetNumRetries(), response_code == net::HTTP_OK);
