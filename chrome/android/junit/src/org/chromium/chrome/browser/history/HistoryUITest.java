@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.history;
 
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.Intents.intending;
-import static androidx.test.espresso.intent.Intents.times;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.app.Instrumentation.ActivityResult;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -28,8 +28,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
 
 import com.google.android.material.tabs.TabLayout;
@@ -39,75 +39,99 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.test.util.CloseableOnMainThread;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Restriction;
+import org.chromium.base.Promise;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.history.HistoryTestUtils.TestObserver;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersBridge;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersResult;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrarJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
-import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Tests the {@link HistoryActivity}.
+ * Tests the History UI.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-public class HistoryActivityTest {
-    // TODO(crbug.com/1238144): Migrate to BaseActivityTestRule.
+@RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
+public class HistoryUITest {
     @Rule
-    public final IntentsTestRule<HistoryActivity> mActivityTestRule =
-            new IntentsTestRule<>(HistoryActivity.class, false, false);
-
+    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
     @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
+    private ActivityScenario<TestActivity> mActivityScenario;
     private StubbedHistoryProvider mHistoryProvider;
     private HistoryAdapter mAdapter;
     private HistoryManager mHistoryManager;
     private RecyclerView mRecyclerView;
-    private TestObserver mTestObserver;
-    private PrefChangeRegistrar mPrefChangeRegistrar;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
+    private Activity mActivity;
 
     private HistoryItem mItem1;
     private HistoryItem mItem2;
 
     private static final String HISTORY_SEARCH_QUERY = "some page";
+
+    @Mock
+    private SnackbarManager mSnackbarManager;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJni;
+    @Mock
+    private PrefService mPrefService;
+    @Mock
+    private IdentityServicesProvider mIdentityService;
+    @Mock
+    private SigninManager mSigninManager;
+    @Mock
+    private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
+    @Mock
+    private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private HistoryClustersBridge mHistoryClustersBridge;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -115,11 +139,6 @@ public class HistoryActivityTest {
 
     @Before
     public void setUp() throws Exception {
-        // Account not signed in by default with AccountManagerTestRule.
-        // The clear browsing data header, one date view, and two
-        // history item views should be shown, but the info header should not. We enforce a default
-        // state because the number of headers shown depends on the signed-in state.
-
         mHistoryProvider = new StubbedHistoryProvider();
 
         Date today = new Date();
@@ -130,9 +149,26 @@ public class HistoryActivityTest {
         mHistoryProvider.addItem(mItem2);
 
         HistoryContentManager.setProviderForTests(mHistoryProvider);
-
-        launchHistoryActivity();
-        HistoryTestUtils.setupHistoryTestHeaders(mAdapter, mTestObserver);
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
+        doReturn(1L).when(mMockLargeIconBridgeJni).init();
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        doReturn(mPrefService).when(mUserPrefsJni).get(mProfile);
+        doReturn(true).when(mPrefService).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        IdentityServicesProvider.setInstanceForTests(mIdentityService);
+        doReturn(mSigninManager).when(mIdentityService).getSigninManager(mProfile);
+        mJniMocker.mock(PrefChangeRegistrarJni.TEST_HOOKS, mPrefChangeRegistrarJni);
+        IncognitoUtils.setEnabledForTesting(true);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
+        mActivityScenario = ActivityScenario.launch(TestActivity.class)
+                                    .onActivity(activity -> mActivity = activity);
+        mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
+                /* Supplier<Tab>= */ null, false, null);
+        mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
+        mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
+        mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
+        layoutRecyclerView();
 
         int expectedItemCount = 4;
         // When Journeys is enabled, there is an additional header item.
@@ -143,30 +179,15 @@ public class HistoryActivityTest {
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
     }
 
-    private void launchHistoryActivity() {
-        HistoryActivity activity = mActivityTestRule.launchActivity(null);
-        mHistoryManager = activity.getHistoryManagerForTests();
-        mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
-        mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
-        mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
-        mTestObserver = new TestObserver();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mHistoryManager.getSelectionDelegateForTests().addObserver(mTestObserver);
-            mAdapter.registerAdapterDataObserver(mTestObserver);
-        });
-    }
-
     @Test
     @SmallTest
     public void testRemove_SingleItem() throws Exception {
-        int callCount = mTestObserver.onChangedCallback.getCallCount();
         final HistoryItemView itemView = (HistoryItemView) getItemView(2);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> itemView.getRemoveButtonForTests().performClick());
+        itemView.getRemoveButtonForTests().performClick();
 
         // Check that one item was removed.
-        mTestObserver.onChangedCallback.waitForCallback(callCount, 1);
+        ShadowLooper.idleMainLooper();
         Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
         Assert.assertEquals(3, mAdapter.getItemCount());
@@ -180,17 +201,10 @@ public class HistoryActivityTest {
         toggleItemSelection(2);
         toggleItemSelection(3);
 
-        int callCount = mTestObserver.onChangedCallback.getCallCount();
-
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            Assert.assertTrue(
-                    mHistoryManager.getToolbarForTests().getMenu().performIdentifierAction(
-                            R.id.selection_mode_delete_menu_id, 0));
-        });
+        performMenuAction(R.id.selection_mode_delete_menu_id);
 
         // Check that all items were removed. The onChangedCallback should be called three times -
         // once for each item that is being removed and once for the removal of the header.
-        mTestObserver.onChangedCallback.waitForCallback(callCount, 3);
         Assert.assertEquals(0, mAdapter.getItemCount());
         Assert.assertEquals(2, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
@@ -209,7 +223,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedIn() {
-        mSigninTestRule.addTestAccountThenSignin();
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
 
         setHasOtherFormsOfBrowsingData(false);
 
@@ -219,7 +233,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedInSynced() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
 
         setHasOtherFormsOfBrowsingData(false);
 
@@ -229,7 +243,7 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testPrivacyDisclaimers_SignedInSyncedAndOtherForms() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
 
         setHasOtherFormsOfBrowsingData(true);
 
@@ -239,34 +253,24 @@ public class HistoryActivityTest {
     @Test
     @SmallTest
     public void testOpenItem() throws Exception {
-        intending(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())))
-                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
-
         clickItem(2);
-
-        intended(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())), times(1));
+        Assert.assertThat(shadowOf(mActivity).peekNextStartedActivity(),
+                allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())));
     }
 
     @Test
     @SmallTest
     public void testOpenSelectedItems() throws Exception {
-        // Stub out intent responses to prevent them from actually being sent.
-        intending(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())))
-                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
-        intending(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem2.getUrl())))
-                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
-
         toggleItemSelection(2);
         toggleItemSelection(3);
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            Assert.assertTrue(
-                    mHistoryManager.getToolbarForTests().getMenu().performIdentifierAction(
-                            R.id.selection_mode_open_in_incognito, 0));
-        });
+        performMenuAction(R.id.selection_mode_open_in_incognito);
+        Intent firstIntent = shadowOf(mActivity).getNextStartedActivity();
+        Intent secondIntent = shadowOf(mActivity).getNextStartedActivity();
 
-        intended(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())), times(1));
-        intended(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem2.getUrl())), times(1));
+        Assert.assertThat(Arrays.asList(firstIntent, secondIntent),
+                hasItems(allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem1.getUrl())),
+                        allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(mItem2.getUrl()))));
     }
 
     @Test
@@ -297,62 +301,16 @@ public class HistoryActivityTest {
 
         mHistoryProvider.removeItem(mItem1);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAdapter.onHistoryDeleted());
+        mAdapter.onHistoryDeleted();
 
         // The selection should be cleared and the items in the adapter should be reloaded.
         Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(3, mAdapter.getItemCount());
     }
 
-    // TODO(crbug.com/1306031): remove this test.
     @Test
     @SmallTest
-    @DisableFeatures("AllowHistoryDeletionForChildAccounts")
-    public void testSupervisedUserHistoryDeletionNotAllowed() throws Exception {
-        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
-        final HistoryItemView item = (HistoryItemView) getItemView(2);
-        View itemRemoveButton = item.getRemoveButtonForTests();
-
-        // The item's remove button is visible for non-supervised users when there is no selection.
-        Assert.assertEquals(View.VISIBLE, itemRemoveButton.getVisibility());
-
-        toggleItemSelection(2);
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_open_in_incognito).isVisible());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_open_in_incognito).isEnabled());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_delete_menu_id).isVisible());
-        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_delete_menu_id).isEnabled());
-        // The item's remove button is invisible for non-supervised users when there is a selection.
-        Assert.assertEquals(View.INVISIBLE, item.getRemoveButtonForTests().getVisibility());
-
-        // Turn selection off and check if remove button is visible.
-        toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
-
-        signInToSupervisedAccount();
-
-        Assert.assertEquals(View.GONE, item.getRemoveButtonForTests().getVisibility());
-        toggleItemSelection(2);
-        Assert.assertNull(toolbar.getItemById(R.id.selection_mode_open_in_incognito));
-        Assert.assertNull(toolbar.getItemById(R.id.selection_mode_delete_menu_id));
-        Assert.assertTrue(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.GONE, item.getRemoveButtonForTests().getVisibility());
-
-        // Make sure selection is no longer enabled.
-        toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.GONE, item.getRemoveButtonForTests().getVisibility());
-
-        signOut();
-
-        // Check that the item's remove button visibility is set correctly after signing out.
-        Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures("AllowHistoryDeletionForChildAccounts")
-    public void testSupervisedUser() throws Exception {
+    public void testSupervisedUser() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final HistoryItemView item = (HistoryItemView) getItemView(2);
         View itemRemoveButton = item.getRemoveButtonForTests();
@@ -426,12 +384,9 @@ public class HistoryActivityTest {
         toggleItemSelection(2);
         Assert.assertTrue(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
 
-        int callCount = mTestObserver.onSelectionCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
+        performMenuAction(R.id.search_menu_id);
 
         // The selection should be cleared when a search is started.
-        mTestObserver.onSelectionCallback.waitForCallback(callCount, 1);
         Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
@@ -449,14 +404,14 @@ public class HistoryActivityTest {
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
 
         // Close the search view.
-        TestThreadUtils.runOnUiThreadBlocking(() -> toolbar.onNavigationBack());
+        toolbar.onNavigationBack();
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
     }
 
     @Test
     @SmallTest
-    public void testToggleInfoMenuItem() throws Exception {
+    public void testToggleInfoMenuItem() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
 
@@ -467,9 +422,9 @@ public class HistoryActivityTest {
         Assert.assertEquals(1, headerGroup.size());
 
         // Signed in but not synced and history has items. The info button should be hidden.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         setHasOtherFormsOfBrowsingData(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> toolbar.onSignInStateChange());
+        toolbar.onSignInStateChange();
         Assert.assertFalse(infoMenuItem.isVisible());
 
         // Signed in, synced, has other forms and has items
@@ -481,13 +436,13 @@ public class HistoryActivityTest {
         Assert.assertEquals(2, headerGroup.size());
 
         // Toggle Info Menu Item to off
-        TestThreadUtils.runOnUiThreadBlocking(() -> mHistoryManager.onMenuItemClick(infoMenuItem));
+        mHistoryManager.onMenuItemClick(infoMenuItem);
         headerGroup = mAdapter.getFirstGroupForTests();
         Assert.assertTrue(mAdapter.hasListHeader());
         Assert.assertEquals(1, headerGroup.size());
 
         // Toggle Info Menu Item to on
-        TestThreadUtils.runOnUiThreadBlocking(() -> mHistoryManager.onMenuItemClick(infoMenuItem));
+        mHistoryManager.onMenuItemClick(infoMenuItem);
         headerGroup = mAdapter.getFirstGroupForTests();
         Assert.assertTrue(mAdapter.hasListHeader());
         Assert.assertEquals(2, headerGroup.size());
@@ -495,21 +450,21 @@ public class HistoryActivityTest {
 
     @Test
     @SmallTest
-    public void testInfoIcon_OtherFormsOfBrowsingData() throws ExecutionException {
+    public void testInfoIcon_OtherFormsOfBrowsingData() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
         setHasOtherFormsOfBrowsingData(true);
         Assert.assertTrue("Info icon should be visible.", infoMenuItem.isVisible());
 
         // Hide disclaimers to simulate setup for https://crbug.com/1071468.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mHistoryManager.onMenuItemClick(infoMenuItem));
+        mHistoryManager.onMenuItemClick(infoMenuItem);
         Assert.assertFalse("Privacy disclaimers should be hidden.",
                 mHistoryManager.getContentManagerForTests()
                         .getShouldShowPrivacyDisclaimersIfAvailable());
 
         // Simulate call indicating there are not other forms of browsing data.
         setHasOtherFormsOfBrowsingData(false);
-        RecyclerViewTestUtils.waitForStableRecyclerView(mRecyclerView);
+        layoutRecyclerView();
         Assert.assertFalse("Info menu item should be hidden.", infoMenuItem.isVisible());
 
         // Simulate call indicating there are other forms of browsing data.
@@ -519,30 +474,27 @@ public class HistoryActivityTest {
 
     @Test
     @SmallTest
-    public void testInfoHeaderInSearchMode() throws Exception {
+    public void testInfoHeaderInSearchMode() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
 
         // Sign in and set has other forms of browsing data to true.
-        int callCount = mTestObserver.onSelectionCallback.getCallCount();
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         setHasOtherFormsOfBrowsingData(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            toolbar.onSignInStateChange();
-            mAdapter.onSignInStateChange();
-        });
-        mTestObserver.onChangedCallback.waitForCallback(callCount, 1);
+
+        toolbar.onSignInStateChange();
+        mAdapter.onSignInStateChange();
+
+        ShadowLooper.idleMainLooper();
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
         Assert.assertTrue(infoMenuItem.isVisible());
         Assert.assertTrue(mAdapter.hasListHeader());
         Assert.assertEquals(2, firstGroup.size());
 
         // Enter search mode
-        callCount = mTestObserver.onSelectionCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
+        performMenuAction(R.id.search_menu_id);
 
-        mTestObserver.onSelectionCallback.waitForCallback(callCount, 1);
+        ShadowLooper.idleMainLooper();
         firstGroup = mAdapter.getFirstGroupForTests();
         Assert.assertFalse(infoMenuItem.isVisible());
         // The first group should be the history item group from SetUp()
@@ -552,18 +504,19 @@ public class HistoryActivityTest {
 
     @Test
     @SmallTest
-    public void testSearch_NotFound() throws Exception {
+    public void testSearch_NotFound() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
 
         // Enter search mode
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
+        performMenuAction(R.id.search_menu_id);
         EditText searchText = toolbar.findViewById(R.id.search_text);
-        TestThreadUtils.runOnUiThreadBlocking(() -> searchText.setText(HISTORY_SEARCH_QUERY));
+        searchText.setText(HISTORY_SEARCH_QUERY);
+        layoutRecyclerView();
 
-        TextView emptyView = mActivityTestRule.getActivity().findViewById(R.id.empty_view);
-        Assert.assertThat(emptyView.getText().toString(),
-                is("Can’t find that page. Check your spelling or try a search on Google."));
+        TextView emptyView =
+                mHistoryManager.getSelectableListLayout().findViewById(R.id.empty_view);
+        Assert.assertThat(emptyView.getText(),
+                is("Can’t find that page. Check your spelling or try a web search."));
     }
 
     @Test
@@ -572,10 +525,8 @@ public class HistoryActivityTest {
         Assert.assertTrue(mAdapter.hasListHeader());
 
         // Not sign in and set clear browsing data button to invisible
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
-            mAdapter.setPrivacyDisclaimer();
-        });
+        mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
+        mAdapter.setPrivacyDisclaimer();
 
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
         Assert.assertFalse(mAdapter.hasListHeader());
@@ -584,85 +535,68 @@ public class HistoryActivityTest {
 
     @Test
     @SmallTest
-    public void testCopyLink() throws Exception {
-        // Allow DiskWrites temporarily in main thread to avoid
-        // violation during copying under emulator environment.
-        try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
-            final ClipboardManager clipboardManager = TestThreadUtils.runOnUiThreadBlocking(() -> {
-                ClipboardManager manager =
-                        (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                Assert.assertNotNull(manager);
-                manager.setPrimaryClip(ClipData.newPlainText(null, ""));
-                return manager;
-            });
-            // Clear the clipboard to make sure we start with a clean state.
+    public void testCopyLink() {
+        final ClipboardManager clipboardManager =
+                (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        Assert.assertNotNull(clipboardManager);
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, ""));
+        // Clear the clipboard to make sure we start with a clean state.
 
-            final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
 
-            // Check that the copy link item is visible when one item is selected.
-            toggleItemSelection(2);
-            Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
+        // Check that the copy link item is visible when one item is selected.
+        toggleItemSelection(2);
+        Assert.assertTrue(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
 
-            // Check that link is copied to the clipboard.
-            TestThreadUtils.runOnUiThreadBlocking(
-                    ()
-                            -> Assert.assertTrue(
-                                    mHistoryManager.getToolbarForTests()
-                                            .getMenu()
-                                            .performIdentifierAction(
-                                                    R.id.selection_mode_copy_link, 0)));
-            CriteriaHelper.pollUiThread(()
-                                                -> Criteria.checkThat(mItem1.getUrl().getSpec(),
-                                                        is(clipboardManager.getText())));
+        // Check that link is copied to the clipboard.
+        performMenuAction(R.id.selection_mode_copy_link);
+        Assert.assertEquals(mItem1.getUrl().getSpec(), clipboardManager.getText());
 
-            // Check that the copy link item is not visible when more than one item is selected.
-            toggleItemSelection(2);
-            toggleItemSelection(3);
-            Assert.assertFalse(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
-        }
+        // Check that the copy link item is not visible when more than one item is selected.
+        toggleItemSelection(2);
+        toggleItemSelection(3);
+        Assert.assertFalse(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
     public void testToggleToJourneysAndBack() {
-        TabLayout toggle =
-                mActivityTestRule.getActivity().findViewById(R.id.history_toggle_tab_layout);
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mHistoryClustersBridge).queryClusters(anyString());
+
+        TabLayout toggle = mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout);
         TabLayout.Tab journeysTab = toggle.getTabAt(1);
 
         Assert.assertFalse(journeysTab.isSelected());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> toggle.selectTab(journeysTab));
-        CriteriaHelper.pollUiThread(() -> {
-            ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
-            return mHistoryManager.getView().getChildAt(0) == activityContentView
-                    && activityContentView.findViewById(R.id.history_toggle_tab_layout) != null;
-        });
+        toggle.selectTab(journeysTab);
+        ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
+        Assert.assertEquals(mHistoryManager.getView().getChildAt(0), activityContentView);
+        promise.fulfill(HistoryClustersResult.emptyResult());
+        ShadowLooper.idleMainLooper();
 
-        TabLayout journeysToggle =
-                mHistoryClustersCoordinator.getActivityContentView().findViewById(
-                        R.id.history_toggle_tab_layout);
+        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 600, 1000);
+
+        TabLayout journeysToggle = recyclerView.findViewById(R.id.history_toggle_tab_layout);
         TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
         Assert.assertFalse(historyTab.isSelected());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> journeysToggle.selectTab(historyTab));
-        CriteriaHelper.pollUiThread(()
-                                            -> mHistoryManager.getView().getChildAt(0)
-                        == mHistoryManager.getSelectableListLayout());
+        journeysToggle.selectTab(historyTab);
+        Assert.assertEquals(
+                mHistoryManager.getView().getChildAt(0), mHistoryManager.getSelectableListLayout());
     }
 
-    // TODO(yolandyan): rewrite this with espresso
-    private void toggleItemSelection(int position) throws Exception {
-        int callCount = mTestObserver.onSelectionCallback.getCallCount();
+    private void toggleItemSelection(int position) {
         final SelectableItemView<HistoryItem> itemView = getItemView(position);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { itemView.performLongClick(); });
-        mTestObserver.onSelectionCallback.waitForCallback(callCount, 1);
+        itemView.performLongClick();
+        layoutRecyclerView();
     }
 
-    private void clickItem(int position) throws Exception {
-        final SelectableItemView<HistoryItem> itemView = getItemView(position);
-        TestThreadUtils.runOnUiThreadBlocking(() -> itemView.performClick());
+    private void clickItem(int position) {
+        getItemView(position).performClick();
     }
 
     @SuppressWarnings("unchecked")
@@ -674,80 +608,33 @@ public class HistoryActivityTest {
     }
 
     private void setHasOtherFormsOfBrowsingData(final boolean hasOtherForms) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mAdapter.hasOtherFormsOfBrowsingData(hasOtherForms));
+        mAdapter.hasOtherFormsOfBrowsingData(hasOtherForms);
     }
 
-    private void signInToSupervisedAccount() throws Exception {
-        // Initialize PrefChangeRegistrar for test.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPrefChangeRegistrar = new PrefChangeRegistrar();
-            // TODO(crbug.com/1306031): remove the ALLOW_DELETING_BROWSER_HISTORY listener.
-            mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, mTestObserver);
-            mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, mTestObserver);
-            IdentityServicesProvider.get()
-                    .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .addSignInStateObserver(mTestObserver);
-        });
-
+    private void signInToSupervisedAccount() {
         // Sign in to account. Note that if supervised user is set before sign in, the supervised
         // user setting will be reset.
-        final CoreAccountInfo coreAccountInfo =
-                mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        mTestObserver.onSigninStateChangedCallback.waitForCallback(
-                0, 1, SyncTestUtil.TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(coreAccountInfo, mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-
-        // Wait for recycler view changes after sign in.
-        CriteriaHelper.pollUiThread(() -> !mRecyclerView.isAnimating());
-
-        // Set supervised user.
-        int onPreferenceChangeCallCount = mTestObserver.onPreferenceChangeCallback.getCallCount();
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            UserPrefs.get(profile).setString(Pref.SUPERVISED_USER_ID, "ChildAccountSUID");
-            return profile.isChild() && !IncognitoUtils.isIncognitoModeEnabled();
-        }));
-
-        // Wait for preference change callbacks:
-        // * one for ALLOW_DELETING_BROWSER_HISTORY
-        // * one for INCOGNITO_MODE_AVAILABILITY.
-        mTestObserver.onPreferenceChangeCallback.waitForCallback(onPreferenceChangeCallCount, 2);
-
-        // Wait until animator finish removing history item delete icon
-        // TODO(twellington): Figure out a better way to do this (e.g. listen for RecyclerView
-        // data changes or add a testing callback)
-        CriteriaHelper.pollUiThread(() -> !mRecyclerView.isAnimating());
-
-        // Clean up PrefChangeRegistrar for test.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPrefChangeRegistrar.destroy();
-            mPrefChangeRegistrar = null;
-        });
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        doReturn(true).when(mProfile).isChild();
+        doReturn("ChildAccountSUID").when(mPrefService).getString(Pref.SUPERVISED_USER_ID);
+        IncognitoUtils.setEnabledForTesting(false);
+        mHistoryManager.getContentManagerForTests().onPreferenceChange();
+        layoutRecyclerView();
     }
 
-    private void signOut() throws Exception {
+    private void signOut() {
         // Clear supervised user id.
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                   .setString(Pref.SUPERVISED_USER_ID, ""));
+        doReturn("").when(mPrefService).getString(Pref.SUPERVISED_USER_ID);
+        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+    }
 
-        // Sign out of account.
-        int currentCallCount = mTestObserver.onSigninStateChangedCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> IdentityServicesProvider.get()
-                                   .getSigninManager(Profile.getLastUsedRegularProfile())
-                                   .signOut(SignoutReason.SIGNOUT_TEST));
-        mTestObserver.onSigninStateChangedCallback.waitForCallback(currentCallCount, 1);
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+    private void performMenuAction(int menuItemId) {
+        mHistoryManager.getToolbarForTests().getMenu().performIdentifierAction(menuItemId, 0);
+        layoutRecyclerView();
+    }
 
-        // Remove observer
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> IdentityServicesProvider.get()
-                                   .getSigninManager(Profile.getLastUsedRegularProfile())
-                                   .removeSignInStateObserver(mTestObserver));
+    private void layoutRecyclerView() {
+        mRecyclerView.measure(0, 0);
+        mRecyclerView.layout(0, 0, 600, 1000);
     }
 }

@@ -64,6 +64,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private SelectionDelegate<ClusterVisit> mSelectionDelegate;
     private SelectableListLayout mSelectableListLayout;
     private SelectionDelegate mDisabledSelectionDelegate = new DisabledSelectionDelegate();
+    private RecyclerView mRecyclerView;
 
     /**
      * Construct a new HistoryClustersCoordinator.
@@ -136,12 +137,12 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
 
         mSelectableListLayout = mActivityContentView.findViewById(R.id.selectable_list);
         mSelectableListLayout.setEmptyViewText(R.string.history_manager_empty);
-        RecyclerView recyclerView = mSelectableListLayout.initializeRecyclerView(mAdapter);
+        mRecyclerView = mSelectableListLayout.initializeRecyclerView(mAdapter);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(
-                recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setItemAnimator(null);
-        recyclerView.addOnScrollListener(mMediator);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(
+                mRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.addOnScrollListener(mMediator);
 
         mToolbar = (HistoryClustersToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.history_clusters_toolbar, mSelectionDelegate,
@@ -214,5 +215,10 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     @VisibleForTesting
     SelectionDelegate<ClusterVisit> getSelectionDelegateForTesting() {
         return mSelectionDelegate;
+    }
+
+    @VisibleForTesting
+    public RecyclerView getRecyclerViewFortesting() {
+        return mRecyclerView;
     }
 }

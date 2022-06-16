@@ -46,7 +46,7 @@ import java.util.List;
 
 /**
  * Tests the scrolling behavior on {@link HistoryActivity}.
- * The main difference for this test file with {@link HistoryActivityTest}is to test scrolling
+ * The main difference for this test file with {@link HistoryUiTest} is to test scrolling
  * behavior under different settings.
  */
 // clang-format off

@@ -77,7 +77,7 @@ public class PrefChangeRegistrar {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(PrefChangeRegistrar caller);
         void add(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller,
                 String preference);

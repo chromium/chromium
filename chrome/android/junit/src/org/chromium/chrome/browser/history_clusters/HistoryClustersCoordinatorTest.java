@@ -33,8 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -59,20 +57,10 @@ import java.util.HashSet;
 
 /** Unit tests for HistoryClustersCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {HistoryClustersCoordinatorTest.ShadowHistoryClustersBridge.class},
-        manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
 public class HistoryClustersCoordinatorTest {
-    @Implements(HistoryClustersBridge.class)
-    static class ShadowHistoryClustersBridge {
-        static HistoryClustersBridge sBridge;
-        @Implementation
-        public static HistoryClustersBridge getForProfile(Profile profile) {
-            return sBridge;
-        }
-    }
-
     private static final String INCOGNITO_EXTRA = "IN_INCOGNITO";
     private static final String NEW_TAB_EXTRA = "IN_NEW_TAB";
 
@@ -116,7 +104,7 @@ public class HistoryClustersCoordinatorTest {
         resetStaticState();
         jniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
         doReturn(1L).when(mMockLargeIconBridgeJni).init();
-        ShadowHistoryClustersBridge.sBridge = mHistoryClustersBridge;
+        HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
         doReturn(mPromise).when(mHistoryClustersBridge).queryClusters(anyString());
 
         mVisit1 = new ClusterVisit(

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history_clusters;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.CalledByNative;
@@ -19,16 +21,28 @@ import java.util.List;
 
 @JNINamespace("history_clusters")
 /** JNI bridge that provides access to HistoryClusters data. */
-class HistoryClustersBridge {
+public class HistoryClustersBridge {
+    static HistoryClustersBridge sInstanceForTesting;
     private long mNativeBridge;
 
     /** Access the instance of HistoryClustersBridge associated with the given profile. */
     public static HistoryClustersBridge getForProfile(Profile profile) {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
+
         return HistoryClustersBridgeJni.get().getForProfile(profile);
     }
 
+    @VisibleForTesting
+    /** Sets a static singleton instance of the bridge for testing purposes. */
+    public static void setInstanceForTesting(HistoryClustersBridge historyClustersBridge) {
+        sInstanceForTesting = historyClustersBridge;
+    }
+
     /* Start a new query for clusters, fetching the first page of results. */
-    Promise<HistoryClustersResult> queryClusters(String query) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public Promise<HistoryClustersResult> queryClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
         HistoryClustersBridgeJni.get().queryClusters(
                 mNativeBridge, this, query, returnedPromise::fulfill);
@@ -36,7 +50,8 @@ class HistoryClustersBridge {
     }
 
     /* Continue the current query for clusters, fetching the next page of results. */
-    Promise<HistoryClustersResult> loadMoreClusters(String query) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public Promise<HistoryClustersResult> loadMoreClusters(String query) {
         Promise<HistoryClustersResult> returnedPromise = new Promise<>();
         HistoryClustersBridgeJni.get().loadMoreClusters(
                 mNativeBridge, this, query, returnedPromise::fulfill);

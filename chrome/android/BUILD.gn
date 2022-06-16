@@ -1107,6 +1107,7 @@ junit_binary("chrome_junit_tests") {
     "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
     "//components/commerce/core:proto_java",
     "//components/content_capture/android:java",
     "//components/content_settings/android:content_settings_enums_java",
