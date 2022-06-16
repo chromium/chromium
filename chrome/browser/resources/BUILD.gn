@@ -80,7 +80,10 @@ group("resources") {
   }
 
   if (is_win || is_mac || is_linux || is_fuchsia) {
-    public_deps += [ "app_settings:resources" ]
+    public_deps += [
+      "app_settings:resources",
+      "ntp4:apps_resources",
+    ]
   }
 
   if (is_linux || is_chromeos) {
@@ -89,7 +92,6 @@ group("resources") {
 
   if (!is_android && !is_chromeos_ash) {
     public_deps += [
-      "ntp4:apps_resources",
       "signin/profile_picker:resources",
       "welcome:resources",
     ]
@@ -124,7 +126,6 @@ if (enable_js_type_check) {
         "gaia_auth_host:closure_compile",
         "image_editor:closure_compile",
         "inline_login:closure_compile",
-        "ntp4:closure_compile",
         "omnibox:closure_compile",
       ]
     }
