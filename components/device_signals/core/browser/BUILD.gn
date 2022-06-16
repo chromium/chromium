@@ -43,6 +43,8 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_signals_aggregator.cc",
+    "mock_signals_aggregator.h",
     "mock_signals_collector.cc",
     "mock_signals_collector.h",
     "mock_system_signals_service_host.cc",

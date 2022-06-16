@@ -34767,6 +34767,8 @@ Called by update_extension_histograms.py.-->
   <int value="1669" label="ENTERPRISE_REMOTEAPPS_ADDFOLDER"/>
   <int value="1670" label="ENTERPRISE_REMOTEAPPS_ADDAPP"/>
   <int value="1671" label="ENTERPRISE_REMOTEAPPS_DELETEAPP"/>
+  <int value="1672" label="ENTERPRISEREPORTINGPRIVATE_GETAVINFO"/>
+  <int value="1673" label="ENTERPRISEREPORTINGPRIVATE_GETHOTFIXES"/>
 </enum>
 
 <enum name="ExtensionIconState">

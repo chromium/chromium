@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,6 +30,16 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/statusor.h"
 #endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/enterprise/signals/signals_features.h"  // nogncheck
+#include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
+#include "components/device_signals/core/browser/signals_aggregator.h"
+#include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -141,6 +152,36 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
 
   return info;
 }
+
+#if BUILDFLAG(IS_WIN)
+
+device_signals::SignalsAggregationRequest CreateAggregationRequest(
+    const std::string& user_id,
+    device_signals::SignalName signal_name) {
+  device_signals::UserContext user_context;
+  user_context.user_id = user_id;
+
+  device_signals::SignalsAggregationRequest request;
+  request.user_context = std::move(user_context);
+  request.signal_names.emplace(signal_name);
+  return request;
+}
+
+void StartSignalCollection(
+    device_signals::SignalsAggregationRequest request,
+    content::BrowserContext* browser_context,
+    base::OnceCallback<void(device_signals::SignalsAggregationResponse)>
+        callback) {
+  DCHECK(browser_context);
+  auto* profile = Profile::FromBrowserContext(browser_context);
+  DCHECK(profile);
+  auto* signals_aggregator =
+      enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
+  DCHECK(signals_aggregator);
+  signals_aggregator->GetSignals(std::move(request), std::move(callback));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -607,5 +648,99 @@ void EnterpriseReportingPrivateEnqueueRecordFunction::
   profile_is_affiliated_for_testing_ = is_affiliated;
 }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+
+// getAvInfo
+
+EnterpriseReportingPrivateGetAvInfoFunction::
+    EnterpriseReportingPrivateGetAvInfoFunction() = default;
+EnterpriseReportingPrivateGetAvInfoFunction::
+    ~EnterpriseReportingPrivateGetAvInfoFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateGetAvInfoFunction::Run() {
+  if (!IsNewFunctionEnabled(
+          enterprise_signals::features::NewEvFunction::kAntiVirus)) {
+    return RespondNow(Error(device_signals::ErrorToString(
+        device_signals::SignalCollectionError::kUnsupported)));
+  }
+
+  std::unique_ptr<api::enterprise_reporting_private::GetAvInfo::Params> params(
+      api::enterprise_reporting_private::GetAvInfo::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  StartSignalCollection(
+      CreateAggregationRequest(params->user_context.user_id,
+                               device_signals::SignalName::kAntiVirus),
+      browser_context(),
+      base::BindOnce(
+          &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved,
+          this));
+
+  return RespondLater();
+}
+
+void EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved(
+    device_signals::SignalsAggregationResponse response) {
+  std::vector<api::enterprise_reporting_private::AntiVirusSignal> arg_list;
+  auto error = ConvertAvProductsResponse(response, &arg_list);
+
+  if (error.has_value()) {
+    Respond(Error(device_signals::ErrorToString(error.value())));
+    return;
+  }
+
+  Respond(ArgumentList(
+      api::enterprise_reporting_private::GetAvInfo::Results::Create(arg_list)));
+}
+
+// getHotfixes
+
+EnterpriseReportingPrivateGetHotfixesFunction::
+    EnterpriseReportingPrivateGetHotfixesFunction() = default;
+EnterpriseReportingPrivateGetHotfixesFunction::
+    ~EnterpriseReportingPrivateGetHotfixesFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateGetHotfixesFunction::Run() {
+  if (!IsNewFunctionEnabled(
+          enterprise_signals::features::NewEvFunction::kHotfix)) {
+    return RespondNow(Error(device_signals::ErrorToString(
+        device_signals::SignalCollectionError::kUnsupported)));
+  }
+
+  std::unique_ptr<api::enterprise_reporting_private::GetHotfixes::Params>
+      params(api::enterprise_reporting_private::GetHotfixes::Params::Create(
+          args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  StartSignalCollection(
+      CreateAggregationRequest(params->user_context.user_id,
+                               device_signals::SignalName::kHotfixes),
+      browser_context(),
+      base::BindOnce(
+          &EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved,
+          this));
+
+  return RespondLater();
+}
+
+void EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved(
+    device_signals::SignalsAggregationResponse response) {
+  std::vector<api::enterprise_reporting_private::HotfixSignal> arg_list;
+  auto error = ConvertHotfixesResponse(response, &arg_list);
+
+  if (error.has_value()) {
+    Respond(Error(device_signals::ErrorToString(error.value())));
+    return;
+  }
+
+  Respond(ArgumentList(
+      api::enterprise_reporting_private::GetHotfixes::Results::Create(
+          arg_list)));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace extensions

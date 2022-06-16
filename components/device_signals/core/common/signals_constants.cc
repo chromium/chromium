@@ -155,6 +155,10 @@ const char kUnsupported[] = "UNSUPPORTED";
 // the SystemSignalsService.
 const char kMissingSystemService[] = "MISSING_SYSTEM_SERVICE";
 
+// Returned when the signals aggregation response is missing a
+// bundle/sub-response struct that was expected by a specific use-case.
+const char kMissingBundle[] = "MISSING_BUNDLE";
+
 }  // namespace errors
 
 }  // namespace device_signals

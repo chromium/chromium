@@ -141,6 +141,8 @@ static_library("extensions") {
     "api/downloads_internal/downloads_internal_api.h",
     "api/enterprise_hardware_platform/enterprise_hardware_platform_api.cc",
     "api/enterprise_hardware_platform/enterprise_hardware_platform_api.h",
+    "api/enterprise_reporting_private/conversion_utils.cc",
+    "api/enterprise_reporting_private/conversion_utils.h",
     "api/enterprise_reporting_private/enterprise_reporting_private_api.cc",
     "api/enterprise_reporting_private/enterprise_reporting_private_api.h",
     "api/extension_action/extension_action_api.cc",
@@ -810,6 +812,8 @@ static_library("extensions") {
     "//components/content_settings/core/browser",
     "//components/cookie_config:cookie_config",
     "//components/crx_file",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common",
     "//components/dom_distiller/core",
     "//components/download/content/public",
     "//components/download/public/common:public",
@@ -952,6 +956,8 @@ static_library("extensions") {
       "api/system_indicator/system_indicator_manager_factory.cc",
       "api/system_indicator/system_indicator_manager_factory.h",
     ]
+
+    deps += [ "//chrome/browser/enterprise/signals:features" ]
   }
 
   if (is_chromeos) {
@@ -1264,6 +1270,7 @@ static_library("extensions") {
       "system_display/display_info_provider_win.h",
     ]
     deps += [
+      "//components/device_signals/core/common/win",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",
     ]

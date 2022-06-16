@@ -34,8 +34,11 @@ enum class SignalCollectionError {
   kUnaffiliatedUser,
   kUnsupported,
   kMissingSystemService,
-  kMaxValue = kMissingSystemService
+  kMissingBundle,
+  kMaxValue = kMissingBundle
 };
+
+const std::string ErrorToString(SignalCollectionError error);
 
 // Base struct type that each specific signal bundle types should extend. The
 // derived signal bundles/responses should group a set of signals that

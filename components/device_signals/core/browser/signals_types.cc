@@ -4,7 +4,24 @@
 
 #include "components/device_signals/core/browser/signals_types.h"
 
+#include "components/device_signals/core/common/signals_constants.h"
+
 namespace device_signals {
+
+const std::string ErrorToString(SignalCollectionError error) {
+  switch (error) {
+    case SignalCollectionError::kConsentRequired:
+      return errors::kConsentRequired;
+    case SignalCollectionError::kUnaffiliatedUser:
+      return errors::kUnaffiliatedUser;
+    case SignalCollectionError::kUnsupported:
+      return errors::kUnsupported;
+    case SignalCollectionError::kMissingSystemService:
+      return errors::kMissingSystemService;
+    case SignalCollectionError::kMissingBundle:
+      return errors::kMissingBundle;
+  }
+}
 
 BaseSignalResponse::~BaseSignalResponse() = default;
 

@@ -33,6 +33,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
+#include "extensions/browser/api_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,7 +50,13 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#include "chrome/browser/enterprise/signals/signals_features.h"  // nogncheck
+#include "components/device_signals/core/browser/mock_signals_aggregator.h"  // nogncheck
+#include "components/device_signals/core/browser/signals_aggregator.h"  // nogncheck
+#include "components/device_signals/core/common/signals_constants.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -68,11 +75,17 @@ using ::testing::WithArgs;
 
 namespace extensions {
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+
+constexpr char kNoError[] = "";
+
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
-const char kFakeClientId[] = "fake-client-id";
+constexpr char kFakeClientId[] = "fake-client-id";
 
 }  // namespace
 
@@ -1059,7 +1072,6 @@ class MockMissiveClient : public ::chromeos::FakeMissiveClient {
 class EnterpriseReportingPrivateEnqueueRecordFunctionTest
     : public ExtensionApiUnittest {
  protected:
-  static constexpr char kNoError[] = "";
   static constexpr char kTestDMTokenValue[] = "test_dm_token_value";
 
   EnterpriseReportingPrivateEnqueueRecordFunctionTest() = default;
@@ -1278,5 +1290,271 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
                 kErrorInvalidEnqueueRecordRequest);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+
+namespace {
+
+constexpr char kFakeUserId[] = "fake user id";
+
+enterprise_reporting_private::UserContext GetFakeUserContext() {
+  enterprise_reporting_private::UserContext user_context;
+  user_context.user_id = kFakeUserId;
+  return user_context;
+}
+
+std::string GetFakeUserContextJsonParams() {
+  auto user_context = GetFakeUserContext();
+  base::ListValue params;
+  params.Append(base::Value::FromUniquePtrValue(user_context.ToValue()));
+  std::string json_value;
+  base::JSONWriter::Write(params, &json_value);
+  return json_value;
+}
+
+std::unique_ptr<KeyedService> BuildMockAggregator(
+    content::BrowserContext* context) {
+  return std::make_unique<
+      testing::StrictMock<device_signals::MockSignalsAggregator>>();
+}
+
+}  // namespace
+
+// Base test class for APIs that require a UserContext parameter and which will
+// make use of the SignalsAggregator to retrieve device signals.
+class UserContextGatedTest : public ExtensionApiUnittest {
+ protected:
+  void SetUp() override {
+    ExtensionApiUnittest::SetUp();
+
+    auto* factory = enterprise_signals::SignalsAggregatorFactory::GetInstance();
+    mock_aggregator_ = static_cast<device_signals::MockSignalsAggregator*>(
+        factory->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockAggregator)));
+  }
+
+  void SetFakeResponse(
+      const device_signals::SignalsAggregationResponse& response) {
+    EXPECT_CALL(*mock_aggregator_, GetSignals(_, _))
+        .WillOnce(
+            Invoke([&](const device_signals::SignalsAggregationRequest& request,
+                       device_signals::SignalsAggregator::GetSignalsCallback
+                           callback) {
+              EXPECT_EQ(request.user_context.user_id, kFakeUserId);
+              EXPECT_EQ(request.signal_names.size(), 1U);
+              std::move(callback).Run(response);
+            }));
+  }
+
+  virtual void SetFeatureFlag() {
+    scoped_features_.InitAndEnableFeature(
+        enterprise_signals::features::kNewEvSignalsEnabled);
+  }
+
+  device_signals::MockSignalsAggregator* mock_aggregator_;
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+// Tests for API enterprise.reportingPrivate.getAvInfo
+class EnterpriseReportingPrivateGetAvInfoTest : public UserContextGatedTest {
+ protected:
+  void SetUp() override {
+    UserContextGatedTest::SetUp();
+
+    SetFeatureFlag();
+
+    function_ =
+        base::MakeRefCounted<EnterpriseReportingPrivateGetAvInfoFunction>();
+  }
+
+  scoped_refptr<extensions::EnterpriseReportingPrivateGetAvInfoFunction>
+      function_;
+};
+
+TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
+  device_signals::AvProduct fake_av_product;
+  fake_av_product.display_name = "Fake display name";
+  fake_av_product.state = device_signals::AvProductState::kOff;
+  fake_av_product.product_id = "fake product id";
+
+  device_signals::AntiVirusSignalResponse av_response;
+  av_response.av_products.push_back(fake_av_product);
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.av_signal_response = av_response;
+
+  SetFakeResponse(expected_response);
+
+  auto response = api_test_utils::RunFunctionAndReturnSingleResult(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+
+  EXPECT_EQ(function_->GetError(), kNoError);
+
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_list());
+  const base::Value::List& list_value = response->GetList();
+  ASSERT_EQ(list_value.size(), av_response.av_products.size());
+
+  const base::Value& av_value = list_value.front();
+  auto parsed_av_signal =
+      enterprise_reporting_private::AntiVirusSignal::FromValue(av_value);
+  ASSERT_TRUE(parsed_av_signal);
+  EXPECT_EQ(parsed_av_signal->display_name, fake_av_product.display_name);
+  EXPECT_EQ(parsed_av_signal->state,
+            enterprise_reporting_private::ANTI_VIRUS_PRODUCT_STATE_OFF);
+  EXPECT_EQ(parsed_av_signal->product_id, fake_av_product.product_id);
+}
+
+TEST_F(EnterpriseReportingPrivateGetAvInfoTest, TopLevelError) {
+  device_signals::SignalCollectionError expected_error =
+      device_signals::SignalCollectionError::kConsentRequired;
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.top_level_error = expected_error;
+  SetFakeResponse(expected_response);
+
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+}
+
+TEST_F(EnterpriseReportingPrivateGetAvInfoTest, CollectionError) {
+  device_signals::SignalCollectionError expected_error =
+      device_signals::SignalCollectionError::kMissingSystemService;
+
+  device_signals::AntiVirusSignalResponse av_response;
+  av_response.collection_error = expected_error;
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.av_signal_response = av_response;
+  SetFakeResponse(expected_response);
+
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+}
+
+class EnterpriseReportingPrivateGetAvInfoDisabledTest
+    : public EnterpriseReportingPrivateGetAvInfoTest {
+ protected:
+  // Overwrite this function to disable the feature flag for tests using this
+  // specific fixture.
+  void SetFeatureFlag() override {
+    scoped_features_.InitAndEnableFeatureWithParameters(
+        enterprise_signals::features::kNewEvSignalsEnabled,
+        {{"DisableAntiVirus", "true"}});
+  }
+};
+
+TEST_F(EnterpriseReportingPrivateGetAvInfoDisabledTest, FlagDisabled_Test) {
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(
+                       device_signals::SignalCollectionError::kUnsupported));
+}
+
+// Tests for API enterprise.reportingPrivate.getHotfixes
+class EnterpriseReportingPrivateGetHotfixesTest : public UserContextGatedTest {
+ protected:
+  void SetUp() override {
+    UserContextGatedTest::SetUp();
+
+    SetFeatureFlag();
+
+    function_ =
+        base::MakeRefCounted<EnterpriseReportingPrivateGetHotfixesFunction>();
+  }
+
+  scoped_refptr<extensions::EnterpriseReportingPrivateGetHotfixesFunction>
+      function_;
+};
+
+TEST_F(EnterpriseReportingPrivateGetHotfixesTest, Success) {
+  static constexpr char kFakeHotfixId[] = "hotfix id";
+  device_signals::HotfixSignalResponse hotfix_response;
+  hotfix_response.hotfixes.push_back({kFakeHotfixId});
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.hotfix_signal_response = hotfix_response;
+
+  SetFakeResponse(expected_response);
+
+  auto response = api_test_utils::RunFunctionAndReturnSingleResult(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+
+  EXPECT_EQ(function_->GetError(), kNoError);
+
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_list());
+  const base::Value::List& list_value = response->GetList();
+  ASSERT_EQ(list_value.size(), hotfix_response.hotfixes.size());
+
+  const base::Value& hotfix_value = list_value.front();
+  auto parsed_hotfix =
+      enterprise_reporting_private::HotfixSignal::FromValue(hotfix_value);
+  ASSERT_TRUE(parsed_hotfix);
+  EXPECT_EQ(parsed_hotfix->hotfix_id, kFakeHotfixId);
+}
+
+TEST_F(EnterpriseReportingPrivateGetHotfixesTest, TopLevelError) {
+  device_signals::SignalCollectionError expected_error =
+      device_signals::SignalCollectionError::kConsentRequired;
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.top_level_error = expected_error;
+  SetFakeResponse(expected_response);
+
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+}
+
+TEST_F(EnterpriseReportingPrivateGetHotfixesTest, CollectionError) {
+  device_signals::SignalCollectionError expected_error =
+      device_signals::SignalCollectionError::kMissingSystemService;
+
+  device_signals::HotfixSignalResponse hotfix_response;
+  hotfix_response.collection_error = expected_error;
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.hotfix_signal_response = hotfix_response;
+  SetFakeResponse(expected_response);
+
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+}
+
+class EnterpriseReportingPrivateGetHotfixesInfoDisabledTest
+    : public EnterpriseReportingPrivateGetHotfixesTest {
+ protected:
+  // Overwrite this function to disable the feature flag for tests using this
+  // specific fixture.
+  void SetFeatureFlag() override {
+    scoped_features_.InitAndEnableFeatureWithParameters(
+        enterprise_signals::features::kNewEvSignalsEnabled,
+        {{"DisableHotfix", "true"}});
+  }
+};
+
+TEST_F(EnterpriseReportingPrivateGetHotfixesInfoDisabledTest,
+       FlagDisabled_Test) {
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeUserContextJsonParams(), profile());
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(
+                       device_signals::SignalCollectionError::kUnsupported));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace extensions
