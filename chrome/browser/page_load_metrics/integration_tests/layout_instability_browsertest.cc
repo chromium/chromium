@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/test/browser_test.h"
@@ -114,7 +115,13 @@ void LayoutInstabilityTest::CheckSources(const Value::List& expected_sources,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
+// TODO(crbug.com/1336973): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SimpleBlockMovement DISABLED_SimpleBlockMovement
+#else
+#define MAYBE_SimpleBlockMovement SimpleBlockMovement
+#endif  //  BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, MAYBE_SimpleBlockMovement) {
   RunWPT("simple-block-movement.html");
 }
 
