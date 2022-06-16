@@ -2746,6 +2746,7 @@
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '--retry-limit=3',
+          '--jobs=1',
         ],
         'linux_args': [
           '--extra-browser-args=--enable-features=Vulkan',
@@ -2764,6 +2765,7 @@
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '--retry-limit=3',
+          '--jobs=1',
         ],
         'linux_args': [
           '--extra-browser-args=--enable-features=Vulkan',
@@ -2783,6 +2785,7 @@
           '--extra-browser-args=--force_high_performance_gpu',
           '--enable-dawn-backend-validation',
           '--retry-limit=3',
+          '--jobs=1',
         ],
         'linux_args': [
           '--extra-browser-args=--enable-features=Vulkan',

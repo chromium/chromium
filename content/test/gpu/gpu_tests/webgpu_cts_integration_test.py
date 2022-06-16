@@ -139,6 +139,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return 'webgpu_cts'
 
   @classmethod
+  def CanRunInParallel(cls) -> bool:
+    return True
+
+  @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(WebGpuCtsIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option('--override-timeout',
