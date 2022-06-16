@@ -1001,10 +1001,13 @@ TEST_P(ScrollableShelfViewRTLTest, MouseWheelOnEmptyShelfShouldExpandAppList) {
   AddAppShortcut();
   AddAppShortcut();
 
+  GetEventGenerator()->MoveMouseTo(scrollable_shelf_view_->shelf_view()
+                                       ->view_model_for_test()
+                                       ->view_at(1)
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
   int shelf_scroll_threshold =
       ShelfConfig::Get()->mousewheel_scroll_offset_threshold();
-  GetEventGenerator()->MoveMouseTo(
-      scrollable_shelf_view_->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->MoveMouseWheel(0, shelf_scroll_threshold + 1);
 
   // The app list's view is lazily loaded. Since this is the first time, and we
