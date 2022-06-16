@@ -71,6 +71,11 @@ export function searchPageTestSuite() {
         'chrome-untrusted://os-feedback/untrusted_index.html',
         untrustedFrame.src);
 
+    // Focus is set after the iframe is loaded.
+    await eventToPromise('load', untrustedFrame);
+    // Verify the description input is focused.
+    assertEquals(getElement('textarea'), getDeepActiveElement());
+
     // Verify the descriptionTitle is in the page.
     const descriptionTitle = getElement('#descriptionTitle');
     assertEquals('Description', descriptionTitle.textContent.trim());

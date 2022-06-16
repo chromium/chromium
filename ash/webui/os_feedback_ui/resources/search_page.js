@@ -85,6 +85,9 @@ export class SearchPageElement extends SearchPageElementBase {
       this.resolveIframeLoaded_ = resolve;
     });
 
+    // Set focus on the input field after iframe is loaded.
+    this.iframeLoaded_.then(() => this.focusInputElement_());
+
     /** @private {?HTMLIFrameElement} */
     this.iframe_ = null;
 
