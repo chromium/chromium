@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
@@ -17,6 +17,7 @@ import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
 import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
 
+import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,51 +25,56 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link SingleTabViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class SingleTabViewBinderTest extends BlankUiTestActivityTestCase {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class SingleTabViewBinderUnitTest {
+    private static final String TEST_TITLE = "test";
+
+    private Activity mActivity;
     private SingleTabView mSingleTabView;
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private PropertyModelChangeProcessor<PropertyModel, SingleTabView, PropertyKey>
+            mPropertyModelChangeProcessor;
     private PropertyModel mPropertyModel;
-    private String mTitle = "test";
 
     @Mock
     private View.OnClickListener mClickListener;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @Before
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSingleTabView = (SingleTabView) getActivity().getLayoutInflater().inflate(
-                    R.layout.single_tab_view_layout, null);
-            getActivity().setContentView(mSingleTabView);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mSingleTabView = (SingleTabView) mActivity.getLayoutInflater().inflate(
+                R.layout.single_tab_view_layout, null);
+        mActivity.setContentView(mSingleTabView);
 
-            mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
-            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                    mPropertyModel, mSingleTabView, SingleTabViewBinder::bind);
-        });
+        mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
+        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
+                mPropertyModel, mSingleTabView, SingleTabViewBinder::bind);
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(mPropertyModelChangeProcessor::destroy);
+    @After
+    public void tearDown() throws Exception {
+        mPropertyModelChangeProcessor.destroy();
         mPropertyModel = null;
         mSingleTabView = null;
+        mActivity = null;
     }
 
     private boolean isViewVisible(int viewId) {
@@ -76,7 +82,6 @@ public class SingleTabViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetTitle() {
         mPropertyModel.set(IS_VISIBLE, true);
@@ -84,15 +89,14 @@ public class SingleTabViewBinderTest extends BlankUiTestActivityTestCase {
         TextView title = mSingleTabView.findViewById(R.id.tab_title_view);
         assertEquals("", title.getText());
 
-        mPropertyModel.set(TITLE, mTitle);
-        assertEquals(mTitle, title.getText());
+        mPropertyModel.set(TITLE, TEST_TITLE);
+        assertEquals(TEST_TITLE, title.getText());
 
         mPropertyModel.set(IS_VISIBLE, false);
         assertFalse(isViewVisible(R.id.single_tab_view));
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetFavicon() {
         mPropertyModel.set(IS_VISIBLE, true);
@@ -108,7 +112,6 @@ public class SingleTabViewBinderTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testClickListener() {
         mPropertyModel.set(IS_VISIBLE, true);
@@ -116,7 +119,7 @@ public class SingleTabViewBinderTest extends BlankUiTestActivityTestCase {
 
         mPropertyModel.set(CLICK_LISTENER, mClickListener);
         mSingleTabView.performClick();
-        verify(mClickListener).onClick(anyObject());
+        verify(mClickListener).onClick(any());
 
         mPropertyModel.set(IS_VISIBLE, false);
         assertFalse(isViewVisible(R.id.single_tab_view));
