@@ -30,6 +30,7 @@ class WebAppCommandLock {
       base::flat_set<content::DisjointRangeLockManager::LeveledLockRequest>;
 
   WebAppCommandLock(WebAppCommandLock&&);
+  WebAppCommandLock& operator=(WebAppCommandLock&&);
 
   WebAppCommandLock(const WebAppCommandLock&) = delete;
   WebAppCommandLock& operator=(const WebAppCommandLock&) = delete;
