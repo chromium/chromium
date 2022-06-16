@@ -34,6 +34,12 @@ constexpr SkColor kSaveButtonBackgroundColor = gfx::kGoogleBlue300;
 constexpr SkColor kSaveButtonTextColor = gfx::kGoogleGrey900;
 constexpr char kFontStyle[] = "Google Sans";
 constexpr int kFontSize = 16;
+// This color is same as the background color of input_mapping_view in kEdit
+// mode and is used for buttons to decide what ink drop color should be. If the
+// dark background color is set, then it will show the light ink drop color.
+// Since we only need the dark mode for the kEdit mode, so dark background is
+// passed for setting up the ink drop.
+constexpr SkColor kEditBackgroundColor = SkColorSetA(SK_ColorBLACK, 0x99);
 
 // About focus ring.
 // Gap between focus ring outer edge to label.
@@ -69,7 +75,8 @@ class EditFinishView::ChildButton : public views::LabelButton {
     focus_ring->SetColor(kFocusRingColor);
     ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                           /*highlight_on_hover=*/true,
-                                          /*highlight_on_focus=*/true);
+                                          /*highlight_on_focus=*/true,
+                                          kEditBackgroundColor);
   }
   ~ChildButton() override = default;
 };
