@@ -5135,7 +5135,7 @@
 
     'web_engine_gtests': {
       'cast_runner_browsertests': {},
-      'cast_runner_integration_tests': {},
+      'cast_runner_integration_tests_cfv1': {},
       'cast_runner_unittests': {},
       'cr_fuchsia_base_unittests': {},
       'web_engine_browsertests': {},
