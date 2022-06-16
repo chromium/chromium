@@ -62,6 +62,9 @@ extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 extern const base::Feature kAggregateShortcuts;
 extern const base::Feature kShortcutExpanding;
 extern const base::Feature kBookmarkPaths;
+// TODO(crbug.com/1202964): Clean up feature flag used in staged roll-out of
+// various CLs related to the contents/description clean-up work.
+extern const base::Feature kStoreTitleInContentsAndUrlInDescription;
 
 // Document provider
 extern const base::Feature kDocumentProvider;
