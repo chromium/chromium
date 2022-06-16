@@ -34,6 +34,12 @@ class HttpsUpgradeService : public KeyedService {
   void SetHttpsPortForTesting(int https_port_for_testing,
                               bool use_fake_https_for_testing);
 
+  // Returns the HTTPS port used by the embedded test server (real or fake).
+  int GetHttpsPortForTesting() const;
+  // Returns true if the tests are using a fake HTTPS server that's actually an
+  // HTTP server.
+  bool IsUsingFakeHttpsForTesting() const;
+
   // Returns true if url is a fake HTTPS URL used in tests. Tests use a fake
   // HTTPS server that actually serves HTTP but on a different port from the
   // test HTTP server. We shouldn't upgrade HTTP URLs from from the fake HTTPS

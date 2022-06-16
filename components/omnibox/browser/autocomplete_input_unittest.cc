@@ -420,22 +420,31 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
   // non-zero value for https_port_for_testing.
   int https_port_for_testing = 12345;
   const TestData test_cases_non_default_port[] = {
-      {u"example.com:8080", GURL("https://example.com:12345"), true},
-      // Non-URL inputs shouldn't be upgraded.
-      {u"example query", GURL(), false},
-      // IP addresses shouldn't be upgraded.
-      {u"127.0.0.1", GURL("http://127.0.0.1"), false},
-      {u"127.0.0.1:80", GURL("http://127.0.0.1:80"), false},
-      {u"127.0.0.1:8080", GURL("http://127.0.0.1:8080"), false},
-      // Non-unique hostnames shouldn't be upgraded.
-      {u"site.test", GURL("http://site.test"), false},
-      // // Fully typed URLs shouldn't be upgraded.
-      {u"http://example.com", GURL("http://example.com"), false},
-      {u"HTTP://EXAMPLE.COM", GURL("http://example.com"), false},
-      {u"http://example.com:80", GURL("http://example.com"), false},
-      {u"HTTP://EXAMPLE.COM:80", GURL("http://example.com"), false},
-      {u"http://example.com:8080", GURL("http://example.com:8080"), false},
-      {u"HTTP://EXAMPLE.COM:8080", GURL("http://example.com:8080"), false}};
+    {u"example.com:8080", GURL("https://example.com:12345"), true},
+    // Non-URL inputs shouldn't be upgraded.
+    {u"example query", GURL(), false},
+    // Non-unique hostnames shouldn't be upgraded.
+    {u"site.test", GURL("http://site.test"), false},
+
+#if !BUILDFLAG(IS_IOS)
+    // IP addresses shouldn't be upgraded.
+    {u"127.0.0.1", GURL("http://127.0.0.1"), false},
+    {u"127.0.0.1:80", GURL("http://127.0.0.1:80"), false},
+    {u"127.0.0.1:8080", GURL("http://127.0.0.1:8080"), false},
+#else
+    // On iOS, IP addresses will be upgraded in tests if the hostname has a
+    // non-default port.
+    {u"127.0.0.1:8080", GURL("https://127.0.0.1:12345"), true},
+#endif
+    //
+    // Fully typed URLs shouldn't be upgraded.
+    {u"http://example.com", GURL("http://example.com"), false},
+    {u"HTTP://EXAMPLE.COM", GURL("http://example.com"), false},
+    {u"http://example.com:80", GURL("http://example.com"), false},
+    {u"HTTP://EXAMPLE.COM:80", GURL("http://example.com"), false},
+    {u"http://example.com:8080", GURL("http://example.com:8080"), false},
+    {u"HTTP://EXAMPLE.COM:8080", GURL("http://example.com:8080"), false}
+  };
   for (const TestData& test_case : test_cases_non_default_port) {
     AutocompleteInput input(
         test_case.input, std::u16string::npos,
@@ -446,4 +455,16 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
     EXPECT_EQ(test_case.expected_added_default_scheme_to_typed_url,
               input.added_default_scheme_to_typed_url());
   }
+
+#if BUILDFLAG(IS_IOS)
+  AutocompleteInput fake_http_input(
+      u"127.0.0.1:8080", std::u16string::npos,
+      metrics::OmniboxEventProto::OTHER, TestSchemeClassifier(),
+      /*should_use_https_as_default_scheme=*/true,
+      /*https_port_for_testing=*/12345,
+      /*use_fake_https_for_https_upgrade_testing=*/true);
+  EXPECT_EQ(GURL("http://127.0.0.1:12345"),
+            fake_http_input.canonicalized_url());
+  EXPECT_TRUE(fake_http_input.added_default_scheme_to_typed_url());
+#endif
 }

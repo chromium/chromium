@@ -287,9 +287,12 @@
 #pragma mark - LocationBarURLLoader
 
 - (void)loadGURLFromLocationBar:(const GURL&)url
-                    postContent:(TemplateURLRef::PostContent*)postContent
-                     transition:(ui::PageTransition)transition
-                    disposition:(WindowOpenDisposition)disposition {
+                               postContent:
+                                   (TemplateURLRef::PostContent*)postContent
+                                transition:(ui::PageTransition)transition
+                               disposition:(WindowOpenDisposition)disposition
+    destination_url_entered_without_scheme:
+        (bool)destination_url_entered_without_scheme {
   if (url.SchemeIs(url::kJavaScriptScheme)) {
     LoadJavaScriptURL(url, self.browserState,
                       self.webStateList->GetActiveWebState());
@@ -300,6 +303,8 @@
     // call to load.
     web::NavigationManager::WebLoadParams web_params =
         web_navigation_util::CreateWebLoadParams(url, transition, postContent);
+    web_params.is_using_https_as_default_scheme =
+        destination_url_entered_without_scheme;
     NSMutableDictionary* combinedExtraHeaders =
         [[self variationHeadersForURL:url] mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];

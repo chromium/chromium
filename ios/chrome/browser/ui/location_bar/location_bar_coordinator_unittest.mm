@@ -158,9 +158,10 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
   WindowOpenDisposition disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
-                            postContent:nil
-                             transition:transition
-                            disposition:disposition];
+                                 postContent:nil
+                                  transition:transition
+                                 disposition:disposition
+      destination_url_entered_without_scheme:false];
 
   FakeUrlLoadingBrowserAgent* url_loader =
       FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
@@ -192,9 +193,10 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
-                            postContent:nil
-                             transition:transition
-                            disposition:disposition];
+                                 postContent:nil
+                                  transition:transition
+                                 disposition:disposition
+      destination_url_entered_without_scheme:false];
 
   FakeUrlLoadingBrowserAgent* url_loader =
       FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(

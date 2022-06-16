@@ -94,6 +94,10 @@ int TestOmniboxClient::GetHttpsPortForTesting() const {
   return 0;
 }
 
+bool TestOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  return false;
+}
+
 gfx::Image TestOmniboxClient::GetSizedIcon(
     const gfx::VectorIcon& vector_icon_type,
     SkColor vector_icon_color) const {

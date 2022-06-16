@@ -90,6 +90,11 @@ class OmniboxClient {
   // redirects.
   virtual int GetHttpsPortForTesting() const = 0;
 
+  // If true, indicates that the tests are using a faux-HTTPS server which is
+  // actually an HTTP server that pretends to serve HTTPS responses. Should only
+  // be true on iOS.
+  virtual bool IsUsingFakeHttpsForHttpsUpgradeTesting() const = 0;
+
   // Returns the icon corresponding to |match| if match is an extension match
   // and an empty icon otherwise.
   virtual gfx::Image GetIconIfExtensionMatch(

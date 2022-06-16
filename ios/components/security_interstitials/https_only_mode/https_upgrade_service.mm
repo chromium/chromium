@@ -17,6 +17,14 @@ void HttpsUpgradeService::SetHttpsPortForTesting(
   use_fake_https_for_testing_ = use_fake_https_for_testing;
 }
 
+int HttpsUpgradeService::GetHttpsPortForTesting() const {
+  return https_port_for_testing_;
+}
+
+bool HttpsUpgradeService::IsUsingFakeHttpsForTesting() const {
+  return use_fake_https_for_testing_;
+}
+
 bool HttpsUpgradeService::IsFakeHTTPSForTesting(const GURL& url) const {
   return url.IntPort() == https_port_for_testing_;
 }

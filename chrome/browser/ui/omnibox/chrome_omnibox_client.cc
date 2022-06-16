@@ -170,6 +170,11 @@ int ChromeOmniboxClient::GetHttpsPortForTesting() const {
   return TypedNavigationUpgradeThrottle::GetHttpsPortForTesting();
 }
 
+bool ChromeOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  // Tests on desktop/Android always use a real HTTPS server.
+  return false;
+}
+
 gfx::Image ChromeOmniboxClient::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   TemplateURLService* service =

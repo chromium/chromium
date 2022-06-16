@@ -109,20 +109,23 @@ AutocompleteInput::AutocompleteInput()
       want_asynchronous_matches_(true),
       should_use_https_as_default_scheme_(false),
       added_default_scheme_to_typed_url_(false),
-      https_port_for_testing_(0) {}
+      https_port_for_testing_(0),
+      use_fake_https_for_https_upgrade_testing_(false) {}
 
 AutocompleteInput::AutocompleteInput(
     const std::u16string& text,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
     const AutocompleteSchemeClassifier& scheme_classifier,
     bool should_use_https_as_default_scheme,
-    int https_port_for_testing)
+    int https_port_for_testing,
+    bool use_fake_https_for_https_upgrade_testing)
     : AutocompleteInput(text,
                         std::string::npos,
                         current_page_classification,
                         scheme_classifier,
                         should_use_https_as_default_scheme,
-                        https_port_for_testing) {}
+                        https_port_for_testing,
+                        use_fake_https_for_https_upgrade_testing) {}
 
 AutocompleteInput::AutocompleteInput(
     const std::u16string& text,
@@ -130,14 +133,16 @@ AutocompleteInput::AutocompleteInput(
     metrics::OmniboxEventProto::PageClassification current_page_classification,
     const AutocompleteSchemeClassifier& scheme_classifier,
     bool should_use_https_as_default_scheme,
-    int https_port_for_testing)
+    int https_port_for_testing,
+    bool use_fake_https_for_https_upgrade_testing)
     : AutocompleteInput(text,
                         cursor_position,
                         "",
                         current_page_classification,
                         scheme_classifier,
                         should_use_https_as_default_scheme,
-                        https_port_for_testing) {}
+                        https_port_for_testing,
+                        use_fake_https_for_https_upgrade_testing) {}
 
 AutocompleteInput::AutocompleteInput(
     const std::u16string& text,
@@ -146,13 +151,16 @@ AutocompleteInput::AutocompleteInput(
     metrics::OmniboxEventProto::PageClassification current_page_classification,
     const AutocompleteSchemeClassifier& scheme_classifier,
     bool should_use_https_as_default_scheme,
-    int https_port_for_testing)
+    int https_port_for_testing,
+    bool use_fake_https_for_https_upgrade_testing)
     : AutocompleteInput() {
   cursor_position_ = cursor_position;
   current_page_classification_ = current_page_classification;
   desired_tld_ = desired_tld;
   should_use_https_as_default_scheme_ = should_use_https_as_default_scheme;
   https_port_for_testing_ = https_port_for_testing;
+  use_fake_https_for_https_upgrade_testing_ =
+      use_fake_https_for_https_upgrade_testing;
   Init(text, scheme_classifier);
 }
 
@@ -180,6 +188,7 @@ void AutocompleteInput::Init(
   if (should_use_https_as_default_scheme_ &&
       type_ == metrics::OmniboxInputType::URL &&
       ShouldUpgradeToHttps(text, canonicalized_url, https_port_for_testing_,
+                           use_fake_https_for_https_upgrade_testing_,
                            &upgraded_url)) {
     DCHECK(upgraded_url.is_valid());
     added_default_scheme_to_typed_url_ = true;
@@ -592,15 +601,29 @@ void AutocompleteInput::ParseForEmphasizeComponents(
 }
 
 // static
-bool AutocompleteInput::ShouldUpgradeToHttps(const std::u16string& text,
-                                             const GURL& url,
-                                             int https_port_for_testing,
-                                             GURL* upgraded_url) {
+bool AutocompleteInput::ShouldUpgradeToHttps(
+    const std::u16string& text,
+    const GURL& url,
+    int https_port_for_testing,
+    bool use_fake_https_for_https_upgrade_testing,
+    GURL* upgraded_url) {
+  if (url::HostIsIPAddress(url.host()) ||
+      net::IsHostnameNonUnique(url.host())) {
+#if !BUILDFLAG(IS_IOS)
+    // Never upgrade IP addresses or non-unique hostnames on non-iOS builds.
+    return false;
+#else
+    // On iOS, tests use a loopback IP address instead of hostnames due to
+    // platform limitations. Only allow them when running tests.
+    if (!https_port_for_testing || !url::HostIsIPAddress(url.host())) {
+      return false;
+    }
+#endif
+  }
+
   if (url.scheme() == url::kHttpScheme &&
       !base::StartsWith(text, base::ASCIIToUTF16(url.scheme()),
                         base::CompareCase::INSENSITIVE_ASCII) &&
-      !url::HostIsIPAddress(url.host()) &&
-      !net::IsHostnameNonUnique(url.host()) &&
       (url.port().empty() || https_port_for_testing)) {
     // Use HTTPS as the default scheme for URLs that are typed without a scheme.
     // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
@@ -616,7 +639,20 @@ bool AutocompleteInput::ShouldUpgradeToHttps(const std::u16string& text,
     //   upgraded (e.g. example.com:80 will load https://example.com).
     DCHECK_EQ(url::kHttpScheme, url.scheme());
     GURL::Replacements replacements;
-    replacements.SetSchemeStr(url::kHttpsScheme);
+#if !BUILDFLAG(IS_IOS)
+    // We sometimes use a fake HTTPS server on iOS as we can't serve good HTTPS
+    // from a test server. On all other platforms, we never use fake HTTPS
+    // server.
+    DCHECK(!use_fake_https_for_https_upgrade_testing);
+#else
+    // On iOS, use_fake_https_for_https_upgrade_testing should only be true if
+    // https_port_for_testing is also true.
+    DCHECK(!use_fake_https_for_https_upgrade_testing || https_port_for_testing);
+#endif
+
+    if (!use_fake_https_for_https_upgrade_testing) {
+      replacements.SetSchemeStr(url::kHttpsScheme);
+    }
     // This needs to be in scope when ReplaceComponents() is called:
     const std::string port_str = base::NumberToString(https_port_for_testing);
     if (https_port_for_testing) {
@@ -711,7 +747,8 @@ void AutocompleteInput::Clear() {
   focus_type_ = OmniboxFocusType::DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
   query_tile_id_.reset();
-  https_port_for_testing_ = false;
+  https_port_for_testing_ = 0;
+  use_fake_https_for_https_upgrade_testing_ = false;
 }
 
 size_t AutocompleteInput::EstimateMemoryUsage() const {

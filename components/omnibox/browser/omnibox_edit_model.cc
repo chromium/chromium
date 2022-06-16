@@ -607,7 +607,8 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
       AutocompleteInput(input_text, cursor_position, GetPageClassification(),
                         client_->GetSchemeClassifier(),
                         client_->ShouldDefaultTypedNavigationsToHttps(),
-                        client_->GetHttpsPortForTesting());
+                        client_->GetHttpsPortForTesting(),
+                        client_->IsUsingFakeHttpsForHttpsUpgradeTesting());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_prevent_inline_autocomplete(
@@ -648,9 +649,9 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
   GURL upgraded_url;
   if (match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
       client_->ShouldDefaultTypedNavigationsToHttps() &&
-      AutocompleteInput::ShouldUpgradeToHttps(text, match.destination_url,
-                                              client_->GetHttpsPortForTesting(),
-                                              &upgraded_url)) {
+      AutocompleteInput::ShouldUpgradeToHttps(
+          text, match.destination_url, client_->GetHttpsPortForTesting(),
+          client_->IsUsingFakeHttpsForHttpsUpgradeTesting(), &upgraded_url)) {
     input_.set_added_default_scheme_to_typed_url(true);
     DCHECK(upgraded_url.is_valid());
     match.destination_url = upgraded_url;
@@ -697,7 +698,8 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
         text_for_desired_tld_navigation, input_.cursor_position(), "com",
         input_.current_page_classification(), client_->GetSchemeClassifier(),
         client_->ShouldDefaultTypedNavigationsToHttps(),
-        client_->GetHttpsPortForTesting());
+        client_->GetHttpsPortForTesting(),
+        client_->IsUsingFakeHttpsForHttpsUpgradeTesting());
     input.set_prevent_inline_autocomplete(input_.prevent_inline_autocomplete());
     input.set_prefer_keyword(input_.prefer_keyword());
     input.set_keyword_mode_entry_method(input_.keyword_mode_entry_method());
@@ -828,7 +830,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   AutocompleteInput alternate_input(
       input_text, GetPageClassification(), client_->GetSchemeClassifier(),
       client_->ShouldDefaultTypedNavigationsToHttps(),
-      client_->GetHttpsPortForTesting());
+      client_->GetHttpsPortForTesting(),
+      client_->IsUsingFakeHttpsForHttpsUpgradeTesting());
   // Somehow we can occasionally get here with no active tab.  It's not
   // clear why this happens.
   alternate_input.set_current_url(client_->GetURL());
@@ -1222,7 +1225,8 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   input_ = AutocompleteInput(view_->GetText(), GetPageClassification(),
                              client_->GetSchemeClassifier(),
                              /*should_use_https_as_default_scheme=*/false,
-                             client_->GetHttpsPortForTesting());
+                             client_->GetHttpsPortForTesting(),
+                             client_->IsUsingFakeHttpsForHttpsUpgradeTesting());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_focus_type(user_clobbered_permanent_text

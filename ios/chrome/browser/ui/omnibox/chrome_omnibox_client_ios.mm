@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #include "ios/chrome/browser/prerender/prerender_service.h"
 #include "ios/chrome/browser/prerender/prerender_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -97,7 +98,13 @@ bool ChromeOmniboxClientIOS::ShouldDefaultTypedNavigationsToHttps() const {
 }
 
 int ChromeOmniboxClientIOS::GetHttpsPortForTesting() const {
-  return 0;
+  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+      ->GetHttpsPortForTesting();
+}
+
+bool ChromeOmniboxClientIOS::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
+  return HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_)
+      ->IsUsingFakeHttpsForTesting();
 }
 
 gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
