@@ -38,6 +38,7 @@ class Browser;
 class PrerenderService;
 @class PrimaryToolbarCoordinator;
 @class SecondaryToolbarCoordinator;
+@class SideSwipeController;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
 @class ToolbarAccessoryPresenter;
@@ -56,6 +57,7 @@ typedef struct {
   SecondaryToolbarCoordinator* secondaryToolbarCoordinator;
   TabStripCoordinator* tabStripCoordinator;
   TabStripLegacyCoordinator* legacyTabStripCoordinator;
+  SideSwipeController* sideSwipeController;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

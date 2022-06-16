@@ -529,6 +529,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1331229): Remove all use of the download manager
     // coordinator from BVC
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
+    _sideSwipeController = dependencies.sideSwipeController;
+    [_sideSwipeController setSnapshotDelegate:self];
+    [_sideSwipeController setSwipeDelegate:self];
     self.toolbarInterface = dependencies.toolbarInterface;
     self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
     self.secondaryToolbarCoordinator = dependencies.secondaryToolbarCoordinator;
@@ -634,27 +637,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK_EQ(_infobarModalOverlayContainerViewController.view.superview,
             self.view);
   [self updateOverlayContainerOrder];
-}
-
-#pragma mark - Delegates Category Properties
-
-// Lazily creates the SideSwipeController on first access.
-- (SideSwipeController*)sideSwipeController {
-  if (!_sideSwipeController) {
-    _sideSwipeController =
-        [[SideSwipeController alloc] initWithBrowser:self.browser];
-    [_sideSwipeController setSnapshotDelegate:self];
-    _sideSwipeController.toolbarInteractionHandler = self.toolbarInterface;
-    _sideSwipeController.primaryToolbarSnapshotProvider =
-        self.primaryToolbarCoordinator;
-    _sideSwipeController.secondaryToolbarSnapshotProvider =
-        self.secondaryToolbarCoordinator;
-    [_sideSwipeController setSwipeDelegate:self];
-    if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-      [_sideSwipeController setTabStripDelegate:self.legacyTabStripCoordinator];
-    }
-  }
-  return _sideSwipeController;
 }
 
 #pragma mark - Private Properties
@@ -1597,8 +1579,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
   }
 
-  if ([self.sideSwipeController inSwipe]) {
-    [self.sideSwipeController resetContentView];
+  if ([_sideSwipeController inSwipe]) {
+    [_sideSwipeController resetContentView];
   }
 
   void (^superCall)() = ^{
@@ -1625,8 +1607,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       self.presentedViewController.beingDismissed) {
     // Don't rotate while a presentation or dismissal animation is occurring.
     return NO;
-  } else if (_sideSwipeController &&
-             ![self.sideSwipeController shouldAutorotate]) {
+  } else if (_sideSwipeController && ![_sideSwipeController shouldAutorotate]) {
     // Don't auto rotate if side swipe controller view says not to.
     return NO;
   } else {
@@ -1772,12 +1753,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   } else {
     [self.secondaryToolbarCoordinator start];
   }
-
-  self.sideSwipeController.toolbarInteractionHandler = self.toolbarInterface;
-  self.sideSwipeController.primaryToolbarSnapshotProvider =
-      self.primaryToolbarCoordinator;
-  self.sideSwipeController.secondaryToolbarSnapshotProvider =
-      self.secondaryToolbarCoordinator;
 
   [self updateBroadcastState];
   if (_voiceSearchController) {
@@ -1971,7 +1946,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(self.browser);
   DCHECK([self isViewLoaded]);
 
-  [self.sideSwipeController addHorizontalGesturesToView:self.view];
+  [_sideSwipeController addHorizontalGesturesToView:self.view];
 
   // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
   // from BVC
@@ -3658,7 +3633,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self.isNTPActiveForCurrentWebState) {
     [_ntpCoordinator locationBarDidBecomeFirstResponder];
   }
-  [self.sideSwipeController setEnabled:NO];
+  [_sideSwipeController setEnabled:NO];
 
   if (!IsVisibleURLNewTabPage(self.currentWebState)) {
     // Tapping on web content area should dismiss the keyboard. Tapping on NTP
@@ -3679,7 +3654,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)locationBarDidResignFirstResponder {
   _keyCommandsProvider.canDismissModals = NO;
-  [self.sideSwipeController setEnabled:YES];
+  [_sideSwipeController setEnabled:YES];
 
   if (self.isNTPActiveForCurrentWebState) {
     [_ntpCoordinator locationBarDidResignFirstResponder];
@@ -4231,7 +4206,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
-  [self.sideSwipeController setInSwipe:NO];
+  [_sideSwipeController setInSwipe:NO];
 }
 
 - (UIView*)sideSwipeContentView {

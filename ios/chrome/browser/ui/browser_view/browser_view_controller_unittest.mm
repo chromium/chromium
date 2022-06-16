@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
@@ -207,6 +207,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     legacy_tab_strip_coordinator_ =
         [[TabStripLegacyCoordinator alloc] initWithBrowser:browser_.get()];
 
+    side_swipe_controller_ =
+        [[SideSwipeController alloc] initWithBrowser:browser_.get()];
+
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
@@ -216,6 +219,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.secondaryToolbarCoordinator = secondary_toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
+    dependencies.sideSwipeController = side_swipe_controller_;
 
     bvc_ = [[BrowserViewController alloc]
                        initWithBrowser:browser_.get()
@@ -273,6 +277,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
   PopupMenuCoordinator* popup_menu_coordinator_;
+  SideSwipeController* side_swipe_controller_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {

@@ -104,6 +104,7 @@
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
@@ -327,6 +328,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   SecondaryToolbarCoordinator* _secondaryToolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
+  SideSwipeController* _sideSwipeController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -363,6 +365,14 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     [_toolbarCoordinatorAdaptor
         addToolbarCoordinator:_secondaryToolbarCoordinator];
 
+    _sideSwipeController =
+        [[SideSwipeController alloc] initWithBrowser:browser];
+    _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinatorAdaptor;
+    _sideSwipeController.primaryToolbarSnapshotProvider =
+        _primaryToolbarCoordinator;
+    _sideSwipeController.secondaryToolbarSnapshotProvider =
+        _secondaryToolbarCoordinator;
+
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       if (base::FeatureList::IsEnabled(kModernTabStrip)) {
         _tabStripCoordinator =
@@ -372,6 +382,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
             [[TabStripLegacyCoordinator alloc] initWithBrowser:browser];
         _legacyTabStripCoordinator.animationWaitDuration =
             kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
+
+        [_sideSwipeController setTabStripDelegate:_legacyTabStripCoordinator];
       }
     }
   }
@@ -836,7 +848,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   TabLifecycleDependencies dependencies;
   dependencies.prerenderService =
       PrerenderServiceFactory::GetForBrowserState(browserState);
-  dependencies.sideSwipeController = browserViewController.sideSwipeController;
+  dependencies.sideSwipeController = _sideSwipeController;
   dependencies.downloadManagerCoordinator = self.downloadManagerCoordinator;
   dependencies.baseViewController = browserViewController;
   dependencies.commandDispatcher = self.browser->GetCommandDispatcher();
@@ -877,6 +889,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   dependencies.secondaryToolbarCoordinator = _secondaryToolbarCoordinator;
   dependencies.tabStripCoordinator = _tabStripCoordinator;
   dependencies.legacyTabStripCoordinator = _legacyTabStripCoordinator;
+  dependencies.sideSwipeController = _sideSwipeController;
 
   return dependencies;
 }
