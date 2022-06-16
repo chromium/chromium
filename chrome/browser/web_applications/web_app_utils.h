@@ -117,9 +117,8 @@ GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
 
 // As above, but returns the extensions handled by the app as a vector of
 // strings.
-std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
-    Profile* profile,
-    const AppId& app_id);
+std::vector<std::u16string> TransformFileExtensionsForDisplay(
+    const std::set<std::string>& extensions);
 
 // Updates the approved or disallowed protocol list for the given app. If
 // necessary, it also updates the protocol registration with the OS.

@@ -1038,6 +1038,8 @@ EnumTraits<crosapi::mojom::PermissionType, apps::PermissionType>::ToMojom(
       return crosapi::mojom::PermissionType::kContacts;
     case apps::PermissionType::kStorage:
       return crosapi::mojom::PermissionType::kStorage;
+    case apps::PermissionType::kFileHandling:
+      return crosapi::mojom::PermissionType::kFileHandling;
     case apps::PermissionType::kPrinting:
       NOTREACHED();
       return crosapi::mojom::PermissionType::kUnknown;
@@ -1069,6 +1071,9 @@ bool EnumTraits<crosapi::mojom::PermissionType,
       return true;
     case crosapi::mojom::PermissionType::kStorage:
       *output = apps::PermissionType::kStorage;
+      return true;
+    case crosapi::mojom::PermissionType::kFileHandling:
+      *output = apps::PermissionType::kFileHandling;
       return true;
   }
 

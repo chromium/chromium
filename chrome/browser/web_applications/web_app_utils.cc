@@ -324,17 +324,6 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 std::tuple<std::u16string, size_t>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
                                                  const AppId& app_id) {
-  auto extensions =
-      GetFileTypeAssociationsHandledByWebAppForDisplayAsList(profile, app_id);
-  return {base::UTF8ToUTF16(base::JoinString(
-              extensions, l10n_util::GetStringUTF8(
-                              IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR))),
-          extensions.size()};
-}
-
-std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
-    Profile* profile,
-    const AppId& app_id) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return {};
@@ -342,17 +331,26 @@ std::vector<std::string> GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
   const apps::FileHandlers* file_handlers =
       provider->registrar().GetAppFileHandlers(app_id);
 
-  std::set<std::string> extensions_set =
-      apps::GetFileExtensionsFromFileHandlers(*file_handlers);
-  std::vector<std::string> extensions_for_display;
-  extensions_for_display.reserve(extensions_set.size());
+  std::vector<std::u16string> extensions_for_display =
+      TransformFileExtensionsForDisplay(
+          apps::GetFileExtensionsFromFileHandlers(*file_handlers));
 
-  // Convert file types from formats like ".txt" to "TXT".
-  std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(extensions_for_display),
-                 [](const std::string& extension) {
-                   return base::ToUpperASCII(extension.substr(1));
-                 });
+  return {base::JoinString(extensions_for_display,
+                           l10n_util::GetStringUTF16(
+                               IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)),
+          extensions_for_display.size()};
+}
+
+std::vector<std::u16string> TransformFileExtensionsForDisplay(
+    const std::set<std::string>& extensions) {
+  std::vector<std::u16string> extensions_for_display;
+  extensions_for_display.reserve(extensions.size());
+  std::transform(
+      extensions.begin(), extensions.end(),
+      std::back_inserter(extensions_for_display),
+      [](const std::string& extension) {
+        return base::UTF8ToUTF16(base::ToUpperASCII(extension.substr(1)));
+      });
   return extensions_for_display;
 }
 

@@ -184,6 +184,7 @@ bool GetArcPermissionType(
       return true;
     case apps::mojom::PermissionType::kUnknown:
     case apps::mojom::PermissionType::kPrinting:
+    case apps::mojom::PermissionType::kFileHandling:
       return false;
   }
 }

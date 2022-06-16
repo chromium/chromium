@@ -92,6 +92,7 @@ const char kIntentActionSend[] = "send";
 const char kIntentActionSendMultiple[] = "send_multiple";
 const char kIntentActionCreateNote[] = "create_note";
 const char kIntentActionEdit[] = "edit";
+const char kIntentActionPotentialFileHandler[] = "potential_file_handler";
 
 const char kUseBrowserForLink[] = "use_browser";
 

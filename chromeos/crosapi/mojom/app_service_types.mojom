@@ -445,6 +445,7 @@ enum PermissionType {
   kNotifications                  = 4,
   [MinVersion=9] kContacts        = 5,
   [MinVersion=9] kStorage         = 6,
+  [MinVersion=10] kFileHandling   = 7,
 };
 
 [Stable]

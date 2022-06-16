@@ -29,6 +29,7 @@ extern const char kIntentActionSendMultiple[];
 extern const char kIntentActionCreateNote[];
 // A request to edit a file in an app. Must include an attached file.
 extern const char kIntentActionEdit[];
+extern const char kIntentActionPotentialFileHandler[];
 
 // App ID value which can be used as a Preferred App to denote that the browser
 // will open the link, and that we should not prompt the user about it.

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/message_formatter.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -39,6 +40,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_constants.h"
@@ -353,8 +355,13 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
 
 void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
                                                       bool enabled) {
-  web_app::PersistFileHandlersUserChoice(profile_, app_id, enabled,
-                                         base::DoNothing());
+  auto mojom_permission = apps::mojom::Permission::New();
+  mojom_permission->permission_type =
+      apps::mojom::PermissionType::kFileHandling;
+  mojom_permission->value = apps::mojom::PermissionValue::NewBoolValue(enabled);
+  mojom_permission->is_managed = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
+      app_id, std::move(mojom_permission));
 }
 
 void AppManagementPageHandler::ShowDefaultAppAssociationsUi() {
@@ -441,54 +448,86 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         std::move(run_on_os_login.value()));
   }
 
-  if (update.AppType() == apps::AppType::kWeb) {
+  if (update.AppType() == apps::AppType::kWeb ||
+      update.AppType() == apps::AppType::kSystemWeb) {
     std::string file_handling_types;
     std::string file_handling_types_label;
     bool fh_enabled = false;
-// Speculative fix for crbug.com/1315958
-#if !BUILDFLAG(IS_CHROMEOS)
-    auto* provider =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-    fh_enabled =
-        !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);
-    if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
-            app->id) &&
-        !provider->registrar().IsSystemApp(app->id) &&
-        !provider->registrar().GetAppFileHandlers(app->id)->empty()) {
-      auto [file_handling_types16, count] =
-          web_app::GetFileTypeAssociationsHandledByWebAppForDisplay(profile_,
-                                                                    app->id);
-      file_handling_types = base::UTF16ToUTF8(file_handling_types16);
+    const bool is_system_web_app =
+        update.InstallReason() == apps::InstallReason::kSystem;
+    if (!is_system_web_app &&
+        base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI)) {
+      apps::IntentFilters filters = update.IntentFilters();
+      if (!filters.empty()) {
+        std::set<std::string> file_extensions;
+        // Mime types are ignored.
+        std::set<std::string> mime_types;
+        for (auto& filter : filters) {
+          bool is_potential_file_handler_action = base::ranges::any_of(
+              filter->conditions.begin(), filter->conditions.end(),
+              [](const std::unique_ptr<apps::Condition>& condition) {
+                if (condition->condition_type != apps::ConditionType::kAction)
+                  return false;
 
-      const std::vector<std::string> all_extensions =
-          web_app::GetFileTypeAssociationsHandledByWebAppForDisplayAsList(
-              profile_, app->id);
-      std::vector<std::string> truncated_extensions = all_extensions;
-      // Only show at most 4 extensions.
-      truncated_extensions.resize(4);
-      file_handling_types_label =
-          base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
-              l10n_util::GetStringUTF16(IDS_APP_MANAGEMENT_FILE_HANDLING_TYPES),
-              "FILE_TYPE_COUNT", static_cast<int>(all_extensions.size()),
-              "FILE_TYPE1", truncated_extensions[0], "FILE_TYPE2",
-              truncated_extensions[1], "FILE_TYPE3", truncated_extensions[2],
-              "FILE_TYPE4", truncated_extensions[3], "OVERFLOW_COUNT",
-              static_cast<int>(all_extensions.size()) -
-                  static_cast<int>(truncated_extensions.size()),
-              "LINK", "#"));
+                if (condition->condition_values.size() != 1U)
+                  return false;
+
+                return condition->condition_values[0]->value ==
+                       apps_util::kIntentActionPotentialFileHandler;
+              });
+          if (is_potential_file_handler_action) {
+            filter->GetMimeTypesAndExtensions(mime_types, file_extensions);
+            break;
+          }
+        }
+
+        for (const auto& permission : update.Permissions()) {
+          if (permission->permission_type ==
+              apps::PermissionType::kFileHandling) {
+            fh_enabled = permission->IsPermissionEnabled();
+            break;
+          }
+        }
+
+        std::vector<std::u16string> extensions_for_display =
+            web_app::TransformFileExtensionsForDisplay(file_extensions);
+        file_handling_types = base::UTF16ToUTF8(
+            base::JoinString(extensions_for_display,
+                             l10n_util::GetStringUTF16(
+                                 IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
+
+        std::vector<std::u16string> truncated_extensions =
+            extensions_for_display;
+        // Only show at most 4 extensions.
+        truncated_extensions.resize(4);
+        file_handling_types_label =
+            base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
+                l10n_util::GetStringUTF16(
+                    IDS_APP_MANAGEMENT_FILE_HANDLING_TYPES),
+                "FILE_TYPE_COUNT",
+                static_cast<int>(extensions_for_display.size()), "FILE_TYPE1",
+                truncated_extensions[0], "FILE_TYPE2", truncated_extensions[1],
+                "FILE_TYPE3", truncated_extensions[2], "FILE_TYPE4",
+                truncated_extensions[3], "OVERFLOW_COUNT",
+                static_cast<int>(extensions_for_display.size()) -
+                    static_cast<int>(truncated_extensions.size()),
+                "LINK", "#"));
+      }
+
+      absl::optional<GURL> learn_more_url;
+      if (!CanShowDefaultAppAssociationsUi())
+        learn_more_url = GURL(kFileHandlingLearnMore);
+      // TODO(crbug/1252505): add file handling policy support.
+      app->file_handling_state = app_management::mojom::FileHandlingState::New(
+          fh_enabled, /*is_managed=*/false, file_handling_types,
+          file_handling_types_label, learn_more_url);
     }
-
-    app->hide_window_mode = provider->registrar().IsIsolated(app->id);
-#endif
-
-    absl::optional<GURL> learn_more_url;
-    if (!CanShowDefaultAppAssociationsUi())
-      learn_more_url = GURL(kFileHandlingLearnMore);
-    // TODO(crbug/1252505): add file handling policy support.
-    app->file_handling_state = app_management::mojom::FileHandlingState::New(
-        fh_enabled, /*is_managed=*/false, file_handling_types,
-        file_handling_types_label, learn_more_url);
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  app->hide_window_mode = provider->registrar().IsIsolated(app->id);
+#endif
 
   app->publisher_id = update.PublisherId();
 
