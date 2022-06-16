@@ -35,6 +35,8 @@ embedder.setUp_ = function(config) {
       '/extensions/platform_apps/web_view/shim/guest_from_opener.html';
   embedder.noReferrerGuestURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/guest_noreferrer.html';
+  embedder.windowOpenMessageURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/window_open_message.html';
   embedder.detectUserAgentURL = embedder.baseGuestURL + '/detect-user-agent';
   embedder.redirectGuestURL = embedder.baseGuestURL + '/server-redirect';
   embedder.redirectGuestURLDest = embedder.baseGuestURL +
@@ -3326,6 +3328,33 @@ function testWebViewAndEmbedderInNewWindow() {
   document.body.appendChild(webview);
 }
 
+function testNewWindowNoDeadlock() {
+  let webview = document.createElement('webview');
+  let newwindowEvent = null;
+  webview.addEventListener('loadstop', () => {
+    // First, we send a message to the guest, which will perform a window.open.
+    webview.contentWindow.postMessage('', '*');
+  });
+  webview.addEventListener('newwindow', (e) => {
+    // Once the guest calls window.open, we receive the request here.
+    // However, we postpone the attachment until we get a message back from the
+    // guest. The implementation cannot delay responding to the sync window.open
+    // IPC until attachment, because the message handler below performs the
+    // attachment, and that does not run until the guest's window.open call
+    // returns and it sends a message back to this embedder.
+    e.preventDefault();
+    newwindowEvent = e;
+  });
+  window.addEventListener('message', (e) => {
+    let newwebview = document.createElement('webview');
+    newwindowEvent.window.attach(newwebview);
+    document.body.appendChild(newwebview);
+    embedder.test.succeed();
+  });
+  webview.src = embedder.windowOpenMessageURL;
+  document.body.appendChild(webview);
+}
+
 function testSelectPopupPositionInMac() {
   var webview = document.createElement('webview');
   webview.id = 'popup-test-mac';
@@ -3542,6 +3571,7 @@ embedder.test.testList = {
        testRendererNavigationRedirectWhileUnattached,
   'testBlobURL': testBlobURL,
   'testWebViewAndEmbedderInNewWindow': testWebViewAndEmbedderInNewWindow,
+  'testNewWindowNoDeadlock': testNewWindowNoDeadlock,
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,

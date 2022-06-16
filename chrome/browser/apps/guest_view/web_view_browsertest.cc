@@ -1771,6 +1771,10 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   ASSERT_NE(empty_guest_opener, empty_guest_embedder->GetPrimaryMainFrame());
 }
 
+IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoDeadlock) {
+  TestHelper("testNewWindowNoDeadlock", "web_view/shim", NEEDS_TEST_SERVER);
+}
+
 // This is a regression test for crbug.com/1309302. It launches an app
 // with two iframes and a webview within each of the iframes. The
 // purpose of the test is to ensure that webRequest subevent names are
