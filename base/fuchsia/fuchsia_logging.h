@@ -24,7 +24,7 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
   ZxLogMessage(const char* file_path,
                int line,
                LogSeverity severity,
-               zx_status_t zx_err);
+               zx_status_t zx_status);
 
   ZxLogMessage(const ZxLogMessage&) = delete;
   ZxLogMessage& operator=(const ZxLogMessage&) = delete;
@@ -32,37 +32,38 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
   ~ZxLogMessage() override;
 
  private:
-  zx_status_t zx_err_;
+  zx_status_t zx_status_;
 };
 
 }  // namespace logging
 
-#define ZX_LOG_STREAM(severity, zx_err) \
-  COMPACT_GOOGLE_LOG_EX_##severity(ZxLogMessage, zx_err).stream()
+#define ZX_LOG_STREAM(severity, zx_status) \
+  COMPACT_GOOGLE_LOG_EX_##severity(ZxLogMessage, zx_status).stream()
 
-#define ZX_LOG(severity, zx_err) \
-  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_err), LOG_IS_ON(severity))
-#define ZX_LOG_IF(severity, condition, zx_err) \
-  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_err), \
+#define ZX_LOG(severity, zx_status) \
+  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_status), LOG_IS_ON(severity))
+#define ZX_LOG_IF(severity, condition, zx_status) \
+  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_status), \
               LOG_IS_ON(severity) && (condition))
 
-#define ZX_CHECK(condition, zx_err)                       \
-  LAZY_STREAM(ZX_LOG_STREAM(FATAL, zx_err), !(condition)) \
+#define ZX_CHECK(condition, zx_status)                       \
+  LAZY_STREAM(ZX_LOG_STREAM(FATAL, zx_status), !(condition)) \
       << "Check failed: " #condition << ". "
 
-#define ZX_DLOG(severity, zx_err) \
-  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_err), DLOG_IS_ON(severity))
+#define ZX_DLOG(severity, zx_status) \
+  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_status), DLOG_IS_ON(severity))
 
 #if DCHECK_IS_ON()
-#define ZX_DLOG_IF(severity, condition, zx_err) \
-  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_err),  \
+#define ZX_DLOG_IF(severity, condition, zx_status) \
+  LAZY_STREAM(ZX_LOG_STREAM(severity, zx_status),  \
               DLOG_IS_ON(severity) && (condition))
 #else  // DCHECK_IS_ON()
-#define ZX_DLOG_IF(severity, condition, zx_err) EAT_STREAM_PARAMETERS
+#define ZX_DLOG_IF(severity, condition, zx_status) EAT_STREAM_PARAMETERS
 #endif  // DCHECK_IS_ON()
 
-#define ZX_DCHECK(condition, zx_err)                                         \
-  LAZY_STREAM(ZX_LOG_STREAM(DCHECK, zx_err), DCHECK_IS_ON() && !(condition)) \
+#define ZX_DCHECK(condition, zx_status)         \
+  LAZY_STREAM(ZX_LOG_STREAM(DCHECK, zx_status), \
+              DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition << ". "
 
 namespace base {
