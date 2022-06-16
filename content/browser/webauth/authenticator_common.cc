@@ -354,8 +354,12 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
   // implemented in u2fd.
   if (base::FeatureList::IsEnabled(device::kWebAuthCrosPlatformAuthenticator) &&
       !is_u2f_api_request) {
+    // There are two possible PIDs the virtual U2F HID device could use, with or
+    // without corp protocol functionality.
     constexpr device::VidPid kChromeOsU2fdVidPid{0x18d1, 0x502c};
-    discovery_factory->set_hid_ignore_list({kChromeOsU2fdVidPid});
+    constexpr device::VidPid kChromeOsU2fdCorpVidPid{0x18d1, 0x5212};
+    discovery_factory->set_hid_ignore_list(
+        {kChromeOsU2fdVidPid, kChromeOsU2fdCorpVidPid});
     discovery_factory->set_generate_request_id_callback(
         GetWebAuthenticationDelegate()->GetGenerateRequestIdCallback(
             render_frame_host));
