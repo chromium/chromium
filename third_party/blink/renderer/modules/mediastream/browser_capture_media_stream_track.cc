@@ -42,22 +42,10 @@ void RecordUma(CropToResult result) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Allow resolving the Promise returned by cropTo() in:
-// 1. ASAN tests, where it is known to be flaky.
-// 2. In production too, remotely, if that turns out to be necessary.
-//
-// This will likely stop being necessary once we add a separate signal
-// from the capturer to the render process, marking that all subsequent
-// frames will be cropped-to the new target, even if no additional
-// frames are produced.
-const base::Feature kCropTopPromiseWaitsForFirstFrame {
-  "CropTopPromiseWaitsForFirstFrame",
-#if defined(ADDRESS_SANITIZER)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+
+// TODO(crbug.com/1332628): Turn on by default.
+const base::Feature kCropTopPromiseWaitsForFirstFrame{
+    "CropTopPromiseWaitsForFirstFrame", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If crop_id is the empty string, returns an empty base::Token.
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
