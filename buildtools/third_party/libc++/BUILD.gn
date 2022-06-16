@@ -88,6 +88,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/ios.cpp",
     "trunk/src/ios.instantiations.cpp",
     "trunk/src/iostream.cpp",
+    "trunk/src/legacy_debug_handler.cpp",
     "trunk/src/legacy_pointer_safety.cpp",
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
