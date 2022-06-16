@@ -791,6 +791,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("live-region-remove.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsLiveRegionChangeOnFreshlyUnignoredNode) {
+  RunEventTest(
+      FILE_PATH_LITERAL("live-region-change-on-freshly-unignored-node.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMenuListCollapse) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse.html"));
