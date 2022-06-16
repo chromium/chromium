@@ -101,7 +101,6 @@ if (is_android) {
 
   robolectric_library("components_background_task_scheduler_junit_tests") {
     include_android_sdk = false
-    testonly = true
     sources = [
       "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerImplWithMockTest.java",
       "internal/android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobServiceTest.java",
@@ -137,7 +136,6 @@ if (is_android) {
       "//components/background_task_scheduler:public_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_deps:chromium_play_services_availability_shadows_java",
-      "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//third_party/robolectric:robolectric_test_sdk_java",

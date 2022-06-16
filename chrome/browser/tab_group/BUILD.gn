@@ -22,8 +22,6 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtilsUnitTest.java",
@@ -36,7 +34,6 @@ robolectric_library("junit") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",

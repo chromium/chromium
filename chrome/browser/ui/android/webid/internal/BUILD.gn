@@ -66,8 +66,6 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java" ]
 
   deps = [
@@ -82,7 +80,6 @@ robolectric_library("junit") {
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

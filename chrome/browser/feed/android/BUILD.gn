@@ -273,8 +273,6 @@ android_library("javatests") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FakeLinearLayoutManager.java",
@@ -343,7 +341,6 @@ robolectric_library("junit") {
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

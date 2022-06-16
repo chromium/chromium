@@ -107,7 +107,6 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/FileEnumWorkerTaskTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerBitmapViewTest.java",
@@ -119,7 +118,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//net/android:net_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

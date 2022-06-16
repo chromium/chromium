@@ -25,7 +25,6 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "java/src/org/chromium/components/browser_ui/webshare/ShareServiceImplTest.java",
     "java/src/org/chromium/components/browser_ui/webshare/SharedFileCollatorTest.java",
@@ -35,7 +34,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",

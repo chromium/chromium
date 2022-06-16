@@ -310,7 +310,6 @@ java_cpp_enum("payments_journey_logger_enum_javagen") {
 }
 
 robolectric_library("junit_test_support") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowPaymentFeatureList.java",
@@ -321,7 +320,6 @@ robolectric_library("junit_test_support") {
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
@@ -334,7 +332,6 @@ robolectric_library("junit_test_support") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
@@ -351,7 +348,6 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//mojo/public/java:system_java",
     "//third_party/android_deps:material_design_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",

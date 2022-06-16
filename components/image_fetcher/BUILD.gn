@@ -51,7 +51,6 @@ source_set("android") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "android/junit/src/org/chromium/components/image_fetcher/CachedImageFetcherTest.java",
     "android/junit/src/org/chromium/components/image_fetcher/ImageFetcherBridgeTest.java",
@@ -67,7 +66,6 @@ robolectric_library("junit") {
     "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:simple_factory_key_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/gif_player:gif_player_java",

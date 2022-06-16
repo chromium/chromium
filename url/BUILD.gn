@@ -310,12 +310,10 @@ if (is_android) {
   # Unlike gurl_junit_test_support targets depending on gurl_junit_shadows must
   # bypass platform checks.
   robolectric_library("gurl_junit_shadows") {
-    testonly = true
     sources = [ "android/test/java/src/org/chromium/url/ShadowGURL.java" ]
     deps = [
       ":gurl_java",
       ":gurl_junit_test_support",
-      "//third_party/android_deps:robolectric_all_java",
     ]
   }
 
@@ -352,7 +350,6 @@ if (is_android) {
   }
 
   robolectric_library("gurl_junit_tests") {
-    testonly = true
     sources = [ "android/junit/src/org/chromium/url/ShadowGURLTest.java" ]
     deps = [
       ":gurl_java",
@@ -361,7 +358,6 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//base/test:test_support_java",
-      "//third_party/android_deps:robolectric_all_java",
       "//third_party/junit",
     ]
   }

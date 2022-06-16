@@ -40,7 +40,6 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/crash/LogcatCrashExtractorTest.java",
     "junit/src/org/chromium/components/crash/PureJavaExceptionReporterTest.java",
@@ -54,7 +53,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//components/minidump_uploader:minidump_uploader_java_test_support",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]

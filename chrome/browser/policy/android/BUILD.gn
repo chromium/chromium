@@ -68,8 +68,6 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/policy/CloudManagementAndroidConnectionTest.java",
     "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferencesTest.java",
@@ -81,7 +79,6 @@ robolectric_library("junit") {
     ":util_java",
     "//base:base_junit_test_support",
     "//chrome/browser/preferences:java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]

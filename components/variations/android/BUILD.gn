@@ -25,7 +25,6 @@ android_library("variations_java") {
 }
 
 robolectric_library("components_variations_junit_tests") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/variations/VariationsCompressionUtilsTest.java",
     "junit/src/org/chromium/components/variations/firstrun/VariationsSeedFetcherTest.java",
@@ -38,7 +37,6 @@ robolectric_library("components_variations_junit_tests") {
     "//components/variations:variations_java",
     "//components/variations/proto:proto_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

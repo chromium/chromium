@@ -18,7 +18,6 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "src/org/chromium/components/webapk/lib/client/WebApkValidatorTest.java",
     "src/org/chromium/components/webapk/lib/client/WebApkVerifySignatureTest.java",
@@ -30,7 +29,6 @@ robolectric_library("junit") {
     "//base/test:test_support_java",
     "//components/webapk/android/libs/common:java",
     "//testing/android/junit:junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
   ]
 }

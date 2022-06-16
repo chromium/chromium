@@ -71,7 +71,6 @@ java_cpp_enum("chrome_browser_flags_enums_srcjar") {
 }
 
 robolectric_library("flags_junit_tests") {
-  testonly = true
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsSafeModeUnitTest.java",
@@ -89,7 +88,6 @@ robolectric_library("flags_junit_tests") {
     "//base/test:test_support_java",
     "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

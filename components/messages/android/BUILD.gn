@@ -129,7 +129,6 @@ static_library("feature_flags") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources =
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
@@ -138,7 +137,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",

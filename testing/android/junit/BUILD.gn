@@ -23,7 +23,6 @@ robolectric_library("junit_test_support") {
     "java/src/org/chromium/testing/local/TestDir.java",
   ]
   deps = [
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

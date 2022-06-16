@@ -26,7 +26,6 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [ "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegateTest.java" ]
   deps = [
     ":java",
@@ -34,7 +33,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//cc:cc_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

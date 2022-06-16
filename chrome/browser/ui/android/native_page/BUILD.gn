@@ -22,8 +22,6 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/ui/native_page/NativePageTest.java",
   ]
@@ -31,7 +29,6 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
   ]
 }

@@ -190,8 +190,6 @@ android_library("download_java_tests") {
 }
 
 robolectric_library("junit_tests") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProviderUnitTest.java",
@@ -213,7 +211,6 @@ robolectric_library("junit_tests") {
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//net/android:net_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",

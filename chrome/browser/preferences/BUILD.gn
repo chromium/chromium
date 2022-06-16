@@ -54,7 +54,6 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("preferences_junit_tests") {
-  testonly = true
   sources = [
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyCheckerTest.java",
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeysTest.java",

@@ -100,8 +100,6 @@ if (is_android) {
   }
 
   robolectric_library("junit_tests") {
-    testonly = true
-
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
@@ -131,7 +129,6 @@ if (is_android) {
       "//components/embedder_support/android:junit_test_support",
       "//components/url_formatter/android:url_formatter_java",
       "//third_party/android_deps:espresso_java",
-      "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_core_java",

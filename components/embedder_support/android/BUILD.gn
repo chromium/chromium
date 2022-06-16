@@ -291,23 +291,17 @@ generate_jni("native_j_unittests_jni_headers") {
 }
 
 robolectric_library("junit_test_support") {
-  testonly = true
   sources = [ "junit/src/org/chromium/components/embedder_support/util/ShadowUrlUtilities.java" ]
-  deps = [
-    ":util_java",
-    "//third_party/android_deps:robolectric_all_java",
-  ]
+  deps = [ ":util_java" ]
 }
 
 robolectric_library("components_embedder_support_junit_tests") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
   ]
   deps = [
     ":util_java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]

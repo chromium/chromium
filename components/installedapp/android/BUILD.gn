@@ -64,7 +64,6 @@ android_library("javatests") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources =
       [ "java/src/org/chromium/components/installedapp/PackageHashTest.java" ]
   deps = [

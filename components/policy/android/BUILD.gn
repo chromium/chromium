@@ -60,7 +60,6 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("components_policy_junit_tests") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",
     "junit/src/org/chromium/components/policy/CombinedPolicyProviderTest.java",
@@ -76,7 +75,6 @@ robolectric_library("components_policy_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//build/android:build_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",

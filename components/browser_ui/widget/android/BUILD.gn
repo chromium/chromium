@@ -385,7 +385,6 @@ android_resources("java_test_resources") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegateUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialogUnitTest.java",
@@ -401,7 +400,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",

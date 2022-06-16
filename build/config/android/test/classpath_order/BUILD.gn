@@ -93,7 +93,6 @@ generate_dummy_android_library("a2_master_java") {
 }
 
 robolectric_library("junit_tests") {
-  testonly = true
   sources =
       [ "java/src/org/chromium/build/classpath_order/ClassPathOrderTest.java" ]
   deps = [
@@ -102,7 +101,6 @@ robolectric_library("junit_tests") {
     ":z1_master_java",
     ":z2_dependency_java",
     "//testing/android/junit:junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

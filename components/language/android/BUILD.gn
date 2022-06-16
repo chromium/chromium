@@ -68,7 +68,6 @@ android_library("ulp_delegate_public_java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [ "java/src/org/chromium/components/language/LanguageProfileControllerUnitTest.java" ]
   deps = [
     ":java",
@@ -79,7 +78,6 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

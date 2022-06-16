@@ -111,12 +111,10 @@ android_resources("test_java_resources") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [ "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPopupPositionTest.java" ]
   deps = [
     ":java",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

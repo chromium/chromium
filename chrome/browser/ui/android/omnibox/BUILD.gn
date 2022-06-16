@@ -349,8 +349,6 @@ proto_java_library("partner_location_descriptor_proto_java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteStateUnitTest.java",
@@ -429,7 +427,6 @@ robolectric_library("junit") {
     "//content/public/test/android:content_java_test_support",
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:material_design_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

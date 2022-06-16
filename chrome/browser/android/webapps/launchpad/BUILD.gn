@@ -70,8 +70,6 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit_tests") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuPermissionsCoordinatorTest.java",
@@ -92,7 +90,6 @@ robolectric_library("junit_tests") {
     "//components/content_settings/android:content_settings_enums_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

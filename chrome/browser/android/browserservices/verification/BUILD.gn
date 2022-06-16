@@ -61,12 +61,10 @@ android_library("javatests") {
 }
 
 robolectric_library("junit_test_support") {
-  testonly = true
   sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierUnitTestSupport.java" ]
   deps = [
     ":java",
     "//components/embedder_support/android:util_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/mockito:mockito_java",
   ]

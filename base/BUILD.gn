@@ -4387,7 +4387,6 @@ if (is_android) {
   }
 
   robolectric_library("base_junit_test_support") {
-    testonly = true
     sources = [
       "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTask.java",
       "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTaskBridge.java",

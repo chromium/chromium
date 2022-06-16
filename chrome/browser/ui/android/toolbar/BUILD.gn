@@ -270,8 +270,6 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuCoordinatorTest.java",
@@ -322,7 +320,6 @@ robolectric_library("junit") {
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:guava_android_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",

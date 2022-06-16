@@ -107,8 +107,6 @@ android_library("incognito_java_tests") {
 }
 
 robolectric_library("incognito_junit_tests") {
-  testonly = true
-
   sources = [
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java",
@@ -128,7 +126,6 @@ robolectric_library("incognito_junit_tests") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",

@@ -146,7 +146,6 @@ flatbuffer_java_library("critical_persisted_tab_data_flatbuffer_java") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
@@ -160,7 +159,6 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/preferences:java",
     "//content/public/android:content_full_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

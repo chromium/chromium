@@ -120,7 +120,6 @@ generate_jni("test_jni_headers") {
 }
 
 robolectric_library("junit") {
-  testonly = true
   sources = [
     "junit/src/org/chromium/components/media_router/BrowserMediaRouterRouteTest.java",
     "junit/src/org/chromium/components/media_router/BrowserMediaRouterSinkObservationTest.java",
@@ -149,7 +148,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//content/public/android:content_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
     "//third_party/junit",

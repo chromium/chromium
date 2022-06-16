@@ -60,8 +60,6 @@ generate_jni("jni_headers") {
 }
 
 robolectric_library("junit") {
-  testonly = true
-
   sources = [ "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarCollectionUnitTest.java" ]
 
   deps = [
