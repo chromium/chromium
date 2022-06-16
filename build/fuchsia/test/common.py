@@ -30,6 +30,7 @@ def get_host_arch() -> str:
 
 
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
+_FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 
 
 def _run_repair_command(output):
@@ -78,7 +79,7 @@ def run_ffx_command(cmd: Iterable[str],
         CalledProcessError if |check| is true.
     """
 
-    ffx_cmd = [os.path.join(SDK_TOOLS_DIR, 'ffx')]
+    ffx_cmd = [_FFX_TOOL]
     if node_name:
         ffx_cmd.extend(('--target', node_name))
     ffx_cmd.extend(cmd)
@@ -97,7 +98,7 @@ def run_continuous_ffx_command(cmd: Iterable[str],
                                node_name: Optional[str] = None,
                                **kwargs) -> subprocess.Popen:
     """Runs an ffx command asynchronously."""
-    ffx_cmd = [os.path.join(SDK_TOOLS_DIR, 'ffx')]
+    ffx_cmd = [_FFX_TOOL]
     if node_name:
         ffx_cmd.extend(('--target', node_name))
     ffx_cmd.extend(cmd)

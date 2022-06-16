@@ -12,9 +12,9 @@ import tempfile
 
 from typing import List
 
-import publish_package
-
 from common import register_common_args
+from log_manager import LogManager, register_log_args, start_system_log
+from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
 from run_executable_test import ExecutableTestRunner
 from serve_repo import register_serve_args, run_serve_cmd
@@ -40,28 +40,33 @@ def main():
 
     # Register arguments
     register_common_args(parser)
-    publish_package.register_package_args(parser, allow_temp_repo=True)
+    register_package_args(parser, allow_temp_repo=True)
+    register_log_args(parser)
     register_serve_args(parser)
 
     # Treat unrecognized arguments as test specific arguments.
     runner_args, test_args = parser.parse_known_args()
 
+    if not runner_args.out_dir:
+        raise ValueError("--out-dir must be specified.")
+
     test_runner = get_test_runner(runner_args, test_args)
-    packages = test_runner.get_package_paths()
+    package_paths = test_runner.get_package_paths()
+    with LogManager(runner_args.logs_dir) as log_manager:
+        start_system_log(log_manager, False, package_paths, ['--since', 'now'])
+        if not runner_args.repo:
+            # Create a directory that serves as a temporary repository.
+            tmpdir = tempfile.mkdtemp()
+            atexit.register(shutil.rmtree, tmpdir)
+            runner_args.repo = tmpdir
 
-    if not runner_args.repo:
-        # Create a directory that serves as a temporary repository.
-        tmpdir = tempfile.mkdtemp()
-        atexit.register(shutil.rmtree, tmpdir)
-        runner_args.repo = tmpdir
-
-    publish_package.publish_packages(packages, runner_args.repo,
-                                     not runner_args.no_repo_init)
-    try:
-        run_serve_cmd('start', runner_args)
-        return test_runner.run_test().returncode
-    finally:
-        run_serve_cmd('stop', runner_args)
+        publish_packages(package_paths, runner_args.repo,
+                         not runner_args.no_repo_init)
+        try:
+            run_serve_cmd('start', runner_args)
+            return test_runner.run_test().returncode
+        finally:
+            run_serve_cmd('stop', runner_args)
 
 
 if __name__ == '__main__':
