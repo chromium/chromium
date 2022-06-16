@@ -1376,7 +1376,7 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
     // production code. Don't bother to delete the service on pipe close,
     // though; just keep it in a vector instead.
     auction_worklet_services_.push_back(
-        std::make_unique<auction_worklet::AuctionWorkletServiceImpl>(
+        auction_worklet::AuctionWorkletServiceImpl::CreateForService(
             std::move(auction_worklet_service_receiver)));
     return nullptr;
   }

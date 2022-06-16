@@ -164,7 +164,7 @@ auto RunNetworkService(
 auto RunAuctionWorkletService(
     mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
         receiver) {
-  return std::make_unique<auction_worklet::AuctionWorkletServiceImpl>(
+  return auction_worklet::AuctionWorkletServiceImpl::CreateForService(
       std::move(receiver));
 }
 

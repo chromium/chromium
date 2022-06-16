@@ -293,6 +293,11 @@ AuctionV8Helper::CreateTaskRunner() {
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
 
+void AuctionV8Helper::SetDestroyedCallback(base::OnceClosure callback) {
+  DCHECK(!destroyed_callback_);
+  destroyed_callback_ = std::move(callback);
+}
+
 v8::Local<v8::Context> AuctionV8Helper::CreateContext(
     v8::Handle<v8::ObjectTemplate> global_template) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -694,6 +699,8 @@ AuctionV8Helper::~AuctionV8Helper() {
   // destroyed before `devtools_agent_`.
   if (devtools_agent_)
     devtools_agent_->DestroySessions();
+  if (destroyed_callback_)
+    std::move(destroyed_callback_).Run();
 }
 
 void AuctionV8Helper::CreateIsolate() {
