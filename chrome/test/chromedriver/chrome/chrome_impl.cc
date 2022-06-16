@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
+#include "chrome/test/chromedriver/chrome/page_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 #include "url/gurl.h"
@@ -59,7 +61,9 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
   Status status = devtools_http_client_->GetWebViewsInfo(&views_info);
   if (status.IsError())
     return status;
-  UpdateWebViews(views_info, w3c_compliant);
+  status = UpdateWebViews(views_info, w3c_compliant);
+  if (status.IsError())
+    return status;
   for (int i = views_info.GetSize() - 1; i >= 0; --i) {
     const WebViewInfo& view = views_info.Get(i);
     if (view.type == WebViewInfo::kPage) {
@@ -76,7 +80,9 @@ Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
   Status status = devtools_http_client_->GetWebViewsInfo(&views_info);
   if (status.IsError())
     return status;
-  UpdateWebViews(views_info, w3c_compliant);
+  status = UpdateWebViews(views_info, w3c_compliant);
+  if (status.IsError())
+    return status;
   std::list<std::string> web_view_ids_tmp;
   for (const auto& view : web_views_)
     web_view_ids_tmp.push_back(view->GetId());
@@ -84,8 +90,8 @@ Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
   return Status(kOk);
 }
 
-void ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
-                                bool w3c_compliant) {
+Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
+                                  bool w3c_compliant) {
   // Check if some web views are closed (or in the case of background pages,
   // become inactive).
   auto it = web_views_.begin();
@@ -111,7 +117,12 @@ void ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         }
       }
       if (!found) {
-        std::unique_ptr<DevToolsClient> client = CreateClient(view.id);
+        std::unique_ptr<DevToolsClientImpl> client;
+        Status status = CreateClient(view.id, &client);
+        if (status.IsError()) {
+          return status;
+        }
+
         for (const auto& listener : devtools_event_listeners_)
           client->AddListener(listener.get());
         // OnConnected will fire when DevToolsClient connects later.
@@ -126,9 +137,21 @@ void ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
               devtools_http_client_->browser_info(), std::move(client),
               device_metrics_.get(), page_load_strategy_));
         }
+        DevToolsClientImpl* parent =
+            static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
+        status = web_views_.back()->AttachTo(parent);
+        if (status.IsError()) {
+          return status;
+        }
+        status = web_views_.back()->ConnectIfNecessary();
+        if (status.IsError()) {
+          return status;
+        }
       }
     }
   }
+
+  return Status(kOk);
 }
 
 Status ChromeImpl::GetWebViewById(const std::string& id, WebView** web_view) {
@@ -171,14 +194,42 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
   return Status(kOk);
 }
 
-std::unique_ptr<DevToolsClient> ChromeImpl::CreateClient(
-    const std::string& id) {
-  auto result = std::make_unique<DevToolsClientImpl>(
-      id, "", devtools_http_client_->endpoint().GetDebuggerUrl(id),
-      socket_factory_);
-  result->SetFrontendCloserFunc(base::BindRepeating(
+Status ChromeImpl::CreateClient(const std::string& id,
+                                std::unique_ptr<DevToolsClientImpl>* client) {
+  Status status = devtools_websocket_client_->ConnectIfNecessary();
+  if (status.IsError()) {
+    return status;
+  }
+
+  std::string session_id;
+  {
+    base::Value params(base::Value::Type::DICT);
+    base::Value result;
+    params.GetDict().Set("targetId", id);
+    params.GetDict().Set("flatten", true);
+    status = devtools_websocket_client_->SendCommandAndGetResult(
+        "Target.attachToTarget", base::Value::AsDictionaryValue(params),
+        &result);
+    if (status.IsError()) {
+      return status;
+    }
+
+    std::string* session_id_ptr = result.GetDict().FindString("sessionId");
+
+    if (session_id_ptr == nullptr) {
+      return Status(kUnknownError,
+                    "No sessionId in the response to Target.attachToTarget");
+    }
+
+    session_id = *session_id_ptr;
+  }
+
+  *client = std::make_unique<DevToolsClientImpl>(id, session_id);
+  (*client)->SetFrontendCloserFunc(base::BindRepeating(
       &ChromeImpl::CloseFrontends, base::Unretained(this), id));
-  return result;
+  (*client)->SetMainPage(true);
+
+  return status;
 }
 
 Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
@@ -217,12 +268,20 @@ Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
 
   for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
        it != docked_frontend_ids.end(); ++it) {
-    std::unique_ptr<DevToolsClient> client(new DevToolsClientImpl(
-        *it, "", devtools_http_client_->endpoint().GetDebuggerUrl(*it),
-        socket_factory_));
+    std::unique_ptr<DevToolsClientImpl> client;
+    Status status = CreateClient(*it, &client);
+    if (status.IsError())
+      return status;
     std::unique_ptr<WebViewImpl> web_view(new WebViewImpl(
         *it, false, nullptr, devtools_http_client_->browser_info(),
         std::move(client), nullptr, page_load_strategy_));
+
+    DevToolsClientImpl* parent =
+        static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
+    status = web_view->AttachTo(parent);
+    if (status.IsError()) {
+      return status;
+    }
 
     status = web_view->ConnectIfNecessary();
     // Ignore disconnected error, because the debugger might have closed when
@@ -696,4 +755,7 @@ ChromeImpl::ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
       devtools_http_client_(std::move(http_client)),
       devtools_websocket_client_(std::move(websocket_client)),
       devtools_event_listeners_(std::move(devtools_event_listeners)),
-      page_load_strategy_(page_load_strategy) {}
+      page_load_strategy_(page_load_strategy) {
+  page_tracker_ = std::make_unique<PageTracker>(
+      devtools_websocket_client_.get(), &web_views_);
+}

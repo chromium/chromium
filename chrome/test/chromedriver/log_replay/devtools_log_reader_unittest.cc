@@ -16,6 +16,7 @@ const char* const kTestDataPath[] = {"chrome", "test", "chromedriver",
                                      "log_replay", "test_data"};
 const char kTestGetTitlePath[] = "testGetTitle_simple.log";
 const char kOneEntryPath[] = "oneDevToolsEntry.log";
+const char kBrowserEntryPath[] = "oneDevToolsBrowserEntry.log";
 const char kTruncatedJSONPath[] = "truncatedJSON.log";
 const char kReadableTimestampPathLinux[] = "testReadableTimestampLinux.log";
 const char kReadableTimestampPathWin[] = "testReadableTimestampWindows.log";
@@ -91,6 +92,18 @@ TEST(DevToolsLogReaderTest, EndOfFile) {
   EXPECT_TRUE(next == nullptr);
 }
 
+TEST(DevToolsLogReaderTest, WebSocketBrowser) {
+  base::FilePath path = GetLogFileFromLiteral(kBrowserEntryPath);
+  DevToolsLogReader reader(path);
+  std::unique_ptr<LogEntry> next = reader.GetNext(LogEntry::kWebSocket);
+  EXPECT_TRUE(next != nullptr);
+  EXPECT_EQ(next->protocol_type, LogEntry::kWebSocket);
+  EXPECT_EQ(next->event_type, LogEntry::kRequest);
+  EXPECT_EQ(next->command_name, "Log.enable");
+  EXPECT_EQ(next->session_id, "");
+  EXPECT_EQ(next->id, 1);
+}
+
 TEST(DevToolsLogReaderTest, WebSocketBasic) {
   base::FilePath path = GetLogFileFromLiteral(kTestGetTitlePath);
   DevToolsLogReader reader(path);
@@ -99,6 +112,7 @@ TEST(DevToolsLogReaderTest, WebSocketBasic) {
   EXPECT_EQ(next->protocol_type, LogEntry::kWebSocket);
   EXPECT_EQ(next->event_type, LogEntry::kRequest);
   EXPECT_EQ(next->command_name, "Log.enable");
+  EXPECT_EQ(next->session_id, "AQUA");
   EXPECT_EQ(next->id, 1);
 }
 
@@ -110,6 +124,7 @@ TEST(DevToolsLogReaderTest, WebSocketMultiple) {
   EXPECT_TRUE(next != nullptr);
   EXPECT_EQ(next->event_type, LogEntry::kRequest);
   EXPECT_EQ(next->command_name, "DOM.getDocument");
+  EXPECT_EQ(next->session_id, "AQUA");
   EXPECT_EQ(next->id, 2);
 }
 
@@ -122,6 +137,7 @@ TEST(DevToolsLogReaderTest, WebSocketPayload) {
   EXPECT_TRUE(next != nullptr);
   EXPECT_EQ(next->command_name, "Target.setAutoAttach");
   EXPECT_EQ(next->id, 3);
+  EXPECT_EQ(next->session_id, "AQUA");
   EXPECT_EQ(
       next->payload,
       "{\n   \"autoAttach\": true,\n   \"waitForDebuggerOnStart\": false\n}\n");

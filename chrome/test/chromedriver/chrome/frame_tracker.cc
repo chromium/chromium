@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -202,7 +203,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
                                                               *target_id));
         WebViewImplHolder child_holder(child.get());
         frame_to_target_map_[*target_id] = std::move(child);
-        frame_to_target_map_[*target_id]->SetUpDevTools();
+        frame_to_target_map_[*target_id]->ConnectIfNecessary();
       }
     }
   } else if (method == "Target.detachedFromTarget") {

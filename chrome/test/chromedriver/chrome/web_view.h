@@ -44,9 +44,6 @@ class WebView {
   // Make DevToolsCient connect to DevTools if it is disconnected.
   virtual Status ConnectIfNecessary() = 0;
 
-  // Make DevToolsCient set up DevTools.
-  virtual Status SetUpDevTools() = 0;
-
   // Handles events that have been received but not yet handled.
   virtual Status HandleReceivedEvents() = 0;
 

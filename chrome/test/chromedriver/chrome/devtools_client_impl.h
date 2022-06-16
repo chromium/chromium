@@ -51,10 +51,15 @@ class DevToolsEventListener;
 class Status;
 class SyncWebSocket;
 
+// The next invariant means that the hierarchy must be flat,
+// we can have two levels of DevToolsClientImpl maximum.
+// Invariant: parent == nullptr || children.empty()
 class DevToolsClientImpl : public DevToolsClient {
  public:
   static const char kBrowserwideDevToolsClientId[];
 
+  // Postcondition: !IsNull()
+  // Postcondition: !IsConnected()
   DevToolsClientImpl(const std::string& id,
                      const std::string& session_id,
                      const std::string& url,
@@ -62,9 +67,9 @@ class DevToolsClientImpl : public DevToolsClient {
 
   typedef base::RepeatingCallback<Status()> FrontendCloserFunc;
 
-  DevToolsClientImpl(const std::string& id,
-                     const std::string& session_id,
-                     DevToolsClientImpl* parent);
+  // Postcondition: IsNull()
+  // Postcondition: !IsConnected()
+  DevToolsClientImpl(const std::string& id, const std::string& session_id);
 
   typedef base::RepeatingCallback<bool(const std::string&,
                                        int,
@@ -81,12 +86,33 @@ class DevToolsClientImpl : public DevToolsClient {
 
   void SetParserFuncForTesting(const ParserFunc& parser_func);
   void SetFrontendCloserFunc(const FrontendCloserFunc& frontend_closer_func);
+  // Make this DevToolsClient a child of 'parent'.
+  // All the commands of the child are routed via the parent.
+  // The parent demultiplexes the incoming events to the appropriate children.
+  // If the parent->IsConnected() this object changes its state to connected,
+  // it sets up the remote end and notifies the listeners about the connection.
+  // Precondition: parent != nullptr
+  // Precondition: IsNull()
+  // The next precondition secures the class invariant about flat hierarchy
+  // Precondition: parent->GetParentClient() == nullptr.
+  // Postcondition: result.IsError() || !IsNull()
+  Status AttachTo(DevToolsClientImpl* parent);
 
   // Overridden from DevToolsClient:
   const std::string& GetId() override;
+  // If the object IsNull then it cannot be connected to the remote end.
+  // Such an object needs to be attached to some !IsNull() parent first.
+  // Postcondition: IsNull() == (socket == nullptr && parent == nullptr)
+  bool IsNull() const override;
+  bool IsConnected() const;
   bool WasCrashed() override;
+  // Connect and configure the remote end.
+  // The children are also connected and their remote ends are configured.
+  // The listeners and the listeners of the children are notified appropriately.
+  // Does nothing if the connection is already established.
+  // Precondition: !IsNull()
+  // Postcondition: result.IsError() || IsConnected()
   Status ConnectIfNecessary() override;
-  Status SetUpDevTools() override;
   Status SendCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
@@ -110,6 +136,11 @@ class DevToolsClientImpl : public DevToolsClient {
   Status SendCommandAndIgnoreResponse(
       const std::string& method,
       const base::DictionaryValue& params) override;
+
+  // Add a listener for connection and events.
+  // Listeners cannot be added to the object that is already connected.
+  // Precondition: !IsConnected()
+  // Precondition: listener != nullptr
   void AddListener(DevToolsEventListener* listener) override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;
@@ -118,6 +149,10 @@ class DevToolsClientImpl : public DevToolsClient {
   void SetOwner(WebViewImpl* owner) override;
   WebViewImpl* GetOwner() const override;
   DevToolsClient* GetRootClient() override;
+  DevToolsClient* GetParentClient() const override;
+  bool IsMainPage() const override;
+  void SetMainPage(bool value);
+  int NextMessageId() const;
 
  private:
   enum ResponseState {
@@ -161,6 +196,9 @@ class DevToolsClientImpl : public DevToolsClient {
   Status EnsureListenersNotifiedOfConnect();
   Status EnsureListenersNotifiedOfEvent();
   Status EnsureListenersNotifiedOfCommandResponse();
+  void ResetListeners();
+  Status OnConnected();
+  Status SetUpDevTools();
 
   std::unique_ptr<SyncWebSocket> socket_;
   GURL url_;
@@ -188,6 +226,8 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_;  // The id identifying a particular request.
   int stack_count_;
+  bool is_remote_end_configured_;
+  bool is_main_page_;
 };
 
 namespace internal {

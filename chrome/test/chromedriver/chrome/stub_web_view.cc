@@ -28,10 +28,6 @@ Status StubWebView::ConnectIfNecessary() {
   return Status(kOk);
 }
 
-Status StubWebView::SetUpDevTools() {
-  return Status(kOk);
-}
-
 Status StubWebView::HandleReceivedEvents() {
   return Status(kOk);
 }

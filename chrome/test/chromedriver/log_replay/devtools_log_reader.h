@@ -53,6 +53,7 @@ class LogEntry {
   std::string command_name;
   std::string payload;
   int id;
+  std::string session_id;
   std::string socket_id;
   bool error;
 };
