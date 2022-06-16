@@ -25,9 +25,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.chrome.browser.settings.PlaceholderSettingsForTest;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 
 /**
  * Tests of {@link IncognitoReauthSettingSwitchPreference}.

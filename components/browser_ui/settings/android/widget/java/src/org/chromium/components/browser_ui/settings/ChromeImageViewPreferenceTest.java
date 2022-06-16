@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.settings;
+package org.chromium.components.browser_ui.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -12,64 +12,59 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests of {@link ChromeImageViewPreference}.
- *
- * TODO(crbug.com/1166810): Move these tests to //components/browser_ui/settings/.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-public class ChromeImageViewPreferenceTest {
-    @Rule
-    public BaseActivityTestRule<SettingsActivity> mRule =
-            new BaseActivityTestRule<>(SettingsActivity.class);
-
-    private PreferenceScreen mPreferenceScreen;
-    private Context mContext;
-
+@RunWith(BaseJUnit4ClassRunner.class)
+public class ChromeImageViewPreferenceTest extends BlankUiTestActivityTestCase {
     private static final String TITLE = "Preference Title";
     private static final String SUMMARY = "This is a summary.";
     private static final int DRAWABLE_RES = R.drawable.ic_folder_blue_24dp;
     private static final int CONTENT_DESCRIPTION_RES = R.string.ok;
 
-    @Before
-    public void setUp() {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        Intent intent = settingsLauncher.createSettingsActivityIntent(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                PlaceholderSettingsForTest.class.getName());
-        mRule.launchActivity(intent);
+    private PreferenceFragmentCompat mPreferenceFragment;
+    private PreferenceScreen mPreferenceScreen;
 
-        PreferenceFragmentCompat fragment =
-                (PreferenceFragmentCompat) mRule.getActivity().getMainFragment();
-        mPreferenceScreen = fragment.getPreferenceScreen();
-        mContext = fragment.getPreferenceManager().getContext();
+    @Override
+    public void setUpTest() throws Exception {
+        super.setUpTest();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPreferenceFragment = new PlaceholderSettingsForTest();
+            getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(android.R.id.content, mPreferenceFragment)
+                    .commit();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mPreferenceFragment.getPreferenceManager(), Matchers.notNullValue());
+            Criteria.checkThat(mPreferenceFragment.getPreferenceScreen(), Matchers.notNullValue());
+        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mPreferenceScreen = mPreferenceFragment.getPreferenceScreen(); });
     }
 
     @Test
     @SmallTest
     public void testChromeImageViewPreference() {
-        ChromeImageViewPreference preference = new ChromeImageViewPreference(mContext);
+        ChromeImageViewPreference preference = new ChromeImageViewPreference(getActivity());
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
         preference.setImageView(DRAWABLE_RES, CONTENT_DESCRIPTION_RES, null);
@@ -85,7 +80,7 @@ public class ChromeImageViewPreferenceTest {
     @Test
     @SmallTest
     public void testChromeImageViewPreferenceManaged() {
-        ChromeImageViewPreference preference = new ChromeImageViewPreference(mContext);
+        ChromeImageViewPreference preference = new ChromeImageViewPreference(getActivity());
         preference.setTitle(TITLE);
         preference.setImageView(DRAWABLE_RES, CONTENT_DESCRIPTION_RES, null);
         preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);

@@ -22,36 +22,6 @@ android_library("java") {
   ]
 }
 
-android_library("javatests") {
-  testonly = true
-
-  sources = [
-    "android/java/src/org/chromium/chrome/browser/settings/ChromeBasePreferenceTest.java",
-    "android/java/src/org/chromium/chrome/browser/settings/ChromeImageViewPreferenceTest.java",
-    "android/java/src/org/chromium/chrome/browser/settings/ManagedPreferencesUtilsTest.java",
-    "android/java/src/org/chromium/chrome/browser/settings/PlaceholderSettingsForTest.java",
-  ]
-
-  deps = [
-    ":java",
-    ":test_support_java",
-    "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
-    "//chrome/test/android:chrome_java_integration_test_support",
-    "//components/browser_ui/settings/android:java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_deps:guava_android_java",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_preference_preference_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit",
-    "//ui/android:ui_java_test_support",
-  ]
-}
-
 android_library("test_support_java") {
   testonly = true
 
