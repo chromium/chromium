@@ -47,6 +47,7 @@ ts_library("build_ts") {
     "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
     "scroll_with_form_field_focused_test.ts",
+    "swipe_detector_test.ts",
     "test_util.ts",
     "title_test.ts",
     "touch_handling_test.ts",

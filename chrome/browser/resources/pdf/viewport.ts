@@ -9,6 +9,7 @@ import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js';
 import {ExtendedKeyEvent, FittingType, Point} from './constants.js';
 import {Gesture, GestureDetector, PinchEventDetail} from './gesture_detector.js';
 import {PdfPluginElement} from './internal_plugin.js';
+import {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 import {ViewportInterface} from './viewport_scroller.js';
 import {InactiveZoomManager, ZoomManager} from './zoom_manager.js';
 
@@ -95,7 +96,9 @@ export class Viewport implements ViewportInterface {
   private keepContentCentered_: boolean = false;
   private tracker_: EventTracker = new EventTracker();
   private gestureDetector_: GestureDetector;
+  private swipeDetector_: SwipeDetector;
   private sentPinchEvent_: boolean = false;
+  private fullscreenForTesting_: boolean = false;
 
   /**
    * @param container The element which contains the scrollable content.
@@ -132,6 +135,11 @@ export class Viewport implements ViewportInterface {
         'pinchend', e => this.onPinchEnd_(e as CustomEvent<PinchEventDetail>));
     this.gestureDetector_.getEventTarget().addEventListener(
         'wheel', e => this.onWheel_(e as CustomEvent<PinchEventDetail>));
+
+    this.swipeDetector_ = new SwipeDetector(content);
+
+    this.swipeDetector_.getEventTarget().addEventListener(
+        'swipe', e => this.onSwipe_(e as CustomEvent<SwipeDirection>));
 
     // Set to a default zoom manager - used in tests.
     this.setZoomManager(new InactiveZoomManager(this.getZoom.bind(this), 1));
@@ -171,6 +179,7 @@ export class Viewport implements ViewportInterface {
   setPresentationMode(enabled: boolean) {
     assert((document.fullscreenElement !== null) === enabled);
     this.gestureDetector_.setPresentationMode(enabled);
+    this.swipeDetector_.setPresentationMode(enabled);
   }
 
   /**
@@ -1327,6 +1336,14 @@ export class Viewport implements ViewportInterface {
   }
 
   /**
+   * Dispatches a swipe event of |direction| external to this viewport.
+   */
+  dispatchSwipe(direction: SwipeDirection) {
+    this.swipeDetector_.getEventTarget().dispatchEvent(
+        new CustomEvent('swipe', {detail: direction}));
+  }
+
+  /**
    * A callback that's called when an update to a pinch zoom is detected.
    */
   private onPinchUpdate_(e: CustomEvent<PinchEventDetail>) {
@@ -1408,7 +1425,7 @@ export class Viewport implements ViewportInterface {
    * A callback that's called when the start of a pinch zoom is detected.
    */
   private onPinchStart_(e: CustomEvent<PinchEventDetail>) {
-    // Disable pinch gestures in Presentation  mode.
+    // Disable pinch gestures in Presentation mode.
     if (document.fullscreenElement !== null) {
       return;
     }
@@ -1441,6 +1458,28 @@ export class Viewport implements ViewportInterface {
 
   getGestureDetectorForTesting(): GestureDetector {
     return this.gestureDetector_;
+  }
+
+  /**
+   * A callback that's called when a left/right swipe is detected in
+   * Presentation mode.
+   */
+  private onSwipe_(e: CustomEvent<SwipeDirection>) {
+    // Left and right swipes are enabled only in Presentation mode.
+    if (document.fullscreenElement === null && !this.fullscreenForTesting_) {
+      return;
+    }
+
+    if ((e.detail === SwipeDirection.RIGHT_TO_LEFT && !isRTL()) ||
+        (e.detail === SwipeDirection.LEFT_TO_RIGHT && isRTL())) {
+      this.goToNextPage();
+    } else {
+      this.goToPreviousPage();
+    }
+  }
+
+  enableFullscreenForTesting() {
+    this.fullscreenForTesting_ = true;
   }
 }
 

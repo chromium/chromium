@@ -423,6 +423,9 @@ export class PluginController implements ContentController {
       case 'gesture':
         this.viewport_.dispatchGesture(messageData.gesture);
         break;
+      case 'swipe':
+        this.viewport_.dispatchSwipe(messageData.direction);
+        break;
       case 'goToPage':
         this.viewport_.goToPage(messageData.page);
         break;
