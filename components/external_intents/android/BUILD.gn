@@ -60,7 +60,7 @@ static_library("android") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
