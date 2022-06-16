@@ -2228,7 +2228,7 @@
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -2257,7 +2257,7 @@
         # 'Dawn Mac x64 Release (Intel)'.
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -2281,7 +2281,7 @@
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
@@ -4119,7 +4119,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
         },
       },
       'Linux Release (NVIDIA)': {
@@ -4130,7 +4130,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
         },
       },
       'Mac Debug (Intel)': {
@@ -4141,7 +4141,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
         },
       },
       'Mac Release (Intel)': {
@@ -4152,7 +4152,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
         },
       },
       'Mac Retina Debug (AMD)': {
@@ -4484,7 +4484,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
         },
       },
       'Mac FYI Experimental Release (Apple M1)': {
@@ -4572,8 +4572,8 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_amd_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_amd_release_telemetry_tests',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Retina Debug (AMD)': {
@@ -4583,7 +4583,7 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_amd_debug_gtests',
+          'gtest_tests': 'gpu_fyi_mac_debug_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_debug_telemetry_tests',
         },
       },
@@ -4595,7 +4595,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_linux_and_mac_telemetry_tests',
         },
       },
       'Mac FYI Retina Release (AMD)': {
@@ -4605,8 +4605,8 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_amd_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_amd_release_telemetry_tests',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Retina Release (NVIDIA)': {
@@ -4632,7 +4632,7 @@
           'mac_pro_amd_gpu',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_amd_release_gtests',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_pro_release_telemetry_tests',
         },
       },
@@ -6184,7 +6184,7 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_v8_desktop_validating_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_v8_desktop_passthrough_telemetry_tests',
         },
       },
       'V8 Android GN (dbg)': {

@@ -2164,11 +2164,6 @@
           '--git-revision': '${got_cr_revision}',
         },
       },
-      'Mac V8 FYI Release (Intel)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
     },
   },
   'media_unittests': {
@@ -2627,11 +2622,6 @@
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
       'Android V8 FYI Release (Nexus 5X)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Mac V8 FYI Release (Intel)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
@@ -3183,18 +3173,6 @@
   'webdriver_tests_suite': {
     'remove_from': [
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
-    ],
-  },
-  'webgl2_conformance_gl_passthrough_tests': {
-    'remove_from': [
-      # Not enough capacity. https://crbug.com/982294
-      'Mac FYI Retina Release (NVIDIA)',
-    ],
-  },
-  'webgl2_conformance_gl_passthrough_tests 8086:3e9b': {
-    'remove_from': [
-      # Only run validating on Mac Intel due to capacity http://crbug.com/1236796
-      'mac_optional_gpu_tests_rel'
     ],
   },
   'webgl2_conformance_gles_passthrough_tests': {

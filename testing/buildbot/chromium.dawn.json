@@ -1846,14 +1846,15 @@
       },
       {
         "args": [
-          "--use-cmd-decoder=validating",
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gl_tests_validating",
+        "name": "gl_tests_passthrough",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1864,7 +1865,8 @@
               "os": "Mac-11.5.2"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "gl_tests",
         "test_id_prefix": "ninja://gpu:gl_tests/"
@@ -2620,14 +2622,15 @@
       },
       {
         "args": [
-          "--use-cmd-decoder=validating",
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gl_tests_validating",
+        "name": "gl_tests_passthrough",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2639,7 +2642,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "gl_tests",
         "test_id_prefix": "ninja://gpu:gl_tests/"
@@ -3345,14 +3349,15 @@
       },
       {
         "args": [
-          "--use-cmd-decoder=validating",
+          "--use-cmd-decoder=passthrough",
+          "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gl_tests_validating",
+        "name": "gl_tests_passthrough",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3363,7 +3368,8 @@
               "os": "Mac-11.5.2"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "gl_tests",
         "test_id_prefix": "ninja://gpu:gl_tests/"

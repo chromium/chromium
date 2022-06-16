@@ -653,6 +653,19 @@ crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/te
 crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 crbug.com/1240443 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 
+# Newly added tests on NVIDIA passthrough
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/webgl-multi-draw.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/textures/misc/format-filterable-renderable.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/fboinvalidate/format_02.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/framebufferblit/conversion_08.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/framebufferblit/conversion_31.html [ Failure ]
+crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/instancedrendering.html [ Failure ]
+
+
 ####################
 # Linux failures   #
 ####################
