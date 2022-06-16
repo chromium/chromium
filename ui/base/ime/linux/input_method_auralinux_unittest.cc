@@ -60,13 +60,8 @@ class TestResult {
 class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
  public:
   explicit LinuxInputMethodContextForTesting(
-      LinuxInputMethodContextDelegate* delegate,
-      bool is_simple)
-      : delegate_(delegate),
-        is_simple_(is_simple),
-        is_sync_mode_(false),
-        eat_key_(false),
-        focused_(false) {}
+      LinuxInputMethodContextDelegate* delegate)
+      : delegate_(delegate), is_sync_mode_(false), eat_key_(false) {}
 
   LinuxInputMethodContextForTesting(const LinuxInputMethodContextForTesting&) =
       delete;
@@ -146,13 +141,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
-                   TextInputType new_type) override {
-    if (is_simple_) {
-      focused_ = has_client;
-    } else {
-      focused_ = new_type != TEXT_INPUT_TYPE_NONE;
-    }
-  }
+                   TextInputType new_type) override {}
 
   void SetCursorLocation(const gfx::Rect& rect) override {
     cursor_position_ = rect;
@@ -183,11 +172,9 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
  private:
   LinuxInputMethodContextDelegate* delegate_;
   VirtualKeyboardControllerStub virtual_keyboard_controller_;
-  const bool is_simple_;
   std::vector<std::u16string> actions_;
   bool is_sync_mode_;
   bool eat_key_;
-  bool focused_;
   gfx::Rect cursor_position_;
   TextInputType input_type_;
   TextInputMode input_mode_;
@@ -206,10 +193,8 @@ class LinuxInputMethodContextFactoryForTesting
       const LinuxInputMethodContextFactoryForTesting&) = delete;
 
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-      LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override {
-    return std::make_unique<LinuxInputMethodContextForTesting>(delegate,
-                                                               is_simple);
+      LinuxInputMethodContextDelegate* delegate) const override {
+    return std::make_unique<LinuxInputMethodContextForTesting>(delegate);
   }
 };
 
@@ -327,8 +312,7 @@ class InputMethodAuraLinuxTest : public testing::Test {
       : factory_(nullptr),
         input_method_auralinux_(nullptr),
         delegate_(nullptr),
-        context_(nullptr),
-        context_simple_(nullptr) {
+        context_(nullptr) {
     factory_ = new LinuxInputMethodContextFactoryForTesting();
     LinuxInputMethodContextFactory::SetInstance(factory_);
     test_result_ = TestResult::GetInstance();
@@ -344,20 +328,13 @@ class InputMethodAuraLinuxTest : public testing::Test {
     input_method_auralinux_ = new InputMethodAuraLinux(delegate_);
     input_method_auralinux_->OnFocus();
     context_ = static_cast<LinuxInputMethodContextForTesting*>(
-        input_method_auralinux_->GetContextForTesting(false));
-    context_simple_ = static_cast<LinuxInputMethodContextForTesting*>(
-        input_method_auralinux_->GetContextForTesting(true));
+        input_method_auralinux_->GetContextForTesting());
   }
 
   void TearDown() override {
     context_->SetSyncMode(false);
     context_->SetEatKey(false);
-
-    context_simple_->SetSyncMode(false);
-    context_simple_->SetEatKey(false);
-
     context_ = nullptr;
-    context_simple_ = nullptr;
 
     delete input_method_auralinux_;
     input_method_auralinux_ = nullptr;
@@ -369,7 +346,6 @@ class InputMethodAuraLinuxTest : public testing::Test {
   InputMethodAuraLinux* input_method_auralinux_;
   InputMethodDelegateForTesting* delegate_;
   LinuxInputMethodContextForTesting* context_;
-  LinuxInputMethodContextForTesting* context_simple_;
   TestResult* test_result_;
 };
 
@@ -396,8 +372,7 @@ TEST_F(InputMethodAuraLinuxTest, BasicSyncModeTest) {
   input_method_auralinux_->DetachTextInputClient(client.get());
   client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_PASSWORD);
-  context_simple_->SetSyncMode(true);
-  context_simple_->SetEatKey(false);
+  context_->SetEatKey(false);
 
   input_method_auralinux_->SetFocusedTextInputClient(client.get());
   input_method_auralinux_->OnTextInputTypeChanged(client.get());
@@ -438,8 +413,7 @@ TEST_F(InputMethodAuraLinuxTest, BasicAsyncModeTest) {
   input_method_auralinux_->DetachTextInputClient(client.get());
   client =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_PASSWORD);
-  context_simple_->SetSyncMode(false);
-  context_simple_->SetEatKey(false);
+  context_->SetEatKey(false);
 
   input_method_auralinux_->SetFocusedTextInputClient(client.get());
   input_method_auralinux_->OnTextInputTypeChanged(client.get());
@@ -619,8 +593,8 @@ TEST_F(InputMethodAuraLinuxTest, DeadKeyTest) {
               test_result_);
 }
 
-TEST_F(InputMethodAuraLinuxTest, DeadKeySimpleContextTest) {
-  DeadKeyTest(TEXT_INPUT_TYPE_NONE, input_method_auralinux_, context_simple_,
+TEST_F(InputMethodAuraLinuxTest, DeadKeyTestTypeNone) {
+  DeadKeyTest(TEXT_INPUT_TYPE_NONE, input_method_auralinux_, context_,
               test_result_);
 }
 

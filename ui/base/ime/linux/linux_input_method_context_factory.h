@@ -27,12 +27,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextFactory {
   // the first instance is not deleted.
   static void SetInstance(const LinuxInputMethodContextFactory* instance);
 
-  virtual ~LinuxInputMethodContextFactory() {}
+  virtual ~LinuxInputMethodContextFactory() = default;
 
-  // Returns a native input method context.
+  // Returns a platform specific input method context.
   virtual std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-      LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const = 0;
+      LinuxInputMethodContextDelegate* delegate) const = 0;
 };
 
 }  // namespace ui

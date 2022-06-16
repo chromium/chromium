@@ -52,17 +52,13 @@ InputMethodAuraLinux::InputMethodAuraLinux(
          "LinuxInputMethodContextFactory is not initialized yet.";
   context_ =
       LinuxInputMethodContextFactory::instance()->CreateInputMethodContext(
-          this, false);
-  context_simple_ =
-      LinuxInputMethodContextFactory::instance()->CreateInputMethodContext(
-          this, true);
+          this);
 }
 
 InputMethodAuraLinux::~InputMethodAuraLinux() = default;
 
-LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting(
-    bool is_simple) {
-  return is_simple ? context_simple_.get() : context_.get();
+LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting() {
+  return context_.get();
 }
 
 // Overriden from InputMethod.
@@ -109,18 +105,12 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   }
   ime_filtered_key_event_.reset();
 
-  LinuxInputMethodContext* context =
-      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
-          ? context_.get()
-          : context_simple_.get();
-
   // If no text input client, dispatch immediately.
   if (!GetTextInputClient()) {
     // For Wayland, wl_keyboard::key will be sent following the peek key event
     // if the event is not consumed by IME, so peek key events should not be
     // dispatched. crbug.com/1225747
-    if (context->IsPeekKeyEvent(*event)) {
+    if (context_->IsPeekKeyEvent(*event)) {
       ime_filtered_key_event_ = std::move(*event);
       return ui::EventDispatchDetails();
     }
@@ -149,7 +139,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     last_commit_result_.reset();
     result_text_.clear();
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
-    filtered = context->DispatchKeyEvent(*event);
+    filtered = context_->DispatchKeyEvent(*event);
   }
 
   // There are four cases here. They are a pair of two conditions:
@@ -227,7 +217,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     if (event->stopped_propagation() || details.target_destroyed) {
       ResetContext();
     } else if (event->type() == ui::ET_KEY_PRESSED) {
-      // If a key event was not filtered by |context_| or |context_simple_|,
+      // If a key event was not filtered by |context_|,
       // then it means the key event didn't generate any result text. For some
       // cases, the key event may still generate a valid character, eg. a
       // control-key event (ctrl-a, return, tab, etc.). We need to send the
@@ -350,14 +340,7 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
   auto* client = GetTextInputClient();
   bool has_client = client != nullptr;
   context_->UpdateFocus(has_client, old_text_input_type, text_input_type_);
-  context_simple_->UpdateFocus(has_client, old_text_input_type,
-                               text_input_type_);
 
-  LinuxInputMethodContext* context =
-      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
-          ? context_.get()
-          : context_simple_.get();
   TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
   int flags = TEXT_INPUT_FLAG_NONE;
   bool should_do_learning = false;
@@ -366,7 +349,7 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
     flags = client->GetTextInputFlags();
     should_do_learning = client->ShouldDoLearning();
   }
-  context->SetContentType(text_input_type_, mode, flags, should_do_learning);
+  context_->SetContentType(text_input_type_, mode, flags, should_do_learning);
 }
 
 void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
@@ -411,7 +394,6 @@ void InputMethodAuraLinux::ResetContext() {
   }
 
   context_->Reset();
-  context_simple_->Reset();
 
   composition_ = CompositionText();
   result_text_.clear();

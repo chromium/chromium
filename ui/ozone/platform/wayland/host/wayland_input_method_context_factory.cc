@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "ui/base/ime/linux/linux_input_method_context_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
@@ -23,9 +24,10 @@ WaylandInputMethodContextFactory::~WaylandInputMethodContextFactory() = default;
 
 std::unique_ptr<LinuxInputMethodContext>
 WaylandInputMethodContextFactory::CreateInputMethodContext(
-    LinuxInputMethodContextDelegate* delegate,
-    bool is_simple) const {
-  return CreateWaylandInputMethodContext(delegate, is_simple);
+    LinuxInputMethodContextDelegate* delegate) const {
+  return std::make_unique<LinuxInputMethodContextWrapper>(
+      CreateWaylandInputMethodContext(delegate, /*is_simple=*/false),
+      CreateWaylandInputMethodContext(delegate, /*is_simple=*/true));
 }
 
 std::unique_ptr<WaylandInputMethodContext>

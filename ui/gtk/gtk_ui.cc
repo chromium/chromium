@@ -34,6 +34,7 @@
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
+#include "ui/base/ime/linux/linux_input_method_context_wrapper.h"
 #include "ui/base/linux/linux_ui_delegate.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -485,9 +486,12 @@ void GtkUi::SetWindowFrameAction(WindowFrameActionSource source,
 }
 
 std::unique_ptr<ui::LinuxInputMethodContext> GtkUi::CreateInputMethodContext(
-    ui::LinuxInputMethodContextDelegate* delegate,
-    bool is_simple) const {
-  return std::make_unique<InputMethodContextImplGtk>(delegate, is_simple);
+    ui::LinuxInputMethodContextDelegate* delegate) const {
+  return std::make_unique<ui::LinuxInputMethodContextWrapper>(
+      std::make_unique<InputMethodContextImplGtk>(delegate,
+                                                  /*is_simple=*/false),
+      std::make_unique<InputMethodContextImplGtk>(delegate,
+                                                  /*is_simple=*/true));
 }
 
 gfx::FontRenderParams GtkUi::GetDefaultFontRenderParams() const {

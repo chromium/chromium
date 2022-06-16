@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   InputMethodAuraLinux& operator=(const InputMethodAuraLinux&) = delete;
   ~InputMethodAuraLinux() override;
 
-  LinuxInputMethodContext* GetContextForTesting(bool is_simple);
+  LinuxInputMethodContext* GetContextForTesting();
 
   // Overriden from InputMethod.
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override;
@@ -82,7 +82,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   bool IgnoringNonKeyInput() const;
 
   std::unique_ptr<LinuxInputMethodContext> context_;
-  std::unique_ptr<LinuxInputMethodContext> context_simple_;
 
   // The last key event that IME is probably in process in
   // async-mode.

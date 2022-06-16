@@ -25,8 +25,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContextFactory
 
   // LinuxInputMethodContextFactory:
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
-      LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override;
+      LinuxInputMethodContextDelegate* delegate) const override;
 };
 
 }  // namespace ui

@@ -52,8 +52,7 @@ class GtkUi : public views::LinuxUI {
 
   // ui::LinuxInputMethodContextFactory:
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
-      ui::LinuxInputMethodContextDelegate* delegate,
-      bool is_simple) const override;
+      ui::LinuxInputMethodContextDelegate* delegate) const override;
 
   // gfx::LinuxFontDelegate:
   gfx::FontRenderParams GetDefaultFontRenderParams() const override;
