@@ -108,6 +108,7 @@ export function confirmationPageTest() {
     assertEquals(
         'Find help articles and answers to common Chromebook questions',
         getElementContent(exploreLink, '#subLabel'));
+    assertTrue(page.i18nExists('exploreAppDescription'));
 
     // Verify the diagnostics app link.
     const diagnosticsLink = helpLinks[1];
