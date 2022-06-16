@@ -238,15 +238,12 @@ SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
     return;
   }
 
-  base::Value::Dict sequence_dictionary;
-  sequence_dictionary.Set(
-      GetSequencingIdPath(),
-      base::NumberToString(sequence_information.sequencing_id()));
-  sequence_dictionary.Set(
-      GetGenerationIdPath(),
-      base::NumberToString(sequence_information.generation_id()));
-  sequence_dictionary.Set(GetPriorityPath(), sequence_information.priority());
-  result_ = std::move(sequence_dictionary);
+  result_.emplace();
+  result_->Set(GetSequencingIdPath(),
+               base::NumberToString(sequence_information.sequencing_id()));
+  result_->Set(GetGenerationIdPath(),
+               base::NumberToString(sequence_information.generation_id()));
+  result_->Set(GetPriorityPath(), sequence_information.priority());
 }
 
 SequenceInformationDictionaryBuilder::~SequenceInformationDictionaryBuilder() =
