@@ -12,11 +12,11 @@
 
 
   :host(:hover) {
-    background-color: #eee;
+    background-color: var(--google-grey-200);
   }
 
   :host(.focused) {
-    background-color: rgba(var(--google-grey-900-rgb), 6%);
+    background-color: var(--google-grey-200);
   }
 
   :host(.focused) #focus-indicator {
@@ -51,6 +51,32 @@
     width: 6px;
   }
 
+  @media (prefers-color-scheme: dark) {
+    :host {
+      color: #fff;
+    }
+    :host(:hover) {
+      /* Google Grey 911 according to the mock. */
+      background-color: rgb(53, 54, 58);
+    }
+
+    :host(.focused) {
+      background-color: rgba(var(--google-grey-900-rgb), 6%);
+    }
+
+    .annotation {
+      color: var(--google-grey-500);
+    }
+
+    iron-icon {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
+
+    #focus-indicator {
+      background-color: var(--google-blue-300);
+    }
+
+  }
 </style>
 <div id="focus-indicator"></div>
 <span class="title">

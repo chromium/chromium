@@ -6,6 +6,7 @@
   }
 
   input {
+    background-color: transparent;
     border: 0;
     box-sizing: border-box;
     height: 100%;
@@ -60,6 +61,26 @@
     margin-inline-start: 1em;
     margin-top: 0.5em;
     --iron-icon-fill-color: var(--google-grey-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      background-color: var(--google-grey-900);
+      color: #fff;
+    }
+
+    .chip {
+      background-color: var(--google-blue-700);
+      color: var(--google-blue-50);
+    }
+
+    input::placeholder {
+      color: var(--google-grey-500);
+    }
+
+    iron-icon {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
   }
 </style>
 <div id="inputRow" aria-owns="options"
