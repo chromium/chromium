@@ -16,10 +16,7 @@ namespace net {
 namespace x509_util {
 
 CSSMFieldValue::CSSMFieldValue()
-    : cl_handle_(CSSM_INVALID_HANDLE),
-      oid_(NULL),
-      field_(NULL) {
-}
+    : cl_handle_(CSSM_INVALID_HANDLE), oid_(nullptr), field_(nullptr) {}
 CSSMFieldValue::CSSMFieldValue(CSSM_CL_HANDLE cl_handle,
                                const CSSM_OID* oid,
                                CSSM_DATA_PTR field)
@@ -29,7 +26,7 @@ CSSMFieldValue::CSSMFieldValue(CSSM_CL_HANDLE cl_handle,
 }
 
 CSSMFieldValue::~CSSMFieldValue() {
-  Reset(CSSM_INVALID_HANDLE, NULL, NULL);
+  Reset(CSSM_INVALID_HANDLE, nullptr, nullptr);
 }
 
 void CSSMFieldValue::Reset(CSSM_CL_HANDLE cl_handle,
@@ -76,7 +73,7 @@ OSStatus CSSMCachedCertificate::GetField(const CSSM_OID* field_oid,
   DCHECK(cached_cert_handle_);
 
   CSSM_OID_PTR oid = const_cast<CSSM_OID_PTR>(field_oid);
-  CSSM_DATA_PTR field_ptr = NULL;
+  CSSM_DATA_PTR field_ptr = nullptr;
   CSSM_HANDLE results_handle = CSSM_INVALID_HANDLE;
   uint32_t field_value_count = 0;
   CSSM_RETURN status = CSSM_CL_CertGetFirstCachedFieldValue(

@@ -39,7 +39,7 @@ class CSSMFieldValue {
   // enough to actually contain the requested type.
   template <typename T> const T* GetAs() const {
     if (!field_ || field_->Length < sizeof(T))
-      return NULL;
+      return nullptr;
     return reinterpret_cast<const T*>(field_->Data);
   }
 

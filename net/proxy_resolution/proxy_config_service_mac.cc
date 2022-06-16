@@ -44,7 +44,7 @@ bool GetBoolFromDictionary(CFDictionaryRef dict,
 void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
                            ProxyConfigWithAnnotation* config) {
   base::ScopedCFTypeRef<CFDictionaryRef> config_dict(
-      SCDynamicStoreCopyProxies(NULL));
+      SCDynamicStoreCopyProxies(nullptr));
   DCHECK(config_dict);
   ProxyConfig proxy_config;
   proxy_config.set_from_system(true);
@@ -169,9 +169,7 @@ class ProxyConfigServiceMac::Helper
   }
 
   // Called when the parent is destroyed.
-  void Orphan() {
-    parent_ = NULL;
-  }
+  void Orphan() { parent_ = nullptr; }
 
   void OnProxyConfigChanged(const ProxyConfigWithAnnotation& new_config) {
     if (parent_)
@@ -242,11 +240,11 @@ void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
   // Called on notifier thread.
 
-  CFStringRef proxies_key = SCDynamicStoreKeyCreateProxies(NULL);
-  CFArrayRef key_array = CFArrayCreate(
-      NULL, (const void **)(&proxies_key), 1, &kCFTypeArrayCallBacks);
+  CFStringRef proxies_key = SCDynamicStoreKeyCreateProxies(nullptr);
+  CFArrayRef key_array = CFArrayCreate(nullptr, (const void**)(&proxies_key), 1,
+                                       &kCFTypeArrayCallBacks);
 
-  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array, NULL);
+  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array, nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 

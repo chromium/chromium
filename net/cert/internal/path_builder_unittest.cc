@@ -901,7 +901,7 @@ void AddToStoreWithEKURestriction(HCERTSTORE store,
     CertAddEnhancedKeyUsageIdentifier(os_cert.get(), usage_identifier);
   }
   CertAddCertificateContextToStore(store, os_cert.get(), CERT_STORE_ADD_ALWAYS,
-                                   NULL);
+                                   nullptr);
 }
 
 bool AreCertsEq(const scoped_refptr<ParsedCertificate> cert_1,

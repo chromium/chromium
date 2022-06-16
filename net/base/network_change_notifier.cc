@@ -329,7 +329,7 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
       /*require_wlan=*/false);
 #else
   NOTIMPLEMENTED();
-  return NULL;
+  return nullptr;
 #endif
 }
 
@@ -522,8 +522,9 @@ const char* NetworkChangeNotifier::ConnectionTypeToString(
 // static
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTracker() {
-  return g_network_change_notifier ?
-        g_network_change_notifier->GetAddressTrackerInternal() : NULL;
+  return g_network_change_notifier
+             ? g_network_change_notifier->GetAddressTrackerInternal()
+             : nullptr;
 }
 #endif
 
@@ -865,7 +866,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTrackerInternal() const {
-  return NULL;
+  return nullptr;
 }
 #endif
 

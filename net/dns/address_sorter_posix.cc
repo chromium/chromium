@@ -369,7 +369,7 @@ void AddressSorterPosix::OnIPAddressChanged() {
     return;
   }
 
-  for (struct ifaddrs* ifa = addrs; ifa != NULL; ifa = ifa->ifa_next) {
+  for (struct ifaddrs* ifa = addrs; ifa != nullptr; ifa = ifa->ifa_next) {
     IPEndPoint src;
     if (!src.FromSockAddr(ifa->ifa_addr, ifa->ifa_addr->sa_len))
       continue;

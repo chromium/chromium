@@ -51,7 +51,7 @@ bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
 crypto::ScopedPK11Slot GetBuiltInRootCertsSlot() {
   crypto::AutoSECMODListReadLock auto_lock;
   SECMODModuleList* head = SECMOD_GetDefaultModuleList();
-  for (SECMODModuleList* item = head; item != NULL; item = item->next) {
+  for (SECMODModuleList* item = head; item != nullptr; item = item->next) {
     int slot_count = item->module->loaded ? item->module->slotCount : 0;
     for (int i = 0; i < slot_count; i++) {
       PK11SlotInfo* slot = item->module->slots[i];

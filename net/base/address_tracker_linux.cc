@@ -73,8 +73,8 @@ bool GetAddress(const struct nlmsghdr* header,
   // getaddrinfo in glibc (check_pf.c). Judging from kernel implementation of
   // NETLINK, IPv4 addresses have only the IFA_ADDRESS attribute, while IPv6
   // have the IFA_LOCAL attribute.
-  uint8_t* address = NULL;
-  uint8_t* local = NULL;
+  uint8_t* address = nullptr;
+  uint8_t* local = nullptr;
   int length = IFA_PAYLOAD(header);
   if (length > header_length) {
     LOG(ERROR) << "ifaddrmsg length exceeds bounds";

@@ -43,7 +43,7 @@ namespace {
 bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
   DWORD usage_size = 0;
 
-  if (!CertGetEnhancedKeyUsage(cert, 0, NULL, &usage_size)) {
+  if (!CertGetEnhancedKeyUsage(cert, 0, nullptr, &usage_size)) {
     return false;
   }
 

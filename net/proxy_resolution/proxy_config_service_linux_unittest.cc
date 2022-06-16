@@ -131,7 +131,7 @@ class MockEnvironment : public base::Environment {
 
   // Zeroes all environment values.
   void Reset() {
-    EnvVarValues zero_values = {0};
+    EnvVarValues zero_values = {nullptr};
     values = zero_values;
   }
 
@@ -198,7 +198,7 @@ class MockSettingGetter : public ProxyConfigServiceLinux::SettingGetter {
 
   // Zeros all environment values.
   void Reset() {
-    GSettingsValues zero_values = {0};
+    GSettingsValues zero_values = {nullptr};
     values = zero_values;
   }
 

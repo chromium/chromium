@@ -53,7 +53,7 @@ class OSXKnownRootHelper {
   OSXKnownRootHelper() {
     crypto::GetMacSecurityServicesLock().AssertAcquired();
 
-    CFArrayRef cert_array = NULL;
+    CFArrayRef cert_array = nullptr;
     OSStatus rv = SecTrustSettingsCopyCertificates(
         kSecTrustSettingsDomainSystem, &cert_array);
     if (rv != noErr) {

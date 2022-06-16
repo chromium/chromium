@@ -474,7 +474,7 @@ void TCPSocketPosix::Close() {
 }
 
 bool TCPSocketPosix::IsValid() const {
-  return socket_ != NULL && socket_->socket_fd() != kInvalidSocket;
+  return socket_ != nullptr && socket_->socket_fd() != kInvalidSocket;
 }
 
 void TCPSocketPosix::DetachFromThread() {

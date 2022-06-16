@@ -671,7 +671,7 @@ TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
 
   for (int i = 0; i < 10; i++) {
     char buf[IFNAMSIZ] = {0};
-    EXPECT_NE((const char*)NULL, original_get_interface_name_(i, buf));
+    EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
   }
 }
 

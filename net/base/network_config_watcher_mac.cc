@@ -217,14 +217,14 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
   // SCDynamicStore API does not exist on iOS.
   // Add a run loop source for a dynamic store to the current run loop.
   SCDynamicStoreContext context = {
-    0,          // Version 0.
-    delegate_,  // User data.
-    NULL,       // This is not reference counted.  No retain function.
-    NULL,       // This is not reference counted.  No release function.
-    NULL,       // No description for this.
+      0,          // Version 0.
+      delegate_,  // User data.
+      nullptr,    // This is not reference counted.  No retain function.
+      nullptr,    // This is not reference counted.  No release function.
+      nullptr,    // No description for this.
   };
   base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
-      NULL, CFSTR("org.chromium"), DynamicStoreCallback, &context));
+      nullptr, CFSTR("org.chromium"), DynamicStoreCallback, &context));
   if (!store) {
     int error = SCError();
     LOG(ERROR) << "SCDynamicStoreCreate failed with Error: " << error << " - "
@@ -234,8 +234,8 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
         ConvertToSCStatusCode(error), SCStatusCode::SC_COUNT);
     return false;
   }
-  run_loop_source_.reset(SCDynamicStoreCreateRunLoopSource(
-      NULL, store.get(), 0));
+  run_loop_source_.reset(
+      SCDynamicStoreCreateRunLoopSource(nullptr, store.get(), 0));
   if (!run_loop_source_) {
     int error = SCError();
     LOG(ERROR) << "SCDynamicStoreCreateRunLoopSource failed with Error: "

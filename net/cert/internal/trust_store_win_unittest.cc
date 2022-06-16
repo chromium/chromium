@@ -65,7 +65,7 @@ bool AddToStore(HCERTSTORE store, const std::string file_name) {
       X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
       CRYPTO_BUFFER_len(cert->cert_buffer())));
   return CertAddCertificateContextToStore(store, os_cert.get(),
-                                          CERT_STORE_ADD_ALWAYS, NULL);
+                                          CERT_STORE_ADD_ALWAYS, nullptr);
 }
 
 // Returns true if cert at file_name successfully added to store with
@@ -93,7 +93,7 @@ bool AddToStoreWithEKURestriction(HCERTSTORE store,
     }
   }
   return !!CertAddCertificateContextToStore(store, os_cert.get(),
-                                            CERT_STORE_ADD_ALWAYS, NULL);
+                                            CERT_STORE_ADD_ALWAYS, nullptr);
 }
 
 // TrustStoreWin isset up as follows:

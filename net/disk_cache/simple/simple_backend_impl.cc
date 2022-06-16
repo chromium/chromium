@@ -780,7 +780,7 @@ SimpleBackendImpl::CreateOrFindActiveOrDoomedEntry(
     return nullptr;
 
   std::pair<EntryMap::iterator, bool> insert_result =
-      active_entries_.insert(EntryMap::value_type(entry_hash, NULL));
+      active_entries_.insert(EntryMap::value_type(entry_hash, nullptr));
   EntryMap::iterator& it = insert_result.first;
   const bool did_insert = insert_result.second;
   if (did_insert) {

@@ -572,7 +572,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
                                 SecTrustResultType* trust_result,
                                 ScopedCFTypeRef<CFArrayRef>* verified_chain,
                                 std::vector<CertEvidenceInfo>* chain_info) {
-  SecTrustRef tmp_trust = NULL;
+  SecTrustRef tmp_trust = nullptr;
   OSStatus status = SecTrustCreateWithCertificates(cert_array, trust_policies,
                                                    &tmp_trust);
   if (status)
@@ -656,7 +656,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
   status = SecTrustEvaluate(tmp_trust, &tmp_trust_result);
   if (status)
     return NetErrorFromOSStatus(status);
-  CFArrayRef tmp_verified_chain = NULL;
+  CFArrayRef tmp_verified_chain = nullptr;
   CSSM_TP_APPLE_EVIDENCE_INFO* tmp_chain_info;
   status = SecTrustGetResult(tmp_trust, &tmp_trust_result, &tmp_verified_chain,
                              &tmp_chain_info);

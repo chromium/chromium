@@ -337,7 +337,7 @@ void GenerateNtlmProofV2(
     base::span<const uint8_t> target_info,
     base::span<uint8_t, kNtlmProofLenV2> v2_proof) {
   bssl::ScopedHMAC_CTX ctx;
-  HMAC_Init_ex(ctx.get(), v2_hash.data(), kNtlmHashLen, EVP_md5(), NULL);
+  HMAC_Init_ex(ctx.get(), v2_hash.data(), kNtlmHashLen, EVP_md5(), nullptr);
   DCHECK_EQ(kNtlmProofLenV2, HMAC_size(ctx.get()));
   HMAC_Update(ctx.get(), server_challenge.data(), kChallengeLen);
   HMAC_Update(ctx.get(), v2_input.data(), kProofInputLenV2);
@@ -383,7 +383,7 @@ void GenerateMicV2(base::span<const uint8_t, kSessionKeyLenV2> session_key,
                    base::span<uint8_t, kMicLenV2> mic) {
   bssl::ScopedHMAC_CTX ctx;
   HMAC_Init_ex(ctx.get(), session_key.data(), kSessionKeyLenV2, EVP_md5(),
-               NULL);
+               nullptr);
   DCHECK_EQ(kMicLenV2, HMAC_size(ctx.get()));
   HMAC_Update(ctx.get(), negotiate_msg.data(), negotiate_msg.size());
   HMAC_Update(ctx.get(), challenge_msg.data(), challenge_msg.size());

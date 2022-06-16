@@ -18,28 +18,30 @@ NSSProfileFilterChromeOS::NSSProfileFilterChromeOS() = default;
 
 NSSProfileFilterChromeOS::NSSProfileFilterChromeOS(
     const NSSProfileFilterChromeOS& other) {
-  public_slot_.reset(other.public_slot_ ?
-      PK11_ReferenceSlot(other.public_slot_.get()) :
-      NULL);
-  private_slot_.reset(other.private_slot_ ?
-      PK11_ReferenceSlot(other.private_slot_.get()) :
-      NULL);
-  system_slot_.reset(
-      other.system_slot_ ? PK11_ReferenceSlot(other.system_slot_.get()) : NULL);
+  public_slot_.reset(other.public_slot_
+                         ? PK11_ReferenceSlot(other.public_slot_.get())
+                         : nullptr);
+  private_slot_.reset(other.private_slot_
+                          ? PK11_ReferenceSlot(other.private_slot_.get())
+                          : nullptr);
+  system_slot_.reset(other.system_slot_
+                         ? PK11_ReferenceSlot(other.system_slot_.get())
+                         : nullptr);
 }
 
 NSSProfileFilterChromeOS::~NSSProfileFilterChromeOS() = default;
 
 NSSProfileFilterChromeOS& NSSProfileFilterChromeOS::operator=(
     const NSSProfileFilterChromeOS& other) {
-  public_slot_.reset(other.public_slot_ ?
-      PK11_ReferenceSlot(other.public_slot_.get()) :
-      NULL);
-  private_slot_.reset(other.private_slot_ ?
-      PK11_ReferenceSlot(other.private_slot_.get()) :
-      NULL);
-  system_slot_.reset(
-      other.system_slot_ ? PK11_ReferenceSlot(other.system_slot_.get()) : NULL);
+  public_slot_.reset(other.public_slot_
+                         ? PK11_ReferenceSlot(other.public_slot_.get())
+                         : nullptr);
+  private_slot_.reset(other.private_slot_
+                          ? PK11_ReferenceSlot(other.private_slot_.get())
+                          : nullptr);
+  system_slot_.reset(other.system_slot_
+                         ? PK11_ReferenceSlot(other.system_slot_.get())
+                         : nullptr);
   return *this;
 }
 
@@ -94,7 +96,7 @@ bool NSSProfileFilterChromeOS::IsModuleAllowed(PK11SlotInfo* slot) const {
 
 bool NSSProfileFilterChromeOS::IsCertAllowed(CERTCertificate* cert) const {
   crypto::ScopedPK11SlotList slots_for_cert(
-      PK11_GetAllSlotsForCert(cert, NULL));
+      PK11_GetAllSlotsForCert(cert, nullptr));
   if (!slots_for_cert)
     return false;
 

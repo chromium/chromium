@@ -83,8 +83,8 @@ std::string GetDefaultNickname(CERTCertificate* nss_cert, CertType type) {
     // Find the private key for this certificate and see if it has a
     // nickname.  If there is a private key, and it has a nickname, then
     // return that nickname.
-    SECKEYPrivateKey* private_key =
-        PK11_FindPrivateKeyFromCert(nss_cert->slot, nss_cert, NULL /*wincx*/);
+    SECKEYPrivateKey* private_key = PK11_FindPrivateKeyFromCert(
+        nss_cert->slot, nss_cert, nullptr /*wincx*/);
     if (private_key) {
       char* private_key_nickname = PK11_GetPrivateKeyNickname(private_key);
       if (private_key_nickname) {
@@ -153,7 +153,7 @@ ScopedCERTCertificate CreateCERTCertificateFromBytes(const uint8_t* data,
   crypto::EnsureNSSInit();
 
   if (!NSS_IsInitialized())
-    return NULL;
+    return nullptr;
 
   SECItem der_cert;
   der_cert.data = const_cast<uint8_t*>(data);
@@ -307,7 +307,7 @@ bool GetPEMEncoded(CERTCertificate* cert, std::string* pem_encoded) {
 
 void GetRFC822SubjectAltNames(CERTCertificate* cert_handle,
                               std::vector<std::string>* names) {
-  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(NULL, NULL, 0));
+  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(nullptr, nullptr, 0));
   DCHECK(alt_name.get());
 
   names->clear();
@@ -337,7 +337,7 @@ void GetRFC822SubjectAltNames(CERTCertificate* cert_handle,
 
 void GetUPNSubjectAltNames(CERTCertificate* cert_handle,
                            std::vector<std::string>* names) {
-  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(NULL, NULL, 0));
+  crypto::ScopedSECItem alt_name(SECITEM_AllocItem(nullptr, nullptr, 0));
   DCHECK(alt_name.get());
 
   names->clear();
@@ -387,7 +387,7 @@ std::string GetCERTNameDisplayName(CERTName* name) {
   CERTRDN** rdns = name->rdns;
   for (size_t rdn = 0; rdns[rdn]; ++rdn) {
     CERTAVA** avas = rdns[rdn]->avas;
-    for (size_t pair = 0; avas[pair] != 0; ++pair) {
+    for (size_t pair = 0; avas[pair] != nullptr; ++pair) {
       SECOidTag tag = CERT_GetAVATag(avas[pair]);
       if (tag == SEC_OID_AVA_COMMON_NAME) {
         // If CN is found, return immediately.

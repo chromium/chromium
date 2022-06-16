@@ -35,7 +35,7 @@ TEST(HttpBasicStateTest, ReleaseConnectionWorks) {
   HttpBasicState state(base::WrapUnique(handle), false);
   const std::unique_ptr<ClientSocketHandle> released_connection(
       state.ReleaseConnection());
-  EXPECT_EQ(NULL, state.connection());
+  EXPECT_EQ(nullptr, state.connection());
   EXPECT_EQ(handle, released_connection.get());
 }
 
@@ -62,7 +62,7 @@ TEST(HttpBasicStateTest, DeleteParser) {
   state.Initialize(&request_info, LOW, NetLogWithSource());
   EXPECT_TRUE(state.parser());
   state.DeleteParser();
-  EXPECT_EQ(NULL, state.parser());
+  EXPECT_EQ(nullptr, state.parser());
 }
 
 TEST(HttpBasicStateTest, GenerateRequestLineNoProxy) {

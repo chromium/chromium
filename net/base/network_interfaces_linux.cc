@@ -214,7 +214,7 @@ base::ScopedFD GetSocketForIoctl() {
 }  // namespace internal
 
 bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
-  if (networks == NULL)
+  if (networks == nullptr)
     return false;
 
 #if BUILDFLAG(IS_ANDROID)

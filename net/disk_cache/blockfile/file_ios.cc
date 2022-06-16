@@ -157,7 +157,7 @@ void FileInFlightIO::OnOperationComplete(disk_cache::BackgroundIO* operation,
 }
 
 // A static object that will broker all async operations.
-FileInFlightIO* s_file_operations = NULL;
+FileInFlightIO* s_file_operations = nullptr;
 
 // Returns the current FileInFlightIO.
 FileInFlightIO* GetFileInFlightIO() {
@@ -171,7 +171,7 @@ FileInFlightIO* GetFileInFlightIO() {
 void DeleteFileInFlightIO() {
   DCHECK(s_file_operations);
   delete s_file_operations;
-  s_file_operations = NULL;
+  s_file_operations = nullptr;
 }
 
 }  // namespace
