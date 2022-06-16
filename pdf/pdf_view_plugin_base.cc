@@ -26,9 +26,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -79,11 +77,6 @@ constexpr double kMinZoom = 0.01;
 // responsive.
 constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
-// Same value as printing::COMPLETE_PREVIEW_DOCUMENT_INDEX.
-constexpr int kCompletePDFIndex = -1;
-// A different negative value to differentiate itself from `kCompletePDFIndex`.
-constexpr int kInvalidPDFIndex = -2;
-
 // Enumeration of pinch states.
 // This should match PinchPhase enum in chrome/browser/resources/pdf/viewport.js
 enum class PinchPhase {
@@ -108,39 +101,7 @@ base::Value::Dict PrepareReplyMessage(base::StringPiece reply_type,
   return reply;
 }
 
-bool IsPrintPreviewUrl(base::StringPiece url) {
-  return base::StartsWith(url, PdfViewPluginBase::kChromeUntrustedPrintHost);
-}
-
-int ExtractPrintPreviewPageIndex(base::StringPiece src_url) {
-  // Sample `src_url` format: chrome-untrusted://print/id/page_index/print.pdf
-  // The page_index is zero-based, but can be negative with special meanings.
-  std::vector<base::StringPiece> url_substr = base::SplitStringPiece(
-      src_url.substr(PdfViewPluginBase::kChromeUntrustedPrintHost.size()), "/",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (url_substr.size() != 3)
-    return kInvalidPDFIndex;
-
-  if (url_substr[2] != "print.pdf")
-    return kInvalidPDFIndex;
-
-  int page_index = 0;
-  if (!base::StringToInt(url_substr[1], &page_index))
-    return kInvalidPDFIndex;
-  return page_index;
-}
-
-bool IsPreviewingPDF(int print_preview_page_count) {
-  return print_preview_page_count == 0;
-}
-
 }  // namespace
-
-// static
-constexpr base::StringPiece PdfViewPluginBase::kChromePrintHost;
-
-// static
-constexpr base::StringPiece PdfViewPluginBase::kChromeUntrustedPrintHost;
 
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
@@ -245,10 +206,6 @@ void PdfViewPluginBase::Beep() {
   base::Value::Dict message;
   message.Set("type", "beep");
   SendMessage(std::move(message));
-}
-
-std::string PdfViewPluginBase::GetURL() {
-  return url_;
 }
 
 void PdfViewPluginBase::Email(const std::string& to,
@@ -437,38 +394,6 @@ void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   DoPaint(paint_rects, ready, pending);
 }
 
-void PdfViewPluginBase::PreviewDocumentLoadComplete() {
-  if (preview_document_load_state_ != DocumentLoadState::kLoading ||
-      preview_pages_info_.empty()) {
-    return;
-  }
-
-  preview_document_load_state_ = DocumentLoadState::kComplete;
-
-  int dest_page_index = preview_pages_info_.front().second;
-  DCHECK_GT(dest_page_index, 0);
-  preview_pages_info_.pop();
-  DCHECK(preview_engine_);
-  engine()->AppendPage(preview_engine_.get(), dest_page_index);
-
-  ++print_preview_loaded_page_count_;
-  LoadNextPreviewPage();
-}
-
-void PdfViewPluginBase::PreviewDocumentLoadFailed() {
-  UserMetricsRecordAction("PDF.PreviewDocumentLoadFailure");
-  if (preview_document_load_state_ != DocumentLoadState::kLoading ||
-      preview_pages_info_.empty()) {
-    return;
-  }
-
-  // Even if a print preview page failed to load, keep going.
-  preview_document_load_state_ = DocumentLoadState::kFailed;
-  preview_pages_info_.pop();
-  ++print_preview_loaded_page_count_;
-  LoadNextPreviewPage();
-}
-
 void PdfViewPluginBase::EnableAccessibility() {
   if (accessibility_state_ == AccessibilityState::kLoaded)
     return;
@@ -505,10 +430,6 @@ AccessibilityDocInfo PdfViewPluginBase::GetAccessibilityDocInfo() const {
       engine()->HasPermission(DocumentPermission::kCopyAccessible);
   doc_info.text_copyable = engine()->HasPermission(DocumentPermission::kCopy);
   return doc_info;
-}
-
-void PdfViewPluginBase::DestroyPreviewEngine() {
-  preview_engine_.reset();
 }
 
 void PdfViewPluginBase::InvalidateAfterPaintDone() {
@@ -832,63 +753,9 @@ void PdfViewPluginBase::HandleGetThumbnailMessage(
                                             GetWeakPtr(), std::move(reply)));
 }
 
-void PdfViewPluginBase::HandleLoadPreviewPageMessage(
-    const base::Value::Dict& message) {
-  const std::string& url = *message.FindString("url");
-  int index = message.FindInt("index").value();
-
-  // For security reasons, crash if `url` is not for Print Preview.
-  CHECK(IsPrintPreview());
-  CHECK(IsPrintPreviewUrl(url));
-  ProcessPreviewPageInfo(url, index);
-}
-
 void PdfViewPluginBase::HandlePrintMessage(
     const base::Value::Dict& /*message*/) {
   Print();
-}
-
-void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
-    const base::Value::Dict& message) {
-  const std::string& url = *message.FindString("url");
-  bool is_grayscale = message.FindBool("grayscale").value();
-  int print_preview_page_count = message.FindInt("pageCount").value();
-
-  // For security reasons, crash if `url` is not for Print Preview.
-  CHECK(IsPrintPreview());
-  CHECK(IsPrintPreviewUrl(url));
-  DCHECK_GE(print_preview_page_count, 0);
-
-  // The page count is zero if the print preview source is a PDF. In which
-  // case, the page index for `url` should be at `kCompletePDFIndex`.
-  // When the page count is not zero, then the source is not PDF. In which
-  // case, the page index for `url` should be non-negative.
-  bool is_previewing_pdf = IsPreviewingPDF(print_preview_page_count);
-  int page_index = ExtractPrintPreviewPageIndex(url);
-  if (is_previewing_pdf)
-    DCHECK_EQ(page_index, kCompletePDFIndex);
-  else
-    DCHECK_GE(page_index, 0);
-
-  print_preview_page_count_ = print_preview_page_count;
-  print_preview_loaded_page_count_ = 0;
-  url_ = url;
-  preview_pages_info_ = base::queue<PreviewPageInfo>();
-  preview_document_load_state_ = DocumentLoadState::kComplete;
-  document_load_state_ = DocumentLoadState::kLoading;
-  last_progress_sent_ = 0;
-  LoadUrl(GetURL(), base::BindOnce(&PdfViewPluginBase::DidOpen, GetWeakPtr()));
-  preview_engine_.reset();
-
-  // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
-  // engine settings across a Print Preview reset.
-  set_engine(CreateEngine(this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
-  engine()->ZoomUpdated(zoom_ * device_scale_);
-  engine()->PageOffsetUpdated(available_area_.OffsetFromOrigin());
-  engine()->PluginSizeUpdated(available_area_.size());
-  engine()->SetGrayscale(is_grayscale);
-
-  paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
 }
 
 void PdfViewPluginBase::HandleRotateClockwiseMessage(
@@ -1206,82 +1073,6 @@ void PdfViewPluginBase::DidOpen(std::unique_ptr<UrlLoader> loader,
   } else if (result != kErrorAborted) {
     DocumentLoadFailed();
   }
-}
-
-void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
-                                       int32_t result) {
-  DCHECK_EQ(result, kSuccess);
-  preview_client_ = std::make_unique<PreviewModeClient>(this);
-  preview_engine_ = CreateEngine(preview_client_.get(),
-                                 PDFiumFormFiller::ScriptOption::kNoJavaScript);
-  preview_engine_->PluginSizeUpdated({});
-  preview_engine_->HandleDocumentLoad(std::move(loader), GetURL());
-}
-
-void PdfViewPluginBase::OnPrintPreviewLoaded() {
-  // Scroll location is retained across document loads in print preview mode, so
-  // there's no need to override the scroll position by scrolling again.
-  if (IsPreviewingPDF(print_preview_page_count_)) {
-    SendPrintPreviewLoadedNotification();
-  } else {
-    DCHECK_EQ(0, print_preview_loaded_page_count_);
-    print_preview_loaded_page_count_ = 1;
-    AppendBlankPrintPreviewPages();
-  }
-
-  OnGeometryChanged(0, 0);
-  if (!document_size_.IsEmpty())
-    paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
-}
-
-void PdfViewPluginBase::AppendBlankPrintPreviewPages() {
-  engine()->AppendBlankPages(print_preview_page_count_);
-  LoadNextPreviewPage();
-}
-
-void PdfViewPluginBase::ProcessPreviewPageInfo(const std::string& url,
-                                               int dest_page_index) {
-  DCHECK(IsPrintPreview());
-  DCHECK_GE(dest_page_index, 0);
-  DCHECK_LT(dest_page_index, print_preview_page_count_);
-
-  // Print Preview JS will send the loadPreviewPage message for every page,
-  // including the first page in the print preview, which has already been
-  // loaded when handing the resetPrintPreviewMode message. Just ignore it.
-  if (dest_page_index == 0)
-    return;
-
-  int src_page_index = ExtractPrintPreviewPageIndex(url);
-  DCHECK_GE(src_page_index, 0);
-
-  preview_pages_info_.push(std::make_pair(url, dest_page_index));
-  LoadAvailablePreviewPage();
-}
-
-void PdfViewPluginBase::LoadAvailablePreviewPage() {
-  if (preview_pages_info_.empty() ||
-      document_load_state_ != DocumentLoadState::kComplete ||
-      preview_document_load_state_ == DocumentLoadState::kLoading) {
-    return;
-  }
-
-  preview_document_load_state_ = DocumentLoadState::kLoading;
-  const std::string& url = preview_pages_info_.front().first;
-
-  // Note that `last_progress_sent_` is not reset for preview page loads.
-  LoadUrl(url,
-          base::BindOnce(&PdfViewPluginBase::DidOpenPreview, GetWeakPtr()));
-}
-
-void PdfViewPluginBase::LoadNextPreviewPage() {
-  if (!preview_pages_info_.empty()) {
-    DCHECK_LT(print_preview_loaded_page_count_, print_preview_page_count_);
-    LoadAvailablePreviewPage();
-    return;
-  }
-
-  if (print_preview_loaded_page_count_ == print_preview_page_count_)
-    SendPrintPreviewLoadedNotification();
 }
 
 gfx::Point PdfViewPluginBase::FrameToPdfCoordinates(

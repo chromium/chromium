@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/queue.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -22,7 +21,6 @@
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
-#include "pdf/preview_mode_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -54,19 +52,11 @@ struct AccessibilityViewportInfo;
 
 // TODO(crbug.com/1302059): Merge with PdfViewWebPlugin.
 class PdfViewPluginBase : public PDFEngine::Client,
-                          public PaintManager::Client,
-                          public PreviewModeClient::Client {
+                          public PaintManager::Client {
  public:
   // Do not save files with over 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.js.
   static constexpr size_t kMaximumSavedFileSize = 100 * 1000 * 1000;
-
-  // Print Preview base URL.
-  static constexpr base::StringPiece kChromePrintHost = "chrome://print/";
-
-  // Untrusted Print Preview base URL.
-  static constexpr base::StringPiece kChromeUntrustedPrintHost =
-      "chrome-untrusted://print/";
 
   enum class AccessibilityState {
     kOff = 0,  // Off.
@@ -100,7 +90,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
   void Beep() override;
-  std::string GetURL() override;
   void Email(const std::string& to,
              const std::string& cc,
              const std::string& bcc,
@@ -120,10 +109,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>& ready,
                std::vector<gfx::Rect>& pending) override;
-
-  // PreviewModeClient::Client:
-  void PreviewDocumentLoadComplete() override;
-  void PreviewDocumentLoadFailed() override;
 
   // Enable accessibility for PDF plugin.
   void EnableAccessibility();
@@ -161,19 +146,18 @@ class PdfViewPluginBase : public PDFEngine::Client,
       PDFEngine::Client* client,
       PDFiumFormFiller::ScriptOption script_option) = 0;
 
-  // Destroys the `PDFiumEngine` used for Print Preview. Subclasses should call
-  // this method in their destructor to ensure the engine is destroyed first.
-  void DestroyPreviewEngine();
-
   virtual const PDFiumEngine* engine() const = 0;
   virtual PDFiumEngine* engine() = 0;
-  virtual void set_engine(std::unique_ptr<PDFiumEngine> engine) = 0;
 
   // Loads `url`, invoking `callback` on receiving the initial response.
   virtual void LoadUrl(base::StringPiece url, LoadUrlCallback callback) = 0;
 
   // Gets a weak pointer with a lifetime matching the derived class.
   virtual base::WeakPtr<PdfViewPluginBase> GetWeakPtr() = 0;
+
+  // Runs when document load completes in Print Preview, before
+  // `OnDocumentLoadComplete()`.
+  virtual void OnPrintPreviewLoaded() = 0;
 
   // Runs when document load completes.
   virtual void OnDocumentLoadComplete() = 0;
@@ -295,7 +279,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Records user actions.
   virtual void UserMetricsRecordAction(const std::string& action) = 0;
 
-  void set_url(std::string url) { url_ = std::move(url); }
+  PaintManager& paint_manager() { return paint_manager_; }
 
   const std::string& link_under_cursor() const { return link_under_cursor_; }
 
@@ -303,6 +287,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const gfx::Rect& available_area() const { return available_area_; }
 
+  const gfx::Size& document_size() const { return document_size_; }
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
   // TODO(crbug.com/1288847): Don't provide direct access to the origin of
@@ -316,7 +301,14 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
-  void set_last_progress_sent(int progress) { last_progress_sent_ = progress; }
+  void set_last_progress_sent(double progress) {
+    last_progress_sent_ = progress;
+  }
+
+  DocumentLoadState document_load_state() const { return document_load_state_; }
+  void set_document_load_state(DocumentLoadState state) {
+    document_load_state_ = state;
+  }
 
   AccessibilityState accessibility_state() const {
     return accessibility_state_;
@@ -341,9 +333,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleGetPasswordCompleteMessage(const base::Value::Dict& message);
   void HandleGetSelectedTextMessage(const base::Value::Dict& message);
   void HandleGetThumbnailMessage(const base::Value::Dict& message);
-  void HandleLoadPreviewPageMessage(const base::Value::Dict& message);
   void HandlePrintMessage(const base::Value::Dict& /*message*/);
-  void HandleResetPrintPreviewModeMessage(const base::Value::Dict& message);
   void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
   void HandleRotateCounterclockwiseMessage(
       const base::Value::Dict& /*message*/);
@@ -373,28 +363,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Starts loading accessibility information.
   void LoadAccessibility();
 
-  // Handles `LoadUrl()` result for print preview.
-  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);
-
-  // Performs tasks necessary when the document is loaded in print preview mode.
-  void OnPrintPreviewLoaded();
-
-  // Reduces the document to 1 page and appends `print_preview_page_count_` - 1
-  // blank pages to the document for print preview.
-  void AppendBlankPrintPreviewPages();
-
-  // Process the preview page data information. `src_url` specifies the preview
-  // page data location. The `src_url` is in the format:
-  // chrome-untrusted://print/id/page_number/print.pdf
-  // `dest_page_index` specifies the blank page index that needs to be replaced
-  // with the new page data.
-  void ProcessPreviewPageInfo(const std::string& src_url, int dest_page_index);
-  // Load the next available preview page into the blank page.
-  void LoadAvailablePreviewPage();
-
-  // Called after a preview page has loaded or failed to load.
-  void LoadNextPreviewPage();
-
   // Converts `frame_coordinates` to PDF coordinates.
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
@@ -403,9 +371,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // `PdfViewWebPlugin`, so all methods should be protected or public.
 
   PaintManager paint_manager_{this};
-
-  // The URL of the PDF document.
-  std::string url_;
 
   // The URL currently under the cursor.
   std::string link_under_cursor_;
@@ -490,34 +455,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // For identifying actual print operations to avoid double logging of UMA.
   bool print_pages_called_;
-
-  // The PreviewModeClient used for print preview. Will be passed to
-  // `preview_engine_`.
-  std::unique_ptr<PreviewModeClient> preview_client_;
-
-  // This engine is used to render the individual preview page data. This is
-  // used only in print preview mode. This will use `PreviewModeClient`
-  // interface which has very limited access to the pp::Instance.
-  std::unique_ptr<PDFiumEngine> preview_engine_;
-
-  DocumentLoadState preview_document_load_state_ = DocumentLoadState::kComplete;
-
-  // Number of pages in print preview mode for non-PDF source, 0 if print
-  // previewing a PDF, and -1 if not in print preview mode.
-  int print_preview_page_count_ = -1;
-
-  // Number of pages loaded in print preview mode for non-PDF source. Always
-  // less than or equal to `print_preview_page_count_`.
-  int print_preview_loaded_page_count_ = -1;
-
-  // Used to manage loaded print preview page information. A `PreviewPageInfo`
-  // consists of data source URL string and the page index in the destination
-  // document.
-  // The URL string embeds a page number that can be found with
-  // ExtractPrintPreviewPageIndex(). This page number is always greater than 0.
-  // The page index is always in the range of [0, print_preview_page_count_).
-  using PreviewPageInfo = std::pair<std::string, int>;
-  base::queue<PreviewPageInfo> preview_pages_info_;
 };
 
 }  // namespace chrome_pdf

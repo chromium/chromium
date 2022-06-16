@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -25,6 +26,7 @@
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/preview_mode_client.h"
 #include "pdf/v8_value_converter.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
@@ -68,7 +70,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public pdf::mojom::PdfListener,
                                public BlinkUrlLoader::Client,
                                public PostMessageReceiver::Client,
-                               public PdfAccessibilityActionHandler {
+                               public PdfAccessibilityActionHandler,
+                               public PreviewModeClient::Client {
  public:
   // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.ts.
   enum class SaveRequestType {
@@ -271,6 +274,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
+  std::string GetURL() override;
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
@@ -316,6 +320,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
 
+  // PreviewModeClient::Client:
+  void PreviewDocumentLoadComplete() override;
+  void PreviewDocumentLoadFailed() override;
+
   // Initializes the plugin for testing, bypassing certain consistency checks.
   bool InitializeForTesting();
 
@@ -330,9 +338,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       PDFiumFormFiller::ScriptOption script_option) override;
   const PDFiumEngine* engine() const override;
   PDFiumEngine* engine() override;
-  void set_engine(std::unique_ptr<PDFiumEngine> engine) override;
   void LoadUrl(base::StringPiece url, LoadUrlCallback callback) override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
+  void OnPrintPreviewLoaded() override;
   void OnDocumentLoadComplete() override;
   void SendMessage(base::Value::Dict message) override;
   void SetFormTextFieldInFocus(bool in_focus) override;
@@ -355,6 +363,15 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool full_frame() const override;
 
  private:
+  // Metadata about an available preview page.
+  struct PreviewPageInfo {
+    // Data source URL.
+    std::string url;
+
+    // Page index in destination document.
+    int dest_page_index = -1;
+  };
+
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
@@ -415,6 +432,21 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Send document metadata data.
   void SendMetadata();
 
+  // Handles message for resetting Print Preview.
+  void HandleResetPrintPreviewModeMessage(const base::Value::Dict& message);
+
+  // Handles message for loading a preview page.
+  void HandleLoadPreviewPageMessage(const base::Value::Dict& message);
+
+  // Starts loading the next available preview page into a blank page.
+  void LoadAvailablePreviewPage();
+
+  // Handles `LoadUrl()` result for a preview page.
+  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);
+
+  // Continues loading the next preview page.
+  void LoadNextPreviewPage();
+
   blink::WebString selected_text_;
 
   std::unique_ptr<Client> const client_;
@@ -425,6 +457,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 
   std::unique_ptr<PDFiumEngine> engine_;
+
+  // The URL of the PDF document.
+  std::string url_;
 
   // The current cursor type.
   ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
@@ -516,6 +551,28 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Whether the plugin is loaded in Print Preview.
   bool is_print_preview_ = false;
+
+  // Number of pages in Print Preview (non-PDF). 0 if previewing a PDF, and -1
+  // if not in Print Preview.
+  int print_preview_page_count_ = -1;
+
+  // Number of pages loaded in Print Preview (non-PDF). Always less than or
+  // equal to `print_preview_page_count_`.
+  int print_preview_loaded_page_count_ = -1;
+
+  // The PreviewModeClient used for print preview. Will be passed to
+  // `preview_engine_`.
+  std::unique_ptr<PreviewModeClient> preview_client_;
+
+  // Engine used to render individual preview pages. This will use the
+  // `PreviewModeClient` interface.
+  std::unique_ptr<PDFiumEngine> preview_engine_;
+
+  // Document load state for the Print Preview engine.
+  DocumentLoadState preview_document_load_state_ = DocumentLoadState::kComplete;
+
+  // Queue of available preview pages to load next.
+  base::queue<PreviewPageInfo> preview_pages_info_;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };
