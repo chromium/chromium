@@ -451,7 +451,7 @@ class ProxyConfigServiceAndroid::Delegate
     const raw_ptr<Delegate> delegate_;
   };
 
-  virtual ~Delegate() {}
+  virtual ~Delegate() = default;
 
   void ShutdownInJNISequence() {
     if (java_proxy_change_listener_.is_null())

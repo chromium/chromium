@@ -72,7 +72,7 @@ class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
             base::BindRepeating(&ProxyConfigServiceAndroidTestBase::GetProperty,
                                 base::Unretained(this))) {}
 
-  ~ProxyConfigServiceAndroidTestBase() override {}
+  ~ProxyConfigServiceAndroidTestBase() override = default;
 
   // testing::Test:
   void SetUp() override {

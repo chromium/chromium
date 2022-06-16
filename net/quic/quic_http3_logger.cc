@@ -88,7 +88,7 @@ base::Value::List ElideQuicHeaderListForNetLog(
 QuicHttp3Logger::QuicHttp3Logger(const NetLogWithSource& net_log)
     : net_log_(net_log) {}
 
-QuicHttp3Logger::~QuicHttp3Logger() {}
+QuicHttp3Logger::~QuicHttp3Logger() = default;
 
 void QuicHttp3Logger::OnControlStreamCreated(quic::QuicStreamId stream_id) {
   if (!net_log_.IsCapturing()) {

@@ -38,7 +38,7 @@ QuicChromiumPacketReader::QuicChromiumPacketReader(
       read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
       net_log_(net_log) {}
 
-QuicChromiumPacketReader::~QuicChromiumPacketReader() {}
+QuicChromiumPacketReader::~QuicChromiumPacketReader() = default;
 
 void QuicChromiumPacketReader::StartReading() {
   for (;;) {

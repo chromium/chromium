@@ -30,7 +30,7 @@ TransportSecurityStateTrieEntry::TransportSecurityStateTrieEntry(
       pinsets_map_(pinsets_map),
       entry_(entry) {}
 
-TransportSecurityStateTrieEntry::~TransportSecurityStateTrieEntry() {}
+TransportSecurityStateTrieEntry::~TransportSecurityStateTrieEntry() = default;
 
 std::string TransportSecurityStateTrieEntry::name() const {
   return entry_->hostname;

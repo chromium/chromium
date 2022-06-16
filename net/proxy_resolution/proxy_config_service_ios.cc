@@ -106,7 +106,6 @@ ProxyConfigServiceIOS::ProxyConfigServiceIOS(
                                 GetCurrentProxyConfig,
                                 traffic_annotation) {}
 
-ProxyConfigServiceIOS::~ProxyConfigServiceIOS() {
-}
+ProxyConfigServiceIOS::~ProxyConfigServiceIOS() = default;
 
 }  // namespace net

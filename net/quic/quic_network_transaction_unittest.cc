@@ -232,7 +232,7 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
       delete;
 
-  ~TestSocketPerformanceWatcher() override {}
+  ~TestSocketPerformanceWatcher() override = default;
 
   bool ShouldNotifyUpdatedRTT() const override {
     return *should_notify_updated_rtt_;
@@ -259,7 +259,7 @@ class TestSocketPerformanceWatcherFactory
   TestSocketPerformanceWatcherFactory& operator=(
       const TestSocketPerformanceWatcherFactory&) = delete;
 
-  ~TestSocketPerformanceWatcherFactory() override {}
+  ~TestSocketPerformanceWatcherFactory() override = default;
 
   // SocketPerformanceWatcherFactory implementation:
   std::unique_ptr<SocketPerformanceWatcher> CreateSocketPerformanceWatcher(

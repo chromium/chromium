@@ -22,7 +22,7 @@ namespace net {
 
 class CryptoMessagePrinter : public quic::CryptoFramerVisitorInterface {
  public:
-  explicit CryptoMessagePrinter() {}
+  explicit CryptoMessagePrinter() = default;
 
   void OnHandshakeMessage(
       const quic::CryptoHandshakeMessage& message) override {

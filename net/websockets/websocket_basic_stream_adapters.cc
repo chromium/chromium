@@ -23,7 +23,8 @@ WebSocketClientSocketHandleAdapter::WebSocketClientSocketHandleAdapter(
     std::unique_ptr<ClientSocketHandle> connection)
     : connection_(std::move(connection)) {}
 
-WebSocketClientSocketHandleAdapter::~WebSocketClientSocketHandleAdapter() {}
+WebSocketClientSocketHandleAdapter::~WebSocketClientSocketHandleAdapter() =
+    default;
 
 int WebSocketClientSocketHandleAdapter::Read(IOBuffer* buf,
                                              int buf_len,

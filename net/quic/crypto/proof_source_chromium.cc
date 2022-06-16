@@ -16,9 +16,9 @@ using std::string;
 
 namespace net {
 
-ProofSourceChromium::ProofSourceChromium() {}
+ProofSourceChromium::ProofSourceChromium() = default;
 
-ProofSourceChromium::~ProofSourceChromium() {}
+ProofSourceChromium::~ProofSourceChromium() = default;
 
 bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
                                      const base::FilePath& key_path,

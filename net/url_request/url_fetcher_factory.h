@@ -22,7 +22,7 @@ class URLFetcherFactory {
       NetworkTrafficAnnotationTag traffic_annotation) = 0;
 
  protected:
-  virtual ~URLFetcherFactory() {}
+  virtual ~URLFetcherFactory() = default;
 };
 
 }  // namespace net

@@ -19,7 +19,7 @@ class SocketTag;
 class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
                                                 public Socket {
  public:
-  ~DatagramClientSocket() override {}
+  ~DatagramClientSocket() override = default;
 
   // Initialize this socket as a client socket to server at |address|.
   // Returns a network error code.

@@ -75,7 +75,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   };
 
   struct EntryFileKey {
-    EntryFileKey() {}
+    EntryFileKey() = default;
     explicit EntryFileKey(uint64_t hash) : entry_hash(hash) {}
 
     uint64_t entry_hash = 0;

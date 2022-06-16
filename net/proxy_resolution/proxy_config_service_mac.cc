@@ -180,7 +180,7 @@ class ProxyConfigServiceMac::Helper
 
  private:
   friend class base::RefCountedThreadSafe<Helper>;
-  ~Helper() {}
+  ~Helper() = default;
 
   ProxyConfigServiceMac* parent_;
 };

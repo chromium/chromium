@@ -50,7 +50,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
   HttpAuthHandlerFactory(const HttpAuthHandlerFactory&) = delete;
   HttpAuthHandlerFactory& operator=(const HttpAuthHandlerFactory&) = delete;
 
-  virtual ~HttpAuthHandlerFactory() {}
+  virtual ~HttpAuthHandlerFactory() = default;
 
   // Sets the source of the HTTP authentication preferences.
   // HttpAuthHandlerFactory doesn't own the preferences, and the

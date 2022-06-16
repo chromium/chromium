@@ -72,7 +72,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // A BackendFactory creates a backend object to be used by the HttpCache.
   class NET_EXPORT BackendFactory {
    public:
-    virtual ~BackendFactory() {}
+    virtual ~BackendFactory() = default;
 
     // The actual method to build the backend. Returns a net error code. If
     // ERR_IO_PENDING is returned, the |callback| will be notified when the

@@ -5937,14 +5937,14 @@ TEST_F(HttpNetworkTransactionTest, NonPermanentGenerateAuthTokenError) {
 // schemes, based on the path of the URL being requests.
 class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
  public:
-  SameProxyWithDifferentSchemesProxyResolver() {}
+  SameProxyWithDifferentSchemesProxyResolver() = default;
 
   SameProxyWithDifferentSchemesProxyResolver(
       const SameProxyWithDifferentSchemesProxyResolver&) = delete;
   SameProxyWithDifferentSchemesProxyResolver& operator=(
       const SameProxyWithDifferentSchemesProxyResolver&) = delete;
 
-  ~SameProxyWithDifferentSchemesProxyResolver() override {}
+  ~SameProxyWithDifferentSchemesProxyResolver() override = default;
 
   static constexpr uint16_t kProxyPort = 10000;
 

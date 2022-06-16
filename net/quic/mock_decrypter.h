@@ -26,7 +26,7 @@ class MockDecrypter : public quic::QuicDecrypter {
   MockDecrypter(const MockDecrypter&) = delete;
   MockDecrypter& operator=(const MockDecrypter&) = delete;
 
-  ~MockDecrypter() override {}
+  ~MockDecrypter() override = default;
 
   // QuicCrypter implementation
   bool SetKey(absl::string_view key) override;

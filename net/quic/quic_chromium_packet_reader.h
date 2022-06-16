@@ -30,7 +30,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
  public:
   class NET_EXPORT_PRIVATE Visitor {
    public:
-    virtual ~Visitor() {}
+    virtual ~Visitor() = default;
     // Called when the read operation failed. The visitor returns
     // whether the reader should keep reading.
     virtual bool OnReadError(int result,

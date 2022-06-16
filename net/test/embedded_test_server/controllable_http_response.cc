@@ -26,7 +26,7 @@ class ControllableHttpResponse::Interceptor : public HttpResponse {
   Interceptor(const Interceptor&) = delete;
   Interceptor& operator=(const Interceptor&) = delete;
 
-  ~Interceptor() override {}
+  ~Interceptor() override = default;
 
  private:
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
@@ -54,7 +54,7 @@ ControllableHttpResponse::ControllableHttpResponse(
       relative_url, relative_url_is_prefix));
 }
 
-ControllableHttpResponse::~ControllableHttpResponse() {}
+ControllableHttpResponse::~ControllableHttpResponse() = default;
 
 void ControllableHttpResponse::WaitForRequest() {
   TRACE_EVENT("test", "ControllableHttpResponse::WaitForRequest");

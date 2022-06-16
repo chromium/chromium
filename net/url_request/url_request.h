@@ -208,7 +208,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     virtual void OnReadCompleted(URLRequest* request, int bytes_read) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   URLRequest(const URLRequest&) = delete;

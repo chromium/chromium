@@ -31,12 +31,12 @@ class NET_EXPORT ThreadedSSLPrivateKey : public SSLPrivateKey {
   // operation.
   class Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns a human-readable name of the provider that backs this
     // SSLPrivateKey, for debugging. If not applicable or available, return the

@@ -128,7 +128,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   TestDelegateBase(const TestDelegateBase&) = delete;
   TestDelegateBase& operator=(const TestDelegateBase&) = delete;
 
-  ~TestDelegateBase() override {}
+  ~TestDelegateBase() override = default;
 
   void OnStreamReady(bool request_headers_sent) override {
     CHECK(!is_ready_);
@@ -359,7 +359,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
   DeleteStreamDelegate(const DeleteStreamDelegate&) = delete;
   DeleteStreamDelegate& operator=(const DeleteStreamDelegate&) = delete;
 
-  ~DeleteStreamDelegate() override {}
+  ~DeleteStreamDelegate() override = default;
 
   void OnStreamReady(bool request_headers_sent) override {
     TestDelegateBase::OnStreamReady(request_headers_sent);

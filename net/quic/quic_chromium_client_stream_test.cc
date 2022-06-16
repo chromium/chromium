@@ -157,7 +157,7 @@ MockQuicClientSessionBase::MockQuicClientSessionBase(
       .WillByDefault(testing::Return(quic::QuicConsumedData(0, false)));
 }
 
-MockQuicClientSessionBase::~MockQuicClientSessionBase() {}
+MockQuicClientSessionBase::~MockQuicClientSessionBase() = default;
 
 class QuicChromiumClientStreamTest
     : public ::testing::TestWithParam<quic::ParsedQuicVersion>,

@@ -20,7 +20,7 @@ namespace net {
 // https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format.
 class NET_EXPORT SSLKeyLogger {
  public:
-  virtual ~SSLKeyLogger() {}
+  virtual ~SSLKeyLogger() = default;
 
   // Writes |line| followed by a newline. This may be called by multiple threads
   // simultaneously. If two calls race, the order of the lines is undefined, but

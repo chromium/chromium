@@ -120,7 +120,7 @@ class ExpiringCache {
 
   // Constructs an ExpiringCache that stores up to |max_entries|.
   explicit ExpiringCache(size_t max_entries) : max_entries_(max_entries) {}
-  ~ExpiringCache() {}
+  ~ExpiringCache() = default;
 
   // Returns the value matching |key|, which must be valid at the time |now|.
   // Returns NULL if the item is not found or has expired. If the item has

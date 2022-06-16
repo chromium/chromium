@@ -266,6 +266,6 @@ NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
   notifier_thread_->StartWithOptions(std::move(thread_options));
 }
 
-NetworkConfigWatcherMac::~NetworkConfigWatcherMac() {}
+NetworkConfigWatcherMac::~NetworkConfigWatcherMac() = default;
 
 }  // namespace net

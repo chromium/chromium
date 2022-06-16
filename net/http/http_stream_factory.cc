@@ -46,7 +46,7 @@ const char kAlternativeServiceHeader[] = "Alt-Svc";
 HttpStreamFactory::HttpStreamFactory(HttpNetworkSession* session)
     : session_(session), job_factory_(std::make_unique<JobFactory>()) {}
 
-HttpStreamFactory::~HttpStreamFactory() {}
+HttpStreamFactory::~HttpStreamFactory() = default;
 
 void HttpStreamFactory::ProcessAlternativeServices(
     HttpNetworkSession* session,

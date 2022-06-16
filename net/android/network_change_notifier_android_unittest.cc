@@ -188,7 +188,7 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
   typedef NetworkChangeNotifier::ConnectionCost ConnectionCost;
   typedef NetworkChangeNotifier::ConnectionSubtype ConnectionSubtype;
 
-  ~BaseNetworkChangeNotifierAndroidTest() override {}
+  ~BaseNetworkChangeNotifierAndroidTest() override = default;
 
   void RunTest(
       const base::RepeatingCallback<int(void)>& notifications_count_getter,

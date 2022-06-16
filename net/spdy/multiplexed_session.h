@@ -20,7 +20,7 @@ namespace net {
 // Base class for SPDY and QUIC sessions.
 class NET_EXPORT_PRIVATE MultiplexedSession {
  public:
-  virtual ~MultiplexedSession() {}
+  virtual ~MultiplexedSession() = default;
 
   // Fills SSL info in |ssl_info| and returns true when SSL is in use.
   virtual bool GetSSLInfo(SSLInfo* ssl_info) const = 0;

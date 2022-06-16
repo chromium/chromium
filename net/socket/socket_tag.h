@@ -35,7 +35,7 @@ class NET_EXPORT SocketTag {
 #else
   SocketTag() = default;
 #endif  // BUILDFLAG(IS_ANDROID)
-  ~SocketTag() {}
+  ~SocketTag() = default;
 
   bool operator<(const SocketTag& other) const;
   bool operator==(const SocketTag& other) const;

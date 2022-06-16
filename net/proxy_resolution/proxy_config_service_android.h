@@ -35,7 +35,7 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
   // the .cc file.
   class JNIDelegate {
    public:
-    virtual ~JNIDelegate() {}
+    virtual ~JNIDelegate() = default;
 
     // Called from Java (on JNI thread) to signal that the proxy settings have
     // changed. The string and int arguments (the host/port pair for the proxy)

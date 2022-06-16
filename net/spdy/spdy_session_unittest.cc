@@ -7141,7 +7141,7 @@ namespace {
 
 class TestSSLConfigService : public SSLConfigService {
  public:
-  TestSSLConfigService() {}
+  TestSSLConfigService() = default;
   ~TestSSLConfigService() override = default;
 
   SSLContextConfig GetSSLContextConfig() override { return config_; }

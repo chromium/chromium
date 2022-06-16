@@ -29,7 +29,7 @@ class TestDelegate : public Http2PushPromiseIndex::Delegate {
  public:
   TestDelegate() = delete;
   explicit TestDelegate(const SpdySessionKey& key) : key_(key) {}
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   bool ValidatePushedStream(spdy::SpdyStreamId stream_id,
                             const GURL& url,

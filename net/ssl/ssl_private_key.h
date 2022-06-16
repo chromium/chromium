@@ -32,7 +32,7 @@ class NET_EXPORT SSLPrivateKey
   using SignCallback =
       base::OnceCallback<void(Error, const std::vector<uint8_t>&)>;
 
-  SSLPrivateKey() {}
+  SSLPrivateKey() = default;
 
   SSLPrivateKey(const SSLPrivateKey&) = delete;
   SSLPrivateKey& operator=(const SSLPrivateKey&) = delete;
@@ -67,7 +67,7 @@ class NET_EXPORT SSLPrivateKey
                                                            bool supports_pss);
 
  protected:
-  virtual ~SSLPrivateKey() {}
+  virtual ~SSLPrivateKey() = default;
 
  private:
   friend class base::RefCountedThreadSafe<SSLPrivateKey>;

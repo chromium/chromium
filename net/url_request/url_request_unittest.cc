@@ -12379,7 +12379,7 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
   ZeroRTTResponse(const ZeroRTTResponse&) = delete;
   ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;
 
-  ~ZeroRTTResponse() override {}
+  ~ZeroRTTResponse() override = default;
 
   void SendResponse(
       base::WeakPtr<test_server::HttpResponseDelegate> delegate) override {

@@ -70,12 +70,12 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
 // The specialized controller that keeps track of current operations.
 class FileInFlightIO : public disk_cache::InFlightIO {
  public:
-  FileInFlightIO() {}
+  FileInFlightIO() = default;
 
   FileInFlightIO(const FileInFlightIO&) = delete;
   FileInFlightIO& operator=(const FileInFlightIO&) = delete;
 
-  ~FileInFlightIO() override {}
+  ~FileInFlightIO() override = default;
 
   // These methods start an asynchronous operation. The arguments have the same
   // semantics of the File asynchronous operations, with the exception that the
@@ -285,8 +285,7 @@ void File::DropPendingIO() {
   DeleteFileInFlightIO();
 }
 
-File::~File() {
-}
+File::~File() = default;
 
 base::PlatformFile File::platform_file() const {
   return base_file_.GetPlatformFile();

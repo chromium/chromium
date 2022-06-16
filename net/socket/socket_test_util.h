@@ -1167,7 +1167,7 @@ class MockTransportSocketParams
 
  private:
   friend class base::RefCounted<MockTransportSocketParams>;
-  ~MockTransportSocketParams() {}
+  ~MockTransportSocketParams() = default;
 };
 
 class MockTransportClientSocketPool : public TransportClientSocketPool {
@@ -1310,7 +1310,7 @@ class MockTaggingStreamSocket : public WrappedStreamSocket {
   MockTaggingStreamSocket(const MockTaggingStreamSocket&) = delete;
   MockTaggingStreamSocket& operator=(const MockTaggingStreamSocket&) = delete;
 
-  ~MockTaggingStreamSocket() override {}
+  ~MockTaggingStreamSocket() override = default;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;

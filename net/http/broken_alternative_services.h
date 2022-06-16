@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
     virtual void OnExpireBrokenAlternativeService(
         const AlternativeService& expired_alternative_service,
         const NetworkIsolationKey& network_isolation_key) = 0;
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // |delegate| will be notified when a broken alternative service expires. It

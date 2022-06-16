@@ -41,12 +41,12 @@ class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpStream {
  public:
-  HttpStream() {}
+  HttpStream() = default;
 
   HttpStream(const HttpStream&) = delete;
   HttpStream& operator=(const HttpStream&) = delete;
 
-  virtual ~HttpStream() {}
+  virtual ~HttpStream() = default;
 
   // Registers the HTTP request for the stream.  Must be called before calling
   // InitializeStream().  Separating the registration of the request from the

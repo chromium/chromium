@@ -1249,7 +1249,7 @@ class ZeroRTTResponse : public test_server::HttpResponse {
   ZeroRTTResponse(const ZeroRTTResponse&) = delete;
   ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;
 
-  ~ZeroRTTResponse() override {}
+  ~ZeroRTTResponse() override = default;
 
   void SendResponse(
       base::WeakPtr<test_server::HttpResponseDelegate> delegate) override {
@@ -3051,7 +3051,7 @@ class FakePeerAddressSocket : public WrappedStreamSocket {
   FakePeerAddressSocket(std::unique_ptr<StreamSocket> socket,
                         const IPEndPoint& address)
       : WrappedStreamSocket(std::move(socket)), address_(address) {}
-  ~FakePeerAddressSocket() override {}
+  ~FakePeerAddressSocket() override = default;
 
   int GetPeerAddress(IPEndPoint* address) const override {
     *address = address_;

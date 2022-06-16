@@ -27,16 +27,16 @@ class NET_EXPORT_PRIVATE ProxyResolver {
  public:
   class Request {
    public:
-    virtual ~Request() {}  // Cancels the request
+    virtual ~Request() = default;  // Cancels the request
     virtual LoadState GetLoadState() = 0;
   };
 
-  ProxyResolver() {}
+  ProxyResolver() = default;
 
   ProxyResolver(const ProxyResolver&) = delete;
   ProxyResolver& operator=(const ProxyResolver&) = delete;
 
-  virtual ~ProxyResolver() {}
+  virtual ~ProxyResolver() = default;
 
   // Gets a list of proxy servers to use for |url|. If the request will
   // complete asynchronously returns ERR_IO_PENDING and notifies the result

@@ -63,7 +63,7 @@ class NET_EXPORT TransportSecurityState {
                           base::OnceClosure callback) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   class NET_EXPORT RequireCTDelegate {
@@ -310,7 +310,7 @@ class NET_EXPORT TransportSecurityState {
                           error_callback) = 0;
 
    protected:
-    virtual ~ReportSenderInterface() {}
+    virtual ~ReportSenderInterface() = default;
   };
 
   // An interface for building and asynchronously sending reports when a
@@ -332,7 +332,7 @@ class NET_EXPORT TransportSecurityState {
         const NetworkIsolationKey& network_isolation_key) = 0;
 
    protected:
-    virtual ~ExpectCTReporter() {}
+    virtual ~ExpectCTReporter() = default;
   };
 
   class NET_EXPORT PinSet {

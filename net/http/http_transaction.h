@@ -61,7 +61,7 @@ class NET_EXPORT_PRIVATE HttpTransaction {
                                   CompletionOnceCallback callback)>;
 
   // Stops any pending IO and destroys the transaction object.
-  virtual ~HttpTransaction() {}
+  virtual ~HttpTransaction() = default;
 
   // Starts the HTTP transaction (i.e., sends the HTTP request).
   //

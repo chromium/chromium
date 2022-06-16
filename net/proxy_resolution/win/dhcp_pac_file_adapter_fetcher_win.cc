@@ -110,7 +110,7 @@ GURL DhcpPacFileAdapterFetcher::GetPacURL() const {
   return pac_url_;
 }
 
-DhcpPacFileAdapterFetcher::DhcpQuery::DhcpQuery() {}
+DhcpPacFileAdapterFetcher::DhcpQuery::DhcpQuery() = default;
 
 void DhcpPacFileAdapterFetcher::DhcpQuery::GetPacURLForAdapter(
     const std::string& adapter_name) {
@@ -126,7 +126,7 @@ std::string DhcpPacFileAdapterFetcher::DhcpQuery::ImplGetPacURLFromDhcp(
   return DhcpPacFileAdapterFetcher::GetPacURLFromDhcp(adapter_name);
 }
 
-DhcpPacFileAdapterFetcher::DhcpQuery::~DhcpQuery() {}
+DhcpPacFileAdapterFetcher::DhcpQuery::~DhcpQuery() = default;
 
 void DhcpPacFileAdapterFetcher::OnDhcpQueryDone(
     scoped_refptr<DhcpQuery> dhcp_query,

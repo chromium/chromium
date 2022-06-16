@@ -97,7 +97,7 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
   SSLPlatformKeyAndroid(const SSLPlatformKeyAndroid&) = delete;
   SSLPlatformKeyAndroid& operator=(const SSLPlatformKeyAndroid&) = delete;
 
-  ~SSLPlatformKeyAndroid() override {}
+  ~SSLPlatformKeyAndroid() override = default;
 
   std::string GetProviderName() override { return provider_name_; }
 

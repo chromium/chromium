@@ -80,7 +80,7 @@ class MockUDPSocketPosixSender : public UDPSocketPosixSender {
 #endif
 
  private:
-  ~MockUDPSocketPosixSender() override {}
+  ~MockUDPSocketPosixSender() override = default;
 };
 
 class MockUDPSocketPosix : public UDPSocketPosix {

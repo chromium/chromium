@@ -72,7 +72,7 @@ class OSXKnownRootHelper {
     std::sort(known_roots_.begin(), known_roots_.end());
   }
 
-  ~OSXKnownRootHelper() {}
+  ~OSXKnownRootHelper() = default;
 
   std::vector<SHA256HashValue> known_roots_;
 };

@@ -37,7 +37,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
   // initiated by the Java side).
   class Observer : public NetworkChangeNotifier::NetworkObserver {
    public:
-    ~Observer() override {}
+    ~Observer() override = default;
 
     // Updates the current connection type.
     virtual void OnConnectionTypeChanged() = 0;

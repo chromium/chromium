@@ -44,7 +44,7 @@ OSStatus TestRootCerts::FixupSecTrustRef(SecTrustRef trust_ref) const {
   return SecTrustSetAnchorCertificatesOnly(trust_ref, false);
 }
 
-TestRootCerts::~TestRootCerts() {}
+TestRootCerts::~TestRootCerts() = default;
 
 void TestRootCerts::Init() {
   temporary_roots_.reset(

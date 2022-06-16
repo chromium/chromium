@@ -65,7 +65,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
 
-  ~TransportConnectJobTest() override {}
+  ~TransportConnectJobTest() override = default;
 
   static scoped_refptr<TransportSocketParams> DefaultParams() {
     return base::MakeRefCounted<TransportSocketParams>(

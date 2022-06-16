@@ -17,7 +17,7 @@ class X509Certificate;
 // Interface for verifying Signed Certificate Timestamps over a certificate.
 class NET_EXPORT CTVerifier {
  public:
-  virtual ~CTVerifier() {}
+  virtual ~CTVerifier() = default;
 
   // Verifies SCTs embedded in the certificate itself, SCTs embedded in a
   // stapled OCSP response, and SCTs obtained via the

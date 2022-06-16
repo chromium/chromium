@@ -1055,9 +1055,9 @@ CertVerifyProcWin::ResultDebugData::Clone() {
   return std::make_unique<ResultDebugData>(*this);
 }
 
-CertVerifyProcWin::CertVerifyProcWin() {}
+CertVerifyProcWin::CertVerifyProcWin() = default;
 
-CertVerifyProcWin::~CertVerifyProcWin() {}
+CertVerifyProcWin::~CertVerifyProcWin() = default;
 
 bool CertVerifyProcWin::SupportsAdditionalTrustAnchors() const {
   return false;

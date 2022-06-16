@@ -70,7 +70,7 @@ class NetworkCostManagerEventSink
   NetworkCostManagerEventSink(INetworkCostManager* cost_manager,
                               const CostChangedCallback& callback)
       : network_cost_manager_(cost_manager), cost_changed_callback_(callback) {}
-  ~NetworkCostManagerEventSink() override {}
+  ~NetworkCostManagerEventSink() override = default;
 
   // INetworkCostManagerEvents members
   IFACEMETHODIMP CostChanged(_In_ DWORD cost,

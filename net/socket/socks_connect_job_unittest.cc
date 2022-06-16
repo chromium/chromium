@@ -66,7 +66,7 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
             NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
 
-  ~SOCKSConnectJobTest() override {}
+  ~SOCKSConnectJobTest() override = default;
 
   static scoped_refptr<SOCKSSocketParams> CreateSOCKSParams(
       SOCKSVersion socks_version,

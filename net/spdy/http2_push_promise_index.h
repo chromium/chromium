@@ -40,12 +40,12 @@ class NET_EXPORT Http2PushPromiseIndex {
   // claimed, and generating SpdySession weak pointer.
   class NET_EXPORT Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Return true if a pushed stream with |url| can be used for a request with
     // |key|.

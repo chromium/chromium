@@ -216,7 +216,7 @@ ProxyResolverMac::ProxyResolverMac(
     const scoped_refptr<PacFileData>& script_data)
     : script_data_(script_data) {}
 
-ProxyResolverMac::~ProxyResolverMac() {}
+ProxyResolverMac::~ProxyResolverMac() = default;
 
 // Gets the proxy information for a query URL from a PAC. Implementation
 // inspired by http://developer.apple.com/samplecode/CFProxySupportTool/

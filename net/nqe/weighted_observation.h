@@ -17,11 +17,7 @@ struct NET_EXPORT_PRIVATE WeightedObservation {
   WeightedObservation(const WeightedObservation& other)
       : WeightedObservation(other.value, other.weight) {}
 
-  WeightedObservation& operator=(const WeightedObservation& other) {
-    value = other.value;
-    weight = other.weight;
-    return *this;
-  }
+  WeightedObservation& operator=(const WeightedObservation& other) = default;
 
   // Required for sorting the samples in the ascending order of values.
   bool operator<(const WeightedObservation& other) const {

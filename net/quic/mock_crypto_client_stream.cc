@@ -81,7 +81,7 @@ MockCryptoClientStream::MockCryptoClientStream(
   crypto_negotiated_params_->cipher_suite = 1;
 }
 
-MockCryptoClientStream::~MockCryptoClientStream() {}
+MockCryptoClientStream::~MockCryptoClientStream() = default;
 
 void MockCryptoClientStream::OnHandshakeMessage(
     const CryptoHandshakeMessage& message) {

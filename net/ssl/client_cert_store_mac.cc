@@ -402,9 +402,9 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
 
 }  // namespace
 
-ClientCertStoreMac::ClientCertStoreMac() {}
+ClientCertStoreMac::ClientCertStoreMac() = default;
 
-ClientCertStoreMac::~ClientCertStoreMac() {}
+ClientCertStoreMac::~ClientCertStoreMac() = default;
 
 void ClientCertStoreMac::GetClientCerts(const SSLCertRequestInfo& request,
                                         ClientCertListCallback callback) {

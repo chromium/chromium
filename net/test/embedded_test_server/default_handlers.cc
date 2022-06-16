@@ -733,7 +733,7 @@ std::unique_ptr<HttpResponse> HandleHungAfterHeadersResponse(
 // A HttpResponse that is almost never ending (with an Exabyte content-length).
 class ExabyteResponse : public BasicHttpResponse {
  public:
-  ExabyteResponse() {}
+  ExabyteResponse() = default;
 
   ExabyteResponse(const ExabyteResponse&) = delete;
   ExabyteResponse& operator=(const ExabyteResponse&) = delete;

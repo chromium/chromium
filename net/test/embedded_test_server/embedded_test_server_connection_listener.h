@@ -37,9 +37,9 @@ class EmbeddedTestServerConnectionListener {
       std::unique_ptr<StreamSocket> socket);
 
  protected:
-  EmbeddedTestServerConnectionListener() {}
+  EmbeddedTestServerConnectionListener() = default;
 
-  virtual ~EmbeddedTestServerConnectionListener() {}
+  virtual ~EmbeddedTestServerConnectionListener() = default;
 };
 
 }  // namespace test_server

@@ -20,9 +20,9 @@ const int kQuicCryptoConfigVersion = 2;
 
 namespace net {
 
-QuicServerInfo::State::State() {}
+QuicServerInfo::State::State() = default;
 
-QuicServerInfo::State::~State() {}
+QuicServerInfo::State::~State() = default;
 
 void QuicServerInfo::State::Clear() {
   base::STLClearObject(&server_config);
@@ -36,7 +36,7 @@ void QuicServerInfo::State::Clear() {
 QuicServerInfo::QuicServerInfo(const quic::QuicServerId& server_id)
     : server_id_(server_id) {}
 
-QuicServerInfo::~QuicServerInfo() {}
+QuicServerInfo::~QuicServerInfo() = default;
 
 const QuicServerInfo::State& QuicServerInfo::state() const {
   return state_;

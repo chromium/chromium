@@ -63,7 +63,7 @@ perf_test::PerfResultReporter SetUpCookieMonsterReporter(
 
 class CookieMonsterTest : public testing::Test {
  public:
-  CookieMonsterTest() {}
+  CookieMonsterTest() = default;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{

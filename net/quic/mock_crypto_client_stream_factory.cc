@@ -12,7 +12,7 @@ using std::string;
 
 namespace net {
 
-MockCryptoClientStreamFactory::~MockCryptoClientStreamFactory() {}
+MockCryptoClientStreamFactory::~MockCryptoClientStreamFactory() = default;
 
 MockCryptoClientStreamFactory::MockCryptoClientStreamFactory()
     : config_(new quic::QuicConfig()) {}

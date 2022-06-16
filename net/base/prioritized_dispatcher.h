@@ -56,7 +56,7 @@ class NET_EXPORT_PRIVATE PrioritizedDispatcher {
   class Job {
    public:
     // Note: PrioritizedDispatcher will never delete a Job.
-    virtual ~Job() {}
+    virtual ~Job() = default;
     // Called when the dispatcher starts the job. Once the job finishes, it must
     // call OnJobFinished.
     virtual void Start() = 0;

@@ -190,7 +190,7 @@ class ReadErrorUploadDataStream : public UploadDataStream {
   ReadErrorUploadDataStream& operator=(const ReadErrorUploadDataStream&) =
       delete;
 
-  ~ReadErrorUploadDataStream() override {}
+  ~ReadErrorUploadDataStream() override = default;
 
  private:
   void CompleteRead() { UploadDataStream::OnReadCompleted(ERR_FAILED); }

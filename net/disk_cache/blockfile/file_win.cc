@@ -215,8 +215,7 @@ bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
   return AsyncWrite(buffer, buffer_len, offset, callback, completed);
 }
 
-File::~File() {
-}
+File::~File() = default;
 
 base::PlatformFile File::platform_file() const {
   DCHECK(init_);

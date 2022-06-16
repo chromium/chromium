@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE DnsTransaction {
 class DnsProbeRunner {
  public:
   // Destruction cancels the probes.
-  virtual ~DnsProbeRunner() {}
+  virtual ~DnsProbeRunner() = default;
 
   // Starts all applicable probes that are not already running. May be called
   // multiple times, but should not be called after destruction of the

@@ -181,7 +181,7 @@ PreloadDecoder::PreloadDecoder(const uint8_t* huffman_tree,
       bit_reader_(trie, trie_bits),
       trie_root_position_(trie_root_position) {}
 
-PreloadDecoder::~PreloadDecoder() {}
+PreloadDecoder::~PreloadDecoder() = default;
 
 bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
   size_t bit_offset = trie_root_position_;

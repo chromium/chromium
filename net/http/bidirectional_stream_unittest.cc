@@ -377,7 +377,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
 // A Timer that does not start a delayed task unless the timer is fired.
 class MockTimer : public base::MockOneShotTimer {
  public:
-  MockTimer() {}
+  MockTimer() = default;
 
   MockTimer(const MockTimer&) = delete;
   MockTimer& operator=(const MockTimer&) = delete;

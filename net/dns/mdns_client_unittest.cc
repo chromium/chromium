@@ -430,7 +430,7 @@ class MockClock : public base::Clock {
 
 class MockTimer : public base::MockOneShotTimer {
  public:
-  MockTimer() {}
+  MockTimer() = default;
 
   MockTimer(const MockTimer&) = delete;
   MockTimer& operator=(const MockTimer&) = delete;

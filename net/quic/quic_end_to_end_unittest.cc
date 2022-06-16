@@ -66,7 +66,7 @@ class TestTransactionFactory : public HttpTransactionFactory {
       : session_(std::make_unique<HttpNetworkSession>(session_params,
                                                       session_context)) {}
 
-  ~TestTransactionFactory() override {}
+  ~TestTransactionFactory() override = default;
 
   // HttpTransactionFactory methods
   int CreateTransaction(RequestPriority priority,

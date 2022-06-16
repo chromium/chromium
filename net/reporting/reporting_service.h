@@ -139,7 +139,7 @@ class NET_EXPORT ReportingService {
   virtual ReportingContext* GetContextForTesting() const = 0;
 
  protected:
-  ReportingService() {}
+  ReportingService() = default;
 };
 
 }  // namespace net

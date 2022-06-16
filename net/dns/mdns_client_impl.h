@@ -45,7 +45,7 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
   MDnsSocketFactoryImpl(const MDnsSocketFactoryImpl&) = delete;
   MDnsSocketFactoryImpl& operator=(const MDnsSocketFactoryImpl&) = delete;
 
-  ~MDnsSocketFactoryImpl() override {}
+  ~MDnsSocketFactoryImpl() override = default;
 
   void CreateSockets(
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     // Handle an mDNS packet buffered in |response| with a size of |bytes_read|.
     virtual void HandlePacket(DnsResponse* response, int bytes_read) = 0;
     virtual void OnConnectionError(int error) = 0;
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   explicit MDnsConnection(MDnsConnection::Delegate* delegate);

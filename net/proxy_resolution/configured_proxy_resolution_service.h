@@ -88,7 +88,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
       MODE_START_AFTER_ACTIVITY,
     };
 
-    virtual ~PacPollPolicy() {}
+    virtual ~PacPollPolicy() = default;
 
     // Decides the next poll delay. |current_delay| is the delay used
     // by the preceding poll, or a negative TimeDelta value if determining

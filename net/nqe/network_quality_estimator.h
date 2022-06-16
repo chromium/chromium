@@ -78,8 +78,8 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
                                   NetworkQualityObservationSource source) = 0;
 
    protected:
-    RTTObserver() {}
-    virtual ~RTTObserver() {}
+    RTTObserver() = default;
+    virtual ~RTTObserver() = default;
   };
 
   // Observes measurements of throughput.
@@ -96,8 +96,8 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
         NetworkQualityObservationSource source) = 0;
 
    protected:
-    ThroughputObserver() {}
-    virtual ~ThroughputObserver() {}
+    ThroughputObserver() = default;
+    virtual ~ThroughputObserver() = default;
   };
 
   // Creates a new NetworkQualityEstimator.

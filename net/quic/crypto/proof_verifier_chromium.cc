@@ -36,7 +36,7 @@ namespace net {
 
 ProofVerifyDetailsChromium::ProofVerifyDetailsChromium() = default;
 
-ProofVerifyDetailsChromium::~ProofVerifyDetailsChromium() {}
+ProofVerifyDetailsChromium::~ProofVerifyDetailsChromium() = default;
 
 ProofVerifyDetailsChromium::ProofVerifyDetailsChromium(
     const ProofVerifyDetailsChromium&) = default;
@@ -574,7 +574,7 @@ ProofVerifierChromium::ProofVerifierChromium(
   DCHECK(transport_security_state_);
 }
 
-ProofVerifierChromium::~ProofVerifierChromium() {}
+ProofVerifierChromium::~ProofVerifierChromium() = default;
 
 quic::QuicAsyncStatus ProofVerifierChromium::VerifyProof(
     const std::string& hostname,

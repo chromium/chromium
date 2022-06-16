@@ -48,7 +48,7 @@ NetLogWithSource::NetLogWithSource() {
   non_null_net_log_ = dummy.get();
 }
 
-NetLogWithSource::~NetLogWithSource() {}
+NetLogWithSource::~NetLogWithSource() = default;
 
 void NetLogWithSource::AddEntry(NetLogEventType type,
                                 NetLogEventPhase phase) const {

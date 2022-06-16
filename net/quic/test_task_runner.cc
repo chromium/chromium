@@ -25,7 +25,7 @@ base::TimeTicks NowInTicks(const quic::MockClock& clock) {
 
 TestTaskRunner::TestTaskRunner(quic::MockClock* clock) : clock_(clock) {}
 
-TestTaskRunner::~TestTaskRunner() {}
+TestTaskRunner::~TestTaskRunner() = default;
 
 bool TestTaskRunner::PostDelayedTask(const base::Location& from_here,
                                      base::OnceClosure task,

@@ -901,8 +901,7 @@ class WebSocketChannelEventInterfaceTest : public WebSocketChannelTest {
             std::make_unique<StrictMock<MockWebSocketEventInterface>>()) {
   }
 
-  ~WebSocketChannelEventInterfaceTest() override {
-  }
+  ~WebSocketChannelEventInterfaceTest() override = default;
 
   // Tests using this fixture must set expectations on the event_interface_ mock
   // object before calling CreateChannelAndConnect() or

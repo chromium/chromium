@@ -76,7 +76,7 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
   class ReadDelegate : public base::win::ObjectWatcher::Delegate {
    public:
     explicit ReadDelegate(Core* core) : core_(core) {}
-    ~ReadDelegate() override {}
+    ~ReadDelegate() override = default;
 
     // base::ObjectWatcher::Delegate methods:
     void OnObjectSignaled(HANDLE object) override;
@@ -88,7 +88,7 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
   class WriteDelegate : public base::win::ObjectWatcher::Delegate {
    public:
     explicit WriteDelegate(Core* core) : core_(core) {}
-    ~WriteDelegate() override {}
+    ~WriteDelegate() override = default;
 
     // base::ObjectWatcher::Delegate methods:
     void OnObjectSignaled(HANDLE object) override;

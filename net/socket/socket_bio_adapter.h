@@ -63,7 +63,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
     virtual void OnWriteReady() = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Creates a new SocketBIOAdapter for the specified socket. |socket| and

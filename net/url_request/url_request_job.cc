@@ -86,8 +86,7 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
 
 URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
 
-URLRequestJob::~URLRequestJob() {
-}
+URLRequestJob::~URLRequestJob() = default;
 
 void URLRequestJob::SetUpload(UploadDataStream* upload) {
 }

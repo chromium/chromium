@@ -29,7 +29,7 @@ class URLFetcherStringWriter;
 // bytes to the destination.
 class NET_EXPORT URLFetcherResponseWriter {
  public:
-  virtual ~URLFetcherResponseWriter() {}
+  virtual ~URLFetcherResponseWriter() = default;
 
   // Initializes this instance. Returns an error code defined in
   // //net/base/net_errors.h. If ERR_IO_PENDING is returned, |callback| will be

@@ -64,7 +64,7 @@ class NET_EXPORT HostResolver {
    public:
     // Destruction cancels the request if running asynchronously, causing the
     // callback to never be invoked.
-    virtual ~ResolveHostRequest() {}
+    virtual ~ResolveHostRequest() = default;
 
     // Starts the request and returns a network error code.
     //
@@ -164,7 +164,7 @@ class NET_EXPORT HostResolver {
   class ProbeRequest {
    public:
     // Destruction cancels the request and all probes.
-    virtual ~ProbeRequest() {}
+    virtual ~ProbeRequest() = default;
 
     // Activates async running of probes. Always returns ERR_IO_PENDING or an
     // error from activating probes. No callback as probes will never "complete"
@@ -312,7 +312,7 @@ class NET_EXPORT HostResolver {
     // multiple types for the same host.
     class Delegate {
      public:
-      virtual ~Delegate() {}
+      virtual ~Delegate() = default;
 
       virtual void OnAddressResult(MdnsListenerUpdateType update_type,
                                    DnsQueryType result_type,
@@ -331,7 +331,7 @@ class NET_EXPORT HostResolver {
     };
 
     // Destruction cancels the listening operation.
-    virtual ~MdnsListener() {}
+    virtual ~MdnsListener() = default;
 
     // Begins the listening operation, invoking |delegate| whenever results are
     // updated. |delegate| will no longer be called once the listening operation

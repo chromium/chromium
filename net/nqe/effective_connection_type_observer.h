@@ -33,8 +33,8 @@ class NET_EXPORT_PRIVATE EffectiveConnectionTypeObserver {
       EffectiveConnectionType type) = 0;
 
  protected:
-  EffectiveConnectionTypeObserver() {}
-  virtual ~EffectiveConnectionTypeObserver() {}
+  EffectiveConnectionTypeObserver() = default;
+  virtual ~EffectiveConnectionTypeObserver() = default;
 };
 
 }  // namespace net

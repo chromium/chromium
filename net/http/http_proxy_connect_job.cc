@@ -200,7 +200,7 @@ HttpProxyConnectJob::HttpProxyConnectJob(
                     host_resolver())
               : nullptr) {}
 
-HttpProxyConnectJob::~HttpProxyConnectJob() {}
+HttpProxyConnectJob::~HttpProxyConnectJob() = default;
 
 const RequestPriority HttpProxyConnectJob::kH2QuicTunnelPriority =
     DEFAULT_PRIORITY;

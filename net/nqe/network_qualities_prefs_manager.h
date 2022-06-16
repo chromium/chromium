@@ -32,7 +32,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   // Provides an interface that must be implemented by the embedder.
   class NET_EXPORT PrefDelegate {
    public:
-    virtual ~PrefDelegate() {}
+    virtual ~PrefDelegate() = default;
 
     // Sets the persistent pref to the given value.
     virtual void SetDictionaryValue(const base::Value::Dict& dict) = 0;

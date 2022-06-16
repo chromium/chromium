@@ -2005,7 +2005,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   DeleteSockCallback(const DeleteSockCallback&) = delete;
   DeleteSockCallback& operator=(const DeleteSockCallback&) = delete;
 
-  ~DeleteSockCallback() override {}
+  ~DeleteSockCallback() override = default;
 
   CompletionOnceCallback callback() {
     return base::BindOnce(&DeleteSockCallback::OnComplete,

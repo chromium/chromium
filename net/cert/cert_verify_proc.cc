@@ -554,7 +554,7 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
 }
 #endif
 
-CertVerifyProc::CertVerifyProc() {}
+CertVerifyProc::CertVerifyProc() = default;
 
 CertVerifyProc::~CertVerifyProc() = default;
 

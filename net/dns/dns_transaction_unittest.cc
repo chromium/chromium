@@ -867,7 +867,7 @@ class DnsTransactionTestBase : public testing::Test {
     DohJobInterceptor(const DohJobInterceptor&) = delete;
     DohJobInterceptor& operator=(const DohJobInterceptor&) = delete;
 
-    ~DohJobInterceptor() override {}
+    ~DohJobInterceptor() override = default;
 
     // URLRequestInterceptor implementation:
     std::unique_ptr<URLRequestJob> MaybeInterceptRequest(

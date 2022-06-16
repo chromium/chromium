@@ -31,7 +31,7 @@ class NET_EXPORT CertNetFetcher
  public:
   class Request {
    public:
-    virtual ~Request() {}
+    virtual ~Request() = default;
 
     // WaitForResult() can be called at most once.
     //
@@ -43,7 +43,7 @@ class NET_EXPORT CertNetFetcher
   // This value can be used in place of timeout or max size limits.
   enum { DEFAULT = -1 };
 
-  CertNetFetcher() {}
+  CertNetFetcher() = default;
 
   CertNetFetcher(const CertNetFetcher&) = delete;
   CertNetFetcher& operator=(const CertNetFetcher&) = delete;
@@ -83,7 +83,7 @@ class NET_EXPORT CertNetFetcher
       int max_response_bytes) = 0;
 
  protected:
-  virtual ~CertNetFetcher() {}
+  virtual ~CertNetFetcher() = default;
 
  private:
   friend class base::RefCountedThreadSafe<CertNetFetcher>;

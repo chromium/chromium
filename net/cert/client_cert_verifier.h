@@ -19,16 +19,16 @@ class NET_EXPORT ClientCertVerifier {
  public:
   class Request {
    public:
-    Request() {}
+    Request() = default;
 
     Request(const Request&) = delete;
     Request& operator=(const Request&) = delete;
 
     // Destruction of the Request cancels it.
-    virtual ~Request() {}
+    virtual ~Request() = default;
   };
 
-  virtual ~ClientCertVerifier() {}
+  virtual ~ClientCertVerifier() = default;
 
   // Verifies the given certificate as a client certificate.
   // Returns OK if successful or an error code upon failure.

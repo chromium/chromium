@@ -172,12 +172,12 @@ class RawHttpResponse : public HttpResponse {
 // destroyed.
 class HungResponse : public HttpResponse {
  public:
-  HungResponse() {}
+  HungResponse() = default;
 
   HungResponse(const HungResponse&) = delete;
   HungResponse& operator=(const HungResponse&) = delete;
 
-  ~HungResponse() override {}
+  ~HungResponse() override = default;
 
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 };

@@ -73,7 +73,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // Delegate handles protocol specific behavior of spdy stream.
   class NET_EXPORT_PRIVATE Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
     virtual NetLogSource source_dependency() const = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // SpdyStream constructor

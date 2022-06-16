@@ -10,7 +10,7 @@
 
 namespace net::ntlm {
 
-NtlmBufferReader::NtlmBufferReader() {}
+NtlmBufferReader::NtlmBufferReader() = default;
 
 NtlmBufferReader::NtlmBufferReader(base::span<const uint8_t> buffer)
     : buffer_(buffer) {}

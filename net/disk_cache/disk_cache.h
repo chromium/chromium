@@ -146,7 +146,7 @@ class NET_EXPORT Backend {
 
   class Iterator {
    public:
-    virtual ~Iterator() {}
+    virtual ~Iterator() = default;
 
     // OpenNextEntry returns a result with net_error() |net::OK| and provided
     // entry if there is an entry to enumerate which it can return immediately.
@@ -175,8 +175,8 @@ class NET_EXPORT Backend {
   // on what will succeed and what will fail.  In particular the blockfile
   // backend will leak entries closed after backend deletion, while others
   // handle it properly.
-  Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
-  virtual ~Backend() {}
+  explicit Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
+  virtual ~Backend() = default;
 
   // Returns the type of this cache.
   net::CacheType GetCacheType() const { return cache_type_; }
@@ -464,7 +464,7 @@ class NET_EXPORT Entry {
   virtual void SetLastUsedTimeForTest(base::Time time) = 0;
 
  protected:
-  virtual ~Entry() {}
+  virtual ~Entry() = default;
 };
 
 struct EntryDeleter {

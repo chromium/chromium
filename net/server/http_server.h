@@ -33,7 +33,7 @@ class HttpServer {
   // destroy the HttpServer in any of these callbacks.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void OnConnect(int connection_id) = 0;
     virtual void OnHttpRequest(int connection_id,

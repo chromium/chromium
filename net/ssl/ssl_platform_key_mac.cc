@@ -89,7 +89,7 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
   SSLPlatformKeySecKey(const SSLPlatformKeySecKey&) = delete;
   SSLPlatformKeySecKey& operator=(const SSLPlatformKeySecKey&) = delete;
 
-  ~SSLPlatformKeySecKey() override {}
+  ~SSLPlatformKeySecKey() override = default;
 
   std::string GetProviderName() override {
     // TODO(https://crbug.com/900721): Is there a more descriptive name to

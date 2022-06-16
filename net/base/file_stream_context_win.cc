@@ -52,8 +52,7 @@ FileStream::Context::Context(base::File file,
   }
 }
 
-FileStream::Context::~Context() {
-}
+FileStream::Context::~Context() = default;
 
 int FileStream::Context::Read(IOBuffer* buf,
                               int buf_len,

@@ -97,7 +97,7 @@ TransportClientSocketPool::Request::Request(
     DCHECK_EQ(priority_, MAXIMUM_PRIORITY);
 }
 
-TransportClientSocketPool::Request::~Request() {}
+TransportClientSocketPool::Request::~Request() = default;
 
 void TransportClientSocketPool::Request::AssignJob(ConnectJob* job) {
   DCHECK(job);

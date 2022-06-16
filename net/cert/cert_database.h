@@ -39,7 +39,7 @@ class NET_EXPORT CertDatabase {
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called whenever the Cert Database is known to have changed.
     // Typically, this will be in response to a CA certificate being added,
@@ -48,7 +48,7 @@ class NET_EXPORT CertDatabase {
     virtual void OnCertDBChanged() {}
 
    protected:
-    Observer() {}
+    Observer() = default;
   };
 
   // Returns the CertDatabase singleton.

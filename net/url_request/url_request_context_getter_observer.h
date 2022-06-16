@@ -14,7 +14,7 @@ class URLRequestContextGetter;
 // URLRequestContextGetter is shutting down.
 class NET_EXPORT URLRequestContextGetterObserver {
  public:
-  URLRequestContextGetterObserver() {}
+  URLRequestContextGetterObserver() = default;
 
   URLRequestContextGetterObserver(const URLRequestContextGetterObserver&) =
       delete;
@@ -28,7 +28,7 @@ class NET_EXPORT URLRequestContextGetterObserver {
   virtual void OnContextShuttingDown() = 0;
 
  protected:
-  virtual ~URLRequestContextGetterObserver() {}
+  virtual ~URLRequestContextGetterObserver() = default;
 };
 
 }  // namespace net

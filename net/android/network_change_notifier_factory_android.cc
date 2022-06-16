@@ -10,9 +10,11 @@
 
 namespace net {
 
-NetworkChangeNotifierFactoryAndroid::NetworkChangeNotifierFactoryAndroid() {}
+NetworkChangeNotifierFactoryAndroid::NetworkChangeNotifierFactoryAndroid() =
+    default;
 
-NetworkChangeNotifierFactoryAndroid::~NetworkChangeNotifierFactoryAndroid() {}
+NetworkChangeNotifierFactoryAndroid::~NetworkChangeNotifierFactoryAndroid() =
+    default;
 
 std::unique_ptr<NetworkChangeNotifier>
 NetworkChangeNotifierFactoryAndroid::CreateInstance() {

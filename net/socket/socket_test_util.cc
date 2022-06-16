@@ -177,7 +177,7 @@ void SocketDataProvider::DetachSocket() {
   socket_ = nullptr;
 }
 
-SocketDataProvider::SocketDataProvider() {}
+SocketDataProvider::SocketDataProvider() = default;
 
 SocketDataProvider::~SocketDataProvider() {
   if (socket_)
@@ -2022,7 +2022,7 @@ void MockTransportClientSocketPool::ReleaseSocket(
 WrappedStreamSocket::WrappedStreamSocket(
     std::unique_ptr<StreamSocket> transport)
     : transport_(std::move(transport)) {}
-WrappedStreamSocket::~WrappedStreamSocket() {}
+WrappedStreamSocket::~WrappedStreamSocket() = default;
 
 int WrappedStreamSocket::Bind(const net::IPEndPoint& local_addr) {
   NOTREACHED();

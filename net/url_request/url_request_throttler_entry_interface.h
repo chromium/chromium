@@ -19,7 +19,7 @@ class URLRequest;
 class NET_EXPORT URLRequestThrottlerEntryInterface
     : public base::RefCountedThreadSafe<URLRequestThrottlerEntryInterface> {
  public:
-  URLRequestThrottlerEntryInterface() {}
+  URLRequestThrottlerEntryInterface() = default;
 
   URLRequestThrottlerEntryInterface(const URLRequestThrottlerEntryInterface&) =
       delete;
@@ -61,7 +61,7 @@ class NET_EXPORT URLRequestThrottlerEntryInterface
 
  protected:
   friend class base::RefCountedThreadSafe<URLRequestThrottlerEntryInterface>;
-  virtual ~URLRequestThrottlerEntryInterface() {}
+  virtual ~URLRequestThrottlerEntryInterface() = default;
 
  private:
   friend class base::RefCounted<URLRequestThrottlerEntryInterface>;

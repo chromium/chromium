@@ -34,8 +34,7 @@ JavaNegotiateResultWrapper::JavaNegotiateResultWrapper(
     : callback_task_runner_(callback_task_runner),
       thread_safe_callback_(std::move(thread_safe_callback)) {}
 
-JavaNegotiateResultWrapper::~JavaNegotiateResultWrapper() {
-}
+JavaNegotiateResultWrapper::~JavaNegotiateResultWrapper() = default;
 
 void JavaNegotiateResultWrapper::SetResult(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
@@ -67,8 +66,7 @@ HttpAuthNegotiateAndroid::HttpAuthNegotiateAndroid(
       env, ConvertUTF8ToJavaString(env, GetAuthAndroidNegotiateAccountType())));
 }
 
-HttpAuthNegotiateAndroid::~HttpAuthNegotiateAndroid() {
-}
+HttpAuthNegotiateAndroid::~HttpAuthNegotiateAndroid() = default;
 
 bool HttpAuthNegotiateAndroid::Init(const NetLogWithSource& net_log) {
   return true;

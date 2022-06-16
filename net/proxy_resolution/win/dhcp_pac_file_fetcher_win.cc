@@ -598,6 +598,6 @@ bool DhcpPacFileFetcherWin::AdapterQuery::ImplGetCandidateAdapterNames(
                                                          info);
 }
 
-DhcpPacFileFetcherWin::AdapterQuery::~AdapterQuery() {}
+DhcpPacFileFetcherWin::AdapterQuery::~AdapterQuery() = default;
 
 }  // namespace net

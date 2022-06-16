@@ -24,7 +24,7 @@ PrioritizedTaskRunner::Job::Job(const base::Location& from_here,
       priority(priority),
       task_count(task_count) {}
 
-PrioritizedTaskRunner::Job::Job() {}
+PrioritizedTaskRunner::Job::Job() = default;
 
 PrioritizedTaskRunner::Job::~Job() = default;
 PrioritizedTaskRunner::Job::Job(Job&& other) = default;

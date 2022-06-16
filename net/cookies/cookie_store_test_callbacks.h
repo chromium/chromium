@@ -62,8 +62,7 @@ class CookieCallback {
 template <typename T>
 class ResultSavingCookieCallback : public CookieCallback {
  public:
-  ResultSavingCookieCallback() {
-  }
+  ResultSavingCookieCallback() = default;
   explicit ResultSavingCookieCallback(base::Thread* run_in_thread)
       : CookieCallback(run_in_thread) {
   }

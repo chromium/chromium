@@ -71,7 +71,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
     : IOBuffer(capacity), capacity_(capacity) {}
 
-QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() {}
+QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() = default;
 
 void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
                                                      size_t buf_len) {
@@ -92,7 +92,7 @@ QuicChromiumPacketWriter::QuicChromiumPacketWriter(
       &QuicChromiumPacketWriter::OnWriteComplete, weak_factory_.GetWeakPtr());
 }
 
-QuicChromiumPacketWriter::~QuicChromiumPacketWriter() {}
+QuicChromiumPacketWriter::~QuicChromiumPacketWriter() = default;
 
 void QuicChromiumPacketWriter::set_force_write_blocked(
     bool force_write_blocked) {

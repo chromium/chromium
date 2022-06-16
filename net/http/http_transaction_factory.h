@@ -19,7 +19,7 @@ class HttpTransaction;
 // An interface to a class that can create HttpTransaction objects.
 class NET_EXPORT HttpTransactionFactory {
  public:
-  virtual ~HttpTransactionFactory() {}
+  virtual ~HttpTransactionFactory() = default;
 
   // Creates a HttpTransaction object. On success, saves the new
   // transaction to |*trans| and returns OK.

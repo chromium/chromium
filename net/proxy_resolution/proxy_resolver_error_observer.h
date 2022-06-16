@@ -14,13 +14,13 @@ namespace net {
 // Interface for observing JavaScript error messages from PAC scripts.
 class NET_EXPORT_PRIVATE ProxyResolverErrorObserver {
  public:
-  ProxyResolverErrorObserver() {}
+  ProxyResolverErrorObserver() = default;
 
   ProxyResolverErrorObserver(const ProxyResolverErrorObserver&) = delete;
   ProxyResolverErrorObserver& operator=(const ProxyResolverErrorObserver&) =
       delete;
 
-  virtual ~ProxyResolverErrorObserver() {}
+  virtual ~ProxyResolverErrorObserver() = default;
 
   // Handler for when an error is encountered. |line_number| may be -1
   // if a line number is not applicable to this error. |error| is a message

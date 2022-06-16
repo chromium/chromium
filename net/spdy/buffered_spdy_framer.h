@@ -27,7 +27,7 @@ namespace net {
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
  public:
-  BufferedSpdyFramerVisitorInterface() {}
+  BufferedSpdyFramerVisitorInterface() = default;
 
   BufferedSpdyFramerVisitorInterface(
       const BufferedSpdyFramerVisitorInterface&) = delete;
@@ -123,7 +123,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
                               uint8_t frame_type) = 0;
 
  protected:
-  virtual ~BufferedSpdyFramerVisitorInterface() {}
+  virtual ~BufferedSpdyFramerVisitorInterface() = default;
 };
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramer

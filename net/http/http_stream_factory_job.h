@@ -65,7 +65,7 @@ class HttpStreamFactory::Job
   // Delegate to report Job's status to HttpStreamRequest and HttpStreamFactory.
   class NET_EXPORT_PRIVATE Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Invoked when |job| has an HttpStream ready.
     virtual void OnStreamReady(Job* job, const SSLConfig& used_ssl_config) = 0;

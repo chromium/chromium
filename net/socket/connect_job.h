@@ -127,12 +127,12 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // function doesn't own |job|.
   class NET_EXPORT_PRIVATE Delegate {
    public:
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Alerts the delegate that the connection completed. |job| must be
     // destroyed by the delegate. A std::unique_ptr<> isn't used because the

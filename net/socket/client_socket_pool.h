@@ -43,7 +43,7 @@ class StreamSocket;
 // socket pools to communicate with higher layer pools.
 class NET_EXPORT HigherLayeredPool {
  public:
-  virtual ~HigherLayeredPool() {}
+  virtual ~HigherLayeredPool() = default;
 
   // Instructs the HigherLayeredPool to close an idle connection. Return true if
   // one was closed.  Closing an idle connection will call into the lower layer
@@ -55,7 +55,7 @@ class NET_EXPORT HigherLayeredPool {
 // socket pools to communicate with lower layer pools.
 class NET_EXPORT LowerLayeredPool {
  public:
-  virtual ~LowerLayeredPool() {}
+  virtual ~LowerLayeredPool() = default;
 
   // Returns true if a there is currently a request blocked on the per-pool
   // (not per-host) max socket limit, either in this pool, or one that it is

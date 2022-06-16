@@ -38,8 +38,8 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
         const nqe::internal::CachedNetworkQuality& cached_network_quality) = 0;
 
    protected:
-    NetworkQualitiesCacheObserver() {}
-    virtual ~NetworkQualitiesCacheObserver() {}
+    NetworkQualitiesCacheObserver() = default;
+    virtual ~NetworkQualitiesCacheObserver() = default;
   };
 
   NetworkQualityStore();

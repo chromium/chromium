@@ -74,7 +74,7 @@ class NET_EXPORT MDnsTransaction {
       ResultCallback;
 
   // Destroying the transaction cancels it.
-  virtual ~MDnsTransaction() {}
+  virtual ~MDnsTransaction() = default;
 
   // Start the transaction. Return true on success. Cache-based transactions
   // will execute the callback synchronously.
@@ -106,7 +106,7 @@ class NET_EXPORT MDnsListener {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when a record is added, removed or updated.
     virtual void OnRecordUpdate(UpdateType update,
@@ -121,7 +121,7 @@ class NET_EXPORT MDnsListener {
   };
 
   // Destroying the listener stops listening.
-  virtual ~MDnsListener() {}
+  virtual ~MDnsListener() = default;
 
   // Start the listener. Return true on success.
   virtual bool Start() = 0;
@@ -140,7 +140,7 @@ class NET_EXPORT MDnsListener {
 // Creates bound datagram sockets ready to use by MDnsClient.
 class NET_EXPORT MDnsSocketFactory {
  public:
-  virtual ~MDnsSocketFactory() {}
+  virtual ~MDnsSocketFactory() = default;
   virtual void CreateSockets(
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) = 0;
 
@@ -154,7 +154,7 @@ class NET_EXPORT MDnsSocketFactory {
 // the client stops listening on the network and destroys the cache.
 class NET_EXPORT MDnsClient {
  public:
-  virtual ~MDnsClient() {}
+  virtual ~MDnsClient() = default;
 
   // Create listener object for RRType |rrtype| and name |name|.
   virtual std::unique_ptr<MDnsListener> CreateListener(

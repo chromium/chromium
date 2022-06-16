@@ -10,7 +10,7 @@ namespace net::test {
 MockQuicData::MockQuicData(quic::ParsedQuicVersion version)
     : printer_(version) {}
 
-MockQuicData::~MockQuicData() {}
+MockQuicData::~MockQuicData() = default;
 
 void MockQuicData::AddConnect(IoMode mode, int rv) {
   connect_ = std::make_unique<MockConnect>(mode, rv);

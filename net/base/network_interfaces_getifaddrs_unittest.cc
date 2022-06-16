@@ -19,7 +19,7 @@ namespace {
 
 class IPAttributesGetterTest : public internal::IPAttributesGetter {
  public:
-  IPAttributesGetterTest() {}
+  IPAttributesGetterTest() = default;
 
   // internal::IPAttributesGetter interface.
   bool IsInitialized() const override { return true; }

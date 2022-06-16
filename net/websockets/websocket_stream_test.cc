@@ -79,7 +79,7 @@ std::unique_ptr<SequencedSocketData> BuildNullSocketData() {
 class MockWeakTimer : public base::MockOneShotTimer,
                       public base::SupportsWeakPtr<MockWeakTimer> {
  public:
-  MockWeakTimer() {}
+  MockWeakTimer() = default;
 };
 
 const char kOrigin[] = "http://www.example.org";

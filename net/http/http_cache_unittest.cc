@@ -772,7 +772,7 @@ std::string GenerateCacheKey(const std::string& url) {
 using HttpCacheTest = TestWithTaskEnvironment;
 class HttpCacheIOCallbackTest : public HttpCacheTest {
  public:
-  HttpCacheIOCallbackTest() {}
+  HttpCacheIOCallbackTest() = default;
   ~HttpCacheIOCallbackTest() override = default;
 
   // HttpCache::ActiveEntry is private, doing this allows tests to use it
@@ -814,7 +814,7 @@ class HttpCacheIOCallbackTest : public HttpCacheTest {
 
 class HttpSplitCacheKeyTest : public HttpCacheTest {
  public:
-  HttpSplitCacheKeyTest() {}
+  HttpSplitCacheKeyTest() = default;
   ~HttpSplitCacheKeyTest() override = default;
 
   std::string ComputeCacheKey(const std::string& url_string) {
@@ -12754,7 +12754,7 @@ TEST_F(HttpCacheTest, GetResourceURLFromHttpCacheKey) {
 
 class TestCompletionCallbackForHttpCache : public TestCompletionCallbackBase {
  public:
-  TestCompletionCallbackForHttpCache() {}
+  TestCompletionCallbackForHttpCache() = default;
   ~TestCompletionCallbackForHttpCache() override = default;
 
   CompletionRepeatingCallback callback() {

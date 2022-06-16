@@ -10,9 +10,9 @@
 
 namespace net {
 
-SSLClientAuthCache::SSLClientAuthCache() {}
+SSLClientAuthCache::SSLClientAuthCache() = default;
 
-SSLClientAuthCache::~SSLClientAuthCache() {}
+SSLClientAuthCache::~SSLClientAuthCache() = default;
 
 bool SSLClientAuthCache::Lookup(const HostPortPair& server,
                                 scoped_refptr<X509Certificate>* certificate,

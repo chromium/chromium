@@ -33,7 +33,7 @@ PropertiesBasedQuicServerInfo::PropertiesBasedQuicServerInfo(
   DCHECK(http_server_properties_);
 }
 
-PropertiesBasedQuicServerInfo::~PropertiesBasedQuicServerInfo() {}
+PropertiesBasedQuicServerInfo::~PropertiesBasedQuicServerInfo() = default;
 
 bool PropertiesBasedQuicServerInfo::Load() {
   const string* data = http_server_properties_->GetQuicServerInfo(

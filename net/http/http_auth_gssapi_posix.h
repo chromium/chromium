@@ -38,7 +38,7 @@ NET_EXPORT_PRIVATE extern gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC;
 // that implementation.
 class NET_EXPORT_PRIVATE GSSAPILibrary {
  public:
-  virtual ~GSSAPILibrary() {}
+  virtual ~GSSAPILibrary() = default;
 
   // Initializes the library, including any necessary dynamic libraries.
   // This is done separately from construction (which happens at startup time)
