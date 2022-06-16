@@ -4,8 +4,8 @@
 
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"

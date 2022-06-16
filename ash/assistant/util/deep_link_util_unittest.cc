@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

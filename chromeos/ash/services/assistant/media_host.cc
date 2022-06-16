@@ -6,9 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/assistant/media_session/assistant_media_session.h"
-#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 

@@ -23,7 +23,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"

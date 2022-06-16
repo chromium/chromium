@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_settings.h"
 
 namespace chromeos {
 namespace assistant {

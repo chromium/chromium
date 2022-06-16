@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 

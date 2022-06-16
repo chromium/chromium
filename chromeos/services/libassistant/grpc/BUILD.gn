@@ -26,9 +26,9 @@ source_set("assistant_client") {
     "external_services:grpc_services_initializer",
     "external_services:grpc_services_observer",
     "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant_shared_headers",
-    "//chromeos/services/assistant/public/cpp",
   ]
 }
 

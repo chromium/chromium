@@ -14,7 +14,7 @@
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/shell.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"

@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "chromeos/ash/services/assistant/platform/audio_devices.h"
-#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

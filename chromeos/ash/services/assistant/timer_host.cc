@@ -5,8 +5,8 @@
 #include "chromeos/ash/services/assistant/timer_host.h"
 
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/service_context.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
 

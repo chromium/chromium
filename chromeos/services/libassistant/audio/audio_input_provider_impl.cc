@@ -5,7 +5,7 @@
 #include "chromeos/services/libassistant/audio/audio_input_provider_impl.h"
 
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace chromeos {
 namespace libassistant {

@@ -20,8 +20,8 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/rand_util.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/l10n/l10n_util.h"
 
