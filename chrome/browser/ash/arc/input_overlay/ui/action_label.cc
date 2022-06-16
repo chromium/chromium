@@ -243,11 +243,8 @@ bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
   DCHECK(parent());
   auto code = event.code();
   auto* parent_view = static_cast<ActionView*>(parent());
-  if (base::UTF8ToUTF16(GetDisplayText(code)) == GetText()) {
-    SetDisplayMode(DisplayMode::kEditedError);
-  } else {
+  if (base::UTF8ToUTF16(GetDisplayText(code)) != GetText())
     parent_view->OnKeyBindingChange(this, code);
-  }
   return true;
 }
 
