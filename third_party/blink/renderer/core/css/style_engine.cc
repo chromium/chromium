@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
@@ -3401,6 +3402,24 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
       layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
   }
   parent_for_detached_subtree_ = nullptr;
+}
+
+void StyleEngine::ReportUseOfLegacyLayoutWithContainerQueries() {
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled());
+
+  // Only report once.
+  if (legacy_layout_query_container_)
+    return;
+
+  legacy_layout_query_container_ = true;
+
+  ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kRendering,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      String::Format(
+          "Using container queries or units with printing, or in combination "
+          "with tables inside multicol will not work correctly."));
+  GetDocument().AddConsoleMessage(console_message);
 }
 
 }  // namespace blink

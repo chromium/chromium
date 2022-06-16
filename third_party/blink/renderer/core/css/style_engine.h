@@ -577,6 +577,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return active_user_style_sheets_;
   }
 
+  // Report a warning to the console that we are combining legacy layout and
+  // container queries.
+  void ReportUseOfLegacyLayoutWithContainerQueries();
+
  private:
   // FontSelectorClient implementation.
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
@@ -810,6 +814,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Set to true if we allow marking for reattachment from layout tree rebuild.
   // AllowMarkStyleDirtyFromRecalcScope.
   bool allow_mark_for_reattach_from_rebuild_layout_tree_{false};
+
+  // Set to true if we have detected an element which is a size query container
+  // rendered in legacy layout.
+  bool legacy_layout_query_container_{false};
 
   // See enum ViewportUnitFlag.
   unsigned viewport_unit_dirty_flags_{0};
