@@ -36,19 +36,25 @@ inline const std::string& GetString(
 // Writes system trace data (ftrace or JSON events) to the perfetto SMB. Makes
 // sure to split up the data into small chunks to avoid exhausting the SMB with
 // a large burst of data, as this would cause data loss.
-template <typename StringType>
+template <typename StringType, typename DataSourceType = void>
 class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
  public:
   enum class TraceType { kFTrace, kJson };
 
   static constexpr size_t kMaxBatchSizeBytes = 1 * 1024 * 1024;  // 1 mB.
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  SystemTraceWriter(uint32_t target_buffer, TraceType trace_type)
+      : trace_type_(trace_type),
+        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+#else
   SystemTraceWriter(PerfettoProducer* producer,
                     uint32_t target_buffer,
                     TraceType trace_type)
       : trace_writer_(producer->CreateTraceWriter(target_buffer)),
         trace_type_(trace_type),
         task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+#endif
 
   SystemTraceWriter(const SystemTraceWriter&) = delete;
   SystemTraceWriter& operator=(const SystemTraceWriter&) = delete;
@@ -90,9 +96,8 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
           internal::GetString(buffered_data_.front()).data() +
           current_data_pos_;
 
-      {
-        perfetto::TraceWriter::TracePacketHandle trace_packet_handle =
-            trace_writer_->NewTracePacket();
+      auto update_packet = [&](perfetto::TraceWriter::TracePacketHandle
+                                   trace_packet_handle) {
         trace_packet_handle->set_timestamp(
             TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
         trace_packet_handle->set_timestamp_clock_id(
@@ -113,8 +118,15 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
             break;
           }
         }
-      }
+      };
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      DataSourceType::Trace([&](typename DataSourceType::TraceContext ctx) {
+        update_packet(ctx.NewTracePacket());
+      });
+#else
+      update_packet(trace_writer_->NewTracePacket());
+#endif
       current_batch_size_ += data_size;
       current_data_pos_ += data_size;
       if (current_data_pos_ >=
@@ -129,15 +141,24 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
       current_batch_size_ = 0;
       auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
       auto task_runner = task_runner_;
-      trace_writer_->Flush([weak_ptr, task_runner]() {
+      auto flush_callback = [weak_ptr, task_runner]() {
         task_runner->PostTask(
             FROM_HERE,
             base::BindOnce(&SystemTraceWriter::WriteNextBatch, weak_ptr));
+      };
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      DataSourceType::Trace([&](typename DataSourceType::TraceContext ctx) {
+        ctx.Flush(flush_callback);
       });
+#else
+      trace_writer_->Flush(flush_callback);
+#endif
     }
   }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   std::unique_ptr<perfetto::TraceWriter> trace_writer_;
+#endif
   TraceType trace_type_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
