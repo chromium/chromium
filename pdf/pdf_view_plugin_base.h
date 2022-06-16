@@ -25,7 +25,6 @@
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 class WebInputEvent;
@@ -35,6 +34,7 @@ struct WebPrintPresetOptions;
 namespace gfx {
 class PointF;
 class Vector2d;
+class Vector2dF;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -197,10 +197,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
-  // Updates the scroll position, which is in CSS pixels relative to the
-  // top-left corner.
-  void UpdateScroll(const gfx::PointF& scroll_position);
-
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
   int GetDocumentPixelWidth() const;
@@ -290,6 +286,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const gfx::Size& document_size() const { return document_size_; }
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
+  const gfx::Size& plugin_dip_size() const { return plugin_dip_size_; }
+
   // TODO(crbug.com/1288847): Don't provide direct access to the origin of
   // `plugin_rect_`, as this exposes the unintuitive "paint offset."
   const gfx::Rect& plugin_rect() const { return plugin_rect_; }
@@ -301,6 +299,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
+  virtual bool needs_reraster() const = 0;
+
+  virtual base::i18n::TextDirection ui_direction() const = 0;
+
+  virtual bool received_viewport_message() const = 0;
+
+  double last_progress_sent() const { return last_progress_sent_; }
   void set_last_progress_sent(double progress) {
     last_progress_sent_ = progress;
   }
@@ -341,8 +346,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
   void HandleSetPresentationModeMessage(const base::Value::Dict& message);
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
-  void HandleStopScrollingMessage(const base::Value::Dict& /*message*/);
-  void HandleViewportMessage(const base::Value::Dict& message);
 
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.
@@ -410,29 +413,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Whether OnPaint() is in progress or not.
   bool in_paint_ = false;
-
-  // True if last bitmap was smaller than the screen.
-  bool last_bitmap_smaller_ = false;
-
-  // True if we request a new bitmap rendering.
-  bool needs_reraster_ = true;
-
-  // The UI direction.
-  base::i18n::TextDirection ui_direction_ = base::i18n::UNKNOWN_DIRECTION;
-
-  // The scroll offset for the last raster in CSS pixels, before any
-  // transformations are applied.
-  gfx::Vector2dF scroll_offset_at_last_raster_;
-
-  // If this is true, then don't scroll the plugin in response to calls to
-  // `UpdateScroll()`. This will be true when the extension page is in the
-  // process of zooming the plugin so that flickering doesn't occur while
-  // zooming.
-  bool stop_scrolling_ = false;
-
-  // Whether the plugin has received a viewport changed message. Nothing should
-  // be painted until this is received.
-  bool received_viewport_message_ = false;
 
   // The callback for receiving the password from the page.
   base::OnceCallback<void(const std::string&)> password_callback_;

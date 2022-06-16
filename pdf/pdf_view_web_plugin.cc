@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -94,6 +95,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -102,6 +104,9 @@
 namespace chrome_pdf {
 
 namespace {
+
+// The minimum zoom level allowed.
+constexpr double kMinZoom = 0.01;
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
@@ -120,6 +125,17 @@ constexpr int kCompletePDFIndex = -1;
 
 // A different negative value to differentiate itself from `kCompletePDFIndex`.
 constexpr int kInvalidPDFIndex = -2;
+
+// Enumeration of pinch states.
+// This should match PinchPhase enum in
+// chrome/browser/resources/pdf/viewport.ts.
+enum class PinchPhase {
+  kNone = 0,
+  kStart = 1,
+  kUpdateZoomOut = 2,
+  kUpdateZoomIn = 3,
+  kEnd = 4,
+};
 
 // Initialization performed per renderer process. Initialization may be
 // triggered from multiple plugin instances, but should only execute once.
@@ -434,6 +450,26 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   // Convert back to CSS pixels.
   scroll_position.Scale(1.0f / device_scale());
   UpdateScroll(scroll_position);
+}
+
+void PdfViewWebPlugin::UpdateScroll(const gfx::PointF& scroll_position) {
+  if (stop_scrolling_)
+    return;
+
+  float max_x = std::max(document_size().width() * static_cast<float>(zoom()) -
+                             plugin_dip_size().width(),
+                         0.0f);
+  float max_y = std::max(document_size().height() * static_cast<float>(zoom()) -
+                             plugin_dip_size().height(),
+                         0.0f);
+
+  gfx::PointF scaled_scroll_position(
+      base::clamp(scroll_position.x(), 0.0f, max_x),
+      base::clamp(scroll_position.y(), 0.0f, max_y));
+  scaled_scroll_position.Scale(device_scale());
+
+  engine_->ScrolledToXPosition(scaled_scroll_position.x());
+  engine_->ScrolledToYPosition(scaled_scroll_position.y());
 }
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
@@ -1044,6 +1080,134 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
     InvalidatePluginContainer();
 }
 
+void PdfViewWebPlugin::HandleStopScrollingMessage(
+    const base::Value::Dict& /*message*/) {
+  stop_scrolling_ = true;
+}
+
+void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
+  const base::Value::Dict* layout_options_value =
+      message.FindDict("layoutOptions");
+  if (layout_options_value) {
+    DocumentLayout::Options layout_options;
+    layout_options.FromValue(*layout_options_value);
+
+    ui_direction_ = layout_options.direction();
+
+    // TODO(crbug.com/1013800): Eliminate need to get document size from here.
+    set_document_size(engine_->ApplyDocumentLayout(layout_options));
+
+    OnGeometryChanged(zoom(), device_scale());
+    if (!document_size().IsEmpty())
+      paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
+
+    // Send 100% loading progress only after initial layout negotiated.
+    if (last_progress_sent() < 100 &&
+        document_load_state() == DocumentLoadState::kComplete) {
+      SendLoadingProgress(/*percentage=*/100);
+    }
+  }
+
+  gfx::Vector2dF scroll_offset(*message.FindDouble("xOffset"),
+                               *message.FindDouble("yOffset"));
+  double new_zoom = *message.FindDouble("zoom");
+  const PinchPhase pinch_phase =
+      static_cast<PinchPhase>(*message.FindInt("pinchPhase"));
+
+  received_viewport_message_ = true;
+  stop_scrolling_ = false;
+  const double zoom_ratio = new_zoom / zoom();
+
+  if (pinch_phase == PinchPhase::kStart) {
+    scroll_offset_at_last_raster_ = scroll_offset;
+    last_bitmap_smaller_ = false;
+    needs_reraster_ = false;
+    return;
+  }
+
+  // When zooming in, we set a layer transform to avoid unneeded rerasters.
+  // Also, if we're zooming out and the last time we rerastered was when
+  // we were even further zoomed out (i.e. we pinch zoomed in and are now
+  // pinch zooming back out in the same gesture), we update the layer
+  // transform instead of rerastering.
+  if (pinch_phase == PinchPhase::kUpdateZoomIn ||
+      (pinch_phase == PinchPhase::kUpdateZoomOut && zoom_ratio > 1.0)) {
+    // Get the coordinates of the center of the pinch gesture.
+    const double pinch_x = *message.FindDouble("pinchX");
+    const double pinch_y = *message.FindDouble("pinchY");
+    gfx::Point pinch_center(pinch_x, pinch_y);
+
+    // Get the pinch vector which represents the panning caused by the change in
+    // pinch center between the start and the end of the gesture.
+    const double pinch_vector_x = *message.FindDouble("pinchVectorX");
+    const double pinch_vector_y = *message.FindDouble("pinchVectorY");
+    gfx::Vector2d pinch_vector =
+        gfx::Vector2d(pinch_vector_x * zoom_ratio, pinch_vector_y * zoom_ratio);
+
+    gfx::Vector2d scroll_delta;
+    // If the rendered document doesn't fill the display area we will
+    // use `paint_offset` to anchor the paint vertically into the same place.
+    // We use the scroll bars instead of the pinch vector to get the actual
+    // position on screen of the paint.
+    gfx::Vector2d paint_offset;
+
+    if (plugin_rect().width() > GetDocumentPixelWidth() * zoom_ratio) {
+      // We want to keep the paint in the middle but it must stay in the same
+      // position relative to the scroll bars.
+      paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
+      scroll_delta = gfx::Vector2d(
+          0,
+          (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
+
+      pinch_vector = gfx::Vector2d();
+      last_bitmap_smaller_ = true;
+    } else if (last_bitmap_smaller_) {
+      // When the document width covers the display area's width, we will anchor
+      // the scroll bars disregarding where the actual pinch certer is.
+      pinch_center = gfx::Point((plugin_rect().width() / device_scale()) / 2,
+                                (plugin_rect().height() / device_scale()) / 2);
+      const double zoom_when_doc_covers_plugin_width =
+          zoom() * plugin_rect().width() / GetDocumentPixelWidth();
+      paint_offset = gfx::Vector2d(
+          (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
+          (1 - zoom_ratio) * pinch_center.y());
+      pinch_vector = gfx::Vector2d();
+      scroll_delta = gfx::Vector2d(
+          (scroll_offset.x() - scroll_offset_at_last_raster_.x() * zoom_ratio),
+          (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
+    }
+
+    paint_manager().SetTransform(zoom_ratio, pinch_center,
+                                 pinch_vector + paint_offset + scroll_delta,
+                                 true);
+    needs_reraster_ = false;
+    return;
+  }
+
+  if (pinch_phase == PinchPhase::kUpdateZoomOut ||
+      pinch_phase == PinchPhase::kEnd) {
+    // We reraster on pinch zoom out in order to solve the invalid regions
+    // that appear after zooming out.
+    // On pinch end the scale is again 1.f and we request a reraster
+    // in the new position.
+    paint_manager().ClearTransform();
+    last_bitmap_smaller_ = false;
+    needs_reraster_ = true;
+
+    // If we're rerastering due to zooming out, we need to update the scroll
+    // offset for the last raster, in case the user continues the gesture by
+    // zooming in.
+    scroll_offset_at_last_raster_ = scroll_offset;
+  }
+
+  // Bound the input parameters.
+  new_zoom = std::max(kMinZoom, new_zoom);
+  DCHECK(message.FindBool("userInitiated").has_value());
+
+  SetZoom(new_zoom);
+  UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
+}
+
 void PdfViewWebPlugin::UpdateScaledValues() {
   total_translate_ = snapshot_translate_;
 
@@ -1178,6 +1342,21 @@ void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
 // TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
 bool PdfViewWebPlugin::full_frame() const {
   return full_frame_;
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+bool PdfViewWebPlugin::needs_reraster() const {
+  return needs_reraster_;
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+base::i18n::TextDirection PdfViewWebPlugin::ui_direction() const {
+  return ui_direction_;
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+bool PdfViewWebPlugin::received_viewport_message() const {
+  return received_viewport_message_;
 }
 
 void PdfViewWebPlugin::OnViewportChanged(

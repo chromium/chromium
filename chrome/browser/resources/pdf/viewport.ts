@@ -1485,7 +1485,7 @@ export class Viewport implements ViewportInterface {
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/pdf_view_plugin_base.cc.
+ * This should match PinchPhase enum in pdf/pdf_view_web_plugin.cc.
  */
 export enum PinchPhase {
   NONE = 0,

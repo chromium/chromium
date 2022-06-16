@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -361,6 +362,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                               int right_height) override;
   void UserMetricsRecordAction(const std::string& action) override;
   bool full_frame() const override;
+  bool needs_reraster() const override;
+  base::i18n::TextDirection ui_direction() const override;
+  bool received_viewport_message() const override;
 
  private:
   // Metadata about an available preview page.
@@ -380,6 +384,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Sends whether to do smooth scrolling.
   void SendSetSmoothScrolling();
 
+  // Updates the scroll position, which is in CSS pixels relative to the
+  // top-left corner.
+  void UpdateScroll(const gfx::PointF& scroll_position);
+
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);
 
@@ -393,6 +401,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Handles message for setting the background color.
   void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
+
+  // Handles message to disable scrolling.
+  void HandleStopScrollingMessage(const base::Value::Dict& message);
+
+  // Handles message for viewport changes.
+  void HandleViewportMessage(const base::Value::Dict& message);
 
   // Recalculates values that depend on scale factors.
   void UpdateScaledValues();
@@ -508,6 +522,29 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The background color of the PDF viewer.
   SkColor background_color_ = SK_ColorTRANSPARENT;
+
+  // True if last bitmap was smaller than the screen.
+  bool last_bitmap_smaller_ = false;
+
+  // True if we request a new bitmap rendering.
+  bool needs_reraster_ = true;
+
+  // The UI direction.
+  base::i18n::TextDirection ui_direction_ = base::i18n::UNKNOWN_DIRECTION;
+
+  // The scroll offset for the last raster in CSS pixels, before any
+  // transformations are applied.
+  gfx::Vector2dF scroll_offset_at_last_raster_;
+
+  // If this is true, then don't scroll the plugin in response to calls to
+  // `UpdateScroll()`. This will be true when the extension page is in the
+  // process of zooming the plugin so that flickering doesn't occur while
+  // zooming.
+  bool stop_scrolling_ = false;
+
+  // Whether the plugin has received a viewport changed message. Nothing should
+  // be painted until this is received.
+  bool received_viewport_message_ = false;
 
   // If true, the render frame has been notified that we're starting a network
   // request so that it can start the throbber. It will be notified again once
