@@ -1524,6 +1524,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   // ChromeClient::tabsToLinks which is part of the glue code.
   web_view_impl->SetTabsToLinks(prefs.tabs_to_links);
 
+  DCHECK(!(web_view_impl->IsFencedFrameRoot() &&
+           prefs.allow_running_insecure_content));
   settings->SetAllowRunningOfInsecureContent(
       prefs.allow_running_insecure_content);
   settings->SetDisableReadingFromCanvas(prefs.disable_reading_from_canvas);
@@ -3389,6 +3391,9 @@ void WebViewImpl::UpdateWebPreferences(
     web_preferences_.shrinks_viewport_contents_to_fit = false;
     web_preferences_.main_frame_resizes_are_orientation_changes = false;
     web_preferences_.text_autosizing_enabled = false;
+
+    // Insecure content should not be allowed in a fenced frame.
+    web_preferences_.allow_running_insecure_content = false;
 
 #if BUILDFLAG(IS_ANDROID)
     // Reusing the global for unowned main frame is only used for
