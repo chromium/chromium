@@ -62,7 +62,7 @@ void WebApprovalsManager::RequestLocalApproval(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetProfileKey());
   WebsiteParentApproval::RequestLocalApproval(
-      web_contents, url,
+      web_contents, NormalizeUrl(url),
       base::BindOnce(&WebApprovalsManager::OnLocalApprovalRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), settings_service, url));
   std::move(callback).Run(true);
@@ -72,12 +72,8 @@ void WebApprovalsManager::RequestLocalApproval(
 void WebApprovalsManager::RequestRemoteApproval(
     const GURL& url,
     ApprovalRequestInitiatedCallback callback) {
-  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
-  if (!effective_url.is_valid())
-    effective_url = url;
   AddRemoteApprovalRequestInternal(
-      base::BindRepeating(CreateURLAccessRequest,
-                          url_matcher::util::Normalize(effective_url)),
+      base::BindRepeating(CreateURLAccessRequest, NormalizeUrl(url)),
       std::move(callback), 0);
 }
 
@@ -102,6 +98,13 @@ size_t WebApprovalsManager::FindEnabledRemoteApprovalRequestCreator(
       return i;
   }
   return remote_approval_request_creators_.size();
+}
+
+GURL WebApprovalsManager::NormalizeUrl(const GURL& url) {
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
+  if (!effective_url.is_valid())
+    effective_url = url;
+  return url_matcher::util::Normalize(effective_url);
 }
 
 void WebApprovalsManager::AddRemoteApprovalRequestInternal(

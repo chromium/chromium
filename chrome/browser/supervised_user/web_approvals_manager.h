@@ -73,6 +73,10 @@ class WebApprovalsManager {
 
   size_t FindEnabledRemoteApprovalRequestCreator(size_t start) const;
 
+  // Strips user-specific tokens in a URL to generalize it for use in the
+  // parent approval request.
+  GURL NormalizeUrl(const GURL& url);
+
   void AddRemoteApprovalRequestInternal(
       const CreateRemoteApprovalRequestCallback& create_request,
       ApprovalRequestInitiatedCallback callback,
