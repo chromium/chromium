@@ -2630,9 +2630,14 @@ void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior,
       animations.insert(animation);
     }
     animations.RemoveAll(previous_animations);
-    GetPopupData()->setAnimationFinishedListener(
-        MakeGarbageCollected<PopupAnimationFinishedEventListener>(
-            this, std::move(animations)));
+    if (animations.IsEmpty()) {
+      // All animations were pre-existing. Just finish now.
+      FinishPopupHideIfNeeded(forcing_level);
+    } else {
+      GetPopupData()->setAnimationFinishedListener(
+          MakeGarbageCollected<PopupAnimationFinishedEventListener>(
+              this, std::move(animations)));
+    }
   }
 }
 

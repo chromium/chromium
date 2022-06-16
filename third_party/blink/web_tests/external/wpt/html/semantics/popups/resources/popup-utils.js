@@ -20,3 +20,6 @@ async function sendEscape() {
   await new test_driver.send_keys(document.body,'\uE00C'); // Escape
   await waitForRender();
 }
+function isElementVisible(el) {
+  return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+}

@@ -4,6 +4,7 @@
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/popup-utils.js"></script>
 
 <div id=popups>
   <div popup id=boolean>Popup</div>
@@ -21,7 +22,7 @@
 
 <script>
   function popupVisible(popup, isPopup) {
-    const isVisible = !!(popup.offsetWidth || popup.offsetHeight || popup.getClientRects().length);
+    const isVisible = isElementVisible(popup);
     if (isVisible) {
       assert_not_equals(window.getComputedStyle(popup).display,'none');
       assert_equals(isPopup,popup.matches(':top-layer'));

@@ -4,6 +4,7 @@
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/popup-utils.js"></script>
 
 <script>
   function ensureShadowDom(host) {
@@ -35,9 +36,6 @@
     ensureShadowDom(testRoot);
     return findPopups(testRoot);
   }
-  function popupVisible(popup) {
-    return !!(popup.offsetWidth || popup.offsetHeight || popup.getClientRects().length);
-  }
   function showPopup(testId,popupNum) {
     getPopupReferences(testId)[popupNum].showPopup();
   }
@@ -59,7 +57,7 @@
     const popup = getPopupReferences('test1')[0];
     popup.showPopup();
     assert_true(popup.matches(':top-layer'));
-    assert_true(popupVisible(popup));
+    assert_true(isElementVisible(popup));
   }, "Popups located inside shadow DOM can still be shown");
 </script>
 
@@ -85,12 +83,12 @@
     const [popup1,popup2] = getPopupReferences('test2');
     popup1.showPopup();
     assert_true(popup1.matches(':top-layer'));
-    assert_true(popupVisible(popup1));
+    assert_true(isElementVisible(popup1));
     popup2.showPopup();
     assert_false(popup1.matches(':top-layer'), 'popup1 open'); // P1 was closed by P2
-    assert_false(popupVisible(popup1), 'popup1 visible');
+    assert_false(isElementVisible(popup1), 'popup1 visible');
     assert_true(popup2.matches(':top-layer'), 'popup2 open'); // P2 is open
-    assert_true(popupVisible(popup2), 'popup2 visible');
+    assert_true(isElementVisible(popup2), 'popup2 visible');
   }, "anchor references do not cross shadow boundaries");
 </script>
 
@@ -114,14 +112,14 @@
     const [popup1,popup2] = getPopupReferences('test3');
     popup1.showPopup();
     assert_true(popup1.matches(':top-layer'));
-    assert_true(popupVisible(popup1));
+    assert_true(isElementVisible(popup1));
     // Showing popup2 should not close popup1, since it is a flat
     // tree ancestor of popup2's anchor button.
     popup2.showPopup();
     assert_true(popup2.matches(':top-layer'));
-    assert_true(popupVisible(popup2));
+    assert_true(isElementVisible(popup2));
     assert_true(popup1.matches(':top-layer'));
-    assert_true(popupVisible(popup1));
+    assert_true(isElementVisible(popup1));
     popup1.hidePopup();
     assert_false(popup2.matches(':top-layer'));
     assert_false(popup1.matches(':top-layer'));
@@ -151,12 +149,12 @@
     popup2.showPopup();
     // Both 1 and 2 should be open at this point.
     assert_true(popup1.matches(':top-layer'), 'popup1 not open');
-    assert_true(popupVisible(popup1));
+    assert_true(isElementVisible(popup1));
     assert_true(popup2.matches(':top-layer'), 'popup2 not open');
-    assert_true(popupVisible(popup2));
+    assert_true(isElementVisible(popup2));
     // This should hide both of them.
     popup1.hidePopup();
     assert_false(popup2.matches(':top-layer'));
-    assert_false(popupVisible(popup2));
+    assert_false(isElementVisible(popup2));
   }, "The popup stack is preserved across shadow-inclusive ancestors");
 </script>
