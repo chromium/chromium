@@ -4,7 +4,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromecast/chromecast.gni")
 
-assert(is_chromeos_ash || is_chromecast)
+assert(is_chromeos_ash || is_castos)
 
 chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
 

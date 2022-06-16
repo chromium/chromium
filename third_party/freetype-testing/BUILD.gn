@@ -128,7 +128,7 @@ source_set("freetype_fuzzer_sources") {
     "$_src/visitors/glyphvisitor.h",
   ]
 
-  if (is_linux || is_chromeos || is_chromecast) {
+  if (is_linux || is_chromeos || is_cast_android) {
     # These sources depend on FreeType's symbol FT_Get_BDF_Charset_ID which is only built on this
     # configuration/platforms, see FreeType's BUILD.gn. In turn they will only be needed by the BDF fuzzer that we built only on this configuration/platforms.
     sources += [
@@ -282,7 +282,7 @@ freetype_fuzzer_test("type1_render") {
   dict = "src/fuzzing/settings/oss-fuzz/type1.dict"
 }
 
-if (is_linux || is_chromeos || is_chromecast) {
+if (is_linux || is_chromeos || is_cast_android) {
   # FreeType's symbol FT_Get_BDF_Charset_ID is only built on this
   # configuration, see FreeType's BUILD.gn. So build fuzzers that depend on
   # this symbol only on this configuration, too.

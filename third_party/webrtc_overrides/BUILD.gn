@@ -117,7 +117,7 @@ webrtc_public_deps = [
 if (defined(rtc_exclude_system_time) && rtc_exclude_system_time) {
   webrtc_public_deps += [ ":system_time" ]
 }
-if (is_chromecast) {
+if (is_castos || is_cast_android) {
   webrtc_public_deps += [
     "//third_party/webrtc/api:network_state_predictor_api",
     "//third_party/webrtc/api/audio:audio_frame_api",
@@ -132,7 +132,7 @@ if (is_chromecast) {
     "//third_party/webrtc/modules/video_coding:codec_globals_headers",
   ]
 }
-if (is_chromecast || is_nacl) {
+if (is_castos || is_cast_android || is_nacl) {
   # For chromecast and NaCL, provide a default field trial implementation.
   webrtc_public_deps += [ "//third_party/webrtc/system_wrappers:field_trial" ]
 } else {

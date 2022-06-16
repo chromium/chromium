@@ -9,7 +9,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 # let's not pull it in twice.
 # Chromecast doesn't ship expat as a system library.
 # Libfuzzer and AFL need to build library from sources.
-if ((is_linux || is_chromeos) && !is_chromecast && !use_fuzzing_engine) {
+if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
   config("expat_config") {
     libs = [ "expat" ]
   }
