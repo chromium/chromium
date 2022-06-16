@@ -83,12 +83,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   class ContentLayer;
   friend class ContentLayer;
 
-  // Populate the `old_layer_` entries for all layers in `this`, pointing them
-  // to values in `old_tree`. This is a very naive algorithm and often creates
-  // large diffs.
-  // TODO(https://crbug.com/1313999): Find a better V2 matching algorithm.
-  void MatchLayersToOldTreeV1(CARendererLayerTree* old_tree);
-
   class RootLayer {
    public:
     RootLayer(CARendererLayerTree* tree);
@@ -115,7 +109,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // properties appropriately. Re-use the CALayers from |old_layer| if
     // possible. If re-using a CALayer from |old_layer|, reset its |ca_layer|
     // to nil, so that its destructor will not remove an active CALayer.
-    void CommitToCA(CALayer* superlayer, const gfx::Size& pixel_size);
+    void CommitToCA(CALayer* superlayer,
+                    RootLayer* old_layer,
+                    const gfx::Size& pixel_size);
 
     // Return true if the CALayer tree is just a video layer on a black or
     // transparent background, false otherwise.
@@ -126,11 +122,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     std::list<ClipAndSortingLayer> clip_and_sorting_layers_;
     base::scoped_nsobject<CALayer> ca_layer_;
-
-    // Weak pointer to the layer in the old CARendererLayerTree that will be
-    // reused by this layer, and the weak factory used to make that pointer.
-    base::WeakPtr<RootLayer> old_layer_;
-    base::WeakPtrFactory<RootLayer> weak_factory_for_new_layer_{this};
   };
   class ClipAndSortingLayer {
    public:
@@ -150,7 +141,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     ~ClipAndSortingLayer();
     void AddContentLayer(CARendererLayerTree* tree,
                          const CARendererLayerParams& params);
-    void CommitToCA();
+    void CommitToCA(ClipAndSortingLayer* old_layer);
     CARendererLayerTree* tree() { return parent_layer_->tree_; }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
@@ -164,11 +155,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     bool is_singleton_sorting_context_ = false;
     base::scoped_nsobject<CALayer> clipping_ca_layer_;
     base::scoped_nsobject<CALayer> rounded_corner_ca_layer_;
-
-    // Weak pointer to the layer in the old CARendererLayerTree that will be
-    // reused by this layer, and the weak factory used to make that pointer.
-    base::WeakPtr<ClipAndSortingLayer> old_layer_;
-    base::WeakPtrFactory<ClipAndSortingLayer> weak_factory_for_new_layer_{this};
   };
   class TransformLayer {
    public:
@@ -184,7 +170,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     ~TransformLayer();
     void AddContentLayer(CARendererLayerTree* tree,
                          const CARendererLayerParams& params);
-    void CommitToCA();
+    void CommitToCA(TransformLayer* old_layer);
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
@@ -193,11 +179,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     gfx::Transform transform_;
     base::scoped_nsobject<CALayer> ca_layer_;
-
-    // Weak pointer to the layer in the old CARendererLayerTree that will be
-    // reused by this layer, and the weak factory used to make that pointer.
-    base::WeakPtr<TransformLayer> old_layer_;
-    base::WeakPtrFactory<TransformLayer> weak_factory_for_new_layer_{this};
   };
   class ContentLayer {
    public:
@@ -217,9 +198,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     ContentLayer(const ContentLayer&) = delete;
     ContentLayer& operator=(const ContentLayer&) = delete;
 
-    // See the behavior of RootLayer for the effects of these functions.
+    // See the behavior of RootLayer for the effects of these functions on the
+    // |ca_layer| member and |old_layer| argument.
     ~ContentLayer();
-    void CommitToCA();
+    void CommitToCA(ContentLayer* old_layer);
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
 
     // Parent layer that owns `this`.
@@ -262,11 +244,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // Layer used to colorize content when it updates, if borders are
     // enabled.
     base::scoped_nsobject<CALayer> update_indicator_layer_;
-
-    // Weak pointer to the layer in the old CARendererLayerTree that will be
-    // reused by this layer, and the weak factory used to make that pointer.
-    base::WeakPtr<ContentLayer> old_layer_;
-    base::WeakPtrFactory<ContentLayer> weak_factory_for_new_layer_{this};
   };
 
   RootLayer root_layer_{this};
