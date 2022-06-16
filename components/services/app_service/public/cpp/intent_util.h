@@ -60,6 +60,11 @@ apps::IntentPtr MakeShareIntent(const std::string& text,
 apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,
                                const std::string& mime_type);
 
+// Create an intent struct from activity and start type.
+apps::IntentPtr MakeIntentForActivity(const std::string& activity,
+                                      const std::string& start_type,
+                                      const std::string& category);
+
 // TODO(crbug.com/1253250): Remove below functions after migrating to non-mojo
 // AppService.
 

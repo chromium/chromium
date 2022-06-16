@@ -137,6 +137,37 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   const std::string& activity_name = "com.android.vending.AssetBrowserActivity";
   const std::string& start_type = "initialStart";
   const std::string& category = "android.intent.category.LAUNCHER";
+  apps::IntentPtr intent =
+      apps_util::MakeIntentForActivity(activity_name, start_type, category);
+  arc::mojom::IntentInfoPtr arc_intent =
+      apps_util::ConvertAppServiceToArcIntent(intent);
+
+  ASSERT_TRUE(intent);
+  ASSERT_TRUE(arc_intent);
+
+  // TODO(crbug.com/1253250): Modify CreateLaunchIntent to use the non mojom
+  // intent to verity intent_str, done in CreateIntentForActivityMojom.
+
+  EXPECT_EQ(arc::kIntentActionMain, arc_intent->action);
+
+  base::flat_map<std::string, std::string> extras;
+  extras.insert(std::make_pair("org.chromium.arc.start_type", start_type));
+  EXPECT_TRUE(arc_intent->extras.has_value());
+  EXPECT_EQ(extras, arc_intent->extras);
+
+  EXPECT_TRUE(arc_intent->categories.has_value());
+  EXPECT_EQ(category, arc_intent->categories.value()[0]);
+
+  arc_intent->extras = apps_util::CreateArcIntentExtras(intent);
+  EXPECT_TRUE(intent->activity_name.has_value());
+  EXPECT_EQ(activity_name, intent->activity_name.value());
+}
+
+// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
+TEST_F(IntentUtilsTest, CreateIntentForActivityMojom) {
+  const std::string& activity_name = "com.android.vending.AssetBrowserActivity";
+  const std::string& start_type = "initialStart";
+  const std::string& category = "android.intent.category.LAUNCHER";
   apps::mojom::IntentPtr intent =
       apps_util::CreateIntentForActivity(activity_name, start_type, category);
   arc::mojom::IntentInfoPtr arc_intent =

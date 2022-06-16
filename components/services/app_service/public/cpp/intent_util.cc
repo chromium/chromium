@@ -148,6 +148,16 @@ apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,
   return intent;
 }
 
+apps::IntentPtr MakeIntentForActivity(const std::string& activity,
+                                      const std::string& start_type,
+                                      const std::string& category) {
+  auto intent = std::make_unique<apps::Intent>(kIntentActionMain);
+  intent->activity_name = activity;
+  intent->start_type = start_type;
+  intent->categories = std::vector<std::string>{category};
+  return intent;
+}
+
 apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
   auto intent = apps::mojom::Intent::New();
   intent->action = kIntentActionView;

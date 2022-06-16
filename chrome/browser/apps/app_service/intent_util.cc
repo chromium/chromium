@@ -628,6 +628,27 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
 }
 
 base::flat_map<std::string, std::string> CreateArcIntentExtras(
+    const apps::IntentPtr& intent) {
+  auto extras = base::flat_map<std::string, std::string>();
+  if (intent->share_text.has_value()) {
+    // Slice off the "S." prefix for the key.
+    extras.insert(std::make_pair(kIntentExtraText + kIntentPrefixLength,
+                                 intent->share_text.value()));
+  }
+  if (intent->share_title.has_value()) {
+    // Slice off the "S." prefix for the key.
+    extras.insert(std::make_pair(kIntentExtraSubject + kIntentPrefixLength,
+                                 intent->share_title.value()));
+  }
+  if (intent->start_type.has_value()) {
+    // Slice off the "S." prefix for the key.
+    extras.insert(std::make_pair(kIntentExtraStartType + kIntentPrefixLength,
+                                 intent->start_type.value()));
+  }
+  return extras;
+}
+
+base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent) {
   auto extras = base::flat_map<std::string, std::string>();
   if (intent->share_text.has_value()) {
@@ -646,6 +667,41 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
                                  intent->start_type.value()));
   }
   return extras;
+}
+
+arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
+    const apps::IntentPtr& intent) {
+  arc::mojom::IntentInfoPtr arc_intent;
+  if (!intent->url.has_value() && !intent->share_text.has_value() &&
+      !intent->activity_name.has_value()) {
+    return arc_intent;
+  }
+
+  arc_intent = arc::mojom::IntentInfo::New();
+  arc_intent->action = ConvertAppServiceToArcIntentAction(intent->action);
+  if (intent->url.has_value()) {
+    arc_intent->data = intent->url->spec();
+  }
+  if (intent->share_text.has_value() || intent->share_title.has_value() ||
+      intent->start_type.has_value()) {
+    arc_intent->extras = CreateArcIntentExtras(intent);
+  }
+  if (!intent->categories.empty()) {
+    arc_intent->categories = intent->categories;
+  }
+  if (intent->data.has_value()) {
+    arc_intent->data = intent->data;
+  }
+  if (intent->mime_type.has_value()) {
+    arc_intent->type = intent->mime_type;
+  }
+  if (intent->ui_bypassed.has_value()) {
+    arc_intent->ui_bypassed = intent->ui_bypassed.value();
+  }
+  if (!intent->extras.empty()) {
+    arc_intent->extras = intent->extras;
+  }
+  return arc_intent;
 }
 
 arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
