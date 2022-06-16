@@ -125,8 +125,7 @@ There are two mechanisms for compressing Chrome l10n files.
      stored as vectors.
    * For images used in native code: [VectorIcon](https://chromium.googlesource.com/chromium/src/+/HEAD/components/vector_icons/README.md).
    * For Android drawables: [VectorDrawable](https://developer.android.com/guide/topics/graphics/vector-drawable-resources).
-     * Convert from `.svg` online using https://inloop.github.io/svg2android/.
-     * Optimize vector drawables with [avocado](https://bugs.chromium.org/p/chromium/issues/detail?id=982302).
+     * Convert from `.svg` following [this guide](https://developer.android.com/studio/write/vector-asset-studio.html#svg).
      * (Googlers): Find most icons as .svg at [go/icons](https://goto.google.com/icons).
  * Would **lossy** compression make sense (often true for large images)?
    * If so, [use lossy webp](https://codereview.chromium.org/2615243002/).
