@@ -265,6 +265,8 @@ ts_files = [
   "file_manager/state/store.ts",
   "file_manager/state/state.ts",
   "file_manager/state/reducers.ts",
+  "file_manager/state/actions.ts",
+  "file_manager/state/file_key.ts",
 ]
 
 # Generated files are built from the repository and the final JS files is only
