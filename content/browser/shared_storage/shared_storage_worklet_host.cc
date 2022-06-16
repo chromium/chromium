@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
-#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 
+#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -31,18 +32,20 @@ using GetResult = storage::SharedStorageManager::GetResult;
 SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
     bool script_execution_succeeded,
     const url::Origin& shared_storage_origin,
-    const std::vector<GURL>& urls,
+    std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+        urls_with_metadata,
     uint32_t index,
     double budget_remaining,
     bool& failed_due_to_no_budget) {
   DCHECK(!failed_due_to_no_budget);
-  DCHECK_GT(urls.size(), 0u);
-  DCHECK_LT(index, urls.size());
+  DCHECK_GT(urls_with_metadata.size(), 0u);
+  DCHECK_LT(index, urls_with_metadata.size());
   DCHECK(script_execution_succeeded || index == 0);
 
   double budget_to_charge =
-      (urls.size() > 1u)
-          ? (script_execution_succeeded ? std::log2(urls.size()) : 1.0)
+      (urls_with_metadata.size() > 1u)
+          ? (script_execution_succeeded ? std::log2(urls_with_metadata.size())
+                                        : 1.0)
           : 0.0;
 
   // If we are running out of budget, consider this mapping to be failed. Use
@@ -53,13 +56,13 @@ SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
     budget_to_charge = 0.0;
   }
 
-  GURL mapped_url = urls[index];
+  GURL mapped_url = urls_with_metadata[index]->url;
 
-  return SharedStorageURNMappingResult{
-      .mapped_url = mapped_url,
-      .metadata =
-          SharedStorageBudgetMetadata{.origin = shared_storage_origin,
-                                      .budget_to_charge = budget_to_charge}};
+  return SharedStorageURNMappingResult(
+      mapped_url,
+      SharedStorageBudgetMetadata{.origin = shared_storage_origin,
+                                  .budget_to_charge = budget_to_charge},
+      urls_with_metadata[index]->reporting_metadata);
 }
 
 }  // namespace
@@ -92,13 +95,13 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   auto it = unresolved_urns_.begin();
   while (it != unresolved_urns_.end()) {
     const GURL& urn_uuid = it->first;
-    const std::vector<GURL>& urls = it->second;
 
     bool failed_due_to_no_budget = false;
     page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
         urn_uuid,
         CalculateSharedStorageURNMappingResult(
-            /*script_execution_succeeded=*/false, shared_storage_origin_, urls,
+            /*script_execution_succeeded=*/false, shared_storage_origin_,
+            std::move(it->second),
             /*index=*/0, /*budget_remaining=*/0.0, failed_due_to_no_budget));
 
     it = unresolved_urns_.erase(it);
@@ -169,7 +172,8 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
 
 void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
     const std::string& name,
-    const std::vector<GURL>& urls,
+    std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+        urls_with_metadata,
     const std::vector<uint8_t>& serialized_data,
     blink::mojom::SharedStorageDocumentService::
         RunURLSelectionOperationOnWorkletCallback callback) {
@@ -190,7 +194,12 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
 
   GURL urn_uuid = page_->fenced_frame_urls_map().GeneratePendingMappedURN();
 
-  bool emplace_succeeded = unresolved_urns_.emplace(urn_uuid, urls).second;
+  std::vector<GURL> urls;
+  for (const auto& url_with_metadata : urls_with_metadata)
+    urls.emplace_back(url_with_metadata->url);
+
+  bool emplace_succeeded =
+      unresolved_urns_.emplace(urn_uuid, std::move(urls_with_metadata)).second;
 
   // Assert that `urn_uuid` was not in the set before.
   DCHECK(emplace_succeeded);
@@ -537,15 +546,17 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   auto it = unresolved_urns_.find(urn_uuid);
   DCHECK(it != unresolved_urns_.end());
 
-  std::vector<GURL> urls = std::move(it->second);
+  std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+      urls_with_metadata = std::move(it->second);
   unresolved_urns_.erase(it);
 
   if (page_) {
     bool failed_due_to_no_budget = false;
     SharedStorageURNMappingResult mapping_result =
         CalculateSharedStorageURNMappingResult(
-            script_execution_succeeded, shared_storage_origin_, urls, index,
-            budget_result.bits, failed_due_to_no_budget);
+            script_execution_succeeded, shared_storage_origin_,
+            std::move(urls_with_metadata), index, budget_result.bits,
+            failed_due_to_no_budget);
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());

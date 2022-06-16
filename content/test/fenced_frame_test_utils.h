@@ -24,7 +24,9 @@ void SimulateSharedStorageURNMappingComplete(
     const GURL& urn_uuid,
     const GURL& mapped_url,
     const url::Origin& shared_storage_origin,
-    double budget_to_charge);
+    double budget_to_charge,
+    const std::string& report_event = "",
+    const GURL& report_url = GURL());
 
 // Tests can use this class to observe and check the URL mapping result.
 class TestFencedFrameURLMappingResultObserver

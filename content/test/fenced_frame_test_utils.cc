@@ -12,6 +12,8 @@
 
 namespace content {
 
+using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
+
 FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node) {
   if (blink::features::kFencedFramesImplementationTypeParam.Get() ==
       blink::features::FencedFramesImplementationType::kShadowDOM) {
@@ -28,13 +30,18 @@ void SimulateSharedStorageURNMappingComplete(
     const GURL& urn_uuid,
     const GURL& mapped_url,
     const url::Origin& shared_storage_origin,
-    double budget_to_charge) {
-  FencedFrameURLMapping::SharedStorageBudgetMetadata metadata = {
+    double budget_to_charge,
+    const std::string& report_event,
+    const GURL& report_url) {
+  FencedFrameURLMapping::SharedStorageBudgetMetadata budget_metadata = {
       .origin = shared_storage_origin, .budget_to_charge = budget_to_charge};
 
+  SharedStorageReportingMap reporting_map(
+      {std::make_pair(report_event, report_url)});
+
   fenced_frame_url_mapping.OnSharedStorageURNMappingResultDetermined(
-      urn_uuid, FencedFrameURLMapping::SharedStorageURNMappingResult{
-                    .mapped_url = mapped_url, .metadata = metadata});
+      urn_uuid, FencedFrameURLMapping::SharedStorageURNMappingResult(
+                    mapped_url, budget_metadata, reporting_map));
 }
 
 TestFencedFrameURLMappingResultObserver::

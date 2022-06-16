@@ -21,6 +21,7 @@ class ScriptState;
 class SharedStorageWorklet;
 class SharedStorageSetMethodOptions;
 class SharedStorageRunOperationMethodOptions;
+class SharedStorageUrlWithMetadata;
 
 class MODULES_EXPORT SharedStorage final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -53,11 +54,11 @@ class MODULES_EXPORT SharedStorage final : public ScriptWrappable {
 
   ScriptPromise selectURL(ScriptState*,
                           const String& name,
-                          const Vector<String>& urls,
+                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
                           ExceptionState&);
   ScriptPromise selectURL(ScriptState*,
                           const String& name,
-                          const Vector<String>& urls,
+                          HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
                           const SharedStorageRunOperationMethodOptions* options,
                           ExceptionState&);
 

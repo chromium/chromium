@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_set_method_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -94,6 +96,31 @@ void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
   }
 
   resolver->Resolve();
+}
+
+// TODO(crbug.com/1335504): Consider moving this function to
+// third_party/blink/common/fenced_frame/fenced_frame_utils.cc.
+bool IsValidFencedFrameReportingURL(const KURL& url) {
+  if (!url.IsValid())
+    return false;
+  return url.ProtocolIs("https");
+}
+
+bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
+  DCHECK(out);
+
+  if (!val->IsString())
+    return false;
+
+  v8::Local<v8::String> str = v8::Local<v8::String>::Cast(val);
+  wtf_size_t length = str->Utf8Length(isolate);
+  LChar* buffer;
+  *out = String::CreateUninitialized(length, buffer);
+
+  str->WriteUtf8(isolate, reinterpret_cast<char*>(buffer), length, nullptr,
+                 v8::String::NO_NULL_TERMINATION);
+
+  return true;
 }
 
 }  // namespace
@@ -251,10 +278,11 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SharedStorage::selectURL(ScriptState* script_state,
-                                       const String& name,
-                                       const Vector<String>& urls,
-                                       ExceptionState& exception_state) {
+ScriptPromise SharedStorage::selectURL(
+    ScriptState* script_state,
+    const String& name,
+    HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+    ExceptionState& exception_state) {
   return selectURL(script_state, name, urls,
                    SharedStorageRunOperationMethodOptions::Create(),
                    exception_state);
@@ -263,7 +291,7 @@ ScriptPromise SharedStorage::selectURL(ScriptState* script_state,
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
-    const Vector<String>& urls,
+    HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -297,19 +325,94 @@ ScriptPromise SharedStorage::selectURL(
     return promise;
   }
 
-  Vector<KURL> converted_urls;
+  v8::Local<v8::Context> v8_context =
+      script_state->GetIsolate()->GetCurrentContext();
+
+  Vector<mojom::blink::SharedStorageUrlWithMetadataPtr> converted_urls;
   converted_urls.ReserveInitialCapacity(urls.size());
 
-  for (const String& url : urls) {
-    KURL converted_url = execution_context->CompleteURL(url);
+  wtf_size_t index = 0;
+  for (const auto& url_with_metadata : urls) {
+    DCHECK(url_with_metadata->hasUrl());
+
+    KURL converted_url =
+        execution_context->CompleteURL(url_with_metadata->url());
+
+    // TODO(crbug.com/1318970): Use `IsValidFencedFrameURL()` or equivalent
+    // logic here.
     if (!converted_url.IsValid()) {
       resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kDataError,
-          "The url \"" + url + "\" is invalid."));
+          "The url \"" + url_with_metadata->url() + "\" is invalid."));
       return promise;
     }
 
-    converted_urls.push_back(converted_url);
+    HashMap<String, KURL> converted_reporting_metadata;
+
+    if (url_with_metadata->hasReportingMetadata()) {
+      DCHECK(url_with_metadata->reportingMetadata().V8Value()->IsObject());
+
+      v8::Local<v8::Object> obj =
+          url_with_metadata->reportingMetadata().V8Value().As<v8::Object>();
+
+      v8::MaybeLocal<v8::Array> maybe_fields =
+          obj->GetOwnPropertyNames(v8_context);
+      v8::Local<v8::Array> fields;
+      if (!maybe_fields.ToLocal(&fields) || fields->Length() == 0) {
+        resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+            script_state->GetIsolate(), DOMExceptionCode::kDataError,
+            "selectURL could not get reporting_metadata object attributes"));
+        return promise;
+      }
+
+      converted_reporting_metadata.ReserveCapacityForSize(fields->Length());
+
+      for (wtf_size_t idx = 0; idx < fields->Length(); idx++) {
+        v8::Local<v8::Value> report_event =
+            fields->Get(v8_context, idx).ToLocalChecked();
+        String report_event_string;
+        if (!StringFromV8(script_state->GetIsolate(), report_event,
+                          &report_event_string)) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kDataError,
+              "selectURL reporting_metadata object attributes must be "
+              "strings"));
+          return promise;
+        }
+
+        v8::Local<v8::Value> report_url =
+            obj->Get(v8_context, report_event).ToLocalChecked();
+        String report_url_string;
+        if (!StringFromV8(script_state->GetIsolate(), report_url,
+                          &report_url_string)) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kDataError,
+              "selectURL reporting_metadata object attributes must be "
+              "strings"));
+          return promise;
+        }
+
+        KURL converted_report_url =
+            execution_context->CompleteURL(report_url_string);
+
+        if (!IsValidFencedFrameReportingURL(converted_report_url)) {
+          resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+              script_state->GetIsolate(), DOMExceptionCode::kDataError,
+              "The metadata for the url at index " +
+                  String::NumberToStringECMAScript(index) +
+                  " has an invalid or non-HTTPS report_url parameter \"" +
+                  report_url_string + "\"."));
+          return promise;
+        }
+
+        converted_reporting_metadata.Set(report_event_string,
+                                         converted_report_url);
+      }
+    }
+
+    converted_urls.push_back(mojom::blink::SharedStorageUrlWithMetadata::New(
+        converted_url, std::move(converted_reporting_metadata)));
+    index++;
   }
 
   Vector<uint8_t> serialized_data;

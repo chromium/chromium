@@ -4,6 +4,7 @@
 
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 
+#include "base/strings/strcat.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
@@ -13,8 +14,21 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "url/url_constants.h"
 
 namespace content {
+
+namespace {
+
+// TODO(crbug.com/1335504): Consider moving this function to
+// third_party/blink/common/fenced_frame/fenced_frame_utils.cc.
+bool IsValidFencedFrameReportingURL(const GURL& url) {
+  if (!url.is_valid())
+    return false;
+  return url.SchemeIs(url::kHttpsScheme);
+}
+
+}  // namespace
 
 const char kSharedStorageDisabledMessage[] = "sharedStorage is disabled";
 
@@ -86,7 +100,8 @@ void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
 
 void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     const std::string& name,
-    const std::vector<GURL>& urls,
+    std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
+        urls_with_metadata,
     const std::vector<uint8_t>& serialized_data,
     RunURLSelectionOperationOnWorkletCallback callback) {
   if (render_frame_host().IsNestedWithinFencedFrame()) {
@@ -97,12 +112,36 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     return;
   }
 
-  if (!blink::IsValidSharedStorageURLsArrayLength(urls.size())) {
+  if (!blink::IsValidSharedStorageURLsArrayLength(urls_with_metadata.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(
         "Attempted to execute RunURLSelectionOperationOnWorklet with invalid "
         "URLs array length.");
     return;
+  }
+
+  for (const auto& url_with_metadata : urls_with_metadata) {
+    // TODO(crbug.com/1318970): Use `blink::IsValidFencedFrameURL()` here.
+    if (!url_with_metadata->url.is_valid()) {
+      // This could indicate a compromised renderer, since the URLs were already
+      // validated in the renderer.
+      receiver_.ReportBadMessage(
+          base::StrCat({"Invalid fenced frame URL '",
+                        url_with_metadata->url.possibly_invalid_spec(), "'"}));
+      return;
+    }
+
+    for (const auto& metadata_pair : url_with_metadata->reporting_metadata) {
+      if (!IsValidFencedFrameReportingURL(metadata_pair.second)) {
+        // This could indicate a compromised renderer, since the reporting URLs
+        // were already validated in the renderer.
+        receiver_.ReportBadMessage(
+            base::StrCat({"Invalid reporting URL '",
+                          metadata_pair.second.possibly_invalid_spec(),
+                          "' for '", metadata_pair.first, "'"}));
+        return;
+      }
+    }
   }
 
   if (!IsSharedStorageAllowed()) {
@@ -113,7 +152,8 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
   }
 
   GetSharedStorageWorkletHost()->RunURLSelectionOperationOnWorklet(
-      name, urls, serialized_data, std::move(callback));
+      name, std::move(urls_with_metadata), serialized_data,
+      std::move(callback));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageSet(
