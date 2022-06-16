@@ -28,6 +28,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -333,7 +334,12 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
             std::move(test_worklet_host_manager));
 
     host_resolver()->AddRule("*", "127.0.0.1");
+    FinishSetup();
+  }
 
+  // Virtual so that derived classes can delay starting the server, and/or add
+  // other set up steps.
+  virtual void FinishSetup() {
     https_server()->AddDefaultHandlers(GetTestDataFilePath());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     SetupCrossSiteRedirector(https_server());
@@ -2567,5 +2573,82 @@ INSTANTIATE_TEST_SUITE_P(
         blink::features::FencedFramesImplementationType::kShadowDOM,
         blink::features::FencedFramesImplementationType::kMPArch),
     &SharedStorageFencedFrameInteractionBrowserTest::DescribeParams);
+
+class SharedStorageReportEventBrowserTest
+    : public SharedStorageFencedFrameInteractionBrowserTest {
+  void FinishSetup() override {
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SharedStorageReportEventBrowserTest,
+                       SelectURL_ReportEvent) {
+  net::test_server::ControllableHttpResponse response1(
+      https_server(), "/fenced_frames/report1.html");
+  net::test_server::ControllableHttpResponse response2(
+      https_server(), "/fenced_frames/report2.html");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  url::Origin shared_storage_origin = url::Origin::Create(main_url);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  GURL urn_uuid = GURL(EvalJs(shell(), R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"},
+          {url: "fenced_frames/title1.html",
+          reporting_metadata: {'click': "fenced_frames/report1.html",
+              'mouse interaction': "fenced_frames/report2.html"}}],
+          {data: {'mockResult':1}});
+    )")
+                           .ExtractString());
+
+  // There are three "worklet operations": one `addModule()` and two
+  // `selectURL()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponsesCount(2);
+
+  FrameTreeNode* fenced_frame_root_node = CreateFencedFrame(urn_uuid);
+
+  std::string event_data1 = "this is a click";
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace("window.fence.reportEvent({"
+                       "  eventType: 'click',"
+                       "  eventData: $1,"
+                       "  destination: ['shared-storage-select-url']});",
+                       event_data1)));
+
+  response1.WaitForRequest();
+  EXPECT_EQ(response1.http_request()->content, event_data1);
+
+  std::string event_data2 = "this is a mouse interaction";
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_root_node,
+             JsReplace("window.fence.reportEvent({"
+                       "  eventType: 'mouse interaction',"
+                       "  eventData: $1,"
+                       "  destination: ['shared-storage-select-url']});",
+                       event_data2)));
+
+  response2.WaitForRequest();
+  EXPECT_EQ(response2.http_request()->content, event_data2);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStorageReportEventBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch),
+    &SharedStorageReportEventBrowserTest::DescribeParams);
 
 }  // namespace content
