@@ -180,7 +180,7 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   // Applies the metadata to already recorded samples in all collections.
   void ApplyMetadataToPastSamples(base::TimeTicks period_start,
                                   base::TimeTicks period_end,
-                                  int64_t name_hash,
+                                  uint64_t name_hash,
                                   absl::optional<int64_t> key,
                                   int64_t value,
                                   absl::optional<PlatformThreadId> thread_id);
@@ -239,7 +239,7 @@ class StackSamplingProfiler::SamplingThread : public Thread {
   void ApplyMetadataToPastSamplesTask(
       base::TimeTicks period_start,
       base::TimeTicks period_end,
-      int64_t name_hash,
+      uint64_t name_hash,
       absl::optional<int64_t> key,
       int64_t value,
       absl::optional<PlatformThreadId> thread_id);
@@ -407,7 +407,7 @@ void StackSamplingProfiler::SamplingThread::AddAuxUnwinder(
 void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
-    int64_t name_hash,
+    uint64_t name_hash,
     absl::optional<int64_t> key,
     int64_t value,
     absl::optional<PlatformThreadId> thread_id) {
@@ -576,7 +576,7 @@ void StackSamplingProfiler::SamplingThread::AddAuxUnwinderTask(
 void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
-    int64_t name_hash,
+    uint64_t name_hash,
     absl::optional<int64_t> key,
     int64_t value,
     absl::optional<PlatformThreadId> thread_id) {
@@ -902,7 +902,7 @@ void StackSamplingProfiler::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
 void StackSamplingProfiler::ApplyMetadataToPastSamples(
     base::TimeTicks period_start,
     base::TimeTicks period_end,
-    int64_t name_hash,
+    uint64_t name_hash,
     absl::optional<int64_t> key,
     int64_t value,
     absl::optional<PlatformThreadId> thread_id) {

@@ -35,7 +35,7 @@ NO_SANITIZE("address")
 const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
     const uint8_t* original_stack_bottom,
     const uintptr_t* original_stack_top,
-    int platform_stack_alignment,
+    size_t platform_stack_alignment,
     uintptr_t* stack_buffer_bottom) {
   const uint8_t* byte_src = original_stack_bottom;
   // The first address in the stack with pointer alignment. Pointer-aligned

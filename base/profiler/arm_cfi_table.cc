@@ -42,10 +42,11 @@ struct CFIDataRow {
   uint16_t cfi_data;
 
   // Helper functions to convert the to ArmCFITable::FrameEntry
-  size_t ra_offset() const {
-    return (cfi_data & kReturnAddressMask) << kReturnAddressShift;
+  uint16_t ra_offset() const {
+    return static_cast<uint16_t>((cfi_data & kReturnAddressMask)
+                                 << kReturnAddressShift);
   }
-  size_t cfa_offset() const { return cfi_data & kCFAMask; }
+  uint16_t cfa_offset() const { return cfi_data & kCFAMask; }
 };
 
 static_assert(sizeof(CFIDataRow) == 4,
@@ -100,7 +101,7 @@ absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
   --func_it;
 
   uint32_t func_start_addr = *func_it;
-  size_t row_num = func_it - function_addresses_.begin();
+  size_t row_num = static_cast<size_t>(func_it - function_addresses_.begin());
   uint16_t index = entry_data_indices_[row_num];
   DCHECK_LE(func_start_addr, address);
 
@@ -138,12 +139,12 @@ absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
     if (func_start_addr + entry.addr_offset > address)
       break;
 
-    uint32_t cfa_offset = entry.cfa_offset();
+    uint16_t cfa_offset = entry.cfa_offset();
     if (cfa_offset == 0)
       return absl::nullopt;
     last_frame_entry.cfa_offset = cfa_offset;
 
-    uint32_t ra_offset = entry.ra_offset();
+    uint16_t ra_offset = entry.ra_offset();
     // The RA offset of the last specified row should be used, if unspecified.
     // Update |last_ra_offset| only if valid for this row. Otherwise, tthe last
     // valid |last_ra_offset| is used. TODO(ssid): This should be fixed in the

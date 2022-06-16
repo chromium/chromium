@@ -87,7 +87,7 @@ class BASE_EXPORT StackCopier {
   static const uint8_t* CopyStackContentsAndRewritePointers(
       const uint8_t* original_stack_bottom,
       const uintptr_t* original_stack_top,
-      int platform_stack_alignment,
+      size_t platform_stack_alignment,
       uintptr_t* stack_buffer_bottom);
 };
 
