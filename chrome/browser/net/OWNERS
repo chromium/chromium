@@ -1,4 +1,5 @@
 file://net/OWNERS
 
+per-file android_network_service_browsertest.cc=wfh@chromium.org
 per-file network_quality*=file://net/nqe/OWNERS
 per-file private_network_access_browsertest*=titouan@chromium.org
