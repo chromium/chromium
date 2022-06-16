@@ -134,6 +134,12 @@ extern const char kCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Calendar "
     "event handling";
 
+extern const char kEnableExpKitCalendarTextClassifierName[] =
+    "Text Classifier in Experience Kit Calendar";
+extern const char kEnableExpKitCalendarTextClassifierDescription[] =
+    "When enabled, Experience Kit Calendar will use Text Classifier library in "
+    "entity detection where possible.";
+
 const char kContentSuggestionsHeaderMigrationName[] =
     "Content Suggestions header migration";
 const char kContentSuggestionsHeaderMigrationDescription[] =

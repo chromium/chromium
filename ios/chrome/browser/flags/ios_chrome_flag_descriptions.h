@@ -113,6 +113,11 @@ extern const char kEnableExpKitAppleCalendarDescription[];
 extern const char kCalendarExperienceKitName[];
 extern const char kCalendarExperienceKitDescription[];
 
+// Title and description for the flag to enable text classifier entity detection
+// in experience kit calendar.
+extern const char kEnableExpKitCalendarTextClassifierName[];
+extern const char kEnableExpKitCalendarTextClassifierDescription[];
+
 // Title and description for the flag that moves the Content Suggestions header
 // to the Discover feed ScrollView.
 extern const char kContentSuggestionsHeaderMigrationName[];
