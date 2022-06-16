@@ -8,12 +8,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
-#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {
 

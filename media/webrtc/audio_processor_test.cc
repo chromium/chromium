@@ -27,8 +27,8 @@
 #include "media/webrtc/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/modules/audio_processing/include/mock_audio_processing.h"
-#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
