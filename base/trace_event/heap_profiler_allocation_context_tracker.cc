@@ -217,22 +217,24 @@ bool AllocationContextTracker::GetContextSnapshot(AllocationContext* ctx) {
 #endif
 
         // If there are too many frames, keep the ones furthest from main().
-        size_t backtrace_capacity = backtrace_end - backtrace;
-        int32_t starting_frame_index = frame_count;
-        if (frame_count > backtrace_capacity) {
-          starting_frame_index = backtrace_capacity - 1;
-          *backtrace++ = StackFrame::FromProgramCounter(nullptr);
-        }
-        for (int32_t i = starting_frame_index - 1; i >= 0; --i) {
-          const void* frame = frames[i];
-          *backtrace++ = StackFrame::FromProgramCounter(frame);
-        }
+      ptrdiff_t backtrace_capacity = backtrace_end - backtrace;
+      ptrdiff_t starting_frame_index =
+          base::checked_cast<ptrdiff_t>(frame_count);
+      if (starting_frame_index > backtrace_capacity) {
+        starting_frame_index = backtrace_capacity - 1;
+        *backtrace++ = StackFrame::FromProgramCounter(nullptr);
+      }
+      for (ptrdiff_t i = starting_frame_index - 1; i >= 0; --i) {
+        const void* frame = frames[i];
+        *backtrace++ = StackFrame::FromProgramCounter(frame);
+      }
 #endif  // !BUILDFLAG(IS_NACL)
         break;
       }
   }
 
-  ctx->backtrace.frame_count = backtrace - std::begin(ctx->backtrace.frames);
+  ctx->backtrace.frame_count =
+      static_cast<size_t>(backtrace - std::begin(ctx->backtrace.frames));
 
   ctx->type_name = TaskContext();
 

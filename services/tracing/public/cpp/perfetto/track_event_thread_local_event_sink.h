@@ -144,8 +144,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
   base::TimeTicks last_timestamp_;
   base::ThreadTicks last_thread_time_;
   base::trace_event::ThreadInstructionCount last_thread_instruction_count_;
-  int process_id_;
-  int thread_id_;
+  base::ProcessId process_id_;
+  base::PlatformThreadId thread_id_;
   std::string thread_name_;
   perfetto::protos::pbzero::ChromeThreadDescriptor::ThreadType thread_type_ =
       perfetto::protos::pbzero::ChromeThreadDescriptor::THREAD_UNSPECIFIED;

@@ -13,7 +13,9 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/thread_instruction_count.h"
@@ -51,7 +53,7 @@ class BASE_EXPORT TraceEvent {
 
   TraceEvent();
 
-  TraceEvent(int thread_id,
+  TraceEvent(PlatformThreadId thread_id,
              TimeTicks timestamp,
              ThreadTicks thread_timestamp,
              ThreadInstructionCount thread_instruction_count,
@@ -82,7 +84,7 @@ class BASE_EXPORT TraceEvent {
   //    event = TraceEvent(thread_id, ....);  // Create and destroy temporary.
   //    event.Reset(thread_id, ...);  // Direct re-initialization.
   //
-  void Reset(int thread_id,
+  void Reset(PlatformThreadId thread_id,
              TimeTicks timestamp,
              ThreadTicks thread_timestamp,
              ThreadInstructionCount thread_instruction_count,
@@ -113,8 +115,8 @@ class BASE_EXPORT TraceEvent {
     return thread_instruction_count_;
   }
   char phase() const { return phase_; }
-  int thread_id() const { return thread_id_; }
-  int process_id() const { return process_id_; }
+  PlatformThreadId thread_id() const { return thread_id_; }
+  ProcessId process_id() const { return process_id_; }
   TimeDelta duration() const { return duration_; }
   TimeDelta thread_duration() const { return thread_duration_; }
   ThreadInstructionDelta thread_instruction_delta() const {
@@ -178,8 +180,8 @@ class BASE_EXPORT TraceEvent {
   //  tid: thread_id_, pid: current_process_id (default case).
   //  tid: -1, pid: process_id_ (when flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID).
   union {
-    int thread_id_ = 0;
-    int process_id_;
+    PlatformThreadId thread_id_ = 0;
+    ProcessId process_id_;
   };
   unsigned int flags_ = 0;
   unsigned long long bind_id_ = 0;

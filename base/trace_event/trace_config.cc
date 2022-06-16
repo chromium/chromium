@@ -158,8 +158,10 @@ void TraceConfig::ProcessFilterConfig::InitializeFromConfigDict(
   if (!value)
     return;
   for (auto& pid_value : value->GetListDeprecated()) {
-    if (pid_value.is_int())
-      included_process_ids_.insert(pid_value.GetInt());
+    if (pid_value.is_int()) {
+      included_process_ids_.insert(
+          static_cast<base::ProcessId>(pid_value.GetInt()));
+    }
   }
 }
 
@@ -393,9 +395,10 @@ void TraceConfig::InitializeFromConfigDict(const Value& dict) {
       record_mode_ = RECORD_AS_MUCH_AS_POSSIBLE;
     }
   }
-  trace_buffer_size_in_events_ =
-      dict.FindIntKey(kTraceBufferSizeInEvents).value_or(0);
-  trace_buffer_size_in_kb_ = dict.FindIntKey(kTraceBufferSizeInKb).value_or(0);
+  trace_buffer_size_in_events_ = base::saturated_cast<size_t>(
+      dict.FindIntKey(kTraceBufferSizeInEvents).value_or(0));
+  trace_buffer_size_in_kb_ = base::saturated_cast<size_t>(
+      dict.FindIntKey(kTraceBufferSizeInKb).value_or(0));
 
   enable_systrace_ = dict.FindBoolKey(kEnableSystraceParam).value_or(false);
   enable_argument_filter_ =
@@ -557,7 +560,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
         heap_profiler_options->FindIntKey(kBreakdownThresholdBytes);
     if (min_size_bytes && *min_size_bytes >= 0) {
       memory_dump_config_.heap_profiler_options.breakdown_threshold_bytes =
-          *min_size_bytes;
+          static_cast<uint32_t>(*min_size_bytes);
     } else {
       memory_dump_config_.heap_profiler_options.breakdown_threshold_bytes =
           MemoryDumpConfig::HeapProfiler::kDefaultBreakdownThresholdBytes;
@@ -605,10 +608,14 @@ Value TraceConfig::ToValue() const {
                     TraceConfig::TraceRecordModeToStr(record_mode_));
   dict.SetBoolKey(kEnableSystraceParam, enable_systrace_);
   dict.SetBoolKey(kEnableArgumentFilterParam, enable_argument_filter_);
-  if (trace_buffer_size_in_events_ > 0)
-    dict.SetIntKey(kTraceBufferSizeInEvents, trace_buffer_size_in_events_);
-  if (trace_buffer_size_in_kb_ > 0)
-    dict.SetIntKey(kTraceBufferSizeInKb, trace_buffer_size_in_kb_);
+  if (trace_buffer_size_in_events_ > 0) {
+    dict.SetIntKey(kTraceBufferSizeInEvents,
+                   base::checked_cast<int>(trace_buffer_size_in_events_));
+  }
+  if (trace_buffer_size_in_kb_ > 0) {
+    dict.SetIntKey(kTraceBufferSizeInKb,
+                   base::checked_cast<int>(trace_buffer_size_in_kb_));
+  }
 
   dict.SetBoolKey(kEnableEventPackageNameFilterParam,
                   enable_event_package_name_filter_);
@@ -658,7 +665,8 @@ Value TraceConfig::ToValue() const {
       Value options(Value::Type::DICTIONARY);
       options.SetIntKey(
           kBreakdownThresholdBytes,
-          memory_dump_config_.heap_profiler_options.breakdown_threshold_bytes);
+          base::checked_cast<int>(memory_dump_config_.heap_profiler_options
+                                      .breakdown_threshold_bytes));
       memory_dump_config.SetKey(kHeapProfilerOptions, std::move(options));
     }
     dict.SetKey(kMemoryDumpConfigParam, std::move(memory_dump_config));

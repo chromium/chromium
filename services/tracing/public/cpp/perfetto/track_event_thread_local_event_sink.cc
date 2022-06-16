@@ -171,7 +171,7 @@ TrackEventThreadLocalEventSink::TrackEventThreadLocalEventSink(
     bool disable_interning,
     bool proto_writer_filtering_enabled)
     : process_id_(TraceLog::GetInstance()->process_id()),
-      thread_id_(static_cast<int>(base::PlatformThread::CurrentId())),
+      thread_id_(base::PlatformThread::CurrentId()),
       privacy_filtering_enabled_(proto_writer_filtering_enabled),
       trace_writer_(std::move(trace_writer)),
       session_id_(session_id),
@@ -712,7 +712,7 @@ void TrackEventThreadLocalEventSink::Flush() {
 }
 
 void TrackEventThreadLocalEventSink::OnThreadNameChanged(const char* name) {
-  if (thread_id_ != static_cast<int>(base::PlatformThread::CurrentId()))
+  if (thread_id_ != base::PlatformThread::CurrentId())
     return;
   EmitThreadTrackDescriptor(nullptr, TRACE_TIME_TICKS_NOW(), name);
 }

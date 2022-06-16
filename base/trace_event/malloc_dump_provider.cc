@@ -369,7 +369,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  int64_t waste = static_cast<int64_t>(resident_size) - allocated_objects_size;
+  int64_t waste = static_cast<int64_t>(resident_size - allocated_objects_size);
 
   // With PartitionAlloc, reported size under malloc/partitions is the resident
   // size, so it already includes fragmentation. Meaning that "malloc/"'s size
@@ -390,7 +390,8 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
     MemoryAllocatorDump* other_dump =
         pmd->CreateAllocatorDump("malloc/metadata_fragmentation_caches");
     other_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes, waste);
+                          MemoryAllocatorDump::kUnitsBytes,
+                          static_cast<uint64_t>(waste));
   }
 
   ReportSyscallCount(syscall_count, outer_dump);

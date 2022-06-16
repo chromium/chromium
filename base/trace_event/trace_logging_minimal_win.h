@@ -145,10 +145,10 @@ class TlmProvider {
   // Calling Register on an already-registered provider is a fatal error.
   // Not thread safe - caller must ensure serialization between calls to
   // Register() and calls to Unregister().
-  int32_t Register(const char* provider_name,
-                   const GUID& provider_guid,
-                   PENABLECALLBACK enable_callback = nullptr,
-                   void* enable_callback_context = nullptr) noexcept;
+  ULONG Register(const char* provider_name,
+                 const GUID& provider_guid,
+                 PENABLECALLBACK enable_callback = nullptr,
+                 void* enable_callback_context = nullptr) noexcept;
 
   // Returns true if any active trace listeners are interested in any events
   // from this provider.
@@ -173,9 +173,9 @@ class TlmProvider {
   // with the specified level and keyword, packs the data into an event and
   // sends it to ETW. Returns Win32 error code or 0 for success.
   template <class... FieldTys>
-  int32_t WriteEvent(const char* event_name,
-                     const EVENT_DESCRIPTOR& event_descriptor,
-                     const FieldTys&... event_fields) const noexcept {
+  ULONG WriteEvent(const char* event_name,
+                   const EVENT_DESCRIPTOR& event_descriptor,
+                   const FieldTys&... event_fields) const noexcept {
     if (!IsEnabled(event_descriptor)) {
       // If nobody is listening, report success.
       return 0;
@@ -264,11 +264,11 @@ class TlmProvider {
                      const char* field_name) const noexcept;
 
   // Returns Win32 error code, or 0 for success.
-  int32_t EventEnd(char* metadata,
-                   uint16_t metadata_index,
-                   EVENT_DATA_DESCRIPTOR* descriptors,
-                   uint32_t descriptors_index,
-                   const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
+  ULONG EventEnd(char* metadata,
+                 uint16_t metadata_index,
+                 EVENT_DATA_DESCRIPTOR* descriptors,
+                 uint32_t descriptors_index,
+                 const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
 
   bool KeywordEnabled(uint64_t keyword) const noexcept;
 
@@ -278,7 +278,7 @@ class TlmProvider {
                                 const char* name) const noexcept;
 
   uint32_t level_plus1_ = 0;
-  uint32_t provider_metadata_size_ = 0;
+  uint16_t provider_metadata_size_ = 0;
   uint64_t keyword_any_ = 0;
   uint64_t keyword_all_ = 0;
   uint64_t reg_handle_ = 0;

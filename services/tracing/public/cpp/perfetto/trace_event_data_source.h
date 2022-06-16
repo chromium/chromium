@@ -251,7 +251,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
       const unsigned char* category_group_enabled,
       const char* name,
       base::trace_event::TraceEventHandle handle,
-      int thread_id,
+      base::PlatformThreadId thread_id,
       bool explicit_timestamps,
       const base::TimeTicks& now,
       const base::ThreadTicks& thread_now,

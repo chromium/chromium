@@ -1298,7 +1298,7 @@ void TraceEventDataSource::OnUpdateDuration(
     const unsigned char* category_group_enabled,
     const char* name,
     base::trace_event::TraceEventHandle handle,
-    int thread_id,
+    base::PlatformThreadId thread_id,
     bool explicit_timestamps,
     const base::TimeTicks& now,
     const base::ThreadTicks& thread_now,
@@ -1486,7 +1486,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   if (record_mode == base::trace_event::RECORD_CONTINUOUSLY)
     trace_writer_->Flush();
 
-  int process_id = TraceLog::GetInstance()->process_id();
+  base::ProcessId process_id = TraceLog::GetInstance()->process_id();
   if (process_id == base::kNullProcessId) {
     // Do not emit descriptor without process id.
     return;

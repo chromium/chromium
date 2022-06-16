@@ -82,7 +82,7 @@ static_assert(trace_event_internal::kGlobalScope == nullptr,
 
 TraceEvent::TraceEvent() = default;
 
-TraceEvent::TraceEvent(int thread_id,
+TraceEvent::TraceEvent(PlatformThreadId thread_id,
                        TimeTicks timestamp,
                        ThreadTicks thread_timestamp,
                        ThreadInstructionCount thread_instruction_count,
@@ -122,7 +122,7 @@ void TraceEvent::Reset() {
   parameter_copy_storage_.Reset();
 }
 
-void TraceEvent::Reset(int thread_id,
+void TraceEvent::Reset(PlatformThreadId thread_id,
                        TimeTicks timestamp,
                        ThreadTicks thread_timestamp,
                        ThreadInstructionCount thread_instruction_count,
@@ -189,12 +189,12 @@ void TraceEvent::AppendAsJSON(
     std::string* out,
     const ArgumentFilterPredicate& argument_filter_predicate) const {
   int64_t time_int64 = timestamp_.ToInternalValue();
-  int process_id;
-  int thread_id;
+  ProcessId process_id;
+  PlatformThreadId thread_id;
   if ((flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID) &&
       process_id_ != kNullProcessId) {
     process_id = process_id_;
-    thread_id = -1;
+    thread_id = static_cast<PlatformThreadId>(-1);
   } else {
     process_id = TraceLog::GetInstance()->process_id();
     thread_id = thread_id_;
@@ -204,9 +204,11 @@ void TraceEvent::AppendAsJSON(
 
   // Category group checked at category creation time.
   DCHECK(!strchr(name_, '"'));
-  StringAppendF(out, "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
-                     ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",
-                process_id, thread_id, time_int64, phase_, category_group_name);
+  StringAppendF(out,
+                "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
+                ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",
+                static_cast<int>(process_id), static_cast<int>(thread_id),
+                time_int64, phase_, category_group_name);
   EscapeJSONString(name_, true, out);
   *out += ",\"args\":";
 
