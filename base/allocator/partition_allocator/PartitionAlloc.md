@@ -21,6 +21,8 @@ paths of allocation and deallocation require very few (reasonably predictable)
 branches. The number of operations in the fast paths is minimal, leading to the
 possibility of inlining.
 
+![general architecture](./dot/layers.png)
+
 However, even the fast path isn't the fastest, because it requires taking
 a per-partition lock. Although we optimized the lock, there was still room for
 improvement; to this end, we introduced the thread cache.
