@@ -119,18 +119,16 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->ShowSuggestion(details);
+  controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(
-      0u,
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
+  EXPECT_EQ(0u, controller_->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
   Bounds bounds;
   bounds.caret = caret_bounds;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
+  controller_->SetBounds(bounds);
 
   EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
   EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
@@ -140,18 +138,16 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->ShowSuggestion(details);
+  controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(
-      1u,
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
+  EXPECT_EQ(1u, controller_->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
   Bounds bounds;
   bounds.caret = caret_bounds;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
+  controller_->SetBounds(bounds);
 
   EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
   EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
@@ -161,9 +157,7 @@ TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
-  IMEAssistiveWindowHandlerInterface* assistive_window =
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler();
-  assistive_window->ShowSuggestion(details);
+  controller_->ShowSuggestion(details);
   ui::ime::SuggestionWindowView* suggestion_view =
       controller_->GetSuggestionWindowViewForTesting();
 
@@ -174,14 +168,14 @@ TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
                                        current_bounds.height());
 
   // One char entered
-  assistive_window->SetBounds(Bounds{.caret = caret_bounds_after_one_key});
+  controller_->SetBounds(Bounds{.caret = caret_bounds_after_one_key});
 
   // Mimic tracking the last suggestion
   details.confirmed_length = 1;
-  assistive_window->ShowSuggestion(details);
+  controller_->ShowSuggestion(details);
 
   // Second char entered to text input
-  assistive_window->SetBounds(Bounds{.caret = caret_bounds_after_two_key});
+  controller_->SetBounds(Bounds{.caret = caret_bounds_after_two_key});
 
   // Anchor should track the new caret position.
   EXPECT_EQ(caret_bounds_after_two_key, suggestion_view->GetAnchorRect());
@@ -193,29 +187,25 @@ TEST_F(AssistiveWindowControllerTest,
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->ShowSuggestion(details);
-  EXPECT_EQ(
-      1u,
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
+  controller_->ShowSuggestion(details);
+  EXPECT_EQ(1u, controller_->GetConfirmedLength());
 
   gfx::Rect current_bounds =
       controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect();
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->HideSuggestion();
+  controller_->HideSuggestion();
 
   // Create new suggestion window.
   AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(properties);
+  controller_->SetAssistiveWindowProperties(properties);
 
   gfx::Rect new_caret_bounds(current_bounds.width() + 1,
                              current_bounds.height());
   Bounds bounds;
   bounds.caret = new_caret_bounds;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
+  controller_->SetBounds(bounds);
   EXPECT_EQ(new_caret_bounds,
             controller_->GetSuggestionWindowViewForTesting()->GetAnchorRect());
 }
@@ -227,14 +217,12 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
   Bounds bounds;
   bounds.caret = caret_bounds;
   bounds.autocorrect = autocorrect_bounds;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
+  controller_->SetBounds(bounds);
 
   AssistiveWindowProperties window;
   window.type = ui::ime::AssistiveWindowType::kUndoWindow;
   window.visible = true;
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(window);
+  controller_->SetAssistiveWindowProperties(window);
 
   ASSERT_TRUE(controller_->GetUndoWindowForTesting() != nullptr);
   autocorrect_bounds.Inset(-4);
@@ -248,9 +236,7 @@ TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
   properties.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(properties);
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -267,9 +253,7 @@ TEST_F(AssistiveWindowControllerTest,
   properties.type = ui::ime::AssistiveWindowType::kPersonalInfoSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(properties);
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -285,9 +269,7 @@ TEST_F(AssistiveWindowControllerTest, SetsMultiWordWindowOrientationVertical) {
   properties.type = ui::ime::AssistiveWindowType::kMultiWordSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(properties);
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -305,9 +287,7 @@ TEST_F(AssistiveWindowControllerTest,
       ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
   properties.visible = true;
   properties.candidates = std::vector<std::u16string>({u"candidate"});
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(properties);
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -324,11 +304,8 @@ TEST_F(AssistiveWindowControllerTest,
   InitEmojiSuggestionWindow();
   InitEmojiButton();
 
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(emoji_window_);
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetButtonHighlighted(
-      emoji_button_, true);
+  controller_->SetAssistiveWindowProperties(emoji_window_);
+  controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
   accessibility_view_->VerifyAnnouncement(kAnnounceString);
@@ -343,11 +320,8 @@ TEST_F(
   InitEmojiButton();
   emoji_button_.announce_string = base::EmptyString16();
 
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(emoji_window_);
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetButtonHighlighted(
-      emoji_button_, true);
+  controller_->SetAssistiveWindowProperties(emoji_window_);
+  controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
   accessibility_view_->VerifyAnnouncement(base::EmptyString16());
@@ -364,11 +338,8 @@ TEST_F(AssistiveWindowControllerTest,
   button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
   button.announce_string = kAnnounceString;
 
-  ui::IMEBridge::Get()
-      ->GetAssistiveWindowHandler()
-      ->SetAssistiveWindowProperties(window);
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetButtonHighlighted(
-      button, true);
+  controller_->SetAssistiveWindowProperties(window);
+  controller_->SetButtonHighlighted(button, true);
   task_environment()->RunUntilIdle();
 
   accessibility_view_->VerifyAnnouncement(kAnnounceString);
@@ -381,8 +352,7 @@ TEST_F(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
   InitEmojiButton();
 
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetButtonHighlighted(
-      emoji_button_, true);
+  controller_->SetButtonHighlighted(emoji_button_, true);
   task_environment()->RunUntilIdle();
 
   accessibility_view_->VerifyAnnouncement(base::EmptyString16());
