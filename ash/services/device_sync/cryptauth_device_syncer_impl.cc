@@ -306,7 +306,8 @@ void CryptAuthDeviceSyncerImpl::GetAttestationCertificates() {
 }
 
 void CryptAuthDeviceSyncerImpl::OnAttestationCertificates(
-    const std::vector<std::string>& cert_chain) {
+    const std::vector<std::string>& cert_chain,
+    bool valid) {
   cryptauthv2::AttestationData* attestation_data =
       local_better_together_device_metadata_.mutable_attestation_data();
   attestation_data->set_type(
@@ -314,6 +315,7 @@ void CryptAuthDeviceSyncerImpl::OnAttestationCertificates(
   for (const std::string& cert : cert_chain) {
     attestation_data->add_certificates(cert);
   }
+  are_attestation_certs_valid_ = valid;
   AttemptNextStep();
 }
 
@@ -763,7 +765,10 @@ void CryptAuthDeviceSyncerImpl::FinishAttempt(
     synced_bluetooth_address_tracker_->SetLastSyncedBluetoothAddress(
         local_better_together_device_metadata_.bluetooth_public_address());
     if (features::IsEcheSWAEnabled()) {
-      attestation_certificates_syncer_->SetLastSyncTimestamp();
+      if (are_attestation_certs_valid_) {
+        attestation_certificates_syncer_->SetLastSyncTimestamp();
+      }
+      are_attestation_certs_valid_ = false;
     }
   }
 

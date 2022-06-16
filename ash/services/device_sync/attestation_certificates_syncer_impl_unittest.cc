@@ -30,7 +30,9 @@ class AttestationCertificatesSyncerImplTest : public testing::Test {
   AttestationCertificatesSyncerImplTest& operator=(
       const AttestationCertificatesSyncerImplTest&) = delete;
 
-  void SaveCerts(const std::vector<std::string>& certs) { result_ = certs; }
+  void SaveCerts(const std::vector<std::string>& certs, bool valid) {
+    result_ = certs;
+  }
 
  protected:
   AttestationCertificatesSyncerImplTest() = default;
@@ -53,7 +55,7 @@ class AttestationCertificatesSyncerImplTest : public testing::Test {
             [](AttestationCertificatesSyncer::NotifyCallback notify_callback,
                const std::string&) {
               std::move(notify_callback)
-                  .Run(std::vector<std::string>{kFakeCert});
+                  .Run(std::vector<std::string>{kFakeCert}, /*valid=*/true);
             }));
   }
 

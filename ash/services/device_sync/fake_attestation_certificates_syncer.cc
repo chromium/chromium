@@ -20,7 +20,7 @@ void FakeAttestationCertificatesSyncer::SetLastSyncTimestamp() {
 void FakeAttestationCertificatesSyncer::UpdateCerts(
     NotifyCallback callback,
     const std::string& user_key) {
-  std::move(callback).Run(std::vector<std::string>{kFakeCert});
+  std::move(callback).Run(std::vector<std::string>{kFakeCert}, /*valid=*/true);
 }
 
 bool FakeAttestationCertificatesSyncer::IsUpdateRequired() {

@@ -89,8 +89,10 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
     return generic_public_key->SerializeAsString();
   }
 
-  void OnAttestationCertificates(const std::vector<std::string>& cert_chain) {
+  void OnAttestationCertificates(const std::vector<std::string>& cert_chain,
+                                 bool valid) {
     result_cert_chain_ = cert_chain;
+    result_validity_ = valid;
   }
 
   void ExpectMockAttestationFlowGetCertificate() {
@@ -150,6 +152,7 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
   int fake_cert_chain_read_index_;
 
   std::vector<std::string> result_cert_chain_;
+  bool result_validity_;
 };
 
 TEST_F(SoftBindAttestationFlowTest, Success) {
@@ -160,6 +163,7 @@ TEST_F(SoftBindAttestationFlowTest, Success) {
                                               user_key);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, result_cert_chain_.size());
+  EXPECT_TRUE(result_validity_);
 }
 
 TEST_F(SoftBindAttestationFlowTest, FeatureDisabledByPolicy) {
@@ -170,6 +174,7 @@ TEST_F(SoftBindAttestationFlowTest, FeatureDisabledByPolicy) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, result_cert_chain_.size());
   EXPECT_EQ("INVALID:attestationNotAllowed", result_cert_chain_[0]);
+  EXPECT_FALSE(result_validity_);
 }
 
 TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToUnspecifiedFailure) {
@@ -182,6 +187,7 @@ TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToUnspecifiedFailure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, result_cert_chain_.size());
   EXPECT_EQ("INVALID:notVerified", result_cert_chain_[0]);
+  EXPECT_FALSE(result_validity_);
 }
 
 TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToBadRequestFailure) {
@@ -194,6 +200,7 @@ TEST_F(SoftBindAttestationFlowTest, NotVerifiedDueToBadRequestFailure) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, result_cert_chain_.size());
   EXPECT_EQ("INVALID:notVerified", result_cert_chain_[0]);
+  EXPECT_FALSE(result_validity_);
 }
 
 TEST_F(SoftBindAttestationFlowTest, Timeout) {
@@ -204,6 +211,7 @@ TEST_F(SoftBindAttestationFlowTest, Timeout) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, result_cert_chain_.size());
   EXPECT_EQ("INVALID:timeout", result_cert_chain_[0]);
+  EXPECT_FALSE(result_validity_);
 }
 
 TEST_F(SoftBindAttestationFlowTest, NearlyExpiredCert) {
@@ -215,6 +223,7 @@ TEST_F(SoftBindAttestationFlowTest, NearlyExpiredCert) {
                                               user_key);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, result_cert_chain_.size());
+  EXPECT_TRUE(result_validity_);
   EXPECT_EQ(2, fake_cert_chain_read_index_);
 }
 
@@ -227,6 +236,7 @@ TEST_F(SoftBindAttestationFlowTest, ExpiredCertRenewed) {
                                               user_key);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, result_cert_chain_.size());
+  EXPECT_TRUE(result_validity_);
   EXPECT_EQ(2, fake_cert_chain_read_index_);
 }
 
@@ -243,6 +253,7 @@ TEST_F(SoftBindAttestationFlowTest, MultipleRenewalsExceedsMaxRetries) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, result_cert_chain_.size());
   EXPECT_EQ("INVALID:tooManyRetries", result_cert_chain_[0]);
+  EXPECT_FALSE(result_validity_);
   EXPECT_EQ(4, fake_cert_chain_read_index_);
 }
 
@@ -260,6 +271,7 @@ TEST_F(SoftBindAttestationFlowTest, MultipleSuccessesSimultaneously) {
                                               user_key);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, result_cert_chain_.size());
+  EXPECT_TRUE(result_validity_);
   EXPECT_EQ(3, fake_cert_chain_read_index_);
 }
 

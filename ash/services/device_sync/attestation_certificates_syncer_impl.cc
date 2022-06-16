@@ -66,7 +66,7 @@ void AttestationCertificatesSyncerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimePref(
       prefs::kCryptAuthAttestationCertificatesLastGeneratedTimestamp,
-      base::Time());
+      base::Time() - kValidTime);
 }
 
 AttestationCertificatesSyncerImpl::AttestationCertificatesSyncerImpl(

@@ -17,7 +17,7 @@ namespace device_sync {
 class AttestationCertificatesSyncer {
  public:
   using NotifyCallback =
-      base::OnceCallback<void(const std::vector<std::string>&)>;
+      base::OnceCallback<void(const std::vector<std::string>&, bool valid)>;
   using GetAttestationCertificatesFunction =
       base::RepeatingCallback<void(const NotifyCallback, const std::string&)>;
 
@@ -27,6 +27,7 @@ class AttestationCertificatesSyncer {
       const AttestationCertificatesSyncer&) = delete;
 
   virtual bool IsUpdateRequired() = 0;
+  // The timestamp is only updated on successful syncs of valid certificates (not mere attempts).
   virtual void SetLastSyncTimestamp() = 0;
   virtual void UpdateCerts(NotifyCallback callback,
                            const std::string& user_key) = 0;
