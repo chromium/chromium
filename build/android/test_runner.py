@@ -1101,7 +1101,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             'raw_logs.txt', 'raw_logs',
             output_manager.Datatype.TEXT) as raw_logs_file:
           raw_logs_file.write(raw_logs)
-      logging.critical('RAW LOGS: %s', raw_logs_file.Link())
+        logging.critical('RAW LOGS: %s', raw_logs_file.Link())
 
       with out_manager.ArchivedTempfile(
           'test_results_presentation.html',
