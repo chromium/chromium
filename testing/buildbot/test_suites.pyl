@@ -4430,7 +4430,6 @@
       # Run popular tests other than capture_unittests, crashpad_tests,
       # content_browsertests, and perfetto_unittests because they fail.
       'absl_hardening_tests': {},
-      'angle_end2end_tests': {},
       'angle_unittests': {
         'args': [
           'angle_unittests',
