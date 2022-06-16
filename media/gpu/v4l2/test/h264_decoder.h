@@ -8,6 +8,7 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
+#include "media/video/h264_parser.h"
 
 namespace media {
 namespace v4l2_test {
@@ -32,9 +33,12 @@ class H264Decoder : public VideoDecoder {
                                        const int frame_number) override;
 
  private:
-  H264Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+  H264Decoder(std::unique_ptr<H264Parser> parser,
+              std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
               std::unique_ptr<V4L2Queue> OUTPUT_queue,
               std::unique_ptr<V4L2Queue> CAPTURE_queue);
+
+  const std::unique_ptr<H264Parser> parser_;
 };
 
 }  // namespace v4l2_test
