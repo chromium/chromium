@@ -108,6 +108,9 @@ class CleanExitBeacon {
   // Updates the last live timestamp.
   void UpdateLastLiveTimestamp();
 
+  const base::FilePath GetUserDataDirForTesting() const;
+  base::FilePath GetBeaconFilePathForTesting() const;
+
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

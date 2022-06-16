@@ -425,6 +425,14 @@ void CleanExitBeacon::UpdateLastLiveTimestamp() {
                         base::Time::Now());
 }
 
+const base::FilePath CleanExitBeacon::GetUserDataDirForTesting() const {
+  return user_data_dir_;
+}
+
+base::FilePath CleanExitBeacon::GetBeaconFilePathForTesting() const {
+  return beacon_file_path_;
+}
+
 // static
 void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kStabilityExitedCleanly, true);
