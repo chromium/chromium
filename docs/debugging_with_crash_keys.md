@@ -70,6 +70,9 @@ cannot have embedded NULs. The constructor argument is the name of the
 crash key, and it is what you will use to identify your data in uploaded
 crash reports.
 
+Note that crash key names are global and must not conflict with the
+name of any other crash key in Chrome.
+
 If you need to declare an array of crash keys (e.g., for recording N values
 of an array), you can use a constructor tag to avoid warnings about `explicit`:
 
@@ -146,7 +149,8 @@ To set a stack trace to a crash key, use the `SetCrashKeyStringToStackTrace()`
 function in crash_logging.h:
 
     Usemeafterfree::~Usemeafterfree() {
-      static crash_reporter::CrashKeyString<1024> trace_key("uaf-dtor-trace");
+      static crash_reporter::CrashKeyString<1024> trace_key(
+          "useme-after-free-uaf-dtor-trace");
       crash_reporter::SetCrashKeyStringToStackTrace(&trace_key,
                                                     base::debug::StackTrace());
     }
