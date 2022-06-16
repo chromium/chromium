@@ -3941,9 +3941,9 @@
     },
 
     'lacros_skylab_amd64_fyi': {
-      'lacros_fyi_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational || "name:lacros.VariationSmoke")',
-        'timeout_sec': 10800,
+      'lacros_all_tast_tests_informational': {
+        'tast_expr': '("group:mainline" && "dep:lacros" && informational)',
+        'timeout_sec': 25200,
       },
       'ozone_unittests': {
         'timeout_sec': 3600,
