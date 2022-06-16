@@ -404,7 +404,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesGainPercent);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
-  registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, true);
+  registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
 
   // Register the prefs backing the audio muting policies.
   // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome
