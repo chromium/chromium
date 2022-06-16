@@ -56,6 +56,7 @@ class PartitionAllocPCScanTestBase : public testing::Test {
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
     });
     allocator_.root()->UncapEmptySlotSpanMemoryForTesting();
@@ -472,6 +473,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   source_root.UncapEmptySlotSpanMemoryForTesting();
@@ -481,6 +483,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   value_root.UncapEmptySlotSpanMemoryForTesting();
@@ -507,6 +510,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   source_root.UncapEmptySlotSpanMemoryForTesting();
@@ -516,6 +520,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   value_root.UncapEmptySlotSpanMemoryForTesting();
@@ -542,6 +547,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   source_root.UncapEmptySlotSpanMemoryForTesting();
@@ -551,6 +557,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   value_root.UncapEmptySlotSpanMemoryForTesting();

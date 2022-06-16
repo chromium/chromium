@@ -83,6 +83,7 @@ void ArrayBufferAllocator::InitializePartition() {
       base::PartitionOptions::Quarantine::kAllowed,
       base::PartitionOptions::Cookie::kAllowed,
       base::PartitionOptions::BackupRefPtr::kDisabled,
+      base::PartitionOptions::BackupRefPtrZapping::kDisabled,
       base::PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
 

@@ -95,6 +95,7 @@ class PartitionAllocator : public Allocator {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   }};
 };
@@ -111,6 +112,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
           PartitionOptions::Quarantine::kDisallowed,
           PartitionOptions::Cookie::kAllowed,
           PartitionOptions::BackupRefPtr::kDisabled,
+          PartitionOptions::BackupRefPtrZapping::kDisabled,
           PartitionOptions::UseConfigurablePool::kNo,
       });
     }

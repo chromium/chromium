@@ -50,6 +50,9 @@ enum class BackupRefPtrMode {
   // This entails splitting the main partition.
   kEnabled,
 
+  // Same as kEnabled but without zapping quarantined objects.
+  kEnabledWithoutZapping,
+
   // BRP is disabled, but the main partition is split out, as if BRP was enabled
   // in the "previous slot" mode.
   kDisabledButSplitPartitions2Way,

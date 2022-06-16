@@ -57,6 +57,7 @@ constexpr base::PartitionOptions kAllocatorOptions = {
     base::PartitionOptions::Quarantine::kDisallowed,
     base::PartitionOptions::Cookie::kAllowed,
     base::PartitionOptions::BackupRefPtr::kDisabled,
+    base::PartitionOptions::BackupRefPtrZapping::kDisabled,
     base::PartitionOptions::UseConfigurablePool::kNo,
 };
 

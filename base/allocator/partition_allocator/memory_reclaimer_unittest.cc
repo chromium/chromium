@@ -50,6 +50,7 @@ class MemoryReclaimerTest : public ::testing::Test {
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kAllowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
     });
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();

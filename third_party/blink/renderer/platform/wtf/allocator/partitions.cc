@@ -79,12 +79,14 @@ void Partitions::Initialize() {
 
 // static
 bool Partitions::InitializeOnce() {
+  base::features::BackupRefPtrMode brp_mode =
+      base::features::kBackupRefPtrModeParam.Get();
   const bool enable_brp =
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&
-      base::features::kBackupRefPtrModeParam.Get() ==
-          base::features::BackupRefPtrMode::kEnabled &&
+      (brp_mode == base::features::BackupRefPtrMode::kEnabled ||
+       brp_mode == base::features::BackupRefPtrMode::kEnabledWithoutZapping) &&
       (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
            base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
        base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
@@ -95,7 +97,10 @@ bool Partitions::InitializeOnce() {
   const base::PartitionOptions::BackupRefPtr brp_setting =
       enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
                  : base::PartitionOptions::BackupRefPtr::kDisabled;
-
+  const base::PartitionOptions::BackupRefPtrZapping brp_zapping_setting =
+      enable_brp && brp_mode == base::features::BackupRefPtrMode::kEnabled
+          ? base::PartitionOptions::BackupRefPtrZapping::kEnabled
+          : base::PartitionOptions::BackupRefPtrZapping::kDisabled;
   scan_is_enabled_ =
       !enable_brp &&
 #if defined(PA_ALLOW_PCSCAN)
@@ -130,6 +135,7 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
         brp_setting,
+        brp_zapping_setting,
         base::PartitionOptions::UseConfigurablePool::kNo,
     });
     fast_malloc_root_ = fast_malloc_allocator->root();
@@ -145,6 +151,7 @@ bool Partitions::InitializeOnce() {
       base::PartitionOptions::Quarantine::kAllowed,
       base::PartitionOptions::Cookie::kAllowed,
       brp_setting,
+      brp_zapping_setting,
       base::PartitionOptions::UseConfigurablePool::kNo,
   });
   buffer_root_ = buffer_allocator->root();
@@ -190,6 +197,7 @@ void Partitions::InitializeArrayBufferPartition() {
       base::PartitionOptions::Quarantine::kAllowed,
       base::PartitionOptions::Cookie::kAllowed,
       base::PartitionOptions::BackupRefPtr::kDisabled,
+      base::PartitionOptions::BackupRefPtrZapping::kDisabled,
       // When the V8 virtual memory cage is enabled, the ArrayBuffer partition
       // must be placed inside of it. For that, PA's ConfigurablePool is
       // created inside the V8 Cage during initialization. As such, here all we

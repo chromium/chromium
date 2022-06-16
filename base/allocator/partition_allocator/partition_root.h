@@ -171,6 +171,11 @@ struct PartitionOptions {
     kEnabled,
   };
 
+  enum class BackupRefPtrZapping : uint8_t {
+    kDisabled,
+    kEnabled,
+  };
+
   enum class UseConfigurablePool : uint8_t {
     kNo,
     kIfAvailable,
@@ -182,12 +187,14 @@ struct PartitionOptions {
                              Quarantine quarantine,
                              Cookie cookie,
                              BackupRefPtr backup_ref_ptr,
+                             BackupRefPtrZapping backup_ref_ptr_zapping,
                              UseConfigurablePool use_configurable_pool)
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
         cookie(cookie),
         backup_ref_ptr(backup_ref_ptr),
+        backup_ref_ptr_zapping(backup_ref_ptr_zapping),
         use_configurable_pool(use_configurable_pool) {}
 
   AlignedAlloc aligned_alloc;
@@ -195,6 +202,7 @@ struct PartitionOptions {
   Quarantine quarantine;
   Cookie cookie;
   BackupRefPtr backup_ref_ptr;
+  BackupRefPtrZapping backup_ref_ptr_zapping;
   UseConfigurablePool use_configurable_pool;
 };
 
@@ -241,6 +249,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool allow_cookie;
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     bool brp_enabled_;
+    bool brp_zapping_enabled_;
 #endif
     bool use_configurable_pool;
 
@@ -724,6 +733,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   bool brp_enabled() const {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     return flags.brp_enabled_;
+#else
+    return false;
+#endif
+  }
+
+  bool brp_zapping_enabled() const {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    return flags.brp_zapping_enabled_;
 #else
     return false;
 #endif
@@ -1269,7 +1286,8 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // If there are no more references to the allocation, it can be freed
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes.
-    if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
+    if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs() &&
+                    brp_zapping_enabled()))
       internal::SecureMemset(object, internal::kQuarantinedByte,
                              slot_span->GetUsableSize(this));
 

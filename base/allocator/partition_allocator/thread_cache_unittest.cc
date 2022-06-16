@@ -68,6 +68,7 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
   });
 
@@ -275,6 +276,7 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
       PartitionOptions::Quarantine::kAllowed,
       PartitionOptions::Cookie::kDisallowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
 

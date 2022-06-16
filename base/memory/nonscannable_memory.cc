@@ -61,6 +61,7 @@ void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
                     : PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
   if (Quarantinable)

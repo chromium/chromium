@@ -217,6 +217,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
+  [[maybe_unused]] bool enable_brp_zapping = false;
   [[maybe_unused]] bool split_main_partition = false;
   [[maybe_unused]] bool use_dedicated_aligned_partition = false;
   [[maybe_unused]] bool process_affected_by_brp_flag = false;
@@ -272,6 +273,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
 
       case base::features::BackupRefPtrMode::kEnabled:
+        enable_brp_zapping = true;
+        ABSL_FALLTHROUGH_INTENDED;
+      case base::features::BackupRefPtrMode::kEnabledWithoutZapping:
         enable_brp = true;
         split_main_partition = true;
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -303,6 +307,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ConfigurePartitions(
       base::allocator::EnableBrp(enable_brp),
+      base::allocator::EnableBrpZapping(enable_brp_zapping),
       base::allocator::SplitMainPartition(split_main_partition),
       base::allocator::UseDedicatedAlignedPartition(
           use_dedicated_aligned_partition),

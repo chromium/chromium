@@ -165,6 +165,7 @@ class MainPartitionConstructor {
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
         base::PartitionOptions::BackupRefPtr::kDisabled,
+        base::PartitionOptions::BackupRefPtrZapping::kDisabled,
         base::PartitionOptions::UseConfigurablePool::kNo,
     });
 
@@ -563,6 +564,7 @@ alignas(partition_alloc::ThreadSafePartitionRoot) uint8_t
 
 void ConfigurePartitions(
     EnableBrp enable_brp,
+    EnableBrpZapping enable_brp_zapping,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     AlternateBucketDistribution use_alternate_bucket_distribution) {
@@ -596,7 +598,6 @@ void ConfigurePartitions(
     PA_DCHECK(!current_root->flags.with_thread_cache);
     return;
   }
-
   auto* new_root =
       new (g_allocator_buffer_for_new_main_partition) ThreadSafePartitionRoot({
           !use_dedicated_aligned_partition
@@ -607,6 +608,9 @@ void ConfigurePartitions(
           base::PartitionOptions::Cookie::kAllowed,
           enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
                      : base::PartitionOptions::BackupRefPtr::kDisabled,
+          enable_brp_zapping
+              ? base::PartitionOptions::BackupRefPtrZapping::kEnabled
+              : base::PartitionOptions::BackupRefPtrZapping::kDisabled,
           base::PartitionOptions::UseConfigurablePool::kNo,
       });
 
@@ -621,6 +625,7 @@ void ConfigurePartitions(
             base::PartitionOptions::Quarantine::kAllowed,
             base::PartitionOptions::Cookie::kAllowed,
             base::PartitionOptions::BackupRefPtr::kDisabled,
+            base::PartitionOptions::BackupRefPtrZapping::kDisabled,
             base::PartitionOptions::UseConfigurablePool::kNo,
         });
   } else {

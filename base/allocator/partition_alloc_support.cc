@@ -291,6 +291,13 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
         brp_group_name = "EnabledBeforeAlloc";
 #endif
         break;
+      case features::BackupRefPtrMode::kEnabledWithoutZapping:
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        brp_group_name = "EnabledPrevSlotWithoutZapping";
+#else
+        brp_group_name = "EnabledBeforeAllocWithoutZapping";
+#endif
+        break;
       case features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
         brp_group_name = "DisabledBut2WaySplit";
         break;

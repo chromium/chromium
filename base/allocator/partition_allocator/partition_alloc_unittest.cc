@@ -284,8 +284,10 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
           PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
           PartitionOptions::BackupRefPtr::kEnabled,
+          PartitionOptions::BackupRefPtrZapping::kEnabled,
 #else
           PartitionOptions::BackupRefPtr::kDisabled,
+          PartitionOptions::BackupRefPtrZapping::kDisabled,
 #endif
           PartitionOptions::UseConfigurablePool::kNo,
     });
@@ -295,6 +297,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
         PartitionOptions::Quarantine::kDisallowed,
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
     });
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
@@ -4100,6 +4103,7 @@ TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
 
@@ -4305,6 +4309,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
         PartitionOptions::Quarantine::kDisallowed,
         PartitionOptions::Cookie::kAllowed,
         PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::BackupRefPtrZapping::kDisabled,
         PartitionOptions::UseConfigurablePool::kIfAvailable,
     });
     root->UncapEmptySlotSpanMemoryForTesting();
@@ -4338,6 +4343,7 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
 
@@ -4394,6 +4400,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
       PartitionOptions::Quarantine::kDisallowed,
       PartitionOptions::Cookie::kAllowed,
       PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
   root.UncapEmptySlotSpanMemoryForTesting();

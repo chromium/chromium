@@ -1053,6 +1053,7 @@ static constexpr PartitionOptions kOpts = {
     PartitionOptions::Quarantine::kDisallowed,
     PartitionOptions::Cookie::kAllowed,
     PartitionOptions::BackupRefPtr::kEnabled,
+    PartitionOptions::BackupRefPtrZapping::kEnabled,
     PartitionOptions::UseConfigurablePool::kNo,
 };
 

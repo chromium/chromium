@@ -17,6 +17,7 @@ constexpr PartitionOptions kConfig{
     PartitionOptions::Quarantine::kDisallowed,
     PartitionOptions::Cookie::kAllowed,
     PartitionOptions::BackupRefPtr::kDisabled,
+    PartitionOptions::BackupRefPtrZapping::kDisabled,
     PartitionOptions::UseConfigurablePool::kNo,
 };
 }  // namespace
