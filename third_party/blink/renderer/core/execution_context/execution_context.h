@@ -168,6 +168,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool IsThreadedWorkletGlobalScope() const { return false; }
   virtual bool IsJSExecutionForbidden() const { return false; }
 
+  // TODO(crbug.com/1335924) Change this method to be pure-virtual and each
+  // derivative explicitly override it.
+  virtual bool IsInFencedFrame() const { return false; }
+
   virtual bool IsContextThread() const { return true; }
 
   virtual bool ShouldInstallV8Extensions() const { return false; }

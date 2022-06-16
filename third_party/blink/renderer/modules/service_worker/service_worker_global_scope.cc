@@ -2568,4 +2568,9 @@ void ServiceWorkerGlobalScope::RecordQueuingTime(base::TimeTicks created_time) {
                                 base::TimeTicks::Now() - created_time);
 }
 
+bool ServiceWorkerGlobalScope::IsInFencedFrame() const {
+  return GetAncestorFrameType() ==
+         mojom::blink::AncestorFrameType::kFencedFrame;
+}
+
 }  // namespace blink

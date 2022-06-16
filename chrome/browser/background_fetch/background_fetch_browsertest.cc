@@ -1019,8 +1019,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
 
   constexpr char kExpectedError[] =
       "NotAllowedError - Failed to execute 'fetch' on "
-      "'BackgroundFetchManager': backgroundFetch is not allowed in a fenced "
-      "frame tree.";
+      "'BackgroundFetchManager': backgroundFetch is not allowed in fenced "
+      "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
   std::vector<const ukm::mojom::UkmEntry*> entries =
@@ -1062,8 +1062,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
 
   constexpr char kExpectedError[] =
       "NotAllowedError - Failed to execute 'fetch' on "
-      "'BackgroundFetchManager': backgroundFetch is not allowed in a fenced "
-      "frame tree.";
+      "'BackgroundFetchManager': backgroundFetch is not allowed in fenced "
+      "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
   std::vector<const ukm::mojom::UkmEntry*> entries =

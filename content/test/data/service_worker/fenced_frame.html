@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ServiceWorkerFencedFrameBrowserTest helper page</title>
+    <script>
+    async function RegisterServiceWorker() {
+      await navigator.serviceWorker.register('fenced_frame_service_worker.js');
+      return 'ok - service worker registered';
+    }
+
+    async function backgroundFetchFromServiceWorker() {
+      const controllerChangePromise = new Promise(resolve => {
+        if (navigator.serviceWorker.controller) {
+          resolve();
+          return;
+        }
+        navigator.serviceWorker.addEventListener('controllerchange', resolve);
+      });
+      const sendMessageToServiceWorker = () => {
+        const ctrl = navigator.serviceWorker.controller;
+        return new Promise(resolve => {
+          ctrl.postMessage({
+            type: 'fetch',
+            id: 'bg-feth-id',
+            resource: [ '/service_worker/hello-from-sw.txt' ],
+            options: { title: 'Background Fetch' }
+          });
+          navigator.serviceWorker.onmessage = e => {
+            resolve(e.data);
+          };
+        });
+      };
+
+      await controllerChangePromise;
+      const data = await sendMessageToServiceWorker()
+
+      return data;
+    }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

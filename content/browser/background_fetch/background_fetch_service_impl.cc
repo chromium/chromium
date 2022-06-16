@@ -46,10 +46,25 @@ void BackgroundFetchServiceImpl::CreateForWorker(
   if (!render_process_host)
     return;
 
+  auto* partition = static_cast<StoragePartitionImpl*>(
+      render_process_host->GetStoragePartition());
   scoped_refptr<BackgroundFetchContext> context =
-      WrapRefCounted(static_cast<StoragePartitionImpl*>(
-                         render_process_host->GetStoragePartition())
-                         ->GetBackgroundFetchContext());
+      WrapRefCounted(partition->GetBackgroundFetchContext());
+
+  // The renderer should have checked and disallowed the request for fenced
+  // frames and thrown an exception in blink::BackgroundFetchManager. Ignore the
+  // request and mark it as bad if the renderer side check didn't happen for
+  // some reason.
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      partition->GetServiceWorkerContext()->GetLiveRegistration(
+          info.registration_id);
+  if (registration && registration->ancestor_frame_type() ==
+                          blink::mojom::AncestorFrameType::kFencedFrame) {
+    bad_message::ReceivedBadMessage(
+        render_process_host, bad_message::BFSI_CREATE_FOR_WORKER_FENCED_FRAME);
+    return;
+  }
+
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BackgroundFetchServiceImpl>(
           std::move(context), info.storage_key,

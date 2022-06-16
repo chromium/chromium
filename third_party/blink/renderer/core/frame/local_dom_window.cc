@@ -2312,6 +2312,10 @@ void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
   BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
 }
 
+bool LocalDOMWindow::IsInFencedFrame() const {
+  return GetFrame() && GetFrame()->IsInFencedFrameTree();
+}
+
 Fence* LocalDOMWindow::fence() {
   // Return nullptr if we aren't in a fenced subtree.
   if (!GetFrame()) {

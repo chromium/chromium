@@ -472,6 +472,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Whether the window is anonymous or not.
   bool isAnonymouslyFramed() const { return isAnonymouslyFramed_; }
 
+  bool IsInFencedFrame() const override;
+
   Fence* fence();
 
   CloseWatcher::WatcherStack* closewatcher_stack() {

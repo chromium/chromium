@@ -69,6 +69,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -3831,6 +3832,65 @@ IN_PROC_BROWSER_TEST_F(
                        loop.QuitClosure()));
     loop.Run();
   }
+}
+
+class ServiceWorkerFencedFrameBrowserTest : public ServiceWorkerBrowserTest {
+ public:
+  ServiceWorkerFencedFrameBrowserTest() = default;
+  ~ServiceWorkerFencedFrameBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ServiceWorkerBrowserTest::SetUpOnMainThread();
+    StartServerAndNavigateToSetup();
+  }
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFencedFrameBrowserTest,
+                       AncestorFrameTypeIsStoredInServiceWorker) {
+  WorkerRunningStatusObserver observer(public_context());
+
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/service_worker/fenced_frame.html");
+
+  RenderFrameHost* fenced_frame = fenced_frame_test_helper().CreateFencedFrame(
+      shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
+
+  // Register the service worker.
+  ASSERT_EQ("ok - service worker registered",
+            EvalJs(fenced_frame, "RegisterServiceWorker()"));
+  observer.WaitUntilRunning();
+
+  // Call backgroundFetch.fetch from the registered service worker, not from
+  // the fenced frame. This will be blocked if the worker is registered in the
+  // fenced frame
+  constexpr char kExpectedError[] =
+      "Failed to execute 'fetch' on 'BackgroundFetchManager': "
+      "backgroundFetch is not allowed in fenced frames.";
+  ASSERT_EQ(kExpectedError,
+            EvalJs(fenced_frame, "backgroundFetchFromServiceWorker()"));
+
+  // Stop service worker to save registration data to storage.
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer.version_id());
+  StopServiceWorker(version.get());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  // Call backgroundFetch.fetch from the registered service worker again.
+  // This ensures if restored data in the service worker keeps the info if it
+  // was registered in the fenced frame or not, and the info is used when it
+  // became active again.
+  ASSERT_EQ(kExpectedError,
+            EvalJs(fenced_frame, "backgroundFetchFromServiceWorker()"));
 }
 
 }  // namespace content

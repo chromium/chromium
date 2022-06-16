@@ -112,6 +112,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // ExecutionContext overrides:
   bool IsServiceWorkerGlobalScope() const override { return true; }
   bool ShouldInstallV8Extensions() const final;
+  bool IsInFencedFrame() const override;
 
   // Implements WorkerGlobalScope:
   void Initialize(

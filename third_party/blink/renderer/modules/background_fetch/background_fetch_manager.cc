@@ -143,11 +143,11 @@ ScriptPromise BackgroundFetchManager::fetch(
     return ScriptPromise();
   }
 
-  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
-  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "backgroundFetch is not allowed in a fenced frame tree.");
+        "backgroundFetch is not allowed in fenced frames.");
     return ScriptPromise();
   }
 
@@ -161,8 +161,6 @@ ScriptPromise BackgroundFetchManager::fetch(
   // Record whether any requests had a body. If there were, reject the promise.
   UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.HasRequestsWithBody",
                         has_requests_with_body);
-
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
   // A HashSet to find whether there are any duplicate requests within the
   // fetch. https://bugs.chromium.org/p/chromium/issues/detail?id=871174.
@@ -336,11 +334,11 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
   if (!registration_->active())
     return ScriptPromise::CastUndefined(script_state);
 
-  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
-  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "backgroundFetch is not allowed in a fenced frame tree.");
+        "backgroundFetch is not allowed in fenced frames.");
     return ScriptPromise();
   }
 
@@ -483,11 +481,11 @@ void BackgroundFetchManager::DidGetRegistration(
 
 ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state,
                                              ExceptionState& exception_state) {
-  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
-  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsInFencedFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "backgroundFetch is not allowed in a fenced frame tree.");
+        "backgroundFetch is not allowed in fenced frames.");
     return ScriptPromise();
   }
 

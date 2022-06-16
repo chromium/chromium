@@ -10,7 +10,6 @@
 
   <script>
     const background_fetch_register_key = token();
-    const fenced_frame_url = 'resources/background-fetch-inner.https.html';
 
     async function test(url, expected, message) {
       attachFencedFrame(url)
@@ -23,7 +22,8 @@
 
     promise_test(async () => {
       const method = "fetch";
-      const url = generateURL(`${fenced_frame_url}`,
+      const fenced_frame_url = 'resources/background-fetch-inner.https.html';
+      const url = generateURL(fenced_frame_url,
                               [background_fetch_register_key, method]);
 
       await test(
@@ -40,7 +40,8 @@
 
     promise_test(async () => {
       const method = "get";
-      const url = generateURL(`${fenced_frame_url}`,
+      const fenced_frame_url = 'resources/background-fetch-inner.https.html';
+      const url = generateURL(fenced_frame_url,
                               [background_fetch_register_key, method]);
       await test(
         url,
@@ -56,7 +57,8 @@
 
     promise_test(async () => {
       const method = "getIds";
-      const url = generateURL(`${fenced_frame_url}`,
+      const fenced_frame_url = 'resources/background-fetch-inner.https.html';
+      const url = generateURL(fenced_frame_url,
                               [background_fetch_register_key, method]);
       await test(
         url,
@@ -69,6 +71,58 @@
         '[backgroundFetch.getIds] Failed inside fencedframe as expected',
         'backgroundFetch.getIds is disallowed inside a cross-origin fenced frame');
     }, 'backgroundFetch.getIds');
+
+    promise_test(async () => {
+      const method = "fetch";
+      const fenced_frame_url = 'resources/background-fetch-sw-inner.https.html';
+      const url = generateURL(fenced_frame_url,
+                              [background_fetch_register_key, method]);
+
+      await test(
+        url,
+        '[backgroundFetch.fetch] Failed inside fencedframe as expected',
+        'backgroundFetch.fetch is disallowed inside a same-origin fenced frame');
+
+      const CROSS_ORIGIN_DESTINATION = getRemoteOriginURL(url);
+      await test(
+        CROSS_ORIGIN_DESTINATION,
+        '[backgroundFetch.fetch] Failed inside fencedframe as expected',
+        'backgroundFetch.fetch is disallowed inside a cross-origin fenced frame');
+    }, 'backgroundFetch.fetch in service worker');
+
+    promise_test(async () => {
+      const method = "get";
+      const fenced_frame_url = 'resources/background-fetch-sw-inner.https.html';
+      const url = generateURL(fenced_frame_url,
+                              [background_fetch_register_key, method]);
+      await test(
+        url,
+        '[backgroundFetch.get] Failed inside fencedframe as expected',
+        'backgroundFetch.get is disallowed inside a same-origin fenced frame');
+
+      const CROSS_ORIGIN_DESTINATION = getRemoteOriginURL(url);
+      await test(
+        CROSS_ORIGIN_DESTINATION,
+        '[backgroundFetch.get] Failed inside fencedframe as expected',
+        'backgroundFetch.get is disallowed inside a cross-origin fenced frame');
+    }, 'backgroundFetch.get in service worker');
+
+    promise_test(async () => {
+      const method = "getIds";
+      const fenced_frame_url = 'resources/background-fetch-sw-inner.https.html';
+      const url = generateURL(fenced_frame_url,
+                              [background_fetch_register_key, method]);
+      await test(
+        url,
+        '[backgroundFetch.getIds] Failed inside fencedframe as expected',
+        'backgroundFetch.getIds is disallowed inside a same-origin fenced frame');
+
+      const CROSS_ORIGIN_DESTINATION = getRemoteOriginURL(url);
+      await test(
+        CROSS_ORIGIN_DESTINATION,
+        '[backgroundFetch.getIds] Failed inside fencedframe as expected',
+        'backgroundFetch.getIds is disallowed inside a cross-origin fenced frame');
+    }, 'backgroundFetch.getIds in service worker');
   </script>
 
 </body>
