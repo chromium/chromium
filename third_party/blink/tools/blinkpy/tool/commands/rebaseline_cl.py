@@ -8,6 +8,7 @@ import itertools
 import json
 import logging
 import optparse
+import re
 
 from blinkpy.common.net.git_cl import GitCL, TryJobStatus
 from blinkpy.common.path_finder import PathFinder
@@ -473,7 +474,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             r.test_name() for r in unexpected_results
             if r.is_missing_baseline() or r.has_non_reftest_mismatch())
 
-        new_failures = self._fetch_tests_with_new_failures(build)
+        test_suite = re.sub('\s*\(.*\)$', '', web_test_results.step_name())
+        new_failures = self._fetch_tests_with_new_failures(build, test_suite)
         if new_failures is None:
             _log.warning('No retry summary available for "%s".',
                          build.builder_name)
@@ -481,8 +483,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             tests = [t for t in tests if t in new_failures]
         return tests
 
-    def _fetch_tests_with_new_failures(self, build):
-        """For a given try job, lists tests that only failed with the patch.
+    def _fetch_tests_with_new_failures(self, build, test_suite):
+        """For a given test suite in the try job, lists tests that only failed
+        with the patch.
 
         If a test failed only with the patch but not without, then that
         indicates that the failure is actually related to the patch and
@@ -491,7 +494,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         If the list of new failures could not be obtained, this returns None.
         """
         results_fetcher = self._tool.results_fetcher
-        content = results_fetcher.fetch_retry_summary_json(build)
+        content = results_fetcher.fetch_retry_summary_json(build, test_suite)
         if content is None:
             return None
         try:

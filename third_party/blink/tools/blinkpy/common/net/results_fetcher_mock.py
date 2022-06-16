@@ -88,7 +88,7 @@ class MockTestResultsFetcher(TestResultsFetcher):
     def set_retry_sumary_json(self, build, content):
         self._canned_retry_summary_json[build] = content
 
-    def fetch_retry_summary_json(self, build):
+    def fetch_retry_summary_json(self, build, test_suite):
         return self._canned_retry_summary_json.get(build)
 
     def get_layout_test_step_names(self, build):

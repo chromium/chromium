@@ -154,8 +154,8 @@ class TestResultsFetcher(object):
                                          builder_name)
 
     @memoized
-    def fetch_retry_summary_json(self, build):
-        """Fetches and returns the text of the archived test_results_summary.json file.
+    def fetch_retry_summary_json(self, build, test_suite):
+        """Fetches and returns the text of the archived *test_results_summary.json file.
 
         This file is expected to contain the results of retrying web tests
         with and without a patch in a try job. It includes lists of tests
@@ -169,8 +169,9 @@ class TestResultsFetcher(object):
         # accessed via test-results, so we download it from GCS directly.
         # There is still a bug in uploading this json file for other platforms than linux.
         # see https://crbug.com/1157202
+        file_name = test_suite + '_' + 'test_results_summary.json'
         return self.web.get_binary('%s/%s' %
-                                   (url_base, 'test_results_summary.json'),
+                                   (url_base, file_name),
                                    return_none_on_404=True)
 
     def accumulated_results_url_base(self, builder_name):
