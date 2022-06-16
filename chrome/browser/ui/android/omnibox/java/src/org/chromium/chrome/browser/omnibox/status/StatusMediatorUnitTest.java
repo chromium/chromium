@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
@@ -30,17 +29,16 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
@@ -57,73 +55,49 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit tests for {@link StatusMediator}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.SEARCH_ENGINE_PROMO_EXISTING_DEVICE)
 public final class StatusMediatorUnitTest {
     private static final String TAG = "StatusMediatorUnitTest";
     private static final String TEST_SEARCH_URL = "https://www.test.com";
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    NewTabPageDelegate mNewTabPageDelegate;
-    @Mock
-    LocationBarDataProvider mLocationBarDataProvider;
-    @Mock
-    UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
-    @Mock
-    SearchEngineLogoUtils mSearchEngineLogoUtils;
-    @Mock
-    Profile mProfile;
-    @Mock
-    LibraryLoader mLibraryLoader;
-    @Mock
-    TemplateUrlService mTemplateUrlService;
-    @Mock
-    PermissionDialogController mPermissionDialogController;
-    @Mock
-    PageInfoIPHController mPageInfoIPHController;
-    @Mock
-    MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
-    @Mock
-    Drawable mStoreIconDrawable;
+    private @Mock NewTabPageDelegate mNewTabPageDelegate;
+    private @Mock LocationBarDataProvider mLocationBarDataProvider;
+    private @Mock UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
+    private @Mock SearchEngineLogoUtils mSearchEngineLogoUtils;
+    private @Mock Profile mProfile;
+    private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock PermissionDialogController mPermissionDialogController;
+    private @Mock PageInfoIPHController mPageInfoIPHController;
+    private @Mock MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
+    private @Mock Drawable mStoreIconDrawable;
 
     Context mContext;
     Resources mResources;
 
     PropertyModel mModel;
     StatusMediator mMediator;
-    Bitmap mBitmap;
     OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
     WindowAndroid mWindowAndroid;
-    LibraryLoader mOriginalLibraryLoader;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mContext = new ContextThemeWrapper(
                 ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
-        mWindowAndroid =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> new WindowAndroid(mContext));
+        mWindowAndroid = new WindowAndroid(mContext);
 
-        mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new PropertyModel(StatusProperties.ALL_KEYS));
-
-        mOriginalLibraryLoader = LibraryLoader.getInstance();
-        doReturn(true).when(mLibraryLoader).isInitialized();
-        LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);
+        mModel = new PropertyModel(StatusProperties.ALL_KEYS);
 
         // By default return google g, but this behavior is overridden in some tests.
         Answer logoAnswer = (invocation) -> {
@@ -138,38 +112,31 @@ public final class StatusMediatorUnitTest {
                 .getSearchEngineLogo(
                         eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any(), any());
 
-        mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         setupStatusMediator(/* isTablet= */ false);
     }
 
     @After
     public void tearDown() {
-        LibraryLoader.setLibraryLoaderForTesting(mOriginalLibraryLoader);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
+        mWindowAndroid.destroy();
     }
 
     private void setupStatusMediator(boolean isTablet) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
-            ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
-                    merchantTrustSignalsCoordinatorObservableSupplier =
-                            new ObservableSupplierImpl<>();
-            mMediator = new StatusMediator(mModel, mResources, mContext,
-                    mUrlBarEditingTextStateProvider, isTablet, mLocationBarDataProvider,
-                    mPermissionDialogController, mSearchEngineLogoUtils,
-                    mTemplateUrlServiceSupplier,
-                    ()
-                            -> mProfile,
-                    mPageInfoIPHController, mWindowAndroid,
-                    merchantTrustSignalsCoordinatorObservableSupplier);
-            mTemplateUrlServiceSupplier.set(mTemplateUrlService);
-            merchantTrustSignalsCoordinatorObservableSupplier.set(mMerchantTrustSignalsCoordinator);
-        });
+        mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
+        ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
+                merchantTrustSignalsCoordinatorObservableSupplier = new ObservableSupplierImpl<>();
+        mMediator = new StatusMediator(mModel, mResources, mContext,
+                mUrlBarEditingTextStateProvider, isTablet, mLocationBarDataProvider,
+                mPermissionDialogController, mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
+                ()
+                        -> mProfile,
+                mPageInfoIPHController, mWindowAndroid,
+                merchantTrustSignalsCoordinatorObservableSupplier);
+        mTemplateUrlServiceSupplier.set(mTemplateUrlService);
+        merchantTrustSignalsCoordinatorObservableSupplier.set(mMerchantTrustSignalsCoordinator);
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_isGoogleLogo() {
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
@@ -182,7 +149,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_isGoogleLogo_hideAfterUnfocusFinished() {
         doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
         setupSearchEngineLogoForTesting(
@@ -195,7 +161,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_isGoogleLogo_noHideIconAfterUnfocusedWhenScrolled() {
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
@@ -210,7 +175,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_isGoogleLogoOnNtp() {
         doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
         setupSearchEngineLogoForTesting(
@@ -224,7 +188,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_isGoogleLogoOnNtpTablet() {
         setupStatusMediator(/* isTablet= */ true);
         doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
@@ -239,7 +202,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_isGoogleLogo_whenScrolled() {
         doReturn(false).when(mLocationBarDataProvider).isLoading();
         doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
@@ -259,7 +221,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
 
-    @UiThreadTest
     public void searchEngineLogo_onTextChanged_globeReplacesIconWhenTextIsSite() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -275,7 +236,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
 
-    @UiThreadTest
     public void searchEngineLogo_onTextChanged_globeReplacesIconWhenAutocompleteSiteContainsText() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -290,7 +250,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_onTextChanged_noGlobeReplacementWhenUrlBarTextDoesNotMatch() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -306,7 +265,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
 
-    @UiThreadTest
     public void searchEngineLogo_onTextChanged_noGlobeReplacementWhenUrlBarTextIsEmpty() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -323,7 +281,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_incognitoStateChanged() {
         mMediator.onIncognitoStateChanged();
 
@@ -333,7 +290,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_incognitoNoIcon() {
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
         setupSearchEngineLogoForTesting(
@@ -348,7 +304,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconChanges() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
@@ -364,7 +319,6 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
 
-    @UiThreadTest
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconNoChanges() {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(false);
@@ -377,7 +331,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void resolveUrlBarTextWithAutocomplete_urlBarTextEmpty() {
         Assert.assertEquals("Empty urlBarText should resolve to empty urlBarTextWithAutocomplete",
                 "", mMediator.resolveUrlBarTextWithAutocomplete(""));
@@ -385,7 +338,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void resolveUrlBarTextWithAutocomplete_urlBarTextMismatchesAutocompleteText() {
         doReturn("https://foo.com").when(mUrlBarEditingTextStateProvider).getTextWithAutocomplete();
         String msg = "The urlBarText should only resolve to the autocomplete text if it's a "
@@ -397,7 +349,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testIncognitoStateChange_goingToIncognito() {
         mMediator.setShowIconsWhenUrlFocused(true);
 
@@ -411,7 +362,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testIncognitoStateChange_backFromIncognito() {
         mMediator.setShowIconsWhenUrlFocused(true);
 
@@ -427,7 +377,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testStatusText() {
         mMediator.setUnfocusedLocationBarWidth(10);
         mMediator.setPageIsOffline(true);
@@ -462,7 +411,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testTemplateUrlServiceChanged() {
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
@@ -478,7 +426,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testSetStoreIconController() {
         mMediator.setStoreIconController();
         verify(mMerchantTrustSignalsCoordinator, times(1)).setOmniboxIconController(eq(mMediator));
@@ -486,7 +433,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testShowStoreIcon_DifferentUrl() {
         setupStoreIconForTesting("test1.com", false);
         // Show the default icon first.
@@ -501,7 +447,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testShowStoreIcon_InIncognito() {
         setupStoreIconForTesting("test.com", true);
         // Show the default icon first.
@@ -516,7 +461,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testShowStoreIcon() {
         setupStoreIconForTesting("test.com", false);
         // Show the default icon first.
@@ -550,7 +494,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testShowStoreIcon_NotEligibleToShowIph() {
         setupStoreIconForTesting("test.com", false);
         // Show the default icon first.
