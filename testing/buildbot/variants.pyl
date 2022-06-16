@@ -989,8 +989,8 @@
   'CROS_EVE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '102.0.5005.75',
-      'cros_img': 'eve-release/R102-14695.85.0',
+      'cros_chrome_version': '102.0.5005.125',
+      'cros_img': 'eve-release/R102-14695.107.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
@@ -1034,8 +1034,8 @@
     'CROS_HANA_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '102.0.5005.75',
-      'cros_img': 'hana-release/R102-14695.85.0',
+      'cros_chrome_version': '102.0.5005.125',
+      'cros_img': 'hana-release/R102-14695.107.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_STABLE',
@@ -1142,8 +1142,8 @@
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '102.0.5005.75',
-      'cros_img': 'strongbad-release/R102-14695.85.0',
+      'cros_chrome_version': '102.0.5005.125',
+      'cros_img': 'strongbad-release/R102-14695.107.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
