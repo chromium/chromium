@@ -16,8 +16,9 @@ namespace blink {
 bool IsValidFencedFrameURL(const GURL& url) {
   if (!url.is_valid())
     return false;
-  return url.SchemeIs(url::kHttpsScheme) || url.IsAboutBlank() ||
-         net::IsLocalhost(url);
+  return (url.SchemeIs(url::kHttpsScheme) || url.IsAboutBlank() ||
+          net::IsLocalhost(url)) &&
+         !url.parsed_for_possibly_invalid_spec().potentially_dangling_markup;
 }
 
 const char kURNUUIDprefix[] = "urn:uuid:";
