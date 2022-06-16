@@ -319,6 +319,14 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  shouldShowPolicyIndicator_() {
+    return this.isSimLockPolicyEnabled_ && this.isActiveSim_;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   computeIsSimPinLockRestricted_() {
     return this.isSimLockPolicyEnabled_ && !!this.globalPolicy &&
         !this.globalPolicy.allowCellularSimLock;

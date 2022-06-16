@@ -27,6 +27,10 @@
         margin-inline-end: 10px;
       }
 
+      cr-policy-indicator {
+        margin-inline-end: var(--cr-button-edge-spacing);
+      }
+
       cr-toggle {
         margin-inline-start: var(--cr-button-edge-spacing);
       }
@@ -81,6 +85,11 @@
               [[i18n('networkSimLockedTooltip')]]
           </paper-tooltip>
           <div class="separator"></div>
+        </template>
+        <template is="dom-if" if="[[shouldShowPolicyIndicator_(isActiveSim_,
+            isSimPinLockRestricted_)]]" restamp>
+          <cr-policy-indicator indicator-type="devicePolicy">
+          </cr-policy-indicator>
         </template>
         <cr-toggle id="simLockButton"
             disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_,
