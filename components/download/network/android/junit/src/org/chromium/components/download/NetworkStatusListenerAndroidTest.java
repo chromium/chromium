@@ -15,10 +15,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
@@ -26,7 +28,8 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect;
 /**
  * Unit test for {@link NetworkStatusListenerAndroid} and {@link BackgroundNetworkStatusListener}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class NetworkStatusListenerAndroidTest {
     private static final int NATIVE_PTR = 1;
 
@@ -65,6 +68,21 @@ public class NetworkStatusListenerAndroidTest {
         mJniMocker.mock(NetworkStatusListenerAndroidJni.TEST_HOOKS, mNativeMock);
     }
 
+    private void runBackgroundThread() {
+        // Flush any UI thread tasks first.
+        ShadowLooper.runUiThreadTasks();
+
+        // Run the background thread.
+        ShadowLooper shadowLooper =
+                Shadows.shadowOf(NetworkStatusListenerAndroid.getHelperForTesting()
+                                         .getHandlerForTesting()
+                                         .getLooper());
+        shadowLooper.runToEndOfTasks();
+
+        // Flush any UI thread tasks created by the background thread.
+        ShadowLooper.runUiThreadTasks();
+    }
+
     private void initWithConnectionType(@ConnectionType int connectionType) {
         when(mAutoDetect.getCurrentNetworkState()).thenReturn(mNetworkState);
         when(mNetworkState.getConnectionType()).thenReturn(connectionType);
@@ -77,24 +95,30 @@ public class NetworkStatusListenerAndroidTest {
     public void testGetCurrentConnectionType() {
         initWithConnectionType(ConnectionType.CONNECTION_3G);
 
+        runBackgroundThread();
+
         // The background thread should set the connection type correctly and update the main
         // thread.
-        CriteriaHelper.pollUiThread(
-                () -> mListener.getCurrentConnectionType() == ConnectionType.CONNECTION_3G);
+        Assert.assertEquals(ConnectionType.CONNECTION_3G, mListener.getCurrentConnectionType());
     }
 
     @Test
     @SmallTest
     public void testOnConnectionTypeChanged() {
         initWithConnectionType(ConnectionType.CONNECTION_3G);
-        CriteriaHelper.pollUiThread(
-                () -> mListener.getCurrentConnectionType() == ConnectionType.CONNECTION_3G);
+
+        runBackgroundThread();
+
+        Assert.assertEquals(ConnectionType.CONNECTION_3G, mListener.getCurrentConnectionType());
 
         // Change the connection type on main thread, the connection type should be updated.
         ThreadUtils.runOnUiThreadBlocking(() -> {
             NetworkStatusListenerAndroid.getHelperForTesting().onConnectionTypeChanged(
                     ConnectionType.CONNECTION_5G);
-            Assert.assertEquals(ConnectionType.CONNECTION_5G, mListener.getCurrentConnectionType());
         });
+
+        runBackgroundThread();
+
+        Assert.assertEquals(ConnectionType.CONNECTION_5G, mListener.getCurrentConnectionType());
     }
 }

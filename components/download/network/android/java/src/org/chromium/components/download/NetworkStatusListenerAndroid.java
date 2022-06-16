@@ -96,6 +96,11 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
                 observer.onConnectionTypeChanged(newConnectionType);
             }
         }
+
+        @VisibleForTesting
+        public Handler getHandlerForTesting() {
+            return mNetworkThreadHandler;
+        }
     }
 
     @VisibleForTesting
