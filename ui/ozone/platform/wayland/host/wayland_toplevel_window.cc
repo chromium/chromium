@@ -69,6 +69,11 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
     LOG(ERROR) << "Failed to create a ShellToplevel.";
     return false;
   }
+  screen_coordinates_enabled_ &= shell_toplevel_->SupportsScreenCoordinates();
+  screen_coordinates_enabled_ &= !use_native_frame_;
+
+  if (screen_coordinates_enabled_)
+    shell_toplevel_->EnableScreenCoordinates();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   shell_toplevel_->SetAppId(window_unique_id_);
@@ -88,7 +93,6 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
                             ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
 
-  screen_coordinates_enabled_ &= shell_toplevel_->SupportsScreenCoordinates();
   // TODO(oshima): Change to use DIP.
   if (screen_coordinates_enabled_)
     SetBoundsInPixels(GetBoundsInPixels());

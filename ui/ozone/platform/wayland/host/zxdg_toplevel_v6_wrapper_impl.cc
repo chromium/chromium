@@ -211,4 +211,6 @@ bool ZXDGToplevelV6WrapperImpl::SupportsScreenCoordinates() const {
   return false;
 }
 
+void ZXDGToplevelV6WrapperImpl::EnableScreenCoordinates() {}
+
 }  // namespace ui

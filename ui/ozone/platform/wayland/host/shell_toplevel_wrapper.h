@@ -123,6 +123,10 @@ class ShellToplevelWrapper {
   // Checks if the server supports chrome to control the window position in
   // screen coordinates.
   virtual bool SupportsScreenCoordinates() const = 0;
+
+  // Enables screen coordinates support. This is no-op if the server does not
+  // support the screen coordinates.
+  virtual void EnableScreenCoordinates() = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

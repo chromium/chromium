@@ -53,6 +53,7 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
       const std::string& restore_window_id_source) override;
   void SetSystemModal(bool modal) override;
   bool SupportsScreenCoordinates() const override;
+  void EnableScreenCoordinates() override;
 
   ZXDGSurfaceV6WrapperImpl* zxdg_surface_v6_wrapper() const;
 
