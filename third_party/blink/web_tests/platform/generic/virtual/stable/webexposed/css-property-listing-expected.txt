@@ -153,6 +153,8 @@ All changes to this list should go through Blink's feature review process: http:
     contain-intrinsic-height
     contain-intrinsic-inline-size
     contain-intrinsic-width
+    container-name
+    container-type
     content
     content-visibility
     counter-increment
@@ -562,6 +564,9 @@ All changes to this list should go through Blink's feature review process: http:
     contain-intrinsic-size
         contain-intrinsic-height
         contain-intrinsic-width
+    container
+        container-name
+        container-type
     flex
         flex-basis
         flex-grow

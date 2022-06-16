@@ -536,9 +536,12 @@
       status:  "experimental",
     },
     {
+      // Flag for supporting size and inline-size container-types along with the
+      // @container rules for size queries. Also implies support for container
+      // relative units and inline-size containment.
       // https://drafts.csswg.org/css-contain-3/#container-queries
       name: "CSSContainerQueries",
-      status: "experimental"
+      status: "stable"
     },
     {
       // https://drafts.csswg.org/css-contain-3/#container-lengths

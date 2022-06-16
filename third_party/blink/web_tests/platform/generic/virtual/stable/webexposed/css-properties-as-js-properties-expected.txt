@@ -135,6 +135,9 @@ containIntrinsicHeight
 containIntrinsicInlineSize
 containIntrinsicSize
 containIntrinsicWidth
+container
+containerName
+containerType
 content
 contentVisibility
 counterIncrement

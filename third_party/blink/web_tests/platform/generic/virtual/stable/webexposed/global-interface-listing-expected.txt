@@ -433,6 +433,9 @@ interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
     getter conditionText
     method constructor
+interface CSSContainerRule : CSSConditionRule
+    attribute @@toStringTag
+    method constructor
 interface CSSCounterStyleRule : CSSRule
     attribute @@toStringTag
     getter additiveSymbols
@@ -10247,6 +10250,12 @@ namespace CSS
     method Q
     method ch
     method cm
+    method cqb
+    method cqh
+    method cqi
+    method cqmax
+    method cqmin
+    method cqw
     method deg
     method dpcm
     method dpi
