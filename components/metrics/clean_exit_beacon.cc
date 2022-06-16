@@ -48,6 +48,7 @@ using ::variations::prefs::kVariationsCrashStreak;
 // This may be modified by SkipCleanShutdownStepsForTesting().
 bool g_skip_clean_shutdown_steps = false;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 // Records the the combined state of two distinct beacons' values in the given
 // histogram.
 void RecordBeaconConsistency(const std::string& histogram_name,
@@ -79,6 +80,7 @@ void RecordBeaconConsistency(const std::string& histogram_name,
   }
   base::UmaHistogramEnumeration(histogram_name, consistency);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
 // Increments kVariationsCrashStreak if |did_previous_session_exit_cleanly| is
 // false. Also, emits the crash streak to a histogram.
@@ -262,8 +264,6 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
           beacon_file_contents->FindKey(prefs::kStabilityExitedCleanly)
               ->GetBool());
     }
-    RecordBeaconConsistency("UMA.CleanExitBeacon.BeaconFileConsistency",
-                            beacon_file_beacon_value, local_state_beacon_value);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
     RecordBeaconConsistency("UMA.CleanExitBeaconConsistency3",
                             beacon_file_beacon_value, backup_beacon_value);
