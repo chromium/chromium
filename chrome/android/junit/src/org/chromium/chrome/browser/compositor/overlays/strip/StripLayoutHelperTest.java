@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -20,6 +21,8 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.After;
 import org.junit.Before;
@@ -112,7 +115,10 @@ public class StripLayoutHelperTest {
 
     @After
     public void tearDown() {
-        if (mStripLayoutHelper != null) mStripLayoutHelper.stopReorderModeForTesting();
+        if (mStripLayoutHelper != null) {
+            mStripLayoutHelper.stopReorderModeForTesting();
+            mStripLayoutHelper.setTabAtPositionForTesting(null);
+        }
     }
 
     /**
@@ -676,6 +682,67 @@ public class StripLayoutHelperTest {
 
         // Assert: Expand duration is 450.
         assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 450);
+    }
+
+    @Test
+    public void testOnLongPress_OnTab() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Long press on second tab.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
+
+        // Verify that we enter reorder mode.
+        assertTrue("Should be in reorder mode after long press on tab.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        assertFalse("Should not show tab menu after long press on tab.",
+                mStripLayoutHelper.isTabMenuShowing());
+    }
+
+    @Test
+    public void testOnLongPress_OnCloseButton() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Mock tab's view.
+        View tabView = new View(mActivity);
+        tabView.setLayoutParams(new MarginLayoutParams(150, 50));
+        when(mModel.getTabAt(1).getView()).thenReturn(tabView);
+
+        // Long press on second tab's close button.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
+
+        // Verify that we show the "Close all tabs" popup menu.
+        assertFalse("Should not be in reorder mode after long press on tab close button.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        assertTrue("Should show tab menu after long press on tab close button.",
+                mStripLayoutHelper.isTabMenuShowing());
+    }
+
+    @Test
+    public void testOnLongPress_OffTab() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Long press past the last tab.
+        mStripLayoutHelper.setTabAtPositionForTesting(null);
+        mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
+
+        // Verify that we show the "Close all tabs" popup menu.
+        assertFalse("Should not be in reorder mode after long press on empty space on tab strip.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        assertFalse("Should not show after long press on empty space on tab strip.",
+                mStripLayoutHelper.isTabMenuShowing());
     }
 
     @Test
