@@ -155,7 +155,9 @@ async function fetchGooglePhotosEnabled(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   // Whether access is allowed should only be fetched once.
-  assert(store.data.wallpaper.googlePhotos.enabled === undefined);
+  if (store.data.wallpaper.googlePhotos.enabled !== undefined) {
+    return;
+  }
 
   store.dispatch(action.beginLoadGooglePhotosEnabledAction());
   const {state} = await provider.fetchGooglePhotosEnabled();
