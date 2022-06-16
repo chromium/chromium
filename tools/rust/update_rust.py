@@ -27,14 +27,14 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = 'f001f930'
+RUST_REVISION = '37a42258'
 RUST_SUB_REVISION = 1
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    '6b1c61d494ad447f41c8ae3b9b3239626eecac00e0f0b793b844e0761133dc37')
+    '8e8295e235db133045f0321980bc99e4a5c16e64d87e60867357b6e7bab34eb7')
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
