@@ -8562,8 +8562,7 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1298286) {
   gfx::FontList font_list;
   gfx::Rect field(2119635455, font_list.GetHeight());
 
-  std::unique_ptr<gfx::RenderText> render_text =
-      gfx::RenderText::CreateRenderText();
+  RenderText* render_text = GetRenderText();
   render_text->SetFontList(font_list);
   render_text->SetHorizontalAlignment(ALIGN_RIGHT);
   render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_UI);
@@ -8571,7 +8570,7 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1298286) {
   render_text->SetDisplayRect(field);
   render_text->SetCursorEnabled(true);
 
-  gfx::test::RenderTextTestApi render_text_test_api(render_text.get());
+  gfx::test::RenderTextTestApi render_text_test_api(render_text);
   render_text_test_api.SetGlyphWidth(2016371456);
 
   EXPECT_FALSE(render_text->multiline());
@@ -8592,8 +8591,7 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1299054) {
   gfx::FontList font_list;
   gfx::Rect field(-1334808765, font_list.GetHeight());
 
-  std::unique_ptr<gfx::RenderText> render_text =
-      gfx::RenderText::CreateRenderText();
+  RenderText* render_text = GetRenderText();
   render_text->SetFontList(font_list);
   render_text->SetHorizontalAlignment(ALIGN_CENTER);
   render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_TEXT);
@@ -8601,7 +8599,7 @@ TEST_F(RenderTextTest, Clusterfuzz_Issue_1299054) {
   render_text->SetDisplayRect(field);
   render_text->SetCursorEnabled(false);
 
-  gfx::test::RenderTextTestApi render_text_test_api(render_text.get());
+  gfx::test::RenderTextTestApi render_text_test_api(render_text);
   render_text_test_api.SetGlyphWidth(1778384896);
 
   const Vector2d& offset = render_text->GetUpdatedDisplayOffset();
