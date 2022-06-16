@@ -82,6 +82,7 @@ source_set("browser") {
     "//components/payments/content/icon",
     "//components/payments/mojom",
     "//components/services/screen_ai/buildflags",
+    "//components/sqlite_proto",
 
     # TODO(crbug.com/1327384): Remove `permissions_common`.
     "//components/permissions:permissions_common",
@@ -121,6 +122,7 @@ source_set("browser") {
     "//content/browser/notifications:notification_proto",
     "//content/browser/payments:payment_app_proto",
     "//content/browser/prerender:mojo_bindings",
+    "//content/browser/private_aggregation/proto:private_aggregation_budgets_proto",
     "//content/browser/process_internals:mojo_bindings",
     "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
@@ -1405,6 +1407,12 @@ source_set("browser") {
     "prerender/prerender_subframe_navigation_throttle.h",
     "presentation/presentation_service_impl.cc",
     "presentation/presentation_service_impl.h",
+    "private_aggregation/private_aggregation_budget_key.cc",
+    "private_aggregation/private_aggregation_budget_key.h",
+    "private_aggregation/private_aggregation_budget_storage.cc",
+    "private_aggregation/private_aggregation_budget_storage.h",
+    "private_aggregation/private_aggregation_budgeter.cc",
+    "private_aggregation/private_aggregation_budgeter.h",
     "process_internals/process_internals_handler_impl.cc",
     "process_internals/process_internals_handler_impl.h",
     "process_internals/process_internals_ui.cc",
