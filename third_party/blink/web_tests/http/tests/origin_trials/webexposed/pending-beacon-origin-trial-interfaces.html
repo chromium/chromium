@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 PendingBeaconAPI --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+      content="A2Q7URPcc1gthhdoaaNJbDcXitk2BU+wF0siZXajx9cCCrKwD2G5IWoIlonL9kPbOzj4Y7GVUbQQEiXPJ+BT7gUAAABYeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiUGVuZGluZ0JlYWNvbkFQSSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<link rel="help"
+      href="http://crbug.com/1293679">
+<title>PendingBeacon API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+  test(t => {
+    OriginTrialsHelper.check_interfaces_exist(this, ['PendingBeacon']);
+    OriginTrialsHelper.check_properties_exist(this,
+      {
+        'PendingBeacon': [
+          'deactivate',
+          'url',
+          'setData',
+          'sendNow',
+          'method',
+          'pageHideTimeout',
+          'state',
+        ],
+      });
+  }, 'PendingBeacon API interfaces and properties in Origin-Trial enabled document.');
+</script>

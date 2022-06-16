@@ -1821,7 +1821,9 @@
       status: "stable",
     },
     {
-      name: "PendingBeaconAPI"
+      name: "PendingBeaconAPI",
+      origin_trial_feature_name: "PendingBeaconAPI",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "PercentBasedScrolling",
