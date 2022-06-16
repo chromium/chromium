@@ -20,13 +20,13 @@ class ImageSkia;
 namespace extensions {
 
 // Shows a dialog when an extension requires a refresh after gaining access to
-// the current site in order to run its blocked action. When the dialog is
-// accepted, `callback` is invoked. with a booleand indication whether the
-// checkbox (if shown) was checked by the user.
+// the current site in order to run its blocked action. The dialog content is
+// based on whether caller `is_updating_permissions`. When the dialog is
+// accepted, `callback` is invoked.
 void ShowBlockedActionDialog(Browser* browser,
                              const ExtensionId& extension_id,
-                             bool show_checkbox,
-                             base::OnceCallback<void(bool)> callback);
+                             bool is_updating_permissions,
+                             base::OnceClosure callback);
 
 #if BUILDFLAG(IS_CHROMEOS)
 

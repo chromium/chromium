@@ -98,11 +98,10 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
           SitePermissionsHelper(Profile::FromBrowserContext(browser_context_))
               .GetSiteAccess(*extension, url));
 
-      // Display the checkbox so the user has the option to always run the
-      // action on this site.
-      bool show_checkbox = true;
+      // Running the action does not update permissions.
+      constexpr bool update_permissions = false;
       ShowBlockedActionBubble(
-          extension, show_checkbox,
+          extension, update_permissions,
           base::BindOnce(&ExtensionActionRunner::OnBlockedActionBubbleClosed,
                          weak_factory_.GetWeakPtr(), extension->id(), url,
                          kExpectedSiteAccess, kExpectedSiteAccess));
@@ -153,13 +152,9 @@ void ExtensionActionRunner::HandlePageAccessModified(
   int blocked_actions = GetBlockedActions(extension->id());
   // Refresh the page if there are pending actions which mandate a refresh.
   if (blocked_actions & kRefreshRequiredActionsMask) {
-    // TODO(devlin): The bubble text should make it clear that permissions are
-    // granted only after the user accepts the refresh.
-    // Since the user already changed site access, don't display the checkbox
-    // to always run on site.
-    bool show_checkbox = false;
+    constexpr bool update_permissions = true;
     ShowBlockedActionBubble(
-        extension, show_checkbox,
+        extension, update_permissions,
         base::BindOnce(&ExtensionActionRunner::OnBlockedActionBubbleClosed,
                        weak_factory_.GetWeakPtr(), extension->id(),
                        web_contents()->GetLastCommittedURL(), current_access,
@@ -367,8 +362,8 @@ void ExtensionActionRunner::LogUMA() const {
 
 void ExtensionActionRunner::ShowBlockedActionBubble(
     const Extension* extension,
-    bool show_checkbox,
-    base::OnceCallback<void(bool)> callback) {
+    bool update_permissions,
+    base::OnceClosure callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   ExtensionsContainer* const extensions_container =
       browser ? browser->window()->GetExtensionsContainer() : nullptr;
@@ -380,13 +375,12 @@ void ExtensionActionRunner::ShowBlockedActionBubble(
   if (accept_bubble_for_testing_.has_value()) {
     if (*accept_bubble_for_testing_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), bubble_is_checked_for_testing_));
+          FROM_HERE, base::BindOnce(std::move(callback)));
     }
     return;
   }
 
-  ShowBlockedActionDialog(browser, extension->id(), show_checkbox,
+  ShowBlockedActionDialog(browser, extension->id(), update_permissions,
                           std::move(callback));
 }
 
@@ -394,8 +388,7 @@ void ExtensionActionRunner::OnBlockedActionBubbleClosed(
     const std::string& extension_id,
     const GURL& page_url,
     SitePermissionsHelper::SiteAccess current_access,
-    SitePermissionsHelper::SiteAccess new_access,
-    bool is_checked) {
+    SitePermissionsHelper::SiteAccess new_access) {
   // Blocked action dialog could have only be shown if the extension's action
   // was blocked, which means the current site access must be "on click".
   DCHECK_EQ(current_access, SitePermissionsHelper::SiteAccess::kOnClick);
@@ -409,14 +402,6 @@ void ExtensionActionRunner::OnBlockedActionBubbleClosed(
                                    .GetByID(extension_id);
   if (!extension)
     return;
-
-  // If the user selected the checkbox, always grant access to this site. Note
-  // that the checkbox should only be visible if the dialog wasn't triggered
-  // after a site access change (which would be evidenced in `new_access`).
-  if (is_checked) {
-    DCHECK_EQ(current_access, new_access);
-    new_access = SitePermissionsHelper::SiteAccess::kOnSite;
-  }
 
   if (current_access != new_access) {
     UpdatePageAccessSettings(extension, current_access, new_access);

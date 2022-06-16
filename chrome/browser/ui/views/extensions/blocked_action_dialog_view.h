@@ -13,7 +13,7 @@ class Browser;
 static void ShowBlockedActionDialogView(
     Browser* browser,
     const extensions::ExtensionId& extension_id,
-    bool show_checkbox,
-    base::OnceCallback<void(bool)> callback);
+    bool is_updating_permissions,
+    base::OnceClosure callback);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_BLOCKED_ACTION_DIALOG_VIEW_H_

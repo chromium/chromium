@@ -25,37 +25,27 @@ namespace extensions {
 
 void ShowBlockedActionDialog(Browser* browser,
                              const ExtensionId& extension_id,
-                             bool show_checkbox,
-                             base::OnceCallback<void(bool)> callback) {
-  ShowBlockedActionDialogView(browser, extension_id, show_checkbox,
+                             bool is_updating_permissions,
+                             base::OnceClosure callback) {
+  ShowBlockedActionDialogView(browser, extension_id, is_updating_permissions,
                               std::move(callback));
 }
 
 }  // namespace extensions
 
-namespace {
-
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
-
-}  // namespace
-
 // static
 void ShowBlockedActionDialogView(Browser* browser,
                                  const extensions::ExtensionId& extension_id,
-                                 bool show_checkbox,
-                                 base::OnceCallback<void(bool)> callback) {
+                                 bool is_updating_permissions,
+                                 base::OnceClosure callback) {
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser);
   DCHECK(container);
 
-  auto on_ok_button_clicked = [](ui::DialogModel* dialog_model,
-                                 bool did_show_checkbox,
-                                 base::OnceCallback<void(bool)> callback) {
-    bool checkbox_checked =
-        dialog_model->GetCheckboxByUniqueId(kCheckboxId)->is_checked();
-    std::move(callback).Run(did_show_checkbox && checkbox_checked);
-  };
-
+  // TODO(emiliapaz): Under the new flag, this dialog is also shown when
+  // revoking permissions. Thus, the name `BlockedActionDialog` is not
+  // applicable anymore. Consider renaming this to `ReloadPageBubble` or
+  // something similar.
   ui::DialogModel::Builder dialog_builder;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -64,28 +54,22 @@ void ShowBlockedActionDialogView(Browser* browser,
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     dialog_builder
-        .SetTitle(l10n_util::GetStringFUTF16(
-            IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE,
-            extension->GetActionName()))
+        .SetTitle(
+            is_updating_permissions
+                ? l10n_util::GetStringUTF16(
+                      IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_UPDATE_PERMISSIONS_TITLE)
+                : l10n_util::GetStringFUTF16(
+                      IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE,
+                      extension->GetActionName()))
         .SetIcon(GetIcon(extension, web_contents))
-        .AddBodyText(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-            IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_BODY_TEXT)))
-        .AddOkButton(
-            base::BindOnce(on_ok_button_clicked, dialog_builder.model(),
-                           show_checkbox, std::move(callback)),
-            l10n_util::GetStringUTF16(
-                IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON_LABEL));
-    if (show_checkbox) {
-      dialog_builder.AddCheckbox(
-          kCheckboxId,
-          ui::DialogModelLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_CHECKBOX_LABEL)));
-    }
+        .AddOkButton(base::BindOnce(std::move(callback)),
+                     l10n_util::GetStringUTF16(
+                         IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
   } else {
     dialog_builder
         .SetTitle(l10n_util::GetStringUTF16(
             IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_HEADING))
-        .AddOkButton(base::BindOnce(std::move(callback), /*is_checked=*/false),
+        .AddOkButton(base::BindOnce(std::move(callback)),
                      l10n_util::GetStringUTF16(
                          IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
   }
