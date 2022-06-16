@@ -148,8 +148,12 @@ class AsyncFirstPartySetsAccessDelegateTest
 TEST_F(AsyncFirstPartySetsAccessDelegateTest,
        QueryBeforeReady_ComputeMetadata) {
   base::test::TestFuture<net::FirstPartySetMetadata> future;
-  EXPECT_FALSE(delegate().ComputeMetadata(
-      kSet1Member1, &kSet1Member1, {kSet1Member1}, future.GetCallback()));
+  {
+    // Force deallocation to provoke a UAF if the impl just copies the pointer.
+    net::SchemefulSite local_member1(kSet1Member1);
+    EXPECT_FALSE(delegate().ComputeMetadata(
+        kSet1Member1, &local_member1, {kSet1Member1}, future.GetCallback()));
+  }
 
   delegate_remote()->NotifyReady();
 

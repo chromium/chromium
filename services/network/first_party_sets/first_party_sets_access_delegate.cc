@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/stl_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/first_party_set_metadata.h"
 
@@ -51,10 +52,10 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
     // destroyed.
-    EnqueuePendingQuery(
-        base::BindOnce(&FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke,
-                       base::Unretained(this), site, top_frame_site,
-                       party_context, std::move(callback)));
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke,
+        base::Unretained(this), site, base::OptionalFromPtr(top_frame_site),
+        party_context, std::move(callback)));
     return absl::nullopt;
   }
 
@@ -120,7 +121,7 @@ FirstPartySetsAccessDelegate::FindOwners(
 
 void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    const absl::optional<net::SchemefulSite> top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -129,8 +130,9 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
       callbacks = base::SplitOnceCallback(std::move(callback));
 
   absl::optional<net::FirstPartySetMetadata> sync_result =
-      manager_->ComputeMetadata(site, top_frame_site, party_context,
-                                context_config_, std::move(callbacks.first));
+      manager_->ComputeMetadata(site, base::OptionalOrNullptr(top_frame_site),
+                                party_context, context_config_,
+                                std::move(callbacks.first));
 
   if (sync_result.has_value())
     std::move(callbacks.second).Run(std::move(sync_result.value()));

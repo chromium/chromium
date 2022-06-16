@@ -254,19 +254,25 @@ class AsyncPopulatedFirstPartySetsManagerTest
 
 TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
        QueryBeforeReady_ComputeMetadata) {
-  net::SchemefulSite member(GURL("https://member1.test"));
-  net::SchemefulSite owner(GURL("https://example.test"));
-
   base::test::TestFuture<net::FirstPartySetMetadata> future;
-  EXPECT_FALSE(manager().ComputeMetadata(
-      member, &member, {member}, fps_context_config(), future.GetCallback()));
+  {
+    // Force deallocation to provoke a UAF if the impl just copies the pointer.
+    net::SchemefulSite member(GURL("https://member1.test"));
+
+    EXPECT_FALSE(manager().ComputeMetadata(
+        member, &member, {member}, fps_context_config(), future.GetCallback()));
+  }
 
   Populate();
 
-  EXPECT_EQ(future.Get(),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+  {
+    net::SchemefulSite owner(GURL("https://example.test"));
+
+    EXPECT_EQ(future.Get(),
+              net::FirstPartySetMetadata(
+                  net::SamePartyContext(Type::kSameParty), &owner, &owner,
+                  net::FirstPartySetsContextType::kHomogeneous));
+  }
 }
 
 TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwner) {
