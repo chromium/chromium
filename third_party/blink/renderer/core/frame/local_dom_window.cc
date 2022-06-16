@@ -179,9 +179,7 @@ class LocalDOMWindow::NetworkStateObserver final
       online_observer_handle_;
 };
 
-LocalDOMWindow::LocalDOMWindow(LocalFrame& frame,
-                               WindowAgent* agent,
-                               bool anonymous)
+LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
     : DOMWindow(frame),
       ExecutionContext(V8PerIsolateData::MainThreadIsolate(), agent),
       script_controller_(MakeGarbageCollected<ScriptController>(
@@ -201,7 +199,6 @@ LocalDOMWindow::LocalDOMWindow(LocalFrame& frame,
       token_(frame.GetLocalFrameToken()),
       post_message_counter_(PostMessagePartition::kSameProcess),
       network_state_observer_(MakeGarbageCollected<NetworkStateObserver>(this)),
-      isAnonymouslyFramed_(anonymous),
       closewatcher_stack_(
           MakeGarbageCollected<CloseWatcher::WatcherStack>(this)) {}
 
@@ -2310,6 +2307,13 @@ void LocalDOMWindow::SetIsInBackForwardCache(bool is_in_back_forward_cache) {
 void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
   total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
   BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+}
+
+bool LocalDOMWindow::isAnonymouslyFramed() const {
+  return GetExecutionContext()
+      ->GetPolicyContainer()
+      ->GetPolicies()
+      .is_anonymous;
 }
 
 bool LocalDOMWindow::IsInFencedFrame() const {

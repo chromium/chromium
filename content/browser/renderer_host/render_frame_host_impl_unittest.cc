@@ -364,16 +364,16 @@ TEST_F(RenderFrameHostImplTest, FaviconURLsResetWithNavigation) {
 }
 
 TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
-  EXPECT_FALSE(main_test_rfh()->anonymous());
+  EXPECT_FALSE(main_test_rfh()->IsAnonymous());
 
   auto* child_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
-  EXPECT_FALSE(child_frame->anonymous());
+  EXPECT_FALSE(child_frame->IsAnonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   child_frame->frame_tree_node()->SetAnonymous(true);
-  EXPECT_FALSE(child_frame->anonymous());
+  EXPECT_FALSE(child_frame->IsAnonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   // A navigation in the anonymous iframe commits an anonymous RFH.
@@ -383,7 +383,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   navigation->Commit();
   child_frame =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
-  EXPECT_TRUE(child_frame->anonymous());
+  EXPECT_TRUE(child_frame->IsAnonymous());
   EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
   // An anonymous document sets a nonce on its network isolation key.
@@ -395,7 +395,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(child_frame)
           ->AppendChild("grandchild"));
-  EXPECT_TRUE(grandchild_frame->anonymous());
+  EXPECT_TRUE(grandchild_frame->IsAnonymous());
   EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
   // The two anonymous RFH's storage keys should have the same nonce.

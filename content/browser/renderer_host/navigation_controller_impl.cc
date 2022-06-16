@@ -3798,8 +3798,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           absl::nullopt /* ad_auction_components */,
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, false /* anonymous */,
-          std::string() /* srcdoc_value */, false /* should_load_data_url */);
+          base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          false /* should_load_data_url */);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

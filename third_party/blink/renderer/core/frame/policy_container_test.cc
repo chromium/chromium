@@ -17,7 +17,8 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
   auto policies = mojom::blink::PolicyContainerPolicies::New(
       network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
       network::mojom::blink::ReferrerPolicy::kNever,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>());
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      /*anonymous=*/false);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 
@@ -30,7 +31,8 @@ TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   auto policies = mojom::blink::PolicyContainerPolicies::New(
       network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
       network::mojom::blink::ReferrerPolicy::kAlways,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>());
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      /*anonymous=*/false);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 

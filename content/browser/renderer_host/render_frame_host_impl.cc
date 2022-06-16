@@ -1572,8 +1572,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       lifecycle_state_(lifecycle_state),
       inner_tree_main_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
-      anonymous_(parent_ ? parent_->anonymous() || frame_tree_node_->anonymous()
-                         : false),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(
@@ -2989,6 +2987,12 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     sandbox_flags_to_commit |= csp->sandbox;
   }
   policy_container_host_->set_sandbox_flags(sandbox_flags_to_commit);
+
+  // The initial empty document's anonymous bit was inherited from the parent
+  // document. The frame's anonymous bit can also turn it one.
+  if (frame_tree_node_->anonymous()) {
+    policy_container_host_->SetIsAnonymous();
+  }
 }
 
 void RenderFrameHostImpl::SetPolicyContainerHost(
@@ -2996,6 +3000,10 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   policy_container_host_ = std::move(policy_container_host);
   policy_container_host_->AssociateWithFrameToken(GetFrameToken(),
                                                   GetProcess()->GetID());
+  // Top-level document are never anonymous.
+  // Note: It is never inherited from the opener, because they are forced to
+  // open windows using noopener.
+  CHECK(parent_ || !IsAnonymous());
 }
 
 void RenderFrameHostImpl::InitializePrivateNetworkRequestPolicy() {
@@ -3604,6 +3612,10 @@ void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
   coop_access_report_manager_.set_coop_reporter(std::move(coop_reporter));
 }
 
+bool RenderFrameHostImpl::IsAnonymous() const {
+  return policy_container_host_->policies().is_anonymous;
+}
+
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
@@ -3736,8 +3748,9 @@ void RenderFrameHostImpl::DidNavigate(
           ? url::Origin::Create(navigation_request->GetWebBundleURL())
           : GetLastCommittedOrigin();
 
-  isolation_info_ = ComputeIsolationInfoInternal(
-      origin, isolation_info_.request_type(), navigation_request->anonymous());
+  isolation_info_ =
+      ComputeIsolationInfoInternal(origin, isolation_info_.request_type(),
+                                   navigation_request->is_anonymous());
 
   // Separately, update the frame's last successful URL except for net error
   // pages, since those do not end up in the correct process after transfers
@@ -3834,25 +3847,25 @@ void RenderFrameHostImpl::SetStorageKey(const blink::StorageKey& storage_key) {
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination) {
-  return ComputeIsolationInfoForNavigation(destination, anonymous());
+  return ComputeIsolationInfoForNavigation(destination, IsAnonymous());
 }
 
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination,
-    bool anonymous) {
+    bool is_anonymous) {
   net::IsolationInfo::RequestType request_type =
       is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
                       : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
-                                      request_type, anonymous);
+                                      request_type, is_anonymous);
 }
 
 net::IsolationInfo
 RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit(
     const url::Origin& main_world_origin,
-    bool anonymous) {
+    bool is_anonymous) {
   return ComputeIsolationInfoInternal(
-      main_world_origin, net::IsolationInfo::RequestType::kOther, anonymous);
+      main_world_origin, net::IsolationInfo::RequestType::kOther, is_anonymous);
 }
 
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
@@ -3862,7 +3875,7 @@ net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
 net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     const url::Origin& frame_origin,
     net::IsolationInfo::RequestType request_type,
-    bool anonymous) {
+    bool is_anonymous) {
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
   net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
 
@@ -3905,25 +3918,25 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     candidate_site_for_cookies = net::SiteForCookies(top_frame_site);
   }
 
-  absl::optional<base::UnguessableToken> nonce = ComputeNonce(anonymous);
+  absl::optional<base::UnguessableToken> nonce = ComputeNonce(is_anonymous);
   return net::IsolationInfo::Create(
       request_type, top_frame_origin, frame_origin, candidate_site_for_cookies,
       std::move(party_context), nonce ? &nonce.value() : nullptr);
 }
 
 absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
-    bool anonymous) {
+    bool is_anonymous) {
   absl::optional<base::UnguessableToken> nonce;
 
   // If it's an anonymous frame tree, use its nonce even if it's within a fenced
   // frame tree to maintain the guarantee that an anonymous frame tree has
   // a unique nonce. Otherwise, use the fenced frame nonce for fenced frames.
   // Note that MPArch will ensure that fenced frame tree within an anonymous
-  // iframe does not have `anonymous` set to true. The ShadowDOM architecture
+  // iframe does not have `is_anonymous` set to true. The ShadowDOM architecture
   // cannot make the same guarantee that MPArch will, and therefore the shadow
   // DOM version and will lead to the anonymous iframe nonce being used
   // (crbug.com/1249865).
-  if (anonymous) {
+  if (is_anonymous) {
     nonce = GetPage().anonymous_iframes_nonce();
   } else {
     nonce = frame_tree_node_->fenced_frame_nonce();
@@ -4003,7 +4016,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
                                      ? new_frame_creator.DeriveNewOpaqueOrigin()
                                      : new_frame_creator;
   isolation_info_ = ComputeIsolationInfoInternal(
-      new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
+      new_frame_origin, net::IsolationInfo::RequestType::kOther, IsAnonymous());
   SetLastCommittedOrigin(new_frame_origin);
 
   SetStorageKey(CalculateStorageKey(
@@ -7167,7 +7180,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   RenderFrameHostImpl* top_level_opener = GetMainFrame();
-  if (anonymous_ || IsNestedWithinFencedFrame()) {
+  if (IsAnonymous() || IsNestedWithinFencedFrame()) {
     params->opener_suppressed = true;
     params->frame_name.clear();
   } else {
@@ -8481,7 +8494,6 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(navigation_request);
   DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
 
-  commit_params->anonymous = navigation_request->anonymous();
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
   bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
@@ -10651,7 +10663,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
   net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
-      origin, net::IsolationInfo::RequestType::kOther, anonymous());
+      origin, net::IsolationInfo::RequestType::kOther, IsAnonymous());
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create
@@ -11620,7 +11632,6 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // Store the required CSP (it will be used by the AncestorThrottle if
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
-  anonymous_ = navigation_request->anonymous();
 
   is_fenced_frame_opaque_url_ =
       navigation_request->is_fenced_frame_opaque_url();

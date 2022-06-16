@@ -730,23 +730,24 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const url::Origin& ComputeTopFrameOrigin(
       const url::Origin& frame_origin) const;
 
-  // Computes the IsolationInfo for this frame to `destination`. Set `anonymous`
-  // to true if the navigation will be loaded as anonymous document (note that
-  // the navigation might be committing an anonymous document even if the
-  // document currently loaded in this RFH is not anonymous, and vice versa).
+  // Computes the IsolationInfo for this frame to `destination`. Set
+  // `is_anonymous` to true if the navigation will be loaded as anonymous
+  // document (note that the navigation might be committing an anonymous
+  // document even if the document currently loaded in this RFH is not
+  // anonymous, and vice versa).
   net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination,
-                                                       bool anonymous);
+                                                       bool is_anonymous);
 
   // Computes the IsolationInfo for this frame to |destination|.
   net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination);
 
   // Computes the IsolationInfo that should be used for subresources, if
   // |main_world_origin_for_url_loader_factory| is committed to this frame. The
-  // boolean `anonymous` specifies whether this frame will commit an anonymous
-  // document.
+  // boolean `is_anonymous` specifies whether this frame will commit an
+  // anonymous document.
   net::IsolationInfo ComputeIsolationInfoForSubresourcesForPendingCommit(
       const url::Origin& main_world_origin_for_url_loader_factory,
-      bool anonymous);
+      bool is_anonymous);
 
   // Computes site_for_cookies for this frame. A non-empty result denotes which
   // domains are considered first-party to the top-level site when resources are
@@ -1868,7 +1869,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_csp_.get();
   }
 
-  bool anonymous() const { return anonymous_; }
+  bool IsAnonymous() const;
 
   bool is_fenced_frame_opaque_url() const {
     return is_fenced_frame_opaque_url_;
@@ -2406,7 +2407,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const;
 
   // Computes the nonce to be used for isolation info and storage key.
-  absl::optional<base::UnguessableToken> ComputeNonce(bool anonymous);
+  absl::optional<base::UnguessableToken> ComputeNonce(bool is_anonymous);
 
   // Return the frame immediately preceding this RenderFrameHost in its parent's
   // children, or nullptr if there is no such node.
@@ -2695,7 +2696,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   net::IsolationInfo ComputeIsolationInfoInternal(
       const url::Origin& frame_origin,
       net::IsolationInfo::RequestType request_type,
-      bool anonymous);
+      bool is_anonymous);
 
   // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
   // This is equivalent to check that |ancestor| is reached by iterating on
@@ -4176,10 +4177,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // https://w3c.github.io/webappsec-cspee/#required-csp,
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
-
-  // Whether the current document is loaded inside an anonymous iframe. Updated
-  // on every cross-document navigation.
-  bool anonymous_ = false;
 
   // Indicates whether the fenced frame is navigated to an opaque url. This flag
   // can only change when the embedder navigates the fenced frame. Any

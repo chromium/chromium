@@ -461,9 +461,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // reporting url. Null, otherwise.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
   absl::optional<WebFencedFrameReporting> fenced_frame_reporting;
-
-  // Whether or not this navigation will commit in an anonymous frame.
-  bool anonymous = false;
 };
 
 }  // namespace blink

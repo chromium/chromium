@@ -6433,13 +6433,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
                      "document.body.appendChild(child);"));
   WaitForLoadStop(web_contents());
 
-  EXPECT_FALSE(main_rfh->anonymous());
+  EXPECT_FALSE(main_rfh->IsAnonymous());
   EXPECT_EQ(false, EvalJs(main_rfh, "window.isAnonymouslyFramed"));
   EXPECT_FALSE(main_rfh->storage_key().nonce().has_value());
 
   EXPECT_EQ(1U, main_rfh->child_count());
   EXPECT_TRUE(main_rfh->child_at(0)->anonymous());
-  EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->anonymous());
+  EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->IsAnonymous());
   EXPECT_EQ(true, EvalJs(main_rfh->child_at(0)->current_frame_host(),
                          "window.isAnonymouslyFramed"));
   EXPECT_FALSE(main_rfh->child_at(0)
@@ -6552,7 +6552,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
     WaitForLoadStop(web_contents());
     EXPECT_EQ(1U, main_rfh->child_count());
     RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
-    EXPECT_EQ(anonymous, iframe->anonymous());
+    EXPECT_EQ(anonymous, iframe->IsAnonymous());
     EXPECT_EQ(anonymous, EvalJs(iframe, "window.isAnonymouslyFramed"));
 
     ResetNetworkState();

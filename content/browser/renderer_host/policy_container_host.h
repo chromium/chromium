@@ -35,7 +35,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
           content_security_policies,
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      network::mojom::WebSandboxFlags sandbox_flags);
+      network::mojom::WebSandboxFlags sandbox_flags,
+      bool is_anonymous);
 
   // Instances of this type are move-only.
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
@@ -96,6 +97,11 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // in addition to those which are set by the embedding frame.
   network::mojom::WebSandboxFlags sandbox_flags =
       network::mojom::WebSandboxFlags::kNone;
+
+  // https://wicg.github.io/anonymous-iframe/#spec-window-attribute
+  // True for window framed inside an anonymous iframe, directly or indirectly
+  // by one of its ancestors
+  bool is_anonymous = false;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -195,6 +201,8 @@ class CONTENT_EXPORT PolicyContainerHost
   void set_sandbox_flags(network::mojom::WebSandboxFlags sandbox_flags) {
     policies_.sandbox_flags = sandbox_flags;
   }
+
+  void SetIsAnonymous() { policies_.is_anonymous = true; }
 
   // Return a PolicyContainer containing copies of the policies and a pending
   // mojo remote that can be used to update policies in this object. If called a

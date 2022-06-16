@@ -697,9 +697,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting_;
 
-  // Whether the document should be anonymous or not.
-  const bool anonymous_ = false;
-
   // Both of these bits must be true to commit preloaded data to the parser when
   // features::kEarlyBodyLoad is enabled.
   bool waiting_for_document_loader_ = false;

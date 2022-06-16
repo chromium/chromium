@@ -844,12 +844,12 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
 }
 
 // Returns true if the parent's COEP policy `parent_coep` should block a child
-// embedded in an <iframe> loaded with `child_coep` policy. The `anonymous`
+// embedded in an <iframe> loaded with `child_coep` policy. The `is_anonymous`
 // parameter reflects whether the child will be loaded as an anonymous document.
 bool CoepBlockIframe(network::mojom::CrossOriginEmbedderPolicyValue parent_coep,
                      network::mojom::CrossOriginEmbedderPolicyValue child_coep,
-                     bool anonymous) {
-  return !anonymous &&
+                     bool is_anonymous) {
+  return !is_anonymous &&
          (network::CompatibleWithCrossOriginIsolated(parent_coep) &&
           !network::CompatibleWithCrossOriginIsolated(child_coep));
 }
@@ -885,12 +885,12 @@ bool IsDocumentToCommitAnonymous(FrameTreeNode* frame,
   // TODO(https://github.com/whatwg/html/issues/6863): Remove the synchronous
   // about:blank navigation.
   if (is_synchronous_about_blank_navigation)
-    return current_document->anonymous();
+    return current_document->IsAnonymous();
 
   // The document to commit will be anonymous if either the iframe element
   // has the 'anonymous' attribute set or the parent document is anonymous.
-  bool parent_anonymous = parent_document && parent_document->anonymous();
-  return parent_anonymous || frame->anonymous();
+  bool parent_is_anonymous = parent_document && parent_document->IsAnonymous();
+  return parent_is_anonymous || frame->anonymous();
 }
 
 // This returns the navigation request's `is_fenced_frame_opaque_url` attribute.
@@ -1227,8 +1227,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<GURL>(), absl::nullopt /* ad_auction_components */,
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, false /* anonymous */,
-          std::string() /* srcdoc_value */, false /* should_load_data_url */);
+          base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          false /* should_load_data_url */);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1352,8 +1352,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           absl::nullopt /* ad_auction_components */,
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, false /* anonymous */,
-          std::string() /* srcdoc_value */, false /* should_load_data_url */);
+          base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          false /* should_load_data_url */);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -1371,7 +1371,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       false /* was_opener_suppressed */, false /* is_pdf */));
 
   absl::optional<base::UnguessableToken> nonce =
-      render_frame_host->ComputeNonce(navigation_request->anonymous());
+      render_frame_host->ComputeNonce(navigation_request->is_anonymous());
   url::Origin top_level_origin =
       render_frame_host->ComputeTopFrameOrigin(origin);
   navigation_request->commit_params_->storage_key =
@@ -1460,8 +1460,9 @@ NavigationRequest::NavigationRequest(
       initiator_frame_token_(begin_params_->initiator_frame_token),
       initiator_process_id_(initiator_process_id),
       was_opener_suppressed_(was_opener_suppressed),
-      anonymous_(IsDocumentToCommitAnonymous(frame_tree_node,
-                                             is_synchronous_renderer_commit)),
+      is_anonymous_(
+          IsDocumentToCommitAnonymous(frame_tree_node,
+                                      is_synchronous_renderer_commit)),
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()),
       is_pdf_(is_pdf),
@@ -4686,14 +4687,14 @@ void NavigationRequest::CommitNavigation() {
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
       render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          origin, anonymous());
+          origin, is_anonymous());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
   // moment. We will be able to use it once the browser can compute the origin
   // to commit.
   absl::optional<base::UnguessableToken> nonce =
-      render_frame_host_->ComputeNonce(anonymous());
+      render_frame_host_->ComputeNonce(is_anonymous());
   url::Origin top_level_origin =
       render_frame_host_->ComputeTopFrameOrigin(GetOriginToCommit());
   commit_params_->storage_key = blink::StorageKey::CreateWithOptionalNonce(
@@ -6826,7 +6827,7 @@ net::IsolationInfo NavigationRequest::GetIsolationInfo() {
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   return frame_tree_node_->current_frame_host()
-      ->ComputeIsolationInfoForNavigation(common_params_->url, anonymous());
+      ->ComputeIsolationInfoForNavigation(common_params_->url, is_anonymous());
 }
 
 bool NavigationRequest::HasSubframeNavigationEntryCommitted() {
@@ -7186,7 +7187,8 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
   // [spec]: 3. If parentPolicy's report-only value is compatible with
   // cross-origin isolation and responsePolicy's value is not, then queue a
   // cross-origin embedder policy inheritance violation [...].
-  if (CoepBlockIframe(parent_coep.report_only_value, coep.value, anonymous())) {
+  if (CoepBlockIframe(parent_coep.report_only_value, coep.value,
+                      is_anonymous())) {
     if (parent_coep_reporter) {
       parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
                                                   /*report_only=*/true);
@@ -7196,7 +7198,7 @@ bool NavigationRequest::CheckResponseAdherenceToCoep(const GURL& url) {
   // [spec]: 4. If parentPolicy's value is not compatible with cross-origin
   // isolation or responsePolicy's value is compatible with cross-origin
   // isolation, then return true.
-  if (!CoepBlockIframe(parent_coep.value, coep.value, anonymous()))
+  if (!CoepBlockIframe(parent_coep.value, coep.value, is_anonymous()))
     return true;
 
   // [spec]: 5 Queue a cross-origin embedder policy inheritance violation with
@@ -7228,7 +7230,7 @@ NavigationRequest::EnforceCOEP() {
   if (!parent_frame) {
     return absl::nullopt;
   }
-  if (anonymous()) {
+  if (is_anonymous()) {
     return absl::nullopt;
   }
   const auto& url = common_params_->url;
@@ -7262,7 +7264,7 @@ bool NavigationRequest::CoopCoepSanityCheck() {
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
       !CompatibleWithCrossOriginIsolated(
           policies.cross_origin_embedder_policy) &&
-      !anonymous_) {
+      !is_anonymous_) {
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;
@@ -7450,7 +7452,8 @@ void NavigationRequest::ComputePoliciesToCommit() {
   DCHECK(!IsErrorPage());
 
   policy_container_builder_->ComputePolicies(
-      url, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags);
+      url, IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags,
+      is_anonymous());
 
   commit_params_->sandbox_flags =
       policy_container_builder_->FinalPolicies().sandbox_flags;

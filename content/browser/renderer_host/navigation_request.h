@@ -692,7 +692,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
-  bool anonymous() const { return anonymous_; }
+  bool is_anonymous() const { return is_anonymous_; }
 
   bool is_fenced_frame_opaque_url() const {
     return is_fenced_frame_opaque_url_;
@@ -1891,7 +1891,7 @@ class CONTENT_EXPORT NavigationRequest
   // Whether the document loaded by this navigation will be committed inside an
   // anonymous iframe. Documents loaded inside anonymous iframes get partitioned
   // storage and use a transient NetworkIsolationKey.
-  const bool anonymous_;
+  const bool is_anonymous_;
 
   // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
   absl::optional<NavigationPolicyContainerBuilder> policy_container_builder_;

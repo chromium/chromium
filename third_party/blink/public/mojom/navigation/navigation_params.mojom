@@ -484,9 +484,6 @@ struct CommitNavigationParams {
   // The time the commit was sent from the browser.
   mojo_base.mojom.TimeTicks commit_sent;
 
-  // Whether or not this navigation will commit in an anonymous frame.
-  bool anonymous = false;
-
   // When URL is about:srcdoc, this carries the srcdoc attribute's value.
   string srcdoc_value;
 

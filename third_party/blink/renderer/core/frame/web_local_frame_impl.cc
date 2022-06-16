@@ -2198,6 +2198,12 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   // Inherit policy container from parent.
   mojom::blink::PolicyContainerPoliciesPtr policy_container_data =
       GetFrame()->DomWindow()->GetPolicyContainer()->GetPolicies().Clone();
+
+  // The initial empty document's anonymous bit is the union of:
+  // - its parent's anonymous bit.
+  // - its frame's anonymous attribute.
+  policy_container_data->is_anonymous |= owner_element->Anonymous();
+
   std::unique_ptr<PolicyContainer> policy_container =
       std::make_unique<PolicyContainer>(std::move(policy_container_remote),
                                         std::move(policy_container_data));

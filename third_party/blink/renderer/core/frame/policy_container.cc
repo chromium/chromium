@@ -37,7 +37,8 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
           container->policies.cross_origin_embedder_policy,
           container->policies.referrer_policy,
           ConvertToMojoBlink(
-              std::move(container->policies.content_security_policies)));
+              std::move(container->policies.content_security_policies)),
+          container->policies.is_anonymous);
   return std::make_unique<PolicyContainer>(std::move(container->remote),
                                            std::move(policies));
 }

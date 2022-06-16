@@ -1008,7 +1008,6 @@ void FillMiscNavigationParams(
   navigation_params->origin_agent_cluster_left_as_default =
       commit_params.origin_agent_cluster_left_as_default;
 
-  navigation_params->anonymous = commit_params.anonymous;
   navigation_params->enabled_client_hints.reserve(
       commit_params.enabled_client_hints.size());
   for (auto enabled_hint : commit_params.enabled_client_hints)
@@ -1104,6 +1103,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
           in->policies->referrer_policy,
           ToWebContentSecurityPolicies(
               std::move(in->policies->content_security_policies)),
+          in->policies->is_anonymous,
       },
       std::move(in->remote));
 }

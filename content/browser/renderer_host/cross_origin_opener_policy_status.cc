@@ -204,7 +204,7 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   net::IsolationInfo isolation_info_for_subresources =
       frame_tree_node_->current_frame_host()
           ->ComputeIsolationInfoForSubresourcesForPendingCommit(
-              response_origin, navigation_request_->anonymous());
+              response_origin, navigation_request_->is_anonymous());
   DCHECK(!isolation_info_for_subresources.IsEmpty());
 
   // Set up endpoint if response contains Reporting-Endpoints header.

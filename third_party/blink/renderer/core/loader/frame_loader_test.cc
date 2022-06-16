@@ -166,7 +166,8 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   EXPECT_EQ(*mojom::blink::PolicyContainerPolicies::New(
                 network::mojom::CrossOriginEmbedderPolicyValue::kNone,
                 network::mojom::ReferrerPolicy::kAlways,
-                Vector<network::mojom::blink::ContentSecurityPolicyPtr>()),
+                Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                /*anonymous=*/false),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }
 

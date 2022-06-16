@@ -922,8 +922,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           absl::nullopt /* ad_auction_components */,
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, false /* anonymous */,
-          std::string() /* srcdoc_value */, false /* should_load_data_url */);
+          base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          false /* should_load_data_url */);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

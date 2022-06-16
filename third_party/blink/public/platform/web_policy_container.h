@@ -20,6 +20,7 @@ struct WebPolicyContainerPolicies {
   network::mojom::CrossOriginEmbedderPolicyValue cross_origin_embedder_policy;
   network::mojom::ReferrerPolicy referrer_policy;
   WebVector<WebContentSecurityPolicy> content_security_policies;
+  bool is_anonymous;
 };
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled

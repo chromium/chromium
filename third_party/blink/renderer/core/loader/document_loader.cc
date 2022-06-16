@@ -336,7 +336,6 @@ struct SameSizeAsDocumentLoader
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting;
-  bool anonymous;
   bool waiting_for_document_loader;
   bool waiting_for_code_cache;
   std::unique_ptr<ExtraData> extra_data;
@@ -438,7 +437,6 @@ DocumentLoader::DocumentLoader(
           params_->is_cross_site_cross_browsing_context_group),
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
-      anonymous_(params_->anonymous),
       extra_data_(std::move(extra_data)) {
   DCHECK(frame_);
 
@@ -587,7 +585,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       CopyInitiatorOriginTrials(initiator_origin_trial_features_);
   params->force_enabled_origin_trials =
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
-  params->anonymous = anonymous_;
   for (const auto& pair : early_hints_preloaded_resources_)
     params->early_hints_preloaded_resources.push_back(pair.key);
   if (ad_auction_components_) {
@@ -2067,13 +2064,13 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
 
 bool ShouldReuseDOMWindow(LocalDOMWindow* window,
                           SecurityOrigin* security_origin,
-                          bool anonymous) {
+                          bool window_anonymous_matching) {
   if (!window) {
     return false;
   }
 
   // Anonymous is tracked per-Window, so if it does not match, do not reuse it.
-  if (anonymous != window->isAnonymouslyFramed()) {
+  if (!window_anonymous_matching) {
     return false;
   }
 
@@ -2127,6 +2124,12 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   bool did_have_policy_container = (policy_container_ != nullptr);
 
+  // The old window's PolicyContainer must be accessed before being potentially
+  // extracted below.
+  const bool old_window_is_anonymous =
+      frame_->DomWindow() &&
+      frame_->DomWindow()->GetPolicyContainer()->GetPolicies().is_anonymous;
+
   // DocumentLoader::InitializeWindow is called either on FrameLoader::Init or
   // on FrameLoader::CommitNavigation. FrameLoader::Init always initializes a
   // non null |policy_container_|. If |policy_container_| is null, this is
@@ -2146,6 +2149,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   // Every window must have a policy container.
   DCHECK(policy_container_);
+
+  const bool window_anonymous_matching =
+      old_window_is_anonymous == policy_container_->GetPolicies().is_anonymous;
 
   ContentSecurityPolicy* csp = CreateCSP();
 
@@ -2197,12 +2203,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
-                            anonymous_)) {
+                            window_anonymous_matching)) {
     auto* agent = GetWindowAgentForOrigin(
         frame_.Get(), security_origin.get(), origin_agent_cluster,
         origin_agent_cluster_left_as_default_);
-    frame_->SetDOMWindow(
-        MakeGarbageCollected<LocalDOMWindow>(*frame_, agent, anonymous_));
+    frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
 
     if (origin_policy_.has_value()) {
       // Convert from WebVector<WebString> to WTF::Vector<WTF::String>

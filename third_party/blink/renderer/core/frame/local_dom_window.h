@@ -117,7 +117,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   static LocalDOMWindow* From(const ScriptState*);
 
-  LocalDOMWindow(LocalFrame&, WindowAgent*, bool anonymous);
+  LocalDOMWindow(LocalFrame&, WindowAgent*);
   ~LocalDOMWindow() override;
 
   // Returns the token identifying the frame that this ExecutionContext was
@@ -470,7 +470,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
 
   // Whether the window is anonymous or not.
-  bool isAnonymouslyFramed() const { return isAnonymouslyFramed_; }
+  bool isAnonymouslyFramed() const;
 
   bool IsInFencedFrame() const override;
 
@@ -602,10 +602,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // due to back-forward cache. This number gets reset when the frame gets out
   // of the back-forward cache.
   size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
-
-  // Anonymous Iframe:
-  // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
-  const bool isAnonymouslyFramed_;
 
   // Collection of fenced frame APIs.
   // https://github.com/shivanigithub/fenced-frame/issues/14

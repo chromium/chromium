@@ -182,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, nullptr);
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
-  builder.ComputePolicies(GURL(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   // This must be called on a task runner, hence the need for this test to be
   // a browser test and not a simple unit test.
@@ -232,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.AddContentSecurityPolicy(MakeTestCSP());
 
   builder.ComputePolicies(AboutBlankUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
@@ -276,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   builder.AddContentSecurityPolicy(MakeTestCSP());
 
   builder.ComputePolicies(AboutSrcdocUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }
@@ -320,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   builder.ComputePolicies(AboutBlankUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePoliciesForError(false,
@@ -416,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   PolicyContainerPolicies history_policies = builder.HistoryPolicies()->Clone();
 
   builder.ComputePolicies(GURL("http://foo.test"), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
 
@@ -424,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
   builder.ComputePolicies(AboutBlankUrl(), false,
-                          network::mojom::WebSandboxFlags::kNone);
+                          network::mojom::WebSandboxFlags::kNone,
+                          /*anonymous=*/false);
 
   EXPECT_EQ(builder.FinalPolicies(), history_policies);
 }

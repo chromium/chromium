@@ -717,7 +717,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   navigation->Commit();
   child_document =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
-  EXPECT_TRUE(child_document->anonymous());
+  EXPECT_TRUE(child_document->IsAnonymous());
   EXPECT_EQ(
       blink::StorageKey::CreateWithNonce(
           url::Origin::Create(kUrl),

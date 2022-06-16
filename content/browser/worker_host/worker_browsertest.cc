@@ -946,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
     WaitForLoadStop(shell()->web_contents());
     EXPECT_EQ(1U, main_rfh->child_count());
     RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
-    EXPECT_EQ(anonymous, iframe->anonymous());
+    EXPECT_EQ(anonymous, iframe->IsAnonymous());
     EXPECT_EQ(anonymous, EvalJs(iframe, "window.isAnonymouslyFramed"));
     ResetNetworkState();
 
