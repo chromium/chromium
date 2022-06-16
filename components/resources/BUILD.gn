@@ -46,7 +46,10 @@ grit("components_resources") {
     "is_fuchsia=$is_fuchsia",
   ]
 
-  deps = [ ":about_credits" ]
+  deps = [
+    ":about_credits",
+    "//components/flags_ui/resources:build_ts",
+  ]
 
   if (!is_ios) {
     deps += [ "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf" ]

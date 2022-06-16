@@ -1669,7 +1669,6 @@ if (enable_js_type_check) {
     data_deps = [
       "chrome/browser/resources:closure_compile",
       "chrome/test:closure_compile",
-      "components/flags_ui/resources:closure_compile",
       "components/neterror/resources:closure_compile",
       "components/security_interstitials:closure_compile",
       "components/sync/driver/resources:closure_compile",
