@@ -11,7 +11,9 @@ promise_test(async t => {
   };
   const trigger = {event_trigger_data: [{'trigger_data': '2'}]};
   await resetEventLevelReports();
-  registerAttributionSrc('Attribution-Reporting-Register-Source', sourceEvent);
+  registerAttributionSrc(
+      'Attribution-Reporting-Register-Source', sourceEvent,
+      'foo=bar;Secure;HttpOnly;Path=/');
   registerAttributionSrc('Attribution-Reporting-Register-Trigger', trigger);
   const payload = await pollEventLevelReports();
   assert_equals(payload.reports.length, 1);

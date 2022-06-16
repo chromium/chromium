@@ -30,7 +30,9 @@ promise_test(async t => {
     },
   };
   await resetAggregatableReports();
-  registerAttributionSrc('Attribution-Reporting-Register-Source', source);
+  registerAttributionSrc(
+      'Attribution-Reporting-Register-Source', source,
+      'foo=bar;Secure;HttpOnly;Path=/');
   registerAttributionSrc('Attribution-Reporting-Register-Trigger', trigger);
   const payload = await pollAggregatableReports();
   assert_equals(payload.reports.length, 1);

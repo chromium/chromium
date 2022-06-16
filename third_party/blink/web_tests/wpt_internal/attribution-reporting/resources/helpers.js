@@ -26,16 +26,21 @@ const resetAggregatableReports = () =>
 
 const pipeHeaderPattern = /[,)]/g;
 
+const encodeForPipe =
+    urlString => {
+      return urlString.replace(pipeHeaderPattern, '\\$&');
+    }
+
 /**
  * Registers either a source or trigger.
  */
-const registerAttributionSrc = (header, body) => {
+const registerAttributionSrc = (header, body, cookie = '') => {
   const url = new URL('/resources/blank.html', window.location);
   // , and ) in header values must be escaped with \
-  url.searchParams.set(
-      'pipe',
-      `header(${header},${
-          JSON.stringify(body).replace(pipeHeaderPattern, '\\$&')})`);
+  const attributionHeader =
+      `header(${header},${encodeForPipe(JSON.stringify(body))})`;
+  const cookieHeader = `header(Set-Cookie,${encodeForPipe(cookie)})`;
+  url.searchParams.set('pipe', `${attributionHeader}|${cookieHeader}`);
   const image = document.createElement('img');
   image.setAttribute('attributionsrc', url);
 };
