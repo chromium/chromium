@@ -13,6 +13,9 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/libgav1/options.gni")
 
+# This flag sets defaults for the current generation of cast devices.
+is_cast_media_device = is_castos || is_cast_android
+
 declare_args() {
   # Allows distributions to link pulseaudio directly (DT_NEEDED) instead of
   # using dlopen. This helps with automated detection of ABI mismatches and
@@ -47,35 +50,48 @@ declare_args() {
   # Enables AC3/EAC3 audio demuxing. This is enabled only on Chromecast, since
   # it only provides demuxing, and is only useful for AC3/EAC3 audio
   # pass-through to HDMI sink on Chromecast.
-  enable_platform_ac3_eac3_audio = proprietary_codecs && is_chromecast
+  enable_platform_ac3_eac3_audio = proprietary_codecs && is_cast_media_device
 
-  enable_platform_mpeg_h_audio = proprietary_codecs && is_chromecast
+  enable_platform_mpeg_h_audio = proprietary_codecs && is_cast_media_device
 
   # Enables DTS/DTSX audio handling in chromium. This includes demuxing,
   # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_dts_audio = false
 
+  # TODO(crbug.com/1330636): Remove the `is_fuchsia` condition once fuchsia
+  # builds set enable_cast_receiver.
   enable_mse_mpeg2ts_stream_parser =
-      proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
+      proprietary_codecs &&
+      (enable_cast_receiver || is_fuchsia || use_fuzzing_engine)
 
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
   # which are encoded using HEVC require |enable_platform_hevc| to be enabled.
-  enable_platform_dolby_vision = proprietary_codecs && is_chromecast
+  #
+  # TODO(crbug.com/1336055): Revisit the default value for this setting as it
+  # applies to video-capable devices.
+  enable_platform_dolby_vision = proprietary_codecs && is_cast_media_device
 
   # Enable HLS with SAMPLE-AES decryption.
-  enable_hls_sample_aes = proprietary_codecs && (is_chromecast || is_fuchsia)
+  #
+  # TODO(crbug.com/1330636): Remove the `is_fuchsia` condition once fuchsia
+  # builds set enable_cast_receiver.
+  enable_hls_sample_aes =
+      proprietary_codecs && (enable_cast_receiver || is_fuchsia)
 
   # Enable logging override, e.g. enable DVLOGs through level 2 at build time.
   # On Chromecast, these are logged as INFO.
   # On Fuchsia, these are logged as VLOGs.
-  enable_logging_override = is_chromecast || is_fuchsia
+  enable_logging_override = is_cast_media_device || is_fuchsia
 
   enable_dav1d_decoder = !is_ios
 
   # Enable browser managed persistent metadata storage for EME persistent
   # session and persistent usage record session.
-  enable_media_drm_storage = is_android || is_chromecast
+  #
+  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition.
+  enable_media_drm_storage =
+      is_android || is_castos || (is_fuchsia && is_chromecast)
 
   # Enable HLS manifest parser and demuxer.
   enable_hls_demuxer = false
@@ -97,9 +113,30 @@ declare_args() {
   # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
   # platform.
   # TODO(b/194429120): Enable this for Lacros builds.
+  # TODO(crbug.com/1336055): Revisit the default value for this setting as it
+  # applies to video-capable devices.
   enable_platform_hevc =
-      proprietary_codecs && (is_chromecast || enable_hevc_parser_and_hw_decoder)
+      proprietary_codecs &&
+      (enable_hevc_parser_and_hw_decoder || is_cast_media_device)
 }
+
+assert(
+    !enable_platform_ac3_eac3_audio || proprietary_codecs,
+    "proprietary_codecs=true is required for enable_platform_ac3_eac3_audio=true.")
+assert(
+    !enable_platform_mpeg_h_audio || proprietary_codecs,
+    "proprietary_codecs=true is required for enable_platform_mpeg_h_audio=true.")
+assert(
+    !enable_mse_mpeg2ts_stream_parser || proprietary_codecs,
+    "proprietary_codecs=true is required for enable_mse_mpeg2ts_stream_parser=true.")
+assert(
+    !enable_platform_dolby_vision || proprietary_codecs,
+    "proprietary_codecs=true is required for enable_platform_dolby_vision=true.")
+assert(!enable_hls_sample_aes || proprietary_codecs,
+       "proprietary_codecs=true is required for enable_hls_sample_aes=true.")
+assert(
+    !enable_platform_dts_audio || proprietary_codecs,
+    "proprietary_codecs=true is required for enable_platform_dts_audio=true.")
 
 assert(
     !enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
@@ -124,10 +161,14 @@ declare_args() {
   # Enables runtime selection of ALSA library for audio.
   use_alsa = false
 
-  # Alsa should be used on non-Android, non-Mac POSIX systems (excluding CastOS
-  # video builds).
+  # Alsa should be used on all non-Android, non-Mac POSIX systems - with the
+  # exception of CastOS desktop builds.
+  #
+  # TODO(crbug.com/1336055): Remove legacy target_cpu hack used for targeting
+  # desktop Chromecast builds.
   if (is_posix && !is_android && !is_mac &&
-      (!is_castos || is_cast_audio_only)) {
+      (!is_castos || (target_cpu == "x86" || target_cpu == "x64") ||
+       is_cast_audio_only)) {
     use_alsa = true
 
     # Pulse is not supported on Chromecast platforms.
@@ -138,7 +179,7 @@ declare_args() {
     # TODO(crbug.com/986021): We shouldn't have to do this, but it's unclear why
     # our test bots are hanging and all of the ones that don't hang just fall
     # back to ALSA after a connection error anyways.
-    if (!use_cras && !is_chromecast && !is_asan && !is_tsan) {
+    if (!use_cras && !is_castos && !is_asan && !is_tsan) {
       use_pulseaudio = true
     }
   }
@@ -159,7 +200,7 @@ declare_args() {
   # media/cdm/api/content_decryption_module.h. If true, the actually library CDM
   # will be hosted in the mojo CDM service running in the CDM (utility) process.
   # Used for all desktop platforms except Fuchsia (crbug.com/1265618).
-  enable_library_cdms = toolkit_views && !is_fuchsia && !is_chromecast
+  enable_library_cdms = toolkit_views && !is_fuchsia && !is_castos
 }
 
 declare_args() {
@@ -189,7 +230,7 @@ assert(!enable_cdm_host_verification || is_mac || is_win,
 _default_mojo_media_services = []
 _default_mojo_media_host = ""
 
-if (is_chromecast) {
+if (is_cast_media_device) {
   _default_mojo_media_services = cast_mojo_media_services
   _default_mojo_media_host = cast_mojo_media_host
 } else if (is_android) {
@@ -253,7 +294,7 @@ declare_args() {
   # This switch defines whether the Media Remoting implementation will be built.
   # When enabled, media is allowed to be renderer and played back on remote
   # devices when the tab is being casted and other conditions are met.
-  enable_media_remoting = !is_chromecast && !is_ios
+  enable_media_remoting = !is_cast_media_device && !is_ios
 }
 
 declare_args() {
