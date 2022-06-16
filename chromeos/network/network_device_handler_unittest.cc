@@ -588,4 +588,36 @@ TEST_F(NetworkDeviceHandlerTest, ChangePinBlockedByPolicy) {
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinChangeSuccessHistogram, 0);
 }
+
+TEST_F(NetworkDeviceHandlerTest, EnterPinWhenSimPinLockPolicyRestricted) {
+  base::HistogramTester histogram_tester;
+
+  fake_device_client_->GetTestInterface()->SetSimLocked(
+      kDefaultCellularDevicePath, true);
+
+  // Test that removing the PIN Lock requirement does not occur when the policy
+  // is not applied.
+  network_device_handler_->EnterPin(kDefaultCellularDevicePath, kDefaultPin,
+                                    GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockSuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
+
+  network_device_handler_->SetAllowCellularSimLock(
+      /*allow_cellular_sim_lock=*/false);
+
+  // Test that removing the PIN Lock requirement does occur when the policy is
+  // applied.
+  network_device_handler_->EnterPin(kDefaultCellularDevicePath, kDefaultPin,
+                                    GetSuccessCallback(), GetErrorCallback());
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockSuccessHistogram, 1);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
+}
 }  // namespace chromeos

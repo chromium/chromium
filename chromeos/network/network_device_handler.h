@@ -106,7 +106,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
                           base::OnceClosure callback,
                           network_handler::ErrorCallback error_callback) = 0;
 
-  // Sends the PIN code |pin| to the device |device_path|.
+  // Sends the PIN code |pin| to the device |device_path|. If admins have
+  // prohibited SIM PIN locking by policy, this call will tell the device at
+  // |device_path| to remove the PIN lock requirement.
   //
   // See note on |callback| and |error_callback| in the class description
   // above. The operation will fail if:
@@ -147,7 +149,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   //    - The SIM is blocked.
   //
   // This method applies to Cellular devices only. The call will fail with a
-  // "not-supported" error if called on a non-cellular device.
+  // "not-supported" error if called on a non-cellular device. The call will
+  // also fail automatically if administrators have prohibited SIM PIN locking
+  // by policy.
   virtual void ChangePin(const std::string& device_path,
                          const std::string& old_pin,
                          const std::string& new_pin,

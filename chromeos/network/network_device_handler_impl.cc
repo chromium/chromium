@@ -190,6 +190,13 @@ void NetworkDeviceHandlerImpl::EnterPin(
     const std::string& pin,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
+  if (!allow_cellular_sim_lock_) {
+    // Remove the PIN lock requirement.
+    RequirePin(device_path, /*require_pin=*/false, pin, std::move(callback),
+               std::move(error_callback));
+    return;
+  }
+
   NET_LOG(USER) << "Device.EnterPin: " << device_path;
   ShillDeviceClient::Get()->EnterPin(
       dbus::ObjectPath(device_path), pin,
