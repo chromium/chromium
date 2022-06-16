@@ -220,8 +220,7 @@ bool SharedImageBackingFactoryOzone::IsSupported(
       !CanImportGpuMemoryBufferToVulkan(gmb_type)) {
     return false;
   }
-#elif BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
+#elif BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY);
   bool used_by_vulkan =

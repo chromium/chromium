@@ -41,11 +41,11 @@ component("shell_dialogs") {
     "//url",
   ]
 
-  if (is_chromeos || is_chromecast) {
+  if (is_chromeos || is_castos || is_cast_android) {
     sources += [ "shell_dialog_stub.cc" ]
   }
 
-  if (is_linux && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "select_file_dialog_linux.cc",
       "select_file_dialog_linux.h",

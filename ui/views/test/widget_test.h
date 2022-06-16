@@ -20,8 +20,9 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !BUILDFLAG(IS_CHROMECAST)
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #include "ui/display/screen.h"
 #endif
 
@@ -163,8 +164,8 @@ class DesktopWidgetTestInteractive : public DesktopWidgetTest {
   // DesktopWidgetTest
   void SetUp() override;
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !BUILDFLAG(IS_CHROMECAST)
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
   void TearDown() override;
   std::unique_ptr<display::Screen> screen_;
 #endif

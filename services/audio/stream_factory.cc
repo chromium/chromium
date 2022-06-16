@@ -133,8 +133,11 @@ void StreamFactory::CreateOutputStream(
 
   // This is required for multizone audio playback on Cast devices.
   // See //chromecast/media/cast_audio_manager.h for more information.
+  //
+  // TODO(crbug.com/1336055): Determine if this condition should instead be
+  // ENABLE_CAST_RECEIVER && !IS_FUCHSIA.
   const std::string device_id_or_group_id =
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
       (::media::AudioDeviceDescription::IsCommunicationsDevice(
            output_device_id) ||
        group_id.is_empty())

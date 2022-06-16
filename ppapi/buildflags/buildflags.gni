@@ -7,5 +7,5 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 
 declare_args() {
-  enable_plugins = !is_android && !is_ios && !is_chromecast && !is_fuchsia
+  enable_plugins = !is_android && !is_ios && !is_castos && !is_fuchsia
 }

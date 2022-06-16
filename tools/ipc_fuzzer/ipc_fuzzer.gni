@@ -11,7 +11,8 @@ declare_args() {
   # Build IPC fuzzer by default if it's a supported configuration. For
   # sanitizer builds, this needs to be enabled explicitly as they can be slow
   # (especially MSan).
-  enable_ipc_fuzzer =
-      is_clang && !is_component_build && !is_official_build && !is_chromecast &&
-      !using_sanitizer && (is_linux || is_chromeos || is_mac || is_win) && !use_ozone
+  enable_ipc_fuzzer = is_clang && !is_component_build && !is_official_build &&
+                      !using_sanitizer &&
+                      ((is_linux && !is_castos) || is_chromeos || is_mac ||
+                       is_win) && !use_ozone
 }

@@ -11,7 +11,7 @@ import("//pdf/features.gni")
 
 declare_args() {
   # Enables basic printing support and UI.
-  enable_basic_printing = !is_chromecast && !is_ios
+  enable_basic_printing = !is_ios && !is_castos && !is_cast_android
 }
 
 declare_args() {
@@ -24,8 +24,8 @@ declare_args() {
     # For fuzzing, just restrict to chromeos and linux.
     use_cups = true
   } else {
-    use_cups = (is_chromeos_device || is_linux || is_chromeos_lacros ||
-                is_mac) && !is_chromecast && !is_fuchsia
+    use_cups = (is_chromeos_device || (is_linux && !is_castos) ||
+                is_chromeos_lacros || is_mac) && !is_fuchsia
   }
 
   # Enables out-of-process printing. While this definition matches

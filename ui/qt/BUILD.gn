@@ -8,7 +8,7 @@ import("//ui/qt/qt.gni")
 
 assert(use_qt)
 assert(is_linux)
-assert(!is_chromecast)
+assert(!is_castos)
 
 pkg_config("qt5_config") {
   packages = [

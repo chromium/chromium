@@ -23,7 +23,7 @@ namespace features {
 // Runs the tracing service as an in-process browser service.
 const base::Feature kTracingServiceInProcess {
   "TracingServiceInProcess",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

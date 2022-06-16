@@ -45,8 +45,8 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
   ~TimeZoneMonitorLinux() override;
 
   void NotifyClientsFromImpl() {
-#if BUILDFLAG(IS_CHROMECAST)
-    // On Chromecast, ICU's default time zone is already set to a new zone. No
+#if BUILDFLAG(IS_CASTOS)
+    // On CastOS, ICU's default time zone is already set to a new zone. No
     // need to redetect it with detectHostTimeZone() or to update ICU.
     // See http://b/112498903 and http://b/113344065.
     std::unique_ptr<icu::TimeZone> new_zone(icu::TimeZone::createDefault());
@@ -64,7 +64,7 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
     }
 
     UpdateIcuAndNotifyClients(std::move(new_zone));
-#endif  // defined(IS_CHROMECAST)
+#endif  // defined(IS_CASTOS)
   }
 
  private:
