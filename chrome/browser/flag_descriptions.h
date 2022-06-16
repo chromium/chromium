@@ -848,6 +848,9 @@ extern const char kTabSearchMediaTabsDescription[];
 extern const char kTabSwitcherOnReturnName[];
 extern const char kTabSwitcherOnReturnDescription[];
 
+extern const char kHiddenNetworkMigrationName[];
+extern const char kHiddenNetworkMigrationDescription[];
+
 extern const char kHideShelfControlsInTabletModeName[];
 extern const char kHideShelfControlsInTabletModeDescription[];
 

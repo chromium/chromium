@@ -333,6 +333,8 @@ extern const base::Feature kHelpAppSearchServiceIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHibernate;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHiddenNetworkMigration;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHiddenNetworkWarning;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHideArcMediaNotifications;

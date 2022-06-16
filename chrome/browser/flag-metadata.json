@@ -3570,6 +3570,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "hidden-network-migration",
+    "owners": [ "rudranshd", "chadduffin", "hsuregan", "cros-connectivity@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "hidpi-capture",
     "owners": [ "//content/browser/media/capture/OWNERS" ],
     "expiry_milestone": 112
