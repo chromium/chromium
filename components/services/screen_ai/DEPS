@@ -6,4 +6,5 @@ include_rules = [
   "+ui/accessibility/ax_role_properties.h",
   "+ui/accessibility/ax_tree_update.h",
   "+ui/gfx/geometry",
+  "+sandbox/policy"
 ]

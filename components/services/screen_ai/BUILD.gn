@@ -16,6 +16,7 @@ source_set("screen_ai") {
     "//components/services/screen_ai/public/cpp:utilities",
     "//components/services/screen_ai/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//sandbox/policy",
     "//ui/accessibility:ax_base",
   ]
 }
