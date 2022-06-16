@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include <set>
@@ -1842,6 +1843,13 @@ class ProfilePickerLacrosFirstRunBrowserTest : public ProfilePickerTestBase {
 
   base::test::ScopedFeatureList feature_list_{
       switches::kLacrosNonSyncingProfiles};
+
+  // Lifts the timeout to make sure it is not hiding errors where we don't get
+  // the signal that the sync service started.
+  // TODO(https://crbug.com/1324886): Find a better way to safely work around
+  // the sync service stalling issue.
+  testing::ScopedSyncStartupTimeoutOverride sync_startup_timeout_{
+      absl::optional<base::TimeDelta>()};
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;
 };

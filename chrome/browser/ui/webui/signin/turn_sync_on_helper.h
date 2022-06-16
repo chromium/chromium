@@ -50,7 +50,7 @@ class SyncSetupInProgressHandle;
 
 // Handles details of setting the primary account with IdentityManager and
 // turning on sync for an account for which there is already a refresh token.
-class TurnSyncOnHelper : public SyncStartupTracker::Observer {
+class TurnSyncOnHelper {
  public:
   // Behavior when the signin is aborted (by an error or cancelled by the user).
   // The mode has no effect on the sync-is-disabled flow where cancelling always
@@ -148,16 +148,16 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer {
   TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
   TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;
 
-  // SyncStartupTracker::Observer:
-  void SyncStartupCompleted() override;
-  void SyncStartupFailed() override;
-
   // Fakes that sync enabled for testing, but does not create a sync service.
   static void SetShowSyncEnabledUiForTesting(
       bool show_sync_enabled_ui_for_testing);
 
   // Returns true if a `TurnSyncOnHelper` is currently active for `profile`.
   static bool HasCurrentTurnSyncOnHelperForTesting(Profile* profile);
+
+  // Used as callback for `SyncStartupTracker`.
+  // Public for testing.
+  void OnSyncStartupStateChanged(SyncStartupTracker::ServiceStartupState state);
 
  private:
   friend class base::DeleteHelper<TurnSyncOnHelper>;
@@ -174,7 +174,7 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer {
   };
 
   // TurnSyncOnHelper deletes itself.
-  ~TurnSyncOnHelper() override;
+  ~TurnSyncOnHelper();
 
   // Handles can offer sign-in errors.  It returns true if there is an error,
   // and false otherwise.

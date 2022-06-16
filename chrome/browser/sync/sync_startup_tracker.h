@@ -5,62 +5,91 @@
 #ifndef CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 #define CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-// SyncStartupTracker provides a centralized way for observers to detect when
-// SyncService has successfully started up, or when startup has failed
-// due to some kind of error. This code was originally part of SigninTracker
-// but now that sync initialization is no longer a required part of signin,
-// it has been broken out of that class so only those places that care about
-// sync initialization depend on it.
+// `SyncStartupTracker` provides an easier way to wait for `SyncService` to be
+// successfully started up, or to be notified when startup has failed due to
+// some kind of error.
 class SyncStartupTracker : public syncer::SyncServiceObserver {
  public:
-  // Observer interface used to notify observers when sync has started up.
-  class Observer {
-   public:
-    virtual ~Observer() {}
-
-    virtual void SyncStartupCompleted() = 0;
-    virtual void SyncStartupFailed() = 0;
+  enum class ServiceStartupState {
+    // Sync backend is still starting up.
+    kPending,
+    // An error has been detected that prevents the sync backend from starting
+    // up.
+    kError,
+    // Sync startup has completed (i.e. `SyncService::IsEngineInitialized()`
+    // returns true).
+    kComplete,
+    // Sync startup is taking too long. This can only be obtained when waiting
+    // for startup via `SyncStartupTracker`.
+    kTimeout,
   };
 
-  SyncStartupTracker(syncer::SyncService* sync_service, Observer* observer);
+  using SyncStartupStateChangedCallback =
+      base::OnceCallback<void(ServiceStartupState)>;
+
+  // Starts observing the status of `sync_service` and runs `callback` when its
+  // startup completes (or fails). If the tracker is destroyed before `callback`
+  // is run, it will just be dropped without running.
+  SyncStartupTracker(syncer::SyncService* sync_service,
+                     SyncStartupStateChangedCallback callback);
 
   SyncStartupTracker(const SyncStartupTracker&) = delete;
   SyncStartupTracker& operator=(const SyncStartupTracker&) = delete;
 
   ~SyncStartupTracker() override;
 
-  enum SyncServiceState {
-    // Sync backend is still starting up.
-    SYNC_STARTUP_PENDING,
-    // An error has been detected that prevents the sync backend from starting
-    // up.
-    SYNC_STARTUP_ERROR,
-    // Sync startup has completed (i.e. SyncService::IsEngineInitialized()
-    // returns true).
-    SYNC_STARTUP_COMPLETE
-  };
-
   // Returns the current state of the sync service.
-  static SyncServiceState GetSyncServiceState(
+  static ServiceStartupState GetServiceStartupState(
       syncer::SyncService* sync_service);
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  // Checks the current service state and notifies |observer_| if the state
-  // has changed. Note that it is expected that the observer will free this
-  // object, so callers should not reference this object after making this call.
+  // Checks the current service state and notifies the
+  // `sync_startup_status_changed_callback_` if the state has changed. Note that
+  // it is expected that the observer will free this object, so callers should
+  // not reference this object after making this call.
   void CheckServiceState();
+
+  void OnStartupTimeout();
 
   // The SyncService we should track.
   raw_ptr<syncer::SyncService> sync_service_;
 
-  // Weak pointer to the observer to notify.
-  raw_ptr<Observer> observer_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
+
+  base::OneShotTimer timeout_waiter_;
+  bool is_timed_out_ = false;
+
+  SyncStartupStateChangedCallback sync_startup_status_changed_callback_;
+
+  base::WeakPtrFactory<SyncStartupTracker> weak_factory_{this};
 };
+
+namespace testing {
+// Helper to control `SyncStartupTracker`'s timeout mechanism for tests. If it
+// is created with an empty timeout value, it will make the tracker not report
+// timeouts.
+class ScopedSyncStartupTimeoutOverride {
+ public:
+  explicit ScopedSyncStartupTimeoutOverride(
+      absl::optional<base::TimeDelta> wait_timeout);
+  ~ScopedSyncStartupTimeoutOverride();
+
+ private:
+  absl::optional<base::TimeDelta> old_wait_timeout_;
+};
+}  // namespace testing
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_

@@ -32,6 +32,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -1222,7 +1223,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupCompleted();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kComplete);
   CheckDelegateCalls();
 }
 
@@ -1258,7 +1260,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupCompleted();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kComplete);
   CheckDelegateCalls();
 }
 
@@ -1294,7 +1297,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupFailed();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kError);
   CheckDelegateCalls();
 }
 
@@ -1332,7 +1336,8 @@ TEST_F(TurnSyncOnHelperTest,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->SyncStartupFailed();
+  sync_starter->OnSyncStartupStateChanged(
+      SyncStartupTracker::ServiceStartupState::kError);
   CheckDelegateCalls();
 }
 
