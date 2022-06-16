@@ -19,6 +19,15 @@ namespace reporting {
 // This test focuses on the dynamic elements (such as |AccountForRecord|).
 class EventUploadSizeControllerTest : public ::testing::Test {
  protected:
+  void SetUp() override {
+    // Default is disabled
+    ASSERT_FALSE(EventUploadSizeController::Enabler::Get());
+
+    // Enable for testing purposes
+    EventUploadSizeController::Enabler::Set(true);
+    ASSERT_TRUE(EventUploadSizeController::Enabler::Get());
+  }
+
   // Needed by NetworkConditionService.
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -33,8 +42,7 @@ TEST_F(EventUploadSizeControllerTest, AccountForRecordAddUp) {
   EventUploadSizeController event_upload_size_controller(
       network_condition_service,
       /*new_events_rate=*/1U,
-      /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max(),
-      /*enabled=*/true);
+      /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max());
   // This number may change from time to time if we adapt the formula in the
   // future.
   const uint64_t max_upload_size =
@@ -72,6 +80,11 @@ TEST_F(EventUploadSizeControllerTest, AccountForRecordAddUp) {
   ASSERT_TRUE(event_upload_size_controller.IsMaximumUploadSizeReached())
       << "The maximum upload size is not reached when " << max_num_of_records
       << " records of size " << record_size << " have been accounted for.";
+
+  // If disabled, |IsMaximumUploadSizeReached| returns false.
+  EventUploadSizeController::Enabler::Set(false);
+  ASSERT_FALSE(EventUploadSizeController::Enabler::Get());
+  ASSERT_FALSE(event_upload_size_controller.IsMaximumUploadSizeReached());
 }
 
 // TODO(b/214039157): Add test for |BuildEncryptedRecords|.

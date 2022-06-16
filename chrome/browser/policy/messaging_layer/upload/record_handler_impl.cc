@@ -20,6 +20,7 @@
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -238,9 +239,12 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   //      "failedUploadedRecord": ... // SequenceInformation proto
   //      "failureStatus": ... // Status proto
   //    },
+  //    "encryptionSettings": ... // EncryptionSettings proto
   //    "forceConfirm": true, // if present, flag that lastSucceedUploadedRecord
   //                          // is to be accepted unconditionally by client
-  //    "encryptionSettings": ... // EncryptionSettings proto
+  //    // Internal control
+  //    "enableUploadSizeAdjustment": true,  // If present, upload size
+  //                                         // adjustment is enabled.
   //  }
   const base::Value::Dict* last_succeed_uploaded_record =
       last_response_.FindDict("lastSucceedUploadedRecord");
@@ -260,6 +264,14 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   const auto force_confirm_flag = last_response_.FindBool("forceConfirm");
   if (force_confirm_flag.has_value() && force_confirm_flag.value()) {
     force_confirm_ = true;
+  }
+
+  // Handle enableUploadSizeAdjustment flag, if present.
+  const auto enable_upload_size_adjustment =
+      last_response_.FindBool("enableUploadSizeAdjustment");
+  if (enable_upload_size_adjustment.has_value()) {
+    EventUploadSizeController::Enabler::Set(
+        enable_upload_size_adjustment.value());
   }
 
   // Handle the encryption settings.

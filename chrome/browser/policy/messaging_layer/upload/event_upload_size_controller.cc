@@ -16,15 +16,13 @@ namespace reporting {
 EventUploadSizeController::EventUploadSizeController(
     const NetworkConditionService& network_condition_service,
     uint64_t new_events_rate,
-    uint64_t remaining_storage_capacity,
-    bool enabled)
-    : enabled_(enabled),
-      new_events_rate_(new_events_rate > 0 ? new_events_rate : 1),
+    uint64_t remaining_storage_capacity)
+    : new_events_rate_(new_events_rate > 0 ? new_events_rate : 1),
       remaining_storage_capacity_(remaining_storage_capacity),
       max_upload_size_(ComputeMaxUploadSize(network_condition_service)) {}
 
 bool EventUploadSizeController::IsMaximumUploadSizeReached() const {
-  return enabled_ && uploaded_size_ >= max_upload_size_;
+  return Enabler::Get() && uploaded_size_ >= max_upload_size_;
 }
 
 void EventUploadSizeController::AccountForRecord(
@@ -74,5 +72,20 @@ EventUploadSizeController::BuildEncryptedRecords(
     }
   }
   return records;
+}
+
+// Enabler implementation ------------------------------
+
+// static
+std::atomic<bool> EventUploadSizeController::Enabler::enabled_ = false;
+
+// static
+void EventUploadSizeController::Enabler::Set(bool enabled) {
+  enabled_ = enabled;
+}
+
+// static
+bool EventUploadSizeController::Enabler::Get() {
+  return enabled_;
 }
 }  // namespace reporting

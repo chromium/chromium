@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_EVENT_UPLOAD_SIZE_CONTROLLER_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_EVENT_UPLOAD_SIZE_CONTROLLER_H_
 
+#include <atomic>
 #include <cstddef>
 #include <vector>
 
@@ -18,15 +19,25 @@ namespace reporting {
 // after a specified set of records has been uploaded.
 class EventUploadSizeController {
  public:
-  // If |enabled| is false, |IsMaximumUploadSizeReached| would always return
-  // false. For now, |enabled| should always be false in production code.
-  // TODO(b/214039157): A policy needs to be added to control whether to enable
-  // this feature.
+  // Manage the global setting of whether upload size adjustment should be
+  // enabled. If disabled, |IsMaximumUploadSizeReached| would always return
+  // false.
+  class Enabler {
+   public:
+    Enabler() = delete;
+    // Sets whether the upload size adjustment should be enabled.
+    static void Set(bool enabled);
+    // Gets whether the upload size adjustment should be enabled.
+    static bool Get();
+
+   private:
+    static std::atomic<bool> enabled_;
+  };
+
   EventUploadSizeController(
       const NetworkConditionService& network_condition_service,
       uint64_t new_events_rate,
-      uint64_t remaining_storage_capacity,
-      bool enabled = false);
+      uint64_t remaining_storage_capacity);
 
   // Build the vector of encrypted records based on the records in the upload
   // request. Event upload size is adjusted.
@@ -67,8 +78,6 @@ class EventUploadSizeController {
   // Bumps up recorded already uploaded size.
   void RecordUploadedSize(uint64_t uploaded_size);
 
-  // Is adjustment based on network condition enabled?
-  const bool enabled_;
   // The rate (bytes per seconds) at which new events are accepted by missive.
   const uint64_t new_events_rate_;
   // How much local storage is left as informed by missive.

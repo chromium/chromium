@@ -193,8 +193,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
       request.encrypted_record(),
       reporting::EventUploadSizeController(network_condition_service_,
                                            new_events_rate,
-                                           remaining_storage_capacity,
-                                           /*enabled=*/false))};
+                                           remaining_storage_capacity))};
 
   DCHECK(upload_provider_);
   MissiveClient* const missive_client = MissiveClient::Get();
