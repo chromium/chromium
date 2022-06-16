@@ -293,6 +293,9 @@ HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
 HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
                        "sanity/show-directory-picker-no-crash.js")
 
+HEADLESS_PROTOCOL_TEST(ShowFilePickerInterception,
+                       "sanity/show-file-picker-interception.js")
+
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {
  public:
