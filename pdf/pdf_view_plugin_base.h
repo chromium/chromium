@@ -40,6 +40,7 @@ class Vector2dF;
 namespace chrome_pdf {
 
 class PDFiumEngine;
+class PaintReadyRect;
 class Thumbnail;
 class UrlLoader;
 struct AccessibilityActionData;
@@ -183,12 +184,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // engine, and updates the accessibility information.
   void OnGeometryChanged(double old_zoom, float old_device_scale);
 
-  // Updates the geometry of the plugin and its image data if the plugin rect
-  // or the device scale has changed. `new_plugin_rect` must be in device
-  // pixels (with the device scale applied).
-  void UpdateGeometryOnPluginRectChanged(const gfx::Rect& new_plugin_rect,
-                                         float new_device_scale);
-
   // A helper of OnGeometryChanged() which updates the available area and
   // the background parts, and notifies the PDF engine of geometry changes.
   void RecalculateAreas(double old_zoom, float old_device_scale);
@@ -279,6 +274,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const std::string& link_under_cursor() const { return link_under_cursor_; }
 
+  SkBitmap& image_data() { return image_data_; }
+
   virtual bool full_frame() const = 0;
 
   const gfx::Rect& available_area() const { return available_area_; }
@@ -286,18 +283,18 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const gfx::Size& document_size() const { return document_size_; }
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
-  const gfx::Size& plugin_dip_size() const { return plugin_dip_size_; }
+  virtual const gfx::Size& plugin_dip_size() const = 0;
 
   // TODO(crbug.com/1288847): Don't provide direct access to the origin of
   // `plugin_rect_`, as this exposes the unintuitive "paint offset."
-  const gfx::Rect& plugin_rect() const { return plugin_rect_; }
+  virtual const gfx::Rect& plugin_rect() const = 0;
 
   // Sets the new zoom scale.
   void SetZoom(double scale);
 
   double zoom() const { return zoom_; }
 
-  float device_scale() const { return device_scale_; }
+  virtual float device_scale() const = 0;
 
   virtual bool needs_reraster() const = 0;
 
@@ -355,7 +352,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The preparation when painting on the image data buffer for the first
   // time.
-  void PrepareForFirstPaint(std::vector<PaintReadyRect>& ready);
+  virtual void PrepareForFirstPaint(std::vector<PaintReadyRect>& ready) = 0;
 
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates();
@@ -394,22 +391,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // high and there are 10 pages, the height will be 8000).
   gfx::Size document_size_;
 
-  // Size, in DIPs, of plugin rectangle.
-  gfx::Size plugin_dip_size_;
-
-  // The plugin rectangle in device pixels.
-  gfx::Rect plugin_rect_;
-
   // Current zoom factor.
   double zoom_ = 1.0;
-
-  // Current device scale factor. Multiply by `device_scale_` to convert from
-  // viewport to screen coordinates. Divide by `device_scale_` to convert from
-  // screen to viewport coordinates.
-  float device_scale_ = 1.0f;
-
-  // True if we haven't painted the plugin viewport yet.
-  bool first_paint_ = true;
 
   // Whether OnPaint() is in progress or not.
   bool in_paint_ = false;

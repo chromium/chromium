@@ -36,6 +36,8 @@
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
@@ -49,7 +51,6 @@ struct WebAssociatedURLLoaderOptions;
 namespace gfx {
 class PointF;
 class Range;
-class Rect;
 }  // namespace gfx
 
 namespace net {
@@ -362,9 +363,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                               int right_height) override;
   void UserMetricsRecordAction(const std::string& action) override;
   bool full_frame() const override;
+  const gfx::Size& plugin_dip_size() const override;
+  const gfx::Rect& plugin_rect() const override;
+  float device_scale() const override;
   bool needs_reraster() const override;
   base::i18n::TextDirection ui_direction() const override;
   bool received_viewport_message() const override;
+  void PrepareForFirstPaint(std::vector<PaintReadyRect>& ready) override;
 
  private:
   // Metadata about an available preview page.
@@ -411,7 +416,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Recalculates values that depend on scale factors.
   void UpdateScaledValues();
 
-  void OnViewportChanged(const gfx::Rect& plugin_rect_in_css_pixel,
+  void OnViewportChanged(const gfx::Rect& new_plugin_rect_in_css_pixel,
                          float new_device_scale);
 
   // Text editing methods.
@@ -522,6 +527,20 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The background color of the PDF viewer.
   SkColor background_color_ = SK_ColorTRANSPARENT;
+
+  // Size, in DIPs, of plugin rectangle.
+  gfx::Size plugin_dip_size_;
+
+  // The plugin rectangle in device pixels.
+  gfx::Rect plugin_rect_;
+
+  // Current device scale factor. Multiply by `device_scale_` to convert from
+  // viewport to screen coordinates. Divide by `device_scale_` to convert from
+  // screen to viewport coordinates.
+  float device_scale_ = 1.0f;
+
+  // True if we haven't painted the plugin viewport yet.
+  bool first_paint_ = true;
 
   // True if last bitmap was smaller than the screen.
   bool last_bitmap_smaller_ = false;

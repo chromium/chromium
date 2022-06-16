@@ -48,6 +48,7 @@
 #include "pdf/document_layout.h"
 #include "pdf/metrics_handler.h"
 #include "pdf/mojom/pdf.mojom.h"
+#include "pdf/paint_ready_rect.h"
 #include "pdf/parsed_params.h"
 #include "pdf/pdf_accessibility_data_handler.h"
 #include "pdf/pdf_engine.h"
@@ -82,9 +83,13 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSize.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -94,6 +99,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -419,13 +425,25 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     canvas->scale(device_to_css_scale_, device_to_css_scale_);
 
   // Position layer at plugin origin before layer scaling.
-  if (!plugin_rect().origin().IsOrigin())
-    canvas->translate(plugin_rect().x(), plugin_rect().y());
+  if (!plugin_rect_.origin().IsOrigin())
+    canvas->translate(plugin_rect_.x(), plugin_rect_.y());
 
   if (snapshot_scale_ != 1.0f)
     canvas->scale(snapshot_scale_, snapshot_scale_);
 
   canvas->drawImage(snapshot_, 0, 0);
+}
+
+void PdfViewWebPlugin::PrepareForFirstPaint(
+    std::vector<PaintReadyRect>& ready) {
+  if (!first_paint_)
+    return;
+
+  // Fill the image data buffer with the background color.
+  first_paint_ = false;
+  image_data().eraseColor(background_color_);
+  ready.emplace_back(gfx::SkIRectToRect(image_data().bounds()),
+                     image_data().asImage(), /*flush_now=*/true);
 }
 
 void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
@@ -448,7 +466,7 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 
   gfx::PointF scroll_position = client_->GetScrollPosition();
   // Convert back to CSS pixels.
-  scroll_position.Scale(1.0f / device_scale());
+  scroll_position.Scale(1.0f / device_scale_);
   UpdateScroll(scroll_position);
 }
 
@@ -457,16 +475,16 @@ void PdfViewWebPlugin::UpdateScroll(const gfx::PointF& scroll_position) {
     return;
 
   float max_x = std::max(document_size().width() * static_cast<float>(zoom()) -
-                             plugin_dip_size().width(),
+                             plugin_dip_size_.width(),
                          0.0f);
   float max_y = std::max(document_size().height() * static_cast<float>(zoom()) -
-                             plugin_dip_size().height(),
+                             plugin_dip_size_.height(),
                          0.0f);
 
   gfx::PointF scaled_scroll_position(
       base::clamp(scroll_position.x(), 0.0f, max_x),
       base::clamp(scroll_position.y(), 0.0f, max_y));
-  scaled_scroll_position.Scale(device_scale());
+  scaled_scroll_position.Scale(device_scale_);
 
   engine_->ScrolledToXPosition(scaled_scroll_position.x());
   engine_->ScrolledToYPosition(scaled_scroll_position.y());
@@ -728,7 +746,7 @@ void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
 
 void PdfViewWebPlugin::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  float inverse_scale = 1.0f / device_scale();
+  float inverse_scale = 1.0f / device_scale_;
   tickmarks_.clear();
   tickmarks_.reserve(tickmarks.size());
   std::transform(tickmarks.begin(), tickmarks.end(),
@@ -1076,7 +1094,7 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
           .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
           .set_id(cc::PaintImage::GetNextId())
           .TakePaintImage();
-  if (!plugin_rect().IsEmpty())
+  if (!plugin_rect_.IsEmpty())
     InvalidatePluginContainer();
 }
 
@@ -1097,9 +1115,9 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
     set_document_size(engine_->ApplyDocumentLayout(layout_options));
 
-    OnGeometryChanged(zoom(), device_scale());
+    OnGeometryChanged(zoom(), device_scale_);
     if (!document_size().IsEmpty())
-      paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
+      paint_manager().InvalidateRect(gfx::Rect(plugin_rect_.size()));
 
     // Send 100% loading progress only after initial layout negotiated.
     if (last_progress_sent() < 100 &&
@@ -1151,7 +1169,7 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
     // position on screen of the paint.
     gfx::Vector2d paint_offset;
 
-    if (plugin_rect().width() > GetDocumentPixelWidth() * zoom_ratio) {
+    if (plugin_rect_.width() > GetDocumentPixelWidth() * zoom_ratio) {
       // We want to keep the paint in the middle but it must stay in the same
       // position relative to the scroll bars.
       paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
@@ -1164,10 +1182,10 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
     } else if (last_bitmap_smaller_) {
       // When the document width covers the display area's width, we will anchor
       // the scroll bars disregarding where the actual pinch certer is.
-      pinch_center = gfx::Point((plugin_rect().width() / device_scale()) / 2,
-                                (plugin_rect().height() / device_scale()) / 2);
+      pinch_center = gfx::Point((plugin_rect_.width() / device_scale_) / 2,
+                                (plugin_rect_.height() / device_scale_) / 2);
       const double zoom_when_doc_covers_plugin_width =
-          zoom() * plugin_rect().width() / GetDocumentPixelWidth();
+          zoom() * plugin_rect_.width() / GetDocumentPixelWidth();
       paint_offset = gfx::Vector2d(
           (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
           (1 - zoom_ratio) * pinch_center.y());
@@ -1260,7 +1278,7 @@ void PdfViewWebPlugin::OnPrintPreviewLoaded() {
 
   OnGeometryChanged(0, 0);
   if (!document_size().IsEmpty())
-    paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
+    paint_manager().InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewWebPlugin::OnDocumentLoadComplete() {
@@ -1345,6 +1363,21 @@ bool PdfViewWebPlugin::full_frame() const {
 }
 
 // TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+const gfx::Size& PdfViewWebPlugin::plugin_dip_size() const {
+  return plugin_dip_size_;
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+const gfx::Rect& PdfViewWebPlugin::plugin_rect() const {
+  return plugin_rect_;
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
+float PdfViewWebPlugin::device_scale() const {
+  return device_scale_;
+}
+
+// TODO(crbug.com/1302059): Delete after merging with `PdfViewPluginBase`.
 bool PdfViewWebPlugin::needs_reraster() const {
   return needs_reraster_;
 }
@@ -1360,13 +1393,45 @@ bool PdfViewWebPlugin::received_viewport_message() const {
 }
 
 void PdfViewWebPlugin::OnViewportChanged(
-    const gfx::Rect& plugin_rect_in_css_pixel,
+    const gfx::Rect& new_plugin_rect_in_css_pixel,
     float new_device_scale) {
-  css_plugin_rect_ = plugin_rect_in_css_pixel;
+  DCHECK_GT(new_device_scale, 0.0f);
 
-  // `plugin_rect_in_css_pixel` needs to be converted to device pixels before
-  // getting passed into PdfViewPluginBase::UpdateGeometryOnPluginRectChanged().
-  UpdateGeometryOnPluginRectChanged(plugin_rect_in_css_pixel, new_device_scale);
+  css_plugin_rect_ = new_plugin_rect_in_css_pixel;
+
+  if (new_device_scale == device_scale_ &&
+      new_plugin_rect_in_css_pixel == plugin_rect_) {
+    return;
+  }
+
+  const float old_device_scale = device_scale_;
+  device_scale_ = new_device_scale;
+  plugin_rect_ = new_plugin_rect_in_css_pixel;
+
+  // TODO(crbug.com/1250173): We should try to avoid the downscaling in this
+  // calculation, perhaps by migrating off `plugin_dip_size_`.
+  plugin_dip_size_ = gfx::ScaleToEnclosingRect(new_plugin_rect_in_css_pixel,
+                                               1.0f / new_device_scale)
+                         .size();
+
+  paint_manager().SetSize(plugin_rect_.size(), device_scale_);
+
+  // Initialize the image data buffer if the context size changes.
+  const gfx::Size old_image_size =
+      gfx::SkISizeToSize(image_data().dimensions());
+  const gfx::Size new_image_size =
+      PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
+  if (new_image_size != old_image_size) {
+    image_data().allocPixels(
+        SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(new_image_size)));
+    first_paint_ = true;
+  }
+
+  // Skip updating the geometry if the new image data buffer is empty.
+  if (image_data().drawsNothing())
+    return;
+
+  OnGeometryChanged(zoom(), old_device_scale);
 }
 
 bool PdfViewWebPlugin::SelectAll() {
@@ -1573,12 +1638,12 @@ void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
   // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
   // engine settings across a Print Preview reset.
   engine_ = CreateEngine(this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
-  engine_->ZoomUpdated(zoom() * device_scale());
+  engine_->ZoomUpdated(zoom() * device_scale_);
   engine_->PageOffsetUpdated(available_area().OffsetFromOrigin());
   engine_->PluginSizeUpdated(available_area().size());
   engine_->SetGrayscale(is_grayscale);
 
-  paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
+  paint_manager().InvalidateRect(gfx::Rect(plugin_rect_.size()));
 }
 
 void PdfViewWebPlugin::HandleLoadPreviewPageMessage(
