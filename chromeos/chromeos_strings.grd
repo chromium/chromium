@@ -3410,6 +3410,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label for replacing a file.">
         Replace
       </message>
+      <message name="IDS_FEEDBACK_TOOL_ADD_FILE_LABEL" desc="Label for the field of adding a file">
+        Add file
+      </message>
       <message name="IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL" desc="Label showing the e-mail address that will be reported.">
         Email
       </message>

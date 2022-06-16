@@ -60,6 +60,8 @@ export function fileAttachmentTestSuite() {
     await initializePage();
     // Verify the add file label is in the page.
     assertEquals('Add file', getElementContent('#addFileLabel'));
+    // Verify the i18n string is added.
+    assertTrue(page.i18nExists('addFileLabel'));
     // Verify the replace file label is in the page.
     assertEquals('Replace', getElementContent('#replaceFileLabel'));
     // The addFileContainer should be visible when no file is selected.

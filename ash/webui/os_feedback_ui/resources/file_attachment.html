@@ -38,7 +38,8 @@
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <button id="addFileLabel" class="file-input"
       on-click="handleOpenFileInputClick_">
-    <iron-icon icon="attachment:add-file"></iron-icon>Add file
+    <iron-icon icon="attachment:add-file"></iron-icon>
+    [[i18n('addFileLabel')]]
   </button>
 </div>
 <input id="selectFileDialog" type="file" on-change="handleFileSelectChange_"
