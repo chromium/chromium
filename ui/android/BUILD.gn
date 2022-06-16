@@ -577,7 +577,7 @@ android_library("clipboard_java_test_support") {
   ]
 }
 
-android_library("ui_javatests") {
+android_library("ui_unit_device_javatests") {
   testonly = true
 
   sources = [

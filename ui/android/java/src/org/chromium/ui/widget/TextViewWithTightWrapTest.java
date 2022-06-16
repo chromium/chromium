@@ -25,8 +25,8 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /**
-Render tests for {@link TextViewWithTightWrap}.
-*/
+ * Render tests for {@link TextViewWithTightWrap}.
+ */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
     private static final int RENDER_TEST_REVISION = 2;
