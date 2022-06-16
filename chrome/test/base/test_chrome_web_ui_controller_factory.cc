@@ -71,6 +71,8 @@ TestChromeWebUIControllerFactory::CreateWebUIControllerForURL(
                               std::make_unique<TestDataSource>("webui"));
 
   content::WebUIDataSource* source = webui::CreateWebUITestDataSource();
+  if (provider)
+    provider->DataSourceOverrides(source);
   content::WebUIDataSource::Add(profile, source);
 
   return controller;
