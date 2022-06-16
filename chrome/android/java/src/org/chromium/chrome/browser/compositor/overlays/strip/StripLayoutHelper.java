@@ -2265,6 +2265,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mMultiStepTabCloseAnimRunning;
     }
 
+    @VisibleForTesting
+    protected boolean isInReorderModeForTesting() {
+        return mInReorderMode;
+    }
+
     private void setAccessibilityDescription(StripLayoutTab stripTab, Tab tab) {
         if (tab != null) setAccessibilityDescription(stripTab, tab.getTitle(), tab.isHidden());
     }

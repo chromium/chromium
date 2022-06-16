@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -1016,6 +1017,138 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getNewTabButton().getX(), 0.0f);
         assertFalse("MultiStepAnimations should have ended.",
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunning());
+    }
+
+    @Test
+    public void testFlingLeft() {
+        // Arrange
+        initializeTest(false, false, 9, 10);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(-150);
+
+        // Act: Perform a fling and update layout.
+        float velocityX = -7000f;
+        // The velocityX value is used to calculate the scroller.finalX value.
+        mStripLayoutHelper.fling(TIMESTAMP, 0, 0, velocityX, 0);
+        // This will use the scroller.finalX value to update the scrollOffset. The timestamp
+        // value here will determine the fling duration and affects the final offset value.
+        mStripLayoutHelper.updateLayout(TIMESTAMP + 10);
+
+        // Assert: Final scrollOffset.
+        // The calculation of this value is done using the velocity. The velocity along a friction
+        // constant is used to calculate deceleration and distance. That together with the animation
+        // duration determines the final scroll offset position.
+        float expectedOffset = -220.f;
+        assertEquals("Unexpected scroll offset.", expectedOffset,
+                mStripLayoutHelper.getScrollOffset(), 0.0);
+    }
+
+    @Test
+    public void testFlingRight() {
+        // Arrange
+        initializeTest(false, false, 9, 10);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // invoked. That also affects the scrollOffset value. So we call updateLayout before
+        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(-150);
+
+        // Act: Perform a fling and update layout.
+        float velocity = 5000f;
+        // The velocityX value is used to calculate the scroller.finalX value.
+        mStripLayoutHelper.fling(TIMESTAMP, 0, 0, velocity, 0);
+        // This will use the scroller.finalX value to update the scrollOffset. The timestamp
+        // value here will determine the fling duration and affects the final offset value.
+        mStripLayoutHelper.updateLayout(TIMESTAMP + 20);
+
+        // Assert: Final scrollOffset.
+        // The calculation of this value is done using the velocity. The velocity along a friction
+        // constant is used to calculate deceleration and distance. That together with the animation
+        // duration determines the final scroll offset position.
+        float expectedOffset = -50.f;
+        assertEquals("Unexpected scroll offset.", expectedOffset,
+                mStripLayoutHelper.getScrollOffset(), 0.0);
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testDrag_UpdatesScrollOffset_ScrollingStrip() {
+        // Arrange
+        initializeTest(false, false, 9, 10);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // invoked. That also affects the scrollOffset value. So we call updateLayout before
+        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(-150);
+
+        // Act: Drag and update layout.
+        float dragDeltaX = -200.f;
+        float totalY = 85.f; // totalY > 50.f to cross reorder threshold.
+        mStripLayoutHelper.drag(TIMESTAMP, 374.74f, 24.276f, dragDeltaX, -0.304f, -16.078f, totalY);
+
+        float expectedOffset = -350; // mScrollOffset + dragDeltaX = -200 - 150 = -350
+        // Assert scroll offset position.
+        assertEquals("Unexpected scroll offset.", expectedOffset,
+                mStripLayoutHelper.getScrollOffset(), 0.0);
+        // Reorder mode is disabled for scrolling strip.
+        assertFalse(mStripLayoutHelper.isInReorderModeForTesting());
+    }
+
+    @Test
+    public void testDrag_UpdatesScrollOffset_CascadingStrip() {
+        // Arrange
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false);
+        initializeTest(false, false, 0, 10);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // invoked. That also affects the scrollOffset value. So we call updateLayout before
+        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(-250);
+
+        // Act: Drag and update layout.
+        float dragDeltaX = -200.f;
+        mStripLayoutHelper.drag(
+                TIMESTAMP, 374.74f, 24.276f, dragDeltaX, -0.304f, -16.078f, -4.476f);
+
+        // Assert
+        float expectedOffset = -450; // mScrollOffset + dragDeltaX = -200 - 250 = -450
+        assertEquals("Unexpected scroll offset.", expectedOffset,
+                mStripLayoutHelper.getScrollOffset(), 0.0);
+        assertFalse("Reorder mode should not enabled when totalY <= 50.",
+                mStripLayoutHelper.isInReorderModeForTesting());
+    }
+
+    @Test
+    public void testDrag_ReorderMode_CascadingStrip() {
+        // Arrange
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false);
+        initializeTest(false, false, 5, 10);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        // When updateLayout is called for the first time, bringSelectedTabToVisibleArea() method is
+        // invoked. That also affects the scrollOffset value. So we call updateLayout before
+        // performing a fling so that bringSelectedTabToVisible area isn't called after the fling.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        mStripLayoutHelper.setScrollOffsetForTesting(-250);
+
+        // Assert: Ensure reorder mode is disabled when starting drag.
+        assertFalse("Reorder mode should be disabled before drag.",
+                mStripLayoutHelper.isInReorderModeForTesting());
+
+        // Act
+        float dragDeltaX = -200.f;
+        float totalY = 75.f; // Drag with totalY > 50.f to cross reorder mode threshold.
+        mStripLayoutHelper.drag(TIMESTAMP, 374.74f, 24.276f, dragDeltaX, -0.304f, -16.078f, totalY);
+
+        // Assert: Reorder mode is enabled.
+        assertTrue("Reorder mode was not enabled after drag.",
+                mStripLayoutHelper.isInReorderModeForTesting());
+        float expectedOffset = -450; // mScrollOffset + dragDeltaX = -200 - 250 = -450
+        assertEquals("Unexpected scroll offset.", expectedOffset,
+                mStripLayoutHelper.getScrollOffset(), 0.0);
     }
 
     private void setupForAnimations() {
