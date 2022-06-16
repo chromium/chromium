@@ -5287,11 +5287,6 @@ const char kNearbySharingOnePageOnboardingName[] =
 const char kNearbySharingOnePageOnboardingDescription[] =
     "Enable new One-page onboarding workflow for Nearby Share.";
 
-const char kNearbySharingReceiveWifiCredentialsName[] =
-    "Nearby Sharing Receive WiFi Credentials.";
-const char kNearbySharingReceiveWifiCredentialsDescription[] =
-    "Enables receiving WiFi networks using Nearby Share.";
-
 const char kNearbySharingSelfShareAutoAcceptName[] =
     "Nearby Sharing Self Share Auto-Accept";
 const char kNearbySharingSelfShareAutoAcceptDescription[] =

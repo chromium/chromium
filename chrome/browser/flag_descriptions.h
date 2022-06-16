@@ -3025,9 +3025,6 @@ extern const char kNearbySharingBackgroundScanningDescription[];
 extern const char kNearbySharingOnePageOnboardingName[];
 extern const char kNearbySharingOnePageOnboardingDescription[];
 
-extern const char kNearbySharingReceiveWifiCredentialsName[];
-extern const char kNearbySharingReceiveWifiCredentialsDescription[];
-
 extern const char kNearbySharingSelfShareAutoAcceptName[];
 extern const char kNearbySharingSelfShareAutoAcceptDescription[];
 
