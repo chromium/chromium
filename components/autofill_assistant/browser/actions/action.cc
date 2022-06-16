@@ -282,6 +282,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kSetNativeValue:
       out << "SetNativeValue";
       break;
+    case ActionProto::ActionInfoCase::kSetNativeChecked:
+      out << "SetNativeChecked";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

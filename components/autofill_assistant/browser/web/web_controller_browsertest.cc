@@ -3628,4 +3628,32 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SetFieldValueThroughNative) {
   EXPECT_EQ(ACTION_APPLIED, fill_status.proto_status());
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       SetElementCheckedThroughNative) {
+  ClientStatus element_status;
+  ElementFinderResult input;
+  FindElement(Selector({"#option1"}), &element_status, &input);
+  ASSERT_EQ(ACTION_APPLIED, element_status.proto_status());
+
+  int backend_node_id;
+  ASSERT_EQ(ACTION_APPLIED,
+            GetBackendNodeId(input, &backend_node_id).proto_status());
+
+  EXPECT_CALL(autofill_assistant_agent_,
+              SetElementChecked(backend_node_id, true,
+                                /* send_events= */ true, _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  ClientStatus fill_status;
+  base::RunLoop run_loop;
+  web_controller_->SetNativeChecked(
+      true, input,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), run_loop.QuitClosure(),
+                     &fill_status));
+  run_loop.Run();
+
+  EXPECT_EQ(ACTION_APPLIED, fill_status.proto_status());
+}
+
 }  // namespace autofill_assistant

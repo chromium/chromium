@@ -51,6 +51,10 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                        const std::u16string& value,
                        bool send_events,
                        SetElementValueCallback callback) override;
+  void SetElementChecked(int32_t backend_node_id,
+                         bool checked,
+                         bool send_events,
+                         SetElementCheckedCallback callback) override;
 
  private:
   // content::RenderFrameObserver:

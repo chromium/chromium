@@ -229,3 +229,12 @@ message SetNativeValueProto {
   // The value to set.
   optional TextValue value = 2;
 }
+
+// Set the |checked| property of a checkbox or radio button.
+message SetNativeCheckedProto {
+  // The target element. Must be an instance of a |WebInputElement|, and must
+  // have a settable |checked| property, otherwise the action will fail.
+  optional ClientIdProto client_id = 1;
+  // The value to set.
+  optional bool checked = 2;
+}

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace autofill_assistant {
@@ -241,6 +242,60 @@ TEST_F(AutofillAssistantAgentBrowserTest, Overrides) {
       kDummySemanticRole, kDummyObjective,
       /* ignore_objective= */ false,
       /* model_timeout= */ base::Milliseconds(1000), callback.Get());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AutofillAssistantAgentBrowserTest, SetElementCheckedForCheckbox) {
+  LoadHTML(R"(<input type="checkbox" id="checkbox">)");
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+
+  const auto web_element =
+      GetMainRenderFrame()
+          ->GetWebFrame()
+          ->GetDocument()
+          .GetElementById(blink::WebString::FromUTF8("checkbox"))
+          .To<blink::WebInputElement>();
+  autofill_assistant_agent_->SetElementChecked(
+      web_element.GetDevToolsNodeIdForTest(), true,
+      /* send_events= */ true, callback.Get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(web_element.IsChecked(), true);
+}
+
+TEST_F(AutofillAssistantAgentBrowserTest, SetElementCheckedForRadioButton) {
+  LoadHTML(R"(<input type="radio" id="radio_button">)");
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+
+  const auto web_element =
+      GetMainRenderFrame()
+          ->GetWebFrame()
+          ->GetDocument()
+          .GetElementById(blink::WebString::FromUTF8("radio_button"))
+          .To<blink::WebInputElement>();
+  autofill_assistant_agent_->SetElementChecked(
+      web_element.GetDevToolsNodeIdForTest(), true,
+      /* send_events= */ true, callback.Get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(web_element.IsChecked(), true);
+}
+
+TEST_F(AutofillAssistantAgentBrowserTest, SetCheckedFailsForNonCheckableInput) {
+  LoadHTML(R"(<input type="text" id="text_input">)");
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(false));
+
+  const auto web_element =
+      GetMainRenderFrame()->GetWebFrame()->GetDocument().GetElementById(
+          blink::WebString::FromUTF8("text_input"));
+
+  autofill_assistant_agent_->SetElementChecked(
+      web_element.GetDevToolsNodeIdForTest(), true,
+      /* send_events= */ true, callback.Get());
   base::RunLoop().RunUntilIdle();
 }
 

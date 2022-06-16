@@ -1625,21 +1625,26 @@ void WebController::ExecuteJS(
       WebControllerErrorInfoProto::EXECUTE_JS, std::move(callback));
 }
 
-void WebController::SetNativeValue(
-    const std::string& value,
-    const ElementFinderResult& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
+ContentAutofillAssistantDriver* WebController::GetDriverForElement(
+    const ElementFinderResult& element) const {
   if (!element.backend_node_id()) {
     DVLOG(1) << __func__
              << "No backend node id on element intended for native execution.";
-    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
-    return;
+    return nullptr;
   }
 
   auto* render_frame_host = element.render_frame_host();
   DCHECK(render_frame_host);
-  auto* driver = ContentAutofillAssistantDriver::GetOrCreateForRenderFrameHost(
+
+  return ContentAutofillAssistantDriver::GetOrCreateForRenderFrameHost(
       render_frame_host, annotate_dom_model_service_);
+}
+
+void WebController::SetNativeValue(
+    const std::string& value,
+    const ElementFinderResult& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  ContentAutofillAssistantDriver* driver = GetDriverForElement(element);
   if (!driver) {
     std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
     return;
@@ -1647,11 +1652,27 @@ void WebController::SetNativeValue(
   driver->GetAutofillAssistantAgent()->SetElementValue(
       *element.backend_node_id(), base::UTF8ToUTF16(value),
       /* send_events= */ true,
-      base::BindOnce(&WebController::OnSetElementValue,
+      base::BindOnce(&WebController::OnSetNativeExecution,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebController::OnSetElementValue(
+void WebController::SetNativeChecked(
+    bool checked,
+    const ElementFinderResult& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  ContentAutofillAssistantDriver* driver = GetDriverForElement(element);
+  if (!driver) {
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
+    return;
+  }
+  driver->GetAutofillAssistantAgent()->SetElementChecked(
+      *element.backend_node_id(), checked,
+      /* send_events= */ true,
+      base::BindOnce(&WebController::OnSetNativeExecution,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebController::OnSetNativeExecution(
     base::OnceCallback<void(const ClientStatus&)> callback,
     bool success) const {
   std::move(callback).Run(success ? OkClientStatus()

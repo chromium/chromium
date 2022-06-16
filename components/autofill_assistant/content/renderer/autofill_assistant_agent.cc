@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/modules/autofill_assistant/node_signals.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -263,6 +264,46 @@ void AutofillAssistantAgent::SetElementValue(const int32_t backend_node_id,
       target_element.To<blink::WebFormControlElement>();
   target_form_control_element.SetValue(blink::WebString::FromUTF16(value),
                                        send_events);
+  std::move(callback).Run(true);
+}
+
+void AutofillAssistantAgent::SetElementChecked(
+    const int32_t backend_node_id,
+    bool checked,
+    bool send_events,
+    SetElementCheckedCallback callback) {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    VLOG(1) << "Failed to set Element checked state, no frame.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  blink::WebElement target_element =
+      frame->GetDocument().GetElementByDevToolsNodeId(backend_node_id);
+  if (target_element.IsNull()) {
+    VLOG(3) << "Failed to set Element checked state, invalid target.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  blink::WebInputElement web_input_element =
+      target_element.DynamicTo<blink::WebInputElement>();
+  if (web_input_element.IsNull()) {
+    VLOG(3) << "Failed to set Element checked state, target is not an input "
+               "element.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!web_input_element.IsCheckbox() && !web_input_element.IsRadioButton()) {
+    VLOG(3) << "Failed to set Element checked state, target is not a checkbox "
+               "or a radio button.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  web_input_element.SetChecked(checked, send_events);
   std::move(callback).Run(true);
 }
 

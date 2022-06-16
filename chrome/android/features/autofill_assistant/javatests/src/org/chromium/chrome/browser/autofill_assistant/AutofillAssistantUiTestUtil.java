@@ -720,10 +720,11 @@ class AutofillAssistantUiTestUtil {
     }
 
     /**
-     * Retrieves the value of the specified element.
+     * Retrieves the value of a given property of an element.
+     * @return A JSONArray containing the property value as the single element.
      */
-    public static String getElementValue(WebContents webContents, String... elementIds)
-            throws Exception {
+    private static JSONArray getElementProperty(
+            WebContents webContents, String propertyName, String... elementIds) throws Exception {
         if (!checkElementExists(webContents, elementIds)) {
             throw new IllegalArgumentException(Arrays.toString(elementIds) + " does not exist");
         }
@@ -731,11 +732,31 @@ class AutofillAssistantUiTestUtil {
                 new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
         javascriptHelper.evaluateJavaScriptForTests(webContents,
                 "(function() {"
-                        + " return [" + getElementSelectorString(elementIds) + ".value]"
+                        + " return [" + getElementSelectorString(elementIds) + "." + propertyName
+                        + "];"
                         + "})()");
         javascriptHelper.waitUntilHasValue();
         JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
-        return result.getString(0);
+        if (result.length() != 1) {
+            throw new RuntimeException("Expected exactly one element in the result.");
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves whether the element is checked, using the .checked property.
+     */
+    public static boolean getElementChecked(WebContents webContents, String... elementIds)
+            throws Exception {
+        return getElementProperty(webContents, "checked", elementIds).getBoolean(0);
+    }
+
+    /**
+     * Retrieves the value of the specified element.
+     */
+    public static String getElementValue(WebContents webContents, String... elementIds)
+            throws Exception {
+        return getElementProperty(webContents, "value", elementIds).getString(0);
     }
 
     /**

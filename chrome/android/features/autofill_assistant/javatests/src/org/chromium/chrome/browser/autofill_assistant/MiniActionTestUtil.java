@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SendKeyEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendTapEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetElementAttributeProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetNativeCheckedProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetNativeValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDocumentToBecomeInteractiveProto;
@@ -177,11 +178,26 @@ class MiniActionTestUtil {
                                                     .setValue(textValue)
                                                     .build())
                          .build());
+        addReleaseElementStep(clientId, list);
     }
 
     static void addSetNativeValueSteps(
             SelectorProto selector, String value, List<ActionProto> list) {
         addSetNativeValueSteps(selector, TextValue.newBuilder().setText(value).build(), list);
+    }
+
+    static void addSetNativeCheckedSteps(
+            SelectorProto selector, Boolean checked, List<ActionProto> list) {
+        ClientIdProto clientId = toClientId("e");
+
+        addWaitForDomStep(selector, clientId, list);
+        list.add(ActionProto.newBuilder()
+                         .setSetNativeChecked(SetNativeCheckedProto.newBuilder()
+                                                      .setClientId(clientId)
+                                                      .setChecked(checked)
+                                                      .build())
+                         .build());
+        addReleaseElementStep(clientId, list);
     }
 
     static void addKeyboardWithSelectSteps(

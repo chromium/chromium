@@ -52,6 +52,7 @@ class WebContents;
 }  // namespace content
 
 namespace autofill_assistant {
+class ContentAutofillAssistantDriver;
 class ElementFinderResult;
 enum class ElementFinderResultType;
 
@@ -390,6 +391,11 @@ class WebController {
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  virtual void SetNativeChecked(
+      bool checked,
+      const ElementFinderResult& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
  private:
@@ -530,8 +536,14 @@ class WebController {
   void OnDispatchJsEvent(base::OnceCallback<void(const ClientStatus&)> callback,
                          const DevtoolsClient::ReplyStatus& reply_status,
                          std::unique_ptr<runtime::EvaluateResult> result) const;
-  void OnSetElementValue(base::OnceCallback<void(const ClientStatus&)> callback,
-                         bool success) const;
+  void OnSetNativeExecution(
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      bool success) const;
+  // Get the driver for the given element finder results. Will return a nullptr
+  // if the driver is not available. Requires that the element has a backend
+  // node id.
+  autofill_assistant::ContentAutofillAssistantDriver* GetDriverForElement(
+      const ElementFinderResult& element) const;
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.

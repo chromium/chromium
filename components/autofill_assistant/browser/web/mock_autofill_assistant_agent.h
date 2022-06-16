@@ -41,6 +41,13 @@ class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
                bool send_events,
                base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(void,
+              SetElementChecked,
+              (int32_t backend_node_id,
+               bool checked,
+               bool send_events,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::AutofillAssistantAgent> receivers_;

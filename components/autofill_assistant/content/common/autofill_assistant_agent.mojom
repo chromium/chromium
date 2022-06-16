@@ -25,4 +25,10 @@ interface AutofillAssistantAgent {
   SetElementValue(int32 backend_node_id, mojo_base.mojom.String16 value,
                   bool send_events)
       => (bool success);
+
+  // Set the checked property on a web input element.
+  // The element should be a checkable WebInputElement: a checkbox or a
+  // radio button.
+  SetElementChecked(int32 backend_node_id, bool checked, bool send_events)
+      => (bool success);
 };

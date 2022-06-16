@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementChecked;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
@@ -562,6 +563,69 @@ public class AutofillAssistantInputActionIntegrationTest {
         waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
 
         assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillCheckboxWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selectorOption2 = toCssSelector("#option2");
+        SelectorProto selectorOption3 = toCssSelector("#option3");
+
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption2, true, list);
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption3, false, list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(false));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(true));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(true));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void fillRadioButtonWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selectorRed = toCssSelector("#radio_red");
+        SelectorProto selectorBlue = toCssSelector("#radio_blue");
+
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorRed, true, list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(false));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(true));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
     }
 
     private void runScript(AutofillAssistantTestScript script) {
