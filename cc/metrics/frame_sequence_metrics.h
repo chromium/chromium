@@ -106,6 +106,11 @@ class CC_EXPORT FrameSequenceMetrics {
         int metric_index,
         const ThroughputData& data);
 
+    static void ReportCheckerboardingHistogram(
+        FrameSequenceMetrics* metrics,
+        FrameInfo::SmoothEffectDrivingThread thread_type,
+        int percent);
+
     void Merge(const ThroughputData& data) {
       frames_expected += data.frames_expected;
       frames_produced += data.frames_produced;

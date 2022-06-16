@@ -433,6 +433,7 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
 // followed by a non-checkerboard frame.
 TEST_F(FrameSequenceTrackerTest, CheckerboardingSimple) {
   CreateNewTracker();
+  base::HistogramTester histogram_tester;
 
   const uint64_t source_1 = 1;
   uint64_t sequence_1 = 0;
@@ -458,12 +459,21 @@ TEST_F(FrameSequenceTrackerTest, CheckerboardingSimple) {
   collection_.NotifyFramePresented(frame_token, feedback);
 
   EXPECT_EQ(1u, NumberOfFramesCheckerboarded());
+
+  // ImplThroughput().frames_expected is set to 100 since in ReportMetrics(),
+  // in order to report checkerboarding histogram, the minimum frames for
+  // ThroughputMetric is 100.
+  ImplThroughput().frames_expected = 100u;
+  ReportMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding.AllSequences", 1u);
 }
 
 // Present a single frame with checkerboarding, followed by a non-checkerboard
 // frame after a few vsyncs.
 TEST_F(FrameSequenceTrackerTest, CheckerboardingMultipleFrames) {
   CreateNewTracker();
+  base::HistogramTester histogram_tester;
 
   const uint64_t source_1 = 1;
   uint64_t sequence_1 = 0;
@@ -489,12 +499,21 @@ TEST_F(FrameSequenceTrackerTest, CheckerboardingMultipleFrames) {
   collection_.NotifyFramePresented(frame_token, feedback);
 
   EXPECT_EQ(3u, NumberOfFramesCheckerboarded());
+
+  // ImplThroughput().frames_expected is set to 100 since in ReportMetrics(),
+  // in order to report checkerboarding histogram, the minimum frames for
+  // ThroughputMetric is 100.
+  ImplThroughput().frames_expected = 100u;
+  ReportMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding.AllSequences", 1u);
 }
 
 // Present multiple checkerboarded frames, followed by a non-checkerboard
 // frame.
 TEST_F(FrameSequenceTrackerTest, MultipleCheckerboardingFrames) {
   CreateNewTracker();
+  base::HistogramTester histogram_tester;
 
   const uint32_t kFrames = 3;
   const uint64_t source_1 = 1;
@@ -527,6 +546,14 @@ TEST_F(FrameSequenceTrackerTest, MultipleCheckerboardingFrames) {
   collection_.NotifyFramePresented(frame_token, feedback);
 
   EXPECT_EQ(kFrames, NumberOfFramesCheckerboarded());
+
+  // ImplThroughput().frames_expected is set to 100 since in ReportMetrics(),
+  // in order to report checkerboarding histogram, the minimum frames for
+  // ThroughputMetric is 100.
+  ImplThroughput().frames_expected = 100u;
+  ReportMetrics();
+  histogram_tester.ExpectTotalCount(
+      "Graphics.Smoothness.Checkerboarding.AllSequences", 1u);
 }
 
 TEST_F(FrameSequenceTrackerTest, ReportMetrics) {

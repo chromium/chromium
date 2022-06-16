@@ -451,6 +451,8 @@ void FrameSequenceMetrics::ReportMetrics() {
         base::LinearHistogram::FactoryGet(
             GetCheckerboardingHistogramName(type_), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
+    ThroughputData::ReportCheckerboardingHistogram(
+        this, SmoothEffectDrivingThread::kCompositor, checkerboarding_percent);
     frames_checkerboarded_ = 0;
   }
 
@@ -678,6 +680,34 @@ int FrameSequenceMetrics::ThroughputData::
           GetMissedDeadlineHistogramName(sequence_type, thread_name), 1, 100,
           101, base::HistogramBase::kUmaTargetedHistogramFlag));
   return percent;
+}
+
+void FrameSequenceMetrics::ThroughputData::ReportCheckerboardingHistogram(
+    FrameSequenceMetrics* metrics,
+    SmoothEffectDrivingThread thread_type,
+    int percent) {
+  const auto sequence_type = metrics->type();
+  DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
+
+  const bool is_animation =
+      ShouldReportForAnimation(sequence_type, thread_type);
+  const bool is_interaction = ShouldReportForInteraction(
+      metrics->type(), thread_type, metrics->GetEffectiveThread());
+
+  if (is_animation) {
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Graphics.Smoothness.Checkerboarding.AllAnimations", percent);
+  }
+
+  if (is_interaction) {
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Graphics.Smoothness.Checkerboarding.AllInteractions", percent);
+  }
+
+  if (is_animation || is_interaction) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Checkerboarding.AllSequences",
+                             percent);
+  }
 }
 
 std::unique_ptr<base::trace_event::TracedValue>
