@@ -42252,32 +42252,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Download"/>
 </enum>
 
-<enum name="FilePrefetchResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid file"/>
-  <int value="2" label="Slow prefetch success">
-    Only slow prefetch was supported.
-  </int>
-  <int value="3" label="Slow prefetch failed">
-    Only slow prefetch was supported, but it failed.
-  </int>
-  <int value="4" label="Memory map failed, slow prefetch used">
-    Mapping file into memory failed; slow prefetch was used as a fallback.
-  </int>
-  <int value="5" label="Memory map failed, slow prefetch failed">
-    Mapping file into memory failed; slow prefetch was attempted as a fallback,
-    but it failed.
-  </int>
-  <int value="6" label="Fast prefetch failed"/>
-  <int value="7" label="Fast prefetch failed, slow prefetch used">
-    Fast prefetch failed; slow prefetch was used as a fallback.
-  </int>
-  <int value="8" label="Fast prefetch failed, slow prefetch failed">
-    Fast prefetch failed; slow prefetch was attempted as a fallback, but it
-    failed.
-  </int>
-</enum>
-
 <enum name="FileStorageRequestType">
   <int value="0" label="Save Request"/>
   <int value="1" label="Restore Request"/>

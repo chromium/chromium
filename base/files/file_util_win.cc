@@ -1023,9 +1023,9 @@ PrefetchVirtualMemoryPtr GetPrefetchVirtualMemoryPtr() {
 
 }  // namespace
 
-PrefetchResult PreReadFile(const FilePath& file_path,
-                           bool is_executable,
-                           int64_t max_bytes) {
+bool PreReadFile(const FilePath& file_path,
+                 bool is_executable,
+                 int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 
   // On Win8 and higher use ::PrefetchVirtualMemory(). This is better than a
@@ -1036,14 +1036,12 @@ PrefetchResult PreReadFile(const FilePath& file_path,
       GetPrefetchVirtualMemoryPtr();
 
   if (prefetch_virtual_memory == nullptr)
-    return internal::PreReadFileSlow(file_path, max_bytes)
-               ? PrefetchResult{PrefetchResultCode::kSlowSuccess}
-               : PrefetchResult{PrefetchResultCode::kSlowFailed};
+    return internal::PreReadFileSlow(file_path, max_bytes);
 
   if (max_bytes == 0) {
     // PrefetchVirtualMemory() fails when asked to read zero bytes.
     // base::MemoryMappedFile::Initialize() fails on an empty file.
-    return PrefetchResult{PrefetchResultCode::kSuccess};
+    return true;
   }
 
   // PrefetchVirtualMemory() fails if the file is opened with write access.
@@ -1051,11 +1049,9 @@ PrefetchResult PreReadFile(const FilePath& file_path,
                                         ? MemoryMappedFile::READ_CODE_IMAGE
                                         : MemoryMappedFile::READ_ONLY;
   MemoryMappedFile mapped_file;
-  if (!mapped_file.Initialize(file_path, access)) {
-    return internal::PreReadFileSlow(file_path, max_bytes)
-               ? PrefetchResult{PrefetchResultCode::kMemoryMapFailedSlowUsed}
-               : PrefetchResult{PrefetchResultCode::kMemoryMapFailedSlowFailed};
-  }
+  if (!mapped_file.Initialize(file_path, access))
+    return internal::PreReadFileSlow(file_path, max_bytes);
+
   const ::SIZE_T length =
       std::min(base::saturated_cast<::SIZE_T>(max_bytes),
                base::saturated_cast<::SIZE_T>(mapped_file.length()));
@@ -1063,11 +1059,9 @@ PrefetchResult PreReadFile(const FilePath& file_path,
   if (!prefetch_virtual_memory(::GetCurrentProcess(),
                                /*NumberOfEntries=*/1, &address_range,
                                /*Flags=*/0)) {
-    return internal::PreReadFileSlow(file_path, max_bytes)
-               ? PrefetchResult{PrefetchResultCode::kFastFailedSlowUsed}
-               : PrefetchResult{PrefetchResultCode::kFastFailedSlowFailed};
+    return internal::PreReadFileSlow(file_path, max_bytes);
   }
-  return PrefetchResult{PrefetchResultCode::kSuccess};
+  return true;
 }
 
 // -----------------------------------------------------------------------------

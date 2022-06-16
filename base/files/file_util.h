@@ -518,30 +518,6 @@ BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
 // false.
 BASE_EXPORT bool SetNonBlocking(int fd);
 
-// Possible results of PreReadFile().
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PrefetchResultCode {
-  kSuccess = 0,
-  kInvalidFile = 1,
-  kSlowSuccess = 2,
-  kSlowFailed = 3,
-  kMemoryMapFailedSlowUsed = 4,
-  kMemoryMapFailedSlowFailed = 5,
-  kFastFailed = 6,
-  kFastFailedSlowUsed = 7,
-  kFastFailedSlowFailed = 8,
-  kMaxValue = kFastFailedSlowFailed
-};
-
-struct PrefetchResult {
-  bool succeeded() const {
-    return code_ == PrefetchResultCode::kSuccess ||
-           code_ == PrefetchResultCode::kSlowSuccess;
-  }
-  const PrefetchResultCode code_;
-};
-
 // Hints the OS to prefetch the first |max_bytes| of |file_path| into its cache.
 //
 // If called at the appropriate time, this can reduce the latency incurred by
@@ -555,18 +531,17 @@ struct PrefetchResult {
 // executable code or as data. Windows treats the file backed pages in RAM
 // differently, and specifying the wrong value results in two copies in RAM.
 //
-// Returns a PrefetchResult indicating whether prefetch succeeded, and the type
-// of failure if it did not. A return value of kSuccess does not guarantee that
-// the entire desired range was prefetched.
+// Returns true if at least part of the requested range was successfully
+// prefetched.
 //
 // Calling this before using ::LoadLibrary() on Windows is more efficient memory
 // wise, but we must be sure no other threads try to LoadLibrary() the file
 // while we are doing the mapping and prefetching, or the process will get a
 // private copy of the DLL via COW.
-BASE_EXPORT PrefetchResult
-PreReadFile(const FilePath& file_path,
-            bool is_executable,
-            int64_t max_bytes = std::numeric_limits<int64_t>::max());
+BASE_EXPORT bool PreReadFile(
+    const FilePath& file_path,
+    bool is_executable,
+    int64_t max_bytes = std::numeric_limits<int64_t>::max());
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 

@@ -55,16 +55,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.ChromeDllPrefetchResult" enum="FilePrefetchResult"
-    expires_after="2022-06-26">
-  <owner>brucedawson@chromium.org</owner>
-  <owner>jessemckenna@google.com</owner>
-  <summary>
-    The result of prefetching chrome.dll on Windows, including whether a
-    fallback to slow prefetch took place, and why if so.
-  </summary>
-</histogram>
-
 <histogram name="Windows.CreateOrUpdateShortcuts.Result"
     enum="CreateOrUpdateShortcutsResult" expires_after="2022-11-26">
   <owner>davidbienvenu@chromium.org</owner>

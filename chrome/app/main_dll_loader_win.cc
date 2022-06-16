@@ -46,10 +46,7 @@
 
 namespace {
 // The entry point signature of chrome.dll.
-typedef int (*DLL_MAIN)(HINSTANCE,
-                        sandbox::SandboxInterfaceInfo*,
-                        int64_t,
-                        base::PrefetchResultCode);
+typedef int (*DLL_MAIN)(HINSTANCE, sandbox::SandboxInterfaceInfo*, int64_t);
 
 typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
 
@@ -86,40 +83,39 @@ base::FilePath GetModulePath(base::WStringPiece module_name) {
   return exe_dir.Append(module_name);
 }
 
+// Prefetches and loads |module| after setting the CWD to |module|'s
+// directory. Returns a handle to the loaded module on success, or nullptr on
+// failure.
+HMODULE LoadModuleWithDirectory(const base::FilePath& module) {
+  ::SetCurrentDirectoryW(module.DirName().value().c_str());
+  base::PreReadFile(module, /*is_executable=*/true);
+  HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
+                                    LOAD_WITH_ALTERED_SEARCH_PATH);
+  return handle;
+}
+
+// Prefetches and loads the appropriate DLL for the process type
+// |process_type_|. Populates |module| with the path of the loaded DLL.
+// Returns a handle to the loaded DLL, or nullptr on failure.
+HMODULE Load(base::FilePath* module) {
+  *module = GetModulePath(installer::kChromeDll);
+  if (module->empty()) {
+    PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
+    return nullptr;
+  }
+  HMODULE dll = LoadModuleWithDirectory(*module);
+  if (!dll)
+    PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
+  return dll;
+}
+
 }  // namespace
 
 //=============================================================================
 
-MainDllLoader::MainDllLoader()
-    : dll_(nullptr) {
-}
+MainDllLoader::MainDllLoader() : dll_(nullptr) {}
 
-MainDllLoader::~MainDllLoader() {
-}
-
-// static
-MainDllLoader::LoadResult MainDllLoader::Load(base::FilePath* module) {
-  *module = GetModulePath(installer::kChromeDll);
-  if (module->empty()) {
-    PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
-    return {nullptr, base::PrefetchResultCode::kInvalidFile};
-  }
-  LoadResult load_result = LoadModuleWithDirectory(*module);
-  if (!load_result.handle)
-    PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
-  return load_result;
-}
-
-// static
-MainDllLoader::LoadResult MainDllLoader::LoadModuleWithDirectory(
-    const base::FilePath& module) {
-  ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  base::PrefetchResultCode prefetch_result_code =
-      base::PreReadFile(module, /*is_executable=*/true).code_;
-  HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
-                                    LOAD_WITH_ALTERED_SEARCH_PATH);
-  return {handle, prefetch_result_code};
-}
+MainDllLoader::~MainDllLoader() = default;
 
 const int kNonBrowserShutdownPriority = 0x280;
 
@@ -146,8 +142,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   }
 
   base::FilePath file;
-  LoadResult load_result = Load(&file);
-  dll_ = load_result.handle;
+  dll_ = Load(&file);
   if (!dll_)
     return chrome::RESULT_CODE_MISSING_DATA;
 
@@ -165,8 +160,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   DLL_MAIN chrome_main =
       reinterpret_cast<DLL_MAIN>(::GetProcAddress(dll_, "ChromeMain"));
   int rc = chrome_main(instance, &sandbox_info,
-                       exe_entry_point_ticks.ToInternalValue(),
-                       load_result.prefetch_result_code);
+                       exe_entry_point_ticks.ToInternalValue());
   return rc;
 }
 
