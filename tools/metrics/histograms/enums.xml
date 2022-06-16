@@ -75703,6 +75703,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Keyboard brightness slider"/>
 </enum>
 
+<enum name="PersonalizationKeyboardBacklightColor">
+  <int value="0" label="kWallpaper"/>
+  <int value="1" label="kWhite"/>
+  <int value="2" label="kRed"/>
+  <int value="3" label="kYellow"/>
+  <int value="4" label="kGreen"/>
+  <int value="5" label="kBlue"/>
+  <int value="6" label="kIndigo"/>
+  <int value="7" label="kPurple"/>
+  <int value="100" label="kRainbow"/>
+</enum>
+
 <enum name="PersonalizationPath">
   <int value="0" label="Screensaver"/>
   <int value="1" label="Screensaver Albums"/>
