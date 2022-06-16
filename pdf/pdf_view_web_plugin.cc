@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
@@ -336,8 +337,8 @@ bool PdfViewWebPlugin::InitializeCommon() {
     return true;
 
   set_last_progress_sent(0);
-  LoadUrl(params->src_url,
-          base::BindOnce(&PdfViewWebPlugin::DidOpen, GetWeakPtr()));
+  LoadUrl(params->src_url, base::BindOnce(&PdfViewWebPlugin::DidOpen,
+                                          weak_factory_.GetWeakPtr()));
   url_ = params->original_url;
 
   // Not all edits go through the PDF plugin's form filler. The plugin instance
@@ -358,6 +359,18 @@ void PdfViewWebPlugin::SendSetSmoothScrolling() {
   message.Set("smoothScrolling",
               blink::Platform::Current()->IsScrollAnimatorEnabled());
   SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
+                               int32_t result) {
+  if (result == kSuccess) {
+    if (!engine_->HandleDocumentLoad(std::move(loader), url_)) {
+      set_document_load_state(DocumentLoadState::kLoading);
+      DocumentLoadFailed();
+    }
+  } else if (result != kErrorAborted) {
+    DocumentLoadFailed();
+  }
 }
 
 void PdfViewWebPlugin::Destroy() {
@@ -1632,7 +1645,8 @@ void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
   preview_document_load_state_ = DocumentLoadState::kComplete;
   set_document_load_state(DocumentLoadState::kLoading);
   set_last_progress_sent(0);
-  LoadUrl(url_, base::BindOnce(&PdfViewWebPlugin::DidOpen, GetWeakPtr()));
+  LoadUrl(url_, base::BindOnce(&PdfViewWebPlugin::DidOpen,
+                               weak_factory_.GetWeakPtr()));
   preview_engine_.reset();
 
   // TODO(crbug.com/1237952): Figure out a more consistent way to preserve

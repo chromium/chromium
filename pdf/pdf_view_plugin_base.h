@@ -42,7 +42,6 @@ namespace chrome_pdf {
 class PDFiumEngine;
 class PaintReadyRect;
 class Thumbnail;
-class UrlLoader;
 struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
@@ -128,12 +127,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   }
 
  protected:
-  // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
-  // load the URL, and `result` is the result code for the load.
-  using LoadUrlCallback =
-      base::OnceCallback<void(std::unique_ptr<UrlLoader> loader,
-                              int32_t result)>;
-
   struct BackgroundPart {
     gfx::Rect location;
     uint32_t color;
@@ -149,9 +142,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   virtual const PDFiumEngine* engine() const = 0;
   virtual PDFiumEngine* engine() = 0;
-
-  // Loads `url`, invoking `callback` on receiving the initial response.
-  virtual void LoadUrl(base::StringPiece url, LoadUrlCallback callback) = 0;
 
   // Gets a weak pointer with a lifetime matching the derived class.
   virtual base::WeakPtr<PdfViewPluginBase> GetWeakPtr() = 0;
@@ -319,9 +309,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
   }
-
-  // Handles `LoadUrl()` result.
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
 
   // Converts a scroll offset (which is relative to a UI direction-dependent
   // scroll origin) to a scroll position (which is always relative to the

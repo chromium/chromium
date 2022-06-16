@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -340,7 +342,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       PDFiumFormFiller::ScriptOption script_option) override;
   const PDFiumEngine* engine() const override;
   PDFiumEngine* engine() override;
-  void LoadUrl(base::StringPiece url, LoadUrlCallback callback) override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   void OnPrintPreviewLoaded() override;
   void OnDocumentLoadComplete() override;
@@ -372,6 +373,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void PrepareForFirstPaint(std::vector<PaintReadyRect>& ready) override;
 
  private:
+  // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
+  // load the URL, and `result` is the result code for the load.
+  using LoadUrlCallback =
+      base::OnceCallback<void(std::unique_ptr<UrlLoader> loader,
+                              int32_t result)>;
+
   // Metadata about an available preview page.
   struct PreviewPageInfo {
     // Data source URL.
@@ -389,9 +396,15 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Sends whether to do smooth scrolling.
   void SendSetSmoothScrolling();
 
+  // Handles `LoadUrl()` result for the main document.
+  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
+
   // Updates the scroll position, which is in CSS pixels relative to the
   // top-left corner.
   void UpdateScroll(const gfx::PointF& scroll_position);
+
+  // Loads `url`, invoking `callback` on receiving the initial response.
+  void LoadUrl(base::StringPiece url, LoadUrlCallback callback);
 
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);

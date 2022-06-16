@@ -42,8 +42,6 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
-#include "pdf/ppapi_migration/result_codes.h"
-#include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/file_name.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -848,18 +846,6 @@ void PdfViewPluginBase::LoadAccessibility() {
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr(), /*page_index=*/0),
       kAccessibilityPageDelay);
-}
-
-void PdfViewPluginBase::DidOpen(std::unique_ptr<UrlLoader> loader,
-                                int32_t result) {
-  if (result == kSuccess) {
-    if (!engine()->HandleDocumentLoad(std::move(loader), GetURL())) {
-      document_load_state_ = DocumentLoadState::kLoading;
-      DocumentLoadFailed();
-    }
-  } else if (result != kErrorAborted) {
-    DocumentLoadFailed();
-  }
 }
 
 gfx::Point PdfViewPluginBase::FrameToPdfCoordinates(
