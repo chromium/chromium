@@ -103,7 +103,7 @@ class CastAudioOutputDevice::Internal
     media_pos_frames_ = 0;
     playback_started_ = false;
     paused_ = false;
-    push_timer_.AbandonAndStop();
+    push_timer_.Stop();
     output_connection_->StopPlayback();
   }
 
@@ -233,8 +233,9 @@ class CastAudioOutputDevice::Internal
     }
 
     // No frames filled, schedule read immediately with a small delay.
-    push_timer_.Start(FROM_HERE, kNoBufferReadDelay, this,
-                      &Internal::TryPushBuffer);
+    push_timer_.Start(FROM_HERE, base::TimeTicks::Now() + kNoBufferReadDelay,
+                      this, &Internal::TryPushBuffer,
+                      base::ExactDeadline(true));
   }
 
   scoped_refptr<CastAudioOutputDevice> output_device_;
@@ -252,7 +253,7 @@ class CastAudioOutputDevice::Internal
   bool paused_ = false;
   bool playback_started_ = false;
   bool backend_initialized_ = false;
-  base::OneShotTimer push_timer_;
+  base::DeadlineTimer push_timer_;
   std::unique_ptr<::media::AudioBus> audio_bus_;
 };
 
