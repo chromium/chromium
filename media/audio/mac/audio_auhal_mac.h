@@ -33,6 +33,7 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/scoped_audio_unit.h"
+#include "media/audio/system_output_glitch_reporter.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -200,9 +201,10 @@ class AUHALStream : public AudioOutputStream {
   // NOTE: Float64 and UInt32 types are used for native API compatibility.
   Float64 last_sample_time_ GUARDED_BY(lock_);
   UInt32 last_number_of_frames_ GUARDED_BY(lock_);
-  UInt32 total_lost_frames_ GUARDED_BY(lock_);
-  UInt32 largest_glitch_frames_ GUARDED_BY(lock_);
-  int glitches_detected_ GUARDED_BY(lock_);
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemOutputGlitchReporter glitch_reporter_ GUARDED_BY(lock_);
 
   // Used to defer Start() to workaround http://crbug.com/160920.
   base::CancelableOnceClosure deferred_start_cb_;
