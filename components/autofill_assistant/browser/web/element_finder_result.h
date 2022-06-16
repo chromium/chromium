@@ -34,10 +34,7 @@ class ElementFinderResult {
   const DomObjectFrameStack& dom_object() const { return dom_object_; }
 
   content::RenderFrameHost* render_frame_host() const {
-    if (!render_frame_id_) {
-      return nullptr;
-    }
-    return content::RenderFrameHost::FromID(*render_frame_id_);
+    return content::RenderFrameHost::FromID(dom_object_.render_frame_id);
   }
 
   const std::string& object_id() const {
@@ -65,13 +62,13 @@ class ElementFinderResult {
     if (!render_frame_host) {
       return;
     }
-    render_frame_id_ = render_frame_host->GetGlobalId();
+    SetRenderFrameHostGlobalId(render_frame_host->GetGlobalId());
   }
 #endif  // defined(UNIT_TEST)
 
   void SetRenderFrameHostGlobalId(
       content::GlobalRenderFrameHostId render_frame_id) {
-    render_frame_id_ = render_frame_id;
+    dom_object_.render_frame_id = render_frame_id;
   }
 
   void SetObjectId(const std::string& object_id) {
@@ -92,9 +89,6 @@ class ElementFinderResult {
 
  private:
   DomObjectFrameStack dom_object_;
-
-  // The id of the render frame host that contains the element.
-  absl::optional<content::GlobalRenderFrameHostId> render_frame_id_;
 };
 
 }  // namespace autofill_assistant

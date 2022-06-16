@@ -37,6 +37,8 @@ class ElementStoreTest : public testing::Test {
     element->SetNodeFrameId(web_contents_->GetPrimaryMainFrame()
                                 ->GetDevToolsFrameToken()
                                 .ToString());
+    element->SetRenderFrameHostGlobalId(
+        web_contents_->GetPrimaryMainFrame()->GetGlobalId());
     return element;
   }
 
@@ -73,9 +75,10 @@ TEST_F(ElementStoreTest, GetElementFromStore) {
   EXPECT_EQ("1", result.object_id());
   EXPECT_EQ(1, *result.backend_node_id());
   EXPECT_THAT(result.node_frame_id(), Not(IsEmpty()));
+  EXPECT_EQ(web_contents_->GetPrimaryMainFrame(), result.render_frame_host());
 }
 
-TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
+TEST_F(ElementStoreTest, GetElementFromStoreWithBadNodeFrameId) {
   auto element = std::make_unique<ElementFinderResult>();
   element->SetObjectId("1");
   element->SetNodeFrameId("unknown");
@@ -86,15 +89,29 @@ TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
             element_store_->GetElement("1", &result).proto_status());
 }
 
-TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
+TEST_F(ElementStoreTest, GetElementFromStoreWithNoNodeFrameId) {
   auto element = std::make_unique<ElementFinderResult>();
   element->SetObjectId("1");
+  element->SetRenderFrameHostGlobalId(
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId());
   AddElement("1", std::move(element));
 
   ElementFinderResult result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
   EXPECT_EQ(web_contents_->GetPrimaryMainFrame(), result.render_frame_host());
+}
+
+TEST_F(ElementStoreTest, GetElementFromStoreWithNoGlobalFrameId) {
+  auto element = std::make_unique<ElementFinderResult>();
+  element->SetObjectId("1");
+  element->SetNodeFrameId(
+      web_contents_->GetPrimaryMainFrame()->GetDevToolsFrameToken().ToString());
+  AddElement("1", std::move(element));
+
+  ElementFinderResult result;
+  EXPECT_EQ(CLIENT_ID_RESOLUTION_FAILED,
+            element_store_->GetElement("1", &result).proto_status());
 }
 
 TEST_F(ElementStoreTest, AddElementToStoreOverwrites) {

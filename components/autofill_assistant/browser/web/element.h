@@ -41,6 +41,11 @@ struct DomObjectFrameStack {
   // The data for the final object.
   JsObjectIdentifier object_data;
 
+  // The id of the render frame host that contains the element.
+  // Note: This is not part of JsObjectIdentifier, because it is not set
+  // throughout the frame stack and only assigned to the final element.
+  content::GlobalRenderFrameHostId render_frame_id;
+
   // This holds the information of all the frames that were traversed until
   // the final element was reached.
   std::vector<JsObjectIdentifier> frame_stack;

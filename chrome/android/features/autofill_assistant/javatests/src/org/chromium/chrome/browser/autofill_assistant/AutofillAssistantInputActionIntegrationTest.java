@@ -27,6 +27,7 @@ import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.
 import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addTapSteps;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
 import androidx.test.filters.MediumTest;
 
@@ -481,9 +482,11 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillTextFieldWithNativeMethod() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto selector = toCssSelector("#input2");
+        SelectorProto input = toCssSelector("#input2");
+        SelectorProto inputInIFrame = toIFrameCssSelector("#iframe", "#input");
 
-        MiniActionTestUtil.addSetNativeValueSteps(selector, "New Value", list);
+        MiniActionTestUtil.addSetNativeValueSteps(input, "Value 1", list);
+        MiniActionTestUtil.addSetNativeValueSteps(inputInIFrame, "Value 2", list);
         list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set Value")
@@ -496,11 +499,13 @@ public class AutofillAssistantInputActionIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
         assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is(""));
 
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("New Value"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("Value 1"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is("Value 2"));
     }
 
     @Test
