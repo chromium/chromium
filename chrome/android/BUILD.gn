@@ -1399,6 +1399,9 @@ android_library("chrome_unit_test_java") {
     "//url:gurl_java_unit_tests",
     "//url:gurl_junit_test_support",
   ]
+
+  sources += share_unit_device_javatest_java_sources
+  deps += share_unit_device_javatest_java_deps
 }
 
 android_library("chrome_test_java") {
