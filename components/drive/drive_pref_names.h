@@ -17,6 +17,7 @@ extern const char kDriveFsProfileSalt[];
 extern const char kDriveFsPinnedMigrated[];
 extern const char kDriveFsWasLaunchedAtLeastOnce[];
 extern const char kDriveFsEnableMirrorSync[];
+extern const char kDriveFsMirrorSyncMachineRootId[];
 
 }  // namespace prefs
 }  // namespace drive

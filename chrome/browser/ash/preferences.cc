@@ -261,9 +261,12 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(drive::prefs::kDriveFsPinnedMigrated, false);
   registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableVerboseLogging,
                                 false);
-  // Do not sync drive::prefs::kDriveFsEnableMirrorSync because we're syncing
-  // local files and users may wish to turn this off on a per device basis.
+  // Do not sync drive::prefs::kDriveFsEnableMirrorSync and
+  // drive::prefs::kDriveFsMirrorSyncMachineId because we're syncing local files
+  // and users may wish to turn this off on a per device basis.
   registry->RegisterBooleanPref(drive::prefs::kDriveFsEnableMirrorSync, false);
+  registry->RegisterStringPref(drive::prefs::kDriveFsMirrorSyncMachineRootId,
+                               "");
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
