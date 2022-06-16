@@ -54,12 +54,6 @@ namespace {
 
 constexpr char kLocalhostAddress[] = "127.0.0.1";
 
-net::Error UnconditionallyPermitConnection(
-    const blink::mojom::DirectSocketOptions& options) {
-  DCHECK(options.remote_hostname.has_value());
-  return net::OK;
-}
-
 class ReadWriteWaiter {
  public:
   ReadWriteWaiter(
@@ -273,6 +267,11 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  }
+
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -302,9 +301,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, OpenTcp_Success) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
 
   const int listening_port = StartTcpServer();
   const std::string script =
@@ -353,11 +349,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, MAYBE_OpenTcp_MDNS) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, CloseTcp) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   const int listening_port = StartTcpServer();
   const std::string script =
       JsReplace("closeTcp($1, $2)", net::IPAddress::IPv4Localhost().ToString(),
@@ -368,7 +359,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, CloseTcp) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcp) {
   constexpr int32_t kRequiredBytes = 10000;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   const int listening_port = StartTcpServer();
   ReadWriteWaiter waiter(/*required_receive_bytes=*/kRequiredBytes,
@@ -384,7 +374,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcp) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcp) {
   constexpr int32_t kRequiredBytes = 150000;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   const int listening_port = StartTcpServer();
   ReadWriteWaiter waiter(/*required_receive_bytes=*/0,
@@ -400,7 +389,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcp) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadWriteTcp) {
   constexpr int32_t kRequiredBytes = 1000;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
   const int listening_port = StartTcpServer();
   ReadWriteWaiter waiter(/*required_receive_bytes=*/kRequiredBytes,
@@ -470,8 +458,6 @@ class MockTcpNetworkContext : public content::test::MockNetworkContext {
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
   MockTcpNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -496,8 +482,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnReadError) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
   MockTcpNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -522,8 +506,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, ReadTcpOnPeerClosed) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
   MockTcpNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -549,8 +531,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnWriteError) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnPipeError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
   MockTcpNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -577,8 +557,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, WriteTcpOnPipeError) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
                        ReadWriteTcpOnSocketObserverError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
   MockTcpNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 

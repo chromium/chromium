@@ -43,12 +43,6 @@ namespace content {
 
 namespace {
 
-net::Error UnconditionallyPermitConnection(
-    const blink::mojom::DirectSocketOptions& options) {
-  DCHECK(options.remote_hostname.has_value());
-  return net::OK;
-}
-
 constexpr char kLocalhostAddress[] = "127.0.0.1";
 
 }  // anonymous namespace
@@ -66,6 +60,11 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+  }
+
   void SetUp() override {
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -115,11 +114,6 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   const std::string script = "closeUdp('::1', 993, {})";
 
   EXPECT_EQ("closeUdp succeeded", EvalJs(shell(), script));
@@ -130,10 +124,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
   const uint32_t kRequiredDatagrams = 35;
   const uint32_t kRequiredBytes =
       kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
 
   // Any attempt to make this a class member results into
   // "This caller requires a single-threaded context".
@@ -173,10 +163,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {
   const int32_t kRequiredBytes = 1;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
 
   const std::string script = JsReplace("sendUdpAfterClose($1, $2, {}, $3)",
                                        kLocalhostAddress, 993, kRequiredBytes);
@@ -189,10 +175,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
   const uint32_t kRequiredDatagrams = 35;
   const uint32_t kRequiredBytes =
       kRequiredDatagrams * (kRequiredDatagrams + 1) / 2;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
 
   network::test::UDPSocketListenerImpl listener;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
@@ -245,11 +227,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterSocketClose) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   network::test::UDPSocketListenerImpl listener;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
       &listener};
@@ -265,11 +242,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterSocketClose) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterStreamClose) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   network::test::UDPSocketListenerImpl listener;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
       &listener};
@@ -285,11 +257,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterStreamClose) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseWithActiveReader) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   network::test::UDPSocketListenerImpl listener;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
       &listener};
@@ -307,11 +274,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseWithActiveReader) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest,
                        CloseWithActiveReaderForce) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   network::test::UDPSocketListenerImpl listener;
   mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver{
       &listener};
@@ -328,11 +290,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSendError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   content::test::MockNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
@@ -364,11 +321,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSendError) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSocketError) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
-
   content::test::MockNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 

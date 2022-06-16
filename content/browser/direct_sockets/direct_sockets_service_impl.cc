@@ -64,13 +64,6 @@ constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
 
 constexpr int32_t kMaxBufferSize = 32 * 1024 * 1024;
 
-DirectSocketsServiceImpl::PermissionCallback&
-GetPermissionCallbackForTesting() {
-  static base::NoDestructor<DirectSocketsServiceImpl::PermissionCallback>
-      callback;
-  return *callback;
-}
-
 network::mojom::NetworkContext*& GetNetworkContextForTesting() {
   static network::mojom::NetworkContext* network_context = nullptr;
   return network_context;
@@ -171,12 +164,6 @@ int32_t DirectSocketsServiceImpl::GetMaxBufferSize() {
 }
 
 // static
-void DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-    PermissionCallback callback) {
-  GetPermissionCallbackForTesting() = std::move(callback);
-}
-
-// static
 void DirectSocketsServiceImpl::SetNetworkContextForTesting(
     network::mojom::NetworkContext* network_context) {
   GetNetworkContextForTesting() = network_context;
@@ -224,9 +211,6 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
     const blink::mojom::DirectSocketOptions& options) {
   if (!frame_host_)
     return net::ERR_CONTEXT_SHUT_DOWN;
-
-  if (GetPermissionCallbackForTesting())
-    return GetPermissionCallbackForTesting().Run(options);  // IN-TEST
 
   if (options.send_buffer_size < 0 || options.receive_buffer_size < 0)
     return net::ERR_INVALID_ARGUMENT;
