@@ -390,7 +390,7 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // A means of accessing metadata about bookmarks.
-  OptimizationGuideKeyedService* opt_guide_;
+  raw_ptr<OptimizationGuideKeyedService> opt_guide_;
 
   // Weak pointers for creating callbacks that won't call into a destroyed
   // object.

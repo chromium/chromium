@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -94,7 +95,7 @@ class GpuFenceManagerTest : public GpuServiceTest {
   std::unique_ptr<GpuFenceManager> manager_;
   std::unique_ptr<MockErrorState> error_state_;
   std::unique_ptr<::testing::NiceMock<::gl::MockEGLInterface>> egl_;
-  gl::GLDisplayEGL* display_ = nullptr;
+  raw_ptr<gl::GLDisplayEGL> display_ = nullptr;
 };
 
 TEST_F(GpuFenceManagerTest, Basic) {

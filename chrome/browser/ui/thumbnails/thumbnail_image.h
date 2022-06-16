@@ -116,7 +116,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
    private:
     friend class ThumbnailImage;
-    ThumbnailImage* thumbnail_ = nullptr;
+    raw_ptr<ThumbnailImage> thumbnail_ = nullptr;
   };
 
   explicit ThumbnailImage(Delegate* delegate);

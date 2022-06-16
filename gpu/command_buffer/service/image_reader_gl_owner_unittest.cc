@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 
 #include <stdint.h>
@@ -99,7 +100,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   base::test::TaskEnvironment task_environment_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(ImageReaderGLOwnerTest, ImageReaderObjectCreation) {

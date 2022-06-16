@@ -5,6 +5,8 @@
 #ifndef UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 #define UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace display {
 
 class Screen;
@@ -27,7 +29,7 @@ class ScopedScreenOverride {
   ~ScopedScreenOverride();
 
  private:
-  Screen* original_screen_;
+  raw_ptr<Screen> original_screen_;
 };
 
 }  // namespace test

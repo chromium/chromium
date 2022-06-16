@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,7 +93,7 @@ class GLImageTest : public testing::Test {
   scoped_refptr<GLSurface> surface_;
   scoped_refptr<GLContext> context_;
   GLImageTestDelegate delegate_;
-  GLDisplay* display_ = nullptr;
+  raw_ptr<GLDisplay> display_ = nullptr;
 };
 
 TYPED_TEST_SUITE_P(GLImageTest);

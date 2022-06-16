@@ -5,6 +5,7 @@
 #include "weblayer/browser/webapps/webapk_install_scheduler.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
@@ -173,7 +174,7 @@ class WebApkInstallSchedulerTest : public WebLayerBrowserTest {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   net::EmbeddedTestServer test_server_;
 

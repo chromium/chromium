@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
   friend class DialogModel;
   void set_dialog_model(DialogModel* model) { dialog_model_ = model; }
 
-  DialogModel* dialog_model_ = nullptr;
+  raw_ptr<DialogModel> dialog_model_ = nullptr;
 };
 
 // DialogModel represents a platform-and-toolkit agnostic data + behavior

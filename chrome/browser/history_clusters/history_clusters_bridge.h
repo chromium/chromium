@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_BRIDGE_H_
 #define CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_BRIDGE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -57,7 +58,7 @@ class HistoryClustersBridge : public base::SupportsUserData::Data {
                          bool is_continuation);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-  HistoryClustersService* history_clusters_service_;
+  raw_ptr<HistoryClustersService> history_clusters_service_;
   base::CancelableTaskTracker query_task_tracker_;
   std::unique_ptr<QueryClustersState> query_clusters_state_;
   base::WeakPtrFactory<HistoryClustersBridge> weak_ptr_factory_{this};

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -125,7 +126,7 @@ class OfferNotificationControllerAndroidBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  PersonalDataManager* personal_data_;
+  raw_ptr<PersonalDataManager> personal_data_;
 };
 
 class OfferNotificationControllerAndroidBrowserTestForInfobar

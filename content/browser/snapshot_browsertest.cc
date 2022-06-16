@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -140,7 +141,7 @@ class SnapshotBrowserTest : public ContentBrowserTest {
   struct SerialSnapshot {
     SerialSnapshot() : host(nullptr) {}
 
-    content::RenderWidgetHost* host;
+    raw_ptr<content::RenderWidgetHost> host;
     ExpectedColor color;
   };
   std::vector<SerialSnapshot> expected_snapshots_;

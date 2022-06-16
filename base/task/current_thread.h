@@ -156,7 +156,8 @@ class BASE_EXPORT CurrentThread {
     ~ScopedAllowApplicationTasksInNativeNestedLoop();
 
    private:
-    sequence_manager::internal::SequenceManagerImpl* const sequence_manager_;
+    const raw_ptr<sequence_manager::internal::SequenceManagerImpl>
+        sequence_manager_;
     const bool previous_state_;
   };
 

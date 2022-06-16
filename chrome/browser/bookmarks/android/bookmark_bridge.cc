@@ -22,6 +22,7 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
@@ -93,8 +94,8 @@ class BookmarkTitleComparer {
   }
 
  private:
-  BookmarkBridge* bookmark_bridge_;  // weak
-  const icu::Collator* collator_;
+  raw_ptr<BookmarkBridge> bookmark_bridge_;  // weak
+  raw_ptr<const icu::Collator> collator_;
 };
 
 std::unique_ptr<icu::Collator> GetICUCollator() {

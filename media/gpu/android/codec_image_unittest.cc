@@ -121,7 +121,7 @@ class CodecImageTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   GLuint texture_id_ = 0;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 
   class PromotionHintReceiver {
    public:

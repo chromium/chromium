@@ -114,7 +114,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
       const TabStripSelectionChange& selection) override {
     if (change.type() == TabStripModelChange::kInserted) {
       for (const auto& contents_with_index : change.GetInsert()->contents) {
-        auto* contents = contents_with_index.contents;
+        auto* contents = contents_with_index.contents.get();
         if (observers_.find(contents) == observers_.end()) {
           observers_[contents] = std::make_unique<InfoBarChangeObserver>(
               base::BindOnce(&InfobarUIChangeObserver::EraseObserver,

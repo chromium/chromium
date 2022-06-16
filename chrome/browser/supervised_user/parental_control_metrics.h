@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_PARENTAL_CONTROL_METRICS_H_
 #define CHROME_BROWSER_SUPERVISED_USER_PARENTAL_CONTROL_METRICS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_metrics_service.h"
 
 class SupervisedUserService;
@@ -23,7 +24,7 @@ class ParentalControlMetrics : public SupervisedUserMetricsService::Observer {
   void OnNewDay() override;
 
  private:
-  SupervisedUserService* const supervised_user_service_;
+  const raw_ptr<SupervisedUserService> supervised_user_service_;
   bool first_report_on_current_device_ = false;
 };
 

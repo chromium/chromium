@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -78,7 +79,7 @@ class ParentalControlMetricsTest : public testing::Test {
 
  private:
   std::unique_ptr<ParentalControlMetrics> parental_control_metrics_;
-  SupervisedUserService* supervised_user_service_ = nullptr;
+  raw_ptr<SupervisedUserService> supervised_user_service_ = nullptr;
 };
 
 TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {

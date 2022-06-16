@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -60,14 +61,14 @@ class ScopedObservation {
     //     has been fully retired.
     CHECK_EQ(source_, nullptr);
     source_ = source;
-    (source_->*AddObsFn)(observer_);
+    (source_.get()->*AddObsFn)(observer_);
   }
 
   // Remove the object passed to the constructor as an observer from |source_|
   // if currently observing. Does nothing otherwise.
   void Reset() {
     if (source_) {
-      (source_->*RemoveObsFn)(observer_);
+      (source_.get()->*RemoveObsFn)(observer_);
       source_ = nullptr;
     }
   }
@@ -82,10 +83,10 @@ class ScopedObservation {
   }
 
  private:
-  Observer* const observer_;
+  const raw_ptr<Observer> observer_;
 
   // The observed source, if any.
-  Source* source_ = nullptr;
+  raw_ptr<Source> source_ = nullptr;
 };
 
 }  // namespace base

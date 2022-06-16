@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
@@ -95,7 +96,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   base::test::TaskEnvironment task_environment_;
-  gl::GLDisplay* display_ = nullptr;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(SurfaceTextureGLOwnerTest, OwnerReturnsServiceId) {

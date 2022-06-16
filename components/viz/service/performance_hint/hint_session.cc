@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -106,8 +107,8 @@ class AdpfHintSession : public HintSession {
   void WakeUp();
 
  private:
-  APerformanceHintSession* const hint_session_;
-  HintSessionFactoryImpl* const factory_;
+  const raw_ptr<APerformanceHintSession> hint_session_;
+  const raw_ptr<HintSessionFactoryImpl> factory_;
   base::TimeDelta target_duration_;
 };
 
@@ -127,7 +128,7 @@ class HintSessionFactoryImpl : public HintSessionFactory {
   friend class AdpfHintSession;
   friend class HintSessionFactory;
 
-  APerformanceHintManager* const manager_;
+  const raw_ptr<APerformanceHintManager> manager_;
   const base::flat_set<base::PlatformThreadId> permanent_thread_ids_;
   base::flat_set<AdpfHintSession*> hint_sessions_;
   THREAD_CHECKER(thread_checker_);

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_RECEIVER_SESSION_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/cast_streaming/browser/cast_streaming_session.h"
@@ -103,7 +104,7 @@ class ReceiverSessionImpl final
   std::unique_ptr<VideoDemuxerStreamDataProvider>
       video_demuxer_stream_data_provider_;
 
-  ReceiverSession::Client* const client_;
+  const raw_ptr<ReceiverSession::Client> client_;
   std::unique_ptr<RendererControllerImpl> external_renderer_controls_;
   absl::optional<RendererControllerConfig> renderer_control_config_;
 

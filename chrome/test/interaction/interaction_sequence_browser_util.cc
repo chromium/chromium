@@ -272,7 +272,8 @@ class InteractionSequenceBrowserUtil::NewTabWatcher
     if (change.type() != TabStripModelChange::Type::kInserted)
       return;
 
-    auto* const web_contents = change.GetInsert()->contents.front().contents;
+    auto* const web_contents =
+        change.GetInsert()->contents.front().contents.get();
     CHECK(!browser_ ||
           browser_ == chrome::FindBrowserWithWebContents(web_contents));
     owner_->StartWatchingWebContents(web_contents);
