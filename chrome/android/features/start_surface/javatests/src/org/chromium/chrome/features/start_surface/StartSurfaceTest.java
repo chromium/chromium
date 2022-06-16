@@ -503,7 +503,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisabledTest(message = "https://crbug.com/1119322")
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/open_ntp_instead_of_start/true"})
     public void testHomeButton_OpenNTPInsteadOfStart() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
