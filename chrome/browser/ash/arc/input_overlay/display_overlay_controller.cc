@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
@@ -27,6 +28,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -37,9 +40,15 @@ namespace {
 constexpr int kMenuEntrySize = 56;
 constexpr int kMenuEntrySideMargin = 24;
 constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
-constexpr int kCornerRadius = 8;
+constexpr int kMenuEntryCornerRadius = 8;
 constexpr int kNudgeVerticalAlign = 8;
 constexpr int kNudgeHeight = 40;
+
+// About focus ring.
+// Gap between focus ring outer edge to label.
+constexpr float kHaloInset = -4;
+// Thickness of focus ring.
+constexpr float kHaloThickness = 2;
 
 }  // namespace
 
@@ -156,8 +165,8 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   auto menu_entry = std::make_unique<views::ImageButton>(base::BindRepeating(
       &DisplayOverlayController::OnMenuEntryPressed, base::Unretained(this)));
   menu_entry->SetImage(views::Button::STATE_NORMAL, game_icon);
-  menu_entry->SetBackground(
-      views::CreateRoundedRectBackground(kMenuEntryBgColor, kCornerRadius));
+  menu_entry->SetBackground(views::CreateRoundedRectBackground(
+      kMenuEntryBgColor, kMenuEntryCornerRadius));
   menu_entry->SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
   menu_entry->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   menu_entry->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -170,6 +179,18 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
   menu_entry_ = parent_view->AddChildView(std::move(menu_entry));
+
+  // Set up focus ring for |menu_entry_|.
+  views::InstallRoundRectHighlightPathGenerator(menu_entry_, gfx::Insets(),
+                                                kMenuEntryCornerRadius);
+  ash::StyleUtil::SetUpInkDropForButton(menu_entry_, gfx::Insets(),
+                                        /*highlight_on_hover=*/true,
+                                        /*highlight_on_focus=*/true);
+  auto* focus_ring = views::FocusRing::Get(menu_entry_);
+  focus_ring->SetHaloInset(kHaloInset);
+  focus_ring->SetHaloThickness(kHaloThickness);
+  focus_ring->SetColor(cros_styles::ResolveColor(
+      cros_styles::ColorName::kFocusRingColor, IsDarkModeEnabled()));
 }
 
 void DisplayOverlayController::RemoveMenuEntryView() {
