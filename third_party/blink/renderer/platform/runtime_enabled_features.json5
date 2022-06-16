@@ -1852,10 +1852,9 @@
       name: "PictureInPicture",
       settable_from_internals: true,
     },
-    // Picture-in-Picture API is disabled by default on Android.
     {
       name: "PictureInPictureAPI",
-      status: {"Android": "", "default": "stable"},
+      status: "stable"
     },
     {
       name: "PictureInPictureV2",
