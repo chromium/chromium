@@ -186,4 +186,22 @@ ConvertReplacedAppPreferencesToMojomReplacedAppPreferences(
   return replaced_app_preferences;
 }
 
+ReplacedAppPreferences
+ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
+    const apps::mojom::ReplacedAppPreferencesPtr& mojom_replace_preferences) {
+  ReplacedAppPreferences replaced_app_preferences;
+  if (!mojom_replace_preferences) {
+    return replaced_app_preferences;
+  }
+  auto& mojom_replaced_preference_map =
+      mojom_replace_preferences->replaced_preference;
+  for (const auto& it : mojom_replaced_preference_map) {
+    for (const auto& filter : it.second) {
+      replaced_app_preferences[it.first].push_back(
+          ConvertMojomIntentFilterToIntentFilter(filter));
+    }
+  }
+  return replaced_app_preferences;
+}
+
 }  // namespace apps

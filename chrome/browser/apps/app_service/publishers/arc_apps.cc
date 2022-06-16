@@ -56,6 +56,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
+#include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -289,10 +290,9 @@ absl::optional<arc::UserInteractionType> GetUserInterationType(
 }
 
 // Check if this intent filter only contains HTTP and HTTPS schemes.
-bool IsHttpOrHttpsIntentFilter(
-    const apps::mojom::IntentFilterPtr& intent_filter) {
+bool IsHttpOrHttpsIntentFilter(const apps::IntentFilterPtr& intent_filter) {
   for (const auto& condition : intent_filter->conditions) {
-    if (condition->condition_type != apps::mojom::ConditionType::kScheme) {
+    if (condition->condition_type != apps::ConditionType::kScheme) {
       continue;
     }
     for (const auto& condition_value : condition->condition_values) {
@@ -308,8 +308,8 @@ bool IsHttpOrHttpsIntentFilter(
 }
 
 void AddPreferredApp(const std::string& app_id,
-                     const apps::mojom::IntentFilterPtr& intent_filter,
-                     apps::mojom::IntentPtr intent,
+                     const apps::IntentFilterPtr& intent_filter,
+                     apps::IntentPtr intent,
                      arc::ArcServiceManager* arc_service_manager,
                      ArcAppListPrefs* prefs) {
   arc::mojom::IntentHelperInstance* instance = nullptr;
@@ -330,15 +330,14 @@ void AddPreferredApp(const std::string& app_id,
 
   instance->AddPreferredApp(
       package_name,
-      apps_util::ConvertAppServiceToArcIntentFilter(
-          package_name,
-          apps::ConvertMojomIntentFilterToIntentFilter(intent_filter)),
+      apps_util::ConvertAppServiceToArcIntentFilter(package_name,
+                                                    intent_filter),
       apps_util::ConvertAppServiceToArcIntent(std::move(intent)));
 }
 
 void ResetVerifiedLinks(
-    const apps::mojom::IntentFilterPtr& intent_filter,
-    const apps::mojom::ReplacedAppPreferencesPtr& replaced_app_preferences,
+    const apps::IntentFilterPtr& intent_filter,
+    const apps::ReplacedAppPreferences& replaced_app_preferences,
     arc::ArcServiceManager* arc_service_manager,
     ArcAppListPrefs* prefs) {
   if (!arc_service_manager) {
@@ -347,7 +346,7 @@ void ResetVerifiedLinks(
   std::vector<std::string> package_names;
 
   // Find the apps that needs to reset verified link domain status in ARC.
-  for (auto& entry : replaced_app_preferences->replaced_preference) {
+  for (auto& entry : replaced_app_preferences) {
     auto app_info = prefs->GetApp(entry.first);
     if (!app_info) {
       continue;
@@ -728,7 +727,16 @@ void ArcApps::OnPreferredAppSet(
     IntentFilterPtr intent_filter,
     IntentPtr intent,
     ReplacedAppPreferences replaced_app_preferences) {
-  // TODO(crbug.com/1253250): Add the implementation.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+  AddPreferredApp(app_id, intent_filter, std::move(intent), arc_service_manager,
+                  prefs);
+  ResetVerifiedLinks(intent_filter, replaced_app_preferences,
+                     arc_service_manager, prefs);
 }
 
 void ArcApps::Connect(
@@ -1125,9 +1133,12 @@ void ArcApps::OnPreferredAppSet(
   if (!prefs) {
     return;
   }
-  AddPreferredApp(app_id, intent_filter, std::move(intent), arc_service_manager,
+  AddPreferredApp(app_id, ConvertMojomIntentFilterToIntentFilter(intent_filter),
+                  ConvertMojomIntentToIntent(intent), arc_service_manager,
                   prefs);
-  ResetVerifiedLinks(intent_filter, replaced_app_preferences,
+  ResetVerifiedLinks(ConvertMojomIntentFilterToIntentFilter(intent_filter),
+                     ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
+                         replaced_app_preferences),
                      arc_service_manager, prefs);
 }
 
