@@ -85,8 +85,10 @@ class LoaderTask : public content::WebContentsObserver {
     }
 
     // Flush all DidFinishLoad events until about:blank loaded.
-    if (url_.IsAboutBlank() && !validated_url.IsAboutBlank())
+    if ((url_.IsAboutBlank() && !validated_url.IsAboutBlank()) ||
+        (!url_.IsAboutBlank() && validated_url.IsAboutBlank())) {
       return;
+    }
 
     timer_.Stop();
 

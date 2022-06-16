@@ -549,17 +549,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       .AwaitNextRegistration(url, RegistrationResultCode::kTimeout);
 }
 
-// crbug.com/1334849: All/ExternallyManagedBrowserTestWithPrefMigrationRead.
-// ReinstallPolicyAppWithLocallyInstalledApp/1 is failing on Mac builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_ReinstallPolicyAppWithLocallyInstalledApp \
-  DISABLED_ReinstallPolicyAppWithLocallyInstalledApp
-#else
-#define MAYBE_ReinstallPolicyAppWithLocallyInstalledApp \
-  ReinstallPolicyAppWithLocallyInstalledApp
-#endif
 IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
-                       MAYBE_ReinstallPolicyAppWithLocallyInstalledApp) {
+                       ReinstallPolicyAppWithLocallyInstalledApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
