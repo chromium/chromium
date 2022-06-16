@@ -31,18 +31,8 @@ namespace {
 
 absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
-#if BUILDFLAG(IS_CHROMEOS)
-  bool show_app_link_in_app_window = true;
-#else
-  bool show_app_link_in_app_window =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage);
-#endif
   bool show_app_link_in_tabbed_browser =
-      show_app_link_in_app_window &&
       base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
-
-  if (!show_app_link_in_app_window)
-    return absl::nullopt;
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)

@@ -215,8 +215,6 @@ extern const base::Feature kDesktopPWAsWebBundles;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kDesktopPWAsWebAppSettingsPage;
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChromeAppsDeprecation;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kKeepForceInstalledPreinstalledApps;

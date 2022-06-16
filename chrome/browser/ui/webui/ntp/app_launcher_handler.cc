@@ -302,8 +302,7 @@ base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
                : kRunOnOsLoginModeWindowed);
 
   // Show settings instead of App info for locally installed web apps.
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
-      is_locally_installed) {
+  if (is_locally_installed) {
     dict.Set("settingsMenuItemOverrideText",
              l10n_util::GetStringUTF16(IDS_WEB_APP_SETTINGS_LINK));
   }
@@ -1101,18 +1100,11 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
-    if (base::FeatureList::IsEnabled(
-            features::kDesktopPWAsWebAppSettingsPage)) {
-      // This assumes the AppLauncherHandler is only used by chrome://apps page.
-      // It needs to be updated if it's also used by other surfaces.
-      chrome::ShowWebAppSettings(
-          chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
-          extension_id, web_app::AppSettingsPageEntryPoint::kChromeAppsPage);
-      return;
-    }
-    chrome::ShowSiteSettings(
+    // This assumes the AppLauncherHandler is only used by chrome://apps page.
+    // It needs to be updated if it's also used by other surfaces.
+    chrome::ShowWebAppSettings(
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
-        web_app_provider_->registrar().GetAppStartUrl(extension_id));
+        extension_id, web_app::AppSettingsPageEntryPoint::kChromeAppsPage);
     return;
   }
 

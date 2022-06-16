@@ -122,9 +122,8 @@ constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
 // Represents the variety of states that can exist and which control the page
 // info bubble's app settings link.
 enum class WebAppSettingsState {
-  kNeitherEnabled,
-  kOnlyWebAppSettingsEnabled,
-  kFileHandlingAlsoEnabled,
+  kFileHandlingDisabled = 1,
+  kFileHandlingEnabled,
 };
 
 // Opens |url| in a new popup window with the dimensions |popup_size|.
@@ -2193,12 +2192,7 @@ class WebAppBrowserTest_PageInfoManagementLink
   WebAppBrowserTest_PageInfoManagementLink() {
     file_handling_feature_list_.InitWithFeatureState(
         blink::features::kFileHandlingAPI,
-        GetParam() == WebAppSettingsState::kFileHandlingAlsoEnabled);
-#if !BUILDFLAG(IS_CHROMEOS)
-    web_app_settings_feature_list_.InitWithFeatureState(
-        features::kDesktopPWAsWebAppSettingsPage,
-        GetParam() != WebAppSettingsState::kNeitherEnabled);
-#endif
+        GetParam() == WebAppSettingsState::kFileHandlingEnabled);
   }
 
   bool ShowingAppManagementLink(Browser* browser) {
@@ -2208,23 +2202,12 @@ class WebAppBrowserTest_PageInfoManagementLink
         &unused_id2);
   }
 
-  static bool HasAppSettingsPage() {
-#if BUILDFLAG(IS_CHROMEOS)
-    return true;
-#else
-    return base::FeatureList::IsEnabled(
-        features::kDesktopPWAsWebAppSettingsPage);
-#endif
-  }
-
   static bool ShowsAppSettingsLinkInTabbedBrowser() {
-    return HasAppSettingsPage() &&
-           base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
+    return base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI);
   }
 
  private:
   base::test::ScopedFeatureList file_handling_feature_list_;
-  base::test::ScopedFeatureList web_app_settings_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
@@ -2244,7 +2227,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, Reparenting) {
   // The leftover tab in the tabbed browser window should not be appy.
   EXPECT_FALSE(ShowingAppManagementLink(browser()));
   // After reparenting into an app browser, should show the app settings link.
-  EXPECT_EQ(HasAppSettingsPage(), ShowingAppManagementLink(app_browser));
+  EXPECT_TRUE(ShowingAppManagementLink(app_browser));
 
   // Move back into tabbed browser: should keep showing the app settings link.
   Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
@@ -2270,7 +2253,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink,
   EXPECT_TRUE(params.browser->is_type_app());
   EXPECT_TRUE(params.browser->is_trusted_source());
 
-  EXPECT_EQ(HasAppSettingsPage(), ShowingAppManagementLink(params.browser));
+  EXPECT_TRUE(ShowingAppManagementLink(params.browser));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
@@ -2291,9 +2274,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PageInfoManagementLink, LaunchAsTab) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppBrowserTest_PageInfoManagementLink,
-    ::testing::Values(WebAppSettingsState::kNeitherEnabled,
-                      WebAppSettingsState::kOnlyWebAppSettingsEnabled,
-                      WebAppSettingsState::kFileHandlingAlsoEnabled));
+    ::testing::Values(WebAppSettingsState::kFileHandlingDisabled,
+                      WebAppSettingsState::kFileHandlingEnabled));
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppBrowserTest_ExternalPrefMigration,

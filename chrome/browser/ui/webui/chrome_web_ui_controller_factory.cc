@@ -1242,10 +1242,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
-      url.host_piece() == chrome::kChromeUIWebAppSettingsHost) {
+  if (url.host_piece() == chrome::kChromeUIWebAppSettingsHost)
     return &NewWebUI<WebAppSettingsUI>;
-  }
 #endif
   if (IsAboutUI(url))
     return &NewWebUI<AboutUI>;
