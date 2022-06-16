@@ -135,6 +135,12 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTestLegacy.testContextMenuEventFired',
     # Flaky: https://crbug.com/1157533.
     'ChromeDriverTest.testShadowDomFindElement',
+    # Flaky: https://crbug.com/1336871.
+    'ChromeDriverTest.testTakeElementScreenshot',
+    'ChromeDriverTest.testTakeElementScreenshotInIframe',
+    'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
+    'ChromeDriverTest.testTakeLargeElementScreenshot',
+    'ChromeDriverSiteIsolation.testCanClickOOPIF',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
