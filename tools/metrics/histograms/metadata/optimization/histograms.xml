@@ -52,6 +52,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationQueryTiles" summary="Query tiles"/>
   <variant name="SegmentationShare" summary="Segmentation: Share user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
+  <variant name="TextClassifier" summary="Smart text selection"/>
 </variants>
 
 <variants name="OptimizationType">
