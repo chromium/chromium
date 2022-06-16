@@ -526,8 +526,7 @@ void AddCrostiniAppListForProfile(Profile* const profile,
   const std::map<std::string, guest_os::GuestOsRegistryService::Registration>&
       registered_apps =
           guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-              ->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                      ApplicationList_VmType_TERMINA);
+              ->GetRegisteredApps(guest_os::VmType::TERMINA);
   for (const auto& pair : registered_apps) {
     const std::string& registered_app_id = pair.first;
     const guest_os::GuestOsRegistryService::Registration& registration =

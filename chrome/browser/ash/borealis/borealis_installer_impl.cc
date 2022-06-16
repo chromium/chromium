@@ -175,9 +175,8 @@ class BorealisInstallerImpl::Installation
     apps_observation_.Observe(apps_registry);
     absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
         apps_registry->GetRegistration(kClientAppId);
-    if (main_app.has_value() && main_app->VmType() ==
-                                    guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_BOREALIS) {
+    if (main_app.has_value() &&
+        main_app->VmType() == guest_os::VmType::BOREALIS) {
       apps_observation_.Reset();
       MainAppFound(true);
       return;
@@ -191,12 +190,11 @@ class BorealisInstallerImpl::Installation
 
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
-      guest_os::GuestOsRegistryService::VmType vm_type,
+      guest_os::VmType vm_type,
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override {
-    if (vm_type != guest_os::GuestOsRegistryService::VmType::
-                       ApplicationList_VmType_BOREALIS) {
+    if (vm_type != guest_os::VmType::BOREALIS) {
       return;
     }
 
@@ -261,7 +259,7 @@ class BorealisInstallerImpl::Uninstallation
     }
     // Clear the borealis apps.
     guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-        ->ClearApplicationList(vm_tools::apps::ApplicationList_VmType_BOREALIS,
+        ->ClearApplicationList(vm_tools::apps::BOREALIS,
                                uninstall_info_->vm_name,
                                uninstall_info_->container_name);
 

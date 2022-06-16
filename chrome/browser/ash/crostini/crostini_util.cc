@@ -434,9 +434,8 @@ void RemoveLxdContainerFromPrefs(Profile* profile,
                    }));
 
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-      ->ClearApplicationList(guest_os::GuestOsRegistryService::VmType::
-                                 ApplicationList_VmType_TERMINA,
-                             container_id.vm_name, container_id.container_name);
+      ->ClearApplicationList(guest_os::VmType::TERMINA, container_id.vm_name,
+                             container_id.container_name);
   guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile)
       ->ClearMimeTypes(container_id.vm_name, container_id.container_name);
 }

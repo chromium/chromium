@@ -26,7 +26,7 @@ class GuestOsExternalProtocolHandlerTest : public testing::Test {
   void SetUp() override {
     fake_crostini_features_.set_enabled(true);
 
-    app_list_.set_vm_type(vm_tools::apps::ApplicationList::TERMINA);
+    app_list_.set_vm_type(vm_tools::apps::VmType::TERMINA);
     app_list_.set_vm_name("vm_name");
     app_list_.set_container_name("container_name");
   }
@@ -100,7 +100,7 @@ class GuestOsExternalProtocolHandlerBorealisTest
 
  protected:
   void SetupBorealisApp() {
-    app_list().set_vm_type(vm_tools::apps::ApplicationList::BOREALIS);
+    app_list().set_vm_type(vm_tools::apps::VmType::BOREALIS);
     AddApp("id", std::string("x-scheme-handler/") + borealis::kAllowedScheme);
     GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
   }

@@ -1709,12 +1709,12 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     // consistent, which means the mount path needs to be the same.
     // display_name, remote_mount_path and vm_type aren't needed and we don't
     // know them at unmount so leave them blank.
-    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
-                   // TODO(b/230667118): Once http://crrev/3627129 makes it into
-                   // Chrome change the type to unknown.
-                   *Volume::CreateForSftpGuestOs(
-                       "", sftp_mount_path, base::FilePath(),
-                       guest_os::VmType::ApplicationList_VmType_TERMINA));
+    DoUnmountEvent(
+        chromeos::MOUNT_ERROR_NONE,
+        // TODO(b/230667118): Once http://crrev/3627129 makes it into
+        // Chrome change the type to unknown.
+        *Volume::CreateForSftpGuestOs("", sftp_mount_path, base::FilePath(),
+                                      guest_os::VmType::TERMINA));
     if (callback)
       std::move(callback).Run(true);
     return;

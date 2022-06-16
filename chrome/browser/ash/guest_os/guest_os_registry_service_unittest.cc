@@ -50,7 +50,7 @@ class GuestOsRegistryServiceTest : public testing::Test {
    public:
     MOCK_METHOD5(OnRegistryUpdated,
                  void(GuestOsRegistryService*,
-                      GuestOsRegistryService::VmType,
+                      VmType,
                       const std::vector<std::string>&,
                       const std::vector<std::string>&,
                       const std::vector<std::string>&));
@@ -88,7 +88,7 @@ class GuestOsRegistryServiceTest : public testing::Test {
 
 TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
   std::string desktop_file_id = "vim";
-  auto vm_type = vm_tools::apps::ApplicationList::TERMINA;
+  auto vm_type = vm_tools::apps::VmType::TERMINA;
   std::string vm_name = "awesomevm";
   std::string container_name = "awesomecontainer";
   std::map<std::string, std::string> name = {{"", "Vim"}};
@@ -146,10 +146,7 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
       service()->GetRegistration(app_id);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->DesktopFileId(), desktop_file_id);
-  EXPECT_EQ(
-      result->VmType(),
-      absl::make_optional(
-          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA));
+  EXPECT_EQ(result->VmType(), absl::make_optional(VmType::TERMINA));
   EXPECT_EQ(result->VmName(), vm_name);
   EXPECT_EQ(result->ContainerName(), container_name);
   EXPECT_EQ(result->Name(), name[""]);
@@ -181,9 +178,7 @@ TEST_F(GuestOsRegistryServiceTest, Observer) {
   EXPECT_CALL(
       observer,
       OnRegistryUpdated(
-          service(),
-          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
-          testing::IsEmpty(), testing::IsEmpty(),
+          service(), VmType::TERMINA, testing::IsEmpty(), testing::IsEmpty(),
           testing::UnorderedElementsAre(app_id_1, app_id_2, app_id_3)));
   service()->UpdateApplicationList(app_list);
 
@@ -192,20 +187,17 @@ TEST_F(GuestOsRegistryServiceTest, Observer) {
   // Rename name for "app 3" to "banana"
   app_list.mutable_apps(2)->mutable_name()->mutable_values(0)->set_value(
       "banana");
-  EXPECT_CALL(
-      observer,
-      OnRegistryUpdated(
-          service(),
-          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
-          testing::ElementsAre(app_id_3), testing::ElementsAre(app_id_2),
-          testing::ElementsAre(app_id_4)));
+  EXPECT_CALL(observer, OnRegistryUpdated(service(), VmType::TERMINA,
+                                          testing::ElementsAre(app_id_3),
+                                          testing::ElementsAre(app_id_2),
+                                          testing::ElementsAre(app_id_4)));
   service()->UpdateApplicationList(app_list);
 }
 
 TEST_F(GuestOsRegistryServiceTest, ObserverForPvmDefault) {
   ApplicationList app_list = crostini::CrostiniTestHelper::BasicAppList(
       "app 1", "PvmDefault", "container");
-  app_list.set_vm_type(vm_tools::apps::ApplicationList_VmType_PLUGIN_VM);
+  app_list.set_vm_type(vm_tools::apps::PLUGIN_VM);
   std::string app_id_1 = crostini::CrostiniTestHelper::GenerateAppId(
       "app 1", "PvmDefault", "container");
 
@@ -213,28 +205,20 @@ TEST_F(GuestOsRegistryServiceTest, ObserverForPvmDefault) {
   service()->AddObserver(&observer);
 
   // Observers should be called when apps are added or updated.
-  EXPECT_CALL(
-      observer,
-      OnRegistryUpdated(
-          service(),
-          GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM,
-          testing::IsEmpty(), testing::IsEmpty(),
-          testing::UnorderedElementsAre(app_id_1)))
+  EXPECT_CALL(observer,
+              OnRegistryUpdated(service(), VmType::PLUGIN_VM,
+                                testing::IsEmpty(), testing::IsEmpty(),
+                                testing::UnorderedElementsAre(app_id_1)))
       .Times(1);
   service()->UpdateApplicationList(app_list);
 
   // Observers should be called when apps are removed.
-  EXPECT_CALL(
-      observer,
-      OnRegistryUpdated(
-          service(),
-          GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM,
-          testing::IsEmpty(), testing::UnorderedElementsAre(app_id_1),
-          testing::IsEmpty()))
+  EXPECT_CALL(observer,
+              OnRegistryUpdated(
+                  service(), VmType::PLUGIN_VM, testing::IsEmpty(),
+                  testing::UnorderedElementsAre(app_id_1), testing::IsEmpty()))
       .Times(1);
-  service()->ClearApplicationList(
-      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM,
-      "PvmDefault", "");
+  service()->ClearApplicationList(VmType::PLUGIN_VM, "PvmDefault", "");
 }
 
 TEST_F(GuestOsRegistryServiceTest, ZeroAppsInstalledHistogram) {
@@ -282,7 +266,7 @@ TEST_F(GuestOsRegistryServiceTest, PluginVmAppsInstalledHistogram) {
   ApplicationList app_list = crostini::CrostiniTestHelper::BasicAppList(
       "app 1", "PvmDefault", "container");
   *app_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("app 2");
-  app_list.set_vm_type(vm_tools::apps::ApplicationList_VmType_PLUGIN_VM);
+  app_list.set_vm_type(vm_tools::apps::PLUGIN_VM);
   service()->UpdateApplicationList(app_list);
 
   RecreateService();
@@ -297,13 +281,9 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
 
   Observer observer;
   service()->AddObserver(&observer);
-  EXPECT_CALL(
-      observer,
-      OnRegistryUpdated(
-          service(),
-          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
-          testing::IsEmpty(), testing::IsEmpty(),
-          testing::ElementsAre(app_id)));
+  EXPECT_CALL(observer, OnRegistryUpdated(
+                            service(), VmType::TERMINA, testing::IsEmpty(),
+                            testing::IsEmpty(), testing::ElementsAre(app_id)));
   service()->UpdateApplicationList(app_list);
 
   absl::optional<GuestOsRegistryService::Registration> result =
@@ -331,13 +311,10 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
   // The install time shouldn't change if fields change.
   test_clock_.Advance(base::Hours(1));
   app_list.mutable_apps(0)->set_no_display(true);
-  EXPECT_CALL(
-      observer,
-      OnRegistryUpdated(
-          service(),
-          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
-          testing::ElementsAre(app_id), testing::IsEmpty(),
-          testing::IsEmpty()));
+  EXPECT_CALL(observer,
+              OnRegistryUpdated(service(), VmType::TERMINA,
+                                testing::ElementsAre(app_id),
+                                testing::IsEmpty(), testing::IsEmpty()));
   service()->UpdateApplicationList(app_list);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);
@@ -397,9 +374,7 @@ TEST_F(GuestOsRegistryServiceTest, ClearApplicationList) {
       GetRegisteredAppIds(),
       testing::UnorderedElementsAre(app_id_1, app_id_2, app_id_3, app_id_4));
 
-  service()->ClearApplicationList(
-      GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA, "vm 2",
-      "");
+  service()->ClearApplicationList(VmType::TERMINA, "vm 2", "");
 
   EXPECT_THAT(GetRegisteredAppIds(),
               testing::UnorderedElementsAre(app_id_1, app_id_2));
@@ -537,8 +512,7 @@ TEST_F(GuestOsRegistryServiceTest, GetEnabledApps) {
   plugin_vm::FakePluginVmFeatures fake_plugin_vm_features;
 
   ApplicationList crostini_list;
-  crostini_list.set_vm_type(
-      GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+  crostini_list.set_vm_type(VmType::TERMINA);
   crostini_list.set_vm_name("termina");
   crostini_list.set_container_name("penguin");
   *crostini_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("c");
@@ -547,8 +521,7 @@ TEST_F(GuestOsRegistryServiceTest, GetEnabledApps) {
   service()->UpdateApplicationList(crostini_list);
 
   ApplicationList plugin_vm_list;
-  plugin_vm_list.set_vm_type(
-      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM);
+  plugin_vm_list.set_vm_type(VmType::PLUGIN_VM);
   plugin_vm_list.set_vm_name("PvmDefault");
   plugin_vm_list.set_container_name("penguin");
   *plugin_vm_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("p");
@@ -583,8 +556,7 @@ TEST_F(GuestOsRegistryServiceTest, GetEnabledApps) {
 
 TEST_F(GuestOsRegistryServiceTest, PluginVmNameSuffix) {
   ApplicationList crostini_list;
-  crostini_list.set_vm_type(
-      GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+  crostini_list.set_vm_type(VmType::TERMINA);
   crostini_list.set_vm_name("termina");
   crostini_list.set_container_name("penguin");
   *crostini_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("c");
@@ -593,8 +565,7 @@ TEST_F(GuestOsRegistryServiceTest, PluginVmNameSuffix) {
   service()->UpdateApplicationList(crostini_list);
 
   ApplicationList plugin_vm_list;
-  plugin_vm_list.set_vm_type(
-      GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM);
+  plugin_vm_list.set_vm_type(VmType::PLUGIN_VM);
   plugin_vm_list.set_vm_name("PvmDefault");
   plugin_vm_list.set_container_name("penguin");
   *plugin_vm_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("p");

@@ -88,8 +88,7 @@ void CrostiniApps::Initialize() {
 
   std::vector<AppPtr> apps;
   for (const auto& pair :
-       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_TERMINA)) {
+       registry_->GetRegisteredApps(guest_os::VmType::TERMINA)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
         pair.second;
     apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
@@ -132,8 +131,7 @@ void CrostiniApps::Connect(
   std::vector<apps::mojom::AppPtr> apps;
 
   for (const auto& pair :
-       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_TERMINA)) {
+       registry_->GetRegisteredApps(guest_os::VmType::TERMINA)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
         pair.second;
     apps.push_back(Convert(registration, /*new_icon_key=*/true));
@@ -227,12 +225,11 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
 
 void CrostiniApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
-    guest_os::GuestOsRegistryService::VmType vm_type,
+    guest_os::VmType vm_type,
     const std::vector<std::string>& updated_apps,
     const std::vector<std::string>& removed_apps,
     const std::vector<std::string>& inserted_apps) {
-  if (vm_type != guest_os::GuestOsRegistryService::VmType::
-                     ApplicationList_VmType_TERMINA) {
+  if (vm_type != guest_os::VmType::TERMINA) {
     return;
   }
 
@@ -272,9 +269,7 @@ void CrostiniApps::OnRegistryUpdated(
 AppPtr CrostiniApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
-  DCHECK_EQ(
-      registration.VmType(),
-      guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+  DCHECK_EQ(registration.VmType(), guest_os::VmType::TERMINA);
 
   auto app = AppPublisher::MakeApp(
       AppType::kCrostini, registration.app_id(), Readiness::kReady,
@@ -314,9 +309,7 @@ AppPtr CrostiniApps::CreateApp(
 apps::mojom::AppPtr CrostiniApps::Convert(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool new_icon_key) {
-  DCHECK_EQ(
-      registration.VmType(),
-      guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+  DCHECK_EQ(registration.VmType(), guest_os::VmType::TERMINA);
 
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kCrostini, registration.app_id(),

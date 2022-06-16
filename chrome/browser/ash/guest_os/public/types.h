@@ -8,7 +8,7 @@
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 namespace guest_os {
 
-using VmType = vm_tools::apps::ApplicationList_VmType;
+using VmType = vm_tools::apps::VmType;
 }
 
 #endif  // CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_TYPES_H_

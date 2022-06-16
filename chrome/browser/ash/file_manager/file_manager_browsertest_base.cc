@@ -1708,9 +1708,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     return crostini::DefaultContainerId();
   }
 
-  guest_os::VmType vm_type() override {
-    return guest_os::VmType::ApplicationList_VmType_TERMINA;
-  }
+  guest_os::VmType vm_type() override { return guest_os::VmType::TERMINA; }
 
   int cid_;
   int cid() override { return cid_; }

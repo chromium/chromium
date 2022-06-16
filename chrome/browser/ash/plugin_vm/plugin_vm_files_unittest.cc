@@ -63,7 +63,7 @@ class PluginVmFilesTest : public testing::Test {
     fake_plugin_vm_features_.set_enabled(true);
 
     vm_tools::apps::ApplicationList app_list;
-    app_list.set_vm_type(vm_tools::apps::ApplicationList::PLUGIN_VM);
+    app_list.set_vm_type(vm_tools::apps::VmType::PLUGIN_VM);
     app_list.set_vm_name("PvmDefault");
     app_list.set_container_name("penguin");
     *app_list.add_apps() = crostini::CrostiniTestHelper::BasicApp("name");

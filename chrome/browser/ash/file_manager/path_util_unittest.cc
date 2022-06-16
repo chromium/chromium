@@ -1156,7 +1156,7 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
   volume_manager->AddVolumeForTesting(Volume::CreateForSftpGuestOs(
       "guest_os_label", base::FilePath("/mount_path/guest_os"),
       base::FilePath("/remote_mount_path/guest_os"),
-      guest_os::VmType::ApplicationList_VmType_TERMINA));
+      guest_os::VmType::TERMINA));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForMTP(
       base::FilePath("/mount_path/mtp"), "mtp_label", false));

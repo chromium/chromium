@@ -418,7 +418,7 @@ class AppServiceAppWindowBorealisBrowserTest
     vm_tools::apps::ApplicationList list;
     list.set_vm_name(vm);
     list.set_container_name(container);
-    list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+    list.set_vm_type(vm_tools::apps::BOREALIS);
     vm_tools::apps::App* app = list.add_apps();
     app->set_desktop_file_id(name);
     app->mutable_name()->add_values()->set_value(name);

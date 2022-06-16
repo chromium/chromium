@@ -45,9 +45,7 @@ void CrostiniRemover::StopVmFinished(CrostiniResult result) {
 
   VLOG(1) << "Clearing application list";
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-      ->ClearApplicationList(guest_os::GuestOsRegistryService::VmType::
-                                 ApplicationList_VmType_TERMINA,
-                             vm_name_, "");
+      ->ClearApplicationList(guest_os::VmType::TERMINA, vm_name_, "");
   guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile_)
       ->ClearMimeTypes(vm_name_, "");
   VLOG(1) << "Destroying disk image";

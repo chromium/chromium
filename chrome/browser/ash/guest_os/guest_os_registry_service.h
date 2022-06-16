@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -77,8 +78,6 @@ using IconContentCallback = base::OnceCallback<void(std::string)>;
 // so some care is required.
 class GuestOsRegistryService : public KeyedService {
  public:
-  using VmType = vm_tools::apps::ApplicationList_VmType;
-
   class Registration {
    public:
     Registration(const std::string app_id, const base::Value pref);

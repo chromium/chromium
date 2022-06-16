@@ -75,7 +75,7 @@ class BorealisAppUninstallerTest : public testing::Test {
     list_ = std::make_unique<vm_tools::apps::ApplicationList>();
     list_->set_vm_name("borealis");
     list_->set_container_name("penguin");
-    list_->set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+    list_->set_vm_type(vm_tools::apps::BOREALIS);
   }
 
   void TearDown() override {

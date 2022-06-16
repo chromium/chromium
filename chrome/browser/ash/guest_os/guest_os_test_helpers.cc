@@ -31,7 +31,7 @@ guest_os::GuestId MockMountProvider::GuestId() {
 }
 
 VmType MockMountProvider::vm_type() {
-  return VmType::ApplicationList_VmType_PLUGIN_VM;
+  return VmType::PLUGIN_VM;
 }
 
 }  // namespace guest_os

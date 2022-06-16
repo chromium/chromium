@@ -119,7 +119,7 @@ base::Value LocaleStringsProtoToDictionary(
 // Populate |pref_registration| based on the given App proto.
 // |name| should be |app.name()| in Dictionary form.
 void PopulatePrefRegistrationFromApp(base::Value& pref_registration,
-                                     GuestOsRegistryService::VmType vm_type,
+                                     VmType vm_type,
                                      const std::string& vm_name,
                                      const std::string& container_name,
                                      const vm_tools::apps::App& app,
@@ -329,14 +329,13 @@ std::string GuestOsRegistryService::Registration::DesktopFileId() const {
   return GetString(guest_os::prefs::kAppDesktopFileIdKey);
 }
 
-GuestOsRegistryService::VmType GuestOsRegistryService::Registration::VmType()
-    const {
+VmType GuestOsRegistryService::Registration::VmType() const {
   if (!pref_.is_dict()) {
-    return GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA;
+    return VmType::TERMINA;
   }
   // The VmType field is new, existing Apps that do not include it must be
   // TERMINA (0) Apps, as Plugin VM apps are not yet in production.
-  return static_cast<GuestOsRegistryService::VmType>(
+  return static_cast<guest_os::VmType>(
       pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0));
 }
 
@@ -349,7 +348,7 @@ std::string GuestOsRegistryService::Registration::ContainerName() const {
 }
 
 std::string GuestOsRegistryService::Registration::Name() const {
-  if (VmType() == VmType::ApplicationList_VmType_PLUGIN_VM) {
+  if (VmType() == VmType::PLUGIN_VM) {
     return l10n_util::GetStringFUTF8(
         IDS_PLUGIN_VM_APP_NAME_WINDOWS_SUFFIX,
         base::UTF8ToUTF16(GetLocalizedString(guest_os::prefs::kAppNameKey)));
@@ -570,13 +569,13 @@ GuestOsRegistryService::GetEnabledApps() const {
   for (auto it = apps.cbegin(); it != apps.cend();) {
     bool enabled = false;
     switch (it->second.VmType()) {
-      case VmType::ApplicationList_VmType_TERMINA:
+      case VmType::TERMINA:
         enabled = crostini_enabled;
         break;
-      case VmType::ApplicationList_VmType_PLUGIN_VM:
+      case VmType::PLUGIN_VM:
         enabled = plugin_vm_enabled;
         break;
-      case VmType::ApplicationList_VmType_BOREALIS:
+      case VmType::BOREALIS:
         enabled = borealis_enabled;
         break;
       default:
@@ -673,7 +672,7 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
   // guarded by a flag.
   if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     auto reg = GetRegistration(app_id);
-    if (reg && reg->VmType() == VmType::ApplicationList_VmType_TERMINA) {
+    if (reg && reg->VmType() == VmType::TERMINA) {
       callback = base::BindOnce(
           &GuestOsRegistryService::ApplyContainerBadge,
           weak_ptr_factory_.GetWeakPtr(),
@@ -1010,8 +1009,8 @@ void GuestOsRegistryService::ContainerBadgeColorChanged(
   std::vector<std::string> removed_apps;
   std::vector<std::string> inserted_apps;
   for (Observer& obs : observers_) {
-    obs.OnRegistryUpdated(this, VmType::ApplicationList_VmType_TERMINA,
-                          updated_apps, removed_apps, inserted_apps);
+    obs.OnRegistryUpdated(this, VmType::TERMINA, updated_apps, removed_apps,
+                          inserted_apps);
   }
 }
 
