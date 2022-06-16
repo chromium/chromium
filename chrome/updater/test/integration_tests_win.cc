@@ -48,6 +48,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -344,39 +345,12 @@ void SetupAppCommand(UpdaterScope scope,
                      const std::wstring& app_id,
                      const std::wstring& command_id,
                      base::ScopedTempDir& temp_dir) {
-  base::FilePath system_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
-
-  const wchar_t kCmdExe[] = L"cmd.exe";
-  const base::FilePath from_test_process = system_path.Append(kCmdExe);
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-
-  if (scope == UpdaterScope::kUser) {
-    command_line = base::CommandLine(from_test_process);
-  } else {
-    base::FilePath programfiles_path;
-    ASSERT_TRUE(
-        base::PathService::Get(base::DIR_PROGRAM_FILES, &programfiles_path));
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(programfiles_path));
-    base::FilePath test_process_path = temp_dir.GetPath().Append(kCmdExe);
-
-    ASSERT_TRUE(base::CopyFile(from_test_process, test_process_path));
-    command_line = base::CommandLine(test_process_path);
-  }
-
-  base::win::RegKey command_key;
-  ASSERT_EQ(command_key.Create(UpdaterScopeToHKeyRoot(scope),
-                               base::StrCat({CLIENTS_KEY, app_id, L"\\",
-                                             kRegKeyCommands, command_id})
-                                   .c_str(),
-                               Wow6432(KEY_WRITE)),
-            ERROR_SUCCESS);
-  ASSERT_EQ(
-      command_key.WriteValue(kRegValueCommandLine,
-                             base::StrCat({command_line.GetCommandLineString(),
-                                           L" /c \"exit %1\""})
-                                 .c_str()),
-      ERROR_SUCCESS);
+  base::CommandLine cmd_exe_command_line(base::CommandLine::NO_PROGRAM);
+  SetupCmdExe(scope, cmd_exe_command_line, temp_dir);
+  CreateAppCommandRegistry(
+      scope, app_id, command_id,
+      base::StrCat(
+          {cmd_exe_command_line.GetCommandLineString(), L" /c \"exit %1\""}));
 }
 
 class WindowEnumerator {
@@ -956,6 +930,8 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
   EXPECT_EQ(exit_code, static_cast<DWORD>(expected_exit_code));
+
+  DeleteAppClientKey(scope, appid);
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {

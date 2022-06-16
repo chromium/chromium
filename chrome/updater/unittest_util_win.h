@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -21,27 +22,29 @@ std::wstring GetAppCommandKeyName(const std::wstring& app_id,
                                   const std::wstring& command_id);
 
 // Creates the key `{HKLM\HKCU}\Software\{CompanyName}\Update\Clients\{app_id}`.
-// `{HKLM\HKCU}` is determined by the current test scope.
-void CreateAppClientKey(const std::wstring& app_id);
+// `{HKLM\HKCU}` is determined by `scope`.
+void CreateAppClientKey(UpdaterScope scope, const std::wstring& app_id);
 
 // Deletes the key `{HKLM\HKCU}\Software\{CompanyName}\Update\Clients\{app_id}`.
-// `{HKLM\HKCU}` is determined by the current test scope.
-void DeleteAppClientKey(const std::wstring& app_id);
+// `{HKLM\HKCU}` is determined by `scope`.
+void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id);
 
 // Creates the key
 // `{HKRoot}\Software\{CompanyName}\Update\Clients\{app_id}\Commands\{cmd_id}`,
 // and adds a `CommandLine` REG_SZ entry with the value `cmd_line`. `{HKRoot}`
-// is determined by the current test scope.
-void CreateAppCommandRegistry(const std::wstring& app_id,
+// is determined by `scope`.
+void CreateAppCommandRegistry(UpdaterScope scope,
+                              const std::wstring& app_id,
                               const std::wstring& cmd_id,
                               const std::wstring& cmd_line);
 
 // Returns the path to "cmd.exe" in `cmd_exe_command_line` based on the current
 // test scope:
-// * "%systemroot%\system32\cmd.exe" for user test scope.
-// * "%programfiles%\`temp_parent_dir`\cmd.exe" for system test scope.
+// * "%systemroot%\system32\cmd.exe" for user `scope`.
+// * "%programfiles%\`temp_parent_dir`\cmd.exe" for system `scope`.
 // `temp_parent_dir` is owned by the caller.
-void SetupCmdExe(base::CommandLine& cmd_exe_command_line,
+void SetupCmdExe(UpdaterScope scope,
+                 base::CommandLine& cmd_exe_command_line,
                  base::ScopedTempDir& temp_parent_dir);
 
 }  // namespace updater

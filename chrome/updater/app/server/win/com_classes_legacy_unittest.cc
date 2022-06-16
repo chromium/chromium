@@ -53,10 +53,10 @@ class LegacyAppCommandWebImplTest : public testing::Test {
   ~LegacyAppCommandWebImplTest() override = default;
 
   void SetUp() override {
-    SetupCmdExe(cmd_exe_command_line_, temp_programfiles_dir_);
+    SetupCmdExe(GetTestScope(), cmd_exe_command_line_, temp_programfiles_dir_);
   }
 
-  void TearDown() override { DeleteAppClientKey(kAppId1); }
+  void TearDown() override { DeleteAppClientKey(GetTestScope(), kAppId1); }
 
   template <typename T>
   absl::optional<std::wstring> MakeCommandLine(
@@ -91,8 +91,8 @@ class LegacyAppCommandWebImplTest : public testing::Test {
       const std::wstring& command_id,
       const std::wstring& command_line_format,
       const std::vector<std::wstring>& parameters) {
-    CreateAppClientKey(app_id);
-    CreateAppCommandRegistry(app_id, command_id, command_line_format);
+    CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
+                             command_line_format);
 
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
     if (HRESULT hr = LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
@@ -109,8 +109,8 @@ class LegacyAppCommandWebImplTest : public testing::Test {
       const std::wstring& command_id,
       const std::wstring& command_line_format,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
-    CreateAppClientKey(app_id);
-    CreateAppCommandRegistry(app_id, command_id, command_line_format);
+    CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
+                             command_line_format);
 
     return LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
         GetTestScope(), app_id, command_id, app_command_web);
@@ -125,8 +125,7 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 
   void NoCmdTest() {
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-    CreateAppClientKey(kAppId1);
-    CreateAppCommandRegistry(kAppId1, kCmdId1, kCmdLineValid);
+    CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1, kCmdLineValid);
 
     EXPECT_HRESULT_FAILED(
         LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
