@@ -23,7 +23,7 @@ class MediaSourceHandleImpl final : public ScriptWrappable,
       String internal_blob_url);
   ~MediaSourceHandleImpl() override;
 
-  scoped_refptr<MediaSourceAttachment> GetAttachment() override;
+  scoped_refptr<MediaSourceAttachment> TakeAttachment() override;
   String GetInternalBlobURL() override;
 
   void mark_serialized();

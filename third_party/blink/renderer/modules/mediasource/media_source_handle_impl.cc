@@ -26,8 +26,8 @@ MediaSourceHandleImpl::~MediaSourceHandleImpl() {
   DVLOG(1) << __func__ << " this=" << this;
 }
 
-scoped_refptr<MediaSourceAttachment> MediaSourceHandleImpl::GetAttachment() {
-  return attachment_;
+scoped_refptr<MediaSourceAttachment> MediaSourceHandleImpl::TakeAttachment() {
+  return std::move(attachment_);
 }
 
 String MediaSourceHandleImpl::GetInternalBlobURL() {
@@ -37,6 +37,13 @@ String MediaSourceHandleImpl::GetInternalBlobURL() {
 void MediaSourceHandleImpl::mark_serialized() {
   DCHECK(!serialized_);
   serialized_ = true;
+
+  // Before being serialized, the serialization must have retrieved our
+  // reference to the |attachment_| precisely once. Note that immediately upon
+  // an instance of us being assigned to srcObject, that instance can no longer
+  // be serialized and there will be at most one async media element load that
+  // retrieves our attachment reference.
+  DCHECK(!attachment_);
 }
 
 void MediaSourceHandleImpl::Trace(Visitor* visitor) const {
