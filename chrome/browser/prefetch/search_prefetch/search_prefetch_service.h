@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -150,6 +152,10 @@ class SearchPrefetchService : public KeyedService,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  base::WeakPtr<SearchPrefetchService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url, bool navigation_prefetch);
@@ -220,6 +226,8 @@ class SearchPrefetchService : public KeyedService,
   // served from cache. The value is the prefetch URL in cache and the latest
   // serving time of the response.
   std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
+
+  base::WeakPtrFactory<SearchPrefetchService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_

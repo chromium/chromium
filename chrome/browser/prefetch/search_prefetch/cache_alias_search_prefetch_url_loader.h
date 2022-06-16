@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,7 +116,9 @@ class CacheAliasSearchPrefetchURLLoader
   // fallback occurs.
   bool paused_ = false;
 
-  raw_ptr<Profile> profile_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  base::WeakPtr<SearchPrefetchService> search_prefetch_service_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 

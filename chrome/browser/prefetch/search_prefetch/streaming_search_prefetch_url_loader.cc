@@ -58,7 +58,8 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     base::OnceCallback<void(bool)> report_error_callback)
     : streaming_prefetch_request_(streaming_prefetch_request),
       report_error_callback_(std::move(report_error_callback)),
-      profile_(profile),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
   DCHECK(streaming_prefetch_request_);
@@ -76,11 +77,9 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     }
   }
   prefetch_url_ = resource_request->url;
-  auto url_loader_factory = profile->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
 
   // Create a network service URL loader with passed in params.
-  url_loader_factory->CreateLoaderAndStart(
+  url_loader_factory_->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |
@@ -552,11 +551,8 @@ void StreamingSearchPrefetchURLLoader::Fallback() {
   url_loader_receiver_.reset();
   is_in_fallback_ = true;
 
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
-
   // Create a network service URL loader with passed in params.
-  url_loader_factory->CreateLoaderAndStart(
+  url_loader_factory_->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |

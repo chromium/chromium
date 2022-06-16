@@ -32,7 +32,10 @@ CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
     const GURL& prefetch_url,
     std::unique_ptr<StreamingSearchPrefetchURLLoader> prefetch_loader)
-    : profile_(profile),
+    : url_loader_factory_(profile->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
+      search_prefetch_service_(
+          SearchPrefetchServiceFactory::GetForProfile(profile)->GetWeakPtr()),
       network_traffic_annotation_(network_traffic_annotation),
       prefetch_url_(prefetch_url),
       prefetch_loader_(std::move(prefetch_loader)) {}
@@ -95,11 +98,8 @@ void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
   prefetch_request.url = prefetch_url_;
 
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
-
   // Create a network service URL loader with passed in params.
-  url_loader_factory->CreateLoaderAndStart(
+  url_loader_factory_->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionNone, prefetch_request,
       url_loader_receiver_.BindNewPipeAndPassRemote(
@@ -126,16 +126,11 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect() {
   url_loader_receiver_.reset();
   can_fallback_ = false;
 
-  SearchPrefetchService* service =
-      SearchPrefetchServiceFactory::GetForProfile(profile_);
-  if (service)
-    service->ClearCacheEntry(resource_request_->url);
-
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
+  if (search_prefetch_service_)
+    search_prefetch_service_->ClearCacheEntry(resource_request_->url);
 
   // Create a network service URL loader with passed in params.
-  url_loader_factory->CreateLoaderAndStart(
+  url_loader_factory_->CreateLoaderAndStart(
       network_url_loader_.BindNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
           network::mojom::kURLLoadOptionSniffMimeType |
@@ -178,10 +173,8 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
         &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
         weak_factory_.GetWeakPtr()));
 
-    SearchPrefetchService* service =
-        SearchPrefetchServiceFactory::GetForProfile(profile_);
-    if (service)
-      service->UpdateServeTime(resource_request_->url);
+    if (search_prefetch_service_)
+      search_prefetch_service_->UpdateServeTime(resource_request_->url);
   }
 
   can_fallback_ = false;

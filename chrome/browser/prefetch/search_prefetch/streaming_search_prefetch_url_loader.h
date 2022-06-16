@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -222,7 +223,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // report it again.
   bool marked_as_servable_ = false;
 
-  raw_ptr<Profile> profile_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // If not null, called when headers are received.
   base::OnceClosure headers_received_callback_;
