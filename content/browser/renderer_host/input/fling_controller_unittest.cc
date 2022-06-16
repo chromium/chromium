@@ -788,7 +788,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)
@@ -835,7 +835,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)

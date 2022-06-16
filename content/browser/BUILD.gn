@@ -2462,17 +2462,16 @@ source_set("browser") {
     ]
   }
 
-  if (is_chromecast) {
-    deps += [ "//chromecast:chromecast_buildflags" ]
-  }
-
-  if (is_chromecast && (is_linux || is_chromeos)) {
+  if (is_castos) {
     sources += [
       "tracing/cast_tracing_agent.cc",
       "tracing/cast_tracing_agent.h",
     ]
 
-    deps += [ "//chromecast/tracing:system_tracer" ]
+    deps += [
+      "//chromecast:chromecast_buildflags",
+      "//chromecast/tracing:system_tracer",
+    ]
 
     defines += [ "CAST_TRACING_AGENT=1" ]
   }

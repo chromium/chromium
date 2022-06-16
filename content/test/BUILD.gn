@@ -985,7 +985,7 @@ static_library("browsertest_support") {
     deps += [ "//content/public/browser" ]
   }
 
-  if (use_aura && toolkit_views && !is_chromecast) {
+  if (use_aura && toolkit_views && !is_castos) {
     deps += [ "//ui/views" ]
   }
 
@@ -1701,7 +1701,7 @@ test("content_browsertests") {
       sources += [ "../browser/media/capture/mouse_cursor_overlay_controller_browsertest.cc" ]
 
       # For chromecast, content_browsertests does not provide a shell window.
-      if (use_aura && !is_chromecast) {
+      if (use_aura && !is_castos) {
         sources += [ "../browser/media/capture/aura_window_video_capture_device_browsertest.cc" ]
       }
     }
@@ -1966,7 +1966,7 @@ test("content_browsertests") {
     ]
   }
 
-  if (is_chromecast) {
+  if (is_castos || is_cast_android) {
     sources -= [
       # The cast shell media pipeline doesn't produce real video frames that we
       # can inspect.
@@ -3003,7 +3003,8 @@ test("content_unittests") {
     deps += [ "//device/vr:vr_fakes" ]
   }
 
-  if (is_chromecast) {
+  # TODO(crbug.com/1293538): Update to check is_cast_audio_only
+  if (is_castos || is_cast_android) {
     deps += [ "//chromecast:chromecast_buildflags" ]
   }
 }

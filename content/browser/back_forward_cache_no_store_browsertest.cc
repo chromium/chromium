@@ -110,13 +110,13 @@ class BackForwardCacheBrowserTestAllowCacheControlNoStore
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // but does not get restored and gets evicted.
 // Turned off on cast for https://crbug.com/1281665 , along with others.
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted \
         DISABLED_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted
 #else
 #define MAYBE_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted \
         PagesWithCacheControlNoStoreEnterBfcacheAndEvicted
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
                        MAYBE_PagesWithCacheControlNoStoreEnterBfcacheAndEvicted) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -163,13 +163,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
 // and if a cookie is modified while it is in bfcache via JavaScript, gets
 // evicted with cookie modified marked.
 // Turned off on cast for https://crbug.com/1281665 .
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript \
         DISABLED_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript
 #else
 #define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript \
         PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
     MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript) {
@@ -230,14 +230,16 @@ IN_PROC_BROWSER_TEST_F(
                   BlockListedFeatures()));
 }
 
-// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast Audio Linux.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreCookieModifiedBackTwice \
   DISABLED_PagesWithCacheControlNoStoreCookieModifiedBackTwice
 #else
 #define MAYBE_PagesWithCacheControlNoStoreCookieModifiedBackTwice \
   PagesWithCacheControlNoStoreCookieModifiedBackTwice
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a cookie is modified, it gets evicted with cookie changed, but if
 // navigated away again and navigated back, it gets evicted without cookie
@@ -304,18 +306,21 @@ IN_PROC_BROWSER_TEST_F(
                   BlockListedFeatures()));
 }
 
-// Flaky on Cast Audio Linux https://crbug.com/1229182
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and even if a cookie is modified on a different domain than the entry, the
 // entry is not marked as cookie modified.
 // Turned off on cast for https://crbug.com/1281665 .
-#if BUILDFLAG(IS_CHROMECAST)
+//
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast Audio Linux.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain \
         DISABLED_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain
 #else
 #define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain \
         PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
     MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain) {
@@ -513,14 +518,16 @@ const char kResponseWithNoCacheWithHTTPOnlyCookie2[] =
     "The server speaks HTTP!";
 }  // namespace
 
-// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast Audio Linux.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
   DISABLED_PagesWithCacheControlNoStoreSetFromResponseHeader
 #else
 #define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
   PagesWithCacheControlNoStoreSetFromResponseHeader
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a cookie is modified while it is in bfcache via response header, gets
 // evicted with cookie modified marked.
@@ -581,14 +588,16 @@ IN_PROC_BROWSER_TEST_F(
                   BlockListedFeatures()));
 }
 
-// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast Audio Linux.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie \
   DISABLED_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie
 #else
 #define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie \
   PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if HTTPOnly cookie is modified while it is in bfcache, gets evicted with
 // HTTPOnly cookie modified marked.
@@ -655,14 +664,16 @@ IN_PROC_BROWSER_TEST_F(
           BlockListedFeatures()));
 }
 
-// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast Audio Linux.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice \
   DISABLED_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice
 #else
 #define MAYBE_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice \
   PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a HTTPOnly cookie is modified, it gets evicted with cookie changed,
 // but if navigated away again and navigated back, it gets evicted without
@@ -763,16 +774,19 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
   }
 };
 
-// TODO(https://crbug.com/1231849): flaky on Cast Linux.
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets restored if cookies do not change.
-#if BUILDFLAG(IS_CHROMECAST)
+//
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast Linux.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
   DISABLED_PagesWithCacheControlNoStoreRestoreFromBackForwardCache
 #else
 #define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
   PagesWithCacheControlNoStoreRestoreFromBackForwardCache
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
     MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
@@ -803,17 +817,20 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-// Flaky on Cast: crbug.com/1229182
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // but gets evicted if cookies change.
 // Turned off on cast for https://crbug.com/1281665 .
-#if BUILDFLAG(IS_CHROMECAST)
+//
+// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
+// crbug.com/1229182 has been resolved. This was originally disabled due to
+// flakiness on Cast.
+#if BUILDFLAG(IS_CASTOS)
 #define MAYBE_PagesWithCacheControlNoStoreEvictedIfCookieChange \
         DISABLED_PagesWithCacheControlNoStoreEvictedIfCookieChange
 #else
 #define MAYBE_PagesWithCacheControlNoStoreEvictedIfCookieChange \
         PagesWithCacheControlNoStoreEvictedIfCookieChange
-#endif
+#endif  // BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
     MAYBE_PagesWithCacheControlNoStoreEvictedIfCookieChange) {

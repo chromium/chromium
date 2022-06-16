@@ -10,7 +10,8 @@ declare_args() {
 
   # Whether to perform critical memory pressure handling when in foreground (if
   # false, critical memory pressure is treated like moderate pressure in foreground).
-  allow_critical_memory_pressure_handling_in_foreground = is_chromecast
+  allow_critical_memory_pressure_handling_in_foreground =
+      is_castos || is_cast_android
 
   # Whether or not MBI mode (Multiple Blink Isolates) should be enabled,
   # depending on the build argument.

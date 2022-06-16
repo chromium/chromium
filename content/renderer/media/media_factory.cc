@@ -112,12 +112,12 @@
 #include "content/renderer/media/cast_renderer_factory.h"
 #endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // Enable remoting receiver
 #include "media/remoting/receiver_controller.h"        // nogncheck
 #include "media/remoting/remoting_constants.h"         // nogncheck
 #include "media/remoting/remoting_renderer_factory.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
@@ -708,7 +708,7 @@ MediaFactory::CreateRendererFactorySelector(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_remoting = std::make_unique<CastRendererClientFactory>(
@@ -732,7 +732,7 @@ MediaFactory::CreateRendererFactorySelector(
         RendererType::kRemoting, std::move(remoting_renderer_factory),
         is_remoting_media);
   }
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 
   if (!is_base_renderer_factory_set) {
     // TODO(crbug.com/1265448): These sorts of checks shouldn't be necessary if

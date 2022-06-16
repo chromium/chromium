@@ -143,7 +143,7 @@ static_library("web_test_browser") {
       "browser/web_test_browser_main_platform_support_mac.mm",
       "browser/web_test_shell_platform_delegate_mac.mm",
     ]
-  } else if (toolkit_views && !is_chromecast) {
+  } else if (toolkit_views && !is_castos) {
     sources += [ "browser/web_test_shell_platform_delegate_views.cc" ]
   } else {
     sources += [ "browser/web_test_shell_platform_delegate_aura.cc" ]

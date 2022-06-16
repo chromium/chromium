@@ -91,9 +91,9 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_CHROMECAST)
-#include "chromecast/chromecast_buildflags.h"
-#endif
+#if BUILDFLAG(IS_CASTOS)
+#include "chromecast/chromecast_buildflags.h"  // nogncheck
+#endif                                         // BUILDFLAG(IS_CASTOS)
 
 namespace content {
 
@@ -633,14 +633,17 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   if (command_line->HasSwitch(switches::kDisableGpu)) {
     // Chomecast audio-only builds run with the flag --disable-gpu. The GPU
     // process should not access hardware GPU in this case.
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS)
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
     fallback_modes_.clear();
     fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
-#endif
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CAST_AUDIO_ONLY)
+#endif  // BUILDFLAG(IS_CASTOS)
+
+#if (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(false) << "GPU acceleration is required on certain platforms!";
-#endif  // IS_CHROMECAST
+#endif
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine
     // embedder. Falling back to SW compositing in that case is not supported.

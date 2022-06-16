@@ -78,7 +78,12 @@ class CONTENT_EXPORT ChildProcessHostImpl
   bool IsChannelOpening() override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
-#if BUILDFLAG(IS_CHROMECAST)
+
+// TODO(crbug.com/1328879): Remove this method when fixing the bug.
+// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+// such builds no longer reach this file.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
+    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
   void RunServiceDeprecated(
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) override;

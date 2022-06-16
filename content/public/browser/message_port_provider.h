@@ -18,7 +18,12 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1329657): The last IS_FUCHSIA check will not be needed once
+// its build sets enable_cast_receiver.
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) &&                    \
+        (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CASTOS) || \
+         BUILDFLAG(IS_CAST_ANDROID)) ||                   \
+    BUILDFLAG(IS_FUCHSIA)
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #endif
 
@@ -52,7 +57,12 @@ class CONTENT_EXPORT MessagePortProvider {
       const base::android::JavaParamRef<jobjectArray>& ports);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1329657): The last IS_FUCHSIA check will not be needed once
+// its build sets enable_cast_receiver.
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) &&                    \
+        (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CASTOS) || \
+         BUILDFLAG(IS_CAST_ANDROID)) ||                   \
+    BUILDFLAG(IS_FUCHSIA)
   // If |target_origin| is unset, then no origin scoping is applied.
   static void PostMessageToFrame(
       Page& page,
@@ -60,7 +70,7 @@ class CONTENT_EXPORT MessagePortProvider {
       const absl::optional<std::u16string>& target_origin,
       const std::u16string& data,
       std::vector<blink::WebMessagePort> ports);
-#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#endif
 };
 
 }  // namespace content

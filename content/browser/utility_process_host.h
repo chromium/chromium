@@ -23,7 +23,11 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+// such builds no longer reach this file.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
+    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
 #include "base/callback.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #endif
@@ -93,7 +97,11 @@ class CONTENT_EXPORT UtilityProcessHost
   // Starts the utility process.
   bool Start();
 
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1328879): Remove this method when fixing the bug.
+// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+// such builds no longer reach this file.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
+    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
   // Instructs the utility process to run an instance of the named service,
   // bound to |service_pipe|. This is DEPRECATED and should never be used.
   using RunServiceDeprecatedCallback =
@@ -166,7 +174,11 @@ class CONTENT_EXPORT UtilityProcessHost
   };
   LaunchState launch_state_ = LaunchState::kLaunchInProgress;
 
-#if BUILDFLAG(IS_CHROMECAST)
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+// TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+// such builds no longer reach this file.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID) || \
+    (BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(IS_CHROMECAST))
   // Collection of callbacks to be run once the process is actually started (or
   // fails to start).
   std::vector<RunServiceDeprecatedCallback> pending_run_service_callbacks_;

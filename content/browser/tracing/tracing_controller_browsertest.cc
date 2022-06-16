@@ -490,11 +490,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_DoubleStopTracing) {
 }
 
 // Only CrOS and Cast support system tracing.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || \
-    (BUILDFLAG(IS_CHROMECAST) &&  \
-     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
 #define MAYBE_SystemTraceEvents SystemTraceEvents
 #else
 #define MAYBE_SystemTraceEvents DISABLED_SystemTraceEvents

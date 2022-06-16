@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 // Needed by remoting sender.
-#include "media/mojo/mojom/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
 namespace blink {

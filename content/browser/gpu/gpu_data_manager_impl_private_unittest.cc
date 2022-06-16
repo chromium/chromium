@@ -26,12 +26,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMECAST)
-#include "chromecast/chromecast_buildflags.h"
+// TODO(crbug.com/1293538): The IS_CAST_AUDIO_ONLY check should not need to be
+// nested inside of an IS_CASTOS check.
+#if BUILDFLAG(IS_CASTOS)
+#include "chromecast/chromecast_buildflags.h"  // nogncheck
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
 #define CAST_AUDIO_ONLY
-#endif
-#endif
+#endif  // BUILDFLAG(IS_CAST_AUDIO_ONLY)
+#endif  // BUILDFLAG(IS_CASTOS)
 
 namespace content {
 namespace {
@@ -320,7 +322,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
 }
-#endif  // IS_CHROMECAST
+#endif  // defined(CAST_AUDIO_ONLY)
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalToGL) {
