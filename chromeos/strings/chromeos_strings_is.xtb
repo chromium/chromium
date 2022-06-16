@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Vista á USB</translation>
 <translation id="1468664791493211953">Tilboð</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> hefur umsjón með þessu tæki og getur hugsanlega fylgst með því sem þú gerir.</translation>
+<translation id="147809995039451286">Ekki var hægt að sækja uppfærsluna</translation>
 <translation id="1478594628797167447">Skanni</translation>
 <translation id="1491076385728777984">Uppfærir fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">Innskráningarsíða</translation>
 <translation id="2006864819935886708">Tenging</translation>
 <translation id="2008685064673031089">Aðalleit</translation>
+<translation id="2011174342667534258">Útgáfa forritunarverkfæra:</translation>
 <translation id="2016697457005847575">Prófaðu skref úrræðaleitar</translation>
 <translation id="2016848882344942759">--ekkert hvítmerki--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">Virkjunarstaða</translation>
 <translation id="2271469253353559191">Áætlun dökkrar stillingar</translation>
 <translation id="2275586345903859204">Viðgerð er lokið</translation>
+<translation id="2276999893457278469">Helsta hjálparefnið</translation>
 <translation id="2287186687001756809">Engin mynd tiltæk. Opnaðu <ph name="LINK" /> til að bæta við myndum</translation>
 <translation id="2294753434210277304">Settu inn ytri geymslu á borð við USB-drif eða SD-kort með mynd endurheimtarforrits Chromebook sem var sótt</translation>
 <translation id="2307344026739914387">Nota núverandi lyklasett</translation>
@@ -178,6 +181,7 @@
 <translation id="2418150275289244458">Opna í stillingum</translation>
 <translation id="2421798028054665193">Mynd <ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
+<translation id="2447969267935997922">Uppsetningu er lokið. Þú mátt fjarlægja USB-drif eða SD-kort núna.</translation>
 <translation id="2448312741937722512">Gerð</translation>
 <translation id="2461822463642141190">Núna</translation>
 <translation id="2480034874476596812">Slökkva handvirkt</translation>
@@ -189,6 +193,7 @@
 <translation id="2517472476991765520">Leita</translation>
 <translation id="2526590354069164005">Skjáborð</translation>
 <translation id="253029298928638905">Endurræsir…</translation>
+<translation id="2533048460510040082">Ráðlagt hjálparefni</translation>
 <translation id="2536159006530886390">Ekki er hægt að tengjast netinu.</translation>
 <translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Opnaðu stillingarnar til að setja þetta upp.</translation>
@@ -858,6 +863,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="885701979325669005">Geymslurými</translation>
 <translation id="8863170912498892583">Virkja dökkt þema</translation>
 <translation id="8863888432376731307">Fáðu <ph name="INTENT" /> fyrir „<ph name="QUERY" />“ og fleira</translation>
+<translation id="8864415976656252616">Engar efnistillögur. Skoðaðu helsta hjálparefnið.</translation>
 <translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8876270629542503161">Tækið er spjaldtölva.</translation>
 <translation id="8881098542468797602">Próf tókst</translation>

@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Infångstportal</translation>
 <translation id="2006864819935886708">Anslutning</translation>
 <translation id="2008685064673031089">Primtalssökning</translation>
+<translation id="2011174342667534258">SDK-version:</translation>
 <translation id="2016697457005847575">Testa felsökningsstegen</translation>
 <translation id="2016848882344942759">–ingen vit etikett–</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
 <translation id="2275586345903859204">Reparationen är klar</translation>
+<translation id="2276999893457278469">Populärt hjälpinnehåll</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Sätt i en extern lagringsenhet, till exempel en USB-enhet eller ett SD-kort med den nedladdade avbildningen för återställningsverktyget för Chromebook</translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
 <translation id="253029298928638905">Startar om …</translation>
+<translation id="2533048460510040082">Föreslaget hjälpinnehåll</translation>
 <translation id="2536159006530886390">Det gick inte att ansluta till internet.</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
@@ -860,6 +863,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="885701979325669005">Lagring</translation>
 <translation id="8863170912498892583">Aktivera mörkt tema</translation>
 <translation id="8863888432376731307">Be om en <ph name="INTENT" /> av <ph name="QUERY" /> och annat</translation>
+<translation id="8864415976656252616">Inga innehållsförslag. Visa populärt hjälpinnehåll.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten är en surfplatta.</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>

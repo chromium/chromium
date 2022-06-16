@@ -2623,6 +2623,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილების ნახვა</translation>
 <translation id="3484273680291419129">მიმდინარეობს საზიანო პროგრამული უზრუნველყოფის ამოშლა...</translation>
 <translation id="3484869148456018791">ახალი სერტიფიკატის მიღება</translation>
+<translation id="3486950712960783074">თქვენი მგზავრობა</translation>
 <translation id="3487007233252413104">ანონიმური ფუნქცია</translation>
 <translation id="3490695139702884919">მიმდინარეობს ჩამოტვირთვა… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">თქვენი შვილის ანგარიში არ არის დაყენებული Family Link-ის მშობელთა მიერ კონტროლის გამოსაყენებლად. მშობელთა მიერ კონტროლის დამატებას დაყენების დასრულების შემდეგ შეძლებთ. მშობელთა მიერ კონტროლის შესახებ დამატებით ინფორმაცია ხელმისაწვდომია აპში „გაცნობა“.</translation>
@@ -2933,6 +2934,7 @@
 <translation id="3797739167230984533">თქვენი <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> იმართება<ph name="END_LINK" /> თქვენი ორგანიზაციის მიერ</translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />-ში „<ph name="SEARCH_TERMS" />“-ის &amp;მოძიება</translation>
 <translation id="3798449238516105146">ვერსია</translation>
+<translation id="3798632811625902122">Bluetooth-მოწყობილობა „<ph name="DEVICE" />“ ითხოვს დაწყვილების ნებართვას.</translation>
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
 <translation id="3800806661949714323">ყველას ჩვენება (რეკომენდებულია)</translation>
 <translation id="3800828618615365228">Google Chrome-ისა და ChromeOS-ის დამატებითი პირობები</translation>
@@ -4920,6 +4922,7 @@
 <translation id="5792295754950501287">სხვა ქმედებები „<ph name="CARD_DESCRIPTION" />“-ისთვის</translation>
 <translation id="5792728279623964091">შეეხეთ ელკვების ღილაკს</translation>
 <translation id="5793339252089865437">განახლების მობილური ქსელის მეშვეობით ჩამოტვირთვამ შეიძლება გამოიწვიოს ლიმიტის გადახარჯვასთან დაკავშირებული ხარჯები.</translation>
+<translation id="5793420564274426163">დაწყვილების დასტური</translation>
 <translation id="5794034487966529952">სამუშაო დაფაზე <ph name="DESK_TITLE" /> გახსნილია ბრაუზერის <ph name="NUM_BROWSERS" /> ფანჯარა</translation>
 <translation id="5794414402486823030">ყოველთვის გახსნა სისტემის დამთვალიერებლით</translation>
 <translation id="5794700615121138172">Linux-ის გაზიარებული საქაღალდეები</translation>
@@ -7415,6 +7418,7 @@
 <translation id="8242426110754782860">გაგრძელება</translation>
 <translation id="8243948765190375130">მედია-კონტენტის ხარისხი შეიძლება შემცირდეს</translation>
 <translation id="8244514732452879619">ძილის დრო ახლოვდება</translation>
+<translation id="8245361042748627813">ეს მალსახმობი შეიცვალა. გამოიყენეთ <ph name="NEW_SHORTCUT_KEY" />, სისტემის დიალოგის მეშვეობით რომ დაბეჭდოთ.</translation>
 <translation id="8246776524656196770">დაიცავით თქვენი უსაფრთხოები გასაღები PIN-კოდის (პერსონალური საიდენტიფიკაციო ნომრის) მეშვეობით</translation>
 <translation id="8248050856337841185">ჩ&amp;ასმა</translation>
 <translation id="8248381369318572865">თქვენს მიკროფონზე წვდომა და თქვენი მეტყველების გაანალიზება</translation>
@@ -7719,6 +7723,7 @@
 <translation id="8561565784790166472">გთხოვთ, გამოიჩინოთ სიფრთხილე</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">განხორციელდა პროგრამის ძველ ვერსიაზე გადასვლის მცდელობა.</translation>
+<translation id="8569673829373920831">ვრცლად <ph name="APP_NAME" />-ის შესახებ</translation>
 <translation id="8569682776816196752">დანიშნულების ადგილები ვერ მოიძებნა</translation>
 <translation id="8571213806525832805">ბოლო 4 კვირა</translation>
 <translation id="8571687764447439720">Kerberos ბილეთის დამატება</translation>

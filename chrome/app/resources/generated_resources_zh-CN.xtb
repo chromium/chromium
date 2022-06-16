@@ -2614,6 +2614,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下文件</translation>
 <translation id="3484273680291419129">正在移除有害软件…</translation>
 <translation id="3484869148456018791">获取新的证书</translation>
+<translation id="3486950712960783074">您的旅行</translation>
 <translation id="3487007233252413104">匿名函数</translation>
 <translation id="3490695139702884919">正在下载…<ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">您孩子的帐号尚未设置 Family Link 家长控制功能。完成设置后，即可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
@@ -2924,6 +2925,7 @@
 <translation id="3797739167230984533">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由所属组织管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">使用<ph name="SEARCH_ENGINE" />搜索“<ph name="SEARCH_TERMS" />”(&amp;S)</translation>
 <translation id="3798449238516105146">版本</translation>
+<translation id="3798632811625902122">蓝牙设备“<ph name="DEVICE" />”希望获得配对许可。</translation>
 <translation id="3799128412641261490">开关控制设置</translation>
 <translation id="3800806661949714323">显示全部（推荐）</translation>
 <translation id="3800828618615365228">Google Chrome 和 Chrome 操作系统附加条款</translation>
@@ -4906,6 +4908,7 @@
 <translation id="5792295754950501287">显示可对“<ph name="CARD_DESCRIPTION" />”执行的更多操作</translation>
 <translation id="5792728279623964091">请点按您的电源按钮</translation>
 <translation id="5793339252089865437">如果您通过移动网络下载更新，则可能需要支付超额费用。</translation>
+<translation id="5793420564274426163">配对确认</translation>
 <translation id="5794034487966529952">桌面“<ph name="DESK_TITLE" />”打开了 <ph name="NUM_BROWSERS" /> 个浏览器窗口</translation>
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
@@ -7401,6 +7404,7 @@
 <translation id="8242426110754782860">继续</translation>
 <translation id="8243948765190375130">可能会致使媒体质量降低</translation>
 <translation id="8244514732452879619">快到就寝时间了</translation>
+<translation id="8245361042748627813">此快捷键已更改。请使用 <ph name="NEW_SHORTCUT_KEY" /> 通过系统对话框进行打印。</translation>
 <translation id="8246776524656196770">通过 PIN 码（个人识别码）保护您的安全密钥</translation>
 <translation id="8248050856337841185">粘贴(&amp;P)</translation>
 <translation id="8248381369318572865">使用您的麦克风并分析您的语音</translation>
@@ -7705,6 +7709,7 @@
 <translation id="8561565784790166472">继续操作有风险，请三思</translation>
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
+<translation id="8569673829373920831">关于“<ph name="APP_NAME" />”的更多内容</translation>
 <translation id="8569682776816196752">未找到任何目标</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>

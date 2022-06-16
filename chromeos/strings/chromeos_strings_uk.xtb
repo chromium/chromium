@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Зберегти на носій USB</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> керує цим пристроєм і може відстежувати ваші дії.</translation>
+<translation id="147809995039451286">Не вдалося завантажити оновлення</translation>
 <translation id="1478594628797167447">Сканери</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />: оновлення мікропрограми на пристрої</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> керує цим користувачем і може віддалено змінювати налаштування та відстежувати його дії.</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2006864819935886708">Підключення</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
+<translation id="2011174342667534258">Версія пакета SDK:</translation>
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="2016848882344942759">--немає бренду продавця--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">Статус активації</translation>
 <translation id="2271469253353559191">Розклад для темного режиму</translation>
 <translation id="2275586345903859204">Ремонт завершено</translation>
+<translation id="2276999893457278469">Найпопулярніший довідковий контент</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Вставте зовнішній носій, наприклад носій USB або карту SD, на який завантажено зображення з Додатка для відновлення Chromebook</translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
@@ -178,6 +181,7 @@
 <translation id="2418150275289244458">Відкрити в налаштуваннях</translation>
 <translation id="2421798028054665193">Зображення <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
+<translation id="2447969267935997922">Встановлення завершено. Можете вийняти носій USB або карту SD.</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
 <translation id="2480034874476596812">Вимкнути вручну</translation>
@@ -189,6 +193,7 @@
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
 <translation id="253029298928638905">Перезапускається…</translation>
+<translation id="2533048460510040082">Рекомендований довідковий контент</translation>
 <translation id="2536159006530886390">Не вдається підключитися до мережі.</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
 <translation id="2584559707064218956">Щоб вибрати параметри, перейдіть у налаштування</translation>
@@ -858,6 +863,7 @@
 <translation id="885701979325669005">Обсяг пам’яті</translation>
 <translation id="8863170912498892583">Увімкнути темну тему</translation>
 <translation id="8863888432376731307">Шукати <ph name="INTENT" /> для запиту "<ph name="QUERY" />" тощо</translation>
+<translation id="8864415976656252616">Немає рекомендованих матеріалів. Перегляньте найпопулярніший довідковий контент.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Це планшет.</translation>
 <translation id="8881098542468797602">Перевірку пройдено</translation>

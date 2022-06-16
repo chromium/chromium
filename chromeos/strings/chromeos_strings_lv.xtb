@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Saglabāt USB diskā</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
+<translation id="147809995039451286">Nevarēja lejupielādēt atjauninājumu.</translation>
 <translation id="1478594628797167447">Skeneris</translation>
 <translation id="1491076385728777984">Notiek ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> pārvalda šo lietotāju un, iespējams, var attālināti pārvaldīt iestatījumus un pārraudzīt lietotāja darbības.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Atvērt iestatījumos</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. no <ph name="TOTAL_PAGES" /> attēliem</translation>
 <translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
+<translation id="2447969267935997922">Instalēšana ir pabeigta. Tagad varat izņemt USB disku vai SD karti.</translation>
 <translation id="2448312741937722512">Tips</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
 <translation id="2480034874476596812">Manuāla izslēgšana</translation>

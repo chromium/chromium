@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Մուտքի էջ</translation>
 <translation id="2006864819935886708">Կապ</translation>
 <translation id="2008685064673031089">Prime որոնում</translation>
+<translation id="2011174342667534258">SDK-ի տարբերակը՝</translation>
 <translation id="2016697457005847575">Փորձել վերացնել անսարքությունները</translation>
 <translation id="2016848882344942759">--առանց վաճառողի ապրանքանիշի--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Ակտիվացման կարգավիճակը</translation>
 <translation id="2271469253353559191">Մուգ ռեժիմի ժամանակացույց</translation>
 <translation id="2275586345903859204">Վերանորոգումն ավարտված է</translation>
+<translation id="2276999893457278469">Հիմնական տեղեկատվական բովանդակություն</translation>
 <translation id="2287186687001756809">Ոչ մի պատկեր չկա։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
 <translation id="2294753434210277304">Տեղադրեք արտաքին հիշողության սարք, օրինակ՝ USB կրիչ կամ SD քարտ, որում ներբեռնված է Chromebook Recovery Utility հավելվածի պատկերը</translation>
 <translation id="2307344026739914387">Օգտագործել ընթացիկ բանալիների զույգը</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2526590354069164005">Աշխատասեղան</translation>
 <translation id="253029298928638905">Վերագործարկում…</translation>
+<translation id="2533048460510040082">Առաջարկվող տեղեկատվական բովանդակություն</translation>
 <translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
@@ -860,6 +863,7 @@
 <translation id="885701979325669005">Պահոց</translation>
 <translation id="8863170912498892583">Միացնել մուգ թեման</translation>
 <translation id="8863888432376731307">Ստացեք «<ph name="QUERY" />» բառի <ph name="INTENT" />ը և ավելին</translation>
+<translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>

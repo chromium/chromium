@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Експортувати закладки</translation>
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="1009476156254802388">Розташування в сервісі <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Тепер доступні елементи керування іграми</translation>
 <translation id="1010498023906173788">Цю вкладку підключено до послідовного порту</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Сторінка не відповідає}one{Сторінки не відповідають}few{Сторінки не відповідають}many{Сторінки не відповідають}other{Сторінки не відповідають}}</translation>
 <translation id="1011355516189274711">Гучність синтезу мовлення</translation>
@@ -860,6 +861,7 @@
 <translation id="1795214765651529549">Вибрати класичну тему</translation>
 <translation id="1796105431091975902">Вибрати посібник правил Ansible, який потрібно додати</translation>
 <translation id="1796588414813960292">Функції, яким потрібен звук, не працюватимуть</translation>
+<translation id="1797117170091578105">Грайте за допомогою клавіатури Chromebook. Ви можете налаштувати клавіші для певних дій.</translation>
 <translation id="1800502858278951817">Жодне розширення не подавало запит на читання й зміну сайту <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Переходити в режим сну, коли кришка закрита</translation>
 <translation id="1802687198411089702">Сторінка не відповідає. Зачекайте або закрийте її.</translation>
@@ -1022,6 +1024,7 @@
 <translation id="1940546824932169984">Під’єднані пристрої</translation>
 <translation id="1941410638996203291">Час початку: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Показати прив’язку клавіш</translation>
 <translation id="1942128823046546853">Читати та змінювати всі ваші дані на всіх веб-сайтах</translation>
 <translation id="1942600407708803723">Завершувати роботу, коли кришка закрита</translation>
 <translation id="1944528062465413897">Код підключення через Bluetooth:</translation>
@@ -2638,6 +2641,7 @@
 <translation id="3482719661246593752">Сайт <ph name="ORIGIN" /> може переглядати зазначені нижче файли</translation>
 <translation id="3484273680291419129">Вилучення зловмисного програмного забезпечення…</translation>
 <translation id="3484869148456018791">Отримати новий сертифікат</translation>
+<translation id="3486950712960783074">Ваша поїздка</translation>
 <translation id="3487007233252413104">анонімна функція</translation>
 <translation id="3490695139702884919">Завантаження… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">В обліковому записі вашої дитини не ввімкнено батьківський контроль через Family Link. Ви зможете зробити це, завершивши налаштування. Інформація про цю функцію доступна в додатку Можливості.</translation>
@@ -2948,6 +2952,7 @@
 <translation id="3797739167230984533">Пристроєм <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> керує<ph name="END_LINK" /> адміністратор вашої організації</translation>
 <translation id="3797900183766075808">&amp;Шукати "<ph name="SEARCH_TERMS" />" у <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="3798449238516105146">Версія</translation>
+<translation id="3798632811625902122">Пристрою з Bluetooth "<ph name="DEVICE" />" потрібен дозвіл на підключення.</translation>
 <translation id="3799128412641261490">Налаштування кнопкового доступу</translation>
 <translation id="3800806661949714323">Показати всі (рекомендовано)</translation>
 <translation id="3800828618615365228">Додаткові умови використання Google Chrome і ОС Chrome</translation>
@@ -4594,6 +4599,7 @@
 <translation id="5449716055534515760">Закрити вік&amp;но</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (доступно в режимі офлайн)</translation>
 <translation id="5454166040603940656">за допомогою <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Показувати більше результатів пошуку</translation>
 <translation id="5455603387986949153">Переглядати серійні номери пристрою з ОС Chrome Flex і компонентів.</translation>
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5457459357461771897">Читати й видаляти фотографії, музику та інші медіафайли на комп’ютері</translation>
@@ -4933,6 +4939,7 @@
 <translation id="5792295754950501287">Інші дії з карткою "<ph name="CARD_DESCRIPTION" />"</translation>
 <translation id="5792728279623964091">Натисніть кнопку живлення</translation>
 <translation id="5793339252089865437">Завантаження оновлень через мобільну мережу може призвести до стягнення значно вищої плати.</translation>
+<translation id="5793420564274426163">Підтвердження підключення</translation>
 <translation id="5794034487966529952">На робочому столі "<ph name="DESK_TITLE" />" відкрито стільки вікон веб-переглядача: <ph name="NUM_BROWSERS" /></translation>
 <translation id="5794414402486823030">Завжди відкривати за допомогою системного переглядача</translation>
 <translation id="5794700615121138172">Спільні папки Linux</translation>
@@ -7073,6 +7080,7 @@
 <translation id="7901405293566323524">Телефонний центр</translation>
 <translation id="7903290522161827520">Шукаєте компоненти веб-переглядача? Перейдіть на сторінку</translation>
 <translation id="7903345046358933331">Сторінка перестала відповідати. Зачекайте, доки вона почне відповідати, або закрийте її.</translation>
+<translation id="7903429136755645827">Натисніть, щоб налаштувати елементи керування іграми</translation>
 <translation id="7903742244674067440">У вас є сертифікати, які ідентифікують ці центри сертифікації</translation>
 <translation id="7903925330883316394">Службовий додаток: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Порти Linux стануть доступними для інших пристроїв у вашій мережі.</translation>
@@ -7434,6 +7442,7 @@
 <translation id="8242426110754782860">Продовжити</translation>
 <translation id="8243948765190375130">Якість медіаконтенту може знизитися</translation>
 <translation id="8244514732452879619">Невдовзі час спати</translation>
+<translation id="8245361042748627813">Комбінацію клавіш змінено. Щоб друкувати через системне вікно, використовуйте комбінацію клавіш <ph name="NEW_SHORTCUT_KEY" />.</translation>
 <translation id="8246776524656196770">Захистіть ключ безпеки PIN-кодом (особистим ідентифікаційним номером)</translation>
 <translation id="8248050856337841185">&amp;Вставити</translation>
 <translation id="8248381369318572865">Дозволити доступ до мікрофона й аналіз мовлення</translation>
@@ -7738,6 +7747,7 @@
 <translation id="8561565784790166472">Будьте обережні</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Спроба встановити програму нижчої версії.</translation>
+<translation id="8569673829373920831">Докладніше про додаток <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Не знайдено жодного місця призначення</translation>
 <translation id="8571213806525832805">Останні 4 тижні</translation>
 <translation id="8571687764447439720">Додати квиток Kerberos</translation>
@@ -8267,6 +8277,7 @@
 <translation id="9078316009970372699">Вимкнути миттєву точку доступу</translation>
 <translation id="9078842827190780028">Відкрийте бічну панель з іншими результатами пошуку</translation>
 <translation id="9079267182985899251">Незабаром ця опція більше не підтримуватиметься. Щоб показати вкладку, скористайтеся <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">оцінює ваші інтереси – Chrome може оцінювати ваші інтереси</translation>
 <translation id="9081543426177426948">Відвідані сайти в анонімному режимі не зберігаються</translation>
 <translation id="9084064520949870008">Відкрити вікно</translation>
 <translation id="9085256200913095638">Копіювати вибрану вкладку</translation>

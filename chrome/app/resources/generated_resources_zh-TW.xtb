@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">匯出書籤</translation>
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="1009476156254802388">「<ph name="WEB_DRIVE" />」位置</translation>
+<translation id="1009663062402466586">現已提供遊戲控制項</translation>
 <translation id="1010498023906173788">這個分頁已連線至序列埠。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{一個網頁無回應}other{多個網頁無回應}}</translation>
 <translation id="1011355516189274711">文字轉語音的音量</translation>
@@ -846,6 +847,7 @@
 <translation id="1795214765651529549">使用傳統版</translation>
 <translation id="1796105431091975902">選取要新增的 Ansible Playbook</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
+<translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
 <translation id="1800502858278951817">沒有任何擴充功能要求讀取及變更 <ph name="SITE_NAME" /> 的權限</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
@@ -1007,6 +1009,7 @@
 <translation id="1940546824932169984">已連結的裝置</translation>
 <translation id="1941410638996203291">開始時間 <ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">顯示機碼對應</translation>
 <translation id="1942128823046546853">讀取及變更你在所有網站上的所有資料</translation>
 <translation id="1942600407708803723">蓋上機蓋時關機</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
@@ -2620,6 +2623,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可以檢視下列檔案</translation>
 <translation id="3484273680291419129">正在移除有害軟體...</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
+<translation id="3486950712960783074">你的行程詳情</translation>
 <translation id="3487007233252413104">匿名函式</translation>
 <translation id="3490695139702884919">下載中... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">貴子女的帳戶並未設定 Family Link 家長監護功能。設定完成後，即可新增家長監護功能。您可以在「探索」應用程式中找到家長監護功能的相關資訊。</translation>
@@ -2930,6 +2934,7 @@
 <translation id="3797739167230984533">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 受到貴機構管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">透過 <ph name="SEARCH_ENGINE" /> 搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="3798449238516105146">版本</translation>
+<translation id="3798632811625902122">藍牙裝置「<ph name="DEVICE" />」要求配對權限。</translation>
 <translation id="3799128412641261490">切換控制功能設定</translation>
 <translation id="3800806661949714323">全部顯示 (建議)</translation>
 <translation id="3800828618615365228">Google Chrome 和 ChromeOS 的《附加條款》</translation>
@@ -4574,6 +4579,7 @@
 <translation id="5449716055534515760">關閉視窗(&amp;D)</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (可離線使用)</translation>
 <translation id="5454166040603940656">提供者：<ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">查看更多搜尋結果</translation>
 <translation id="5455603387986949153">讀取 ChromeOS Flex 裝置序號和元件序號。</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5457459357461771897">讀取及刪除你電腦中的相片、音樂及其他媒體</translation>
@@ -4913,6 +4919,7 @@
 <translation id="5792295754950501287">可對「<ph name="CARD_DESCRIPTION" />」執行的其他動作</translation>
 <translation id="5792728279623964091">請輕觸電源按鈕</translation>
 <translation id="5793339252089865437">如果你透過行動網路下載更新，可能會產生超額傳輸費用。</translation>
+<translation id="5793420564274426163">配對確認</translation>
 <translation id="5794034487966529952">「<ph name="DESK_TITLE" />」電腦已開啟 <ph name="NUM_BROWSERS" /> 個瀏覽器視窗</translation>
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
@@ -7047,6 +7054,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器元件嗎？請前往</translation>
 <translation id="7903345046358933331">網頁無回應。您可以等待網頁回應，或是直接關閉網頁。</translation>
+<translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
 <translation id="7903742244674067440">您儲存了這些憑證授權單位的識別憑證</translation>
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">將 Linux 連接埠提供給網路上的其他裝置使用。</translation>
@@ -7408,6 +7416,7 @@
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="8243948765190375130">媒體品質可能會降低</translation>
 <translation id="8244514732452879619">快到就寢時間了</translation>
+<translation id="8245361042748627813">這個捷徑已變更。請使用 <ph name="NEW_SHORTCUT_KEY" />，透過系統對話方塊進行列印。</translation>
 <translation id="8246776524656196770">使用 PIN 碼 (個人識別號碼) 保護你的安全金鑰</translation>
 <translation id="8248050856337841185">貼上(&amp;P)</translation>
 <translation id="8248381369318572865">存取你的麥克風及分析語音內容</translation>
@@ -7712,6 +7721,7 @@
 <translation id="8561565784790166472">執行時請特別注意</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">試圖降級應用程式。</translation>
+<translation id="8569673829373920831">進一步瞭解<ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">找不到目的地</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8571687764447439720">新增 Kerberos 票證</translation>
@@ -8238,6 +8248,7 @@
 <translation id="9078316009970372699">停用即時網路共用</translation>
 <translation id="9078842827190780028">在側邊面板中查看更多搜尋結果</translation>
 <translation id="9079267182985899251">系統即將停止支援這個選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
+<translation id="9080971985541434310">推測你的興趣喜好 - Chrome 可以推測你感興趣的主題</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
 <translation id="9085256200913095638">複製所選分頁</translation>

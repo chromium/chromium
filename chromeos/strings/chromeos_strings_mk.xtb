@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Зачувајте на USB</translation>
 <translation id="1468664791493211953">Понуди</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управува со уредов и може да ја набљудува вашата активност.</translation>
+<translation id="147809995039451286">Не може да се преземе ажурирањето</translation>
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1491076385728777984">Се ажурира фирмверот на <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управува со корисников и може оддалеку да управува со поставките и да ја набљудува неговата активност.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Отвори во поставките</translation>
 <translation id="2421798028054665193">Слика <ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
+<translation id="2447969267935997922">Инсталацијата е завршена. Сега можете да го отстраните USB-дискот или SD-картичката.</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="2480034874476596812">Рачно исклучи</translation>

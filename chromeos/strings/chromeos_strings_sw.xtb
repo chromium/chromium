@@ -127,6 +127,7 @@
 <translation id="1999615961760456652">Ukurasa wa Mwanzo</translation>
 <translation id="2006864819935886708">Uunganishaji</translation>
 <translation id="2008685064673031089">Prime search</translation>
+<translation id="2011174342667534258">Toleo la SDK:</translation>
 <translation id="2016697457005847575">Jaribu hatua za utatuzi</translation>
 <translation id="2016848882344942759">--hakuna lebo-nyeupe--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -158,6 +159,7 @@
 <translation id="225692081236532131">Hali ya kuwasha</translation>
 <translation id="2271469253353559191">Ratiba ya hali nyeusi</translation>
 <translation id="2275586345903859204">Urekebishaji umekamilika</translation>
+<translation id="2276999893457278469">Maudhui maarufu ya usaidizi</translation>
 <translation id="2287186687001756809">Hakuna picha inayopatikana. Ili uweke picha, nenda kwenye <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Weka hifadhi ya nje kama vile hifadhi ya USB au kadi ya SD, ikiwa na picha iliyopakuliwa ya Urejeshaji wa Data ya Chromebook</translation>
 <translation id="2307344026739914387">Tumia jozi ya funguo ya sasa</translation>
@@ -191,6 +193,7 @@
 <translation id="2517472476991765520">Tafuta</translation>
 <translation id="2526590354069164005">Eneo-kazi</translation>
 <translation id="253029298928638905">Inazima kisha iwake...</translation>
+<translation id="2533048460510040082">Maudhui ya usaidizi yanayopendekezwa</translation>
 <translation id="2536159006530886390">Imeshindwa kuunganisha kwenye intaneti.</translation>
 <translation id="2570743873672969996">Inatekeleza jaribio la <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Nenda kwenye Mipangilio ili uiweke</translation>
@@ -859,6 +862,7 @@
 <translation id="885701979325669005">Hifadhi</translation>
 <translation id="8863170912498892583">Washa mandhari meusi</translation>
 <translation id="8863888432376731307">Pata <ph name="INTENT" /> wa "<ph name="QUERY" />" na mengine mengi</translation>
+<translation id="8864415976656252616">Hakuna maudhui yanayopendekezwa. Angalia maudhui maarufu ya usaidizi.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Kifaa hiki ni kompyuta kibao.</translation>
 <translation id="8881098542468797602">Jaribio limefaulu</translation>

@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Enregistrer sur une clé USB</translation>
 <translation id="1468664791493211953">Offres</translation>
 <translation id="1476467821656042872">Il est possible que <ph name="MANAGER" />, qui gère cet appareil, puisse surveiller votre activité.</translation>
+<translation id="147809995039451286">Impossible de télécharger la mise à jour</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Mise à jour du micrologiciel sur <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur dont il peut modifier les paramètres et surveiller l'activité à distance.</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2006864819935886708">Connectivité</translation>
 <translation id="2008685064673031089">Recherche de nombres premiers</translation>
+<translation id="2011174342667534258">Version du SDK :</translation>
 <translation id="2016697457005847575">Essayer la procédure de dépannage</translation>
 <translation id="2016848882344942759">--pas de marque blanche--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">État d'activation</translation>
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2275586345903859204">La réparation est terminée</translation>
+<translation id="2276999893457278469">Contenu d'aide populaire</translation>
 <translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Insérez un périphérique de stockage externe contenant l'image téléchargée de Chromebook Recovery Utility, comme une clé USB ou une carte SD</translation>
 <translation id="2307344026739914387">Utiliser la paire de clés actuelle</translation>
@@ -178,6 +181,7 @@
 <translation id="2418150275289244458">Ouvrir dans les paramètres</translation>
 <translation id="2421798028054665193">Image <ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
+<translation id="2447969267935997922">Installation terminée. Vous pouvez désormais retirer la clé USB ou la carte SD.</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Consommation actuelle</translation>
 <translation id="2480034874476596812">Manuellement</translation>
@@ -189,6 +193,7 @@
 <translation id="2517472476991765520">Scanner</translation>
 <translation id="2526590354069164005">Bureau</translation>
 <translation id="253029298928638905">Redémarrage…</translation>
+<translation id="2533048460510040082">Contenu d'aide suggéré</translation>
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2570743873672969996">Exécution du test <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Pour configurer, accédez à Paramètres</translation>
@@ -858,6 +863,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="885701979325669005">Données stockées</translation>
 <translation id="8863170912498892583">Activer le thème sombre</translation>
 <translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> pour "<ph name="QUERY" />" et plus</translation>
+<translation id="8864415976656252616">Aucune suggestion de contenu. Consultez les contenus d'aide populaires.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">L'appareil est une tablette.</translation>
 <translation id="8881098542468797602">Test réussi</translation>

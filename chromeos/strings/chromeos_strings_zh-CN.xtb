@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">保存至 USB</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 负责管理此设备，而且也许能够监控您的活动。</translation>
+<translation id="147809995039451286">无法下载更新</translation>
 <translation id="1478594628797167447">扫描器</translation>
 <translation id="1491076385728777984">正在更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">在“设置”中打开</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
+<translation id="2447969267935997922">安装完毕。现在可以拔出 U 盘或 SD 卡了。</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="2480034874476596812">手动关闭</translation>

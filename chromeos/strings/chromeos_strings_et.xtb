@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Salvesta USB-le</translation>
 <translation id="1468664791493211953">Pakkumised</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> haldab seda seadet ja saab võib-olla jälgida teie tegevusi.</translation>
+<translation id="147809995039451286">Värskendust ei saanud alla laadida</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1491076385728777984">Seadmes <ph name="DEVICE_NAME" /> värskendatakse püsivara</translation>
 <translation id="1499900233129743732">Seda kasutajat haldab domeen <ph name="MANAGER" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Ava rakenduses Seaded</translation>
 <translation id="2421798028054665193">Pilt <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ujukoma täpsus</translation>
+<translation id="2447969267935997922">Installimine on lõpetatud. Võite nüüd USB-ketta või SD-kaardi eemaldada.</translation>
 <translation id="2448312741937722512">Tüüp</translation>
 <translation id="2461822463642141190">Praegune</translation>
 <translation id="2480034874476596812">Käsitsi väljalülitamine</translation>

@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Экспарт закладак</translation>
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="1009476156254802388">Месцазнаходжанне спамповак сэрвісу "<ph name="WEB_DRIVE" />"</translation>
+<translation id="1009663062402466586">Цяпер можна кіраваць гульнёй</translation>
 <translation id="1010498023906173788">Гэта ўкладка падключана да паслядоўнага порта.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Старонка не адказвае}one{Старонкі не адказваюць}few{Старонкі не адказваюць}many{Старонкі не адказваюць}other{Старонкі не адказваюць}}</translation>
 <translation id="1011355516189274711">Гучнасць сінтэзу маўлення</translation>
@@ -849,6 +850,7 @@
 <translation id="1795214765651529549">Выкарыстоўваць класічную тэму</translation>
 <translation id="1796105431091975902">Выберыце дапаможнік Ansible, які трэба дадаць</translation>
 <translation id="1796588414813960292">Функцыі, для якіх патрэбны гук, не будуць працаваць</translation>
+<translation id="1797117170091578105">Гуляйце, выкарыстоўваючы клавіятуру Chromebook. Клавішы можна наладзіць такім чынам, каб яны выконвалі канкрэтныя дзеянні.</translation>
 <translation id="1800502858278951817">Ні адно пашырэнне не запытвала дазвол чытаць і змяняць сайт <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Пры закрыцці вечка пераводзіць прыладу ў рэжым сну</translation>
 <translation id="1802687198411089702">Старонка не адказвае. Можна пачакаць або закрыць яе.</translation>
@@ -1010,6 +1012,7 @@
 <translation id="1940546824932169984">Падключаныя прылады</translation>
 <translation id="1941410638996203291">Час пачатку: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Паказаць вызначэнне клавіш</translation>
 <translation id="1942128823046546853">Праглядаць і змяняць усе вашы даныя на ўсіх вэб-сайтах</translation>
 <translation id="1942600407708803723">Пры закрыцці вечка выключаць прыладу</translation>
 <translation id="1944528062465413897">Код спалучэння па Bluetooth</translation>
@@ -2622,6 +2625,7 @@
 <translation id="3482719661246593752">Сайт <ph name="ORIGIN" /> можа праглядаць наступныя файлы</translation>
 <translation id="3484273680291419129">Ідзе выдаленне шкоднага праграмнага забеспячэння...</translation>
 <translation id="3484869148456018791">Стварыць новы сертыфікат</translation>
+<translation id="3486950712960783074">Ваша паездка</translation>
 <translation id="3487007233252413104">ананімная функцыя</translation>
 <translation id="3490695139702884919">Ідзе спампоўванне… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Для ўліковага запісу вашага дзіцяці не наладжаны бацькоўскі кантроль Family Link. Вы можаце дадаць функцыю бацькоўскага кантролю па завяршэнні наладкі. Інфармацыю пра бацькоўскі кантроль можна знайсці ў праграме "Агляд".</translation>
@@ -2932,6 +2936,7 @@
 <translation id="3797739167230984533">Вашай прыладай <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> кіруе<ph name="END_LINK" /> арганізацыя</translation>
 <translation id="3797900183766075808">&amp;Шукаць у <ph name="SEARCH_ENGINE" /> "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="3798449238516105146">Версія</translation>
+<translation id="3798632811625902122">Прылада з Bluetooth "<ph name="DEVICE" />" запытвае дазвол на спалучэнне.</translation>
 <translation id="3799128412641261490">Налады доступу праз пераключальнікі</translation>
 <translation id="3800806661949714323">Паказваць усе (рэкамендуецца)</translation>
 <translation id="3800828618615365228">Дадатковыя ўмовы Google Chrome і Chrome OS</translation>
@@ -4577,6 +4582,7 @@
 <translation id="5449716055534515760">Закрыць а&amp;кно</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (мова даступная па-за сеткай)</translation>
 <translation id="5454166040603940656">крыніца: <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Паказаць больш вынікаў пошуку</translation>
 <translation id="5455603387986949153">Счытванне серыйных нумароў прылады з Chrome OS Flex і кампанентаў.</translation>
 <translation id="5457113250005438886">Несапраўдная</translation>
 <translation id="5457459357461771897">Прагляд і выдаленне з камп'ютара фота, музыкі і іншых файлаў мультымедыя</translation>
@@ -4918,6 +4924,7 @@
 <translation id="5792295754950501287">Іншыя дзеянні для карткі "<ph name="CARD_DESCRIPTION" />"</translation>
 <translation id="5792728279623964091">Націсніце кнопку сілкавання</translation>
 <translation id="5793339252089865437">Калі спампоўваць абнаўленне праз мабільную сетку, гэта можа прывесці да празмерных выдаткаў.</translation>
+<translation id="5793420564274426163">Пацвярджэнне спалучэння</translation>
 <translation id="5794034487966529952">На працоўным стале "<ph name="DESK_TITLE" />" адкрыты некалькі (<ph name="NUM_BROWSERS" />) вокнаў браўзера</translation>
 <translation id="5794414402486823030">Заўсёды адкрываць з дапамогай стандартнага сродку прагляду</translation>
 <translation id="5794700615121138172">Абагуленыя папкі Linux</translation>
@@ -7058,6 +7065,7 @@
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Шукаеце кампаненты браўзера? Наведайце старонку</translation>
 <translation id="7903345046358933331">Старонка перастала адказваць на запыты. Можна пачакаць, пакуль яна пачне адказваць, або закрыць яе.</translation>
+<translation id="7903429136755645827">Націсніце, каб наладзіць кіраванне гульнёй</translation>
 <translation id="7903742244674067440">У вас захоўваюцца сертыфікаты, якія ідэнтыфікуюць гэтыя цэнтры сертыфікацыі</translation>
 <translation id="7903925330883316394">Утыліта: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Зрабіце парты Linux даступнымі для іншых прылад у вашай сетцы.</translation>
@@ -7418,6 +7426,7 @@
 <translation id="8242426110754782860">Працягнуць</translation>
 <translation id="8243948765190375130">Якасць прайгравання медыязмесціва можа пагоршыцца</translation>
 <translation id="8244514732452879619">Надыходзіць час сну</translation>
+<translation id="8245361042748627813">Гэта спалучэнне клавіш змянілася. Каб друкаваць з выкарыстаннем сістэмнага дыялогавага акна, ужывайце <ph name="NEW_SHORTCUT_KEY" />.</translation>
 <translation id="8246776524656196770">Абараніце ключ бяспекі з дапамогай PIN-кода (асабістага ідэнтыфікацыйнага нумара)</translation>
 <translation id="8248050856337841185">&amp;Уставіць</translation>
 <translation id="8248381369318572865">Доступ да мікрафона і аналіз гаворкі</translation>
@@ -7722,6 +7731,7 @@
 <translation id="8561565784790166472">Будзьце асцярожнымі!</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Вы спрабуеце ўсталяваць ранейшую версію праграмы.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" /> – дадатковая інфармацыя</translation>
 <translation id="8569682776816196752">Месцы прызначэння не знойдзены</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
 <translation id="8571687764447439720">Дадаць білет Kerberos</translation>
@@ -8248,6 +8258,7 @@
 <translation id="9078316009970372699">Выключыць Імгненны рэжым мадэма</translation>
 <translation id="9078842827190780028">Паказаць іншыя вынікі пошуку на бакавой панэлі</translation>
 <translation id="9079267182985899251">Неўзабаве гэта функцыя падтрымлівацца не будзе. Для прэзентацыі ўкладак выкарыстоўвайце <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">прыблізна вызначае вашы інтарэсы – Chrome можа прыблізна вызначаць вашы інтарэсы</translation>
 <translation id="9081543426177426948">Звесткі аб сайтах, якія вы наведваеце ў рэжыме інкогніта, не захоўваюцца</translation>
 <translation id="9084064520949870008">Адкрыць як акно</translation>
 <translation id="9085256200913095638">Дубліраваць выбраную ўкладку</translation>

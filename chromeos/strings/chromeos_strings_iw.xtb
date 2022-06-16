@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">‏שמירה בכונן USB</translation>
 <translation id="1468664791493211953">מבצעים</translation>
 <translation id="1476467821656042872">הניהול של המכשיר הזה נעשה מהדומיין <ph name="MANAGER" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
+<translation id="147809995039451286">לא ניתן היה להוריד את העדכון</translation>
 <translation id="1478594628797167447">סורק</translation>
 <translation id="1491076385728777984">מתבצע עדכון קושחה ב-<ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">פתיחה בהגדרות</translation>
 <translation id="2421798028054665193">תמונה <ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
+<translation id="2447969267935997922">‏ההתקנה הסתיימה. עכשיו אפשר להסיר את כונן ה-USB או את כרטיס ה-SD.</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2480034874476596812">כיבוי ידני</translation>

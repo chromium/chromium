@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Захаваць на USB-дыску</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
+<translation id="147809995039451286">Не ўдалося спампаваць абнаўленне</translation>
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1491076385728777984">Ідзе абнаўленне ўбудаванага праграмнага забеспячэння прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
 <translation id="2006864819935886708">Магчымасць падключэння</translation>
 <translation id="2008685064673031089">Пошук простых лікаў</translation>
+<translation id="2011174342667534258">Версія SDK:</translation>
 <translation id="2016697457005847575">Паспрабуйце знайсці і выправіць непаладку</translation>
 <translation id="2016848882344942759">--без рэбрэндынгу--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">Стан актывацыі</translation>
 <translation id="2271469253353559191">Расклад уключэння цёмнага рэжыму</translation>
 <translation id="2275586345903859204">Рамонт завершаны</translation>
+<translation id="2276999893457278469">Папулярнае даведачнае змесціва</translation>
 <translation id="2287186687001756809">Відарыс недаступны. Дадаць фота можна з сайта <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Устаўце знешняе сховішча, напрыклад, USB-дыск або SD-карту, са спампаваным вобразам Утыліты аднаўлення Chromebook</translation>
 <translation id="2307344026739914387">Выкарыстанне бягучай пары ключоў</translation>
@@ -178,6 +181,7 @@
 <translation id="2418150275289244458">Адкрыць у наладах</translation>
 <translation id="2421798028054665193">Відарыс <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Дакладнасць выкарыстання нефіксаванай коскі</translation>
+<translation id="2447969267935997922">Усталяванне завершана. Цяпер USB-дыск або SD-карту можна выняць.</translation>
 <translation id="2448312741937722512">Тып</translation>
 <translation id="2461822463642141190">Цяпер</translation>
 <translation id="2480034874476596812">Выключыць уручную</translation>
@@ -189,6 +193,7 @@
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2526590354069164005">Працоўны стол</translation>
 <translation id="253029298928638905">Ідзе перазапуск...</translation>
+<translation id="2533048460510040082">Прапанаванае даведачнае змесціва</translation>
 <translation id="2536159006530886390">Не ўдаецца падключыцца да інтэрнэту.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> праходзіць праверку...</translation>
 <translation id="2584559707064218956">Каб задаць канфігурацыю, перайдзіце ў Налады</translation>
@@ -858,6 +863,7 @@
 <translation id="885701979325669005">Сховішча</translation>
 <translation id="8863170912498892583">Уключыць цёмную тэму</translation>
 <translation id="8863888432376731307">Атрымайце <ph name="INTENT" /> і дадатковую інфармацыю ў адказ на запыт "<ph name="QUERY" />"</translation>
+<translation id="8864415976656252616">Няма прапанавага змесціва. Азнаёмцеся з папулярным даведачным змесцівам.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Гэта планшэт.</translation>
 <translation id="8881098542468797602">Праверка пройдзена</translation>

@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">ወደ ዩኤስቢ አስቀምጥ</translation>
 <translation id="1468664791493211953">ቅናሽ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ይህን መሣሪያ ያስተዳድራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
+<translation id="147809995039451286">ዝማኔውን ማውረድ አልተቻለም</translation>
 <translation id="1478594628797167447">ቃኚ</translation>
 <translation id="1491076385728777984">በ<ph name="DEVICE_NAME" /> ላይ ፊርምዌርን በማዘመን ላይ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያስተዳድር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">በቅንብሮች ውስጥ ክፈት</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" /> ምስል ከ<ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
+<translation id="2447969267935997922">መጫን ተጠናቅቋል። የእርስዎን የዩኤስቢ አንጻፊ ወይም ኤስዲ ካርድ አሁን ማስወገድ ይችላሉ።</translation>
 <translation id="2448312741937722512">አይነት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="2480034874476596812">ራስዎ ያጥፉ</translation>

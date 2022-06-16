@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">यूएसबी ड्राइव पर सेव करें</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
 <translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
+<translation id="147809995039451286">अपडेट डाउनलोड नहीं किया जा सका</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> का फ़र्मवेयर अपडेट किया जा रहा है</translation>
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">'सेटिंग' में जाकर खोलें</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> में से <ph name="CURRENT_PAGE" /> की इमेज</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
+<translation id="2447969267935997922">फ़र्मवेयर इंस्टॉल हो गया है. अब यूएसबी ड्राइव या एसडी कार्ड हटाया जा सकता है.</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
 <translation id="2480034874476596812">मैन्युअल तरीके से बंद करें</translation>

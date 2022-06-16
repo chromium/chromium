@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Salva su USB</translation>
 <translation id="1468664791493211953">Offerte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
+<translation id="147809995039451286">Impossibile scaricare l'aggiornamento</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Aggiornamento del firmware su <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestisce questo utente e potrebbe gestire le impostazioni e monitorare l'attività utente da remoto.</translation>
@@ -126,6 +127,7 @@
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connettività</translation>
 <translation id="2008685064673031089">Prime search</translation>
+<translation id="2011174342667534258">Versione SDK:</translation>
 <translation id="2016697457005847575">Prova i passaggi per la risoluzione dei problemi</translation>
 <translation id="2016848882344942759">--no white-label--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -157,6 +159,7 @@
 <translation id="225692081236532131">Stato attivazione</translation>
 <translation id="2271469253353559191">Programmazione modalità Buio</translation>
 <translation id="2275586345903859204">La riparazione è stata completata</translation>
+<translation id="2276999893457278469">Contenuti Help principali</translation>
 <translation id="2287186687001756809">Nessuna immagine disponibile. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="2294753434210277304">Inserisci l'unità di archiviazione esterna, come un'unità USB o una scheda SD, con l'immagine Utilità ripristino Chromebook scaricata</translation>
 <translation id="2307344026739914387">Utilizza coppia di chiavi corrente</translation>
@@ -178,6 +181,7 @@
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2421798028054665193">Immagine <ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
+<translation id="2447969267935997922">Installazione completa. Ora puoi rimuovere l'unità USB o la scheda SD.</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2480034874476596812">Disattiva manualmente</translation>
@@ -189,6 +193,7 @@
 <translation id="2517472476991765520">Scansiona</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Riavvio in corso…</translation>
+<translation id="2533048460510040082">Contenuti Help suggeriti</translation>
 <translation id="2536159006530886390">Impossibile connettersi a Internet.</translation>
 <translation id="2570743873672969996">Esecuzione del test <ph name="TEST_NAME" /> in corso…</translation>
 <translation id="2584559707064218956">Vai alle Impostazioni per la configurazione</translation>
@@ -858,6 +863,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="885701979325669005">Dati memorizzati dai siti</translation>
 <translation id="8863170912498892583">Abilita il tema scuro</translation>
 <translation id="8863888432376731307">Ricevi <ph name="INTENT" /> per "<ph name="QUERY" />" e non solo</translation>
+<translation id="8864415976656252616">Nessun contenuto suggerito. Visualizza i contenuti Help principali.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Il dispositivo è un tablet.</translation>
 <translation id="8881098542468797602">Test effettuato correttamente</translation>

@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Сохранить на USB-накопитель</translation>
 <translation id="1468664791493211953">Предложения</translation>
 <translation id="1476467821656042872">Этим устройством управляет <ph name="MANAGER" />. Ваши действия могут отслеживаться.</translation>
+<translation id="147809995039451286">Не удалось скачать обновление.</translation>
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />: обновление встроенного ПО…</translation>
 <translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">Перейти к настройкам</translation>
 <translation id="2421798028054665193">Изображение: <ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точность чисел с плавающей запятой</translation>
+<translation id="2447969267935997922">Установка завершена. Извлеките USB-накопитель или SD-карту.</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Расход энергии</translation>
 <translation id="2480034874476596812">Отключить вручную</translation>

@@ -62,6 +62,7 @@
 <translation id="1459784442280469416">Auf USB speichern</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
+<translation id="147809995039451286">Update konnte nicht heruntergeladen werden</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1491076385728777984">Die Firmware auf „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
@@ -180,6 +181,7 @@
 <translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
+<translation id="2447969267935997922">Installation abgeschlossen. Du kannst jetzt den USB-Speicher bzw. die SD-Karte entfernen.</translation>
 <translation id="2448312741937722512">Art</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2480034874476596812">Manuell deaktivieren</translation>
