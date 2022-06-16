@@ -374,13 +374,13 @@ export class CollectionsGrid extends PolymerElement {
     }
   }
 
-  getClassForEmptyTile_(tile: ImageTile): string {
+  private getClassForEmptyTile_(tile: ImageTile): string {
     return `photo-inner-container ${
         (this.isGooglePhotosTile_(tile) ? 'google-photos-empty' :
                                           'photo-empty')}`;
   }
 
-  getImageUrlForEmptyTile_(tile: ImageTile): string {
+  private getImageUrlForEmptyTile_(tile: ImageTile): string {
     return `chrome://personalization/common/${
         (this.isGooglePhotosTile_(tile) ? 'google_photos.svg' :
                                           'no_images.svg')}`;

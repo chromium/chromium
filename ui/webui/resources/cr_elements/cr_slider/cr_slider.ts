@@ -461,6 +461,8 @@ export class CrSliderElement extends CrSliderElementBase {
     }
   }
 
+  // Overridden from PaperRippleBehavior
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _createRipple() {
     this._rippleContainer = this.$.knob;
     const ripple = super._createRipple();

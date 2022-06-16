@@ -110,7 +110,7 @@ export class Service implements ServiceInterface {
    * Opens a file browser dialog for the user to select a file (or directory).
    * @return The promise to be resolved with the selected path.
    */
-  chooseFilePath_(
+  private chooseFilePath_(
       selectType: chrome.developerPrivate.SelectType,
       fileType: chrome.developerPrivate.FileType): Promise<string> {
     return new Promise(function(resolve, reject) {

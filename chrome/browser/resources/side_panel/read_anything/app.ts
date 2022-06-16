@@ -135,7 +135,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // Called by ReadAnythingPageHandler via callback router. //
   ////////////////////////////////////////////////////////////
 
-  showContent_(contentNodes: ContentNode[]) {
+  private showContent_(contentNodes: ContentNode[]) {
     const shadowRoot: ShadowRoot|null = this.shadowRoot;
     if (!shadowRoot) {
       return;
@@ -162,7 +162,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  updateFontName_(newFontName: string) {
+  private updateFontName_(newFontName: string) {
     // Validate that the given font name is a valid choice, or use the default.
     const validFontName = this.validFontNames.find(
         (f: {name: string, cssClass: string}) => f.name === newFontName);

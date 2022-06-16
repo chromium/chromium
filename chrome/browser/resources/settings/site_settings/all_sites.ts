@@ -455,12 +455,12 @@ export class AllSitesElement extends AllSitesElementBase {
     this.$.menu.get().showAt(target);
   }
 
-  onRemoveSite_(e: RemoveSiteEvent) {
+  private onRemoveSite_(e: RemoveSiteEvent) {
     this.actionMenuModel_ = e.detail;
     this.$.confirmRemoveSite.get().showModal();
   }
 
-  onConfirmRemoveSite_(e: Event) {
+  private onConfirmRemoveSite_(e: Event) {
     const {index, actionScope, origin, isPartitioned} = this.actionMenuModel_!;
     const siteGroupToUpdate = this.filteredList_[index];
 

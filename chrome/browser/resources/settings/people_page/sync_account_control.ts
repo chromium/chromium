@@ -170,7 +170,7 @@ export class SettingsSyncAccountControlElement extends
   /**
    * Records Signin_Impression_FromSettings user action.
    */
-  recordImpressionUserActions_() {
+  private recordImpressionUserActions_() {
     assert(!this.syncStatus.signedIn);
 
     chrome.metricsPrivate.recordUserAction('Signin_Impression_FromSettings');

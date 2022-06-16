@@ -39,7 +39,7 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
   /**
    * Returns true if the button should be disabled due to app install type.
    */
-  getDisableState_(app: App): boolean {
+  private getDisableState_(app: App): boolean {
     if (!app) {
       return true;
     }

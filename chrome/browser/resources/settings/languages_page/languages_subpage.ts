@@ -329,7 +329,8 @@ export class SettingsLanguagesSubpageElement extends
    * @return 'target' if |languageCode| matches the target language,
    *     'non-target' otherwise.
    */
-  isTranslationTarget_(languageCode: string, translateTarget: string): string {
+  private isTranslationTarget_(languageCode: string, translateTarget: string):
+      string {
     if (this.languageHelper.convertLanguageCodeForTranslate(languageCode) ===
         translateTarget) {
       return 'target';
@@ -489,7 +490,7 @@ export class SettingsLanguagesSubpageElement extends
    * Returns "complex" if the menu includes checkboxes, which should change
    * the spacing of items and show a separator in the menu.
    */
-  getMenuClass_(translateEnabled: boolean): string {
+  private getMenuClass_(translateEnabled: boolean): string {
     if (translateEnabled || isWindows) {
       return 'complex';
     }

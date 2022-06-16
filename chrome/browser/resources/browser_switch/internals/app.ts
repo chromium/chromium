@@ -180,7 +180,7 @@ class BrowserSwitchInternalsAppElement extends
     return [opensIn, reason];
   }
 
-  checkUrl_(url: string) {
+  private checkUrl_(url: string) {
     if (!url) {
       this.urlCheckerOutput_ = [];
       return;

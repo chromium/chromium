@@ -94,6 +94,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     return this.loading_;
   }
 
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
   private _forwardHostPropV2(prop: string, value: any) {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);

@@ -170,7 +170,7 @@ export class InfiniteList extends PolymerElement {
     }
   }
 
-  ensureTemplatized_() {
+  private ensureTemplatized_() {
     // The user provided light-dom template(s) to use when stamping DOM items.
     const templates = this.querySelectorAll('template');
     assert(templates.length > 0, 'At least one template must be provided');

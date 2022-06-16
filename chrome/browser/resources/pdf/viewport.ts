@@ -1564,7 +1564,7 @@ class ScrollContent {
   /**
    * Dispatches a "scroll" event.
    */
-  dispatchScroll_() {
+  private dispatchScroll_() {
     this.target_ && this.target_.dispatchEvent(new Event('scroll'));
   }
 

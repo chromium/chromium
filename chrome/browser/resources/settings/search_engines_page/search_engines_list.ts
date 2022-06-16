@@ -117,7 +117,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 
-  computeVisibleEngines_(engines: Array<SearchEngine>) {
+  private computeVisibleEngines_(engines: Array<SearchEngine>) {
     if (!engines || !engines.length) {
       return;
     }
@@ -125,7 +125,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     return engines.slice(0, this.visibleEnginesSize);
   }
 
-  computeCollapsedEngines_(engines: Array<SearchEngine>) {
+  private computeCollapsedEngines_(engines: Array<SearchEngine>) {
     if (!engines || !engines.length) {
       return;
     }

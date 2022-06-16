@@ -154,7 +154,7 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
   }
 
   /** Synchronously call apply the `action` by calling the reducer.  */
-  dispatchInternal_(action: ActionType) {
+  private dispatchInternal_(action: ActionType) {
     // action(this.reduce.bind(this));
     this.reduce(action);
   }

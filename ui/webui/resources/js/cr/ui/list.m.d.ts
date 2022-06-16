@@ -38,8 +38,6 @@ declare class List extends HTMLUListElement {
   startBatchUpdates(): void;
   endBatchUpdates(): void;
   decorate(): void;
-  measureItemHeight_(item: ListItem): number;
-  getItemHeightByIndex_(index: number): number;
   measureItem(item?: ListItem): Size|undefined;
   getListItemAncestor(element?: HTMLElement): HTMLElement|undefined;
   handleKeyDown(e: Event): void;

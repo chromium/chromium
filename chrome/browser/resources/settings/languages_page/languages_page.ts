@@ -164,7 +164,7 @@ export class SettingsLanguagesPageElement extends
    * of spellcheck languages, based on whether or not the language is enabled.
    * @param isEnabled Whether the language is enabled or not.
    */
-  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
+  private getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
       chrome.settingsPrivate.PrefObject {
     return isEnabled ? this.get('spellcheck.forced_dictionaries', this.prefs) :
                        this.get('spellcheck.blocked_dictionaries', this.prefs);

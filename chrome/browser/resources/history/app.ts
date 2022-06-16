@@ -334,6 +334,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   /** Overridden from IronScrollTargetBehavior */
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _scrollHandler() {
     if (this.scrollTarget) {
       // When the tabs are visible, show the toolbar shadow for the synced

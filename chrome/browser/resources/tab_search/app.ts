@@ -609,7 +609,7 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
-  announceA11y_(text: string) {
+  private announceA11y_(text: string) {
     IronA11yAnnouncer.requestAvailability();
     this.dispatchEvent(new CustomEvent(
         'iron-announce', {bubbles: true, composed: true, detail: {text}}));

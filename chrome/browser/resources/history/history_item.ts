@@ -297,7 +297,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
     }
   }
 
-  onLinkRightClick_() {
+  private onLinkRightClick_() {
     BrowserServiceImpl.getInstance().recordAction('EntryLinkRightClick');
   }
 

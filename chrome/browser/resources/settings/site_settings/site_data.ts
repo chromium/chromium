@@ -252,7 +252,7 @@ export class SiteDataElement extends SiteDataElementBase {
   /**
    * Shows a dialog to confirm the deletion of multiple sites.
    */
-  onRemoveShowingSitesTap_(e: Event) {
+  private onRemoveShowingSitesTap_(e: Event) {
     e.preventDefault();
     this.$.confirmDeleteDialog.showModal();
   }

@@ -334,7 +334,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
    * tabs page. Sign in promo gets displayed when user is signed out, and
    * different messages are shown when there are no synced tabs.
    */
-  signInStateChanged_(_current: boolean, previous?: boolean) {
+  private signInStateChanged_(_current: boolean, previous?: boolean) {
     if (previous === undefined) {
       return;
     }

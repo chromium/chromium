@@ -57,7 +57,7 @@ export class AppManagementWindowModeElement extends PolymerElement {
         .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
   }
 
-  toggleWindowMode_() {
+  private toggleWindowMode_() {
     assert(this.app);
     const currentWindowMode = this.app.windowMode;
     if (currentWindowMode === WindowMode.kUnknown) {

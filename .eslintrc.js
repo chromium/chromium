@@ -87,7 +87,12 @@ module.exports = {
         {
           selector: 'classMethod',
           format: ['camelCase'],
-          leadingUnderscore: 'allow',
+          modifiers: ['public'],
+        },
+        {
+          selector: 'classMethod',
+          format: ['camelCase'],
+          modifiers: ['private'],
           trailingUnderscore: 'allow',
         },
         {

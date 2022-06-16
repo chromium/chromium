@@ -243,7 +243,7 @@ export class BookmarksCommandManagerElement extends
     }
   }
 
-  isCommandVisible_(command: Command, itemIds: Set<string>): boolean {
+  private isCommandVisible_(command: Command, itemIds: Set<string>): boolean {
     switch (command) {
       case Command.EDIT:
         return itemIds.size === 1 && this.globalCanEdit_;

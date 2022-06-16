@@ -51,7 +51,7 @@ export class AppServiceInternalsElement extends PolymerElement {
    * Manually responds to URL hash changes, since the regular browser handling
    * doesn't work in the Shadow DOM.
    */
-  onHashChanged_() {
+  private onHashChanged_() {
     if (!location.hash || !this.shadowRoot) {
       window.scrollTo(0, 0);
       return;
@@ -65,7 +65,7 @@ export class AppServiceInternalsElement extends PolymerElement {
     selected.scrollIntoView();
   }
 
-  save_() {
+  private save_() {
     const fileParts = [];
     fileParts.push('App List\n');
     fileParts.push('========\n\n');

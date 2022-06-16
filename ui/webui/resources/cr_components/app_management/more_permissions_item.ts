@@ -37,7 +37,7 @@ export class AppManagementMorePermissionsItemElement extends PolymerElement {
     this.addEventListener('click', this.onClick_);
   }
 
-  onClick_() {
+  private onClick_() {
     BrowserProxy.getInstance().handler.openNativeSettings(this.app.id);
     recordAppManagementUserAction(
         this.app.type, AppManagementUserAction.NATIVE_SETTINGS_OPENED);
