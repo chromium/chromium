@@ -971,7 +971,17 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
   }
 
-  if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target)) {
+  // If the target is in a different renderer than the root renderer (indicated
+  // by having a different frame sink ID), we currently cannot provide
+  // reasonable metadata about the region capture rect. For more context, see
+  // https://crbug.com/1327560.
+  //
+  // TODO(https://crbug.com/1335175): Provide accurate bounds for elements
+  // embedded in different renderers.
+  const bool is_same_frame_sink_as_requested =
+      resolved_target_->GetFrameSinkId() == target_->frame_sink_id;
+  if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target) &&
+      is_same_frame_sink_as_requested) {
     const float scale_factor = frame_metadata.device_scale_factor;
     metadata.region_capture_rect =
         scale_factor ? ScaleToEnclosingRect(capture_region, 1.0f / scale_factor)
