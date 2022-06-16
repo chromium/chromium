@@ -52,6 +52,7 @@ class SimTest : public testing::Test {
   SimCompositor& Compositor();
 
   Vector<String>& ConsoleMessages();
+  void ResizeView(const gfx::Size&);
 
   // Creates a SimWebFrameWidget. Subclasses can override this if the
   // wish to create their own.

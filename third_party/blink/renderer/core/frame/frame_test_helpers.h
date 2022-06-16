@@ -80,6 +80,7 @@ class WebLocalFrameImpl;
 struct WebNavigationParams;
 class WebRemoteFrameImpl;
 class WebSettings;
+class WidgetInputHandlerManager;
 
 namespace frame_test_helpers {
 class TestWebFrameClient;
@@ -257,6 +258,21 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
       mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>,
       mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>);
 
+  WidgetInputHandlerManager* GetWidgetInputHandlerManager() const;
+  void FlushInputHandlerTasks();
+
+  // Simulates an input event arriving at the WidgetInputHandlerManager from the
+  // browser process.  The event will run synchronously through the compositor's
+  // real input handling code (InputHandlerProxy and ThreadedInputHandler).
+  //
+  // Note that with scroll unification, tests should send gesture scroll events
+  // using this method, and not through WebFrameWidgetImpl::HandleInputEvent or
+  // EventHandler::HandleGestureEvent.  Tests that use this method for scrolling
+  // should also use SimTest::ResizeView or WebViewHelper::Resize (not directly
+  // WebFrameWidgetImpl::Resize) to set the initial size of the viewport.
+  //
+  void DispatchThroughCcInputHandler(const WebInputEvent& event);
+
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 
  protected:
@@ -417,6 +433,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebLocalFrameImpl* LocalMainFrame() const;
   WebRemoteFrameImpl* RemoteMainFrame() const;
   TestWebFrameWidget* GetMainFrameWidget() const;
+  WidgetInputHandlerManager* GetWidgetInputHandlerManager() const;
 
   void set_viewport_enabled(bool viewport) {
     DCHECK(!web_view_)

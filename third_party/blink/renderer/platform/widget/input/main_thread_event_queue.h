@@ -139,10 +139,6 @@ class PLATFORM_EXPORT MainThreadEventQueue
                mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
   }
 
-  base::SingleThreadTaskRunner* main_task_runner_for_testing() const {
-    return main_task_runner_.get();
-  }
-
  protected:
   friend class base::RefCountedThreadSafe<MainThreadEventQueue>;
   virtual ~MainThreadEventQueue();

@@ -75,8 +75,11 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
+#include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -574,6 +577,10 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   frame_widget->InitializeCompositing(frame_widget->GetAgentGroupScheduler(),
                                       initial_screen_infos,
                                       &layer_tree_settings);
+  // This runs WidgetInputHandlerManager::InitOnInputHandlingThread, which will
+  // set up the InputHandlerProxy.
+  frame_widget->FlushInputHandlerTasks();
+
   frame_widget->SetCompositorVisible(true);
   return frame_widget;
 }
@@ -617,7 +624,11 @@ TestWebFrameWidget* WebViewHelper::GetMainFrameWidget() const {
 }
 
 void WebViewHelper::Resize(const gfx::Size& size) {
-  GetWebView()->MainFrameWidget()->Resize(size);
+  // In addition to calling WebFrameWidgetImpl::Resize(), this updates the
+  // LayerTreeHost::device_viewport_rect(), which is used to set up the
+  // compositor's clip tree.  (In a real browser this would happen through
+  // Widget.UpdateVisualProperties).
+  GetMainFrameWidget()->SetWindowRectSynchronouslyForTesting(gfx::Rect(size));
 }
 
 void WebViewHelper::InitializeWebView(
@@ -819,6 +830,26 @@ TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
   if (!widget_input_handler_host_)
     widget_input_handler_host_ = std::make_unique<TestWidgetInputHandlerHost>();
   return widget_input_handler_host_.get();
+}
+
+WidgetInputHandlerManager* TestWebFrameWidget::GetWidgetInputHandlerManager()
+    const {
+  return widget_base_for_testing()->widget_input_handler_manager();
+}
+
+void TestWebFrameWidget::FlushInputHandlerTasks() {
+  auto* main_task_runner = static_cast<scheduler::FakeTaskRunner*>(
+      GetWidgetInputHandlerManager()->main_task_runner_for_testing());
+  main_task_runner->RunUntilIdle();
+}
+
+void TestWebFrameWidget::DispatchThroughCcInputHandler(
+    const WebInputEvent& event) {
+  GetWidgetInputHandlerManager()->DispatchEvent(
+      std::make_unique<WebCoalescedInputEvent>(event.Clone(),
+                                               ui::LatencyInfo()),
+      mojom::blink::WidgetInputHandler::DispatchEventCallback());
+  FlushInputHandlerTasks();
 }
 
 display::ScreenInfo TestWebFrameWidget::GetInitialScreenInfo() {

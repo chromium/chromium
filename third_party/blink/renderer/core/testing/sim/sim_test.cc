@@ -62,7 +62,7 @@ void SimTest::SetUp() {
   compositor_->SetLayerTreeHost(
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
 
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(300, 200));
+  ResizeView(gfx::Size(300, 200));
 }
 
 void SimTest::TearDown() {
@@ -167,6 +167,10 @@ SimCompositor& SimTest::Compositor() {
 
 Vector<String>& SimTest::ConsoleMessages() {
   return web_frame_client_->ConsoleMessages();
+}
+
+void SimTest::ResizeView(const gfx::Size& size) {
+  web_view_helper_->Resize(size);
 }
 
 SimWebFrameWidget* SimTest::CreateSimWebFrameWidget(

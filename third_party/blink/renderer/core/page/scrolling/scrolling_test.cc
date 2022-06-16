@@ -2508,16 +2508,23 @@ class ScrollingSimTest : public SimTest,
   ScrollingSimTest() : scroll_unification_enabled_(GetParam()) {}
 
   void SetUp() override {
+    if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
+      feature_list_.InitAndEnableFeature(::features::kScrollUnification);
     SimTest::SetUp();
     WebView().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
-    WebView().MainFrameViewWidget()->Resize(gfx::Size(1000, 1000));
+    ResizeView(gfx::Size(1000, 1000));
     WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
   }
 
-  WebCoalescedInputEvent GenerateGestureEvent(WebInputEvent::Type type,
-                                              int delta_x = 0,
-                                              int delta_y = 0) {
+  void TearDown() override {
+    SimTest::TearDown();
+    feature_list_.Reset();
+  }
+
+  WebGestureEvent GenerateGestureEvent(WebInputEvent::Type type,
+                                       int delta_x = 0,
+                                       int delta_y = 0) {
     WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                           WebInputEvent::GetStaticTimeStampForTests(),
                           WebGestureDevice::kTouchscreen);
@@ -2529,7 +2536,14 @@ class ScrollingSimTest : public SimTest,
       event.data.scroll_begin.delta_x_hint = delta_x;
       event.data.scroll_begin.delta_y_hint = delta_y;
     }
-    return WebCoalescedInputEvent(event, ui::LatencyInfo());
+    return event;
+  }
+
+  WebCoalescedInputEvent GenerateCoalescedGestureEvent(WebInputEvent::Type type,
+                                                       int delta_x = 0,
+                                                       int delta_y = 0) {
+    return WebCoalescedInputEvent(GenerateGestureEvent(type, delta_x, delta_y),
+                                  ui::LatencyInfo());
   }
 
   unsigned NumObjectsNeedingLayout() {
@@ -2542,12 +2556,43 @@ class ScrollingSimTest : public SimTest,
   }
 
  protected:
- protected:
   RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
       scroll_unification_enabled_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ScrollingSimTest, testing::Bool());
+
+TEST_P(ScrollingSimTest, BasicScroll) {
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #s { overflow: scroll; width: 300px; height: 300px; }
+      #sp { width: 600px; height: 600px; }
+    </style>
+    <div id=s><div id=sp>hello</div></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, 0, -100));
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
+  widget.DispatchThroughCcInputHandler(
+      GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+
+  Compositor().BeginFrame();
+
+  Element* scroller = GetDocument().getElementById("s");
+  LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
+  EXPECT_EQ(100, box->ScrolledContentOffset().top);
+}
 
 // Pre-scroll-unification, ensures that ScrollBegin and ScrollUpdate cause
 // layout and ScrollEnd does not. Post unification, Blink will not handle these
@@ -2590,8 +2635,9 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-      WebView().MainFrameWidget()->HandleInputEvent(GenerateGestureEvent(
-          WebInputEvent::Type::kGestureScrollBegin, 0, 10));
+      WebView().MainFrameWidget()->HandleInputEvent(
+          GenerateCoalescedGestureEvent(
+              WebInputEvent::Type::kGestureScrollBegin, 0, 10));
       EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
     }
 
@@ -2602,8 +2648,9 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
       GetDocument().UpdateStyleAndLayoutTree();
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
-      WebView().MainFrameWidget()->HandleInputEvent(GenerateGestureEvent(
-          WebInputEvent::Type::kGestureScrollUpdate, 0, 10));
+      WebView().MainFrameWidget()->HandleInputEvent(
+          GenerateCoalescedGestureEvent(
+              WebInputEvent::Type::kGestureScrollUpdate, 0, 10));
       EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
     }
 
@@ -2615,7 +2662,8 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
       ASSERT_NE(NumObjectsNeedingLayout(), 0u);
 
       WebView().MainFrameWidget()->HandleInputEvent(
-          GenerateGestureEvent(WebInputEvent::Type::kGestureScrollEnd, 0, 0));
+          GenerateCoalescedGestureEvent(WebInputEvent::Type::kGestureScrollEnd,
+                                        0, 0));
       EXPECT_NE(NumObjectsNeedingLayout(), 0u);
     }
   }

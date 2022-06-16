@@ -63,6 +63,10 @@ class WebFrameWidgetSimTest : public SimTest {};
 // WebFrameWidgetImpl requests a new viz::LocalSurfaceId to be allocated on the
 // impl thread.
 TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
+  LoadURL("about:blank");
+  // Resets CommitState::new_local_surface_id_request.
+  Compositor().BeginFrame();
+
   viz::ParentLocalSurfaceIdAllocator allocator;
 
   // Enable auto-resize.
@@ -961,18 +965,14 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
     void SendInputEventAndWaitForDispatch(
         std::unique_ptr<WebInputEvent> event) {
       MainThreadEventQueue* input_event_queue =
-          widget_base_for_testing()
-              ->widget_input_handler_manager()
-              ->input_event_queue();
+          GetWidgetInputHandlerManager()->input_event_queue();
       input_event_queue->HandleEvent(
           std::make_unique<WebCoalescedInputEvent>(std::move(event),
                                                    ui::LatencyInfo()),
           MainThreadEventQueue::DispatchType::kNonBlocking,
           mojom::blink::InputEventResultState::kSetNonBlocking,
           WebInputEventAttribution(), nullptr, base::DoNothing());
-      auto* main_task_runner = static_cast<scheduler::FakeTaskRunner*>(
-          input_event_queue->main_task_runner_for_testing());
-      main_task_runner->RunUntilIdle();
+      FlushInputHandlerTasks();
     }
 
     void CompositeAndWaitForPresentation(SimCompositor& compositor) {

@@ -167,11 +167,10 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
                     const ui::LatencyInfo& latency_info,
                     mojom::blink::DidOverscrollParamsPtr overscroll,
                     absl::optional<cc::TouchAction> touch_action) {
+    // callback_ can be null in tests.
     if (callback_) {
       std::move(callback_).Run(ack_result, latency_info, std::move(overscroll),
                                touch_action);
-    } else {
-      DCHECK(!overscroll) << "Unexpected overscroll for un-acked event";
     }
 
     if (!blocking_coalesced_callbacks_.empty()) {

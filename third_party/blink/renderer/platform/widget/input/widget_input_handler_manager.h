@@ -177,6 +177,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 
+  base::SingleThreadTaskRunner* main_task_runner_for_testing() const {
+    return main_thread_task_runner_.get();
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<WidgetInputHandlerManager>;
   ~WidgetInputHandlerManager() override;
