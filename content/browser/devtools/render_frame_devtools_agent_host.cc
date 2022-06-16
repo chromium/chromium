@@ -250,7 +250,7 @@ RenderFrameDevToolsAgentHost::RenderFrameDevToolsAgentHost(
   SetFrameTreeNode(frame_tree_node);
   ChangeFrameHostAndObservedProcess(frame_host);
   render_frame_alive_ = frame_host_ && frame_host_->IsRenderFrameLive();
-  if (frame_tree_node->parent()) {
+  if (frame_tree_node->GetFrameType() != FrameType::kPrimaryMainFrame) {
     render_frame_crashed_ = !render_frame_alive_;
   } else {
     WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);

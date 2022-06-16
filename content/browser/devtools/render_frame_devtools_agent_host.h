@@ -118,6 +118,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
  private:
   friend class DevToolsAgentHost;
+  friend class RenderFrameDevToolsAgentHostFencedFrameBrowserTest;
 
   static void UpdateRawHeadersAccess(RenderFrameHostImpl* rfh);
 
