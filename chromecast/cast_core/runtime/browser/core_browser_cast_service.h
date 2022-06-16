@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_SERVICE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_SERVICE_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CORE_BROWSER_CAST_SERVICE_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CORE_BROWSER_CAST_SERVICE_H_
 
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
-#include "chromecast/cast_core/runtime/browser/cast_runtime_service.h"
+#include "chromecast/cast_core/runtime/browser/core_browser_cast_service.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_endpoint_manager.h"
 #include "chromecast/service/cast_service.h"
@@ -37,7 +37,7 @@ class VideoPlaneController;
 // This interface is to be used for building the Cast Runtime Service and act as
 // the border between shared Chromium code and the specifics of that
 // implementation.
-class CastRuntimeService
+class CoreBrowserCastService
     : public CastService,
       public CastRuntimeMetricsRecorder::EventBuilderFactory,
       public media::CastRuntimeAudioChannelEndpointManager {
@@ -45,11 +45,11 @@ class CastRuntimeService
   using NetworkContextGetter =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
-  CastRuntimeService(CastWebService* web_service,
-                     NetworkContextGetter network_context_getter,
-                     media::VideoPlaneController* video_plane_controller,
-                     RuntimeApplicationWatcher* application_watcher);
-  ~CastRuntimeService() override;
+  CoreBrowserCastService(CastWebService* web_service,
+                         NetworkContextGetter network_context_getter,
+                         media::VideoPlaneController* video_plane_controller,
+                         RuntimeApplicationWatcher* application_watcher);
+  ~CoreBrowserCastService() override;
 
   // Returns WebCryptoServer.
   virtual WebCryptoServer* GetWebCryptoServer();
@@ -76,4 +76,4 @@ class CastRuntimeService
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_SERVICE_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CORE_BROWSER_CAST_SERVICE_H_

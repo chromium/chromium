@@ -12,7 +12,7 @@
 
 namespace chromecast {
 
-class CastRuntimeService;
+class CoreBrowserCastService;
 class CastFeatureListCreator;
 class RuntimeApplication;
 
@@ -26,8 +26,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
       CastFeatureListCreator* feature_list_creator);
   ~CastRuntimeContentBrowserClient() override;
 
-  // Returns an instance of |CastRuntimeService|.
-  virtual CastRuntimeService* GetCastRuntimeService();
+  // Returns an instance of |CoreBrowserCastService|.
+  virtual CoreBrowserCastService* GetCastService();
 
   // CastContentBrowserClient overrides:
   std::unique_ptr<CastService> CreateCastService(
@@ -69,9 +69,9 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient,
   // purposes of disabling buffering.
   std::atomic_bool is_runtime_application_for_streaming_{false};
 
-  // An instance of |CastRuntimeService| created once during the lifetime of the
-  // runtime.
-  CastRuntimeService* cast_runtime_service_ = nullptr;
+  // An instance of |CoreBrowserCastService| created once during the lifetime of
+  // the runtime.
+  CoreBrowserCastService* core_browser_cast_service_ = nullptr;
 };
 
 }  // namespace chromecast

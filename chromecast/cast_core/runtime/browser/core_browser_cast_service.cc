@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/cast_runtime_service.h"
+#include "chromecast/cast_core/runtime/browser/core_browser_cast_service.h"
 
 #include "base/command_line.h"
 #include "base/process/process.h"
@@ -12,7 +12,7 @@
 
 namespace chromecast {
 
-CastRuntimeService::CastRuntimeService(
+CoreBrowserCastService::CoreBrowserCastService(
     CastWebService* web_service,
     NetworkContextGetter network_context_getter,
     media::VideoPlaneController* video_plane_controller,
@@ -23,13 +23,13 @@ CastRuntimeService::CastRuntimeService(
                       video_plane_controller,
                       application_watcher) {}
 
-CastRuntimeService::~CastRuntimeService() = default;
+CoreBrowserCastService::~CoreBrowserCastService() = default;
 
-void CastRuntimeService::InitializeInternal() {}
+void CoreBrowserCastService::InitializeInternal() {}
 
-void CastRuntimeService::FinalizeInternal() {}
+void CoreBrowserCastService::FinalizeInternal() {}
 
-void CastRuntimeService::StartInternal() {
+void CoreBrowserCastService::StartInternal() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   std::string runtime_id =
       command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
@@ -40,23 +40,23 @@ void CastRuntimeService::StartInternal() {
   }
 }
 
-void CastRuntimeService::StopInternal() {
+void CoreBrowserCastService::StopInternal() {
   app_dispatcher_.Stop();
 }
 
-std::unique_ptr<CastEventBuilder> CastRuntimeService::CreateEventBuilder() {
+std::unique_ptr<CastEventBuilder> CoreBrowserCastService::CreateEventBuilder() {
   return std::make_unique<CastEventBuilderSimple>();
 }
 
-const std::string& CastRuntimeService::GetAudioChannelEndpoint() {
+const std::string& CoreBrowserCastService::GetAudioChannelEndpoint() {
   return app_dispatcher_.GetCastMediaServiceEndpoint();
 }
 
-WebCryptoServer* CastRuntimeService::GetWebCryptoServer() {
+WebCryptoServer* CoreBrowserCastService::GetWebCryptoServer() {
   return nullptr;
 }
 
-receiver::MediaManager* CastRuntimeService::GetMediaManager() {
+receiver::MediaManager* CoreBrowserCastService::GetMediaManager() {
   return nullptr;
 }
 

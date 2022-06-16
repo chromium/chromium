@@ -10,7 +10,7 @@
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/runtime/browser/cast_core_switches.h"
-#include "chromecast/cast_core/runtime/browser/cast_runtime_service.h"
+#include "chromecast/cast_core/runtime/browser/core_browser_cast_service.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/cast_core/runtime/common/cors_exempt_headers.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
@@ -27,8 +27,8 @@ CastRuntimeContentBrowserClient::CastRuntimeContentBrowserClient(
 
 CastRuntimeContentBrowserClient::~CastRuntimeContentBrowserClient() = default;
 
-CastRuntimeService* CastRuntimeContentBrowserClient::GetCastRuntimeService() {
-  return cast_runtime_service_;
+CoreBrowserCastService* CastRuntimeContentBrowserClient::GetCastService() {
+  return core_browser_cast_service_;
 }
 
 std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
@@ -40,18 +40,18 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     CastWebService* web_service,
     DisplaySettingsManager* display_settings_manager,
     shell::AccessibilityServiceImpl* accessibility_service) {
-  DCHECK(!cast_runtime_service_);
+  DCHECK(!core_browser_cast_service_);
   auto network_context_getter = base::BindRepeating(
       [](CastRuntimeContentBrowserClient* client)
           -> network::mojom::NetworkContext* {
         return client->GetSystemNetworkContext();
       },
       this);
-  auto cast_runtime_service = std::make_unique<CastRuntimeService>(
+  auto core_browser_cast_service = std::make_unique<CoreBrowserCastService>(
       web_service, std::move(network_context_getter), video_plane_controller,
       this);
-  cast_runtime_service_ = cast_runtime_service.get();
-  return cast_runtime_service;
+  core_browser_cast_service_ = core_browser_cast_service.get();
+  return core_browser_cast_service;
 }
 
 std::unique_ptr<::media::CdmFactory>
