@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/ui/browser_list.h"
 
@@ -48,8 +49,8 @@ void ElementManagerImpl::ProposeElement(
     fuchsia::element::Spec spec,
     fidl::InterfaceRequest<fuchsia::element::Controller> element_controller,
     ProposeElementCallback callback) {
-  if (spec.component_url() !=
-      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm") {
+  if (!spec.has_component_url() ||
+      !base::EndsWith(spec.component_url(), "/chrome#meta/chrome.cm")) {
     callback(fuchsia::element::Manager_ProposeElement_Result::WithErr(
         fuchsia::element::ProposeElementError::INVALID_ARGS));
     return;
