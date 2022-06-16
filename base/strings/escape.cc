@@ -61,7 +61,7 @@ std::string Escape(StringPiece text,
       escaped.push_back(IntToHex(c >> 4));
       escaped.push_back(IntToHex(c & 0xf));
     } else {
-      escaped.push_back(c);
+      escaped.push_back(static_cast<char>(c));
     }
   }
   return escaped;
@@ -198,8 +198,8 @@ bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
   char most_sig_digit(escaped_text[index + 1]);
   char least_sig_digit(escaped_text[index + 2]);
   if (IsHexDigit(most_sig_digit) && IsHexDigit(least_sig_digit)) {
-    *value =
-        HexDigitToInt(most_sig_digit) * 16 + HexDigitToInt(least_sig_digit);
+    *value = static_cast<unsigned char>(HexDigitToInt(most_sig_digit) * 16 +
+                                        HexDigitToInt(least_sig_digit));
     return true;
   }
   return false;
@@ -236,7 +236,7 @@ bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
     }
   }
 
-  int32_t char_index = 0;
+  size_t char_index = 0;
   // Check if the unicode "character" that was just unescaped is valid.
   if (!ReadUnicodeCharacter(reinterpret_cast<char*>(bytes), num_bytes,
                             &char_index, code_point_out)) {
@@ -253,10 +253,11 @@ bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
 
 // This method takes a Unicode code point and returns true if it should be
 // unescaped, based on |rules|.
-bool ShouldUnescapeCodePoint(UnescapeRule::Type rules, uint32_t code_point) {
+bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
+                             base_icu::UChar32 code_point) {
   // If this is an ASCII character, use the lookup table.
-  if (code_point < 0x80) {
-    return kUrlUnescape[code_point] ||
+  if (code_point >= 0 && code_point < 0x80) {
+    return kUrlUnescape[static_cast<size_t>(code_point)] ||
            // Allow some additional unescaping when flags are set.
            (code_point == ' ' && (rules & UnescapeRule::SPACES)) ||
            // Allow any of the prohibited but non-control characters when doing
@@ -418,7 +419,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
       // sequences.
       unsigned char non_utf8_byte;
       if (UnescapeUnsignedByteAtIndex(escaped_text, i, &non_utf8_byte)) {
-        result.push_back(non_utf8_byte);
+        result.push_back(static_cast<char>(non_utf8_byte));
         if (adjustments)
           adjustments->push_back(OffsetAdjuster::Adjustment(i, 3, 1));
         i += 3;
@@ -569,7 +570,7 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
     // UnescapeUnsignedByteAtIndex does bounds checking, so this is always safe
     // to call.
     if (UnescapeUnsignedByteAtIndex(escaped_text, i, &byte)) {
-      unescaped_text[output_index++] = byte;
+      unescaped_text[output_index++] = static_cast<char>(byte);
       i += 3;
       continue;
     }
@@ -595,7 +596,7 @@ bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
   unescaped_text->clear();
 
   std::set<unsigned char> illegal_encoded_bytes;
-  for (char c = '\x00'; c < '\x20'; ++c) {
+  for (unsigned char c = '\x00'; c < '\x20'; ++c) {
     illegal_encoded_bytes.insert(c);
   }
   if (fail_on_path_separators) {
@@ -632,7 +633,7 @@ bool ContainsEncodedBytes(StringPiece escaped_text,
 std::u16string UnescapeForHTML(StringPiece16 input) {
   static const struct {
     const char* ampersand_code;
-    const char replacement;
+    const char16_t replacement;
   } kEscapeToChars[] = {
       {"&lt;", '<'},   {"&gt;", '>'},   {"&amp;", '&'},
       {"&quot;", '"'}, {"&#39;", '\''},
@@ -648,14 +649,15 @@ std::u16string UnescapeForHTML(StringPiece16 input) {
        ++iter) {
     if (*iter == '&') {
       // Potential ampersand encode char.
-      size_t index = iter - text.begin();
+      size_t index = static_cast<size_t>(iter - text.begin());
       for (size_t i = 0; i < std::size(kEscapeToChars); i++) {
         if (ampersand_chars[i].empty()) {
           ampersand_chars[i] = ASCIIToUTF16(kEscapeToChars[i].ampersand_code);
         }
         if (text.find(ampersand_chars[i], index) == index) {
-          text.replace(iter, iter + ampersand_chars[i].length(), 1,
-                       kEscapeToChars[i].replacement);
+          text.replace(
+              iter, iter + static_cast<ptrdiff_t>(ampersand_chars[i].length()),
+              1, kEscapeToChars[i].replacement);
           break;
         }
       }

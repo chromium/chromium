@@ -250,8 +250,9 @@ std::string GetTextRunCharsAsUTF8(
     int char_index) {
   std::string chars_utf8;
   for (uint32_t i = 0; i < text_run.len; ++i) {
-    base::WriteUnicodeCharacter(chars[char_index + i].unicode_character,
-                                &chars_utf8);
+    base::WriteUnicodeCharacter(
+        static_cast<base_icu::UChar32>(chars[char_index + i].unicode_character),
+        &chars_utf8);
   }
   return chars_utf8;
 }

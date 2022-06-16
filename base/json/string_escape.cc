@@ -85,12 +85,8 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
   if (put_in_quotes)
     dest->push_back('"');
 
-  // Casting is necessary because ICU uses int32_t. Try and do so safely.
-  CHECK_LE(str.length(),
-           static_cast<size_t>(std::numeric_limits<int32_t>::max()));
-  const int32_t length = static_cast<int32_t>(str.length());
-
-  for (int32_t i = 0; i < length; ++i) {
+  const size_t length = str.length();
+  for (size_t i = 0; i < length; ++i) {
     base_icu::UChar32 code_point;
     if (!ReadUnicodeCharacter(str.data(), length, &i, &code_point) ||
         code_point == CBU_SENTINEL) {

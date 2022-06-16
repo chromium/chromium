@@ -39,7 +39,8 @@ void OffsetAdjuster::AdjustOffset(const Adjustments& adjustments,
   DCHECK(offset);
   if (*offset == std::u16string::npos)
     return;
-  int adjustment = 0;
+  size_t original_lengths = 0;
+  size_t output_lengths = 0;
   for (const auto& i : adjustments) {
     if (*offset <= i.original_offset)
       break;
@@ -47,9 +48,10 @@ void OffsetAdjuster::AdjustOffset(const Adjustments& adjustments,
       *offset = std::u16string::npos;
       return;
     }
-    adjustment += static_cast<int>(i.original_length - i.output_length);
+    original_lengths += i.original_length;
+    output_lengths += i.output_length;
   }
-  *offset -= adjustment;
+  *offset += output_lengths - original_lengths;
 
   if (*offset > limit)
     *offset = std::u16string::npos;
@@ -70,17 +72,20 @@ void OffsetAdjuster::UnadjustOffset(const Adjustments& adjustments,
                                     size_t* offset) {
   if (*offset == std::u16string::npos)
     return;
-  int adjustment = 0;
+  size_t original_lengths = 0;
+  size_t output_lengths = 0;
   for (const auto& i : adjustments) {
-    if (*offset + adjustment <= i.original_offset)
+    if (*offset + original_lengths - output_lengths <= i.original_offset)
       break;
-    adjustment += static_cast<int>(i.original_length - i.output_length);
-    if ((*offset + adjustment) < (i.original_offset + i.original_length)) {
+    original_lengths += i.original_length;
+    output_lengths += i.output_length;
+    if ((*offset + original_lengths - output_lengths) <
+        (i.original_offset + i.original_length)) {
       *offset = std::u16string::npos;
       return;
     }
   }
-  *offset += adjustment;
+  *offset += original_lengths - output_lengths;
 }
 
 // static
@@ -149,15 +154,15 @@ void OffsetAdjuster::MergeSequentialAdjustments(
       //   <=
       //   adjusted_iter->original_offset + shift +
       //       adjusted_iter->original_length
-
       // Modify the current |adjusted_iter| to include whatever collapsing
       // happened in |first_iter|, then advance to the next |first_adjustments|
       // because we dealt with the current one.
-      const int collapse = static_cast<int>(first_iter->original_length) -
-          static_cast<int>(first_iter->output_length);
+
       // This function does not know how to deal with a string that expands and
       // then gets modified, only strings that collapse and then get modified.
-      DCHECK_GT(collapse, 0);
+      DCHECK_GT(first_iter->original_length, first_iter->output_length);
+      const size_t collapse =
+          first_iter->original_length - first_iter->output_length;
       adjusted_iter->original_length += collapse;
       currently_collapsing += collapse;
       ++first_iter;
@@ -188,14 +193,12 @@ bool ConvertUnicode(const SrcChar* src,
                     OffsetAdjuster::Adjustments* adjustments) {
   if (adjustments)
     adjustments->clear();
-  // ICU requires 32-bit numbers.
   bool success = true;
-  int32_t src_len32 = static_cast<int32_t>(src_len);
-  for (int32_t i = 0; i < src_len32; i++) {
+  for (size_t i = 0; i < src_len; i++) {
     base_icu::UChar32 code_point;
     size_t original_i = i;
     size_t chars_written = 0;
-    if (ReadUnicodeCharacter(src, src_len32, &i, &code_point)) {
+    if (ReadUnicodeCharacter(src, src_len, &i, &code_point)) {
       chars_written = WriteUnicodeCharacter(code_point, output);
     } else {
       chars_written = WriteUnicodeCharacter(0xFFFD, output);

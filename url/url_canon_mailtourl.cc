@@ -57,8 +57,8 @@ bool DoCanonicalizeMailtoURL(const URLComponentSource<CHAR>& source,
     // Copy the path using path URL's more lax escaping rules.
     // We convert to UTF-8 and escape non-ASCII, but leave most
     // ASCII characters alone.
-    int end = parsed.path.end();
-    for (int i = parsed.path.begin; i < end; ++i) {
+    size_t end = static_cast<size_t>(parsed.path.end());
+    for (size_t i = static_cast<size_t>(parsed.path.begin); i < end; ++i) {
       UCHAR uch = static_cast<UCHAR>(source.path[i]);
       if (ShouldEncodeMailboxCharacter<UCHAR>(uch))
         success &= AppendUTF8EscapedChar(source.path, &i, end, output);

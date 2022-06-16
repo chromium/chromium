@@ -65,7 +65,7 @@ class FontFallback
                      DWRITE_FONT_STYLE base_style,
                      DWRITE_FONT_STRETCH base_stretch,
                      IDWriteFont** mapped_font,
-                     uint32_t* mapped_length) LOCKS_EXCLUDED(lock_);
+                     size_t* mapped_length) LOCKS_EXCLUDED(lock_);
 
   void AddCachedFamily(Microsoft::WRL::ComPtr<IDWriteFontFamily> family,
                        const wchar_t* base_family_name,
