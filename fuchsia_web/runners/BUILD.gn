@@ -221,7 +221,7 @@ test("cast_runner_unittests") {
   data_deps = [ ":cast_runner_core" ]
 }
 
-test("cast_runner_integration_tests_cfv1") {
+test("cast_runner_integration_tests") {
   sources = [
     "cast/cast_runner_integration_test.cc",
     "cast/fake_component_context.cc",

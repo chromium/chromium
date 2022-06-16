@@ -8959,8 +8959,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "cast_runner_integration_tests_cfv1",
-        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_integration_tests_cfv1/"
+        "test": "cast_runner_integration_tests",
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_integration_tests/"
       },
       {
         "merge": {
@@ -10528,8 +10528,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "cast_runner_integration_tests_cfv1",
-        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_integration_tests_cfv1/"
+        "test": "cast_runner_integration_tests",
+        "test_id_prefix": "ninja://fuchsia_web/runners:cast_runner_integration_tests/"
       },
       {
         "merge": {
