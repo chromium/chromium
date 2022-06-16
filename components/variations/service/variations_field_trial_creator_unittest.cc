@@ -1299,7 +1299,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 
   // Verify that the beacon file does not exist.
   EXPECT_FALSE(base::PathExists(
-      user_data_dir_path().Append(variations::kVariationsFilename)));
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename)));
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
@@ -1331,7 +1331,7 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 
   // Verify that the beacon file was written and that the contents are correct.
   const base::FilePath variations_file_path =
-      user_data_dir_path().Append(variations::kVariationsFilename);
+      user_data_dir_path().Append(variations::kCleanExitBeaconFilename);
   EXPECT_TRUE(base::PathExists(variations_file_path));
   std::string beacon_file_contents;
   ASSERT_TRUE(

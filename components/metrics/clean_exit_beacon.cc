@@ -259,8 +259,10 @@ void CleanExitBeacon::Initialize() {
     group = SetUpExtendedSafeModeTrial(channel_);
   }
 
-  if (group == kEnabledGroup)
-    beacon_file_path_ = user_data_dir_.Append(variations::kVariationsFilename);
+  if (group == kEnabledGroup) {
+    beacon_file_path_ =
+        user_data_dir_.Append(variations::kCleanExitBeaconFilename);
+  }
 
   std::unique_ptr<base::Value> beacon_file_contents =
       MaybeGetFileContents(beacon_file_path_);
