@@ -834,11 +834,6 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
       network::switches::kIgnoreCertificateErrorsSPKIList,
       kWebPageReplayCertSPKI);
   command_line->AppendSwitch(switches::kStartMaximized);
-  // Tests are not expecting default field trials config, disable them by adding
-  // a fake field trial.
-  // TOOD(crbug/1212552) Remove this switch and either do this directly via gn
-  // args or not at all and update test expectations.
-  command_line->AppendSwitchASCII(::switches::kForceFieldTrials, "Foo/Bar");
 }
 
 void TestRecipeReplayer::Setup() {
