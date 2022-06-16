@@ -453,10 +453,6 @@ bool AppListControllerImpl::IsVisible() {
   return IsVisible(absl::nullopt);
 }
 
-void AppListControllerImpl::HideContinueSection() {
-  SetHideContinueSection(true);
-}
-
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (IsKioskSession())

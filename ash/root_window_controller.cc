@@ -822,6 +822,24 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
         sort_apps_submenu_.get(),
         ui::ImageModel::FromVectorIcon(kReorderIcon,
                                        ui::kColorAshSystemUIMenuIcon));
+
+    // Append the "Show all suggestions" / "Hide all suggestions" item.
+    if (features::IsLauncherHideContinueSectionEnabled()) {
+      menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+      if (app_list_controller->ShouldHideContinueSection()) {
+        menu_model->AddItemWithIcon(
+            ShelfContextMenuModel::MENU_SHOW_CONTINUE_SECTION,
+            l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
+            ui::ImageModel::FromVectorIcon(kLauncherShowContinueSectionIcon,
+                                           ui::kColorAshSystemUIMenuIcon));
+      } else {
+        menu_model->AddItemWithIcon(
+            ShelfContextMenuModel::MENU_HIDE_CONTINUE_SECTION,
+            l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
+            ui::ImageModel::FromVectorIcon(kLauncherHideContinueSectionIcon,
+                                           ui::kColorAshSystemUIMenuIcon));
+      }
+    }
   }
 
   root_window_menu_model_adapter_->Run(

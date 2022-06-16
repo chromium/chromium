@@ -15604,6 +15604,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="503" label="Shelf Alignment Right"/>
   <int value="504" label="Shelf Alignment Bottom"/>
   <int value="505" label="Change Wallpaper"/>
+  <int value="506" label="Personalization Hub"/>
+  <int value="507" label="Hide Continue Section"/>
+  <int value="508" label="Show Continue Section"/>
 </enum>
 
 <enum name="ChromeOSUsbEventTiming">

@@ -233,8 +233,6 @@ class ASH_EXPORT AppsContainerView
   // Gets the height of the `separator_` including its vertical margin.
   int GetSeparatorHeight();
 
-  views::View* GetShowContinueSectionButtonForTest();
-
   SearchResultPageAnchoredDialog* dialog_for_test() {
     return dialog_controller_->dialog();
   }

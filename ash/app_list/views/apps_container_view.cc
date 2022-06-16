@@ -34,10 +34,8 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -60,7 +58,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -177,25 +174,6 @@ class AppsContainerView::ContinueContainer : public views::View {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical);
 
-    // Add the button to show the continue section, wrapped in a view to center
-    // it horizontally.
-    auto* button_container = AddChildView(std::make_unique<views::View>());
-    button_container
-        ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical))
-        ->set_cross_axis_alignment(
-            views::BoxLayout::CrossAxisAlignment::kCenter);
-    show_continue_section_button_ =
-        button_container->AddChildView(std::make_unique<PillButton>(
-            base::BindRepeating(&AppsContainerView::ContinueContainer::
-                                    OnPressShowContinueSection,
-                                base::Unretained(this)),
-            l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
-            PillButton::Type::kIcon, &kExpandAllIcon));
-    show_continue_section_button_->SetUseDefaultLabelFont();
-    // Put the icon on the right.
-    show_continue_section_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-
     continue_section_ = AddChildView(std::make_unique<ContinueSectionView>(
         view_delegate, dialog_controller, kContinueColumnCount,
         /*tablet_mode=*/true));
@@ -220,15 +198,6 @@ class AppsContainerView::ContinueContainer : public views::View {
       UpdateRecentAppsMargins();
   }
 
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    // The "show continue section" button appears directly over the wallpaper,
-    // so use a "base layer" color for its background.
-    show_continue_section_button_->SetBackgroundColor(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent40));
-  }
-
   bool HasRecentApps() const { return recent_apps_->GetVisible(); }
 
   void UpdateAppListConfig(AppListConfig* config) {
@@ -236,9 +205,6 @@ class AppsContainerView::ContinueContainer : public views::View {
   }
 
   void UpdateContinueSectionVisibility() {
-    // Show the "Show continue section" button if continue section is hidden.
-    bool hide_continue_section = view_delegate_->ShouldHideContinueSection();
-    show_continue_section_button_->SetVisible(hide_continue_section);
     // The continue section view and recent apps view manage their own
     // visibility internally.
     continue_section_->UpdateElementsVisibility();
@@ -246,9 +212,6 @@ class AppsContainerView::ContinueContainer : public views::View {
     UpdateSeparatorVisibility();
   }
 
-  PillButton* show_continue_section_button() {
-    return show_continue_section_button_;
-  }
   ContinueSectionView* continue_section() { return continue_section_; }
   RecentAppsView* recent_apps() { return recent_apps_; }
 
@@ -267,13 +230,7 @@ class AppsContainerView::ContinueContainer : public views::View {
                            continue_section_->GetVisible());
   }
 
-  void OnPressShowContinueSection(const ui::Event& event) {
-    view_delegate_->SetHideContinueSection(false);
-    UpdateContinueSectionVisibility();
-  }
-
   AppListViewDelegate* const view_delegate_;
-  PillButton* show_continue_section_button_ = nullptr;
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
@@ -1772,12 +1729,6 @@ int AppsContainerView::GetSeparatorHeight() {
     return 0;
   return separator_->GetProperty(views::kMarginsKey)->height() +
          views::Separator::kThickness;
-}
-
-views::View* AppsContainerView::GetShowContinueSectionButtonForTest() {
-  return continue_container_
-             ? continue_container_->show_continue_section_button()
-             : nullptr;
 }
 
 }  // namespace ash

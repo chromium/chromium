@@ -16,6 +16,7 @@ namespace ash {
 class ShelfItemDelegate;
 
 // A context menu shown for shelf items, the shelf itself, or the desktop area.
+// In tablet mode the "desktop area" includes the app list.
 class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
                                          public ui::SimpleMenuModel::Delegate {
  public:
@@ -34,6 +35,8 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
     MENU_ALIGNMENT_BOTTOM = 504,
     MENU_CHANGE_WALLPAPER = 505,
     MENU_PERSONALIZATION_HUB = 506,
+    MENU_HIDE_CONTINUE_SECTION = 507,
+    MENU_SHOW_CONTINUE_SECTION = 508,
     MENU_ASH_END
   };
 

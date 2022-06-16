@@ -38,15 +38,10 @@ TEST_F(AppsContainerViewTest, ContinueSectionVisibleByDefault) {
   helper->AddAppItems(5);
   TabletMode::Get()->SetEnabledForTest(true);
 
-  // The show continue section button is hidden.
-  auto* apps_container_view = helper->GetAppsContainerView();
-  EXPECT_FALSE(
-      apps_container_view->GetShowContinueSectionButtonForTest()->GetVisible());
-
   // The continue section and recent apps are visible.
   EXPECT_TRUE(helper->GetFullscreenContinueSectionView()->GetVisible());
   EXPECT_TRUE(helper->GetFullscreenRecentAppsView()->GetVisible());
-  EXPECT_TRUE(apps_container_view->separator()->GetVisible());
+  EXPECT_TRUE(helper->GetAppsContainerView()->separator()->GetVisible());
 }
 
 TEST_F(AppsContainerViewTest, CanHideContinueSection) {
@@ -61,19 +56,13 @@ TEST_F(AppsContainerViewTest, CanHideContinueSection) {
   // Hide the continue section.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 
-  // The show continue section button appears.
-  auto* apps_container_view = helper->GetAppsContainerView();
-  auto* show_continue_section_button =
-      apps_container_view->GetShowContinueSectionButtonForTest();
-  EXPECT_TRUE(show_continue_section_button->GetVisible());
-
   // Continue section and recent apps are hidden.
   EXPECT_FALSE(helper->GetFullscreenContinueSectionView()->GetVisible());
   EXPECT_FALSE(helper->GetFullscreenRecentAppsView()->GetVisible());
-  EXPECT_FALSE(apps_container_view->separator()->GetVisible());
+  EXPECT_FALSE(helper->GetAppsContainerView()->separator()->GetVisible());
 }
 
-TEST_F(AppsContainerViewTest, CanShowContinueSectionByClickingButton) {
+TEST_F(AppsContainerViewTest, CanShowContinueSection) {
   // Simulate a user with the continue section hidden on startup.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 
@@ -85,27 +74,18 @@ TEST_F(AppsContainerViewTest, CanShowContinueSectionByClickingButton) {
   helper->AddAppItems(5);
   TabletMode::Get()->SetEnabledForTest(true);
 
-  // The show continue section button appears.
-  auto* apps_container_view = helper->GetAppsContainerView();
-  auto* show_continue_section_button =
-      apps_container_view->GetShowContinueSectionButtonForTest();
-  EXPECT_TRUE(show_continue_section_button->GetVisible());
-
   // Continue section and recent apps are hidden.
   EXPECT_FALSE(helper->GetFullscreenContinueSectionView()->GetVisible());
   EXPECT_FALSE(helper->GetFullscreenRecentAppsView()->GetVisible());
-  EXPECT_FALSE(apps_container_view->separator()->GetVisible());
+  EXPECT_FALSE(helper->GetAppsContainerView()->separator()->GetVisible());
 
-  // Click the show continue section button.
-  LeftClickOn(show_continue_section_button);
-
-  // The button hides.
-  EXPECT_FALSE(show_continue_section_button->GetVisible());
+  // Show the continue section.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(false);
 
   // The continue section and recent apps are visible.
   EXPECT_TRUE(helper->GetFullscreenContinueSectionView()->GetVisible());
   EXPECT_TRUE(helper->GetFullscreenRecentAppsView()->GetVisible());
-  EXPECT_TRUE(apps_container_view->separator()->GetVisible());
+  EXPECT_TRUE(helper->GetAppsContainerView()->separator()->GetVisible());
 }
 
 }  // namespace ash

@@ -373,10 +373,8 @@ TEST_F(AppContextMenuTest, ChromeApp) {
 }
 
 TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({ash::features::kProductivityLauncher,
-                                 ash::features::kLauncherHideContinueSection},
-                                {});
+  base::test::ScopedFeatureList feature_list(
+      ash::features::kProductivityLauncher);
 
   scoped_refptr<extensions::Extension> app = MakeChromeApp();
   service_->AddExtension(app.get());
@@ -396,10 +394,6 @@ TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
   AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW),
               &states);
   AddToStates(menu, MenuState(ash::SHOW_APP_INFO), &states);
-
-  // A separator item and the hide continue section item appear at the end.
-  AddToStates(menu, MenuState(), &states);
-  AddToStates(menu, MenuState(ash::HIDE_CONTINUE_SECTION), &states);
   ValidateMenuState(menu_model.get(), states);
 }
 

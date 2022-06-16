@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -254,10 +253,6 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       RequestAppListSort(profile(), ash::AppListSortOrder::kColor);
       break;
 
-    case ash::HIDE_CONTINUE_SECTION:
-      ash::AppListController::Get()->HideContinueSection();
-      break;
-
     default:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
@@ -427,17 +422,6 @@ void AppServiceContextMenu::OnGetMenuModel(
         reorder_submenu_.get(),
         ui::ImageModel::FromVectorIcon(
             GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1),
-            color_id));
-  }
-
-  if (item_context_ == ash::AppListItemContext::kRecentApps &&
-      ash::features::IsLauncherHideContinueSectionEnabled()) {
-    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model->AddItemWithIcon(
-        ash::HIDE_CONTINUE_SECTION,
-        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
-        ui::ImageModel::FromVectorIcon(
-            GetMenuItemVectorIcon(ash::HIDE_CONTINUE_SECTION, /*string_id=*/-1),
             color_id));
   }
 

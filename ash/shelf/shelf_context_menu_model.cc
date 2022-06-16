@@ -128,6 +128,16 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
                                     PersonalizationEntryPoint::kHomeScreen);
       NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
       break;
+    case MENU_HIDE_CONTINUE_SECTION:
+      DCHECK(features::IsLauncherHideContinueSectionEnabled());
+      DCHECK(is_tablet_mode);
+      shell->app_list_controller()->SetHideContinueSection(true);
+      break;
+    case MENU_SHOW_CONTINUE_SECTION:
+      DCHECK(features::IsLauncherHideContinueSectionEnabled());
+      DCHECK(is_tablet_mode);
+      shell->app_list_controller()->SetHideContinueSection(false);
+      break;
     // Using reorder CommandId in ash/public/cpp/app_menu_constants.h
     case REORDER_BY_NAME_ALPHABETICAL:
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(

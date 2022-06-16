@@ -1331,12 +1331,6 @@ TEST_F(AppListControllerImplAppListBubbleTest, HideContinueSectionUpdatesPref) {
   controller->SetHideContinueSection(false);
   EXPECT_FALSE(controller->ShouldHideContinueSection());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kLauncherContinueSectionHidden));
-
-  // Hiding continue section can be done via the AppListController interface
-  // exposed in //ash/public.
-  AppListController::Get()->HideContinueSection();
-  EXPECT_TRUE(controller->ShouldHideContinueSection());
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kLauncherContinueSectionHidden));
 }
 
 // AppListControllerImpl test that start in inactive session.

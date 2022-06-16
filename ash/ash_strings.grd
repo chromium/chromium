@@ -4562,8 +4562,8 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE" desc="Context menu option title to remove a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
         Remove suggestion
       </message>
-      <message name="IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION" desc="Button title to show the launcher continue section after it has been hidden.">
-        Continue where you left off
+      <message name="IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION" desc="Context menu label to show the launcher continue section after it has been hidden.">
+        Show all suggestions
       </message>
       <message name="IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION" desc="Context menu label to hide the launcher continue section (which defaults to being shown).">
         Hide all suggestions
