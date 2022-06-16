@@ -43,9 +43,20 @@ SideSearchIconView::SideSearchIconView(
   SetLabel(l10n_util::GetStringUTF16(IDS_SIDE_SEARCH_ENTRYPOINT_LABEL));
   SetUpForInOutAnimation();
   SetPaintLabelOverSolidBackground(true);
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
-SideSearchIconView::~SideSearchIconView() = default;
+SideSearchIconView::~SideSearchIconView() {
+  browser_->tab_strip_model()->RemoveObserver(this);
+}
+
+void SideSearchIconView::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed())
+    HidePageActionLabel();
+}
 
 void SideSearchIconView::SetLabelVisibilityForTesting(bool visible) {
   label()->SetVisible(visible);
@@ -88,8 +99,10 @@ void SideSearchIconView::UpdateImpl() {
     }
   }
 
-  if (!should_show)
+  if (!should_show) {
+    HidePageActionLabel();
     browser_view->CloseFeaturePromo(feature_engagement::kIPHSideSearchFeature);
+  }
 }
 
 void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
@@ -100,8 +113,7 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
                             : SideSearchPageActionLabelVisibility::kNotVisible);
 
   // Reset the slide animation if in progress.
-  UnpauseAnimation();
-  ResetSlideAnimation(false);
+  HidePageActionLabel();
 
   side_search_browser_controller->ToggleSidePanel();
 
@@ -196,6 +208,11 @@ void SideSearchIconView::SetPageActionLabelShown() {
       SideSearchTabContentsHelper::FromWebContents(active_contents);
   DCHECK(tab_contents_helper);
   tab_contents_helper->DidShowPageActionLabel();
+}
+
+void SideSearchIconView::HidePageActionLabel() {
+  UnpauseAnimation();
+  ResetSlideAnimation(false);
 }
 
 BEGIN_METADATA(SideSearchIconView, PageActionIconView)
