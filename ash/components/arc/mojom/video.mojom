@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module arc.mojom;
 
@@ -11,6 +11,7 @@ import "ash/components/arc/mojom/video_decode_accelerator.mojom";
 import "ash/components/arc/mojom/video_decoder.mojom";
 import "ash/components/arc/mojom/video_encode_accelerator.mojom";
 import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Deprecated method IDs: 0
@@ -57,7 +58,9 @@ interface VideoAcceleratorFactory {
   CreateDecodeAccelerator@2(
       pending_receiver<VideoDecodeAccelerator> video_decoder,
       [MinVersion=8] pending_remote<ProtectedBufferManager>?
-           protected_buffer_manager);
+           protected_buffer_manager,
+      [MinVersion=10] pending_remote<chromeos.cdm.mojom.BrowserCdmFactory>?
+           browser_cdm_factory);
 
   // Create a new |video_decoder| instance.
   [MinVersion=9]

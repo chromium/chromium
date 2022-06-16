@@ -27,10 +27,40 @@ namespace chromeos {
 
 namespace {
 
+// This class is used as a singleton which then allows replacing the underlying
+// mojo::Remote<cdm::mojom::BrowserCdmFactory> that it will return.
+class BrowserCdmFactoryRemoteHolder {
+ public:
+  BrowserCdmFactoryRemoteHolder() = default;
+  BrowserCdmFactoryRemoteHolder(const BrowserCdmFactoryRemoteHolder&) = delete;
+  BrowserCdmFactoryRemoteHolder& operator=(
+      const BrowserCdmFactoryRemoteHolder&) = delete;
+  ~BrowserCdmFactoryRemoteHolder() = default;
+
+  mojo::Remote<cdm::mojom::BrowserCdmFactory>& GetBrowserCdmFactoryRemote() {
+    return remote_;
+  }
+
+  void ReplaceBrowserCdmFactoryRemote(
+      mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
+    remote_ = std::move(remote);
+  }
+
+ private:
+  mojo::Remote<cdm::mojom::BrowserCdmFactory> remote_;
+};
+
+// This holds the global single BrowserCdmFactoryRemoteHolder object which then
+// internally can hold either the Mojo connection to the browser process or the
+// Mojo connection to the GPU process if we are doing OOP video decoding.
+BrowserCdmFactoryRemoteHolder& GetBrowserCdmFactoryRemoteHolder() {
+  static base::NoDestructor<BrowserCdmFactoryRemoteHolder> remote_holder;
+  return *remote_holder;
+}
+
 // This holds the global singleton Mojo connection to the browser process.
 mojo::Remote<cdm::mojom::BrowserCdmFactory>& GetBrowserCdmFactoryRemote() {
-  static base::NoDestructor<mojo::Remote<cdm::mojom::BrowserCdmFactory>> remote;
-  return *remote;
+  return GetBrowserCdmFactoryRemoteHolder().GetBrowserCdmFactoryRemote();
 }
 
 // This holds the task runner we are bound to.
@@ -183,6 +213,14 @@ void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+void ChromeOsCdmFactory::SetBrowserCdmFactoryRemote(
+    mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
+  GetBrowserCdmFactoryRemoteHolder().ReplaceBrowserCdmFactoryRemote(
+      std::move(remote));
+  GetFactoryTaskRunner() = base::SequencedTaskRunnerHandle::Get();
+}
+
 // static
 media::CdmContext* ChromeOsCdmFactory::GetArcCdmContext() {
   static base::NoDestructor<ArcCdmContext> arc_cdm_context;

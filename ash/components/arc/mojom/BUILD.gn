@@ -271,6 +271,7 @@ mojom("media") {
 
   public_deps = [
     "//ash/components/arc/mojom:protected_buffer_manager",
+    "//chromeos/components/cdm_factory_daemon/mojom",
     "//sandbox/policy/mojom",
     "//ui/gfx/geometry/mojom",
   ]

@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/components/cdm_factory_daemon",
   "+gpu/config/gpu_driver_bug_workarounds.h",
   "+gpu/config/gpu_preferences.h",
   "+gpu/ipc/common/gpu_memory_buffer_support.h",

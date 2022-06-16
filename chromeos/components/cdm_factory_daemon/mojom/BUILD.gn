@@ -15,6 +15,7 @@ mojom_component("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//ui/gfx/geometry/mojom",
   ]
   if (is_chromeos_ash) {

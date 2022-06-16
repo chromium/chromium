@@ -40,6 +40,13 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxyAsh
 
   static CdmFactoryDaemonProxyAsh& GetInstance();
 
+  // Used to create a backing implementation of the
+  // cdm::mojom::BrowserCdmFactory that will proxy all calls to the browser
+  // process. This is used to create a mojo::PendingRemote that can be passed
+  // to an OOP video decoder.
+  static std::unique_ptr<cdm::mojom::BrowserCdmFactory>
+  CreateBrowserCdmFactoryProxy();
+
   void ConnectOemCrypto(
       mojo::PendingReceiver<arc::mojom::OemCryptoService> oemcryptor,
       mojo::PendingRemote<arc::mojom::ProtectedBufferManager>

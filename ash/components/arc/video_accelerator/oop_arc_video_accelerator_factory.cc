@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "ash/components/arc/video_accelerator/oop_arc_video_accelerator_factory.h"
 
 #include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
@@ -9,6 +11,7 @@
 #include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bind_to_current_loop.h"
@@ -112,8 +115,9 @@ OOPArcVideoAcceleratorFactory::~OOPArcVideoAcceleratorFactory() {
 
 void OOPArcVideoAcceleratorFactory::CreateDecodeAccelerator(
     mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver,
-    mojo::PendingRemote<mojom::ProtectedBufferManager>
-        protected_buffer_manager) {
+    mojo::PendingRemote<mojom::ProtectedBufferManager> protected_buffer_manager,
+    mojo::PendingRemote<chromeos::cdm::mojom::BrowserCdmFactory>
+        browser_cdm_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOGF(2);
   // Note that a well-behaved client should not reach this point twice because
@@ -123,6 +127,10 @@ void OOPArcVideoAcceleratorFactory::CreateDecodeAccelerator(
   // compromised, we have bigger problems.
   protected_buffer_manager_ = base::MakeRefCounted<MojoProtectedBufferManager>(
       std::move(protected_buffer_manager));
+  mojo::Remote<chromeos::cdm::mojom::BrowserCdmFactory>
+      browser_cdm_factory_remote(std::move(browser_cdm_factory));
+  chromeos::ChromeOsCdmFactory::SetBrowserCdmFactoryRemote(
+      std::move(browser_cdm_factory_remote));
   auto decoder = std::make_unique<GpuArcVideoDecodeAccelerator>(
       gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
       protected_buffer_manager_);
