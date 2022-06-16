@@ -3684,35 +3684,6 @@
             ]
         }
     ],
-    "EnableSuggestedFiles": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Quick_Access",
-                    "params": {
-                        "model_name": "quick_access"
-                    },
-                    "enable_features": [
-                        "EnableSuggestedFiles",
-                        "LauncherItemSuggest"
-                    ]
-                },
-                {
-                    "name": "Future_Access",
-                    "params": {
-                        "model_name": "future_access"
-                    },
-                    "enable_features": [
-                        "EnableSuggestedFiles",
-                        "LauncherItemSuggest"
-                    ]
-                }
-            ]
-        }
-    ],
     "EstablishGpuChannelAsync": [
         {
             "platforms": [
@@ -6892,21 +6863,27 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithContinueSection",
+                    "name": "EnabledWithContinueSection_20220615",
                     "params": {
                         "enable_continue": "true"
                     },
                     "enable_features": [
                         "ProductivityLauncher"
+                    ],
+                    "disable_features": [
+                        "LauncherItemSuggest"
                     ]
                 },
                 {
-                    "name": "EnabledWithoutContinueSection",
+                    "name": "EnabledWithoutContinueSection_20220615",
                     "params": {
                         "enable_continue": "false"
                     },
                     "enable_features": [
                         "ProductivityLauncher"
+                    ],
+                    "disable_features": [
+                        "LauncherItemSuggest"
                     ]
                 }
             ]
