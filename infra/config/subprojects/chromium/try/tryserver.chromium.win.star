@@ -39,7 +39,7 @@ try_.builder(
         "ci/win-asan",
     ],
     goma_jobs = goma.jobs.J150,
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
