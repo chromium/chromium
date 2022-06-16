@@ -62,12 +62,10 @@ class ClassificationsLoader {
   ClassificationMap GetClassificationsInternal(
       FilterClassification_SiteRole role);
 
-  absl::optional<std::vector<FilterClassification>>
-      component_source_classifications_ GUARDED_BY_CONTEXT(sequence_checker_) =
-          absl::nullopt;
-  absl::optional<std::vector<FilterClassification>>
-      component_destination_classifications_
-          GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
+  absl::optional<ClassificationMap> component_source_classification_map_
+      GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
+  absl::optional<ClassificationMap> component_destination_classification_map_
+      GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

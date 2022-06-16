@@ -4,6 +4,7 @@
 
 #include "components/url_param_filter/core/url_param_classifications_loader.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -85,14 +86,10 @@ ClassificationMap GetClassificationsFromFeature(
   return map;
 }
 
-// If this is called before `ReadClassifications` has read classifications from
-// the component, returns an empty map.
 ClassificationMap GetClassificationMap(
-    const absl::optional<std::vector<FilterClassification>>& classifications) {
-  if (!classifications.has_value())
-    return ClassificationMap();
+    const std::vector<FilterClassification>& classifications) {
   ClassificationMap map;
-  for (const FilterClassification& classification : classifications.value()) {
+  for (const FilterClassification& classification : classifications) {
     ProcessClassification(map, classification);
   }
   return map;
@@ -153,9 +150,10 @@ void ClassificationsLoader::ReadClassifications(
     }
   }
 
-  component_source_classifications_ = std::move(source_classifications);
-  component_destination_classifications_ =
-      std::move(destination_classifications);
+  component_source_classification_map_ =
+      GetClassificationMap(source_classifications);
+  component_destination_classification_map_ =
+      GetClassificationMap(destination_classifications);
 
   base::UmaHistogramCounts10000(
       "Navigation.UrlParamFilter.ApplicableClassificationCount.Source",
@@ -167,8 +165,8 @@ void ClassificationsLoader::ReadClassifications(
 
 void ClassificationsLoader::ResetListsForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  component_source_classifications_.reset();
-  component_destination_classifications_.reset();
+  component_source_classification_map_.reset();
+  component_destination_classification_map_.reset();
 }
 
 ClassificationsLoader::ClassificationsLoader() = default;
@@ -192,10 +190,14 @@ ClassificationMap ClassificationsLoader::GetClassificationsInternal(
   // classifications.
   switch (role) {
     case FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE:
-      return GetClassificationMap(component_source_classifications_);
+      return component_source_classification_map_.has_value()
+                 ? component_source_classification_map_.value()
+                 : ClassificationMap();
     case FilterClassification_SiteRole::
         FilterClassification_SiteRole_DESTINATION:
-      return GetClassificationMap(component_destination_classifications_);
+      return component_destination_classification_map_.has_value()
+                 ? component_destination_classification_map_.value()
+                 : ClassificationMap();
     case FilterClassification_SiteRole_SITE_ROLE_UNKNOWN:
       return ClassificationMap();
   }
