@@ -13,13 +13,14 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_client_implementation_type.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "dbus/message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 
 namespace chromeos {
+
+class FakeUpdateEngineClient;
 
 // UpdateEngineClient is used to communicate with the update engine.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
@@ -56,10 +57,24 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
     virtual void OnUpdateOverCellularOneTimePermissionGranted() {}
   };
 
+  // Returns the global instance if initialized. May return null.
+  static UpdateEngineClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance used on Linux desktop, if
+  // no instance already exists.
+  static void InitializeFake();
+
+  // Creates and initializes a fake global instance for unit tests.
+  static FakeUpdateEngineClient* InitializeFakeForTest();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   UpdateEngineClient(const UpdateEngineClient&) = delete;
   UpdateEngineClient& operator=(const UpdateEngineClient&) = delete;
-
-  ~UpdateEngineClient() override;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
@@ -161,9 +176,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
       int64_t update_size,
       UpdateOverCellularOneTimePermissionCallback callback) = 0;
 
-  // Creates the instance.
-  static UpdateEngineClient* Create(DBusClientImplementationType type);
-
   // Returns true if |target_channel| is more stable than |current_channel|.
   static bool IsTargetChannelMoreStable(const std::string& current_channel,
                                         const std::string& target_channel);
@@ -178,8 +190,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
                                 IsFeatureEnabledCallback callback) = 0;
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   UpdateEngineClient();
+  ~UpdateEngineClient() override;
 };
 
 }  // namespace chromeos

@@ -32,10 +32,8 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
   ~EolNotificationTest() override = default;
 
   void SetUp() override {
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::Initialize();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        base::WrapUnique<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
 
@@ -61,6 +59,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
     ConciergeClient::Shutdown();
+    UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

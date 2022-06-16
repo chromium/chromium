@@ -19,7 +19,6 @@
 #include "chromeos/dbus/cec_service/fake_cec_service_client.h"
 #include "chromeos/dbus/chunneld/chunneld_client.h"
 #include "chromeos/dbus/chunneld/fake_chunneld_client.h"
-#include "chromeos/dbus/common/dbus_client_implementation_type.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -41,7 +40,6 @@
 #include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
 #include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
-#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 
@@ -60,13 +58,6 @@ namespace chromeos {
 #endif  // USE_REAL_DBUS_CLIENTS
 
 DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
-  // TODO(hashimoto): Use CREATE_DBUS_CLIENT for all clients after removing
-  // DBusClientImplementationType and converting all Create() methods to return
-  // std::unique_ptr. crbug.com/952745
-  const DBusClientImplementationType client_impl_type =
-      use_real_clients ? REAL_DBUS_CLIENT_IMPLEMENTATION
-                       : FAKE_DBUS_CLIENT_IMPLEMENTATION;
-
   arc_data_snapshotd_client_ =
       CREATE_DBUS_CLIENT(ArcDataSnapshotdClient, use_real_clients);
   arc_keymaster_client_ =
@@ -92,12 +83,6 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
       CREATE_DBUS_CLIENT(RuntimeProbeClient, use_real_clients);
   smb_provider_client_ =
       CREATE_DBUS_CLIENT(SmbProviderClient, use_real_clients);
-
-  // TODO(crbug.com/1229048): Resolve among the 3 implementations of
-  // UpdateEngineClient and use CREATE_DBUS_CLIENT, or comment on why this
-  // special case (that doesn't use CREATE_DBUS_CLIENT) exists.
-  update_engine_client_.reset(UpdateEngineClient::Create(client_impl_type));
-
   virtual_file_provider_client_ =
       CREATE_DBUS_CLIENT(VirtualFileProviderClient, use_real_clients);
 }
@@ -123,7 +108,6 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   oobe_configuration_client_->Init(system_bus);
   runtime_probe_client_->Init(system_bus);
   smb_provider_client_->Init(system_bus);
-  update_engine_client_->Init(system_bus);
   virtual_file_provider_client_->Init(system_bus);
 }
 

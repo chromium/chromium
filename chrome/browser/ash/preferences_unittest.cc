@@ -182,18 +182,18 @@ class PreferencesTest : public testing::Test {
         &previous_input_method_, &current_input_method_);
     input_method::InitializeForTesting(mock_manager_);
 
-    if (!chromeos::DBusThreadManager::IsInitialized()) {
-      chromeos::DBusThreadManager::Initialize();
-    }
-    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<chromeos::UpdateEngineClient>(
-            fake_update_engine_client_));
+    chromeos::DBusThreadManager::Initialize();
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
     prefs_ = std::make_unique<Preferences>(mock_manager_);
   }
 
   void TearDown() override {
+    // `prefs_` accesses UpdateEngineClient in its destructor.
+    prefs_.reset();
+    UpdateEngineClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
+
     input_method::Shutdown();
     // UserSessionManager doesn't listen to profile destruction, so make sure
     // the default IME state isn't still cached in case test_profile_ is

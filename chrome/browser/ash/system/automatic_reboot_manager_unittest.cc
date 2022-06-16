@@ -344,10 +344,8 @@ void AutomaticRebootManagerBasicTest::SetUp() {
   TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
   AutomaticRebootManager::RegisterPrefs(local_state_.registry());
 
-  update_engine_client_ = new FakeUpdateEngineClient;
   DBusThreadManager::Initialize();
-  DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-      std::unique_ptr<UpdateEngineClient>(update_engine_client_));
+  update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
   PowerManagerClient::InitializeFake();
 
   EXPECT_CALL(*mock_user_manager_, IsUserLoggedIn())
@@ -372,6 +370,7 @@ void AutomaticRebootManagerBasicTest::TearDown() {
   }
 
   PowerManagerClient::Shutdown();
+  UpdateEngineClient::Shutdown();
   DBusThreadManager::Shutdown();
   TestingBrowserProcess::GetGlobal()->SetLocalState(NULL);
 }

@@ -50,6 +50,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
@@ -173,8 +174,7 @@ class ChildStatusCollectorTest : public testing::Test {
   ChildStatusCollectorTest()
       : user_manager_(new ash::MockUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
-        user_data_dir_override_(chrome::DIR_USER_DATA),
-        update_engine_client_(new chromeos::FakeUpdateEngineClient) {
+        user_data_dir_override_(chrome::DIR_USER_DATA) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
     EXPECT_CALL(*user_manager_, Shutdown()).Times(1);
@@ -199,11 +199,9 @@ class ChildStatusCollectorTest : public testing::Test {
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
 
-    // Use FakeUpdateEngineClient.
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        base::WrapUnique<chromeos::UpdateEngineClient>(update_engine_client_));
-
+    // Use FakeUpdateEngineClient.
+    chromeos::UpdateEngineClient::InitializeFakeForTest();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -221,6 +219,7 @@ class ChildStatusCollectorTest : public testing::Test {
     testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
+    chromeos::UpdateEngineClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
@@ -434,7 +433,6 @@ class ChildStatusCollectorTest : public testing::Test {
   em::ChildStatusReportRequest child_status_;
   std::unique_ptr<TestingChildStatusCollector> status_collector_;
   base::ScopedPathOverride user_data_dir_override_;
-  chromeos::FakeUpdateEngineClient* const update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   // This property is required to instantiate the session manager, a singleton

@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,11 +98,9 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     scoped_local_state_.Get()->SetUserPref(prefs::kAttemptedToEnableAutoupdate,
                                            std::make_unique<base::Value>(true));
 
-    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<chromeos::UpdateEngineClient>(
-            fake_update_engine_client_));
+    fake_update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
 
     // Fast forward to set current time to local 2am . This is done to align the
     // relaunch deadline within the default relaunch window of 2am to 4am so
@@ -123,6 +122,7 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     }
     tzset();
 
+    chromeos::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

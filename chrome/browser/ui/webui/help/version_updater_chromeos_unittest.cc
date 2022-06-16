@@ -60,10 +60,8 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   ~VersionUpdaterCrosTest() override {}
 
   void SetUp() override {
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::Initialize();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
     EXPECT_CALL(*mock_user_manager_, IsCurrentUserOwner())
         .WillRepeatedly(Return(false));
@@ -98,6 +96,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   void TearDown() override {
     network_handler_test_helper_.reset();
     version_updater_.reset();
+    UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

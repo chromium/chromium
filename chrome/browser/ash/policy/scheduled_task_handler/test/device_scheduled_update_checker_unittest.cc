@@ -124,13 +124,9 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
-    auto fake_update_engine_client =
-        std::make_unique<chromeos::FakeUpdateEngineClient>();
-    fake_update_engine_client_ = fake_update_engine_client.get();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::move(fake_update_engine_client));
-
+    fake_update_engine_client_ =
+        chromeos::UpdateEngineClient::InitializeFakeForTest();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
@@ -158,6 +154,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     device_scheduled_update_checker_.reset();
     network_state_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
+    chromeos::UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::NullCallback());

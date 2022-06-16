@@ -20,7 +20,6 @@ component("common") {
     "blocking_method_caller.cc",
     "blocking_method_caller.h",
     "dbus_client.h",
-    "dbus_client_implementation_type.h",
     "dbus_method_call_status.h",
     "pipe_reader.cc",
     "pipe_reader.h",

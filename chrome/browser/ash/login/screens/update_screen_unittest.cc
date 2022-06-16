@@ -76,10 +76,8 @@ class UpdateScreenUnitTest : public testing::Test {
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
     PowerManagerClient::InitializeFake();
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::Initialize();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
@@ -104,6 +102,7 @@ class UpdateScreenUnitTest : public testing::Test {
     network_portal_detector::Shutdown();
     network_handler_test_helper_.reset();
     PowerManagerClient::Shutdown();
+    UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

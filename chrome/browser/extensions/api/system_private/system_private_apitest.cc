@@ -12,8 +12,8 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 
 using chromeos::UpdateEngineClient;
 #endif
@@ -33,16 +33,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, GetIncognitoModeAvailability) {
 
 class GetUpdateStatusApiTest : public ExtensionApiTest {
  public:
-  GetUpdateStatusApiTest() : fake_update_engine_client_(NULL) {}
+  GetUpdateStatusApiTest() = default;
 
   GetUpdateStatusApiTest(const GetUpdateStatusApiTest&) = delete;
   GetUpdateStatusApiTest& operator=(const GetUpdateStatusApiTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient;
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -50,7 +48,7 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
   }
 
  protected:
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
+  chromeos::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(GetUpdateStatusApiTest, Progress) {

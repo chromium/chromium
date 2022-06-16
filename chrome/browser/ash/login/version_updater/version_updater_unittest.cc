@@ -92,10 +92,8 @@ class VersionUpdaterUnitTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     // Initialize objects needed by VersionUpdater.
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
     DBusThreadManager::Initialize();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
     network_handler_test_helper_ =
         std::make_unique<chromeos::NetworkHandlerTestHelper>();
@@ -127,7 +125,7 @@ class VersionUpdaterUnitTest : public testing::Test {
     network_portal_detector::InitializeForTesting(nullptr);
     network_handler_test_helper_.reset();
 
-    // It will delete `fake_update_engine_client_`.
+    UpdateEngineClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

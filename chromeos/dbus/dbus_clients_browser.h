@@ -31,7 +31,6 @@ class ImageLoaderClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
 class SmbProviderClient;
-class UpdateEngineClient;
 class VirtualFileProviderClient;
 
 // Owns D-Bus clients.
@@ -71,7 +70,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<OobeConfigurationClient> oobe_configuration_client_;
   std::unique_ptr<RuntimeProbeClient> runtime_probe_client_;
   std::unique_ptr<SmbProviderClient> smb_provider_client_;
-  std::unique_ptr<UpdateEngineClient> update_engine_client_;
   std::unique_ptr<VirtualFileProviderClient> virtual_file_provider_client_;
 };
 

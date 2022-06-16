@@ -62,6 +62,7 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/userdataauth/arc_quota_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
@@ -159,6 +160,7 @@ void InitializeDBus() {
   InitializeDBusClient<chromeos::TpmManagerClient>(bus);
   InitializeDBusClient<TypecdClient>(bus);
   InitializeDBusClient<chromeos::U2FClient>(bus);
+  InitializeDBusClient<chromeos::UpdateEngineClient>(bus);
   InitializeDBusClient<chromeos::UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
   InitializeDBusClient<chromeos::VmPluginDispatcherClient>(bus);
@@ -220,6 +222,7 @@ void ShutdownDBus() {
   chromeos::VmPluginDispatcherClient::Shutdown();
   UpstartClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();
+  chromeos::UpdateEngineClient::Shutdown();
   chromeos::U2FClient::Shutdown();
   TypecdClient::Shutdown();
   chromeos::TpmManagerClient::Shutdown();

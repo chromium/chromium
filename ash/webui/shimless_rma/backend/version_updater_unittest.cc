@@ -41,9 +41,7 @@ class VersionUpdaterTest : public testing::Test {
  public:
   VersionUpdaterTest() {
     chromeos::DBusThreadManager::Initialize();
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
     InitializeManagedNetworkConfigurationHandler();
@@ -63,7 +61,7 @@ class VersionUpdaterTest : public testing::Test {
     network_configuration_handler_.reset();
     network_profile_handler_.reset();
     ui_proxy_config_service_.reset();
-    // This will delete `fake_update_engine_client_`.
+    UpdateEngineClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

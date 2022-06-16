@@ -117,7 +117,7 @@ SmbProviderClient* DBusThreadManager::GetSmbProviderClient() {
 }
 
 UpdateEngineClient* DBusThreadManager::GetUpdateEngineClient() {
-  RETURN_DBUS_CLIENT(update_engine_client_);
+  return UpdateEngineClient::Get();
 }
 
 VirtualFileProviderClient* DBusThreadManager::GetVirtualFileProviderClient() {
@@ -221,11 +221,6 @@ void DBusThreadManagerSetter::SetImageLoaderClient(
 void DBusThreadManagerSetter::SetSmbProviderClient(
     std::unique_ptr<SmbProviderClient> client) {
   smb_provider_client_ = std::move(client);
-}
-
-void DBusThreadManagerSetter::SetUpdateEngineClient(
-    std::unique_ptr<UpdateEngineClient> client) {
-  update_engine_client_ = std::move(client);
 }
 
 }  // namespace chromeos

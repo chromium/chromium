@@ -126,12 +126,8 @@ UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
 }
 
 void UpdateRequiredNotificationTest::SetUp() {
-  auto fake_update_engine_client =
-      std::make_unique<chromeos::FakeUpdateEngineClient>();
-  fake_update_engine_client_ = fake_update_engine_client.get();
   chromeos::DBusThreadManager::Initialize();
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-      std::move(fake_update_engine_client));
+  fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
   network_handler_test_helper_ =
       std::make_unique<chromeos::NetworkHandlerTestHelper>();
 
@@ -157,6 +153,7 @@ void UpdateRequiredNotificationTest::SetUp() {
 void UpdateRequiredNotificationTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
+  UpdateEngineClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
 }
 

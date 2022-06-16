@@ -111,7 +111,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   void SetImageBurnerClient(std::unique_ptr<ImageBurnerClient> client);
   void SetImageLoaderClient(std::unique_ptr<ImageLoaderClient> client);
   void SetSmbProviderClient(std::unique_ptr<SmbProviderClient> client);
-  void SetUpdateEngineClient(std::unique_ptr<UpdateEngineClient> client);
 
  private:
   friend class DBusThreadManager;
@@ -128,7 +127,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   std::unique_ptr<ImageBurnerClient> image_burner_client_;
   std::unique_ptr<ImageLoaderClient> image_loader_client_;
   std::unique_ptr<SmbProviderClient> smb_provider_client_;
-  std::unique_ptr<UpdateEngineClient> update_engine_client_;
 };
 
 }  // namespace chromeos
