@@ -70,7 +70,6 @@ class EditFinishView::ChildButton : public views::LabelButton {
     ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                           /*highlight_on_hover=*/true,
                                           /*highlight_on_focus=*/true);
-    SetHasInkDropActionOnClick(true);
   }
   ~ChildButton() override = default;
 };

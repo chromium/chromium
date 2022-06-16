@@ -9,6 +9,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/grit/component_extension_resources.h"
@@ -52,6 +53,12 @@ constexpr int kBorderRow2 = 20;
 constexpr int kBorderRow3 = 32;
 constexpr int kBorderRow4 = 36;
 constexpr int kBorderSides = 40;
+
+// About focus ring.
+// Gap between focus ring outer edge to label.
+constexpr float kHaloInset = -4;
+// Thickness of focus ring.
+constexpr float kHaloThickness = 2;
 }  // namespace
 
 // static
@@ -170,8 +177,19 @@ void EducationalView::Init(views::View* parent) {
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_ACCEPT_BUTTON),
         ash::PillButton::Type::kIconless,
         /*icon=*/nullptr));
-    accept_button_->SetBackgroundColor(GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
+    accept_button_->SetButtonTextColor(cros_styles::ResolveColor(
+        cros_styles::ColorName::kButtonLabelColorPrimary, IsDarkModeEnabled()));
+    accept_button_->SetBackgroundColor(cros_styles::ResolveColor(
+        cros_styles::ColorName::kButtonBackgroundColorPrimary,
+        IsDarkModeEnabled()));
+    ash::StyleUtil::SetUpInkDropForButton(accept_button_, gfx::Insets(),
+                                          /*highlight_on_hover=*/true,
+                                          /*highlight_on_focus=*/true);
+    auto* focus_ring = views::FocusRing::Get(accept_button_);
+    focus_ring->SetHaloInset(kHaloInset);
+    focus_ring->SetHaloThickness(kHaloThickness);
+    focus_ring->SetColor(cros_styles::ResolveColor(
+        cros_styles::ColorName::kFocusRingColor, IsDarkModeEnabled()));
   }
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBorderRow4, 0)));
   const auto ui_size = GetPreferredSize();
