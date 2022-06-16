@@ -266,10 +266,8 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
       parsed_value = ConsumeFontMetricOverride(range, context);
       break;
     case AtRuleDescriptorID::SizeAdjust:
-      if (RuntimeEnabledFeatures::CSSFontFaceSizeAdjustEnabled()) {
-        parsed_value = css_parsing_utils::ConsumePercent(
-            range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-      }
+      parsed_value = css_parsing_utils::ConsumePercent(
+          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
       break;
     default:
       break;

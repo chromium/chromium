@@ -595,12 +595,6 @@
       status: "test",
     },
     {
-      // @font-face descriptor size-adjust.
-      // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
-      name: "CSSFontFaceSizeAdjust",
-      status: "stable",
-    },
-    {
       name: "CSSFontFamilyMath",
       status: "experimental",
       implied_by: ["MathMLCore"],

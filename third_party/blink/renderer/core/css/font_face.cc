@@ -271,10 +271,8 @@ FontFace::FontFace(ExecutionContext* context,
                         AtRuleDescriptorID::DescentOverride);
   SetPropertyFromString(context, descriptors->lineGapOverride(),
                         AtRuleDescriptorID::LineGapOverride);
-  if (RuntimeEnabledFeatures::CSSFontFaceSizeAdjustEnabled()) {
-    SetPropertyFromString(context, descriptors->sizeAdjust(),
-                          AtRuleDescriptorID::SizeAdjust);
-  }
+  SetPropertyFromString(context, descriptors->sizeAdjust(),
+                        AtRuleDescriptorID::SizeAdjust);
 }
 
 FontFace::~FontFace() = default;

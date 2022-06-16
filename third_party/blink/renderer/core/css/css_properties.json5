@@ -6277,7 +6277,6 @@
       name: "size-adjust",
       is_descriptor: true,
       is_property: false,
-      runtime_flag: "CSSFontFaceSizeAdjust",
     },
     {
       name: "base-palette",
