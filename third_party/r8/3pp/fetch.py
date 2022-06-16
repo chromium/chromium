@@ -18,8 +18,15 @@ _ARCHIVE_URL = 'https://r8.googlesource.com/r8/+archive/{}.tar.gz'
 
 
 def get_commit_before_today():
-    """Returns hash of last commit that occurred before today (by UTC)."""
-    today = datetime.datetime.now(datetime.timezone.utc).date()
+    """Returns hash of last commit that occurred before today (in Hawaii time)."""
+    # We are doing UTC-10 (Hawaii time) since midnight there is roughly equal to a
+    # time before North America starts working (where much of the chrome build
+    # team is located), and is at least partially through the workday for Denmark
+    # (where much of the R8 team is located). This ideally allows 3pp to catch
+    # R8's work faster, instead of doing UTC where we would typically have to wait
+    # ~18 hours to get R8's latest changes.
+    desired_timezone = datetime.timezone(-datetime.timedelta(hours=10))
+    today = datetime.datetime.now(desired_timezone).date()
     # Response looks like:
     # {
     # "log": [
@@ -43,12 +50,12 @@ def get_commit_before_today():
         ctime_string = commit['committer']['time']
         commit_time = datetime.datetime.strptime(ctime_string,
                                                  "%a %b %d %H:%M:%S %Y %z")
-        utc_commit_time = commit_time.astimezone(datetime.timezone.utc)
+        normalized_commit_time = commit_time.astimezone(desired_timezone)
 
         # We are assuming that the commits are given in order of committed time.
         # This appears to be true, but I can't find anywhere that this is
         # guaranteed.
-        if utc_commit_time.date() < today:
+        if normalized_commit_time.date() < today:
             # This is the first commit we can find before today.
             return commit['commit']
 
@@ -58,15 +65,15 @@ def get_commit_before_today():
 
 
 def compute_patch_hash():
-  this_dir = pathlib.Path(__file__).parent
-  md5 = hashlib.md5()
-  for p in sorted(this_dir.glob('patches/*.patch')):
-    md5.update(p.read_bytes())
-  # Include install.py so that it triggers changes as well.
-  md5.update((this_dir / 'install.sh').read_bytes())
-  # Shorten to avoid really long version strings. Given the low number of patch
-  # files, 10 digits is more than sufficient.
-  return md5.hexdigest()[:10]
+    this_dir = pathlib.Path(__file__).parent
+    md5 = hashlib.md5()
+    for p in sorted(this_dir.glob('patches/*.patch')):
+        md5.update(p.read_bytes())
+    # Include install.py so that it triggers changes as well.
+    md5.update((this_dir / 'install.sh').read_bytes())
+    # Shorten to avoid really long version strings. Given the low number of patch
+    # files, 10 digits is more than sufficient.
+    return md5.hexdigest()[:10]
 
 
 def do_latest():
