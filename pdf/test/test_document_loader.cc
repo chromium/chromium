@@ -11,8 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "pdf/range_set.h"
-#include "pdf/url_loader_wrapper.h"
+#include "pdf/loader/range_set.h"
+#include "pdf/loader/url_loader_wrapper.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/chunk_stream.h"
+#include "pdf/loader/chunk_stream.h"
 
 #include <array>
 #include <memory>

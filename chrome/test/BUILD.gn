@@ -2392,7 +2392,7 @@ if (!is_android) {
         ]
         deps += [
           "//pdf:features",
-          "//pdf:internal",
+          "//pdf/loader",
         ]
       }
     }

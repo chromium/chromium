@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/document_loader_impl.h"
+#include "pdf/loader/document_loader_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,8 +14,8 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "pdf/loader/url_loader_wrapper.h"
 #include "pdf/pdf_features.h"
-#include "pdf/url_loader_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/range/range.h"

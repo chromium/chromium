@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_CHUNK_STREAM_H_
-#define PDF_CHUNK_STREAM_H_
+#ifndef PDF_LOADER_CHUNK_STREAM_H_
+#define PDF_LOADER_CHUNK_STREAM_H_
 
 #include <stddef.h>
 #include <string.h>
@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "pdf/range_set.h"
+#include "pdf/loader/range_set.h"
 
 namespace chrome_pdf {
 
@@ -121,4 +121,4 @@ class ChunkStream {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_CHUNK_STREAM_H_
+#endif  // PDF_LOADER_CHUNK_STREAM_H_

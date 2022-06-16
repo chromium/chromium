@@ -4,8 +4,8 @@
 
 // Defines a set of geometric ranges, and standard operations on it.
 
-#ifndef PDF_RANGE_SET_H_
-#define PDF_RANGE_SET_H_
+#ifndef PDF_LOADER_RANGE_SET_H_
+#define PDF_LOADER_RANGE_SET_H_
 
 #include <ostream>
 #include <set>
@@ -74,4 +74,4 @@ class RangeSet {
 std::ostream& operator<<(std::ostream& os,
                          const chrome_pdf::RangeSet& range_set);
 
-#endif  // PDF_RANGE_SET_H_
+#endif  // PDF_LOADER_RANGE_SET_H_

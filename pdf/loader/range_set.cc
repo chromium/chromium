@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/range_set.h"
+#include "pdf/loader/range_set.h"
 
 #include <algorithm>
 #include <sstream>

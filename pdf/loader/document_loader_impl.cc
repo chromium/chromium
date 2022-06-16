@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/document_loader_impl.h"
+#include "pdf/loader/document_loader_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -16,9 +16,9 @@
 #include "base/feature_list.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
+#include "pdf/loader/result_codes.h"
+#include "pdf/loader/url_loader_wrapper.h"
 #include "pdf/pdf_features.h"
-#include "pdf/ppapi_migration/result_codes.h"
-#include "pdf/url_loader_wrapper.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {

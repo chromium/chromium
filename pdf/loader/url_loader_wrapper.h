@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_URL_LOADER_WRAPPER_H_
-#define PDF_URL_LOADER_WRAPPER_H_
+#ifndef PDF_LOADER_URL_LOADER_WRAPPER_H_
+#define PDF_LOADER_URL_LOADER_WRAPPER_H_
 
 #include <stdint.h>
 
@@ -62,4 +62,4 @@ class URLLoaderWrapper {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_URL_LOADER_WRAPPER_H_
+#endif  // PDF_LOADER_URL_LOADER_WRAPPER_H_

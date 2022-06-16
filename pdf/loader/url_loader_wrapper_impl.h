@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_URL_LOADER_WRAPPER_IMPL_H_
-#define PDF_URL_LOADER_WRAPPER_IMPL_H_
+#ifndef PDF_LOADER_URL_LOADER_WRAPPER_IMPL_H_
+#define PDF_LOADER_URL_LOADER_WRAPPER_IMPL_H_
 
 #include <stdint.h>
 
@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "pdf/url_loader_wrapper.h"
+#include "pdf/loader/url_loader_wrapper.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
@@ -76,4 +76,4 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_URL_LOADER_WRAPPER_IMPL_H_
+#endif  // PDF_LOADER_URL_LOADER_WRAPPER_IMPL_H_

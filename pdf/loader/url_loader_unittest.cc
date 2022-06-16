@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/loader/url_loader.h"
 
 #include <stddef.h>
 
@@ -22,7 +22,7 @@
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
-#include "pdf/ppapi_migration/result_codes.h"
+#include "pdf/loader/result_codes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"

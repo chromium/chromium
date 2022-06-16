@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "pdf/document_loader.h"
+#include "pdf/loader/document_loader.h"
 
 namespace chrome_pdf {
 

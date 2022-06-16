@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_DOCUMENT_LOADER_IMPL_H_
-#define PDF_DOCUMENT_LOADER_IMPL_H_
+#ifndef PDF_LOADER_DOCUMENT_LOADER_IMPL_H_
+#define PDF_LOADER_DOCUMENT_LOADER_IMPL_H_
 
 #include <stdint.h>
 
@@ -12,8 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "pdf/chunk_stream.h"
-#include "pdf/document_loader.h"
+#include "pdf/loader/chunk_stream.h"
+#include "pdf/loader/document_loader.h"
 
 namespace chrome_pdf {
 
@@ -99,4 +99,4 @@ class DocumentLoaderImpl : public DocumentLoader {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_DOCUMENT_LOADER_IMPL_H_
+#endif  // PDF_LOADER_DOCUMENT_LOADER_IMPL_H_

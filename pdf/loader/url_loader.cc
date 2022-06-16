@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/loader/url_loader.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +19,7 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
-#include "pdf/ppapi_migration/result_codes.h"
+#include "pdf/loader/result_codes.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"

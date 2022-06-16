@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_DOCUMENT_LOADER_H_
-#define PDF_DOCUMENT_LOADER_H_
+#ifndef PDF_LOADER_DOCUMENT_LOADER_H_
+#define PDF_LOADER_DOCUMENT_LOADER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -57,4 +57,4 @@ class DocumentLoader {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_DOCUMENT_LOADER_H_
+#endif  // PDF_LOADER_DOCUMENT_LOADER_H_

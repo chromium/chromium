@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_PPAPI_MIGRATION_URL_LOADER_H_
-#define PDF_PPAPI_MIGRATION_URL_LOADER_H_
+#ifndef PDF_LOADER_URL_LOADER_H_
+#define PDF_LOADER_URL_LOADER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -227,4 +227,4 @@ class BlinkUrlLoader final : public UrlLoader,
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_PPAPI_MIGRATION_URL_LOADER_H_
+#endif  // PDF_LOADER_URL_LOADER_H_
