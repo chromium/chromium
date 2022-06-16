@@ -774,7 +774,7 @@ std::string CreateLaunchIntent(const std::string& package_name,
 
 arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const std::string& package_name,
-    const apps::mojom::IntentFilterPtr& intent_filter) {
+    const apps::IntentFilterPtr& intent_filter) {
   std::vector<std::string> actions;
   std::vector<std::string> schemes;
   std::vector<arc::IntentFilter::AuthorityEntry> authorities;
@@ -782,53 +782,53 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
   std::vector<std::string> mime_types;
   for (auto& condition : intent_filter->conditions) {
     switch (condition->condition_type) {
-      case apps::mojom::ConditionType::kScheme:
+      case apps::ConditionType::kScheme:
         for (auto& condition_value : condition->condition_values) {
           schemes.push_back(condition_value->value);
         }
         break;
-      case apps::mojom::ConditionType::kHost:
+      case apps::ConditionType::kHost:
         for (auto& condition_value : condition->condition_values) {
           authorities.emplace_back(
               /*host=*/condition_value->value, /*port=*/0);
         }
         break;
-      case apps::mojom::ConditionType::kPattern:
+      case apps::ConditionType::kPattern:
         for (auto& condition_value : condition->condition_values) {
           arc::mojom::PatternType match_type;
           switch (condition_value->match_type) {
-            case apps::mojom::PatternMatchType::kLiteral:
+            case apps::PatternMatchType::kLiteral:
               match_type = arc::mojom::PatternType::PATTERN_LITERAL;
               break;
-            case apps::mojom::PatternMatchType::kPrefix:
+            case apps::PatternMatchType::kPrefix:
               match_type = arc::mojom::PatternType::PATTERN_PREFIX;
               break;
-            case apps::mojom::PatternMatchType::kGlob:
+            case apps::PatternMatchType::kGlob:
               match_type = arc::mojom::PatternType::PATTERN_SIMPLE_GLOB;
               break;
-            case apps::mojom::PatternMatchType::kNone:
-            case apps::mojom::PatternMatchType::kMimeType:
-            case apps::mojom::PatternMatchType::kFileExtension:
-            case apps::mojom::PatternMatchType::kIsDirectory:
-            case apps::mojom::PatternMatchType::kSuffix:
+            case apps::PatternMatchType::kNone:
+            case apps::PatternMatchType::kMimeType:
+            case apps::PatternMatchType::kFileExtension:
+            case apps::PatternMatchType::kIsDirectory:
+            case apps::PatternMatchType::kSuffix:
               NOTREACHED();
               return arc::IntentFilter();
           }
           paths.emplace_back(condition_value->value, match_type);
         }
         break;
-      case apps::mojom::ConditionType::kAction:
+      case apps::ConditionType::kAction:
         for (auto& condition_value : condition->condition_values) {
           actions.push_back(
               ConvertAppServiceToArcIntentAction(condition_value->value));
         }
         break;
-      case apps::mojom::ConditionType::kMimeType:
+      case apps::ConditionType::kMimeType:
         for (auto& condition_value : condition->condition_values) {
           mime_types.push_back(condition_value->value);
         }
         break;
-      case apps::mojom::ConditionType::kFile:
+      case apps::ConditionType::kFile:
         NOTREACHED();
         return arc::IntentFilter();
     }

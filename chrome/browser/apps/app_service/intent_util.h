@@ -158,7 +158,7 @@ std::string CreateLaunchIntent(const std::string& package_name,
 // Convert between App Service and ARC IntentFilters.
 arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const std::string& package_name,
-    const apps::mojom::IntentFilterPtr& intent_filter);
+    const apps::IntentFilterPtr& intent_filter);
 
 apps::IntentFilterPtr CreateIntentFilterForArc(
     const arc::IntentFilter& arc_intent_filter);

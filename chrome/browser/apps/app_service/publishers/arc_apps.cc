@@ -330,8 +330,9 @@ void AddPreferredApp(const std::string& app_id,
 
   instance->AddPreferredApp(
       package_name,
-      apps_util::ConvertAppServiceToArcIntentFilter(package_name,
-                                                    intent_filter),
+      apps_util::ConvertAppServiceToArcIntentFilter(
+          package_name,
+          apps::ConvertMojomIntentFilterToIntentFilter(intent_filter)),
       apps_util::ConvertAppServiceToArcIntent(std::move(intent)));
 }
 
