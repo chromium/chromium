@@ -2296,7 +2296,7 @@
   },
   {
     "name": "enable-jxl",
-    "owners": [ "deymo", "firsching", "lode" ],
+    "owners": [ "eustas@chromium.org", "firsching", "sboukortt", "veluca" ],
     "expiry_milestone": 115
   },
   {
