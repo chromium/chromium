@@ -4,25 +4,19 @@
 
 package org.chromium.chrome.browser.feed;
 
-import android.support.test.InstrumentationRegistry;
-import android.view.View;
-
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.feature_engagement.Tracker;
 
-/** Tests for {@link BackToTopBubbleScrollListener}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/** Unit tests for {@link BackToTopBubbleScrollListener}. */
+@RunWith(BaseRobolectricTestRunner.class)
 public final class BackToTopBubbleScrollListenerTest
         implements FeedBubbleDelegate, BackToTopBubbleScrollListener.ResultHandler {
-    private View mFeedRootView;
     private boolean mIsFeedExpanded;
     private boolean mIsShowingBackToTopBubble;
     private int mHeaderCount;
@@ -103,13 +97,9 @@ public final class BackToTopBubbleScrollListenerTest
     }
 
     @Before
-    public void setUp() {
-        mFeedRootView = new View(InstrumentationRegistry.getContext());
-        mFeedRootView.layout(0, 0, 0, 100);
-    }
+    public void setUp() {}
 
     @Test
-    @SmallTest
     @Feature({"Feed"})
     public void testFeedNotExpanded() {
         mIsFeedExpanded = false;
@@ -129,7 +119,6 @@ public final class BackToTopBubbleScrollListenerTest
     }
 
     @Test
-    @SmallTest
     @Feature({"Feed"})
     public void testNotReachingEndOfFeed() {
         mIsFeedExpanded = true;
@@ -161,7 +150,6 @@ public final class BackToTopBubbleScrollListenerTest
     }
 
     @Test
-    @SmallTest
     @Feature({"Feed"})
     public void testReachingEndOfFeed() {
         mIsFeedExpanded = true;
@@ -204,7 +192,6 @@ public final class BackToTopBubbleScrollListenerTest
     }
 
     @Test
-    @SmallTest
     @Feature({"Feed"})
     public void testNotPassingRequiredNumberOfFeedCards() {
         mIsFeedExpanded = true;
@@ -237,7 +224,6 @@ public final class BackToTopBubbleScrollListenerTest
     }
 
     @Test
-    @SmallTest
     @Feature({"Feed"})
     public void testPassingRequiredNumberOfFeedCards() {
         mIsFeedExpanded = true;

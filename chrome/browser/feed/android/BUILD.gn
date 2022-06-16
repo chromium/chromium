@@ -230,10 +230,7 @@ android_library("javatests") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java",
-    "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
-    "java/src/org/chromium/chrome/browser/feed/RefreshIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
   ]
 
@@ -279,6 +276,7 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FakeLinearLayoutManager.java",
     "java/src/org/chromium/chrome/browser/feed/FeedFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedLoggingParametersTest.java",
@@ -287,8 +285,10 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedStreamTest.java",
+    "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/NativeViewListRendererTest.java",
     "java/src/org/chromium/chrome/browser/feed/NtpListContentManagerTest.java",
+    "java/src/org/chromium/chrome/browser/feed/RefreshIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/ScrollTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementMediatorTest.java",
