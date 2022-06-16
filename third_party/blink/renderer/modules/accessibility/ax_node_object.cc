@@ -1933,7 +1933,7 @@ unsigned AXNodeObject::HierarchicalLevel() const {
 
   uint32_t level;
   if (HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kLevel, level)) {
-    if (level >= 1 && level <= 9)
+    if (level >= 1)
       return level;
   }
 
