@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,7 +63,7 @@ void SetTranslationDelegate(TranslationDelegate* delegate) {
   g_translation_delegate = delegate;
 }
 
-std::wstring GetLocalizedString(UINT base_message_id) {
+std::wstring GetLocalizedString(int base_message_id) {
   // Map |base_message_id| to the base id for the current install mode.
   base_message_id = GetBaseMessageIdForMode(base_message_id);
 
@@ -71,8 +72,8 @@ std::wstring GetLocalizedString(UINT base_message_id) {
 
   std::wstring localized_string;
 
-  UINT message_id =
-      static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
+  UINT message_id = base::checked_cast<UINT>(base_message_id +
+                                             GetLanguageSelector().offset());
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
