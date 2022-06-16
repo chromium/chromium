@@ -236,6 +236,11 @@ CheckClientDownloadRequest::ShouldUploadBinary(
   if (reason == REASON_DOWNLOAD_DESTROYED)
     return absl::nullopt;
 
+  // If the download already has a scanning response attached, there is no need
+  // to try and upload it again.
+  if (item_->GetUserData(enterprise_connectors::ScanResult::kKey))
+    return absl::nullopt;
+
   // If the download is considered dangerous, don't upload the binary to show
   // a warning to the user ASAP.
   if (reason == REASON_DOWNLOAD_DANGEROUS ||
