@@ -4097,12 +4097,6 @@ crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-right-radius-010.x
 crbug.com/1045599 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Failure ]
-crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-001.html [ Failure ]
-crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-composition.html [ Failure ]
-crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-interpolation.html [ Failure ]
-crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-001.html [ Failure ]
-crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-composition.html [ Failure ]
-crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Failure ]
 crbug.com/1335889 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
 
