@@ -8,7 +8,6 @@ package feedwire;
 
 import "components/feed/core/proto/v2/wire/chrome_fulfillment_info.proto";
 import "components/feed/core/proto/v2/wire/feed_entry_point_data.proto";
-import "components/feed/core/proto/v2/wire/feed_preferences.proto";
 import "components/feed/core/proto/v2/wire/token.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -21,6 +20,7 @@ message FeedQuery {
     UNKNOWN_REQUEST_REASON = 0;
     MANUAL_REFRESH = 1;
     SCHEDULED_REFRESH = 2;
+    APP_CLOSE_REFRESH = 13;
     NEXT_PAGE_SCROLL = 3;
     PREFETCHED_WEB_FEED = 8;
     INTERACTIVE_WEB_FEED = 9;
@@ -38,5 +38,4 @@ message FeedQuery {
   optional ContentOrder order_by = 8;
   optional FeedEntryPointData feed_entry_point_data = 9;
   optional ChromeFulfillmentInfo chrome_fulfillment_info = 341477699;
-  optional FeedPreferences feed_preferences = 445876180;
 }
