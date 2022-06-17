@@ -56,7 +56,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Retrieves all search engines and returns them to WebUI.
   void HandleGetSearchEnginesList(const base::Value::List& args);
 
-  std::unique_ptr<base::DictionaryValue> GetSearchEnginesList();
+  base::Value::Dict GetSearchEnginesList();
 
   // Removes the search engine at the given index. Called from WebUI.
   void HandleRemoveSearchEngine(const base::Value::List& args);
