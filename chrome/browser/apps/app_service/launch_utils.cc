@@ -413,6 +413,7 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
       ConvertAppServiceToCrosapiLaunchContainer(params.container);
   crosapi_params->disposition =
       ConvertWindowOpenDispositionToCrosapi(params.disposition);
+  crosapi_params->display_id = params.display_id;
   return crosapi_params;
 }
 
@@ -423,7 +424,7 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
       crosapi_params->app_id,
       ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
       ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
-      crosapi_params->launch_source);
+      crosapi_params->launch_source, crosapi_params->display_id);
   if (!crosapi_params->intent) {
     return params;
   }

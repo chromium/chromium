@@ -425,6 +425,8 @@ struct LaunchParams {
   [MinVersion=14]LaunchContainer container@3;
   // How the tab opened in a window if app is opened in tab.
   [MinVersion=14]WindowOpenDisposition disposition@4;
+  // An id that indicates which display the app should be launched in.
+  [MinVersion=15]int64 display_id@5;
 };
 
 [Stable]
