@@ -106,8 +106,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
     ~AutomationListener() override;
 
     // content:WebContentsObserver:
-    void DidFinishNavigation(
-        content::NavigationHandle* navigation_handle) override;
+    void PrimaryPageChanged(content::Page& page) override;
 
     raw_ptr<AutomationEventRouter> router;
     ExtensionId extension_id;
