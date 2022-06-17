@@ -3319,7 +3319,8 @@
     "DisableGles2ForOopR": [
         {
             "platforms": [
-                "linux"
+                "linux",
+                "windows"
             ],
             "experiments": [
                 {
