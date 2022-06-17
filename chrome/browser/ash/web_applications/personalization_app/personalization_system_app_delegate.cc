@@ -10,11 +10,14 @@
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
@@ -83,6 +86,14 @@ PersonalizationSystemAppDelegate::GetWebAppInfo() const {
 
 gfx::Size PersonalizationSystemAppDelegate::GetMinimumWindowSize() const {
   return {600, 420};
+}
+
+gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
+    Browser* browser) const {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize({826, 608});
+  return bounds;
 }
 
 bool PersonalizationSystemAppDelegate::ShouldCaptureNavigations() const {

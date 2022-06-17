@@ -12,6 +12,7 @@
       '. .              .       .       .';
     grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+    height: 100%;
   }
 
   :host([main-page]) #container.zero-state-disabled {
@@ -23,16 +24,15 @@
     display: flex;
     flex-direction: column;
     grid-area: message;
+    justify-content: space-between;
   }
 
   #messageContainer .text {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-1-font);
-    height: 40px;
     line-height: 1.5;
     margin-top: 12px;
     text-align: center;
-    width: 60%;
   }
 
   #messageContainer cr-button {
