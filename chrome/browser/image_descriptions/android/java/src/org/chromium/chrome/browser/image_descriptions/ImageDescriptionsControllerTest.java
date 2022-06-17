@@ -33,15 +33,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -54,8 +52,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 /**
  *  Unit tests for {@link ImageDescriptionsController}
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@RunWith(BaseJUnit4ClassRunner.class)
 public class ImageDescriptionsControllerTest extends BlankUiTestActivityTestCase {
     @Rule
     public JniMocker mJniMocker = new JniMocker();

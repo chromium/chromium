@@ -3166,6 +3166,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//build/config/android/test/resource_overlay:unit_device_javatests",
     "//chrome/android/features/tab_ui:unit_device_javatests",
     "//chrome/browser/back_press/android:unit_device_javatests",
+    "//chrome/browser/image_descriptions:unit_device_javatests",
     "//chrome/browser/loading_modal/android:unit_device_javatests",
     "//chrome/browser/optimization_guide/android:unit_device_javatests",
     "//chrome/browser/partnercustomizations:unit_device_javatests",
