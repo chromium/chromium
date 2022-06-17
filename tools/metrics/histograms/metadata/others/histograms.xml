@@ -2207,6 +2207,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChildProcess.ProcessLifetime.Utility" units="ms"
+    expires_after="2023-06-16">
+  <owner>olivierli@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The time elapsed between the creation and destruction of a utility process.
+    Recorded when the process is recorded as destroyed in PerformanceManager.
+  </summary>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.BrowserLoadTime" units="ms"
     expires_after="2022-10-01">
   <obsolete>

@@ -13,6 +13,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/common/process_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -384,6 +385,16 @@ TEST_F(MetricsCollectorTest, ProcessLifetime_Subframe_NoAd_Mixed) {
       histogram_tester_.GetTotalCountsForPrefix("Renderer.ProcessLifetime3"),
       ElementsAre(Pair("Renderer.ProcessLifetime3", 1),
                   Pair("Renderer.ProcessLifetime3.Subframe_NoAd", 1)));
+}
+
+TEST_F(MetricsCollectorTest, ProcessLifetime_Utility) {
+  auto process_node =
+      CreateNode<ProcessNodeImpl>(content::PROCESS_TYPE_UTILITY);
+  process_node->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process_node.reset();
+  EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(
+                  "ChildProcess.ProcessLifetime.Utility"),
+              ElementsAre(Pair("ChildProcess.ProcessLifetime.Utility", 1)));
 }
 
 }  // namespace performance_manager
