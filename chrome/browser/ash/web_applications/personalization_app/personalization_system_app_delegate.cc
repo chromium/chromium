@@ -37,13 +37,44 @@ PersonalizationSystemAppDelegate::GetWebAppInfo() const {
           ? l10n_util::GetStringUTF16(
                 IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE)
           : l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_WALLPAPER_LABEL);
-  std::initializer_list<web_app::IconResourceInfo> icons = {
-      {"app_icon_192.png", 192, IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG}};
   if (ash::features::IsPersonalizationHubEnabled()) {
-    icons = {{"app_hub_icon_192.png", 192,
-              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG}};
+    web_app::CreateIconInfoForSystemWebApp(
+        info->start_url,
+        {
+            {
+                "app_hub_icon_64.png",
+                64,
+                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_64_PNG,
+            },
+            {
+                "app_hub_icon_128.png",
+                128,
+                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_128_PNG,
+            },
+            {
+                "app_hub_icon_192.png",
+                192,
+                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG,
+            },
+            {
+                "app_hub_icon_256.png",
+                256,
+                IDR_ASH_PERSONALIZATION_APP_HUB_ICON_256_PNG,
+            },
+        },
+        *info);
+  } else {
+    web_app::CreateIconInfoForSystemWebApp(
+        info->start_url,
+        {
+            {
+                "app_icon_192.png",
+                192,
+                IDR_ASH_PERSONALIZATION_APP_ICON_192_PNG,
+            },
+        },
+        *info);
   }
-  web_app::CreateIconInfoForSystemWebApp(info->start_url, icons, *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
