@@ -2797,7 +2797,7 @@
     ],
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
-      'use_clang_coverage', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation', 'release_bot_reclient',
+      'use_clang_coverage', 'x64', 'ios', 'ios_simulator', 'xctest', 'ios_disable_xcode_project_generation', 'release_bot_reclient',
     ],
 
     'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [

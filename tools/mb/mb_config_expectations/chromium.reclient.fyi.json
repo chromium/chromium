@@ -63,7 +63,6 @@
   },
   "ios-simulator reclient staging": {
     "gn_args": {
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,
@@ -78,7 +77,6 @@
   },
   "ios-simulator reclient test": {
     "gn_args": {
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,
