@@ -325,6 +325,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(CompileShader, Slow);
   BIND(CompressedTexImage2D, Slow, NeedFlushOnMac);
   BIND(CompressedTexSubImage2D, Slow);
+  BIND(CopyBufferSubData);
   BIND(CopyTexSubImage2D, Slow);
 #if BUILDFLAG(IS_APPLE)
   functions->fCreateProgram = [func = gl->glCreateProgramFn]() {
