@@ -230,16 +230,15 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void AddSimSlotInfoToList(
-      base::Value::ListStorage& ordered_sim_slot_info_list,
-      const std::string& eid,
-      const std::string& iccid,
-      bool primary = false) {
-    base::Value item(base::Value::Type::DICTIONARY);
-    item.SetStringKey(shill::kSIMSlotInfoEID, eid);
-    item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
-    item.SetBoolKey(shill::kSIMSlotInfoPrimary, primary);
-    ordered_sim_slot_info_list.push_back(std::move(item));
+  void AddSimSlotInfoToList(base::Value::List& ordered_sim_slot_info_list,
+                            const std::string& eid,
+                            const std::string& iccid,
+                            bool primary = false) {
+    base::Value::Dict item;
+    item.Set(shill::kSIMSlotInfoEID, eid);
+    item.Set(shill::kSIMSlotInfoICCID, iccid);
+    item.Set(shill::kSIMSlotInfoPrimary, primary);
+    ordered_sim_slot_info_list.Append(std::move(item));
   }
 
   void SetupNetworks() {
@@ -268,13 +267,13 @@ class CrosNetworkConfigTest : public testing::Test {
         /*notify_changed=*/false);
 
     // Setup SimSlotInfo
-    base::Value::ListStorage ordered_sim_slot_info_list;
+    base::Value::List ordered_sim_slot_info_list;
     AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"",
                          kCellularTestIccid,
                          /*primary=*/true);
     helper()->device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMSlotInfoProperty,
-        base::Value(ordered_sim_slot_info_list),
+        base::Value(std::move(ordered_sim_slot_info_list)),
         /*notify_changed=*/false);
 
     // Note: These are Shill dictionaries, not ONC.
@@ -944,7 +943,7 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
       /*esim_1_physical_slot=*/esim_2_physical_slot);
 
   // Add pSIM and eSIM slot info to Shill.
-  base::Value::ListStorage ordered_sim_slot_info_list;
+  base::Value::List ordered_sim_slot_info_list;
   // Add pSIM first to correspond to |psim_physical_slot| index. Note that
   // pSIMs do not have EIDs.
   AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestPSimIccid,
@@ -958,7 +957,7 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
   AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", /*iccid=*/"");
   helper()->device_test()->SetDeviceProperty(
       kCellularDevicePath, shill::kSIMSlotInfoProperty,
-      base::Value(ordered_sim_slot_info_list),
+      base::Value(std::move(ordered_sim_slot_info_list)),
       /*notify_changed=*/true);
   base::RunLoop().RunUntilIdle();
 

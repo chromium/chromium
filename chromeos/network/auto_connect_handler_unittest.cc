@@ -786,12 +786,12 @@ TEST_F(AutoConnectHandlerTest, DisconnectFromBlockedNetwork) {
 
   // Apply a device policy, which blocks wifi0. No disconnects should occur
   // since we wait for both device & user policy before possibly disconnecting.
-  base::Value::ListStorage blocked;
-  blocked.push_back(base::Value("7769666930"));  // hex(wifi0) = 7769666930
-  base::Value global_config(base::Value::Type::DICTIONARY);
-  global_config.SetKey(::onc::global_network_config::kBlockedHexSSIDs,
-                       base::Value(blocked));
-  SetupDevicePolicy(std::string(), global_config);
+  base::Value::List blocked;
+  blocked.Append("7769666930");  // hex(wifi0) = 7769666930
+  base::Value::Dict global_config;
+  global_config.Set(::onc::global_network_config::kBlockedHexSSIDs,
+                    std::move(blocked));
+  SetupDevicePolicy(std::string(), base::Value(std::move(global_config)));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(wifi0_service_path));

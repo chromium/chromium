@@ -760,14 +760,13 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   *out_flags_for_user = iter->second.flags;
 
   // Encode feature flags.
-  std::vector<base::Value> feature_flag_list;
+  base::Value::List feature_flag_list;
   for (const auto& feature_flag : iter->second.feature_flags) {
-    feature_flag_list.emplace_back(base::Value(feature_flag));
+    feature_flag_list.Append(feature_flag);
   }
   if (!feature_flag_list.empty()) {
     std::string encoded;
-    base::JSONWriter::Write(base::Value(std::move(feature_flag_list)),
-                            &encoded);
+    base::JSONWriter::Write(feature_flag_list, &encoded);
     out_flags_for_user->push_back(base::StringPrintf(
         "--%s=%s", chromeos::switches::kFeatureFlags, encoded.c_str()));
   }

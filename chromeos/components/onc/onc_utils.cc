@@ -720,8 +720,8 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
                                      base::Value* network_configs) {
   bool success = true;
-  base::Value::ListStorage filtered_configs;
-  for (base::Value& network : network_configs->GetListDeprecated()) {
+  base::Value::List filtered_configs;
+  for (base::Value& network : network_configs->GetList()) {
     DCHECK(network.is_dict());
     if (!ResolveServerCertRefsInNetwork(certs_by_guid, &network)) {
       std::string* guid = network.FindStringKey(::onc::network_config::kGUID);
@@ -733,7 +733,7 @@ bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
       continue;
     }
 
-    filtered_configs.push_back(std::move(network));
+    filtered_configs.Append(std::move(network));
   }
   *network_configs = base::Value(std::move(filtered_configs));
   return success;
