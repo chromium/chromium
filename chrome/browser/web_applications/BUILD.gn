@@ -18,6 +18,8 @@ source_set("web_applications") {
     "commands/install_from_info_command.h",
     "commands/install_from_sync_command.cc",
     "commands/install_from_sync_command.h",
+    "commands/install_isolated_app_command.cc",
+    "commands/install_isolated_app_command.h",
     "commands/install_web_app_with_params_command.cc",
     "commands/install_web_app_with_params_command.h",
     "commands/run_on_os_login_command.cc",
@@ -480,6 +482,7 @@ source_set("web_applications_unit_tests") {
   sources = [
     "commands/clear_browsing_data_command_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
+    "commands/install_isolated_app_command_unittest.cc",
     "commands/run_on_os_login_command_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
