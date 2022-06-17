@@ -256,9 +256,14 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
       std::make_unique<AppServiceAppWindowShelfController>(this);
   app_service_app_window_controller_ = app_service_controller.get();
   app_window_controllers_.emplace_back(std::move(app_service_controller));
-  if (web_app::IsWebAppsCrosapiEnabled()) {
+  if (web_app::IsWebAppsCrosapiEnabled() &&
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+    DCHECK(proxy);
     browser_app_shelf_controller_ = std::make_unique<BrowserAppShelfController>(
-        profile, *model_, *shelf_item_factory_, *shelf_spinner_controller_);
+        profile, *proxy->BrowserAppInstanceRegistry(), *model_,
+        *shelf_item_factory_, *shelf_spinner_controller_);
   } else {
     // Create the browser monitor which will inform the shelf of status changes.
     browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
