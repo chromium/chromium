@@ -620,19 +620,32 @@ INSTANTIATE_TEST_SUITE_P(Incognito,
                          ExtensionWebRequestApiAuthRequiredTest,
                          ::testing::Values(ProfileMode::kIncognito));
 
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestBlocking) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.page_url = "test_blocking.html",
+                                .custom_arg = R"({"testSuite": "normal"})"}))
+      << message_;
+}
+
 // This test times out regularly on win_rel trybots. See http://crbug.com/122178
 // Also on Linux/ChromiumOS debug, ASAN and MSAN builds.
 // https://crbug.com/670415
+// Slower and flaky tests should be isolated in the "slow" group of tests in
+// the JS file. This prevents losing test coverage for those tests that are
+// not causing timeouts and flakes.
 #if BUILDFLAG(IS_WIN) || !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
     defined(MEMORY_SANITIZER)
-#define MAYBE_WebRequestBlocking DISABLED_WebRequestBlocking
+#define MAYBE_WebRequestBlockingSlow DISABLED_WebRequestBlockingSlow
 #else
-#define MAYBE_WebRequestBlocking WebRequestBlocking
+#define MAYBE_WebRequestBlockingSlow WebRequestBlockingSlow
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebRequestBlocking) {
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       MAYBE_WebRequestBlockingSlow) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_blocking.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.page_url = "test_blocking.html",
+                                .custom_arg = R"({"testSuite": "slow"})"}))
       << message_;
 }
 
