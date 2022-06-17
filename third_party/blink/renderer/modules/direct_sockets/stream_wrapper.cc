@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
@@ -11,6 +13,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
@@ -19,14 +22,6 @@ StreamWrapper::StreamWrapper(ScriptState* script_state)
     : script_state_(script_state) {}
 
 StreamWrapper::~StreamWrapper() = default;
-
-ScriptValue StreamWrapper::CreateException(ScriptState* script_state,
-                                           DOMExceptionCode code,
-                                           const String& message) {
-  return ScriptValue(script_state->GetIsolate(),
-                     V8ThrowDOMException::CreateOrEmpty(
-                         script_state->GetIsolate(), code, message));
-}
 
 void StreamWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
@@ -100,6 +95,13 @@ ScriptPromise ReadableStreamWrapper::UnderlyingSource::pull(
   return ScriptPromise::CastUndefined(script_state);
 }
 
+ScriptPromise ReadableStreamWrapper::UnderlyingSource::Cancel(
+    ScriptState* script_state,
+    ScriptValue) {
+  readable_stream_wrapper_->CloseStream();
+  return ScriptPromise::CastUndefined(script_state);
+}
+
 void ReadableStreamWrapper::UnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(readable_stream_wrapper_);
   UnderlyingSourceBase::Trace(visitor);
@@ -113,6 +115,24 @@ ScriptPromise WritableStreamWrapper::UnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController*,
     ExceptionState&) {
+  class AbortAlgorithm final : public AbortSignal::Algorithm {
+   public:
+    explicit AbortAlgorithm(WritableStreamWrapper* writable_stream_wrapper)
+        : writable_stream_wrapper_(writable_stream_wrapper) {}
+
+    void Run() override { writable_stream_wrapper_->OnAbortSignal(); }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(writable_stream_wrapper_);
+      Algorithm::Trace(visitor);
+    }
+
+   private:
+    Member<WritableStreamWrapper> writable_stream_wrapper_;
+  };
+
+  Controller()->signal()->AddAlgorithm(
+      MakeGarbageCollected<AbortAlgorithm>(GetWritableStreamWrapper()));
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -124,9 +144,16 @@ ScriptPromise WritableStreamWrapper::UnderlyingSink::write(
   return writable_stream_wrapper_->Write(chunk, exception_state);
 }
 
+ScriptPromise WritableStreamWrapper::UnderlyingSink::close(
+    ScriptState* script_state,
+    ExceptionState&) {
+  writable_stream_wrapper_->CloseStream();
+  return ScriptPromise::CastUndefined(script_state);
+}
+
 ScriptPromise WritableStreamWrapper::UnderlyingSink::abort(
     ScriptState* script_state,
-    ScriptValue reason,
+    ScriptValue,
     ExceptionState& exception_state) {
   return close(script_state, exception_state);
 }
