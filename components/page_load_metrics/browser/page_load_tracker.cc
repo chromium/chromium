@@ -786,12 +786,6 @@ void PageLoadTracker::OnTimingChanged() {
   DCHECK(!last_dispatched_merged_page_timing_->Equals(
       metrics_update_dispatcher_.timing()));
 
-  if (parent_tracker_) {
-    // Notify the parent of inner main frame's timing changes as subframe's one.
-    parent_tracker_->OnSubFrameTimingChanged(
-        page_main_frame_, metrics_update_dispatcher_.timing());
-  }
-
   const mojom::PaintTimingPtr& paint_timing =
       metrics_update_dispatcher_.timing().paint_timing;
   largest_contentful_paint_handler_.RecordTiming(
@@ -816,10 +810,6 @@ void PageLoadTracker::OnSubFrameTimingChanged(
     content::RenderFrameHost* rfh,
     const mojom::PageLoadTiming& timing) {
   DCHECK(rfh->GetParentOrOuterDocument());
-  if (parent_tracker_) {
-    // Notify the parent of inner frames' timing changes.
-    parent_tracker_->OnSubFrameTimingChanged(rfh, timing);
-  }
   const mojom::PaintTimingPtr& paint_timing = timing.paint_timing;
   largest_contentful_paint_handler_.RecordTiming(
       *paint_timing->largest_contentful_paint,
