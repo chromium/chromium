@@ -40,7 +40,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.IconType;
@@ -49,6 +48,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
@@ -56,13 +56,10 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 
 /**
- * Tests {@link ShareSheetBottomSheetContent}.
+ * Unit tests {@link ShareSheetBottomSheetContent}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public final class ShareSheetBottomSheetContentTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -86,6 +83,7 @@ public final class ShareSheetBottomSheetContentTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
 

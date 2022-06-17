@@ -52,9 +52,10 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordin
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.Tracker;
@@ -62,6 +63,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -71,13 +73,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests {@link ChromeProvidedSharingOptionsProvider}.
+ * Unit tests {@link ChromeProvidedSharingOptionsProvider}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(
+        {ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT, ChromeFeatureList.WEBNOTES_STYLIZE})
+@DisableFeatures(
+        {ChromeFeatureList.LIGHTWEIGHT_REACTIONS, ChromeFeatureList.UPCOMING_SHARING_FEATURES,
+                ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 public class ChromeProvidedSharingOptionsProviderTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
-
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -123,6 +127,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Before
     public void setUp() {
         Looper.prepare();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
