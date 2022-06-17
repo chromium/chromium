@@ -169,13 +169,13 @@ void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
   PA_LOG(INFO) << "SaveRecentAppMetadataListToPref";
   size_t num_recent_apps_to_save =
       std::min(recent_app_metadata_list_.size(), kMaxSavedRecentApps);
-  std::vector<base::Value> app_metadata_value_list;
+  base::Value::List app_metadata_value_list;
   for (size_t i = 0; i < num_recent_apps_to_save; ++i) {
-    app_metadata_value_list.push_back(
+    app_metadata_value_list.Append(
         recent_app_metadata_list_[i].first.ToValue());
   }
-  pref_service_->Set(prefs::kRecentAppsHistory,
-                     base::Value(std::move(app_metadata_value_list)));
+  pref_service_->SetList(prefs::kRecentAppsHistory,
+                         std::move(app_metadata_value_list));
 }
 
 void RecentAppsInteractionHandlerImpl::OnFeatureStatesChanged(

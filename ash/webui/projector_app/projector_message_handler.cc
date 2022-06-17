@@ -77,10 +77,10 @@ std::string ProjectorErrorToString(ProjectorError mode) {
 }
 
 base::Value ScreencastListToValue(const PendingScreencastSet& screencasts) {
-  std::vector<base::Value> value;
+  base::Value::List value;
   value.reserve(screencasts.size());
   for (const auto& item : screencasts)
-    value.push_back(item.ToValue());
+    value.Append(item.ToValue());
 
   return base::Value(std::move(value));
 }
@@ -266,16 +266,15 @@ void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
   const CoreAccountInfo primary_account =
       oauth_token_fetcher_.GetPrimaryAccountInfo();
 
-  std::vector<base::Value> response;
+  base::Value::List response;
   response.reserve(accounts.size());
   for (const auto& info : accounts) {
-    base::Value account_info(base::Value::Type::DICTIONARY);
-    account_info.SetKey(kUserName, base::Value(info.full_name));
-    account_info.SetKey(kUserEmail, base::Value(info.email));
-    account_info.SetKey(kUserPictureURL, base::Value(info.picture_url));
-    account_info.SetKey(kIsPrimaryUser,
-                        base::Value(info.gaia == primary_account.gaia));
-    response.push_back(std::move(account_info));
+    base::Value::Dict account_info;
+    account_info.Set(kUserName, info.full_name);
+    account_info.Set(kUserEmail, info.email);
+    account_info.Set(kUserPictureURL, info.picture_url);
+    account_info.Set(kIsPrimaryUser, info.gaia == primary_account.gaia);
+    response.Append(std::move(account_info));
   }
 
   ResolveJavascriptCallback(args[0], base::Value(std::move(response)));

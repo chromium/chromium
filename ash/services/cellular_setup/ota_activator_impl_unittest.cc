@@ -266,13 +266,13 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
   base::Value CreateCellularSIMSlotInfo(
       const std::string& iccid,
       const std::string& eid = std::string()) {
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, eid);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoICCID, iccid);
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
-    sim_slot_infos.push_back(std::move(slot_info_item));
-    return base::Value(sim_slot_infos);
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoEID, eid);
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, iccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, false);
+    sim_slot_infos.Append(std::move(slot_info_item));
+    return base::Value(std::move(sim_slot_infos));
   }
 
   base::test::TaskEnvironment task_environment_{

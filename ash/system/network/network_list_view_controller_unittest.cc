@@ -343,16 +343,15 @@ class NetworkListViewControllerTest : public AshTestBase {
     network_state_helper()->device_test()->AddDevice(
         kCellularDevicePath, shill::kTypeCellular, kCellularDeviceName);
 
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetKey(shill::kSIMSlotInfoICCID,
-                          base::Value(kCellularTestIccid));
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-    slot_info_item.SetStringKey(shill::kSIMSlotInfoEID, kTestBaseEid);
-    sim_slot_infos.push_back(std::move(slot_info_item));
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kCellularTestIccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    slot_info_item.Set(shill::kSIMSlotInfoEID, kTestBaseEid);
+    sim_slot_infos.Append(std::move(slot_info_item));
     network_state_helper()->device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMSlotInfoProperty,
-        base::Value(sim_slot_infos), /*notify_changed=*/true);
+        base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
 
     // Wait for network state and device change events to be handled.
     base::RunLoop().RunUntilIdle();

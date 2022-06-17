@@ -134,12 +134,12 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
         /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/false,
         expected_user_id2);
 
-    std::vector<base::Value> app_metadata_value_list;
-    app_metadata_value_list.push_back(app_metadata1.ToValue());
-    app_metadata_value_list.push_back(app_metadata2.ToValue());
+    base::Value::List app_metadata_value_list;
+    app_metadata_value_list.Append(app_metadata1.ToValue());
+    app_metadata_value_list.Append(app_metadata2.ToValue());
 
-    pref_service_.Set(prefs::kRecentAppsHistory,
-                      base::Value(std::move(app_metadata_value_list)));
+    pref_service_.SetList(prefs::kRecentAppsHistory,
+                          std::move(app_metadata_value_list));
   }
 
   void SaveLegacyRecentAppToPref() {
@@ -159,11 +159,11 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorG));
     EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorB));
 
-    std::vector<base::Value> app_metadata_value_list;
-    app_metadata_value_list.push_back(std::move(app_metadata_value));
+    base::Value::List app_metadata_value_list;
+    app_metadata_value_list.Append(std::move(app_metadata_value));
 
-    pref_service_.Set(prefs::kRecentAppsHistory,
-                      base::Value(std::move(app_metadata_value_list)));
+    pref_service_.SetList(prefs::kRecentAppsHistory,
+                          std::move(app_metadata_value_list));
   }
 
   std::string GetPackageName() {

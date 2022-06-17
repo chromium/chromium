@@ -86,16 +86,16 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
             std::move(sim_lock_status), /*notify_changed=*/true);
 
     // Set the cellular service to be the active profile.
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetKey(shill::kSIMSlotInfoICCID, base::Value(kTestIccid));
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-    sim_slot_infos.push_back(std::move(slot_info_item));
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
     network_config_helper_->network_state_helper()
         .device_test()
         ->SetDeviceProperty(
             kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
-            base::Value(sim_slot_infos), /*notify_changed=*/true);
+            base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -246,21 +246,22 @@ TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
 
   EXPECT_FALSE(GetManagedSimLockNotification());
   // Simulate primary ICCID changed. Notification should be shown after.
-  base::Value::ListStorage sim_slot_infos;
-  base::Value slot_info_item(base::Value::Type::DICTIONARY);
-  slot_info_item.SetKey(shill::kSIMSlotInfoICCID, base::Value(kTestIccid));
-  slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, false);
-  sim_slot_infos.push_back(std::move(slot_info_item));
+  base::Value::List sim_slot_infos;
+  base::Value::Dict slot_info_item;
+  slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
+  slot_info_item.Set(shill::kSIMSlotInfoPrimary, false);
+  sim_slot_infos.Append(std::move(slot_info_item));
 
-  base::Value slot_info_item_2(base::Value::Type::DICTIONARY);
-  slot_info_item_2.SetKey(shill::kSIMSlotInfoICCID, base::Value("kTestIccid2"));
-  slot_info_item_2.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-  sim_slot_infos.push_back(std::move(slot_info_item_2));
+  base::Value::Dict slot_info_item_2;
+  slot_info_item_2.Set(shill::kSIMSlotInfoICCID, "kTestIccid2");
+  slot_info_item_2.Set(shill::kSIMSlotInfoPrimary, true);
+  sim_slot_infos.Append(std::move(slot_info_item_2));
 
   network_config_helper_->network_state_helper()
       .device_test()
       ->SetDeviceProperty(kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
-                          base::Value(sim_slot_infos), /*notify_changed=*/true);
+                          base::Value(std::move(sim_slot_infos)),
+                          /*notify_changed=*/true);
 
   base::RunLoop().RunUntilIdle();
 

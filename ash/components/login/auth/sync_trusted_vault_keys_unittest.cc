@@ -80,14 +80,14 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeys) {
   const int kEncryptionKeyVersion1 = 17;
   const int kEncryptionKeyVersion2 = 15;
 
-  std::vector<base::Value> key_values;
-  key_values.push_back(
+  base::Value::List key_values;
+  key_values.Append(
       MakeKeyValue(kEncryptionKeyMaterial1, kEncryptionKeyVersion1));
-  key_values.push_back(
+  key_values.Append(
       MakeKeyValue(kEncryptionKeyMaterial2, kEncryptionKeyVersion2));
 
   base::Value::Dict root_value;
-  root_value.Set("encryptionKeys", base::Value(std::move(key_values)));
+  root_value.Set("encryptionKeys", std::move(key_values));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);
@@ -103,13 +103,13 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeysWithMissingVersion) {
   const std::vector<uint8_t> kEncryptionKeyMaterial2 = {5, 6, 7, 8};
   const int kEncryptionKeyVersion1 = 17;
 
-  std::vector<base::Value> key_values;
-  key_values.push_back(
+  base::Value::List key_values;
+  key_values.Append(
       MakeKeyValue(kEncryptionKeyMaterial1, kEncryptionKeyVersion1));
-  key_values.push_back(MakeKeyValueWithoutVersion(kEncryptionKeyMaterial2));
+  key_values.Append(MakeKeyValueWithoutVersion(kEncryptionKeyMaterial2));
 
   base::Value::Dict root_value;
-  root_value.Set("encryptionKeys", base::Value(std::move(key_values)));
+  root_value.Set("encryptionKeys", std::move(key_values));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);
@@ -126,12 +126,12 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithTrustedRecoveryMethods) {
   const int kMethodType1 = 7;
   const int kMethodType2 = 8;
 
-  std::vector<base::Value> key_values;
-  key_values.push_back(MakePublicKeyAndType(kPublicKeyMaterial1, kMethodType1));
-  key_values.push_back(MakePublicKeyAndType(kPublicKeyMaterial2, kMethodType2));
+  base::Value::List key_values;
+  key_values.Append(MakePublicKeyAndType(kPublicKeyMaterial1, kMethodType1));
+  key_values.Append(MakePublicKeyAndType(kPublicKeyMaterial2, kMethodType2));
 
   base::Value::Dict root_value;
-  root_value.Set("trustedRecoveryMethods", base::Value(std::move(key_values)));
+  root_value.Set("trustedRecoveryMethods", std::move(key_values));
 
   const SyncTrustedVaultKeys actual_converted_keys =
       SyncTrustedVaultKeys::FromJs(root_value);
