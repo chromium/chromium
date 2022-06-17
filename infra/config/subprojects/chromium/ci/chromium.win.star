@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
+load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -15,7 +15,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
     main_console_view = "main",
     os = os.WINDOWS_DEFAULT,
     pool = ci.DEFAULT_POOL,
@@ -86,9 +87,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_ANY,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -114,9 +112,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_ANY,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -252,9 +247,6 @@ ci.builder(
     cores = 32,
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_ANY,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -285,9 +277,6 @@ ci.builder(
     cores = 32,
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_ANY,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -359,7 +348,4 @@ ci.builder(
     ),
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 12 * time.hour,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
