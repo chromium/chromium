@@ -5,7 +5,7 @@
      and on some platforms position and size features don't make sense -->
 <meta name="flags" content="may">
 <title>Multi-Screen Window Placement test: window.open()</title>
-<link rel="help" href="https://webscreens.github.io/window-placement/">
+<link rel="help" href="https://w3c.github.io/window-placement">
 This test uses multi-screen details to open a popup window on each screen.<br>
 It runs automated or manually with `wpt serve` and a compatible browser.<br><br>
 <button id="setUpButton">Request screen details</button>
@@ -17,17 +17,11 @@ It runs automated or manually with `wpt serve` and a compatible browser.<br><br>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/helpers.js"></script>
 
 <script>
 'use strict';
 let popups = [];
-
-function log(str) {
-  const entry = document.createElement('li');
-  entry.innerHTML = str;
-  logger.appendChild(entry);
-  return entry;
-}
 
 cleanUpButton.addEventListener('click', async () => {
   popups.forEach(p => p.close());
@@ -89,27 +83,7 @@ async function testPopupOnScreen(popupTest, screen) {
 }
 
 promise_test(async setUpTest => {
-  assert_true(
-      'getScreenDetails' in self && 'isExtended' in screen,
-      `API not supported; use Chromium (not content_shell) and enable
-       chrome://flags/#enable-experimental-web-platform-features`);
-  if (!screen.isExtended)
-    log(`WARNING: Use multiple screens for full test coverage`);
-  if (window.location.href.startsWith('file'))
-    log(`WARNING: Run via 'wpt serve'; file URLs lack permission support`);
-
-  try {  // Support manual testing where test_driver is not running.
-    await test_driver.set_permission({name: 'window-placement'}, 'granted');
-  } catch {
-  }
-  const setUpWatcher = new EventWatcher(setUpTest, setUpButton, ['click']);
-  const setUpClick = setUpWatcher.wait_for('click');
-  try {  // Support manual testing where test_driver is not running.
-    await test_driver.click(setUpButton);
-  } catch {
-  }
-  await setUpClick;
-  setUpButton.disabled = true;
+  await setUpWindowPlacement(setUpTest, setUpButton);
   const screenDetails = await getScreenDetails();
   assert_true(!!screenDetails, 'Error getting screen details');
   assert_greater_than(screenDetails.screens.length, 0, 'Connect a screen');
