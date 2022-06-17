@@ -1527,7 +1527,9 @@ void TileManager::IssueSignals() {
   if (signals_.activate_tile_tasks_completed &&
       signals_.activate_gpu_work_completed &&
       !signals_.did_notify_ready_to_activate) {
-    if (!client_->HasPendingTree() || IsReadyToActivate()) {
+    // If commit_to_active_tree is true(no pending tree), NotifyReadyToActivate
+    // isn't sent to client, so don't call IsReadyToActivate() to save CPU time
+    if (client_->HasPendingTree() && IsReadyToActivate()) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                    "TileManager::IssueSignals - ready to activate");
       signals_.did_notify_ready_to_activate = true;
@@ -1538,7 +1540,7 @@ void TileManager::IssueSignals() {
   // Ready to draw.
   if (signals_.draw_tile_tasks_completed && signals_.draw_gpu_work_completed &&
       !signals_.did_notify_ready_to_draw) {
-    if (IsReadyToDraw()) {
+    if (tile_manager_settings_.needs_notify_ready_to_draw && IsReadyToDraw()) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                    "TileManager::IssueSignals - ready to draw");
       signals_.did_notify_ready_to_draw = true;
@@ -1561,6 +1563,12 @@ void TileManager::IssueSignals() {
     }
   }
 
+  bool notify_ready_to_activate_pending =
+      client_->HasPendingTree() && !signals_.did_notify_ready_to_activate;
+  bool notify_ready_to_draw_pending =
+      tile_manager_settings_.needs_notify_ready_to_draw &&
+      !signals_.did_notify_ready_to_draw;
+
   // Allow decodes for rasterized tiles if all required for draw/activate tiles
   // are done. And pre-decode tiles once all tile tasks are done.
   // Note that the order is important here, since all signals could have become
@@ -1568,8 +1576,8 @@ void TileManager::IssueSignals() {
   if (signals_.did_notify_all_tile_tasks_completed) {
     checker_image_tracker_.SetMaxDecodePriorityAllowed(
         CheckerImageTracker::DecodeType::kPreDecode);
-  } else if (signals_.did_notify_ready_to_activate &&
-             signals_.did_notify_ready_to_draw) {
+  } else if (!notify_ready_to_activate_pending &&
+             !notify_ready_to_draw_pending) {
     checker_image_tracker_.SetMaxDecodePriorityAllowed(
         CheckerImageTracker::DecodeType::kRaster);
   }

@@ -36,6 +36,8 @@ TileManagerSettings LayerTreeSettings::ToTileManagerSettings() const {
   tile_manager_settings.use_partial_raster = use_partial_raster;
   tile_manager_settings.enable_checker_imaging = enable_checker_imaging;
   tile_manager_settings.min_image_bytes_to_checker = min_image_bytes_to_checker;
+  tile_manager_settings.needs_notify_ready_to_draw =
+      commit_to_active_tree | wait_for_all_pipeline_stages_before_draw;
   return tile_manager_settings;
 }
 

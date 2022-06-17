@@ -389,7 +389,7 @@ class LayerTreeHostTestReadyToActivateEmpty : public LayerTreeHostTest {
   size_t required_for_activation_count_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestReadyToActivateEmpty);
+MULTI_THREAD_TEST_F(LayerTreeHostTestReadyToActivateEmpty);
 
 // Test if the LTHI receives ReadyToActivate notifications from the TileManager
 // when some raster tasks flagged as REQUIRED_FOR_ACTIVATION got scheduled.
@@ -461,7 +461,7 @@ class LayerTreeHostTestReadyToDrawEmpty : public LayerTreeHostTest {
   size_t required_for_draw_count_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestReadyToDrawEmpty);
+SINGLE_THREAD_TEST_F(LayerTreeHostTestReadyToDrawEmpty);
 
 // Test if the LTHI receives ReadyToDraw notifications from the TileManager when
 // some raster tasks flagged as REQUIRED_FOR_DRAW got scheduled.
@@ -544,12 +544,26 @@ class LayerTreeHostTestReadyToDrawVisibility : public LayerTreeHostTest {
 
   void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
     if (!host_impl->visible()) {
-      {
-        DebugScopedSetMainThread main(task_runner_provider());
-        layer_tree_host()->SetVisible(true);
-      }
-      EXPECT_TRUE(host_impl->visible());
+      // DidFinishImplFrameOnThread is called from Scheduler::FinishImplFrame()
+      // with inside_scheduled_action_ being true, so if SetVisible is called
+      // directly here without PostTask, ProcessScheduledActions() triggered by
+      // SetVisible() is ignored, so no more action will be executed.
+      // Therefore, this TC will be succeed only if there is another events like
+      //   - RasterTaskImpl's OnTaskCompleted : this is flaky depending on tile
+      //     task threads when SetVisible(false) is called.
+      //   - NotifyReadytoActivate : this is not called in single threaded
+      // To remove flaky, PostTask is required here.
+      ImplThreadTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHostTestReadyToDrawVisibility::SetVisible,
+                         base::Unretained(this), host_impl));
     }
+  }
+
+  void SetVisible(LayerTreeHostImpl* host_impl) {
+    DebugScopedSetMainThread main(task_runner_provider());
+    layer_tree_host()->SetVisible(true);
+    EXPECT_TRUE(host_impl->visible());
   }
 
   void AfterTest() override {
@@ -7605,28 +7619,9 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
         }
         break;
       case 4:
-        ++step_;
+        // NotifyReadyToDrawOnThread() is not called in multi threaded mode
+        EndTest();
         break;
-      case 5:
-        // Waiting for NotifyReadyToDraw.
-        break;
-      case 6:
-        // NotifyReadyToDraw happened.
-        ++step_;
-        break;
-    }
-  }
-
-  void NotifyReadyToDrawOnThread(LayerTreeHostImpl* host_impl) override {
-    if (step_ == 5) {
-      ++step_;
-      // NotifyReadyToDraw has happened, we may draw once more, but should not
-      // get any more draws after that. End the test after a timeout to watch
-      // for any extraneous draws.
-      // TODO(brianderson): We could remove this delay and instead wait until
-      // the viz::BeginFrameSource decides it doesn't need to send frames
-      // anymore, or test that it already doesn't here.
-      EndTestAfterDelayMs(16 * 4);
     }
   }
 
@@ -7705,7 +7700,7 @@ class LayerTreeHostTestOneActivatePerPrepareTiles : public LayerTreeHostTest {
   size_t scheduled_prepare_tiles_count_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestOneActivatePerPrepareTiles);
+MULTI_THREAD_TEST_F(LayerTreeHostTestOneActivatePerPrepareTiles);
 
 class LayerTreeHostTestActivationCausesPrepareTiles : public LayerTreeHostTest {
  public:
@@ -10334,5 +10329,50 @@ class LayerTreeHostTestInvalidateImplSideForRerasterTiling
   scoped_refptr<FakePictureLayer> layer_on_main_;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestInvalidateImplSideForRerasterTiling);
+
+class LayerTreeHostTestNeedsNotifyReadyToDrawAndActivate
+    : public LayerTreeHostTest {
+ public:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommitAndDrawFrame() override { EndTest(); }
+
+  void NotifyReadyToDrawOnThread(LayerTreeHostImpl* host_impl) override {
+    // called if needs_notify_ready_to_draw_ is true
+    EXPECT_TRUE(needs_notify_ready_to_draw_);
+  }
+
+  void NotifyReadyToActivateOnThread(LayerTreeHostImpl* host_impl) override {
+    // called if needs_notify_ready_to_activate_ is true
+    EXPECT_TRUE(needs_notify_ready_to_activate_);
+  }
+
+ protected:
+  bool needs_notify_ready_to_draw_ = true;
+  bool needs_notify_ready_to_activate_ = true;
+};
+
+class LayerTreeHostTestNeedsNotifyReadyToDrawOnly
+    : public LayerTreeHostTestNeedsNotifyReadyToDrawAndActivate {
+ public:
+  LayerTreeHostTestNeedsNotifyReadyToDrawOnly() {
+    // expectation for Single Threaded LayerTreeHost
+    needs_notify_ready_to_draw_ = true;
+    needs_notify_ready_to_activate_ = false;
+  }
+};
+SINGLE_THREAD_TEST_F(LayerTreeHostTestNeedsNotifyReadyToDrawOnly);
+
+class LayerTreeHostTestNeedsNotifyReadyToActivateOnly
+    : public LayerTreeHostTestNeedsNotifyReadyToDrawAndActivate {
+ public:
+  LayerTreeHostTestNeedsNotifyReadyToActivateOnly() {
+    // expectation for threaded LayerTreeHost
+    needs_notify_ready_to_draw_ = false;
+    needs_notify_ready_to_activate_ = true;
+  }
+};
+MULTI_THREAD_TEST_F(LayerTreeHostTestNeedsNotifyReadyToActivateOnly);
+
 }  // namespace
 }  // namespace cc
