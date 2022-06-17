@@ -7500,7 +7500,8 @@ const FeatureEntry kFeatureEntries[] = {
          switches::kEnableFeatures,
          "PrivacySandboxSettings3:"
          "disable-dialog-for-testing/true/show-sample-data/true,"
-         "EnableFetchingAccountCapabilities")},
+         "EnableFetchingAccountCapabilities,InterestGroupStorage,"
+         "AdInterestGroupAPI,Fledge,FencedFrames")},
 
     {"privacy-sandbox-ads-apis",
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
