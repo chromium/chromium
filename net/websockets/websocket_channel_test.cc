@@ -395,9 +395,9 @@ class EqualsFramesMatcher : public ::testing::MatcherInterface<
   explicit EqualsFramesMatcher(const InitFrame (*expect_frames)[N])
       : expect_frames_(expect_frames) {}
 
-  virtual bool MatchAndExplain(
+  bool MatchAndExplain(
       std::vector<std::unique_ptr<WebSocketFrame>>* actual_frames,
-      ::testing::MatchResultListener* listener) const {
+      ::testing::MatchResultListener* listener) const override {
     if (actual_frames->size() != N) {
       *listener << "the vector size is " << actual_frames->size();
       return false;
@@ -436,11 +436,11 @@ class EqualsFramesMatcher : public ::testing::MatcherInterface<
     return true;
   }
 
-  virtual void DescribeTo(std::ostream* os) const {
+  void DescribeTo(std::ostream* os) const override {
     *os << "matches " << *expect_frames_;
   }
 
-  virtual void DescribeNegationTo(std::ostream* os) const {
+  void DescribeNegationTo(std::ostream* os) const override {
     *os << "does not match " << *expect_frames_;
   }
 

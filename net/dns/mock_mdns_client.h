@@ -16,7 +16,7 @@ namespace net {
 class MockMDnsTransaction : public MDnsTransaction {
  public:
   MockMDnsTransaction();
-  ~MockMDnsTransaction();
+  ~MockMDnsTransaction() override;
 
   MOCK_METHOD0(Start, bool());
   MOCK_CONST_METHOD0(GetName, const std::string&());
@@ -26,7 +26,7 @@ class MockMDnsTransaction : public MDnsTransaction {
 class MockMDnsClient : public MDnsClient {
  public:
   MockMDnsClient();
-  ~MockMDnsClient();
+  ~MockMDnsClient() override;
 
   MOCK_METHOD3(CreateListener,
                std::unique_ptr<MDnsListener>(uint16_t,

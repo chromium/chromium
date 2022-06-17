@@ -4397,7 +4397,7 @@ class CertVerifyProcWeakDigestTest
     : public testing::TestWithParam<WeakDigestTestData> {
  public:
   CertVerifyProcWeakDigestTest() = default;
-  virtual ~CertVerifyProcWeakDigestTest() = default;
+  ~CertVerifyProcWeakDigestTest() override = default;
 };
 
 // Tests that the CertVerifyProc::Verify() properly surfaces the (weak) hash

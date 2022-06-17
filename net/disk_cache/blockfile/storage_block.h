@@ -39,7 +39,7 @@ class StorageBlock : public FileBlock {
   StorageBlock(const StorageBlock&) = delete;
   StorageBlock& operator=(const StorageBlock&) = delete;
 
-  virtual ~StorageBlock();
+  ~StorageBlock() override;
 
   // Deeps copies from another block. Neither this nor |other| should be
   // |modified|.

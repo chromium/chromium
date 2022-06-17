@@ -462,7 +462,7 @@ class BidirectionalStreamQuicImplTest
     clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
   }
 
-  ~BidirectionalStreamQuicImplTest() {
+  ~BidirectionalStreamQuicImplTest() override {
     if (session_) {
       session_->CloseSessionOnError(
           ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
