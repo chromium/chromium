@@ -302,7 +302,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "http://crbug.com/1296677")
     public void testTapOnRoleIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -319,8 +318,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
-    @DisabledTest(message = "https://crbug.com/1291558")
     public void testTapOnARIAIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
