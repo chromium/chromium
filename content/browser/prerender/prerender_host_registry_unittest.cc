@@ -35,12 +35,18 @@ blink::mojom::SpeculationCandidatePtr CreatePrerenderCandidate(
   return candidate;
 }
 
-void SendCandidate(const GURL& url,
-                   mojo::Remote<blink::mojom::SpeculationHost>& remote) {
+void SendCandidates(const std::vector<GURL>& urls,
+                    mojo::Remote<blink::mojom::SpeculationHost>& remote) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(CreatePrerenderCandidate(url));
+  candidates.resize(urls.size());
+  base::ranges::transform(urls, candidates.begin(), &CreatePrerenderCandidate);
   remote->UpdateSpeculationCandidates(std::move(candidates));
   remote.FlushForTesting();
+}
+
+void SendCandidate(const GURL& url,
+                   mojo::Remote<blink::mojom::SpeculationHost>& remote) {
+  SendCandidates({url}, remote);
 }
 
 PrerenderAttributes GeneratePrerenderAttributes(
@@ -411,8 +417,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   ASSERT_TRUE(remote1.is_connected());
   const GURL kPrerenderingUrl1("https://example.com/next1");
   const GURL kPrerenderingUrl2("https://example.com/next2");
-  SendCandidate(kPrerenderingUrl1, remote1);
-  SendCandidate(kPrerenderingUrl2, remote1);
+  SendCandidates({kPrerenderingUrl1, kPrerenderingUrl2}, remote1);
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
@@ -455,8 +460,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   ASSERT_TRUE(remote1.is_connected());
   const GURL kPrerenderingUrl1("https://example.com/next1");
   const GURL kPrerenderingUrl2("https://example.com/next2");
-  SendCandidate(kPrerenderingUrl1, remote1);
-  SendCandidate(kPrerenderingUrl2, remote1);
+  SendCandidates({kPrerenderingUrl1, kPrerenderingUrl2}, remote1);
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.

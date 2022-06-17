@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -728,6 +729,166 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubResource) {
   // Cancellation must have occurred due to authentication request.
   ExpectFinalStatusForSpeculationRule(
       PrerenderHost::FinalStatus::kLoginAuthRequested);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       CancelOnSpeculationCandidateRemoved) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                         let sc = document.createElement('script');
+                         sc.type = 'speculationrules';
+                         sc.textContent = JSON.stringify({
+                           prerender: [
+                             {source: "list", urls: [$1]}
+                           ]
+                         });
+                         document.head.appendChild(sc);
+                         )",
+                         kPrerenderingUrl)));
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Remove the rules and check that the prerender is cancelled with an
+  // appropriate final status.
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  ASSERT_TRUE(ExecJs(
+      web_contents_impl()->GetPrimaryMainFrame(),
+      "document.querySelector('script[type=speculationrules]').remove()"));
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kTriggerDestroyed);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DontCancelOnSpeculationUpdateIfStillEligible) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                         let sc = document.createElement('script');
+                         sc.type = 'speculationrules';
+                         sc.textContent = JSON.stringify({
+                           prerender: [
+                             {source: "list", urls: [$1]}
+                           ]
+                         });
+                         document.head.appendChild(sc);
+                         )",
+                         kPrerenderingUrl)));
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                         document.querySelector('script[type=speculationrules]')
+                             .remove();
+                         let sc = document.createElement('script');
+                         sc.type = 'speculationrules';
+                         sc.textContent = JSON.stringify({
+                           prerender: [
+                             {source: "list", urls: ["/empty.html", $1]}
+                           ]
+                         });
+                         document.head.appendChild(sc);
+                         )",
+                         kPrerenderingUrl)));
+
+  // Replace the rules. Even though the original rules are gone, the new ones
+  // still permit the prerender so it continues.
+  {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+    run_loop.Run();
+    ASSERT_NE(GetHostForUrl(kPrerenderingUrl),
+              RenderFrameHost::kNoFrameTreeNodeId);
+  }
+
+  // Remove the rules and check that the prerender is cancelled.
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  ASSERT_TRUE(ExecJs(
+      web_contents_impl()->GetPrimaryMainFrame(),
+      "document.querySelector('script[type=speculationrules]').remove()"));
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       CanStartSecondPrerenderWhenCancellingFirst) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl = GetUrl("/title2.html");
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                         let sc = document.createElement('script');
+                         sc.type = 'speculationrules';
+                         sc.textContent = JSON.stringify({
+                           prerender: [
+                             {source: "list", urls: [$1]}
+                           ]
+                         });
+                         document.head.appendChild(sc);
+                         )",
+                         kPrerenderingUrl)));
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Starting a different prerender still works.
+  // (For now, this works unconditionally. In the future this might depend on
+  // some other conditions.)
+  const GURL kPrerenderingUrl2 = GetUrl("/title3.html");
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                         document.querySelector('script[type=speculationrules]')
+                             .remove();
+                         let sc = document.createElement('script');
+                         sc.type = 'speculationrules';
+                         sc.textContent = JSON.stringify({
+                           prerender: [
+                             {source: "list", urls: [$1]}
+                           ]
+                         });
+                         document.head.appendChild(sc);
+                         )",
+                         kPrerenderingUrl2)));
+
+  // The original prerender should be cancelled.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // And the new one should be discovered.
+  registry_observer.WaitForTrigger(kPrerenderingUrl2);
+  int second_host_id = GetHostForUrl(kPrerenderingUrl2);
+  EXPECT_NE(second_host_id, RenderFrameHost::kNoFrameTreeNodeId);
 }
 
 // Tests that prerendering triggered by prerendered pages is deferred until
