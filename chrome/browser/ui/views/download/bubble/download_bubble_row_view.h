@@ -49,6 +49,8 @@ class DownloadBubbleRowView : public views::View,
   void OnThemeChanged() override;
   void Layout() override;
   Views GetChildrenInZOrder() override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseCaptureLost() override;
 
   // Overrides DownloadUIModel::Observer:
   void OnDownloadOpened() override;
@@ -147,8 +149,15 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<const gfx::VectorIcon> last_overriden_icon_ = nullptr;
   bool already_set_default_icon_ = false;
 
-  // HoverButton for main button click and inkdrop animations.
+  // HoverButton for main button click, inkdrop animations and drag and drop
+  // events.
   raw_ptr<HoverButton> hover_button_ = nullptr;
+
+  // Drag and drop:
+  // Whether we are dragging the download bubble row.
+  bool dragging_ = false;
+  // Position that a possible drag started at.
+  absl::optional<gfx::Point> drag_start_point_;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };
