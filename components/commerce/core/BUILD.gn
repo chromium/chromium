@@ -24,32 +24,26 @@ source_set("feature_list") {
   ]
 
   deps = [
+    ":commerce_heuristics_data",
     "//base",
     "//components/flags_ui",
     "//components/search",
     "//third_party/re2:re2",
     "//url:url",
   ]
-
-  if (!is_android) {
-    deps += [ ":commerce_heuristics_data" ]
-  }
 }
 
 source_set("feature_list_unittests") {
   testonly = true
   sources = [ "commerce_feature_list_unittest.cc" ]
   deps = [
+    ":commerce_heuristics_data",
     ":feature_list",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
     "//third_party/re2:re2",
   ]
-
-  if (!is_android) {
-    deps += [ ":commerce_heuristics_data" ]
-  }
 }
 
 static_library("metrics") {
@@ -82,50 +76,48 @@ if (is_android) {
   }
 }
 
-if (!is_android) {
-  source_set("commerce_heuristics_data") {
-    sources = [
-      "commerce_heuristics_data.cc",
-      "commerce_heuristics_data.h",
-      "commerce_heuristics_data_metrics_helper.cc",
-      "commerce_heuristics_data_metrics_helper.h",
-    ]
+source_set("commerce_heuristics_data") {
+  sources = [
+    "commerce_heuristics_data.cc",
+    "commerce_heuristics_data.h",
+    "commerce_heuristics_data_metrics_helper.cc",
+    "commerce_heuristics_data_metrics_helper.h",
+  ]
 
-    deps = [
-      "//base",
-      "//third_party/re2:re2",
-    ]
-  }
+  deps = [
+    "//base",
+    "//third_party/re2:re2",
+  ]
+}
 
-  source_set("commerce_heuristics_data_unittests") {
-    testonly = true
-    sources = [ "commerce_heuristics_data_unittest.cc" ]
-    deps = [
-      ":commerce_heuristics_data",
-      "//base",
-      "//base/test:test_support",
-      "//testing/gtest",
-      "//third_party/re2:re2",
-    ]
-  }
+source_set("commerce_heuristics_data_unittests") {
+  testonly = true
+  sources = [ "commerce_heuristics_data_unittest.cc" ]
+  deps = [
+    ":commerce_heuristics_data",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/re2:re2",
+  ]
+}
 
-  source_set("heuristics_provider") {
-    sources = [
-      "heuristics/commerce_heuristics_provider.cc",
-      "heuristics/commerce_heuristics_provider.h",
-    ]
+source_set("heuristics_provider") {
+  sources = [
+    "heuristics/commerce_heuristics_provider.cc",
+    "heuristics/commerce_heuristics_provider.h",
+  ]
 
-    deps = [
-      ":commerce_heuristics_data",
-      ":feature_list",
-      "//base",
-      "//components/resources:components_resources_grit",
-      "//net",
-      "//third_party/re2:re2",
-      "//ui/base",
-      "//url:url",
-    ]
-  }
+  deps = [
+    ":commerce_heuristics_data",
+    ":feature_list",
+    "//base",
+    "//components/resources:components_resources_grit",
+    "//net",
+    "//third_party/re2:re2",
+    "//ui/base",
+    "//url:url",
+  ]
 }
 
 static_library("shopping_service") {

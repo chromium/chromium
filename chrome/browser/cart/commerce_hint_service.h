@@ -8,13 +8,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
-#include "chrome/browser/cart/cart_service.h"
 #include "chrome/common/cart/commerce_hints.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/cart/cart_service.h"
+#endif
 
 namespace cart {
 
@@ -49,12 +51,15 @@ class CommerceHintService
   explicit CommerceHintService(content::WebContents* web_contents);
   friend class content::WebContentsUserData<CommerceHintService>;
 
+  void OnOperationFinished(const std::string& operation, bool success);
+
+#if !BUILDFLAG(IS_ANDROID)
   void AddCartToDB(const GURL& url,
                    bool success,
                    std::vector<CartDB::KeyAndValue> proto_pairs);
-  void OnOperationFinished(const std::string& operation, bool success);
 
   raw_ptr<CartService> service_;
+#endif
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
   base::WeakPtrFactory<CommerceHintService> weak_factory_{this};
