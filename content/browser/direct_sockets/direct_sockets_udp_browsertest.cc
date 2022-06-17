@@ -59,28 +59,10 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     return browser_context()->GetDefaultStoragePartition()->GetNetworkContext();
   }
 
-  raw_ptr<content::test::AsyncJsRunner> GetAsyncJsRunner() const {
-    return runner_.get();
-  }
-
-  void ConnectJsSocket(int port = 0) const {
-    const std::string open_socket = JsReplace(
-        R"(
-          socket = new UDPSocket($1, $2);
-          await socket.connection;
-        )",
-        kLocalhostAddress, port);
-
-    ASSERT_TRUE(
-        EvalJs(shell(), content::test::WrapAsync(open_socket)).value.is_none());
-  }
-
  protected:
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-    runner_ =
-        std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
   }
 
   void SetUp() override {
@@ -129,8 +111,6 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
   ScopedContentBrowserClientSetting setting{&client_};
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::UDPSocket> server_socket_;
-
-  std::unique_ptr<content::test::AsyncJsRunner> runner_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
@@ -183,6 +163,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdp) {
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {
   const int32_t kRequiredBytes = 1;
+
   const std::string script = JsReplace("sendUdpAfterClose($1, $2, {}, $3)",
                                        kLocalhostAddress, 993, kRequiredBytes);
 
@@ -216,6 +197,8 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
 
   const uint16_t local_port = EvalJs(shell(), open_socket).ExtractInt();
 
+  auto runner =
+      std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
   const std::string async_read = content::test::WrapAsync(JsReplace(
       R"(
         let { readable } = await socket.connection;
@@ -223,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdp) {
         return await readLoop(reader, $1);
       )",
       static_cast<int>(kRequiredBytes)));
-  auto future = GetAsyncJsRunner()->RunScript(async_read);
+  auto future = runner->RunScript(async_read);
 
   // With a client socket listening in the javascript code, we can finally start
   // sending out data.
@@ -270,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadUdpAfterStreamClose) {
       JsReplace("readUdpAfterStreamClose($1, $2, {})",
                 server_address.ToStringWithoutPort(), server_address.port());
 
-  EXPECT_EQ("readUdpAferStreamClose succeeded.", EvalJs(shell(), script));
+  EXPECT_EQ("readUdpAferSocketClose succeeded.", EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseWithActiveReader) {
@@ -282,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseWithActiveReader) {
       CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
   const std::string open_socket =
-      JsReplace("closeUdpWithLockedReadable($1, $2, /*unlock=*/false)",
+      JsReplace("closeUdpWithLockedReadable($1, $2)",
                 server_address.ToStringWithoutPort(), server_address.port());
 
   EXPECT_THAT(EvalJs(shell(), open_socket).ExtractString(),
@@ -299,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest,
       CreateUDPServerSocket(listener_receiver.BindNewPipeAndPassRemote());
 
   const std::string open_socket =
-      JsReplace("closeUdpWithLockedReadable($1, $2, /*unlock=*/true)",
+      JsReplace("closeUdpWithLockedReadable($1, $2, true)",
                 server_address.ToStringWithoutPort(), server_address.port());
 
   EXPECT_THAT(EvalJs(shell(), open_socket).ExtractString(),
@@ -310,10 +293,20 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSendError) {
   content::test::MockNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
-  ConnectJsSocket();
+  const std::string open_socket = JsReplace(
+      R"(
+        socket = new UDPSocket($1, 0);
+        await socket.connection;
+      )",
+      kLocalhostAddress);
 
+  ASSERT_TRUE(
+      EvalJs(shell(), content::test::WrapAsync(open_socket)).value.is_none());
+
+  auto runner =
+      std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
   const std::string async_read = "readWriteUdpOnError(socket);";
-  auto future = GetAsyncJsRunner()->RunScript(async_read);
+  auto future = runner->RunScript(async_read);
 
   // MockNetworkContext owns the MockUDPSocket and therefore outlives it.
   mock_network_context.get_udp_socket()->SetAdditionalSendCallback(
@@ -331,7 +324,15 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSocketError) {
   content::test::MockNetworkContext mock_network_context;
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
-  ConnectJsSocket();
+  const std::string open_socket = JsReplace(
+      R"(
+        socket = new UDPSocket($1, 0);
+        await socket.connection;
+      )",
+      kLocalhostAddress);
+
+  ASSERT_TRUE(
+      EvalJs(shell(), content::test::WrapAsync(open_socket)).value.is_none());
 
   // MockNetworkContext owns the MockUDPSocket and therefore outlives it.
   mock_network_context.get_udp_socket()->SetAdditionalSendCallback(
@@ -341,8 +342,10 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, ReadWriteUdpOnSocketError) {
           },
           &mock_network_context));
 
+  auto runner =
+      std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
   const std::string script = "readWriteUdpOnError(socket)";
-  auto future = GetAsyncJsRunner()->RunScript(script);
+  auto future = runner->RunScript(script);
 
   EXPECT_THAT(future->Get(),
               ::testing::HasSubstr("readWriteUdpOnError succeeded"));

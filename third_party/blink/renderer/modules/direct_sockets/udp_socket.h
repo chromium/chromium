@@ -55,9 +55,25 @@ class MODULES_EXPORT UDPSocket final
                            const UDPSocketOptions*,
                            ExceptionState&);
 
+  // Socket:
+  ScriptPromise connection(ScriptState* script_state) const override {
+    return Socket::connection(script_state);
+  }
+  ScriptPromise closed(ScriptState* script_state) const override {
+    return Socket::closed(script_state);
+  }
+  ScriptPromise close(ScriptState* script_state,
+                      const SocketCloseOptions* options,
+                      ExceptionState& exception_state) override {
+    return Socket::close(script_state, options, exception_state);
+  }
+
  public:
   explicit UDPSocket(ScriptState*);
   ~UDPSocket() override;
+
+  UDPSocket(const UDPSocket&) = delete;
+  UDPSocket& operator=(const UDPSocket&) = delete;
 
   // Validates options and calls
   // DirectSocketsServiceMojoRemote::OpenUdpSocket(...) with Init(...) passed as
@@ -82,20 +98,21 @@ class MODULES_EXPORT UDPSocket final
  private:
   mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
   GetUDPSocketReceiver();
+
   mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
   GetUDPSocketListener();
 
   // network::mojom::blink::UDPSocketListener:
   void OnReceived(int32_t result,
-                  const absl::optional<net::IPEndPoint>& src_addr,
-                  absl::optional<base::span<const uint8_t>> data) override;
+                  const absl::optional<::net::IPEndPoint>& src_addr,
+                  absl::optional<::base::span<const ::uint8_t>> data) override;
 
   void OnServiceConnectionError() override;
   void OnSocketConnectionError();
 
   void CloseOnError();
-
-  void OnBothStreamsClosed(std::vector<bool> args);
+  void Close(const SocketCloseOptions*, ExceptionState&) override;
+  void CloseInternal(bool error);
 
   const Member<UDPSocketMojoRemote> udp_socket_;
   HeapMojoReceiver<network::mojom::blink::UDPSocketListener, UDPSocket>

@@ -4,15 +4,10 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
-#include "base/notreached.h"
-#include "mojo/public/cpp/system/handle_signals_state.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
-#include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
-#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
@@ -30,6 +25,24 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+// An implementation of UnderlyingSinkBase that forwards all operations to the
+// TCPWritableStreamWrapper object that created it.
+class TCPWritableStreamWrapper::TCPUnderlyingSink final
+    : public WritableStreamWrapper::UnderlyingSink {
+ public:
+  explicit TCPUnderlyingSink(TCPWritableStreamWrapper* writable_stream_wrapper)
+      : WritableStreamWrapper::UnderlyingSink(writable_stream_wrapper) {}
+
+  ScriptPromise close(ScriptState* script_state, ExceptionState&) override {
+    GetWritableStreamWrapper()->CloseSocket(/*error=*/false);
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    WritableStreamWrapper::UnderlyingSink::Trace(visitor);
+  }
+};
 
 TCPWritableStreamWrapper::CachedDataBuffer::CachedDataBuffer(
     v8::Isolate* isolate,
@@ -55,7 +68,7 @@ TCPWritableStreamWrapper::CachedDataBuffer::~CachedDataBuffer() {
 
 TCPWritableStreamWrapper::TCPWritableStreamWrapper(
     ScriptState* script_state,
-    CloseOnceCallback on_close,
+    base::OnceCallback<void(bool)> on_close,
     mojo::ScopedDataPipeProducerHandle handle)
     : WritableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
@@ -67,17 +80,24 @@ TCPWritableStreamWrapper::TCPWritableStreamWrapper(
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
       WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReady,
                          WrapWeakPersistent(this)));
-
   close_watcher_.Watch(
       data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReset,
+      WTF::BindRepeating(&TCPWritableStreamWrapper::OnPeerClosed,
                          WrapWeakPersistent(this)));
 
   // Set the CountQueueingStrategy's high water mark as 1 to make the logic of
   // |WriteOrCacheData| much simpler
-  InitSinkAndWritable(/*sink=*/MakeGarbageCollected<UnderlyingSink>(this),
+  InitSinkAndWritable(/*sink=*/MakeGarbageCollected<TCPUnderlyingSink>(this),
                       /*high_water_mark=*/1);
+}
+
+void TCPWritableStreamWrapper::CloseSocket(bool error) {
+  if (on_close_) {
+    DCHECK_EQ(GetState(), State::kOpen);
+    std::move(on_close_).Run(error);
+  }
+  DCHECK_NE(GetState(), State::kOpen);
 }
 
 bool TCPWritableStreamWrapper::HasPendingWrite() const {
@@ -91,6 +111,9 @@ void TCPWritableStreamWrapper::Trace(Visitor* visitor) const {
 
 void TCPWritableStreamWrapper::OnHandleReady(MojoResult result,
                                              const mojo::HandleSignalsState&) {
+  DVLOG(1) << "TCPWritableStreamWrapper::OnHandleReady() this=" << this
+           << " result=" << result;
+
   switch (result) {
     case MOJO_RESULT_OK:
       WriteCachedData();
@@ -105,22 +128,21 @@ void TCPWritableStreamWrapper::OnHandleReady(MojoResult result,
   }
 }
 
-void TCPWritableStreamWrapper::OnHandleReset(MojoResult result,
-                                             const mojo::HandleSignalsState&) {
-  DCHECK_EQ(result, MOJO_RESULT_OK);
-  ResetPipe();
-}
+void TCPWritableStreamWrapper::OnPeerClosed(MojoResult result,
+                                            const mojo::HandleSignalsState&) {
+  DVLOG(1) << "TCPWritableStreamWrapper::OnPeerClosed() this=" << this
+           << " result=" << result;
 
-void TCPWritableStreamWrapper::OnAbortSignal() {
-  if (write_promise_resolver_) {
-    write_promise_resolver_->Reject(
-        Controller()->signal()->reason(GetScriptState()));
-    write_promise_resolver_ = nullptr;
-  }
+  DCHECK_EQ(result, MOJO_RESULT_OK);
+  DCHECK_EQ(GetState(), State::kOpen);
+
+  CloseSocket(/*error=*/true);
 }
 
 ScriptPromise TCPWritableStreamWrapper::Write(ScriptValue chunk,
                                               ExceptionState& exception_state) {
+  DVLOG(1) << "TCPWritableStreamWrapper::Write() this=" << this;
+
   // There can only be one call to write() in progress at a time.
   DCHECK(!write_promise_resolver_);
   DCHECK_EQ(0u, offset_);
@@ -139,16 +161,15 @@ ScriptPromise TCPWritableStreamWrapper::Write(ScriptValue chunk,
   DCHECK(buffer_source);
 
   DOMArrayPiece array_piece(buffer_source);
-  return WriteOrCacheData({array_piece.Bytes(), array_piece.ByteLength()},
-                          exception_state);
+  return WriteOrCacheData({array_piece.Bytes(), array_piece.ByteLength()});
 }
 
 // Attempt to write |data|. Cache anything that could not be written
 // synchronously. Arrange for the cached data to be written asynchronously.
 ScriptPromise TCPWritableStreamWrapper::WriteOrCacheData(
-    base::span<const uint8_t> data,
-    ExceptionState& exception_state) {
-  DCHECK(data_pipe_);
+    base::span<const uint8_t> data) {
+  DVLOG(1) << "TCPWritableStreamWrapper::WriteOrCacheData() this=" << this
+           << " data=(" << data.data() << ", " << data.size() << ")";
   size_t written = WriteDataSynchronously(data);
 
   if (written == data.size())
@@ -156,14 +177,22 @@ ScriptPromise TCPWritableStreamWrapper::WriteOrCacheData(
 
   DCHECK_LT(written, data.size());
 
+  if (!data_pipe_) {
+    ScriptState::Scope scope(GetScriptState());
+    return ScriptPromise::Reject(
+        GetScriptState(),
+        CreateException(GetScriptState(), DOMExceptionCode::kInvalidStateError,
+                        "Pipe is disconnected."));
+  }
+
   DCHECK(!cached_data_);
   cached_data_ = std::make_unique<CachedDataBuffer>(
       GetScriptState()->GetIsolate(), data.data() + written,
       data.size() - written);
   DCHECK_EQ(offset_, 0u);
   write_watcher_.ArmOrNotify();
-  write_promise_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      GetScriptState(), exception_state.GetContext());
+  write_promise_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(GetScriptState());
   return write_promise_resolver_->Promise();
 }
 
@@ -171,6 +200,8 @@ ScriptPromise TCPWritableStreamWrapper::WriteOrCacheData(
 // asynchronously. Fulfill |write_promise_resolver_| once all data has been
 // written.
 void TCPWritableStreamWrapper::WriteCachedData() {
+  DVLOG(1) << "TCPWritableStreamWrapper::WriteCachedData() this=" << this;
+
   auto data = base::make_span(static_cast<uint8_t*>(cached_data_->data()),
                               cached_data_->length())
                   .subspan(offset_);
@@ -200,6 +231,8 @@ void TCPWritableStreamWrapper::WriteCachedData() {
 // bytes written. May close |data_pipe_| as a side-effect on error.
 size_t TCPWritableStreamWrapper::WriteDataSynchronously(
     base::span<const uint8_t> data) {
+  DVLOG(1) << "TCPWritableStreamWrapper::WriteDataSynchronously() this=" << this
+           << " data=(" << data.data() << ", " << data.size() << ")";
   DCHECK(data_pipe_);
 
   // This use of saturated cast means that we will fallback to asynchronous
@@ -224,64 +257,37 @@ size_t TCPWritableStreamWrapper::WriteDataSynchronously(
   }
 }
 
-void TCPWritableStreamWrapper::CloseStream() {
+void TCPWritableStreamWrapper::CloseStream(bool error) {
   if (GetState() != State::kOpen) {
     return;
   }
-  SetState(State::kClosed);
-  DCHECK(!write_promise_resolver_);
+  SetState(error ? State::kAborted : State::kClosed);
 
-  // If close request came from writer.close() or writer.abort(), the internal
-  // state of the stream is already set to closed.  Therefore we don't have to
-  // do anything with the controller.
-  if (!data_pipe_) {
-    // This is a rare case indicating that writer.close/abort() interrupted
-    // the OnWriteError() call where the pipe already got reset, but the
-    // corresponding IPC hasn't yet arrived. The simplest way is to abort
-    // CloseStream by setting state to Open and allow the IPC to finish the
-    // job.
-    SetState(State::kOpen);
-    return;
+  {
+    ScriptState::Scope scope(GetScriptState());
+    ScriptValue exception =
+        error
+            ? CreateException(GetScriptState(), DOMExceptionCode::kNetworkError,
+                              "Connection aborted by remote")
+            : CreateException(GetScriptState(),
+                              DOMExceptionCode::kInvalidStateError,
+                              "Stream closed.");
+    if (write_promise_resolver_) {
+      write_promise_resolver_->Reject(exception);
+      write_promise_resolver_ = nullptr;
+    }
+
+    Controller()->error(GetScriptState(), exception);
   }
+
+  on_close_.Reset();
 
   ResetPipe();
-  std::move(on_close_).Run(/*error=*/false);
-}
-
-void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
-  if (GetState() != State::kOpen) {
-    return;
-  }
-  SetState(State::kAborted);
-
-  auto message =
-      String{"Stream aborted by the remote: " + net::ErrorToString(error_code)};
-  auto* exception = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, message);
-
-  // Can be already reset due to HandlePipeClosed() called previously.
-  if (data_pipe_) {
-    ResetPipe();
-  }
-
-  auto* script_state = GetScriptState();
-  DCHECK(script_state->ContextIsValid());
-
-  ScriptState::Scope scope{script_state};
-  if (write_promise_resolver_) {
-    write_promise_resolver_->RejectWithDOMException(
-        DOMExceptionCode::kNetworkError, message);
-    write_promise_resolver_ = nullptr;
-  } else {
-    auto* script_state = GetScriptState();
-    Controller()->error(script_state,
-                        ScriptValue::From(script_state, exception));
-  }
-
-  std::move(on_close_).Run(/*error=*/true);
 }
 
 void TCPWritableStreamWrapper::ResetPipe() {
+  DVLOG(1) << "TCPWritableStreamWrapper::ResetPipe() this=" << this;
+
   write_watcher_.Cancel();
   close_watcher_.Cancel();
   data_pipe_.reset();
@@ -291,6 +297,8 @@ void TCPWritableStreamWrapper::ResetPipe() {
 }
 
 void TCPWritableStreamWrapper::Dispose() {
+  DVLOG(1) << "TCPWritableStreamWrapper::Dispose() this=" << this;
+
   ResetPipe();
 }
 

@@ -37,25 +37,27 @@ namespace blink {
 
 class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
  public:
-  using CloseOnceCallback = base::OnceCallback<void(bool error)>;
-
   enum class State { kOpen, kAborted, kClosed };
 
   explicit StreamWrapper(ScriptState*);
-  virtual ~StreamWrapper();
+  virtual ~StreamWrapper() = 0;
 
   State GetState() const { return state_; }
   ScriptState* GetScriptState() const { return script_state_; }
 
   virtual bool Locked() const = 0;
 
-  virtual void CloseStream() = 0;
-  virtual void ErrorStream(int32_t error_code) = 0;
+  virtual void CloseStream(bool error) = 0;
+  virtual void CloseSocket(bool error) { NOTIMPLEMENTED(); }
 
   void Trace(Visitor* visitor) const override;
 
  protected:
   void SetState(State state) { state_ = state; }
+
+  static ScriptValue CreateException(ScriptState*,
+                                     DOMExceptionCode,
+                                     const String& message);
 
  private:
   const Member<ScriptState> script_state_;
@@ -96,23 +98,17 @@ class WritableStreamWrapper : public StreamWrapper {
   WritableStream* Writable() const { return writable_; }
   bool Locked() const override;
 
+  // Implements UnderlyingSink::write(...)
+  virtual ScriptPromise Write(ScriptValue, ExceptionState&) = 0;
+
   // Checks whether there's a write in progress.
   virtual bool HasPendingWrite() const { return false; }
+
   void Trace(Visitor*) const override;
 
  protected:
   class UnderlyingSink;
   void InitSinkAndWritable(UnderlyingSink*, size_t high_water_mark);
-
-  // Intercepts signal from WritableStream::abort(...) and processes it out
-  // of order (without waiting for queued writes to complete first).
-  // Note that UnderlyingSink::abort(...) will be called right afterwards --
-  // therefore normally it's sufficient to reject the pending promise (and the
-  // rest will be handled by the controller).
-  virtual void OnAbortSignal() = 0;
-
-  // Implements UnderlyingSink::write(...)
-  virtual ScriptPromise Write(ScriptValue, ExceptionState&) = 0;
 
   WritableStreamDefaultController* Controller() const;
 
@@ -127,7 +123,7 @@ class ReadableStreamWrapper::UnderlyingSource : public UnderlyingSourceBase {
 
   ScriptPromise Start(ScriptState*) override;
   ScriptPromise pull(ScriptState*) override;
-  ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
+  ScriptPromise Cancel(ScriptState*, ScriptValue reason) override = 0;
 
   void Trace(Visitor*) const override;
 
@@ -152,7 +148,7 @@ class WritableStreamWrapper::UnderlyingSink : public UnderlyingSinkBase {
                       ScriptValue chunk,
                       WritableStreamDefaultController*,
                       ExceptionState&) override;
-  ScriptPromise close(ScriptState*, ExceptionState&) override;
+  ScriptPromise close(ScriptState*, ExceptionState&) override = 0;
   ScriptPromise abort(ScriptState*,
                       ScriptValue reason,
                       ExceptionState&) override;

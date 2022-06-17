@@ -7,7 +7,6 @@
 #include "base/callback_forward.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_underlying_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
@@ -27,18 +26,37 @@
 
 namespace blink {
 
+class UDPReadableStreamWrapper::UDPUnderlyingSource
+    : public ReadableStreamWrapper::UnderlyingSource {
+ public:
+  UDPUnderlyingSource(ScriptState* script_state,
+                      UDPReadableStreamWrapper* readable_stream_wrapper)
+      : ReadableStreamWrapper::UnderlyingSource(script_state,
+                                                readable_stream_wrapper) {}
+
+  ScriptPromise Cancel(ScriptState* script_state, ScriptValue reason) override {
+    GetReadableStreamWrapper()->CloseSocket(/*error=*/false);
+    return ScriptPromise::CastUndefined(script_state);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ReadableStreamWrapper::UnderlyingSource::Trace(visitor);
+  }
+};
+
 // UDPReadableStreamWrapper definition
 
 UDPReadableStreamWrapper::UDPReadableStreamWrapper(
     ScriptState* script_state,
-    CloseOnceCallback on_close,
     const Member<UDPSocketMojoRemote> udp_socket,
+    base::OnceCallback<void(bool)> on_close,
     uint32_t high_water_mark)
     : ReadableStreamWrapper(script_state),
-      on_close_(std::move(on_close)),
-      udp_socket_(udp_socket) {
+      udp_socket_(udp_socket),
+      on_close_(std::move(on_close)) {
   InitSourceAndReadable(
-      /*source=*/MakeGarbageCollected<UnderlyingSource>(GetScriptState(), this),
+      /*source=*/MakeGarbageCollected<UDPUnderlyingSource>(GetScriptState(),
+                                                           this),
       high_water_mark);
 }
 
@@ -79,27 +97,26 @@ void UDPReadableStreamWrapper::Trace(Visitor* visitor) const {
   ReadableStreamWrapper::Trace(visitor);
 }
 
-void UDPReadableStreamWrapper::CloseStream() {
-  if (GetState() != State::kOpen) {
-    return;
-  }
-  SetState(State::kClosed);
-
-  std::move(on_close_).Run(/*error=*/false);
+void UDPReadableStreamWrapper::CloseSocket(bool error) {
+  DCHECK_EQ(GetState(), State::kOpen);
+  std::move(on_close_).Run(error);
+  DCHECK_NE(GetState(), State::kOpen);
 }
 
-void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
+void UDPReadableStreamWrapper::CloseStream(bool error) {
   if (GetState() != State::kOpen) {
     return;
   }
-  SetState(State::kAborted);
+  SetState(error ? State::kAborted : State::kClosed);
 
-  auto* exception = MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, String{"Stream aborted by the remote: " +
-                                              net::ErrorToString(error_code)});
-  Controller()->Error(exception);
+  if (error) {
+    Controller()->Error(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+  } else {
+    Controller()->Close();
+  }
 
-  std::move(on_close_).Run(/*error=*/true);
+  on_close_.Reset();
 }
 
 }  // namespace blink

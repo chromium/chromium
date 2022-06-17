@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket.h"
 
-#include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "net/base/net_errors.h"
@@ -12,6 +11,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_close_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_connection.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
-#include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -122,15 +121,12 @@ void UDPSocket::Init(int32_t result,
                      const absl::optional<net::IPEndPoint>& local_addr,
                      const absl::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK && peer_addr) {
-    auto close_callback = base::BarrierCallback<bool>(
-        /*num_callbacks=*/2,
-        WTF::Bind(&UDPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
-
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state_, close_callback, udp_socket_,
+        script_state_, udp_socket_,
+        WTF::Bind(&UDPSocket::CloseInternal, WrapWeakPersistent(this)),
         readable_stream_buffer_size_.value_or(readableStreamDefaultBufferSize));
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
-        script_state_, close_callback, udp_socket_);
+        script_state_, udp_socket_);
 
     auto* connection = UDPSocketConnection::Create();
 
@@ -227,23 +223,48 @@ void UDPSocket::OnSocketConnectionError() {
 }
 
 void UDPSocket::CloseOnError() {
+  if (Initialized()) {
+    CloseInternal(/*error=*/true);
+    DCHECK(Closed());
+  }
+}
+
+void UDPSocket::Close(const SocketCloseOptions* options,
+                      ExceptionState& exception_state) {
   if (!Initialized()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is not properly initialized.");
     return;
   }
 
-  readable_stream_wrapper_->ErrorStream(net::ERR_CONNECTION_ABORTED);
-  writable_stream_wrapper_->ErrorStream(net::ERR_CONNECTION_ABORTED);
+  if (Closed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is already closed or errored.");
+    return;
+  }
+
+  if (!options->hasForce() || !options->force()) {
+    if (readable_stream_wrapper_->Locked() ||
+        writable_stream_wrapper_->Locked()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Close called on locked streams.");
+      return;
+    }
+  }
+
+  CloseInternal(/*error=*/false);
+  DCHECK(Closed());
 }
 
-void UDPSocket::OnBothStreamsClosed(std::vector<bool> args) {
-  DCHECK_EQ(args.size(), 2U);
-  // At least one callback was invoked with error = true.
-  bool error = base::ranges::any_of(args, base::identity());
-
+void UDPSocket::CloseInternal(bool error) {
   CloseServiceAndResetFeatureHandle();
   ResolveOrRejectClosed(error);
 
   socket_listener_.reset();
+
+  // Reject pending read/write promises.
+  readable_stream_wrapper_->CloseStream(error);
+  writable_stream_wrapper_->CloseStream(error);
 
   // Close the socket.
   udp_socket_->Close();

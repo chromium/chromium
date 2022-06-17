@@ -21,3 +21,7 @@ dictionary TCPSocketOptions : SocketOptions {
 dictionary UDPSocketOptions : SocketOptions {
   [EnforceRange] unsigned short readableStreamBufferSize;
 };
+
+dictionary SocketCloseOptions {
+  boolean force;
+};
