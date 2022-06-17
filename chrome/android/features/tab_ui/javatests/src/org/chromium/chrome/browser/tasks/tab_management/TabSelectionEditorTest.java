@@ -585,7 +585,6 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1237367")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
