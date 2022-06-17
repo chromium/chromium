@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/spell_checker.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace quick_answers {
@@ -39,11 +38,9 @@ void QuickAnswersClient::SetIntentGeneratorFactoryForTesting(
 QuickAnswersClient::QuickAnswersClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     QuickAnswersDelegate* delegate)
-    : url_loader_factory_(url_loader_factory), delegate_(delegate) {
-  if (chromeos::features::IsQuickAnswersAlwaysTriggerForSingleWord()) {
-    spell_checker_ = std::make_unique<SpellChecker>(url_loader_factory);
-  }
-}
+    : url_loader_factory_(url_loader_factory),
+      delegate_(delegate),
+      spell_checker_(std::make_unique<SpellChecker>(url_loader_factory)) {}
 
 QuickAnswersClient::~QuickAnswersClient() = default;
 

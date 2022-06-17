@@ -8,14 +8,12 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/spell_checker.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
@@ -551,10 +549,6 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentUnSupportedEntity) {
 }
 
 TEST_F(IntentGeneratorTest, ShouldTriggerForSingleWordInDictionary) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   const std::string kWord = "single";
 
   // No Annotation provided.
@@ -579,10 +573,6 @@ TEST_F(IntentGeneratorTest, ShouldTriggerForSingleWordInDictionary) {
 
 TEST_F(IntentGeneratorTest,
        ShouldNotTriggerForSingleWordInDictionaryWithDigits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   const std::string kWord = "1st";
 
   // No Annotation provided.
@@ -607,10 +597,6 @@ TEST_F(IntentGeneratorTest,
 }
 
 TEST_F(IntentGeneratorTest, ShouldNotTriggerForProperNounInDictionary) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   const std::string kWord = "Amy";
 
   // No Annotation provided.
@@ -636,10 +622,6 @@ TEST_F(IntentGeneratorTest, ShouldNotTriggerForProperNounInDictionary) {
 
 TEST_F(IntentGeneratorTest,
        ShouldFallbackToAnnotationsForWordNotInDictionaryNoAnnotation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   const std::string kWord = "single";
 
   // No Annotation provided, and not add the word to the dictionary.
@@ -663,10 +645,6 @@ TEST_F(IntentGeneratorTest,
 TEST_F(
     IntentGeneratorTest,
     ShouldFallbackToAnnotationsForWordNotInDictionaryWithDictionaryAnnotation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   const std::string kWord = "unfathomable";
 
   // Annotation provided, and not add the word to the dictionary.
@@ -699,10 +677,6 @@ TEST_F(
 TEST_F(
     IntentGeneratorTest,
     ShouldFallbackToAnnotationsForWordNotInDictionaryWithUnitConversionAnnotation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   const std::string kText = "50kg";
 
   // Annotation provided, and not add the text to the dictionary.
@@ -733,10 +707,6 @@ TEST_F(
 }
 
 TEST_F(IntentGeneratorTest, ShouldNotTriggerForMultipleWords) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
-
   // No Annotation provided.
   std::vector<TextAnnotationPtr> annotations;
   UseFakeServiceConnection(annotations);

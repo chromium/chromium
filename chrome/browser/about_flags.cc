@@ -6108,13 +6108,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableQuickAnswersV2TranslationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDisableQuickAnswersV2Translation)},
 
-    {"quick-answers-always-trigger-for-single-word",
-     flag_descriptions::kQuickAnswersAlwaysTriggerForSingleWordName,
-     flag_descriptions::kQuickAnswersAlwaysTriggerForSingleWordDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord)},
-
     {"quick-answers-for-more-locales",
      flag_descriptions::kQuickAnswersForMoreLocalesName,
      flag_descriptions::kQuickAnswersForMoreLocalesDescription, kOsCrOS,

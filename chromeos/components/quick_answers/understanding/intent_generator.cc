@@ -148,32 +148,30 @@ IntentGenerator::~IntentGenerator() {
 }
 
 void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
-  if (chromeos::features::IsQuickAnswersAlwaysTriggerForSingleWord()) {
-    const std::u16string& u16_text = base::UTF8ToUTF16(request.selected_text);
-    base::i18n::BreakIterator iter(u16_text,
-                                   base::i18n::BreakIterator::BREAK_WORD);
-    if (!iter.Init() || !iter.Advance()) {
-      NOTREACHED() << "Failed to load BreakIterator.";
+  const std::u16string& u16_text = base::UTF8ToUTF16(request.selected_text);
+  base::i18n::BreakIterator iter(u16_text,
+                                 base::i18n::BreakIterator::BREAK_WORD);
+  if (!iter.Init() || !iter.Advance()) {
+    NOTREACHED() << "Failed to load BreakIterator.";
 
-      std::move(complete_callback_)
-          .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
-      return;
-    }
+    std::move(complete_callback_)
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
+    return;
+  }
 
-    DCHECK(spell_checker_.get()) << "spell_checker_ should exist when the "
-                                    "always trigger feature is enabled";
-    // Check spelling if the selected text is a valid single word.
-    if (iter.IsWord() && iter.prev() == 0 && iter.pos() == u16_text.length()) {
-      // Search server do not provide useful information for proper nouns and
-      // abbreviations (such as "Amy" and "ASAP"). Check spelling of the word in
-      // lower case to filter out such cases.
-      auto text = base::UTF16ToUTF8(
-          base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
-      spell_checker_->CheckSpelling(
-          text, base::BindOnce(&IntentGenerator::CheckSpellingCallback,
-                               weak_factory_.GetWeakPtr(), request));
-      return;
-    }
+  DCHECK(spell_checker_.get()) << "spell_checker_ should exist when the "
+                                  "always trigger feature is enabled";
+  // Check spelling if the selected text is a valid single word.
+  if (iter.IsWord() && iter.prev() == 0 && iter.pos() == u16_text.length()) {
+    // Search server do not provide useful information for proper nouns and
+    // abbreviations (such as "Amy" and "ASAP"). Check spelling of the word in
+    // lower case to filter out such cases.
+    auto text = base::UTF16ToUTF8(
+        base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
+    spell_checker_->CheckSpelling(
+        text, base::BindOnce(&IntentGenerator::CheckSpellingCallback,
+                             weak_factory_.GetWeakPtr(), request));
+    return;
   }
 
   // Fallback to text classifier.

@@ -4860,11 +4860,6 @@ const char kDisableQuickAnswersV2TranslationName[] =
 const char kDisableQuickAnswersV2TranslationDescription[] =
     "Disable translation services of the Quick Answers.";
 
-const char kQuickAnswersAlwaysTriggerForSingleWordName[] =
-    "Enable Quick Answers always trigger for single word";
-const char kQuickAnswersAlwaysTriggerForSingleWordDescription[] =
-    "Enable Quick Answers always trigger for single word selection.";
-
 const char kQuickAnswersForMoreLocalesName[] =
     "Enable Quick Answers for more locales";
 const char kQuickAnswersForMoreLocalesDescription[] =

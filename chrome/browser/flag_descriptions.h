@@ -2770,9 +2770,6 @@ extern const char kDeprecateAssistantStylusFeaturesDescription[];
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 
-extern const char kQuickAnswersAlwaysTriggerForSingleWordName[];
-extern const char kQuickAnswersAlwaysTriggerForSingleWordDescription[];
-
 extern const char kQuickAnswersForMoreLocalesName[];
 extern const char kQuickAnswersForMoreLocalesDescription[];
 
