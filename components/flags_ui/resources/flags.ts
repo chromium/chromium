@@ -9,50 +9,69 @@ import 'chrome://resources/js/ios/web_ui.js';
 import 'chrome://resources/js/jstemplate_compiled.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isIOS, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
-let lastChanged = null;
-let lastFocused = null;
+let lastChanged: HTMLElement|null = null;
+let lastFocused: HTMLElement|null = null;
+
 const restartButton = $('experiment-restart-button');
 
-/** @type {?function():void} */
-let experimentalFeaturesResolver = null;
+const experimentalFeaturesResolver: PromiseResolver<void> =
+    new PromiseResolver();
 
 // Exported on |window| since this is needed by tests.
-/** @type {!Promise} */
-window.experimentalFeaturesReadyForTest = new Promise(resolve => {
-  experimentalFeaturesResolver = resolve;
-});
+Object.assign(
+    window,
+    {experimentalFeaturesReadyForTest: experimentalFeaturesResolver.promise});
 
-/** @const {!Array<!Object<string, !HTMLElement>>} */
-const tabs = [
+// Declare properties that are augmented on some HTMLElement instances by
+// jstemplate.
+type WithExtras = {
+  internal_name: string,
+};
+
+type Tab = {
+  tabEl: HTMLElement,
+  panelEl: HTMLElement,
+};
+
+const tabs: Tab[] = [
   {
-    tabEl: document.querySelector('#tab-available'),
-    panelEl: document.querySelector('#tab-content-available'),
+    tabEl: document.body.querySelector('#tab-available')!,
+    panelEl: document.body.querySelector('#tab-content-available')!,
   },
   // <if expr="not is_ios">
   {
-    tabEl: document.querySelector('#tab-unavailable'),
-    panelEl: document.querySelector('#tab-content-unavailable'),
+    tabEl: document.body.querySelector('#tab-unavailable')!,
+    panelEl: document.body.querySelector('#tab-content-unavailable')!,
   },
   // </if>
 ];
 
 /**
  * Toggles necessary attributes to display selected tab.
- * @param {!HTMLElement} selectedTabEl
  */
-function selectTab(selectedTabEl) {
+function selectTab(selectedTabEl: HTMLElement) {
   for (const tab of tabs) {
     const isSelectedTab = tab.tabEl === selectedTabEl;
-    tab.tabEl.parentNode.classList.toggle('selected', isSelectedTab);
-    tab.tabEl.setAttribute('aria-selected', isSelectedTab);
+    tab.tabEl.parentElement!.classList.toggle('selected', isSelectedTab);
+    tab.tabEl.setAttribute('aria-selected', String(isSelectedTab));
     tab.panelEl.classList.toggle('selected', isSelectedTab);
   }
+}
+
+declare global {
+  class JsEvalContext {
+    constructor(data: any);
+  }
+
+  function jstGetTemplate(id: string): HTMLElement;
+  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
 }
 
 /**
@@ -64,11 +83,9 @@ function selectTab(selectedTabEl) {
  * Takes the |experimentalFeaturesData| input argument which represents data
  * about all the current feature entries and populates the html jstemplate with
  * that data. It expects an object structure like the above.
- * @param {!ExperimentalFeaturesData} experimentalFeaturesData Information about
- *     all experiments. See returnFlagsExperiments() for the structure of this
- * object.
+ * @param experimentalFeaturesData Information about all experiments.
  */
-function renderTemplate(experimentalFeaturesData) {
+function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
   const templateToProcess = jstGetTemplate('tab-content-available-template');
   const context = new JsEvalContext(experimentalFeaturesData);
   const content = $('tab-content-available');
@@ -91,34 +108,34 @@ function renderTemplate(experimentalFeaturesData) {
   showRestartToast(experimentalFeaturesData.needsRestart);
 
   // Add handlers to dynamically created HTML elements.
-  let elements = document.getElementsByClassName('experiment-select');
-  for (const element of elements) {
+  let selectElements =
+      document.body.querySelectorAll<HTMLSelectElement&WithExtras>(
+          '.experiment-select');
+  for (const element of selectElements) {
     element.onchange = function() {
-      const selectElement = /** @type {!HTMLSelectElement} */ (element);
-      handleSelectExperimentalFeatureChoice(
-          selectElement, selectElement.selectedIndex);
+      handleSelectExperimentalFeatureChoice(element, element.selectedIndex);
       lastChanged = element;
       return false;
     };
     registerFocusEvents(element);
   }
 
-  elements = document.getElementsByClassName('experiment-enable-disable');
-  for (const element of elements) {
+  selectElements = document.body.querySelectorAll<HTMLSelectElement&WithExtras>(
+      '.experiment-enable-disable');
+  for (const element of selectElements) {
     element.onchange = function() {
-      const selectElement = /** @type {!HTMLSelectElement} */ (element);
       handleEnableExperimentalFeature(
-          selectElement,
-          selectElement.options[selectElement.selectedIndex].value ==
-              'enabled');
-      lastChanged = selectElement;
+          element, element.options[element.selectedIndex]!.value == 'enabled');
+      lastChanged = element;
       return false;
     };
     registerFocusEvents(element);
   }
 
-  elements = document.getElementsByClassName('experiment-origin-list-value');
-  for (const element of elements) {
+  const textAreaElements =
+      document.body.querySelectorAll<HTMLTextAreaElement&WithExtras>(
+          '.experiment-origin-list-value');
+  for (const element of textAreaElements) {
     element.onchange = function() {
       handleSetOriginListFlag(element, element.value);
       return false;
@@ -141,7 +158,8 @@ function renderTemplate(experimentalFeaturesData) {
   const smallScreenCheck = window.matchMedia('(max-width: 480px)');
   // Toggling of experiment description overflow content on smaller screens.
   if (smallScreenCheck.matches) {
-    elements = document.querySelectorAll('.experiment .flex:first-child');
+    const elements = document.body.querySelectorAll<HTMLElement>(
+        '.experiment .flex:first-child');
     for (const element of elements) {
       element.onclick = () => element.classList.toggle('expand');
     }
@@ -162,9 +180,8 @@ function renderTemplate(experimentalFeaturesData) {
  * Add events to an element in order to keep track of the last focused element.
  * Focus restart button if a previous focus target has been set and tab key
  * pressed.
- * @param {Element} el Element to bind events to.
  */
-function registerFocusEvents(el) {
+function registerFocusEvents(el: HTMLElement) {
   el.addEventListener('keydown', function(e) {
     if (lastChanged && e.key === 'Tab' && !e.shiftKey) {
       lastFocused = lastChanged;
@@ -185,11 +202,12 @@ function registerFocusEvents(el) {
  */
 function highlightReferencedFlag() {
   if (window.location.hash) {
-    const el = document.querySelector(window.location.hash);
+    const el = document.body.querySelector(window.location.hash);
     if (el && !el.classList.contains('referenced')) {
       // Unhighlight whatever's highlighted.
-      if (document.querySelector('.referenced')) {
-        document.querySelector('.referenced').classList.remove('referenced');
+      if (document.body.querySelector('.referenced')) {
+        document.body.querySelector('.referenced')!.classList.remove(
+            'referenced');
       }
       // Highlight the referenced element.
       el.classList.add('referenced');
@@ -197,7 +215,7 @@ function highlightReferencedFlag() {
       // <if expr="not is_ios">
       // Switch to unavailable tab if the flag is in this section.
       if ($('tab-content-unavailable').contains(el)) {
-        selectTab(/** @type {!HTMLElement} */ ($('tab-unavailable')));
+        selectTab($('tab-unavailable'));
       }
       // </if>
       el.scrollIntoView();
@@ -221,9 +239,9 @@ function restartBrowser() {
 
 /**
  * Cause a text string to be announced by screen readers
- * @param {string} text The text that should be announced.
+ * @param text The text that should be announced.
  */
-function announceStatus(text) {
+function announceStatus(text: string) {
   $('screen-reader-status-message').textContent = '';
   setTimeout(function() {
     $('screen-reader-status-message').textContent = text;
@@ -245,9 +263,9 @@ function crosUrlFlagsRedirect() {
 
 /**
  * Show the restart toast.
- * @param {boolean} show Setting to toggle showing / hiding the toast.
+ * @param show Setting to toggle showing / hiding the toast.
  */
-function showRestartToast(show) {
+function showRestartToast(show: boolean) {
   $('needs-restart').classList.toggle('show', show);
   const restartButton = $('experiment-restart-button');
   if (restartButton) {
@@ -259,73 +277,41 @@ function showRestartToast(show) {
 }
 
 /**
- * @typedef {{
- *    internal_name: string,
- *    name: string,
- *    description: string,
- *    enabled: boolean,
- *    is_default: boolean,
- *    choices: ?Array<{internal_name: string, description: string, selected:
- * boolean}>, supported_platforms: !Array<string>
- * }}
+ * `enabled` and `is_default` are only set if the feature is single valued.
+ * `enabled` is true if the feature is currently enabled.
+ * `is_default` is true if the feature is in its default state.
+ * `choices` is only set if the entry has multiple values.
  */
-let Feature;
+type Feature = {
+  internal_name: string,
+  name: string,
+  description: string,
+  enabled: boolean,
+  is_default: boolean,
+  supported_platforms: string[],
+  choices?: Array<{
+           internal_name: string,
+           description: string,
+           selected: boolean,
+         }>,
+};
 
-/**
- * @typedef {{
- *  supportedFeatures: !Array<!Feature>,
- *  unsupportedFeatures: !Array<!Feature>,
- *  needsRestart: boolean,
- *  showBetaChannelPromotion: boolean,
- *  showDevChannelPromotion: boolean,
- *  showOwnerWarning: boolean,
- *  showSystemFlagsLink: boolean
- * }}
- */
-let ExperimentalFeaturesData;
+type ExperimentalFeaturesData = {
+  supportedFeatures: Feature[],
+  unsupportedFeatures: Feature[],
+  needsRestart: boolean,
+  showBetaChannelPromotion: boolean,
+  showDevChannelPromotion: boolean,
+  showOwnerWarning: boolean,
+  showSystemFlagsLink: boolean,
+};
 
 /**
  * Called by the WebUI to re-populate the page with data representing the
  * current state of all experimental features.
- * @param {ExperimentalFeaturesData} experimentalFeaturesData Information about
- *     all experimental
- *    features in the following format:
- *   {
- *     supportedFeatures: [
- *       {
- *         internal_name: 'Feature ID string',
- *         name: 'Feature name',
- *         description: 'Description',
- *         // enabled and default are only set if the feature is single valued.
- *         // enabled is true if the feature is currently enabled.
- *         // is_default is true if the feature is in its default state.
- *         enabled: true,
- *         is_default: false,
- *         // choices is only set if the entry has multiple values.
- *         choices: [
- *           {
- *             internal_name: 'Experimental feature ID string',
- *             description: 'description',
- *             selected: true
- *           }
- *         ],
- *         supported_platforms: [
- *           'Mac',
- *           'Linux'
- *         ],
- *       }
- *     ],
- *     unsupportedFeatures: [
- *       // Mirrors the format of |supportedFeatures| above.
- *     ],
- *     needsRestart: false,
- *     showBetaChannelPromotion: false,
- *     showDevChannelPromotion: false,
- *     showOwnerWarning: false,
- *     showSystemFlagsLink: false
- *   }
  */
-function returnExperimentalFeatures(experimentalFeaturesData) {
+function returnExperimentalFeatures(
+    experimentalFeaturesData: ExperimentalFeaturesData) {
   const bodyContainer = $('body-container');
   renderTemplate(experimentalFeaturesData);
 
@@ -349,22 +335,22 @@ function returnExperimentalFeatures(experimentalFeaturesData) {
     systemFlagsLinkDiv.style.display = 'none';
   }
 
-  experimentalFeaturesResolver();
+  experimentalFeaturesResolver.resolve();
 }
 
 /**
  * Handles updating the UI after experiment selections have been made.
  * Adds or removes experiment highlighting depending on whether the experiment
  * is set to the default option then shows the restart button.
- * @param {HTMLElement} node The select node for the experiment being changed.
- * @param {number} index The selected option index.
+ * @param node The select node for the experiment being changed.
+ * @param index The selected option index.
  */
-function experimentChangesUiUpdates(node, index) {
-  const selected = node.options[index];
-  /** @suppress {missingProperties} */
-  const experimentContainerEl = $(node.internal_name).firstElementChild;
+function experimentChangesUiUpdates(
+    node: HTMLSelectElement&WithExtras, index: number) {
+  const selected = node.options[index]!;
+  const experimentContainerEl = $(node.internal_name).firstElementChild!;
   const isDefault =
-      ('default' in selected.dataset && selected.dataset.default === '1') ||
+      ('default' in selected.dataset && selected.dataset['default'] === '1') ||
       (!('default' in selected.dataset) && index === 0);
   experimentContainerEl.classList.toggle('experiment-default', isDefault);
   experimentContainerEl.classList.toggle('experiment-switched', !isDefault);
@@ -374,11 +360,11 @@ function experimentChangesUiUpdates(node, index) {
 
 /**
  * Handles a 'enable' or 'disable' button getting clicked.
- * @param {HTMLElement} node The node for the experiment being changed.
- * @param {boolean} enable Whether to enable or disable the experiment.
- * @suppress {missingProperties}
+ * @param node The node for the experiment being changed.
+ * @param enable Whether to enable or disable the experiment.
  */
-function handleEnableExperimentalFeature(node, enable) {
+function handleEnableExperimentalFeature(
+    node: HTMLSelectElement&WithExtras, enable: boolean) {
   /* This function is an onchange handler, which can be invoked during page
    * restore - see https://crbug.com/1038638. */
   if (!node.internal_name) {
@@ -390,25 +376,24 @@ function handleEnableExperimentalFeature(node, enable) {
   experimentChangesUiUpdates(node, enable ? 1 : 0);
 }
 
-/** @suppress {missingProperties} */
-function handleSetOriginListFlag(node, value) {
+function handleSetOriginListFlag(node: HTMLElement&WithExtras, value: string) {
   /* This function is an onchange handler, which can be invoked during page
    * restore - see https://crbug.com/1038638. */
   if (!node.internal_name) {
     return;
   }
-  chrome.send('setOriginListFlag', [String(node.internal_name), String(value)]);
+  chrome.send('setOriginListFlag', [String(node.internal_name), value]);
   showRestartToast(true);
 }
 
 /**
  * Invoked when the selection of a multi-value choice is changed to the
  * specified index.
- * @param {HTMLElement} node The node for the experiment being changed.
- * @param {number} index The index of the option that was selected.
- * @suppress {missingProperties}
+ * @param node The node for the experiment being changed.
+ * @param index The index of the option that was selected.
  */
-function handleSelectExperimentalFeatureChoice(node, index) {
+function handleSelectExperimentalFeatureChoice(
+    node: HTMLSelectElement&WithExtras, index: number) {
   /* This function is an onchange handler, which can be invoked during page
    * restore - see https://crbug.com/1038638. */
   if (!node.internal_name) {
@@ -420,92 +405,68 @@ function handleSelectExperimentalFeatureChoice(node, index) {
   experimentChangesUiUpdates(node, index);
 }
 
-/** @type {!FlagSearch.SearchContent} */
-const emptySearchContent = Object.freeze({
+/** Type for storing the elements which are searched on. */
+type SearchContent = {
+  link: NodeListOf<HTMLElement>|null,
+  title: NodeListOf<HTMLElement>|null,
+  description: NodeListOf<HTMLElement>|null,
+};
+
+const emptySearchContent: SearchContent = Object.freeze({
   link: null,
   title: null,
   description: null,
 });
 
+// Delay in ms following a keypress, before a search is made.
+const SEARCH_DEBOUNCE_TIME_MS: number = 150;
+
 /**
  * Handles in page searching. Matches against the experiment flag name.
- * @constructor
  */
-const FlagSearch = function() {
-  FlagSearch.instance_ = this;
+class FlagSearch {
+  private experiments_: SearchContent = Object.assign({}, emptySearchContent);
+  private unavailableExperiments_: SearchContent =
+      Object.assign({}, emptySearchContent);
+  private searchIntervalId_: number|null = null;
 
-  /** @private {!FlagSearch.SearchContent} */
-  this.experiments_ = /** @type {FlagSearch.SearchContent} */ (
-      Object.assign({}, emptySearchContent));
+  private searchBox_: HTMLInputElement;
+  private noMatchMsg_: NodeListOf<HTMLElement>;
 
-  /** @private {!FlagSearch.SearchContent} */
-  this.unavailableExperiments_ = /** @type {FlagSearch.SearchContent} */ (
-      Object.assign({}, emptySearchContent));
+  initialized: boolean = false;
 
-  this.searchBox_ = $('search');
-  this.noMatchMsg_ = document.querySelectorAll('.tab-content .no-match');
-
-  /** @private {?number} */
-  this.searchIntervalId_ = null;
-
-  this.initialized = false;
-};
-
-// Delay in ms following a keypress, before a search is made.
-FlagSearch.SEARCH_DEBOUNCE_TIME_MS = 150;
-
-/**
- * Object definition for storing the elements which are searched on.
- * @typedef {{
- *   description: ?NodeList<!HTMLElement>,
- *   link: ?NodeList<!HTMLElement>,
- *   title: ?NodeList<!HTMLElement>
- * }}
- */
-FlagSearch.SearchContent;
-
-/**
- * Get the singleton instance of FlagSearch.
- * @return {Object} Instance of FlagSearch.
- */
-FlagSearch.getInstance = function() {
-  if (FlagSearch.instance_) {
-    return FlagSearch.instance_;
-  } else {
-    return new FlagSearch();
+  constructor() {
+    this.searchBox_ = document.body.querySelector<HTMLInputElement>('#search')!;
+    this.noMatchMsg_ = document.body.querySelectorAll('.tab-content .no-match');
   }
-};
 
-FlagSearch.prototype = {
   /**
    * Initialises the in page search. Adding searchbox listeners and
    * collates the text elements used for string matching.
    */
   init() {
-    this.experiments_.link = /** @type {!NodeList<!HTMLElement>} */ (
-        document.querySelectorAll('#tab-content-available .permalink'));
-    this.experiments_.title = /** @type {!NodeList<!HTMLElement>} */ (
-        document.querySelectorAll('#tab-content-available .experiment-name'));
-    this.experiments_.description = /** @type {!NodeList<!HTMLElement>} */ (
-        document.querySelectorAll('#tab-content-available p'));
+    this.experiments_.link =
+        document.body.querySelectorAll('#tab-content-available .permalink');
+    this.experiments_.title = document.body.querySelectorAll(
+        '#tab-content-available .experiment-name');
+    this.experiments_.description =
+        document.body.querySelectorAll('#tab-content-available p');
 
-    this.unavailableExperiments_.link = /** @type {!NodeList<!HTMLElement>} */ (
-        document.querySelectorAll('#tab-content-unavailable .permalink'));
-    this.unavailableExperiments_.title =
-        /** @type {!NodeList<!HTMLElement>} */ (document.querySelectorAll(
-            '#tab-content-unavailable .experiment-name'));
+    this.unavailableExperiments_.link =
+        document.body.querySelectorAll('#tab-content-unavailable .permalink');
+    this.unavailableExperiments_.title = document.body.querySelectorAll(
+        '#tab-content-unavailable .experiment-name');
     this.unavailableExperiments_.description =
-        /** @type {!NodeList<!HTMLElement>} */ (
-            document.querySelectorAll('#tab-content-unavailable p'));
+        document.body.querySelectorAll('#tab-content-unavailable p');
 
     if (!this.initialized) {
       this.searchBox_.addEventListener('input', this.debounceSearch.bind(this));
 
-      document.querySelector('.clear-search')
-          .addEventListener('click', this.clearSearch.bind(this));
+      document.body.querySelector('.clear-search')!.addEventListener(
+          'click', this.clearSearch.bind(this));
 
-      window.addEventListener('keyup', function(e) {
-        if (document.activeElement.nodeName === 'TEXTAREA') {
+      window.addEventListener('keyup', e => {
+        if (document.activeElement!.nodeName === 'TEXTAREA') {
           return;
         }
         switch (e.key) {
@@ -517,11 +478,11 @@ FlagSearch.prototype = {
             this.searchBox_.blur();
             break;
         }
-      }.bind(this));
+      });
       this.searchBox_.focus();
       this.initialized = true;
     }
-  },
+  }
 
   /**
    * Clears a search showing all experiments.
@@ -529,29 +490,30 @@ FlagSearch.prototype = {
   clearSearch() {
     this.searchBox_.value = '';
     this.doSearch();
-  },
+  }
 
   /**
    * Reset existing highlights on an element.
-   * @param {HTMLElement} el The element to remove all highlighted mark up on.
-   * @param {string} text Text to reset the element's textContent to.
+   * @param el The element to remove all highlighted mark up on.
+   * @param text Text to reset the element's textContent to.
    */
-  resetHighlights(el, text) {
+  resetHighlights(el: HTMLElement, text: string) {
     if (el.children) {
       el.textContent = text;
     }
-  },
+  }
 
   /**
    * Highlights the search term within a given element.
-   * @param {string} searchTerm Search term user entered.
-   * @param {HTMLElement} el The node containing the text to match against.
-   * @return {boolean} Whether there was a match.
+   * @param searchTerm Search term user entered.
+   * @param el The node containing the text to match against.
+   * @return Whether there was a match.
    */
-  highlightMatchInElement(searchTerm, el) {
+  highlightMatchInElement(searchTerm: string, el: HTMLElement): boolean {
     // Experiment container.
-    const parentEl = el.parentNode.parentNode.parentNode;
-    const text = el.textContent;
+    const parentEl = el.parentElement!.parentElement!.parentElement;
+    assert(parentEl);
+    const text = el.textContent!;
     const match = text.toLowerCase().indexOf(searchTerm);
 
     parentEl.classList.toggle('hidden', match === -1);
@@ -584,53 +546,56 @@ FlagSearch.prototype = {
       this.resetHighlights(el, text);
     }
     return true;
-  },
+  }
 
   /**
    * Goes through all experiment text and highlights the relevant matches.
    * Only the first instance of a match in each experiment text block is
    * highlighted. This prevents the sea of yellow that happens using the global
    * find in page search.
-   * @param {FlagSearch.SearchContent} searchContent Object containing the
-   *     experiment text elements to search against.
-   * @param {string} searchTerm
-   * @return {number} The number of matches found.
+   * @param searchContent Object containing the experiment text elements to
+   *     search against.
+   * @return The number of matches found.
    */
-  highlightAllMatches(searchContent, searchTerm) {
+  highlightAllMatches(searchContent: SearchContent, searchTerm: string):
+      number {
     let matches = 0;
+    assert(searchContent.description);
+    assert(searchContent.link);
+    assert(searchContent.title);
     for (let i = 0, j = searchContent.link.length; i < j; i++) {
-      if (this.highlightMatchInElement(searchTerm, searchContent.title[i])) {
+      if (this.highlightMatchInElement(searchTerm, searchContent.title[i]!)) {
         this.resetHighlights(
-            searchContent.description[i],
-            searchContent.description[i].textContent);
+            searchContent.description[i]!,
+            searchContent.description[i]!.textContent!);
         this.resetHighlights(
-            searchContent.link[i], searchContent.link[i].textContent);
+            searchContent.link[i]!, searchContent.link[i]!.textContent!);
         matches++;
         continue;
       }
       if (this.highlightMatchInElement(
-              searchTerm, searchContent.description[i])) {
+              searchTerm, searchContent.description[i]!)) {
         this.resetHighlights(
-            searchContent.title[i], searchContent.title[i].textContent);
+            searchContent.title[i]!, searchContent.title[i]!.textContent!);
         this.resetHighlights(
-            searchContent.link[i], searchContent.link[i].textContent);
+            searchContent.link[i]!, searchContent.link[i]!.textContent!);
         matches++;
         continue;
       }
       // Match links, replace spaces with hyphens as flag names don't
       // have spaces.
       if (this.highlightMatchInElement(
-              searchTerm.replace(/\s/, '-'), searchContent.link[i])) {
+              searchTerm.replace(/\s/, '-'), searchContent.link[i]!)) {
         this.resetHighlights(
-            searchContent.title[i], searchContent.title[i].textContent);
+            searchContent.title[i]!, searchContent.title[i]!.textContent!);
         this.resetHighlights(
-            searchContent.description[i],
-            searchContent.description[i].textContent);
+            searchContent.description[i]!,
+            searchContent.description[i]!.textContent!);
         matches++;
       }
     }
     return matches;
-  },
+  }
 
   /**
    * Performs a search against the experiment title, description, permalink.
@@ -639,13 +604,13 @@ FlagSearch.prototype = {
     const searchTerm = this.searchBox_.value.trim().toLowerCase();
 
     if (searchTerm || searchTerm === '') {
-      document.body.classList.toggle('searching', searchTerm);
+      document.body.classList.toggle('searching', Boolean(searchTerm));
       // Available experiments
-      this.noMatchMsg_[0].classList.toggle(
+      this.noMatchMsg_[0]!.classList.toggle(
           'hidden',
           this.highlightAllMatches(this.experiments_, searchTerm) > 0);
       // Unavailable experiments
-      this.noMatchMsg_[1].classList.toggle(
+      this.noMatchMsg_[1]!.classList.toggle(
           'hidden',
           this.highlightAllMatches(this.unavailableExperiments_, searchTerm) >
               0);
@@ -653,7 +618,7 @@ FlagSearch.prototype = {
     }
 
     this.searchIntervalId_ = null;
-  },
+  }
 
   announceSearchResults() {
     const searchTerm = this.searchBox_.value.trim().toLowerCase();
@@ -662,10 +627,10 @@ FlagSearch.prototype = {
     }
 
     const selectedTab =
-        tabs.find(tab => tab.panelEl.classList.contains('selected'));
+        tabs.find(tab => tab.panelEl.classList.contains('selected'))!;
     const selectedTabId = selectedTab.panelEl.id;
     const queryString = `#${selectedTabId} .experiment:not(.hidden)`;
-    const total = document.querySelectorAll(queryString).length;
+    const total = document.body.querySelectorAll(queryString).length;
     if (total) {
       announceStatus(
           total === 1 ?
@@ -673,7 +638,7 @@ FlagSearch.prototype = {
               loadTimeData.getStringF(
                   'searchResultsPlural', total, searchTerm));
     }
-  },
+  }
 
   /**
    * Debounces the search to improve performance and prevent too many searches
@@ -683,10 +648,17 @@ FlagSearch.prototype = {
     if (this.searchIntervalId_) {
       clearTimeout(this.searchIntervalId_);
     }
-    this.searchIntervalId_ = setTimeout(
-        this.doSearch.bind(this), FlagSearch.SEARCH_DEBOUNCE_TIME_MS);
+    this.searchIntervalId_ =
+        setTimeout(this.doSearch.bind(this), SEARCH_DEBOUNCE_TIME_MS);
   }
-};
+
+  /** Get the singleton instance of FlagSearch. */
+  static getInstance(): FlagSearch {
+    return instance || (instance = new FlagSearch());
+  }
+}
+
+let instance: FlagSearch|null = null;
 
 /**
  * Allows the restart button to jump back to the previously focused experiment
