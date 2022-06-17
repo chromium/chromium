@@ -8,14 +8,13 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-// The controller acts as C++ entry point to the fast checkout UI. It provides
+// The controller acts as C++ entry point to Fast Checkout UI. It provides
 // clients all necessary directives to communicate back and forth with the
 // bottom sheet.
 class FastCheckoutControllerImpl : public FastCheckoutController {
