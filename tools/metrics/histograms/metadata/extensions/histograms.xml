@@ -222,6 +222,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.BackgroundHostCreatedForExtension"
+    enum="BackgroundHostCreatedForExtensionValues" expires_after="2022-10-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a background host is created for an extension. The value
+    indicates for which extension the host was created.
+
+    The breakdown of extensions that make up the &quot;Other extension&quot;
+    bucket can be derived from the LoadCountsPerTopLevelDocument UKM event. To
+    compare UKM event counts with UMA sample counts, use this formula:
+
+    count of UKM events for a given extension * count of samples in the
+    &quot;Other extension&quot; bucket of this histogram / count of UKM events
+    for all extensions
+
+    Extensions bundled with Chrome have dedicated values in this histogram
+    because they are not synced and therefore not reported through UKM.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.BackgroundPageLoadTime2" units="ms"
     expires_after="2022-11-18">
   <owner>rdevlin.cronin@chromium.org</owner>

@@ -10131,6 +10131,16 @@ others/histograms.xml -->
   <int value="3" label="Cold start of the browser"/>
 </enum>
 
+<enum name="BackgroundHostCreatedForExtensionValues">
+  <int value="0" label="Other extension"/>
+  <int value="1"
+      label="Google Docs Offline (ghbmnnjooekpmoecnnnilnnbdlolhkhi)"/>
+  <int value="2"
+      label="In-App Payment Support (nmmhkkegccagdldgiimedpiccmgmieda)"/>
+  <int value="3"
+      label="Assessment Assistant (gndmhdcefbhlchkhipcnnbkcmicncehk)"/>
+</enum>
+
 <enum name="BackgroundModeMenuItem">
   <int value="0" label="About"/>
   <int value="1" label="Task manager"/>
