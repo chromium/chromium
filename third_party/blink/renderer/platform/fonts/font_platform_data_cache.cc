@@ -48,12 +48,14 @@ const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
 FontPlatformDataCache* FontPlatformDataCache::Create() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(FontPlatformDataCache,
                                   shared_font_platform_data_cache, ());
-  return &shared_font_platform_data_cache;
+  if (RuntimeEnabledFeatures::ParallelTextShapingEnabled())
+    return &shared_font_platform_data_cache;
+  return new FontPlatformDataCache();
 }
 #else
 // static
-std::unique_ptr<FontPlatformDataCache> FontPlatformDataCache::Create() {
-  return std::make_unique<FontPlatformDataCache>();
+FontPlatformDataCache* FontPlatformDataCache::Create() {
+  return new FontPlatformDataCache();
 }
 #endif
 

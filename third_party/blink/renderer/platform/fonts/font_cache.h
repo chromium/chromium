@@ -396,11 +396,7 @@ class PLATFORM_EXPORT FontCache final {
   uint16_t generation_ = 0;
   bool platform_init_ = false;
   Persistent<HeapHashSet<WeakMember<FontCacheClient>>> font_cache_clients_;
-#if defined(USE_PARALLEL_TEXT_SHAPING)
   FontPlatformDataCache* const font_platform_data_cache_;
-#else
-  std::unique_ptr<FontPlatformDataCache> font_platform_data_cache_;
-#endif
   FallbackListShaperCache fallback_list_shaper_cache_;
   FontDataCache font_data_cache_;
 
