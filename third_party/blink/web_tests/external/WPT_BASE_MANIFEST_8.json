@@ -250209,7 +250209,7 @@
      []
     ],
     "custom-cors-response.js": [
-     "88688675a2aabf3dc8d7920fa7cc05bae41c7ac0",
+     "be9c7ce3bdc3c9effa6a8cb02c1beacbd5d631c1",
      []
     ],
     "dispatcher": {
@@ -377064,7 +377064,7 @@
        ]
       ],
       "font-invalid.html": [
-       "950747580e8bc0fb46c919669977681fe308d805",
+       "4262750b0ee5f8fc579731e39ed1b4934ff908e4",
        [
         null,
         {}
@@ -377163,6 +377163,13 @@
       ],
       "font-palette-values-valid.html": [
        "e6e3dda9eb1ced5b187137bceb2a85ee8207e700",
+       [
+        null,
+        {}
+       ]
+      ],
+      "font-shorthand-variant.html": [
+       "98a02ff9bb1270bb8f259839cdc3af7dda02923b",
        [
         null,
         {}
@@ -538790,7 +538797,7 @@
        ]
       ],
       "type.tentative.any.js": [
-       "173af647f27dc756df87bef348f84d3c9547bc9f",
+       "95adc2af0f6813c6f349889ff4d4d3a3305f5cc7",
        [
         null,
         {
@@ -540302,7 +540309,7 @@
        ]
       ],
       "type.tentative.any.js": [
-       "596e10b6bf548e8b0979f9cdd169817035eed218",
+       "ef1ceecb17d695cea4347a0732ba2aa17e074d9d",
        [
         null,
         {
