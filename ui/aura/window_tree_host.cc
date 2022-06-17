@@ -256,7 +256,7 @@ gfx::Transform WindowTreeHost::GetInverseRootTransformForLocalEventCoordinates()
   return invert;
 }
 
-bool WindowTreeHost::UpdateCompositorScaleAndSize(
+void WindowTreeHost::UpdateCompositorScaleAndSize(
     const gfx::Size& new_size_in_pixels) {
   gfx::Rect new_bounds(new_size_in_pixels);
   if (compositor_->display_transform_hint() ==
@@ -265,16 +265,12 @@ bool WindowTreeHost::UpdateCompositorScaleAndSize(
           gfx::OVERLAY_TRANSFORM_ROTATE_270) {
     new_bounds.Transpose();
   }
-  bool changed = compositor_->device_scale_factor() != device_scale_factor_ ||
-                 compositor_->size() != new_bounds.size();
-  // TODO(crbug.com/1329481): Skip updating the compositor if not changed.
 
   // Allocate a new LocalSurfaceId for the new size or scale factor.
   window_->AllocateLocalSurfaceId();
   ScopedLocalSurfaceIdValidator lsi_validator(window());
   compositor_->SetScaleAndSize(device_scale_factor_, new_bounds.size(),
                                window_->GetLocalSurfaceId());
-  return changed;
 }
 
 void WindowTreeHost::ConvertDIPToScreenInPixels(gfx::Point* point) const {
@@ -694,10 +690,10 @@ void WindowTreeHost::OnHostResizedInPixels(
   // from GetBoundsInPixels() on Windows to contain extra space for window
   // transition animations and should be used to set compositor size instead of
   // GetBoundsInPixels() in such case.
-  if (UpdateCompositorScaleAndSize(new_size_in_pixels)) {
-    for (WindowTreeHostObserver& observer : observers_)
-      observer.OnHostResized(this);
-  }
+  UpdateCompositorScaleAndSize(new_size_in_pixels);
+
+  for (WindowTreeHostObserver& observer : observers_)
+    observer.OnHostResized(this);
 }
 
 void WindowTreeHost::OnHostWorkspaceChanged() {

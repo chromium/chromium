@@ -133,8 +133,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   // Updates the compositor's size and scale from |new_size_in_pixels|,
   // |device_scale_factor_| and the compositor's transform hint.
-  // Return false if the compositor already has the same scale factor and size.
-  bool UpdateCompositorScaleAndSize(const gfx::Size& new_size_in_pixels);
+  void UpdateCompositorScaleAndSize(const gfx::Size& new_size_in_pixels);
 
   // Converts |point| from the root window's coordinate system to native
   // screen's.
