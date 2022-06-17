@@ -99,10 +99,7 @@ js_library("data") {
 }
 
 js_library("search") {
-  deps = [
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-  ]
+  deps = [ "//ui/webui/resources/js:util.m" ]
 }
 
 js_library("sync_index") {
@@ -121,11 +118,7 @@ js_library("sync_node_browser") {
 }
 
 js_library("sync_search") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:array_data_model.m",
-    "//ui/webui/resources/js/cr/ui:list.m",
-  ]
+  deps = [ ":chrome_sync" ]
 }
 
 js_library("traffic_log") {

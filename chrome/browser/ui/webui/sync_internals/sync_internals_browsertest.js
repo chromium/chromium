@@ -319,8 +319,12 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
   ]);
 
   // Select the first list item and verify the search tab remains selected.
-  document.querySelector('#sync-results-list').getListItemByIndex(0).selected =
-      true;
+  const firstItem =
+      document.querySelector('#sync-results-list').querySelector('li');
+  assertFalse(firstItem.hasAttribute('selected'));
+  firstItem.click();
+  // Verify that this selected the item.
+  assertTrue(firstItem.hasAttribute('selected'));
   assertTrue(searchTab.hasAttribute('selected'));
 });
 
