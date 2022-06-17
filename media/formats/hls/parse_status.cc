@@ -51,6 +51,10 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kByteRangeInvalid);
     PARSE_STATUS_CODE_CASE(kValueOverflowsTimeDelta);
     PARSE_STATUS_CODE_CASE(kPlaylistOverflowsTimeDelta);
+    PARSE_STATUS_CODE_CASE(kSkipBoundaryTooLow);
+    PARSE_STATUS_CODE_CASE(kHoldBackDistanceTooLow);
+    PARSE_STATUS_CODE_CASE(kPartHoldBackDistanceTooLow);
+    PARSE_STATUS_CODE_CASE(kPartInfTagWithoutPartHoldBack);
   }
 
   NOTREACHED();

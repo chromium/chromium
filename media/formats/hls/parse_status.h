@@ -48,6 +48,10 @@ enum class ParseStatusCode : StatusCodeType {
   kByteRangeInvalid,
   kValueOverflowsTimeDelta,
   kPlaylistOverflowsTimeDelta,
+  kSkipBoundaryTooLow,
+  kHoldBackDistanceTooLow,
+  kPartHoldBackDistanceTooLow,
+  kPartInfTagWithoutPartHoldBack,
 };
 
 struct ParseStatusTraits {

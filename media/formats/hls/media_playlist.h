@@ -88,6 +88,37 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=nominal%20playback%20rate).-,If,-the%20Media%20Playlist
   bool HasMediaSequenceTag() const { return has_media_sequence_tag_; }
 
+  // If present, this represents that the server can produce playlist delta
+  // updates. The value represents the distance from the end of the
+  // playlist beyond which media segments and their associated tags can be
+  // skipped.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-6.2.5.1
+  absl::optional<base::TimeDelta> GetSkipBoundary() const {
+    return skip_boundary_;
+  }
+
+  // Returns whether the server can produce playlist delta updates that skip
+  // EXT-X-DATERANGE tags.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-6.2.5.1
+  bool CanSkipDateRanges() const { return can_skip_dateranges_; }
+
+  // Returns the server-recommended minimum distance from the end
+  // of the playlist at which clients should begin live playback.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.8:~:text=SKIP%2DUNTIL%20attribute.-,HOLD%2DBACK,-The%20value%20is
+  base::TimeDelta GetHoldBackDistance() const { return hold_back_distance_; }
+
+  // Returns the server-recommended minimum distance from the end
+  // of the playlist at which clients should begin live playback when playing in
+  // low-latency mode.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.8:~:text=any%20Media%20Playlist.-,PART%2DHOLD%2DBACK,-The%20value%20is
+  absl::optional<base::TimeDelta> GetPartHoldBackDistance() const {
+    return part_hold_back_distance_;
+  }
+
+  // Returns whether the server supports blocking playlist reloads.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-6.2.5.2
+  bool CanBlockReload() const { return can_block_reload_; }
+
   // Attempts to parse the media playlist represented by `source`. `uri` must be
   // a valid, non-empty GURL referring to the URI of this playlist. If this
   // playlist was found through a multivariant playlist, `parent_playlist` must
@@ -111,6 +142,11 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   bool end_list_;
   bool i_frames_only_;
   bool has_media_sequence_tag_;
+  bool can_skip_dateranges_;
+  bool can_block_reload_;
+  absl::optional<base::TimeDelta> skip_boundary_;
+  base::TimeDelta hold_back_distance_;
+  absl::optional<base::TimeDelta> part_hold_back_distance_;
 };
 
 }  // namespace media::hls

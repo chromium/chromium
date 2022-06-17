@@ -127,6 +127,44 @@ inline void HasMediaSequenceTag(bool value,
   EXPECT_EQ(playlist.HasMediaSequenceTag(), value) << from.ToString();
 }
 
+// Checks that the value of `GetSkipBoundary()` matches the given value.
+inline void HasSkipBoundary(absl::optional<base::TimeDelta> value,
+                            const base::Location& from,
+                            const MediaPlaylist& playlist) {
+  EXPECT_TRUE(RoughlyEqual(playlist.GetSkipBoundary(), value))
+      << from.ToString();
+}
+
+// Checks that the value of `CanSkipDateRanges()` matches the given value.
+inline void CanSkipDateRanges(bool value,
+                              const base::Location& from,
+                              const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.CanSkipDateRanges(), value) << from.ToString();
+}
+
+// Checks that the value of `GetHoldBackDistance()` matches the given value.
+inline void HasHoldBackDistance(base::TimeDelta value,
+                                const base::Location& from,
+                                const MediaPlaylist& playlist) {
+  EXPECT_TRUE(RoughlyEqual(playlist.GetHoldBackDistance(), value))
+      << from.ToString();
+}
+
+// Checks that the value of `GetPartHoldBackDistance()` matches the given value.
+inline void HasPartHoldBackDistance(absl::optional<base::TimeDelta> value,
+                                    const base::Location& from,
+                                    const MediaPlaylist& playlist) {
+  EXPECT_TRUE(RoughlyEqual(playlist.GetPartHoldBackDistance(), value))
+      << from.ToString();
+}
+
+// Checks that the value of `CanBlockReload()` matches the given value.
+inline void CanBlockReload(bool value,
+                           const base::Location& from,
+                           const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.CanBlockReload(), value) << from.ToString();
+}
+
 // Checks that the latest media segment has the given duration.
 inline void HasDuration(base::TimeDelta duration,
                         const base::Location& from,

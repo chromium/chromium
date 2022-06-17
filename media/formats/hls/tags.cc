@@ -121,6 +121,36 @@ constexpr base::StringPiece GetAttributeName(XPartInfTagAttribute attribute) {
   return "";
 }
 
+// Attributes expected in `EXT-X-SERVER-CONTROL tag contents.
+// These must remain sorted alphabetically.
+enum class XServerControlTagAttribute {
+  kCanBlockReload,
+  kCanSkipDateRanges,
+  kCanSkipUntil,
+  kHoldBack,
+  kPartHoldBack,
+  kMaxValue = kPartHoldBack,
+};
+
+constexpr base::StringPiece GetAttributeName(
+    XServerControlTagAttribute attribute) {
+  switch (attribute) {
+    case XServerControlTagAttribute::kCanBlockReload:
+      return "CAN-BLOCK-RELOAD";
+    case XServerControlTagAttribute::kCanSkipDateRanges:
+      return "CAN-SKIP-DATERANGES";
+    case XServerControlTagAttribute::kCanSkipUntil:
+      return "CAN-SKIP-UNTIL";
+    case XServerControlTagAttribute::kHoldBack:
+      return "HOLD-BACK";
+    case XServerControlTagAttribute::kPartHoldBack:
+      return "PART-HOLD-BACK";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -521,6 +551,109 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   }
 
   return XPartInfTag{.target_duration = part_target};
+}
+
+ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {
+  DCHECK(tag.GetName() == ToTagName(XServerControlTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the attribute-list
+  TypedAttributeMap<XServerControlTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  // Extract the 'CAN-SKIP-UNTIL' attribute
+  absl::optional<base::TimeDelta> can_skip_until;
+  if (map.HasValue(XServerControlTagAttribute::kCanSkipUntil)) {
+    auto result = types::ParseDecimalFloatingPoint(
+        map.GetValue(XServerControlTagAttribute::kCanSkipUntil));
+
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    can_skip_until = base::Seconds(std::move(result).value());
+
+    if (can_skip_until->is_max()) {
+      return ParseStatusCode::kValueOverflowsTimeDelta;
+    }
+  }
+
+  // Extract the 'CAN-SKIP-DATERANGES' attribute
+  bool can_skip_dateranges = false;
+  if (map.HasValue(XServerControlTagAttribute::kCanSkipDateRanges)) {
+    if (map.GetValue(XServerControlTagAttribute::kCanSkipDateRanges).Str() ==
+        "YES") {
+      // The existence of this attribute requires the 'CAN-SKIP-UNTIL'
+      // attribute.
+      if (!can_skip_until.has_value()) {
+        return ParseStatusCode::kMalformedTag;
+      }
+
+      can_skip_dateranges = true;
+    }
+  }
+
+  // Extract the 'HOLD-BACK' attribute
+  absl::optional<base::TimeDelta> hold_back;
+  if (map.HasValue(XServerControlTagAttribute::kHoldBack)) {
+    auto result = types::ParseDecimalFloatingPoint(
+        map.GetValue(XServerControlTagAttribute::kHoldBack));
+
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    hold_back = base::Seconds(std::move(result).value());
+
+    if (hold_back->is_max()) {
+      return ParseStatusCode::kValueOverflowsTimeDelta;
+    }
+  }
+
+  // Extract the 'PART-HOLD-BACK' attribute
+  absl::optional<base::TimeDelta> part_hold_back;
+  if (map.HasValue(XServerControlTagAttribute::kPartHoldBack)) {
+    auto result = types::ParseDecimalFloatingPoint(
+        map.GetValue(XServerControlTagAttribute::kPartHoldBack));
+
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    part_hold_back = base::Seconds(std::move(result).value());
+
+    if (part_hold_back->is_max()) {
+      return ParseStatusCode::kValueOverflowsTimeDelta;
+    }
+  }
+
+  // Extract the 'CAN-BLOCK-RELOAD' attribute
+  bool can_block_reload = false;
+  if (map.HasValue(XServerControlTagAttribute::kCanBlockReload)) {
+    if (map.GetValue(XServerControlTagAttribute::kCanBlockReload).Str() ==
+        "YES") {
+      can_block_reload = true;
+    }
+  }
+
+  return XServerControlTag{
+      .skip_boundary = can_skip_until,
+      .can_skip_dateranges = can_skip_dateranges,
+      .hold_back = hold_back,
+      .part_hold_back = part_hold_back,
+      .can_block_reload = can_block_reload,
+  };
 }
 
 ParseStatus::Or<XMediaSequenceTag> XMediaSequenceTag::Parse(TagItem tag) {

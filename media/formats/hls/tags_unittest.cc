@@ -570,4 +570,147 @@ TEST(HlsTagsTest, ParseXPartInfTag) {
       ParseStatusCode::kValueOverflowsTimeDelta);
 }
 
+TEST(HlsTagsTest, ParseXServerControlTag) {
+  RunTagIdenficationTest<XServerControlTag>(
+      "#EXT-X-SERVER-CONTROL:SKIP-UNTIL=10\n", "SKIP-UNTIL=10");
+
+  // Tag requires content
+  ErrorTest<XServerControlTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+
+  // Content is allowed to be empty
+  auto tag = OkTest<XServerControlTag>("");
+  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, false);
+
+  tag = OkTest<XServerControlTag>(
+      "CAN-SKIP-UNTIL=50,CAN-SKIP-DATERANGES=YES,HOLD-BACK=60,PART-HOLD-BACK="
+      "40,CAN-BLOCK-RELOAD=YES,FUTURE-PROOF=YES");
+  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(50)));
+  EXPECT_EQ(tag.can_skip_dateranges, true);
+  EXPECT_TRUE(RoughlyEqual(tag.hold_back, base::Seconds(60)));
+  EXPECT_TRUE(RoughlyEqual(tag.part_hold_back, base::Seconds(40)));
+  EXPECT_EQ(tag.can_block_reload, true);
+
+  ErrorTest<XServerControlTag>("CAN-SKIP-UNTIL=-5",
+                               ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>("CAN-SKIP-UNTIL={$B}",
+                               ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>("CAN-SKIP-UNTIL=\"5\"",
+                               ParseStatusCode::kMalformedTag);
+
+  tag = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=5");
+  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(5)));
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, false);
+
+  // Test max value
+  tag = OkTest<XServerControlTag>("CAN-SKIP-UNTIL=" +
+                                  base::NumberToString(MaxSeconds()));
+  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, false);
+
+  ErrorTest<XServerControlTag>(
+      "CAN-SKIP-UNTIL=" + base::NumberToString(MaxSeconds() + 1),
+      ParseStatusCode::kValueOverflowsTimeDelta);
+
+  // 'CAN-SKIP-DATERANGES' requires the presence of 'CAN-SKIP-UNTIL'
+  ErrorTest<XServerControlTag>("CAN-SKIP-DATERANGES=YES",
+                               ParseStatusCode::kMalformedTag);
+  tag = OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=YES,CAN-SKIP-UNTIL=50");
+  EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(50)));
+  EXPECT_EQ(tag.can_skip_dateranges, true);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, false);
+
+  // The only value that results in `true` is "YES"
+  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
+    tag = OkTest<XServerControlTag>("CAN-SKIP-DATERANGES=" + x +
+                                    ",CAN-SKIP-UNTIL=50");
+    EXPECT_TRUE(RoughlyEqual(tag.skip_boundary, base::Seconds(50)));
+    EXPECT_EQ(tag.can_skip_dateranges, false);
+    EXPECT_EQ(tag.hold_back, absl::nullopt);
+    EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+    EXPECT_EQ(tag.can_block_reload, false);
+  }
+
+  // 'HOLD-BACK' must be a valid DecimalFloatingPoint
+  ErrorTest<XServerControlTag>("HOLD-BACK=-5", ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>("HOLD-BACK={$B}",
+                               ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>("HOLD-BACK=\"5\"",
+                               ParseStatusCode::kMalformedTag);
+
+  tag = OkTest<XServerControlTag>("HOLD-BACK=50");
+  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_TRUE(RoughlyEqual(tag.hold_back, base::Seconds(50)));
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, false);
+
+  // Test max value
+  tag = OkTest<XServerControlTag>("HOLD-BACK=" +
+                                  base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_TRUE(RoughlyEqual(tag.hold_back, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, false);
+  ErrorTest<XServerControlTag>(
+      "HOLD-BACK=" + base::NumberToString(MaxSeconds() + 1),
+      ParseStatusCode::kValueOverflowsTimeDelta);
+
+  // 'PART-HOLD-BACK' must be a valid DecimalFloatingPoint
+  ErrorTest<XServerControlTag>("PART-HOLD-BACK=-5",
+                               ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>("PART-HOLD-BACK={$B}",
+                               ParseStatusCode::kMalformedTag);
+  ErrorTest<XServerControlTag>("PART-HOLD-BACK=\"5\"",
+                               ParseStatusCode::kMalformedTag);
+
+  tag = OkTest<XServerControlTag>("PART-HOLD-BACK=50");
+  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_EQ(tag.part_hold_back, base::Seconds(50));
+  EXPECT_EQ(tag.can_block_reload, false);
+
+  // Test max value
+  tag = OkTest<XServerControlTag>("PART-HOLD-BACK=" +
+                                  base::NumberToString(MaxSeconds()));
+  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_TRUE(RoughlyEqual(tag.part_hold_back, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(tag.can_block_reload, false);
+  ErrorTest<XServerControlTag>(
+      "PART-HOLD-BACK=" + base::NumberToString(MaxSeconds() + 1),
+      ParseStatusCode::kValueOverflowsTimeDelta);
+
+  // The only value that results in `true` is "YES"
+  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
+    tag = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=" + x);
+    EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+    EXPECT_EQ(tag.can_skip_dateranges, false);
+    EXPECT_EQ(tag.hold_back, absl::nullopt);
+    EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+    EXPECT_EQ(tag.can_block_reload, false);
+  }
+
+  tag = OkTest<XServerControlTag>("CAN-BLOCK-RELOAD=YES");
+  EXPECT_EQ(tag.skip_boundary, absl::nullopt);
+  EXPECT_EQ(tag.can_skip_dateranges, false);
+  EXPECT_EQ(tag.hold_back, absl::nullopt);
+  EXPECT_EQ(tag.part_hold_back, absl::nullopt);
+  EXPECT_EQ(tag.can_block_reload, true);
+}
+
 }  // namespace media::hls

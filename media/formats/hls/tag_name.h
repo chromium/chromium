@@ -58,6 +58,7 @@ enum class MediaPlaylistTagName : TagName {
   kXGap,
   kXPlaylistType,
   kXPartInf,
+  kXServerControl,
   kXMediaSequence,
   kXDiscontinuitySequence,
   kXByteRange,

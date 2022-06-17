@@ -69,6 +69,7 @@ constexpr auto kTagNames = base::MakeFixedFlatMap({
     TagNameEntry("EXT-X-MEDIA-SEQUENCE", MediaPlaylistTagName::kXMediaSequence),
     TagNameEntry("EXT-X-PART-INF", MediaPlaylistTagName::kXPartInf),
     TagNameEntry("EXT-X-PLAYLIST-TYPE", MediaPlaylistTagName::kXPlaylistType),
+    TagNameEntry("EXT-X-SERVER-CONTROL", MediaPlaylistTagName::kXServerControl),
     TagNameEntry("EXT-X-SESSION-DATA",
                  MultivariantPlaylistTagName::kXSessionData),
     TagNameEntry("EXT-X-SESSION-KEY",

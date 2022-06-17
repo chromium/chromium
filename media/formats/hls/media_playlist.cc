@@ -39,6 +39,11 @@ struct MediaPlaylist::CtorArgs {
   bool end_list;
   bool i_frames_only;
   bool has_media_sequence_tag;
+  bool can_skip_dateranges;
+  bool can_block_reload;
+  absl::optional<base::TimeDelta> skip_boundary;
+  base::TimeDelta hold_back_distance;
+  absl::optional<base::TimeDelta> part_hold_back_distance;
 };
 
 MediaPlaylist::MediaPlaylist(MediaPlaylist&&) = default;
@@ -77,6 +82,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XEndListTag> end_list_tag;
   absl::optional<XIFramesOnlyTag> i_frames_only_tag;
   absl::optional<XPartInfTag> part_inf_tag;
+  absl::optional<XServerControlTag> server_control_tag;
   absl::optional<XMediaSequenceTag> media_sequence_tag;
   absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
   std::vector<MediaSegment> segments;
@@ -188,6 +194,13 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
         }
         case MediaPlaylistTagName::kXPartInf: {
           auto error = ParseUniqueTag(*tag, part_inf_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
+          break;
+        }
+        case MediaPlaylistTagName::kXServerControl: {
+          auto error = ParseUniqueTag(*tag, server_control_tag);
           if (error.has_value()) {
             return std::move(error).value();
           }
@@ -333,6 +346,52 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
         .target_duration = part_inf_tag->target_duration};
   }
 
+  bool can_skip_dateranges = false;
+  bool can_block_reload = false;
+  absl::optional<base::TimeDelta> skip_boundary;
+  base::TimeDelta hold_back_distance = target_duration * 3;
+  absl::optional<base::TimeDelta> part_hold_back_distance;
+  if (server_control_tag.has_value()) {
+    can_skip_dateranges = server_control_tag->can_skip_dateranges;
+    can_block_reload = server_control_tag->can_block_reload;
+
+    if (server_control_tag->skip_boundary.has_value()) {
+      skip_boundary = server_control_tag->skip_boundary.value();
+
+      // The skip boundary MUST be at least six times the target
+      // duration.
+      if (skip_boundary.value() < target_duration * 6) {
+        return ParseStatusCode::kSkipBoundaryTooLow;
+      }
+    }
+
+    if (server_control_tag->hold_back.has_value()) {
+      hold_back_distance = server_control_tag->hold_back.value();
+
+      // The hold back distance MUST be at least three times the target
+      // duration.
+      if (hold_back_distance < target_duration * 3) {
+        return ParseStatusCode::kHoldBackDistanceTooLow;
+      }
+    }
+
+    if (server_control_tag->part_hold_back.has_value()) {
+      part_hold_back_distance = server_control_tag->part_hold_back.value();
+
+      // The part hold back distance MUST be at least twice the part target
+      // duration.
+      if (partial_segment_info.has_value() &&
+          part_hold_back_distance < partial_segment_info->target_duration * 2) {
+        return ParseStatusCode::kPartHoldBackDistanceTooLow;
+      }
+    }
+  }
+
+  // PART-HOLD-BACK is required if the PART-INF tag appeared
+  if (part_inf_tag.has_value() && !part_hold_back_distance.has_value()) {
+    return ParseStatusCode::kPartInfTagWithoutPartHoldBack;
+  }
+
   // Ensure that no segment exceeds the target duration
   base::TimeDelta total_duration;
   for (const auto& segment : segments) {
@@ -374,7 +433,12 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
                .playlist_type = playlist_type,
                .end_list = end_list_tag.has_value(),
                .i_frames_only = i_frames_only_tag.has_value(),
-               .has_media_sequence_tag = media_sequence_tag.has_value()});
+               .has_media_sequence_tag = media_sequence_tag.has_value(),
+               .can_skip_dateranges = can_skip_dateranges,
+               .can_block_reload = can_block_reload,
+               .skip_boundary = skip_boundary,
+               .hold_back_distance = hold_back_distance,
+               .part_hold_back_distance = part_hold_back_distance});
 }
 
 MediaPlaylist::MediaPlaylist(CtorArgs args)
@@ -386,6 +450,11 @@ MediaPlaylist::MediaPlaylist(CtorArgs args)
       playlist_type_(args.playlist_type),
       end_list_(args.end_list),
       i_frames_only_(args.i_frames_only),
-      has_media_sequence_tag_(args.has_media_sequence_tag) {}
+      has_media_sequence_tag_(args.has_media_sequence_tag),
+      can_skip_dateranges_(args.can_skip_dateranges),
+      can_block_reload_(args.can_block_reload),
+      skip_boundary_(args.skip_boundary),
+      hold_back_distance_(args.hold_back_distance),
+      part_hold_back_distance_(args.part_hold_back_distance) {}
 
 }  // namespace media::hls

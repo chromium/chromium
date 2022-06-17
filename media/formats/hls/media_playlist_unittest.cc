@@ -1096,6 +1096,7 @@ TEST(HlsMediaPlaylistTest, XPartInfTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
+  builder.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=500");
 
   // EXT-X-PART-INF tag must be well-formed
   for (base::StringPiece x : {"", ":", ":TARGET=1", ":PART-TARGET=two"}) {
@@ -1135,6 +1136,138 @@ TEST(HlsMediaPlaylistTest, XPartInfTag) {
   // The EXT-X-PART-INF tag may not appear twice
   fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=10");
   fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+}
+
+TEST(HlsMediaPlaylistTest, XServerControlTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:6");
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(6));
+
+  // Without the EXT-X-SERVER-CONTROL tag, certain properties have default
+  // values
+  auto fork = builder;
+  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(CanSkipDateRanges, false);
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+  // An empty EXT-X-SERVER-CONTROL tag shouldn't change these defaults
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:");
+  fork.ExpectOk();
+
+  // This tag may not appear twice
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:");
+  fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+
+  // If attributes are malformed, playlist should be rejected
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:CAN-SKIP-UNTIL={$foo}");
+  fork.ExpectError(ParseStatusCode::kMalformedTag);
+
+  // The CAN-SKIP-UNTIL attribute must be at least six times the target duration
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:CAN-SKIP-UNTIL=35");
+  fork.ExpectError(ParseStatusCode::kSkipBoundaryTooLow);
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:CAN-SKIP-UNTIL=36");
+  fork.ExpectPlaylist(HasSkipBoundary, base::Seconds(36));
+  fork.ExpectPlaylist(CanSkipDateRanges, false);
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+
+  // The CAN-SKIP-DATERANGES tag may not appear without CAN-SKIP-UNTIL
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:CAN-SKIP-DATERANGES=YES");
+  fork.ExpectError(ParseStatusCode::kMalformedTag);
+
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-SERVER-CONTROL:CAN-SKIP-DATERANGES=YES,CAN-SKIP-UNTIL=40");
+  fork.ExpectPlaylist(CanSkipDateRanges, true);
+  fork.ExpectPlaylist(HasSkipBoundary, base::Seconds(40));
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine(
+      "#EXT-X-SERVER-CONTROL:CAN-SKIP-UNTIL=40,CAN-SKIP-DATERANGES=YES");
+  fork.ExpectPlaylist(CanSkipDateRanges, true);
+  fork.ExpectPlaylist(HasSkipBoundary, base::Seconds(40));
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+
+  // The 'EXT-X-PART-INF' tag requires the 'PART-HOLD-BACK' field
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0.2");
+  fork.ExpectError(ParseStatusCode::kPartInfTagWithoutPartHoldBack);
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0.2");
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:");
+  fork.ExpectError(ParseStatusCode::kPartInfTagWithoutPartHoldBack);
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0.2");
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=0.5");
+  fork.ExpectPlaylist(
+      HasPartialSegmentInfo,
+      MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(0.2)});
+  fork.ExpectPlaylist(HasPartHoldBackDistance, base::Seconds(0.5));
+  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(CanSkipDateRanges, false);
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+
+  // PART-HOLD-BACK must not be less than PART-TARGET * 2 (unless that tag
+  // doesn't exist)
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0.2");
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=0.4");
+  fork.ExpectPlaylist(
+      HasPartialSegmentInfo,
+      MediaPlaylist::PartialSegmentInfo{.target_duration = base::Seconds(0.2)});
+  fork.ExpectPlaylist(HasPartHoldBackDistance, base::Seconds(0.4));
+  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(CanSkipDateRanges, false);
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0.2");
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=0.3");
+  fork.ExpectError(ParseStatusCode::kPartHoldBackDistanceTooLow);
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=0.3");
+  fork.ExpectPlaylist(HasPartialSegmentInfo, absl::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, base::Seconds(0.3));
+  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(CanSkipDateRanges, false);
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectPlaylist(CanBlockReload, false);
+  fork.ExpectOk();
+
+  // Test the effect of the 'CAN-BLOCK-RELOAD' attribute
+  fork = builder;
+  fork.AppendLine("#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES");
+  fork.ExpectPlaylist(CanBlockReload, true);
+  fork.ExpectPlaylist(HasPartialSegmentInfo, absl::nullopt);
+  fork.ExpectPlaylist(HasPartHoldBackDistance, absl::nullopt);
+  fork.ExpectPlaylist(HasSkipBoundary, absl::nullopt);
+  fork.ExpectPlaylist(CanSkipDateRanges, false);
+  fork.ExpectPlaylist(HasHoldBackDistance, base::Seconds(6) * 3);
+  fork.ExpectOk();
 }
 
 }  // namespace media::hls
