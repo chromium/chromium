@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -168,6 +169,60 @@ class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
 
  private:
   gfx::ImageSkia avatar_;
+};
+
+// views::MdTextButton which:
+// - Uses the passed-in `brand_background_color` based on whether the button
+//   background contrasts sufficiently with dialog background.
+// - If `brand_text_color` is not provided, computes the text color such that it
+//   contrasts sufficiently with `brand_background_color`.
+class ContinueButton : public views::MdTextButton {
+ public:
+  ContinueButton(views::MdTextButton::PressedCallback callback,
+                 const std::u16string& text,
+                 AccountSelectionBubbleView* bubble_view,
+                 absl::optional<SkColor> brand_background_color,
+                 absl::optional<SkColor> brand_text_color)
+      : views::MdTextButton(callback, text),
+        bubble_view_(bubble_view),
+        brand_background_color_(brand_background_color),
+        brand_text_color_(brand_text_color) {}
+
+  ContinueButton(const ContinueButton&) = delete;
+  ContinueButton& operator=(const ContinueButton&) = delete;
+  ~ContinueButton() override = default;
+
+  void OnThemeChanged() override {
+    views::MdTextButton::OnThemeChanged();
+    if (!brand_background_color_)
+      return;
+
+    SkColor dialog_background_color = bubble_view_->GetBackgroundColor();
+    if (color_utils::GetContrastRatio(dialog_background_color,
+                                      *brand_background_color_) <
+        color_utils::kMinimumReadableContrastRatio) {
+      SetBgColorOverride(absl::nullopt);
+      SetEnabledTextColors(absl::nullopt);
+      return;
+    }
+    SetBgColorOverride(*brand_background_color_);
+    SkColor text_color;
+    if (brand_text_color_) {
+      // IdpNetworkRequestManager ensures that `brand_text_color_` is only set
+      // if it sufficiently contrasts with `brand_background_color_`.
+      text_color = *brand_text_color_;
+    } else {
+      text_color = color_utils::BlendForMinContrast(GetCurrentTextColor(),
+                                                    *brand_background_color_)
+                       .color;
+    }
+    SetEnabledTextColors(text_color);
+  }
+
+ private:
+  base::raw_ptr<AccountSelectionBubbleView> bubble_view_;
+  absl::optional<SkColor> brand_background_color_;
+  absl::optional<SkColor> brand_text_color_;
 };
 
 void SendAccessibilityEvent(views::Widget* widget,
@@ -318,17 +373,14 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // Prefer using the given name if it is provided, otherwise fallback to name.
   std::string display_name =
       account.given_name.empty() ? account.name : account.given_name;
-  auto button = std::make_unique<views::MdTextButton>(
+  auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&AccountSelectionBubbleView::OnAccountSelected,
                           weak_ptr_factory_.GetWeakPtr(), account),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
-                                 base::UTF8ToUTF16(display_name)));
+                                 base::UTF8ToUTF16(display_name)),
+      this, brand_background_color_, brand_text_color_);
   button->SetCornerRadius(kButtonRadius);
   button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  if (brand_background_color_)
-    button->SetBgColorOverride(*brand_background_color_);
-  if (brand_text_color_)
-    button->SetEnabledTextColors(brand_text_color_);
   button->SetProminent(true);
   continue_button_ = row->AddChildView(std::move(button));
 

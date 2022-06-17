@@ -19,6 +19,7 @@
 namespace views {
 class ImageView;
 class Label;
+class MdTextButton;
 }  // namespace views
 
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
@@ -132,7 +133,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<views::Label> title_label_{nullptr};
 
   // View containing the continue button.
-  raw_ptr<views::View> continue_button_{nullptr};
+  raw_ptr<views::MdTextButton> continue_button_{nullptr};
 
   // Used to differentiate UI dismissal scenarios.
   bool verify_sheet_shown_{false};
