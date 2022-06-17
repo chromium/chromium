@@ -200,7 +200,7 @@ class PLATFORM_EXPORT FontPlatformData {
    private:
     // TODO(yosin): Once all platforms support parallel text shaping, we should
     // use `std::unique_ptr<T>` for `HarfBuzzFace`.
-    using Map = HashMap<base::PlatformThreadId, scoped_refptr<HarfBuzzFace>>;
+    using Map = HashMap<base::PlatformThreadId, std::unique_ptr<HarfBuzzFace>>;
     base::Lock lock_;
     Map map_ GUARDED_BY(lock_);
   };
