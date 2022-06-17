@@ -340,4 +340,25 @@ TEST_F(ListMarkerTest, InlineMarginsForOutside) {
   EXPECT_EQ(LayoutUnit(), end);
 }
 
+class ListMarkerLegacyTest : public RenderingTest {
+ private:
+  ScopedLayoutNGForTest layout_ng{false};
+};
+
+// crbug.com/1336864
+TEST_F(ListMarkerLegacyTest, NegativeLetterSpacing) {
+  SetBodyContent(
+      R"HTML(<ul><li id="target" style="
+  font-size: 100px;
+  letter-spacing: -4400000000px;
+  list-style-type: 'foo';
+  list-style-position: outside;
+  ">foo</li></ul>)HTML");
+
+  auto* item_object = GetLayoutObjectByElementId("target");
+  auto* marker_object = ListMarker::MarkerFromListItem(item_object);
+  // Negative letter-spacing should not make the marker width negative.
+  EXPECT_GE(To<LayoutBox>(marker_object)->LogicalWidth(), LayoutUnit());
+}
+
 }  // namespace blink
