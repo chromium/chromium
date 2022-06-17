@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -19,12 +18,10 @@ namespace guest_os {
 namespace {
 
 bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
-  VmType type = VmTypeFromPref(dict);
   const std::string* vm_name = dict.FindStringKey(prefs::kVmNameKey);
   const std::string* container_name =
       dict.FindStringKey(prefs::kContainerNameKey);
-  return (type == container_id.vm_type) &&
-         (vm_name && *vm_name == container_id.vm_name) &&
+  return (vm_name && *vm_name == container_id.vm_name) &&
          (container_name && *container_name == container_id.container_name);
 }
 
@@ -36,16 +33,11 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
 
 }  // namespace
 
-GuestId::GuestId(VmType vm_type,
-                 std::string vm_name,
-                 std::string container_name) noexcept
-    : vm_type(vm_type),
-      vm_name(std::move(vm_name)),
-      container_name(std::move(container_name)) {}
+GuestId::GuestId(std::string vm_name, std::string container_name) noexcept
+    : vm_name(std::move(vm_name)), container_name(std::move(container_name)) {}
 
 GuestId::GuestId(const base::Value& value) noexcept {
   const base::Value::Dict* dict = value.GetIfDict();
-  vm_type = VmTypeFromPref(value);
   const std::string* vm = nullptr;
   const std::string* container = nullptr;
   if (dict != nullptr) {
@@ -65,34 +57,22 @@ base::flat_map<std::string, std::string> GuestId::ToMap() const {
 
 base::Value::Dict GuestId::ToDictValue() const {
   base::Value::Dict dict;
-  dict.Set(prefs::kVmTypeKey, static_cast<int>(vm_type));
   dict.Set(prefs::kVmNameKey, vm_name);
   dict.Set(prefs::kContainerNameKey, container_name);
   return dict;
 }
 
 bool operator<(const GuestId& lhs, const GuestId& rhs) noexcept {
-  int result = static_cast<int>(lhs.vm_type) - static_cast<int>(rhs.vm_type);
-  if (result != 0) {
-    return result < 0;
-  }
-  result = lhs.vm_name.compare(rhs.vm_name);
-  if (result != 0) {
-    return result < 0;
-  }
-  return lhs.container_name < rhs.container_name;
+  const auto result = lhs.vm_name.compare(rhs.vm_name);
+  return result < 0 || (result == 0 && lhs.container_name < rhs.container_name);
 }
 
 bool operator==(const GuestId& lhs, const GuestId& rhs) noexcept {
-  return lhs.vm_type == rhs.vm_type && lhs.vm_name == rhs.vm_name &&
-         lhs.container_name == rhs.container_name;
+  return lhs.vm_name == rhs.vm_name && lhs.container_name == rhs.container_name;
 }
 
 std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {
-  return ostream << "(type:" << container_id.vm_type << ":"
-                 << vm_tools::apps::ApplicationList_VmType_Name(
-                        container_id.vm_type)
-                 << " vm:\"" << container_id.vm_name << "\" container:\""
+  return ostream << "(vm: \"" << container_id.vm_name << "\" container: \""
                  << container_id.container_name << "\")";
 }
 
@@ -112,13 +92,13 @@ void RemoveDuplicateContainerEntries(PrefService* prefs) {
   }
 }
 
-std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
+std::vector<GuestId> GetContainers(Profile* profile) {
   std::vector<GuestId> result;
   const base::Value::List& container_list =
       profile->GetPrefs()->GetList(prefs::kGuestOsContainers)->GetList();
   for (const auto& container : container_list) {
     guest_os::GuestId id(container);
-    if (id.vm_type == vm_type) {
+    if (!id.vm_name.empty() && !id.container_name.empty()) {
       result.push_back(std::move(id));
     }
   }
@@ -158,12 +138,15 @@ void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
                    }));
 }
 
-void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
+void RemoveVmFromPrefs(Profile* profile, const std::string& vm_name) {
   auto* pref_service = profile->GetPrefs();
   ListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
   updater->EraseListIter(std::find_if(
       updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
-      [&](const auto& dict) { return VmTypeFromPref(dict) == vm_type; }));
+      [&](const auto& dict) {
+        const std::string* dict_vm_name = dict.FindStringKey(prefs::kVmNameKey);
+        return dict_vm_name && *dict_vm_name == vm_name;
+      }));
 }
 
 const base::Value* GetContainerPrefValue(Profile* profile,

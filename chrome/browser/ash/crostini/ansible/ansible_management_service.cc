@@ -213,8 +213,7 @@ void AnsibleManagementService::OnApplyAnsiblePlaybook(
 
 void AnsibleManagementService::OnApplyAnsiblePlaybookProgress(
     const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal) {
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   switch (signal.status()) {
     case vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::SUCCEEDED:
       OnConfigurationFinished(container_id, true);

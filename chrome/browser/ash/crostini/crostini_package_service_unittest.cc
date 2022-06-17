@@ -247,9 +247,7 @@ class CrostiniPackageServiceTest : public testing::Test {
   const std::string kDifferentContainerApp2Id;  // App_id for app with
                                                 // kDifferentContainerApp2FileId
   const guest_os::GuestId kDifferentContainerId =
-      guest_os::GuestId(kCrostiniDefaultVmType,
-                        kDifferentVmVmName,
-                        kDifferentContainerContainerName);
+      guest_os::GuestId(kDifferentVmVmName, kDifferentContainerContainerName);
   storage::FileSystemURL package_file_url_;
 
   UninstallPackageProgressSignal MakeUninstallSignal(
@@ -1082,9 +1080,7 @@ TEST_F(CrostiniPackageServiceTest,
   signal_progress2.set_status(UninstallPackageProgressSignal::SUCCEEDED);
 
   SendAppListUpdateSignal(
-      guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
-                        kCrostiniDefaultContainerName),
-      1);
+      guest_os::GuestId(kDifferentVmVmName, kCrostiniDefaultContainerName), 1);
   fake_cicerone_client_->UninstallPackageProgress(signal_progress);
   fake_cicerone_client_->UninstallPackageProgress(signal_progress2);
 
@@ -1101,9 +1097,7 @@ TEST_F(CrostiniPackageServiceTest,
   service_->QueueUninstallApplication(kDefaultAppId);
 
   SendAppListUpdateSignal(
-      guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
-                        kCrostiniDefaultContainerName),
-      1);
+      guest_os::GuestId(kDifferentVmVmName, kCrostiniDefaultContainerName), 1);
 
   StartAndSignalUninstall(UninstallPackageProgressSignal::SUCCEEDED);
 
@@ -1838,8 +1832,7 @@ TEST_F(CrostiniPackageServiceTest,
   signal_progress.set_status(InstallLinuxPackageProgressSignal::SUCCEEDED);
 
   service_->QueueInstallLinuxPackage(
-      guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
-                        kCrostiniDefaultContainerName),
+      guest_os::GuestId(kDifferentVmVmName, kCrostiniDefaultContainerName),
       package_file_url_, base::DoNothing());
   request =
       fake_cicerone_client_->get_most_recent_install_linux_package_request();
@@ -1850,9 +1843,7 @@ TEST_F(CrostiniPackageServiceTest,
   base::RunLoop().RunUntilIdle();
 
   SendAppListUpdateSignal(
-      guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
-                        kCrostiniDefaultContainerName),
-      1);
+      guest_os::GuestId(kDifferentVmVmName, kCrostiniDefaultContainerName), 1);
   fake_cicerone_client_->InstallLinuxPackageProgress(signal_progress);
   fake_cicerone_client_->InstallLinuxPackageProgress(signal_progress2);
 
@@ -1871,9 +1862,7 @@ TEST_F(CrostiniPackageServiceTest,
   base::RunLoop().RunUntilIdle();
 
   SendAppListUpdateSignal(
-      guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
-                        kCrostiniDefaultContainerName),
-      1);
+      guest_os::GuestId(kDifferentVmVmName, kCrostiniDefaultContainerName), 1);
 
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::SUCCEEDED);
 

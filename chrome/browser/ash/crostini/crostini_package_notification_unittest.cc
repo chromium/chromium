@@ -116,8 +116,9 @@ TEST_F(CrostiniPackageNotificationTest, InstallIgnorePreviousIcons) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
-      kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING,
+      guest_os::GuestId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName),
+      std::u16string(), kNotificationId, service_.get());
 
   app = CrostiniTestHelper::BasicApp(kSecondAppFileId);
   crostini_test_helper_->AddApp(app);
@@ -130,8 +131,9 @@ TEST_F(CrostiniPackageNotificationTest, FailureErrorMessage) {
   CrostiniPackageNotification notification(
       profile_.get(),
       CrostiniPackageNotification::NotificationType::PACKAGE_INSTALL,
-      PackageOperationStatus::RUNNING, DefaultContainerId(), std::u16string(),
-      kNotificationId, service_.get());
+      PackageOperationStatus::RUNNING,
+      guest_os::GuestId(kCrostiniDefaultVmName, kCrostiniDefaultContainerName),
+      std::u16string(), kNotificationId, service_.get());
 
   // Initially, the error message is blank.
   EXPECT_EQ(notification.GetErrorMessageForTesting(), "");

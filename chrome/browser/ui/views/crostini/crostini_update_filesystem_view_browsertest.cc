@@ -68,9 +68,7 @@ class CrostiniUpdateFilesystemViewBrowserTest
   }
 
   const guest_os::GuestId kGuestId =
-      guest_os::GuestId(crostini::kCrostiniDefaultVmType,
-                        "vm_name",
-                        "container_name");
+      guest_os::GuestId("vm_name", "container_name");
 };
 
 // Test the dialog is actually launched.

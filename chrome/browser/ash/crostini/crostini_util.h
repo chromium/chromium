@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/ash/guest_os/public/types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -42,7 +41,6 @@ extern const char kCrostiniImageAliasPattern[];
 extern const char kCrostiniContainerDefaultVersion[];
 extern const char kCrostiniContainerFlag[];
 
-extern const guest_os::VmType kCrostiniDefaultVmType;
 extern const char kCrostiniDefaultVmName[];
 extern const char kCrostiniDefaultContainerName[];
 extern const char kCrostiniDefaultUsername[];

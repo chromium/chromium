@@ -138,8 +138,7 @@ void VmApplicationsServiceProvider::LaunchTerminal(
     // kInvalidDisplayId will launch terminal on the current active display.
     crostini::LaunchTerminal(
         profile, display::kInvalidDisplayId,
-        guest_os::GuestId(crostini::kCrostiniDefaultVmType, request.vm_name(),
-                          request.container_name()),
+        guest_os::GuestId(request.vm_name(), request.container_name()),
         request.cwd(),
         std::vector<std::string>(request.params().begin(),
                                  request.params().end()));

@@ -29,8 +29,7 @@ TEST_F(CrostiniTerminalTest, GenerateTerminalURL) {
             "&args[]=--target_container%3Dpenguin"
             "&args[]=--owner_id%3Dtest");
   EXPECT_EQ(GenerateTerminalURL(&profile, "red",
-                                guest_os::GuestId(kCrostiniDefaultVmType,
-                                                  "test-vm", "test-container"),
+                                guest_os::GuestId("test-vm", "test-container"),
                                 "/home/user", {"arg1"}),
             "chrome-untrusted://terminal/html/terminal.html"
             "?command=vmshell"
@@ -50,12 +49,10 @@ TEST_F(CrostiniTerminalTest, ShortcutIdForSSH) {
 TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  guest_os::GuestId id(kCrostiniDefaultVmType, "test-vm", "test-container");
+  guest_os::GuestId id("test-vm", "test-container");
   EXPECT_EQ(ShortcutIdFromContainerId(&profile, id),
-            R"({"container_name":"test-container",)"
-            R"("shortcut":"terminal",)"
-            R"("vm_name":"test-vm",)"
-            R"("vm_type":0})");
+            R"({"container_name":"test-container","shortcut":"terminal",)"
+            R"("vm_name":"test-vm"})");
 
   // Container with multi-profile should include settings_profile.
   auto pref = base::JSONReader::Read(R"({
@@ -73,8 +70,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
             R"({"container_name":"test-container",)"
             R"("settings_profile":"green",)"
             R"("shortcut":"terminal",)"
-            R"("vm_name":"test-vm",)"
-            R"("vm_type":0})");
+            R"("vm_name":"test-vm"})");
 }
 
 TEST_F(CrostiniTerminalTest, GetSSHConnections) {

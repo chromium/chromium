@@ -759,8 +759,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
 
   base::Value::List container_info_list;
 
-  for (const auto& container_id : guest_os::GetContainers(
-           profile_, guest_os::VmType::ApplicationList_VmType_TERMINA)) {
+  for (const auto& container_id : guest_os::GetContainers(profile_)) {
     base::Value::Dict container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info =

@@ -1253,8 +1253,7 @@ CrostiniManager::CrostiniManager(Profile* profile)
   // which is fine, since e.g. force-quitting a running VM because policy
   // changed isn't something we're going to do.
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    for (const auto& container :
-         guest_os::GetContainers(profile_, kCrostiniDefaultVmType)) {
+    for (const auto& container : guest_os::GetContainers(profile_)) {
       RegisterContainer(container);
     }
   }
@@ -2287,8 +2286,7 @@ void CrostiniManager::OnFileWatchTriggered(
     const vm_tools::cicerone::FileWatchTriggeredSignal& signal) {
   for (auto& observer : file_change_observers_) {
     observer.OnCrostiniFileChanged(
-        guest_os::GuestId(kCrostiniDefaultVmType, signal.vm_name(),
-                          signal.container_name()),
+        guest_os::GuestId(signal.vm_name(), signal.container_name()),
         base::FilePath(signal.path()));
   }
 }
@@ -2762,8 +2760,7 @@ void CrostiniManager::OnContainerStarted(
     const vm_tools::cicerone::ContainerStartedSignal& signal) {
   if (signal.owner_id() != owner_id_)
     return;
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
 
   auto* engagement_metrics_service =
       CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
@@ -2787,8 +2784,7 @@ void CrostiniManager::OnContainerStarted(
         base::BindOnce(
             &CrostiniManager::DeallocateForwardedPortsCallback,
             weak_ptr_factory_.GetWeakPtr(), std::move(profile_),
-            guest_os::GuestId(kCrostiniDefaultVmType, signal.vm_name(),
-                              signal.container_name())));
+            guest_os::GuestId(signal.vm_name(), signal.container_name())));
   }
   for (auto& observer : container_started_observers_) {
     observer.OnContainerStarted(container_id);
@@ -2819,8 +2815,7 @@ void CrostiniManager::OnContainerStartupFailed(
   if (signal.owner_id() != owner_id_)
     return;
 
-  guest_os::GuestId container(kCrostiniDefaultVmType, signal.vm_name(),
-                              signal.container_name());
+  guest_os::GuestId container(signal.vm_name(), signal.container_name());
   LOG(ERROR) << "Container startup failed for container: " << container;
   InvokeAndErasePendingContainerCallbacks(
       &start_container_callbacks_, container,
@@ -2831,8 +2826,7 @@ void CrostiniManager::OnContainerShutdown(
     const vm_tools::cicerone::ContainerShutdownSignal& signal) {
   if (signal.owner_id() != owner_id_)
     return;
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   // Find the callbacks to call, then erase them from the map.
   auto range_callbacks =
       shutdown_container_callbacks_.equal_range(container_id);
@@ -2875,8 +2869,7 @@ void CrostiniManager::OnInstallLinuxPackageProgress(
       NOTREACHED();
   }
 
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   for (auto& observer : linux_package_operation_progress_observers_) {
     observer.OnInstallLinuxPackageProgress(
         container_id, status, signal.progress_percent(), error_message);
@@ -2910,8 +2903,7 @@ void CrostiniManager::OnUninstallPackageProgress(
       NOTREACHED();
   }
 
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   for (auto& observer : linux_package_operation_progress_observers_) {
     observer.OnUninstallPackageProgress(container_id, status,
                                         signal.progress_percent());
@@ -2959,8 +2951,7 @@ void CrostiniManager::OnUpgradeContainerProgress(
     }
   }
 
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   for (auto& observer : upgrade_container_progress_observers_) {
     observer.OnUpgradeContainerProgress(container_id, status,
                                         progress_messages);
@@ -3206,8 +3197,7 @@ void CrostiniManager::OnLxdContainerCreated(
     const vm_tools::cicerone::LxdContainerCreatedSignal& signal) {
   if (signal.owner_id() != owner_id_)
     return;
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   CrostiniResult result;
 
   switch (signal.status()) {
@@ -3247,8 +3237,7 @@ void CrostiniManager::OnLxdContainerDeleted(
   if (signal.owner_id() != owner_id_)
     return;
 
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   bool success =
       signal.status() == vm_tools::cicerone::LxdContainerDeletedSignal::DELETED;
   if (success) {
@@ -3272,8 +3261,7 @@ void CrostiniManager::OnLxdContainerDownloading(
   if (owner_id_ != signal.owner_id()) {
     return;
   }
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   auto iter = restarters_by_container_.find(container_id);
   if (iter != restarters_by_container_.end()) {
     iter->second->OnContainerDownloading(signal.download_progress());
@@ -3306,8 +3294,7 @@ void CrostiniManager::OnLxdContainerStarting(
           << signal.status() << " for container " << signal.container_name();
   if (signal.owner_id() != owner_id_)
     return;
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   CrostiniResult result;
 
   switch (signal.status()) {
@@ -3370,8 +3357,7 @@ void CrostiniManager::OnLxdContainerStopping(
     const vm_tools::cicerone::LxdContainerStoppingSignal& signal) {
   if (signal.owner_id() != owner_id_)
     return;
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   CrostiniResult result;
   switch (signal.status()) {
     case vm_tools::cicerone::LxdContainerStoppingSignal::UNKNOWN:
@@ -3608,7 +3594,7 @@ void CrostiniManager::OnExportLxdContainerProgress(
   if (signal.owner_id() != owner_id_)
     return;
 
-  const guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
+  const guest_os::GuestId container_id(signal.vm_name(),
                                        signal.container_name());
 
   CrostiniResult result;
@@ -3720,7 +3706,7 @@ void CrostiniManager::OnImportLxdContainerProgress(
                  << ", " << signal.failure_reason();
   }
 
-  const guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
+  const guest_os::GuestId container_id(signal.vm_name(),
                                        signal.container_name());
 
   if (call_observers) {
@@ -3855,8 +3841,7 @@ void CrostiniManager::OnCancelUpgradeContainer(
 
 void CrostiniManager::OnPendingAppListUpdates(
     const vm_tools::cicerone::PendingAppListUpdatesSignal& signal) {
-  guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
-                                 signal.container_name());
+  guest_os::GuestId container_id(signal.vm_name(), signal.container_name());
   for (auto& observer : pending_app_list_updates_observers_) {
     observer.OnPendingAppListUpdates(container_id, signal.count());
   }

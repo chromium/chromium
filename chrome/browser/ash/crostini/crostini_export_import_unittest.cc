@@ -122,8 +122,9 @@ class CrostiniExportImportTest : public testing::Test {
   }
 
   CrostiniExportImportTest()
-      : default_container_id_(DefaultContainerId()),
-        custom_container_id_(kCrostiniDefaultVmType, "MyVM", "MyContainer") {
+      : default_container_id_(kCrostiniDefaultVmName,
+                              kCrostiniDefaultContainerName),
+        custom_container_id_("MyVM", "MyContainer") {
     chromeos::DBusThreadManager::Initialize();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();

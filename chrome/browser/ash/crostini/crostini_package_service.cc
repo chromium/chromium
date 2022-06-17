@@ -299,8 +299,7 @@ void CrostiniPackageService::QueueUninstallApplication(
     return;
   }
 
-  const guest_os::GuestId container_id(registration->VmType(),
-                                       registration->VmName(),
+  const guest_os::GuestId container_id(registration->VmName(),
                                        registration->ContainerName());
   const std::string app_name = registration->Name();
   if (ContainerHasRunningOperation(container_id)) {
@@ -462,8 +461,7 @@ void CrostiniPackageService::OnInstallLinuxPackage(
 void CrostiniPackageService::UninstallApplication(
     const guest_os::GuestOsRegistryService::Registration& registration,
     const std::string& app_id) {
-  const guest_os::GuestId container_id(registration.VmType(),
-                                       registration.VmName(),
+  const guest_os::GuestId container_id(registration.VmName(),
                                        registration.ContainerName());
 
   // Policies can change under us, and crostini may now be forbidden.
