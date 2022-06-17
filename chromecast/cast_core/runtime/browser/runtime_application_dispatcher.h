@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -83,9 +84,11 @@ class RuntimeApplicationDispatcher final {
 
   // Helper methods.
   void OnApplicationLoaded(
+      std::string session_id,
       cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
       grpc::Status status);
   void OnApplicationLaunched(
+      std::string session_id,
       cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
       grpc::Status status);
   void SendHeartbeat();
@@ -103,7 +106,10 @@ class RuntimeApplicationDispatcher final {
   void OnMetricsRecorderServiceStopped(
       cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
           reactor);
-  void ResetApp();
+  // Returns an app for the |session_id| or nullptr if not found.
+  RuntimeApplication* GetApp(const std::string& session_id) const;
+  // Destroys the app for the |session_id|.
+  void ResetApp(const std::string& session_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
   CastWebService* const web_service_;
@@ -113,7 +119,7 @@ class RuntimeApplicationDispatcher final {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::ObserverList<Observer> observers_;
 
-  std::unique_ptr<RuntimeApplication> app_;
+  base::flat_map<std::string, std::unique_ptr<RuntimeApplication>> loaded_apps_;
 
   // Allows histogram and action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.
