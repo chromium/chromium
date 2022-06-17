@@ -6,16 +6,15 @@ package org.chromium.components.omnibox;
 
 import android.util.SparseArray;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +23,8 @@ import java.util.List;
 /**
  * Unit tests for {@link AutocompleteResult}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowGURL.class})
 public class AutocompleteResultUnitTest {
     private AutocompleteMatch buildSuggestionForIndex(int index) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -35,7 +34,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_sameContentsAreEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -70,7 +68,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_itemsOutOfOrderAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -94,7 +91,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_missingGroupsDetailsAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -117,7 +113,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_groupsWithDifferentDefaultExpandedStateAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -141,7 +136,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_extraGroupsDetailsAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -166,7 +160,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_differentItemsAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -181,7 +174,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_differentGroupsDetailsAreNotEqual() {
         List<AutocompleteMatch> list = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
@@ -209,7 +201,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_differentSubtypesAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -234,7 +225,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_newItemsAreNotEqual() {
         List<AutocompleteMatch> list1 =
                 Arrays.asList(buildSuggestionForIndex(1), buildSuggestionForIndex(2));
@@ -249,7 +239,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_emptyListsAreEqual() {
         final List<AutocompleteMatch> list1 = new ArrayList<>();
         final List<AutocompleteMatch> list2 = new ArrayList<>();
@@ -260,7 +249,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_nullAndEmptyListsAreEqual() {
         final List<AutocompleteMatch> list1 = new ArrayList<>();
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
@@ -270,7 +258,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void autocompleteResult_emptyAndNonEmptyListsAreNotEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(buildSuggestionForIndex(1));
         final List<AutocompleteMatch> list2 = new ArrayList<>();
@@ -281,7 +268,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void resultCreatedFromCacheIsIdentifiedAsCached() {
         AutocompleteResult res = new AutocompleteResult(0, null, null);
         Assert.assertTrue(res.isFromCachedResult());
@@ -295,7 +281,6 @@ public class AutocompleteResultUnitTest {
     }
 
     @Test
-    @SmallTest
     public void resultCreatedFromNativeAreNotIdentifiedAsCached() {
         AutocompleteResult res = new AutocompleteResult(0x12345678, null, null);
         Assert.assertFalse(res.isFromCachedResult());

@@ -446,15 +446,16 @@ if (is_android) {
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
-  android_library("javatests") {
-    testonly = true
-    sources = [ "//components/omnibox/browser/android/javatests/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
+  robolectric_library("junit") {
+    sources = [ "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
     deps = [
       ":browser_java",
       ":test_util_java",
       "//base:base_java_test_support",
+      "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",
+      "//url:gurl_junit_shadows",
     ]
   }
 
