@@ -11693,7 +11693,7 @@
         "policies": {},
         "prefs": {
           "power.adaptive_charging_enabled": {
-            "default_value": false
+            "default_value": true
           }
         }
       },
