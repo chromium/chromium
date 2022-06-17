@@ -791,6 +791,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kStylusWritingToInput;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDisableArrayBufferSizeLimitsForTesting;
 
+// If enabled, the HTMLDocumentParser will use a budget based on elapsed time
+// rather than token count.
+BLINK_COMMON_EXPORT extern const base::Feature kTimedHTMLParserBudget;
+
 }  // namespace features
 }  // namespace blink
 

@@ -246,6 +246,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   Vector<std::unique_ptr<PendingPreloadData>> pending_preload_data_
       GUARDED_BY(pending_preload_lock_);
 
+  const bool timed_parser_budget_enabled_ =
+      base::FeatureList::IsEnabled(features::kTimedHTMLParserBudget);
+
   ThreadScheduler* scheduler_;
 };
 

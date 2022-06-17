@@ -82,6 +82,7 @@ namespace blink {
 // the final page. This is the default value to use, if no Finch-provided
 // value exists.
 constexpr int kDefaultMaxTokenizationBudget = 250;
+constexpr int kNumYieldsWithDefaultBudget = 2;
 
 class EndIfDelayedForbiddenScope;
 class ShouldCompleteScope;
@@ -137,6 +138,36 @@ PreloadProcessingMode GetPreloadProcessingMode() {
 bool IsPreloadScanningEnabled(Document* document) {
   return document->GetSettings() &&
          document->GetSettings()->GetDoHtmlPreloadScanning();
+}
+
+base::TimeDelta GetDefaultTimedBudget() {
+  static const base::FeatureParam<base::TimeDelta> kDefaultParserBudgetParam{
+      &features::kTimedHTMLParserBudget, "default-parser-budget",
+      base::Milliseconds(10)};
+  // Cache the value to avoid parsing the param string more than once.
+  static const base::TimeDelta kDefaultParserBudgetValue =
+      kDefaultParserBudgetParam.Get();
+  return kDefaultParserBudgetValue;
+}
+
+base::TimeDelta GetTimedBudget(int times_yielded) {
+  static const base::FeatureParam<int> kNumYieldsWithDefaultBudgetParam{
+      &features::kTimedHTMLParserBudget, "num-yields-with-default-budget",
+      kNumYieldsWithDefaultBudget};
+  // Cache the value to avoid parsing the param string more than once.
+  static const int kNumYieldsWithDefaultBudgetValue =
+      kNumYieldsWithDefaultBudgetParam.Get();
+
+  static const base::FeatureParam<base::TimeDelta> kLongParserBudgetParam{
+      &features::kTimedHTMLParserBudget, "long-parser-budget",
+      base::Milliseconds(500)};
+  // Cache the value to avoid parsing the param string more than once.
+  static const base::TimeDelta kLongParserBudgetValue =
+      kLongParserBudgetParam.Get();
+
+  if (times_yielded <= kNumYieldsWithDefaultBudgetValue)
+    return GetDefaultTimedBudget();
+  return kLongParserBudgetValue;
 }
 
 // This class encapsulates the internal state needed for synchronous foreground
@@ -737,9 +768,14 @@ bool HTMLDocumentParser::PumpTokenizer() {
   // number, to attempt to consume all available tokens in one go. This
   // heuristic is intended to allow a quick first contentful paint, followed by
   // a larger rendering lifecycle that processes the remainder of the page.
-  int budget = (task_runner_state_->TimesYielded() <= 2)
-                   ? kDefaultMaxTokenizationBudget
-                   : 1e7;
+  int budget =
+      (task_runner_state_->TimesYielded() <= kNumYieldsWithDefaultBudget)
+          ? kDefaultMaxTokenizationBudget
+          : 1e7;
+
+  base::TimeDelta timed_budget;
+  if (timed_parser_budget_enabled_)
+    timed_budget = GetTimedBudget(task_runner_state_->TimesYielded());
 
   base::ElapsedTimer chunk_parsing_timer_;
   unsigned tokens_parsed = 0;
@@ -757,6 +793,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // to yield at some point soon, especially if we're in "extended budget"
       // mode. So reduce the budget back to at most the default.
       budget = std::min(budget, kDefaultMaxTokenizationBudget);
+      if (timed_parser_budget_enabled_) {
+        timed_budget = std::min(timed_budget, chunk_parsing_timer_.Elapsed() +
+                                                  GetDefaultTimedBudget());
+      }
     }
     {
       RUNTIME_CALL_TIMER_SCOPE(
@@ -774,7 +814,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
       DCHECK(base::FeatureList::IsEnabled(
                  features::kDeferBeginMainFrameDuringLoading) ||
              scheduler_->DontDeferBeginMainFrame());
-      should_yield = budget <= 0 && scheduler_->DontDeferBeginMainFrame();
+      if (timed_parser_budget_enabled_)
+        should_yield = chunk_parsing_timer_.Elapsed() >= timed_budget;
+      else
+        should_yield = budget <= 0 && scheduler_->DontDeferBeginMainFrame();
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
       should_yield &= task_runner_state_->HaveExitedHeader();
 
