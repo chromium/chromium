@@ -15,13 +15,22 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_onboarding_controller.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+
+namespace {
+
+constexpr char kUrl[] = "https://www.example.com";
+constexpr char kOtherUrlWithSameDomain[] = "https://www.example.com/login";
 
 class TestApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinatorImpl {
  public:
@@ -41,28 +50,24 @@ TestApcOnboardingCoordinatorImpl::TestApcOnboardingCoordinatorImpl(
     content::WebContents* web_contents)
     : ApcOnboardingCoordinatorImpl(web_contents) {}
 
-class ApcOnboardingCoordinatorImplTest : public ::testing::Test {
- public:
-  ApcOnboardingCoordinatorImplTest() {
-    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
+}  // namespace
 
-    web_contents_ = web_contents_factory_->CreateWebContents(&profile_);
+class ApcOnboardingCoordinatorImplTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  ApcOnboardingCoordinatorImplTest() = default;
+  ~ApcOnboardingCoordinatorImplTest() override = default;
+
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
     coordinator_ =
         std::make_unique<TestApcOnboardingCoordinatorImpl>(web_contents());
   }
 
   TestApcOnboardingCoordinatorImpl* coordinator() { return coordinator_.get(); }
-  content::WebContents* web_contents() { return web_contents_; }
-  PrefService* GetPrefs() { return profile_.GetPrefs(); }
+  PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
  private:
-  // Testing setup. The `TestWebContentsFactory` needs to be listed after the
-  // profile so that it is destroyed first.
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
-  raw_ptr<content::WebContents> web_contents_;
-
   // The object to be tested.
   std::unique_ptr<TestApcOnboardingCoordinatorImpl> coordinator_;
 };
@@ -146,4 +151,67 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndDecline) {
   // Consent is saved in the pref.
   EXPECT_FALSE(
       GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+}
+
+TEST_F(ApcOnboardingCoordinatorImplTest,
+       PerformOnboardingDuringOngoingNavigation) {
+  // Simulate an ongoing navigation.
+  web_contents()->GetController().LoadURL(
+      GURL(kUrl), content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+
+  // Start the onboarding.
+  base::MockCallback<ApcOnboardingCoordinator::Callback> coordinator_callback;
+  coordinator()->PerformOnboarding(coordinator_callback.Get());
+
+  // Expect these calls to happen once the navigation is finished.
+  raw_ptr<MockAssistantOnboardingController> controller =
+      new MockAssistantOnboardingController();
+  EXPECT_CALL(*coordinator(), CreateOnboardingController)
+      .WillOnce([controller]() {
+        return base::WrapUnique<AssistantOnboardingController>(controller);
+      });
+  EXPECT_CALL(*coordinator(), CreateOnboardingPrompt);
+
+  // Commit the navigation.
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+}
+
+TEST_F(ApcOnboardingCoordinatorImplTest,
+       PerformOnboardingDuringOngoingNavigationToSameDomain) {
+  // Simulate a previous navigation.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kUrl), ui::PAGE_TRANSITION_LINK);
+  // Simulate an ongoing navigation.
+  web_contents()->GetController().LoadURL(
+      GURL(kOtherUrlWithSameDomain), content::Referrer(),
+      ui::PAGE_TRANSITION_LINK, std::string());
+
+  // Expect these calls to happen immediately sine the navigation is within
+  // the same domain.
+  raw_ptr<MockAssistantOnboardingController> controller =
+      new MockAssistantOnboardingController();
+  EXPECT_CALL(*coordinator(), CreateOnboardingController)
+      .WillOnce([controller]() {
+        return base::WrapUnique<AssistantOnboardingController>(controller);
+      });
+  EXPECT_CALL(*coordinator(), CreateOnboardingPrompt);
+
+  // Start the onboarding.
+  base::MockCallback<ApcOnboardingCoordinator::Callback> coordinator_callback;
+  coordinator()->PerformOnboarding(coordinator_callback.Get());
+}
+
+TEST_F(ApcOnboardingCoordinatorImplTest,
+       PerformOnboardingDuringOngoingNavigationThatDoesNotFinish) {
+  // Simulate an ongoing navigation.
+  web_contents()->GetController().LoadURL(
+      GURL(kUrl), content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+
+  // Start the onboarding.
+  base::MockCallback<ApcOnboardingCoordinator::Callback> coordinator_callback;
+  coordinator()->PerformOnboarding(coordinator_callback.Get());
+
+  // No prompt is ever created if the navigation does not finish.
+  EXPECT_CALL(*coordinator(), CreateOnboardingController).Times(0);
+  EXPECT_CALL(*coordinator(), CreateOnboardingPrompt).Times(0);
 }
