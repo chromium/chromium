@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
@@ -44,7 +43,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
-import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -485,13 +483,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests the Translate Caption on a resolve gesture.
-     * This test is disabled because it relies on the network and a live search result,
-     * which would be flaky for bots.
-     * TODO(donnd) Load a fake SERP into the panel to trigger SERP-translation and similar
-     * features.
+     * Tests the Translate Caption on a resolve gesture forces a translation.
      */
-    @Manual(message = "Useful for manual testing when a network is connected.")
     @Test
     @LargeTest
     @Feature({"ContextualSearch"})
@@ -504,17 +497,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertTrue("Translation was not forced with the current request URL: "
                         + mManager.getRequest().getSearchUrl(),
                 mManager.getRequest().isTranslationForced());
-
-        // Wait for the translate caption to be shown in the Bar.
-        int waitFactor = 5; // We need to wait an extra long time for the panel content to render.
-        CriteriaHelper.pollUiThread(() -> {
-            ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
-            Criteria.checkThat(barControl, Matchers.notNullValue());
-            Criteria.checkThat(barControl.getCaptionVisible(), Matchers.is(true));
-            Criteria.checkThat(barControl.getCaptionText(), Matchers.notNullValue());
-            Criteria.checkThat(
-                    barControl.getCaptionText().toString(), Matchers.not(Matchers.isEmptyString()));
-        }, 3000 * waitFactor, DEFAULT_POLLING_INTERVAL * waitFactor);
     }
 
     //============================================================================================
