@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Autofill>Assistant"
+}
+team_email: "chrome-duplex@google.com"
