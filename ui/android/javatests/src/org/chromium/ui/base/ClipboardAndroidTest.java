@@ -50,14 +50,6 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     @Override
     public void tearDownTest() throws Exception {
         ClipboardAndroidTestSupport.cleanup();
-
-        // Clear the clipboard to avoid leaving any state.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clipData = ClipData.newPlainText("", "");
-            clipboardManager.setPrimaryClip(clipData);
-        });
         super.tearDownTest();
     }
 
