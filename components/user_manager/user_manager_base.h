@@ -167,10 +167,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
 
-  // Returns true if trusted device policies have successfully been retrieved
-  // and ephemeral users are enabled.
-  virtual bool AreEphemeralUsersEnabled() const = 0;
-
   void AddUserRecordForTesting(User* user) {
     return AddUserRecord(user);
   }

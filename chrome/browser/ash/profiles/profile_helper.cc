@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/base/file_flusher.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -309,7 +308,7 @@ bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
   }
 
   // Otherwise, users are ephemeral when the policy is enabled.
-  return ChromeUserManager::Get()->AreEphemeralUsersEnabled();
+  return user_manager::UserManager::Get()->AreEphemeralUsersEnabled();
 }
 
 // static

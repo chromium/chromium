@@ -364,6 +364,10 @@ class USER_MANAGER_EXPORT UserManager {
   // Accepted user types: USER_TYPE_REGULAR, USER_TYPE_GUEST, USER_TYPE_CHILD.
   virtual bool IsUserAllowed(const User& user) const = 0;
 
+  // Returns true if trusted device policies have successfully been retrieved
+  // and ephemeral users are enabled.
+  virtual bool AreEphemeralUsersEnabled() const = 0;
+
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;
 
