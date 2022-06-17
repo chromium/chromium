@@ -611,7 +611,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "https://crbug.com/1291558")
     public void testQuickActionCaptionAndImage(@EnabledFeature int enabledFeature)
             throws Exception {
         // Skip when this experimental feature is enabled since it's not yet planned past Beta.
@@ -649,8 +648,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertEquals(0.f, imageControl.getCustomImageVisibilityPercentage(), 0);
 
         // Go back to peeking.
-        swipePanelDown();
-        waitForPanelToPeek();
+        peekPanel();
 
         // Assert that the quick action data is showing.
         Assert.assertTrue(barControl.getCaptionVisible());
