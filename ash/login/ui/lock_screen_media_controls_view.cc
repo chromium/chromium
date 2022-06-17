@@ -28,6 +28,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/font.h"
@@ -182,6 +183,7 @@ class MediaActionButton : public views::ImageButton {
     SetAction(action, accessible_name);
 
     SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
         this, views::FocusRing::Get(this), absl::nullopt);
   }
@@ -214,9 +216,6 @@ class MediaActionButton : public views::ImageButton {
         this,
         GetVectorIconForMediaAction(static_cast<MediaSessionAction>(tag())),
         icon_size_, icon_color, icon_disabled_color);
-    views::FocusRing::Get(this)->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
   int const icon_size_;

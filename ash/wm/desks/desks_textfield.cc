@@ -10,6 +10,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
@@ -43,6 +44,8 @@ DesksTextfield::DesksTextfield() {
     return static_cast<DesksTextfield*>(view)->IsViewHighlighted() ||
            view->HasFocus();
   });
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
 }
 
@@ -116,9 +119,6 @@ void DesksTextfield::OnThemeChanged() {
   const SkColor selection_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusAuraColor);
   SetSelectionBackgroundColor(selection_color);
-
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   UpdateFocusRingState();
 }

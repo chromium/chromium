@@ -34,7 +34,7 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_transform.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -534,6 +534,8 @@ AshNotificationView::AshNotificationView(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
     layer()->SetIsFastRoundedCorner(true);
   }
+
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
   // Create layer in some views for animations.
   message_center_utils::InitLayerForAnimations(header_row());
@@ -1119,10 +1121,6 @@ void AshNotificationView::OnThemeChanged() {
 
   if (message_label_in_expanded_state_)
     message_label_in_expanded_state_->SetEnabledColor(secondary_text_color);
-
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   UpdateIconAndButtonsColor(
       message_center::MessageCenter::Get()->FindVisibleNotificationById(

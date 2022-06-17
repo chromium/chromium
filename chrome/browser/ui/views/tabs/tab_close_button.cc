@@ -100,7 +100,8 @@ void TabCloseButton::SetColors(TabStyle::TabColors colors) {
   colors_ = std::move(colors);
   views::InkDrop::Get(this)->SetBaseColor(
       color_utils::GetColorWithMaxContrast(colors_.background_color));
-  views::FocusRing::Get(this)->SetColor(colors_.close_button_focus_ring_color);
+  views::FocusRing::Get(this)->SetColorId(
+      colors_.close_button_focus_ring_color);
   OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
 }
 

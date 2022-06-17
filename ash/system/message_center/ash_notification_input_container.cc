@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_constants.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -83,9 +84,7 @@ void AshNotificationInputContainer::StyleTextfield() {
   views::FocusRing::Install(textfield());
   views::InstallRoundRectHighlightPathGenerator(
       textfield(), gfx::Insets(), kTextfieldBackgroundCornerRadius);
-  views::FocusRing::Get(textfield())
-      ->SetColor(color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(textfield())->SetColorId(ui::kColorAshFocusRing);
 }
 
 gfx::Insets AshNotificationInputContainer::GetSendButtonPadding() const {
@@ -96,9 +95,7 @@ void AshNotificationInputContainer::SetSendButtonHighlightPath() {
   views::FocusRing::Install(textfield());
   views::InstallRoundRectHighlightPathGenerator(button(), gfx::Insets(),
                                                 kInputReplyHighlightRadius);
-  views::FocusRing::Get(button())->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(button())->SetColorId(ui::kColorAshFocusRing);
 }
 
 void AshNotificationInputContainer::UpdateButtonImage() {

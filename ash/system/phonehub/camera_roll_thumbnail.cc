@@ -10,6 +10,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -41,9 +43,7 @@ CameraRollThumbnail::CameraRollThumbnail(
       camera_roll_manager_(camera_roll_manager),
       user_action_recorder_(user_action_recorder) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kCameraRollThumbnailBorderRadius);
 
@@ -89,10 +89,6 @@ void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
-const char* CameraRollThumbnail::GetClassName() const {
-  return "CameraRollThumbnail";
-}
-
 void CameraRollThumbnail::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
@@ -130,5 +126,8 @@ phone_hub_metrics::CameraRollMediaType CameraRollThumbnail::GetMediaType() {
   return video_type_ ? phone_hub_metrics::CameraRollMediaType::kVideo
                      : phone_hub_metrics::CameraRollMediaType::kPhoto;
 }
+
+BEGIN_METADATA(CameraRollThumbnail, views::MenuButton)
+END_METADATA
 
 }  // namespace ash

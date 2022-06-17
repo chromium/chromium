@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -183,7 +184,7 @@ void AssistantOnboardingSuggestionView::InitLayout(
 
   // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::FocusRing::Get(this)->SetColor(gfx::kGoogleBlue300);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshOnboardingFocusRing);
 
   // Ink Drop.
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

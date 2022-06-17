@@ -629,7 +629,7 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   // from the size calculations so that the focus UI is aligned.
   views::FocusRing* focus_ring = views::FocusRing::Get(desk_name_view_);
   const int focus_ring_length =
-      focus_ring->halo_thickness() - focus_ring->halo_inset();
+      focus_ring->GetHaloThickness() - focus_ring->GetHaloInset();
   const int min_width = std::min(preview_bounds.width() - focus_ring_length,
                                  kMinDeskNameViewWidth);
   const int max_width = std::max(preview_bounds.width() - focus_ring_length,

@@ -35,7 +35,6 @@ class ASH_EXPORT ShelfControlButton : public ShelfButton {
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
  protected:
   void PaintBackground(gfx::Canvas* canvas, const gfx::Rect& bounds);

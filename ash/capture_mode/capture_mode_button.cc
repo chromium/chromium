@@ -10,6 +10,7 @@
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -41,8 +42,7 @@ void CaptureModeButton::ConfigureButton(views::ImageButton* button,
   button->GetViewAccessibility().OverrideIsLeaf(true);
 
   button->SetInstallFocusRingOnFocus(true);
-  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           capture_mode::kButtonPadding));

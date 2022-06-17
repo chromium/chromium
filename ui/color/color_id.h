@@ -184,10 +184,27 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
+  /* NOTE: Nearly all of the following CrOS color ids will need to be re- */ \
+  /* evaluated once CrOS fully supports the color pipeline. */ \
+  E_CPONLY(kColorAshActionLabelFocusRingEdit) \
+  E_CPONLY(kColorAshActionLabelFocusRingError) \
+  E_CPONLY(kColorAshActionLabelFocusRingHover) \
+  \
+  E_CPONLY(kColorAshAppListFocusRing) \
+  E_CPONLY(kColorAshAppListFocusRingNoKeyboard) \
   E_CPONLY(kColorAshAppListSeparator) \
   E_CPONLY(kColorAshAppListSeparatorLight) \
   E_CPONLY(kColorAshArcInputMenuSeparator) \
+  E_CPONLY(kColorAshFocusRing) \
+  /* TODO(kylixrd): Determine whether this special color should follow */ \
+  /* light/dark mode. Remove if it should equal kColorAshFocusRing. */ \
+  E_CPONLY(kColorAshEditFinishFocusRing) \
   E_CPONLY(kColorAshIconInOobe) \
+  \
+  /* TODO(crbug/1319917): Remove these when dark light mode is launched. */ \
+  E_CPONLY(kColorAshLightFocusRing) \
+  \
+  E_CPONLY(kColorAshOnboardingFocusRing) \
   \
   E_CPONLY(kColorAshSystemUIBorderColor1) \
   E_CPONLY(kColorAshSystemUIBorderColor2) \

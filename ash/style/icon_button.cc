@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -98,6 +99,7 @@ IconButton::IconButton(PressedCallback callback,
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   if (has_border) {
     // The focus ring will be around the whole button's bounds, but the inkdrop
     // will have the same size as the content.
@@ -234,11 +236,7 @@ void IconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void IconButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-
   UpdateVectorIcon();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
   SchedulePaint();
 }
 

@@ -23,8 +23,6 @@ class Windows10TabSearchCaptionButton : public Windows10CaptionButton {
       const Windows10TabSearchCaptionButton&) = delete;
   ~Windows10TabSearchCaptionButton() override;
 
-  void OnThemeChanged() override;
-
   TabSearchBubbleHost* tab_search_bubble_host() {
     return tab_search_bubble_host_.get();
   }

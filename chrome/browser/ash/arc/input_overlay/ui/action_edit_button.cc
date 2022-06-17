@@ -9,6 +9,7 @@
 #include "ash/style/style_util.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -62,8 +63,7 @@ ActionEditButton::ActionEditButton(PressedCallback callback)
   DCHECK(color_provider);
   if (!focus_ring || !color_provider)
     return;
-  focus_ring->SetColor(color_provider->GetControlsLayerColor(
-      ash::AshColorProvider::ControlsLayerType::kFocusRingColor));
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHaloThickness(kFocusRingStrokeWidth);
   focus_ring->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets(0)));

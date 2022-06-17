@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
@@ -243,6 +244,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf,
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<HighlightPathGenerator>(this,
                                                kTrayBackgroundFocusPadding));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   SetFocusPainter(nullptr);
 
   views::HighlightPathGenerator::Install(
@@ -492,9 +494,6 @@ void TrayBackgroundView::OnThemeChanged() {
   StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
                                                   StyleUtil::kInkDropOpacity |
                                                   StyleUtil::kHighlightOpacity);
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {

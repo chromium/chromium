@@ -40,6 +40,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -257,6 +258,7 @@ SavedDeskItemView::SavedDeskItemView(
   focus_ring->SetHasFocusPredicate([](views::View* view) {
     return static_cast<SavedDeskItemView*>(view)->IsViewHighlighted();
   });
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
@@ -390,9 +392,6 @@ void SavedDeskItemView::OnThemeChanged() {
   time_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
   time_view_->SetEnabledColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
-
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void SavedDeskItemView::OnViewFocused(views::View* observed_view) {

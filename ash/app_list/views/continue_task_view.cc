@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -107,9 +108,7 @@ ContinueTaskView::ContinueTaskView(
   views::HighlightPathGenerator::Install(this,
                                          std::move(ink_drop_highlight_path));
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColor(
-      ColorProvider::Get()->GetControlsLayerColor(
-          ColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   SetFocusPainter(nullptr);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

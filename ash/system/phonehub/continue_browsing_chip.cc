@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -53,8 +54,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       user_action_recorder_(user_action_recorder) {
   auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
   // Install this highlight path generator to set the desired shape for
   // our focus ring.

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
@@ -68,6 +69,8 @@ AshNotificationExpandButton::AshNotificationExpandButton(
 
   message_center_utils::InitLayerForAnimations(label_);
   message_center_utils::InitLayerForAnimations(image_);
+
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
@@ -195,10 +198,6 @@ void AshNotificationExpandButton::OnThemeChanged() {
 
   UpdateIcons();
   image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
-
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 
   SkColor background_color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);

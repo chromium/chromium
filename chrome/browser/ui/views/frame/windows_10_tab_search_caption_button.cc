@@ -25,15 +25,11 @@ Windows10TabSearchCaptionButton::Windows10TabSearchCaptionButton(
           frame_view->browser_view()->GetProfile())) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
+  views::FocusRing::Get(this)->SetColorId(
+      kColorTabSearchCaptionButtonFocusRing);
 }
 
 Windows10TabSearchCaptionButton::~Windows10TabSearchCaptionButton() = default;
-
-void Windows10TabSearchCaptionButton::OnThemeChanged() {
-  Windows10CaptionButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      GetColorProvider()->GetColor(kColorTabSearchCaptionButtonFocusRing));
-}
 
 BEGIN_METADATA(Windows10TabSearchCaptionButton, Windows10CaptionButton)
 END_METADATA

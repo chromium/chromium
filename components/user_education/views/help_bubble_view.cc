@@ -160,9 +160,8 @@ class MdIPHBubbleButton : public views::MdTextButton {
     views::MdTextButton::OnThemeChanged();
 
     const auto* color_provider = GetColorProvider();
-    const SkColor background_color =
-        color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
-    views::FocusRing::Get(this)->SetColor(background_color);
+    views::FocusRing::Get(this)->SetColorId(
+        delegate_->GetHelpBubbleBackgroundColorId());
 
     const SkColor foreground_color = color_provider->GetColor(
         is_default_button_
@@ -217,8 +216,8 @@ class ClosePromoButton : public views::ImageButton {
     const auto* color_provider = GetColorProvider();
     views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
         delegate_->GetHelpBubbleCloseButtonInkDropColorId()));
-    views::FocusRing::Get(this)->SetColor(
-        color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId()));
+    views::FocusRing::Get(this)->SetColorId(
+        delegate_->GetHelpBubbleForegroundColorId());
   }
 
  private:

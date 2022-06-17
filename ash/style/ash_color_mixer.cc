@@ -5,9 +5,11 @@
 #include "ash/style/ash_color_mixer.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -19,6 +21,29 @@ void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
   auto* ash_color_provider = AshColorProvider::Get();
   ui::ColorMixer& mixer = provider->AddMixer();
+
+  mixer[ui::kColorAshActionLabelFocusRingEdit] = {gfx::kGoogleBlue300};
+  mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
+  mixer[ui::kColorAshActionLabelFocusRingHover] =
+      ui::SetAlpha(gfx::kGoogleGrey200, 0x60);
+
+  mixer[ui::kColorAshAppListFocusRing] = {
+      AppListColorProvider::Get()->GetFocusRingColor()};
+  mixer[ui::kColorAshAppListFocusRingNoKeyboard] =
+      ui::SetAlpha(ui::kColorAshAppListFocusRing, SK_AlphaTRANSPARENT);
+  mixer[ui::kColorAshAppListSeparatorLight] = {
+      ui::kColorAshSystemUIMenuSeparator};
+  mixer[ui::kColorAshAppListSeparator] =
+      ui::SetAlpha(gfx::kGoogleGrey900, 0x24);
+  mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
+  mixer[ui::kColorAshFocusRing] = {ash_color_provider->GetControlsLayerColor(
+      ash::AshColorProvider::ControlsLayerType::kFocusRingColor)};
+  mixer[ui::kColorAshEditFinishFocusRing] = {gfx::kGoogleBlue300};
+  mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
+
+  mixer[ui::kColorAshLightFocusRing] = {gfx::kGoogleBlue300};
+
+  mixer[ui::kColorAshOnboardingFocusRing] = {gfx::kGoogleBlue300};
 
   mixer[ui::kColorAshSystemUIBorderColor1] = {
       ash_color_provider->GetControlsLayerColor(
@@ -63,12 +88,6 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshSystemUIMenuSeparator] = {
       ash_color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor)};
-  mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
-  mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
-  mixer[ui::kColorAshAppListSeparatorLight] = {
-      ui::kColorAshSystemUIMenuSeparator};
-  mixer[ui::kColorAshAppListSeparator] = {
-      SkColorSetA(gfx::kGoogleGrey900, 0x24)};
 }
 
 }  // namespace ash

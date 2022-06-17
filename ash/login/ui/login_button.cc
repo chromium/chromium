@@ -54,6 +54,7 @@ LoginButton::LoginButton(PressedCallback callback)
       this));
 
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   login_views_utils::ConfigureRectFocusRingCircleInkDrop(
       this, views::FocusRing::Get(this), absl::nullopt);
 }
@@ -62,13 +63,6 @@ LoginButton::~LoginButton() = default;
 
 int LoginButton::GetInkDropRadius() const {
   return std::min(GetLocalBounds().width(), GetLocalBounds().height()) / 2;
-}
-
-void LoginButton::OnThemeChanged() {
-  views::ImageButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 }  // namespace ash

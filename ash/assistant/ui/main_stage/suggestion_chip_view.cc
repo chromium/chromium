@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
@@ -103,8 +104,7 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
 
   if (use_dark_light_mode_colors_) {
     views::FocusRing* focus_ring = views::FocusRing::Get(this);
-    focus_ring->SetColor(ColorProvider::Get()->GetControlsLayerColor(
-        ColorProvider::ControlsLayerType::kFocusRingColor));
+    focus_ring->SetColorId(ui::kColorAshFocusRing);
     focus_ring->SetHaloThickness(kFocusedStrokeWidthDip);
     focus_ring->SetHaloInset(0.0f);
   } else {
@@ -235,10 +235,6 @@ void SuggestionChipView::OnThemeChanged() {
         views::Emphasis::kMaximum, size());
     SetBorder(views::CreateRoundedRectBorder(kStrokeWidthDip, radius,
                                              GetStrokeColor()));
-
-    views::FocusRing::Get(this)->SetColor(
-        ColorProvider::Get()->GetControlsLayerColor(
-            ColorProvider::ControlsLayerType::kFocusRingColor));
   }
 }
 

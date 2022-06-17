@@ -112,6 +112,10 @@ PillButton::PillButton(PressedCallback callback,
     SetBackground(views::CreateRoundedRectBackground(
         GetDefaultBackgroundColor(type), kPillButtonHeight / 2.f));
   }
+  views::FocusRing::Get(this)->SetColorId(
+      (use_light_colors_ && !features::IsDarkLightModeEnabled())
+          ? ui::kColorAshLightFocusRing
+          : ui::kColorAshFocusRing);
   SetTooltipText(text);
 }
 
@@ -142,8 +146,6 @@ void PillButton::OnThemeChanged() {
           AshColorProvider::ContentLayerType::kButtonIconColor));
   SkColor enabled_text_color =
       text_color_.value_or(GetDefaultButtonTextColor(type_));
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
   SkColor background_color =
       background_color_.value_or(GetDefaultBackgroundColor(type_));
   if (background())
@@ -157,8 +159,6 @@ void PillButton::OnThemeChanged() {
         icon_color_.value_or(color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kButtonIconColor));
     enabled_text_color = text_color_.value_or(GetDefaultButtonTextColor(type_));
-    views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
     background_color =
         background_color_.value_or(GetDefaultBackgroundColor(type_));
     if (background())

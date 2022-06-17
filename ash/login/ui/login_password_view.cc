@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -466,6 +467,7 @@ class LoginPasswordView::DisplayPasswordButton
         IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE));
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
     SetEnabled(false);
   }
@@ -486,13 +488,6 @@ class LoginPasswordView::DisplayPasswordButton
     SetImage(views::Button::STATE_NORMAL, visible_icon);
     SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
     SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
-  }
-
-  void OnThemeChanged() override {
-    views::ToggleImageButton::OnThemeChanged();
-    views::FocusRing::Get(this)->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 };
 

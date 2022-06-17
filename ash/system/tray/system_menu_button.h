@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_SYSTEM_MENU_BUTTON_H_
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -16,6 +17,7 @@ namespace ash {
 // used across Ash material design native UI menus.
 class SystemMenuButton : public views::ImageButton {
  public:
+  METADATA_HEADER(SystemMenuButton);
   // Constructs the button with |callback| and a centered icon corresponding to
   // |normal_icon| when button is enabled and |disabled_icon| when it is
   // disabled. |accessible_name_id| corresponds to the string in
@@ -40,9 +42,6 @@ class SystemMenuButton : public views::ImageButton {
   // Sets the normal and disabled icons based on that using default menu icon
   // colors.
   void SetVectorIcon(const gfx::VectorIcon& icon);
-
-  // views::ImageButton:
-  const char* GetClassName() const override;
 
  private:
   // Returns the size that the ink drop should be constructed with.

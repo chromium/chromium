@@ -24,6 +24,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -370,6 +371,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   views::InstallEmptyHighlightPathGenerator(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(
@@ -1011,13 +1013,6 @@ void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
 
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::HIDDEN);
-}
-
-void ShelfAppButton::OnThemeChanged() {
-  ShelfButton::OnThemeChanged();
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 }  // namespace ash

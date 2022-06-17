@@ -136,6 +136,7 @@ class BasePinButton : public views::View {
         this));
 
     views::FocusRing::Install(this);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
     login_views_utils::ConfigureRectFocusRingCircleInkDrop(
         this, views::FocusRing::Get(this), kInkDropCornerRadiusDp);
   }
@@ -178,13 +179,6 @@ class BasePinButton : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->SetName(accessible_name_);
     node_data->role = ax::mojom::Role::kButton;
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    views::FocusRing::Get(this)->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kFocusRingColor));
   }
 
  protected:

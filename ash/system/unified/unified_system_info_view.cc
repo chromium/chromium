@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -134,6 +135,7 @@ DateView::DateView(UnifiedSystemTrayController* controller)
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
   SetEnabled(Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
@@ -146,8 +148,6 @@ void DateView::OnThemeChanged() {
   auto* color_provider = AshColorProvider::Get();
   label_->SetEnabledColor(color_provider->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary));
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void DateView::OnButtonPressed(const ui::Event& event) {
@@ -416,8 +416,6 @@ void ManagedStateView::OnThemeChanged() {
   image_->SetImage(
       gfx::CreateVectorIcon(icon_, color_provider->GetContentLayerColor(
                                        ContentLayerType::kIconColorSecondary)));
-  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 ManagedStateView::ManagedStateView(PressedCallback callback,
@@ -438,6 +436,7 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
 
   SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 

@@ -25,6 +25,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -189,8 +190,7 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   auto* focus_ring = views::FocusRing::Get(menu_entry_);
   focus_ring->SetHaloInset(kHaloInset);
   focus_ring->SetHaloThickness(kHaloThickness);
-  focus_ring->SetColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kFocusRingColor, IsDarkModeEnabled()));
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
 }
 
 void DisplayOverlayController::RemoveMenuEntryView() {

@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -259,8 +260,7 @@ void EducationalView::Init(views::View* parent) {
     auto* focus_ring = views::FocusRing::Get(accept_button_);
     focus_ring->SetHaloInset(kHaloInset);
     focus_ring->SetHaloThickness(kHaloThickness);
-    focus_ring->SetColor(cros_styles::ResolveColor(
-        cros_styles::ColorName::kFocusRingColor, IsDarkModeEnabled()));
+    focus_ring->SetColorId(ui::kColorAshFocusRing);
   }
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, 0, GetBorderRow4(portrait_mode_), 0)));

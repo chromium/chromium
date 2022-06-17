@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
@@ -68,8 +69,7 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                           base::Unretained(this)));
 
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColor(
-      AppListColorProvider::Get()->GetFocusRingColor());
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshAppListFocusRing);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InstallPillHighlightPathGenerator(this);
@@ -152,12 +152,10 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(bounds, height() / 2, flags);
 
   // Focus Ring should only be visible when keyboard traversal is occurring.
-  const auto focus_ring_color =
-      AppListColorProvider::Get()->GetFocusRingColor();
-  views::FocusRing::Get(this)->SetColor(
+  views::FocusRing::Get(this)->SetColorId(
       view_delegate_->KeyboardTraversalEngaged()
-          ? focus_ring_color
-          : SkColorSetA(focus_ring_color, 0));
+          ? ui::kColorAshAppListFocusRing
+          : ui::kColorAshAppListFocusRingNoKeyboard);
 }
 
 void SearchResultSuggestionChipView::OnFocus() {
