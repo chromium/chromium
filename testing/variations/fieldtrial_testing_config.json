@@ -3316,6 +3316,21 @@
             ]
         }
     ],
+    "DisableGles2ForOopR": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "disable_features": [
+                        "UseGles2ForOopR"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableIPH": [
         {
             "platforms": [
