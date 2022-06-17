@@ -417,6 +417,7 @@ generate_grd("build_grd") {
     ":build_ts",
     ":build_web_ui_test_mojo_grdp",
     "bookmarks:build_grdp",
+    "commander:build_grdp",
     "cr_components:build_grdp",
     "cr_elements:build_grdp",
     "downloads:build_grdp",
@@ -433,6 +434,7 @@ generate_grd("build_grd") {
   grdp_files = [
     "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
+    "$target_gen_dir/commander/resources.grdp",
     "$target_gen_dir/cr_components/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",

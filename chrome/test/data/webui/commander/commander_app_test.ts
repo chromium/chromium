@@ -4,29 +4,30 @@
 
 import 'chrome://commander/app.js';
 
-import {BrowserProxy} from 'chrome://commander/browser_proxy.js';
+import {CommanderAppElement} from 'chrome://commander/app.js';
+import {BrowserProxyImpl} from 'chrome://commander/browser_proxy.js';
 import {Action, Entity, ViewModel} from 'chrome://commander/types.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
-import {assertDeepEquals, assertEquals, assertGT} from '../chai_assert.js';
-import {flushTasks} from '../test_util.js';
+import {assertDeepEquals, assertEquals, assertGT, assertNotEquals, assertTrue} from '../chai_assert.js';
 
 import {TestCommanderBrowserProxy} from './test_commander_browser_proxy.js';
 
 suite('CommanderWebUIBrowserTest', () => {
-  let app;
-  let testProxy;
+  let app: CommanderAppElement;
+  let testProxy: TestCommanderBrowserProxy;
 
   /**
    * Creates a basic view model skeleton from the provided data.
    * Populated with action = DISPLAY_RESULTS, and an option per each title
    * in `titles` with entity = COMMAND and `matchedRanges` = [[0, 1]].
-   * @param {number} resultSetId The value of `resultSetId` in the view model.
-   * @param {!Array<string>} titles A list of option titles.
-   * @returns {!ViewModel}
+   * @param resultSetId The value of `resultSetId` in the view model.
+   * @param titles A list of option titles.
    */
-  function createStubViewModel(resultSetId, titles) {
+  function createStubViewModel(
+      resultSetId: number, titles: string[]): ViewModel {
     const options = titles.map(title => ({
                                  title: title,
                                  entity: Entity.COMMAND,
@@ -42,11 +43,12 @@ suite('CommanderWebUIBrowserTest', () => {
   /**
    * Asserts that of the elements in `elements`, only the element at
    * `focusedIndex` has class 'focused'.
-   * @param {!NodeList<!HTMLElement>} elements An ordered list of elements.
-   * @param {number} focusedIndex The index at which the focused element is
+   * @param elements An ordered list of elements.
+   * @param focusedIndex The index at which the focused element is
    *     expected to appear.
    */
-  function assertFocused(elements, focusedIndex) {
+  function assertFocused(
+      elements: NodeListOf<HTMLElement>, focusedIndex: number) {
     assertGT(elements.length, 0);
     Array.from(elements).forEach((element, index) => {
       const isFocused = element.classList.contains('focused');
@@ -59,7 +61,7 @@ suite('CommanderWebUIBrowserTest', () => {
 
   setup(async () => {
     testProxy = new TestCommanderBrowserProxy();
-    BrowserProxy.setInstance(testProxy);
+    BrowserProxyImpl.setInstance(testProxy);
     document.body.innerHTML = '';
     app = document.createElement('commander-app');
     document.body.appendChild(app);
@@ -90,11 +92,12 @@ suite('CommanderWebUIBrowserTest', () => {
         'view-model-updated', createStubViewModel(42, titles));
     await flushTasks();
 
-    const optionElements = app.shadowRoot.querySelectorAll('commander-option');
+    const optionElements = app.shadowRoot!.querySelectorAll('commander-option');
     assertEquals(titles.length, optionElements.length);
 
     const actualTitles = Array.from(optionElements).map(el => {
-      return Array.from(el.shadowRoot.querySelectorAll('.title-piece'))
+      return Array
+          .from(el.shadowRoot!.querySelectorAll<HTMLElement>('.title-piece'))
           .map(piece => piece.innerText)
           .join('');
     });
@@ -119,7 +122,8 @@ suite('CommanderWebUIBrowserTest', () => {
         ]));
     await flushTasks();
 
-    const optionElements = app.shadowRoot.querySelectorAll('commander-option');
+    const optionElements = app.shadowRoot!.querySelectorAll('commander-option');
+    assertTrue(!!optionElements[1]);
     optionElements[1].click();
     const [optionIndex, resultID] =
         await testProxy.whenCalled('optionSelected');
@@ -133,28 +137,30 @@ suite('CommanderWebUIBrowserTest', () => {
                           ]));
     await flushTasks();
 
-    const optionElements = app.shadowRoot.querySelectorAll('commander-option');
+    const optionElements = app.shadowRoot!.querySelectorAll('commander-option');
     assertFocused(optionElements, 0);
   });
 
   test('no results view shown if no results', async () => {
-    assertEquals(null, app.shadowRoot.querySelector('#noResults'));
+    assertEquals(null, app.shadowRoot!.querySelector('#noResults'));
     app.$.input.value = 'A';
     webUIListenerCallback('view-model-updated', createStubViewModel(42, []));
     await flushTasks();
 
-    assertEquals(0, app.shadowRoot.querySelectorAll('commander-option').length);
-    assertNotEquals(null, app.shadowRoot.querySelector('#noResults'));
+    assertEquals(
+        0, app.shadowRoot!.querySelectorAll('commander-option').length);
+    assertNotEquals(null, app.shadowRoot!.querySelector('#noResults'));
   });
 
   test('no results view not shown for empty input', async () => {
-    assertEquals(null, app.shadowRoot.querySelector('#noResults'));
+    assertEquals(null, app.shadowRoot!.querySelector('#noResults'));
     webUIListenerCallback('view-model-updated', createStubViewModel(42, []));
     await flushTasks();
 
     assertEquals('', app.$.input.value);
-    assertEquals(0, app.shadowRoot.querySelectorAll('commander-option').length);
-    assertEquals(null, app.shadowRoot.querySelector('#noResults'));
+    assertEquals(
+        0, app.shadowRoot!.querySelectorAll('commander-option').length);
+    assertEquals(null, app.shadowRoot!.querySelector('#noResults'));
   });
 
   test('arrow keys change selection', async () => {
@@ -164,7 +170,7 @@ suite('CommanderWebUIBrowserTest', () => {
                           ]));
     await flushTasks();
 
-    const optionElements = app.shadowRoot.querySelectorAll('commander-option');
+    const optionElements = app.shadowRoot!.querySelectorAll('commander-option');
     keyDownOn(input, 0, [], 'ArrowDown');
     assertFocused(optionElements, 1);
     keyDownOn(input, 0, [], 'ArrowDown');
@@ -203,9 +209,9 @@ suite('CommanderWebUIBrowserTest', () => {
         {resultSetId: 42, action: Action.PROMPT, promptText: expectedPrompt});
     await flushTasks();
 
-    const chips = app.shadowRoot.querySelectorAll('.chip');
+    const chips = app.shadowRoot!.querySelectorAll<HTMLElement>('.chip');
     assertEquals(1, chips.length);
-    assertEquals(expectedPrompt, chips[0].innerText);
+    assertEquals(expectedPrompt, chips[0]!.innerText);
   });
 
   test('backspacing over chip cancels prompt', async () => {
@@ -226,9 +232,10 @@ suite('CommanderWebUIBrowserTest', () => {
     keyDownOn(input, 0, [], 'Backspace');
     assertEquals(1, testProxy.getCallCount('promptCancelled'));
   });
+
   test('focusing options updates aria-activedescendant', async () => {
     const input = app.$.input;
-    const inputRow = app.shadowRoot.querySelector('#inputRow');
+    const inputRow = app.$.inputRow;
     assertEquals(null, inputRow.getAttribute('aria-selected'));
 
     webUIListenerCallback('view-model-updated', createStubViewModel(42, [
@@ -236,11 +243,12 @@ suite('CommanderWebUIBrowserTest', () => {
                           ]));
     await flushTasks();
 
-    const optionElements = app.shadowRoot.querySelectorAll('commander-option');
+    const optionElements = app.shadowRoot!.querySelectorAll('commander-option');
+    assertEquals(3, optionElements.length);
     assertEquals(
-        optionElements[0].id, inputRow.getAttribute('aria-activedescendant'));
+        optionElements[0]!.id, inputRow.getAttribute('aria-activedescendant'));
     keyDownOn(input, 0, [], 'ArrowDown');
     assertEquals(
-        optionElements[1].id, inputRow.getAttribute('aria-activedescendant'));
+        optionElements[1]!.id, inputRow.getAttribute('aria-activedescendant'));
   });
 });

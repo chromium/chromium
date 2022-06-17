@@ -65,4 +65,11 @@ export class CommanderOptionElement extends PolymerElement {
     return isMatch ? 'match' : '';
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'commander-option': CommanderOptionElement;
+  }
+}
+
 customElements.define(CommanderOptionElement.is, CommanderOptionElement);

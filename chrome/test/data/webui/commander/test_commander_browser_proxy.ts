@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {BrowserProxy} from 'chrome://commander/browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestCommanderBrowserProxy extends TestBrowserProxy {
+export class TestCommanderBrowserProxy extends TestBrowserProxy implements
+    BrowserProxy {
   constructor() {
     super([
       'textChanged',
@@ -15,15 +17,15 @@ export class TestCommanderBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  textChanged(newText) {
+  textChanged(newText: string) {
     this.methodCalled('textChanged', newText);
   }
 
-  optionSelected(index, resultSetId) {
+  optionSelected(index: number, resultSetId: number) {
     this.methodCalled('optionSelected', [index, resultSetId]);
   }
 
-  heightChanged(newHeight) {
+  heightChanged(newHeight: number) {
     this.methodCalled('heightChanged', newHeight);
   }
 
