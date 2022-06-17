@@ -97,6 +97,7 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
@@ -147,6 +148,8 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
 
   scoped_refptr<gl::GLImageIOSurface> image(
       gl::GLImageIOSurface::Create(plane_size, internalformat));
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
 
   uint32_t io_surface_plane = (plane == gfx::BufferPlane::UV) ? 1 : 0;
   if (!image->Initialize(io_surface, io_surface_plane, handle.id,

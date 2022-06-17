@@ -160,8 +160,9 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
        !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane))
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
-  scoped_refptr<gl::GLImage> image = MakeGLImage(
-      client_id, std::move(handle), buffer_format, plane, surface_handle, size);
+  scoped_refptr<gl::GLImage> image =
+      MakeGLImage(client_id, std::move(handle), buffer_format, color_space,
+                  plane, surface_handle, size);
   if (!image) {
     LOG(ERROR) << "Failed to create image.";
     return nullptr;
@@ -184,8 +185,6 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   DCHECK(handle_type == gfx::SHARED_MEMORY_BUFFER || target != GL_TEXTURE_2D ||
          texture_2d_support || image->ShouldBindOrCopy() == gl::GLImage::BIND);
 #endif  // DCHECK_IS_ON()
-  if (color_space.IsValid())
-    image->SetColorSpace(color_space);
   if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     image->DisableInUseByWindowServer();
 
@@ -219,6 +218,7 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLImage::MakeGLImage(
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     SurfaceHandle surface_handle,
     const gfx::Size& size) {
@@ -228,6 +228,8 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLImage::MakeGLImage(
     if (!base::IsValueInRangeForNumericType<size_t>(handle.stride))
       return nullptr;
     auto image = base::MakeRefCounted<gl::GLImageSharedMemory>(size);
+    if (color_space.IsValid())
+      image->SetColorSpace(color_space);
     if (!image->Initialize(handle.region, handle.id, format, handle.offset,
                            handle.stride)) {
       return nullptr;
@@ -240,7 +242,8 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLImage::MakeGLImage(
     return nullptr;
 
   return image_factory_->CreateImageForGpuMemoryBuffer(
-      std::move(handle), size, format, plane, client_id, surface_handle);
+      std::move(handle), size, format, color_space, plane, client_id,
+      surface_handle);
 }
 
 bool SharedImageBackingFactoryGLImage::IsSupported(

@@ -117,6 +117,8 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
           static_cast<SharedImageBackingOzone*>(backing())->GetNativePixmap();
       gl_image_ = base::MakeRefCounted<gl::GLImageNativePixmap>(
           pixmap->GetBufferSize(), buffer_format);
+      if (backing()->color_space().IsValid())
+        gl_image_->SetColorSpace(backing()->color_space());
       gl_image_->InitializeForOverlay(pixmap);
     }
 

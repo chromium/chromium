@@ -321,6 +321,7 @@ scoped_refptr<gl::GLImage> GenericV4L2Device::CreateGLImage(
 
   DCHECK(pixmap);
 
+  // TODO(b/220336463): plumb the right color space.
   auto image =
       base::MakeRefCounted<gl::GLImageNativePixmap>(size, buffer_format);
   bool ret = image->Initialize(std::move(pixmap));

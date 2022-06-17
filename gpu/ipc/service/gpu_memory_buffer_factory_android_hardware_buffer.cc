@@ -142,6 +142,7 @@ GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
@@ -156,6 +157,8 @@ GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateImageForGpuMemoryBuffer(
 
   scoped_refptr<gl::GLImageAHardwareBuffer> image(
       new gl::GLImageAHardwareBuffer(size));
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
   if (!image->Initialize(buffer.get(),
                          /* preserved */ false)) {
     DLOG(ERROR) << "Failed to create GLImage " << size.ToString();

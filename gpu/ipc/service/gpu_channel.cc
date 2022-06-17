@@ -1082,10 +1082,12 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
       if (!manager->gpu_memory_buffer_factory())
         return nullptr;
 
+      // TODO(b/220336463): plumb the right color space.
       return manager->gpu_memory_buffer_factory()
           ->AsImageFactory()
           ->CreateImageForGpuMemoryBuffer(std::move(handle), size, format,
-                                          plane, client_id_, surface_handle);
+                                          gfx::ColorSpace(), plane, client_id_,
+                                          surface_handle);
     }
   }
 }

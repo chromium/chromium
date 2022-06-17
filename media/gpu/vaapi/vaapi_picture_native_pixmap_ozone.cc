@@ -79,6 +79,7 @@ VaapiStatus VaapiPictureNativePixmapOzone::Initialize(
 
   const gfx::BufferFormat format = pixmap->GetBufferFormat();
 
+  // TODO(b/220336463): plumb the right color space.
   auto image =
       base::MakeRefCounted<gl::GLImageNativePixmap>(visible_size_, format);
   if (!image->Initialize(std::move(pixmap))) {

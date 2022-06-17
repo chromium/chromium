@@ -95,7 +95,11 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
                                const gfx::Point& offset,
                                const gfx::Rect& rect);
 
-  // Set the color space when image is used as an overlay.
+  // Set the color space when image is used as an overlay. The color space may
+  // also be useful for images backed by YUV buffers: if the GL driver can
+  // sample the YUV buffer as RGB, we need to tell it the encoding (BT.601,
+  // BT.709, or BT.2020) and range (limited or null), and |color_space| conveys
+  // this.
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
   const gfx::ColorSpace& color_space() const { return color_space_; }
 

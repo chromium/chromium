@@ -188,6 +188,7 @@ GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
@@ -197,6 +198,8 @@ GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     return nullptr;
   // Transfer ownership of handle to GLImageDXGI.
   auto image = base::MakeRefCounted<gl::GLImageDXGI>(size, nullptr);
+  if (color_space.IsValid())
+    image->SetColorSpace(color_space);
   if (!image->InitializeHandle(std::move(handle.dxgi_handle), 0, format))
     return nullptr;
   return image;

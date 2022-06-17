@@ -91,6 +91,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLImage
   scoped_refptr<gl::GLImage> MakeGLImage(int client_id,
                                          gfx::GpuMemoryBufferHandle handle,
                                          gfx::BufferFormat format,
+                                         const gfx::ColorSpace& color_space,
                                          gfx::BufferPlane plane,
                                          SurfaceHandle surface_handle,
                                          const gfx::Size& size);
