@@ -112,23 +112,24 @@ class PopularSitesTest : public ::testing::Test {
     prefs_->SetString(prefs::kPopularSitesOverrideVersion, version);
   }
 
-  base::Value CreateListFromTestSites(const TestPopularSiteVector& sites) {
-    base::Value::ListStorage sites_value;
+  base::Value::List CreateListFromTestSites(
+      const TestPopularSiteVector& sites) {
+    base::Value::List sites_value;
     for (const TestPopularSite& site : sites) {
-      base::Value site_value(base::Value::Type::DICTIONARY);
+      base::Value::Dict site_value;
       for (const std::pair<const std::string, std::string>& kv : site) {
         if (kv.first == kTitleSource) {
           int source;
           bool convert_success = base::StringToInt(kv.second, &source);
           DCHECK(convert_success);
-          site_value.SetIntKey(kv.first, source);
+          site_value.Set(kv.first, source);
           continue;
         }
-        site_value.SetStringKey(kv.first, kv.second);
+        site_value.Set(kv.first, kv.second);
       }
-      sites_value.push_back(std::move(site_value));
+      sites_value.Append(std::move(site_value));
     }
-    return base::Value(sites_value);
+    return sites_value;
   }
 
   void RespondWithV5JSON(const std::string& url,
@@ -140,15 +141,16 @@ class PopularSitesTest : public ::testing::Test {
 
   void RespondWithV6JSON(const std::string& url,
                          const TestPopularSectionVector& sections) {
-    base::Value::ListStorage sections_value(sections.size());
+    base::Value::List sections_value;
+    sections_value.reserve(sections.size());
     for (const TestPopularSection& section : sections) {
-      base::Value section_value(base::Value::Type::DICTIONARY);
-      section_value.SetIntKey(kSection, static_cast<int>(section.first));
-      section_value.SetKey(kSites, CreateListFromTestSites(section.second));
-      sections_value.push_back(std::move(section_value));
+      base::Value::Dict section_value;
+      section_value.Set(kSection, static_cast<int>(section.first));
+      section_value.Set(kSites, CreateListFromTestSites(section.second));
+      sections_value.Append(std::move(section_value));
     }
     std::string sites_string;
-    base::JSONWriter::Write(base::Value(sections_value), &sites_string);
+    base::JSONWriter::Write(sections_value, &sites_string);
     test_url_loader_factory_.AddResponse(url, sites_string);
   }
 
