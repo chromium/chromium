@@ -191,12 +191,14 @@ typename BreakList<T>::const_iterator IncrementBreakListIteratorToPosition(
     const BreakList<T>& break_list,
     typename BreakList<T>::const_iterator iter,
     size_t position) {
-  for (; iter != break_list.breaks().end(); ++iter) {
+  DCHECK_LT(position, break_list.max());
+  for (;;) {
+    CHECK(iter != break_list.breaks().end());
     const Range range = break_list.GetRange(iter);
     if (position >= range.start() && position < range.end())
-      break;
+      return iter;
+    ++iter;
   }
-  return iter;
 }
 
 // Replaces the unicode control characters, control characters and PUA (Private

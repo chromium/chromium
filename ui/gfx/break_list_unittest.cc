@@ -144,17 +144,9 @@ TEST_F(BreakListTest, GetBreakAndRange) {
     size_t break_index;
     Range range;
   } cases[] = {
-    { 0, 0, Range(0, 1) },
-    { 1, 1, Range(1, 2) },
-    { 2, 2, Range(2, 4) },
-    { 3, 2, Range(2, 4) },
-    { 4, 3, Range(4, 6) },
-    { 5, 3, Range(4, 6) },
-    { 6, 4, Range(6, 8) },
-    { 7, 4, Range(6, 8) },
-    // Positions at or beyond the max simply return the last break and range.
-    { 8, 4, Range(6, 8) },
-    { 9, 4, Range(6, 8) },
+      {0, 0, Range(0, 1)}, {1, 1, Range(1, 2)}, {2, 2, Range(2, 4)},
+      {3, 2, Range(2, 4)}, {4, 3, Range(4, 6)}, {5, 3, Range(4, 6)},
+      {6, 4, Range(6, 8)}, {7, 4, Range(6, 8)},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
