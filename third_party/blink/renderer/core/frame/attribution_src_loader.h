@@ -70,9 +70,6 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* DoRegistration(const KURL& src_url,
                                  SrcType src_type,
                                  bool associated_with_navigation);
-  void DoPrerenderingRegistration(const KURL& src_url,
-                                  SrcType src_type,
-                                  bool associated_with_navigation);
 
   // Returns whether the attribution is allowed to be registered. Devtool issue
   // might be reported if it's not allowed.

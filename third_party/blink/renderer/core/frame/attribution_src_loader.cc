@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
@@ -202,7 +203,7 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
 
   if (document->IsPrerendering()) {
     document->AddPostPrerenderingActivationStep(
-        WTF::Bind(&AttributionSrcLoader::DoPrerenderingRegistration,
+        WTF::Bind(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
                   WrapPersistentIfNeeded(this), src_url, src_type,
                   associated_with_navigation));
     return nullptr;
@@ -257,13 +258,6 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
 
   return client;
-}
-
-void AttributionSrcLoader::DoPrerenderingRegistration(
-    const KURL& src_url,
-    SrcType src_type,
-    bool associated_with_navigation) {
-  DoRegistration(src_url, src_type, associated_with_navigation);
 }
 
 bool AttributionSrcLoader::CanRegisterAttribution(
