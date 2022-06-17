@@ -49,17 +49,20 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 
   void Reset(const gpu::Mailbox& mailbox,
              const gfx::Size& size,
+             const gfx::ColorSpace& color_space,
              DestroySharedImageCB destroy_shared_image_cb) {
     Destroy();
     DCHECK(!mailbox.IsZero());
     mailbox_ = mailbox;
     size_ = size;
+    color_space_ = color_space;
     destroy_shared_image_cb_ = std::move(destroy_shared_image_cb);
   }
 
   bool HasData() const { return !mailbox_.IsZero(); }
   const gpu::Mailbox& mailbox() const { return mailbox_; }
   const gfx::Size& size() const { return size_; }
+  const gfx::ColorSpace& color_space() const { return color_space_; }
 
  private:
   void Destroy() {
@@ -76,6 +79,7 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 
   gpu::Mailbox mailbox_;
   gfx::Size size_;
+  gfx::ColorSpace color_space_;
   DestroySharedImageCB destroy_shared_image_cb_;
   const scoped_refptr<base::SequencedTaskRunner> destruction_task_runner_;
 };
@@ -262,6 +266,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT1("media,gpu", "ConvertFrameOnGPUThread", "VideoFrame id",
                origin_frame->unique_id());
+  const gfx::ColorSpace src_color_space = frame->ColorSpace();
   const gfx::Rect visible_rect = frame->visible_rect();
 
   // |origin_frame| is kept alive by |frame|.
@@ -275,13 +280,14 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
   if (stored_shared_image) {
     DCHECK(!stored_shared_image->mailbox().IsZero());
     bool res;
-    if (stored_shared_image->size() == GetRectSizeFromOrigin(visible_rect)) {
+    if (stored_shared_image->size() == GetRectSizeFromOrigin(visible_rect) &&
+        stored_shared_image->color_space() == src_color_space) {
       res = UpdateSharedImageOnGPUThread(stored_shared_image->mailbox());
     } else {
-      // The existing shared image's size is no longer good enough, so let's
-      // create a new one.
-      res = GenerateSharedImageOnGPUThread(origin_frame, visible_rect,
-                                           stored_shared_image);
+      // Either the existing shared image's size is no longer good enough or the
+      // color space has changed. Let's create a new shared image.
+      res = GenerateSharedImageOnGPUThread(origin_frame, src_color_space,
+                                           visible_rect, stored_shared_image);
     }
     if (res) {
       DCHECK(stored_shared_image->HasData());
@@ -295,8 +301,8 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
 
   // There was no existing SharedImage: create a new one.
   auto new_shared_image = std::make_unique<ScopedSharedImage>(gpu_task_runner_);
-  if (!GenerateSharedImageOnGPUThread(origin_frame, visible_rect,
-                                      new_shared_image.get())) {
+  if (!GenerateSharedImageOnGPUThread(origin_frame, src_color_space,
+                                      visible_rect, new_shared_image.get())) {
     return;
   }
   DCHECK(new_shared_image->HasData());
@@ -317,6 +323,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
 
 bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
     VideoFrame* video_frame,
+    const gfx::ColorSpace& src_color_space,
     const gfx::Rect& destination_visible_rect,
     ScopedSharedImage* shared_image) {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
@@ -371,7 +378,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
       mailbox, gpu::kPlatformVideoFramePoolClientId,
       std::move(gpu_memory_buffer_handle), *buffer_format,
       gfx::BufferPlane::DEFAULT, gpu::kNullSurfaceHandle, shared_image_size,
-      video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      src_color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       shared_image_usage);
   if (!success) {
     OnError(FROM_HERE, "Failed to create shared image.");
@@ -380,7 +387,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   // There's no need to UpdateSharedImage() after CreateSharedImage().
 
   shared_image->Reset(
-      mailbox, shared_image_size,
+      mailbox, shared_image_size, src_color_space,
       shared_image_stub->GetSharedImageDestructionCallback(mailbox));
   return true;
 }
