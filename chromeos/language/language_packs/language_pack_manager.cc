@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -56,6 +57,8 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   // Clients of Language Packs don't need to know the IDs.
   // TODO(b/223250258): We currently only have 10 languages. Add all remaining
   // languages once the infra issue is fixed.
+  // Note: if you add new languages here, make sure to add them to the metrics
+  //       test `LanguagePackMetricsTest.CheckLanguageCodes`.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
           // Handwriting Recognition.
@@ -216,6 +219,9 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
     std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
+
+  base::UmaHistogramSparse("ChromeOS.LanguagePacks.GetPackState.LanguageCode",
+                           static_cast<int32_t>(base::PersistentHash(locale)));
 
   DlcserviceClient::Get()->GetDlcState(
       *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));

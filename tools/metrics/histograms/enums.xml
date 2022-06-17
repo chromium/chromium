@@ -52942,6 +52942,80 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8026721" label="Zaza"/>
 </enum>
 
+<enum name="LanguagePackLanguageCodes">
+  <summary>
+    Hash values of language codes that correspond to a Language Pack. The hash
+    is created by computing base::PersistentHash() of the label, then cast to
+    int32. To generate new values in a way that is consistent, use the unit test
+    at chromeos/language/language_packs/metrics_unittest.cc.
+  </summary>
+  <int value="-1954182822" label="et"/>
+  <int value="-1902856059" label="tr"/>
+  <int value="-1858573686" label="ga"/>
+  <int value="-1840989837" label="ar"/>
+  <int value="-1823490855" label="be"/>
+  <int value="-1784800271" label="tl"/>
+  <int value="-1781321693" label="my"/>
+  <int value="-1760656795" label="kk"/>
+  <int value="-1728890006" label="kn"/>
+  <int value="-1722334576" label="sv"/>
+  <int value="-1667118147" label="bg"/>
+  <int value="-1660178764" label="bn"/>
+  <int value="-1391374456" label="ur"/>
+  <int value="-1339452358" label="hu"/>
+  <int value="-1319436779" label="lt"/>
+  <int value="-1060081087" label="te"/>
+  <int value="-1001508648" label="nl"/>
+  <int value="-854196551" label="ko"/>
+  <int value="-763755563" label="ru"/>
+  <int value="-703387832" label="ml"/>
+  <int value="-651240163" label="am"/>
+  <int value="-622454823" label="cs"/>
+  <int value="-554160101" label="es"/>
+  <int value="-468417265" label="ca"/>
+  <int value="-414170858" label="ne"/>
+  <int value="-232429543" label="fi"/>
+  <int value="-155273274" label="ka"/>
+  <int value="-132861449" label="or"/>
+  <int value="-103735858" label="is"/>
+  <int value="-100682548" label="hr"/>
+  <int value="-76675939" label="hy"/>
+  <int value="0" label="Unknown"/>
+  <int value="13936671" label="fa"/>
+  <int value="37698508" label="si"/>
+  <int value="76742708" label="mn"/>
+  <int value="126997093" label="sk"/>
+  <int value="202713180" label="ms"/>
+  <int value="385084822" label="pt"/>
+  <int value="411897228" label="fr"/>
+  <int value="579959091" label="iw"/>
+  <int value="592207805" label="pl"/>
+  <int value="656523220" label="zh"/>
+  <int value="771844654" label="uk"/>
+  <int value="916296240" label="id"/>
+  <int value="934072607" label="ta"/>
+  <int value="942489058" label="gu"/>
+  <int value="943542304" label="sl"/>
+  <int value="1136549914" label="it"/>
+  <int value="1176966558" label="de"/>
+  <int value="1229318713" label="vi"/>
+  <int value="1242216658" label="el"/>
+  <int value="1256230022" label="km"/>
+  <int value="1299213554" label="mr"/>
+  <int value="1305993605" label="mt"/>
+  <int value="1347501577" label="lo"/>
+  <int value="1396205312" label="no"/>
+  <int value="1438566975" label="hi"/>
+  <int value="1445641954" label="lv"/>
+  <int value="1505395693" label="th"/>
+  <int value="1652267726" label="ja"/>
+  <int value="1840739667" label="ti"/>
+  <int value="1889238869" label="pa"/>
+  <int value="1938425968" label="ro"/>
+  <int value="2017029213" label="sr"/>
+  <int value="2026210505" label="da"/>
+</enum>
+
 <enum name="LanguagePackMojoFeatureId">
   <int value="0" label="Unknown and unsupported feature"/>
   <int value="1" label="Handwriting recognition"/>
