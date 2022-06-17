@@ -49,7 +49,10 @@ static constexpr base::TimeDelta kDefaultIdTokenRequestDelay = base::Seconds(3);
 // TODO(yigu): We need to make sure the delay is greater than the time required
 // for a successful flow based on `Blink.FedCm.Timing.TurnaroundTime`.
 // https://crbug.com/1298316.
-static constexpr base::TimeDelta kRequestRejectionDelay = base::Seconds(60);
+// TODO(crbug.com/1329633): We temporarily use 120s to make the UI more accessible.
+// We should try not to dismiss it automatically if a user is interacting with it
+// using keyboard or accessibility tools.
+static constexpr base::TimeDelta kRequestRejectionDelay = base::Seconds(120);
 
 // Maximum number of provider URLs in the manifest list.
 // TODO(cbiesinger): Determine what the right number is.
