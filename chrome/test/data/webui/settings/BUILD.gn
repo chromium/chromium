@@ -35,6 +35,7 @@ if (!is_chromeos_ash) {
   preprocessed_files += [
     "test_languages_browser_proxy.ts",
     "languages_page_tests.ts",
+    "languages_page_metrics_test_browser.ts",
   ]
 }
 
@@ -154,7 +155,6 @@ if (is_chromeos_ash) {
 } else {
   non_preprocessed_files += [
     "fake_language_settings_private.ts",
-    "languages_page_metrics_test_browser.ts",
     "languages_subpage_details_tests.ts",
     "languages_subpage_tests.ts",
     "languages_tests.ts",

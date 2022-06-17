@@ -160,6 +160,31 @@ suite('LanguagesPageMetricsBrowser', function() {
         await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
   });
 
+  // <if expr="is_win">
+  test('records when chrome language is changed', async () => {
+    // Adding language with supportsUI = true in
+    // fake_language_settings_private.ts
+    languageHelper.enableLanguage('sw');
+    // Testing the 'Change Chrome Language' button with 'sw'
+    const languagesSection =
+        languagesSubpage.shadowRoot!.querySelector('#languagesSection');
+    assertTrue(!!languagesSection);
+    const menuButton = languagesSection.querySelector<HTMLElement>(
+        '.list-item cr-icon-button#more-sw');
+    assertTrue(!!menuButton);
+    menuButton.click();
+    flush();
+    const actionMenu = languagesSubpage.$.menu.get();
+    assertTrue(actionMenu.open);
+    const item = actionMenu.querySelector<HTMLElement>('#uiLanguageItem');
+    assertTrue(!!item);
+    item.click();
+    assertEquals(
+        LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE,
+        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
+  });
+  // </if>
+
   test('records on language list reorder', async () => {
     // Add several languages.
     for (const language of ['en-CA', 'en-US', 'tk', 'no']) {
