@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERMS_OF_SERVICE_URL} from './feedback_constants.js';
 import {FeedbackFlowState} from './feedback_flow.js';
 import {AttachedFile, FeedbackContext, Report} from './feedback_types.js';
 
@@ -54,10 +55,17 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      */
     this.screenshotUrl;
+
+    /**
+     * @type {string}
+     * @protected
+     */
+    this.privacyNote_;
   }
 
   ready() {
     super.ready();
+    this.setPrivacyNote_();
 
     // Set up event listener for email change to retarget |this| to be the
     // ShareDataPageElement's context.
@@ -184,6 +192,28 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    */
   reEnableSendReportButton() {
     this.getElement_('#buttonSend').disabled = false;
+  }
+
+  /**
+   * Make the link clickable and open it in a new window
+   * @param {!string} linkSelector
+   * @param {!string} linkUrl
+   * @private
+   */
+  openLinkInNewWindow_(linkSelector, linkUrl) {
+    const linkElement = this.shadowRoot.querySelector(linkSelector);
+    linkElement.setAttribute('href', linkUrl);
+    linkElement.setAttribute('target', '_blank');
+  }
+
+  /** @private */
+  setPrivacyNote_() {
+    this.privacyNote_ = this.i18nAdvanced('privacyNote', {attrs: ['id']});
+
+    this.openLinkInNewWindow_('#legalHelpPageUrl', FEEDBACK_LEGAL_HELP_URL);
+    this.openLinkInNewWindow_('#privacyPolicyUrl', FEEDBACK_PRIVACY_POLICY_URL);
+    this.openLinkInNewWindow_(
+        '#termsOfServiceUrl', FEEDBACK_TERMS_OF_SERVICE_URL);
   }
 }
 

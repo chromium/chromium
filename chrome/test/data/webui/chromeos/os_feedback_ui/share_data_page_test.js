@@ -132,7 +132,15 @@ export function shareDataPageTestSuite() {
     assertTrue(getElementContent('#sysInfoLabel').length > 0);
 
     // Privacy note is a long localized string in HTML format.
-    assertTrue(getElementContent('#privacyNote').length > 0);
+    assertTrue(page.i18nExists('privacyNote'));
+    assertEquals(
+        'Go to the Legal Help page to request content changes for ' +
+            'legal reasons. Some account and system information ' +
+            'may be sent to Google. We will use the information you ' +
+            'give us to help address technical issues and to improve our ' +
+            'services, subject to our Privacy Policy and Terms of Service.',
+        getElementContent('#privacyNote'));
+
   });
 
   // Test that the email drop down is populated with two options.
