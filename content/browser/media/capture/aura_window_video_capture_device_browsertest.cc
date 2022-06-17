@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   RunUntilIdle();
 }
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the target window is destroyed before the device is
 // stopped.
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
@@ -309,7 +309,7 @@ class AuraWindowVideoCaptureDeviceBrowserTestWin
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1096946): enable.
+// TODO(https://crbug.com/1096946): enable.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
                        DISABLED_CapturesOccludedWindow) {
   aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // On ChromeOS, another window may occlude a window that is being captured.
 // Make sure the visibility is set to visible during capture if it's occluded.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
@@ -393,7 +393,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      true /* fixed aspect ratio */)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Disabled (crbug.com/1096988)
+// Disabled (https://crbug.com/1096946)
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing.

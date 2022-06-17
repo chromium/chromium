@@ -52,10 +52,26 @@ class FrameTestUtil {
                                  const gfx::Rect& include_rect,
                                  const gfx::Rect& exclude_rect);
 
-  // Returns true if the red, green, and blue components are all within
-  // |max_diff| of each other.
+  // Returns true if the red, green, and blue components of |color| and |rgb|
+  // are all within |max_diff| of each other.
   static bool IsApproximatelySameColor(SkColor color,
                                        const RGB& rgb,
+                                       int max_diff = kMaxColorDifference);
+
+  // Returns true if the red, green, and blue components of |color| and
+  // |expected_color| are all within |max_diff| of each other.
+  static bool IsApproximatelySameColor(SkColor color,
+                                       SkColor expected_color,
+                                       int max_diff = kMaxColorDifference);
+
+  // Returns true if the red, green, and blue components of pixels in
+  // |frame| are within |max_diff| of |expected_color|. Only the pixels
+  // contained within |raw_include_rect| and not contained within
+  // |raw_exclude_rect| will be considered.
+  static bool IsApproximatelySameColor(SkBitmap frame,
+                                       const gfx::Rect& raw_include_rect,
+                                       const gfx::Rect& raw_exclude_rect,
+                                       SkColor expected_color,
                                        int max_diff = kMaxColorDifference);
 
   // Determines how |original| has been scaled and translated to become
