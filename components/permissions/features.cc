@@ -101,10 +101,6 @@ const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_url", ""};
 
-const base::FeatureParam<bool> kPermissionPredictionServiceUseJson{
-    &permissions::features::kPermissionPredictionServiceUseUrlOverride,
-    "service_use_json", false};
-
 const base::FeatureParam<double>
     kPermissionOnDeviceNotificationPredictionsHoldbackChance(
         &features::kPermissionOnDeviceNotificationPredictions,

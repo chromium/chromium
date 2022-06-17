@@ -63,10 +63,6 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
     })");
 }
 
-bool ShouldUseJson() {
-  return permissions::feature_params::kPermissionPredictionServiceUseJson.Get();
-}
-
 }  // namespace
 
 namespace permissions {
@@ -82,12 +78,8 @@ void PredictionService::StartLookup(const PredictionRequestFeatures& entity,
   auto request = GetResourceRequest();
   auto proto_request = GetPredictionRequestProto(entity);
   std::string request_data;
-  if (ShouldUseJson()) {
-    request_data =
-        GeneratePredictionsRequestMessageToJson(*proto_request.get());
-  } else {
-    proto_request->SerializeToString(&request_data);
-  }
+
+  proto_request->SerializeToString(&request_data);
 
   SendRequestInternal(std::move(request), request_data, entity,
                       std::move(response_callback));
@@ -149,9 +141,7 @@ void PredictionService::SendRequestInternal(
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        GetTrafficAnnotationTag());
-  owned_loader->AttachStringForUpload(
-      request_data,
-      ShouldUseJson() ? "application/json" : "application/x-protobuf");
+  owned_loader->AttachStringForUpload(request_data, "application/x-protobuf");
 
   owned_loader->SetTimeoutDuration(kURLLookupTimeout);
   owned_loader->DownloadToString(
@@ -200,12 +190,6 @@ PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
   if (!response_body || loader->NetError() != net::OK ||
       loader->ResponseInfo()->headers->response_code() != net::HTTP_OK) {
     return nullptr;
-  }
-
-  std::string mime_type;
-  if (loader->ResponseInfo()->headers->GetMimeType(&mime_type) &&
-      mime_type == "application/json") {
-    return GeneratePredictionsResponseJsonToMessage(*response_body);
   }
 
   auto predictions_response = std::make_unique<GeneratePredictionsResponse>();
