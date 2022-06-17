@@ -229,11 +229,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                    keyCommandsProvider:key_commands_provider_
                           dependencies:dependencies];
 
-    popup_menu_coordinator_ = [[PopupMenuCoordinator alloc]
-        initWithBaseViewController:bvc_
-                           browser:browser_.get()];
-    [popup_menu_coordinator_ start];
-
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];
     [window addSubview:[bvc_ view]];
@@ -276,7 +271,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   SecondaryToolbarCoordinator* secondary_toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
-  PopupMenuCoordinator* popup_menu_coordinator_;
   SideSwipeController* side_swipe_controller_;
 };
 

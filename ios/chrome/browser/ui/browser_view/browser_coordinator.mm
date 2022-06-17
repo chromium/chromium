@@ -93,7 +93,6 @@
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
@@ -310,10 +309,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
 // The coordinator used for the Text Fragments feature.
 @property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
-
-// The coordinator for the popup menu.
-@property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
-
 @end
 
 @implementation BrowserCoordinator {
@@ -611,16 +606,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   // coordinators.
   DCHECK(self.dispatcher);
 
-  self.popupMenuCoordinator = [[PopupMenuCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
-  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
-  self.popupMenuCoordinator.popupMenuAppearanceDelegate = self.viewController;
-  [self.popupMenuCoordinator start];
-
-  _legacyTabStripCoordinator.longPressDelegate = self.popupMenuCoordinator;
-
   self.ARQuickLookCoordinator = [[ARQuickLookCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -834,9 +819,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   [self.netExportCoordinator stop];
   self.netExportCoordinator = nil;
-
-  [self.popupMenuCoordinator stop];
-  self.popupMenuCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
@@ -885,6 +867,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   dependencies.bubblePresenter = _bubblePresenter;
   dependencies.downloadManagerCoordinator = self.downloadManagerCoordinator;
   dependencies.toolbarInterface = _toolbarCoordinatorAdaptor;
+  dependencies.UIUpdater = _toolbarCoordinatorAdaptor;
   dependencies.primaryToolbarCoordinator = _primaryToolbarCoordinator;
   dependencies.secondaryToolbarCoordinator = _secondaryToolbarCoordinator;
   dependencies.tabStripCoordinator = _tabStripCoordinator;
