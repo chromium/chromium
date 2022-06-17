@@ -5022,6 +5022,11 @@
           'all',
         ],
       },
+      'ios-device (reclient shadow)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'ios-simulator': {
         'additional_compile_targets': [
           'all',

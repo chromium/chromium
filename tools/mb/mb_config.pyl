@@ -586,6 +586,7 @@
       'Mac Builder (dbg)': 'gpu_tests_debug_bot',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
       'ios-device': 'ios_device_release_compile_only',
+      'ios-device (reclient shadow)': 'ios_device_release_compile_only_reclient',
       'ios-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
@@ -2779,6 +2780,10 @@
 
     'ios_device_release_compile_only': [
         'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot', 'ios_disable_xcode_project_generation',
+    ],
+
+    'ios_device_release_compile_only_reclient': [
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient', 'ios_disable_xcode_project_generation',
     ],
 
     # doesn't have symbol_level=0

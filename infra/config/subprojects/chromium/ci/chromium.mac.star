@@ -7,8 +7,9 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
-load("//lib/ci.star", "ci")
+load("//lib/ci.star", "ci", "rbe_instance")
 load("//lib/consoles.star", "consoles")
+load("//lib/structs.star", "structs")
 
 ci.defaults.set(
     builder_group = "chromium.mac",
@@ -422,6 +423,29 @@ ios_builder(
     ],
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
+)
+
+ios_builder(
+    name = "ios-device (reclient shadow)",
+    builder_spec = builder_config.copy_from(
+        "ci/ios-device",
+        lambda spec: structs.evolve(
+            spec,
+            build_gs_bucket = None,
+        ),
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "ios|default",
+            short_name = "rec",
+        ),
+    ],
+    builderless = True,
+    tree_closing = False,
+    sheriff_rotations = args.ignore_default(None),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 40,
 )
 
 ios_builder(
