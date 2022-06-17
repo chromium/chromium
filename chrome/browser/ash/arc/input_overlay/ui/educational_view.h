@@ -41,9 +41,6 @@ class EducationalView : public views::View {
   // shadow correctly.
   void AddShadow();
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
   raw_ptr<ash::PillButton> accept_button_ = nullptr;
   // View shadow for this view.
   std::unique_ptr<ash::ViewShadow> view_shadow_;

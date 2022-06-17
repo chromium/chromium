@@ -39,18 +39,18 @@ constexpr int kDialogHeightPortrait = 305;
 constexpr int kDialogShadowElevation = 3;
 constexpr int kDialogCornerRadius = 12;
 
-constexpr int kTitleFontSizeLandscape = 20;
+constexpr int kTitleFontSizeLandscape = 28;
 constexpr int kTitleFontSizePortrait = 18;
 
 // About description style.
 constexpr int kDescriptionFontSize = 13;
 
 // About Alpha style.
-constexpr int kAlphaFontSize = 11;
+constexpr int kAlphaFontSize = 10;
 constexpr int kAlphaCornerRadius = 4;
-constexpr int kAlphaHeight = 16;
+constexpr int kAlphaHeight = 20;
 constexpr int kAlphaSidePadding = 4;
-constexpr int kAlphaLeftMargin = 12;
+constexpr int kAlphaLeftMargin = 8;
 
 // Misc spacing.
 constexpr int kBorderRowLandscape1 = 16;
@@ -175,7 +175,8 @@ void EducationalView::Init(views::View* parent) {
     auto container_view = std::make_unique<views::View>();
     container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+        .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
     // Game controls.
     container_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
@@ -219,7 +220,7 @@ void EducationalView::Init(views::View* parent) {
         AddChildView(ash::login_views_utils::CreateBubbleLabel(
             l10n_util::GetStringUTF16(
                 IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA),
-            /*view_defining_max_width=*/this,
+            /*view_defining_max_width=*/nullptr,
             /*color=*/
             GetContentLayerColor(
                 ash::AshColorProvider::ContentLayerType::kTextColorSecondary),
@@ -235,6 +236,8 @@ void EducationalView::Init(views::View* parent) {
                                               GetBorderRow3(portrait_mode_),
                                               GetBorderSides(portrait_mode_)));
     description_label->SetMultiLine(true);
+    description_label->SetMaximumWidth(GetDialogWidth(portrait_mode_) -
+                                       2 * GetBorderSides(portrait_mode_));
     description_label->SetSize(gfx::Size());
   }
   {
@@ -276,15 +279,6 @@ void EducationalView::AddShadow() {
 
 void EducationalView::OnAcceptedPressed() {
   display_overlay_controller_->OnEducationalViewDismissed();
-}
-
-gfx::Size EducationalView::CalculatePreferredSize() const {
-  auto available_size = View::CalculatePreferredSize();
-  auto spec_size = gfx::Size(GetDialogWidth(portrait_mode_),
-                             GetDialogHeight(portrait_mode_));
-
-  return gfx::Size(std::min(available_size.width(), spec_size.width()),
-                   std::min(available_size.height(), spec_size.height()));
 }
 
 }  // namespace input_overlay
