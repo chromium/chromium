@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<RelativeLayout
+<org.chromium.chrome.browser.search_resumption.SearchResumptionTileView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -39,4 +39,4 @@
         android:singleLine="true"
         android:layout_centerVertical="true"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
-</RelativeLayout>
+</org.chromium.chrome.browser.search_resumption.SearchResumptionTileView>

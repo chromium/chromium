@@ -24,12 +24,12 @@
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Secondary"/>
 
-      <LinearLayout
+      <org.chromium.chrome.browser.search_resumption.SearchResumptionContainerView
         android:id="@+id/search_resumption_module_tiles_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/search_resumption_module_margin_bottom"
         android:baselineAligned="false"
         android:orientation="vertical">
-      </LinearLayout>
+      </org.chromium.chrome.browser.search_resumption.SearchResumptionContainerView>
 </LinearLayout>
