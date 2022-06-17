@@ -199,7 +199,7 @@ TEST_F('ChromeVoxPanelTest', 'InternationalFormControlsMenu', async function() {
   await this.runWithLoadedTree(this.internationalButtonDoc);
   // Turn on language switching and set available voice list.
   localStorage['languageSwitching'] = 'true';
-  this.getPanelWindow().LocaleOutputHelper.instance.availableVoices_ =
+  LocaleOutputHelper.instance.availableVoices_ =
       [{'lang': 'en-US'}, {'lang': 'es-ES'}];
   CommandHandlerInterface.instance.onCommand('showFormsList');
   await this.waitForMenu('panel_menu_form_controls');
