@@ -25,12 +25,6 @@ Histogram* HistogramFactoryGetCounts(absl::string_view name,
       base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-Histogram* HistogramFactoryGetCounts(
-    const std::string& name, int min, int max, int bucket_count) {
-  return HistogramFactoryGetCounts(absl::string_view(name), min, max,
-                                   bucket_count);
-}
-
 Histogram* HistogramFactoryGetCountsLinear(absl::string_view name,
                                            int min,
                                            int max,
@@ -40,12 +34,6 @@ Histogram* HistogramFactoryGetCountsLinear(absl::string_view name,
       base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-Histogram* HistogramFactoryGetCountsLinear(
-    const std::string& name, int min, int max, int bucket_count) {
-  return HistogramFactoryGetCountsLinear(absl::string_view(name), min, max,
-                                         bucket_count);
-}
-
 Histogram* HistogramFactoryGetEnumeration(absl::string_view name,
                                           int boundary) {
   return reinterpret_cast<Histogram*>(base::LinearHistogram::FactoryGet(
@@ -53,21 +41,10 @@ Histogram* HistogramFactoryGetEnumeration(absl::string_view name,
       base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-Histogram* HistogramFactoryGetEnumeration(
-    const std::string& name, int boundary) {
-  return HistogramFactoryGetEnumeration(absl::string_view(name), boundary);
-}
-
 Histogram* SparseHistogramFactoryGetEnumeration(absl::string_view name,
                                                 int boundary) {
   return reinterpret_cast<Histogram*>(base::SparseHistogram::FactoryGet(
       std::string(name), base::HistogramBase::kUmaTargetedHistogramFlag));
-}
-
-Histogram* SparseHistogramFactoryGetEnumeration(const std::string& name,
-                                                int boundary) {
-  return SparseHistogramFactoryGetEnumeration(absl::string_view(name),
-                                              boundary);
 }
 
 const char* GetHistogramName(Histogram* histogram_pointer) {
