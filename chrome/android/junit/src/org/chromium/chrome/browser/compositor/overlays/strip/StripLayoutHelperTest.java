@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -97,6 +101,9 @@ public class StripLayoutHelperTest {
     private static final float TAB_MARGIN_WIDTH = 76.f;
     private static final long TIMESTAMP = 5000;
     private static final float NEW_TAB_BTN_X = 700.f;
+    private static final float NEW_TAB_BTN_Y = 1400.f;
+    private static final float NEW_TAB_BTN_WIDTH = 100.f;
+    private static final float NEW_TAB_BTN_HEIGHT = 100.f;
 
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72;
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END_MODEL_SELECTOR = 120;
@@ -686,6 +693,144 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testOnDown_OnNewTabButton() {
+        // Initialize.
+        initializeTest(false, false, 0);
+
+        // Set new tab button location and dimensions.
+        mStripLayoutHelper.getNewTabButton().setX(NEW_TAB_BTN_X);
+        mStripLayoutHelper.getNewTabButton().setY(NEW_TAB_BTN_Y);
+        mStripLayoutHelper.getNewTabButton().setWidth(NEW_TAB_BTN_WIDTH);
+        mStripLayoutHelper.getNewTabButton().setHeight(NEW_TAB_BTN_HEIGHT);
+
+        // Press down on new tab button.
+        // CenterX = getX() + (getWidth() / 2) = 700 + (100 / 2) = 750
+        // CenterY = getY() + (getHeight() / 2) = 1400 + (100 / 2) = 1450
+        mStripLayoutHelper.onDown(TIMESTAMP, 750f, 1450f, false, 0);
+
+        // Verify.
+        assertTrue("New tab button should be pressed.",
+                mStripLayoutHelper.getNewTabButton().isPressed());
+        assertNull("Should not set an interacting tab when pressing down on new tab button.",
+                mStripLayoutHelper.getInteractingTab());
+        assertFalse("Should not start reorder mode when pressing down on new tab button.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+    }
+
+    @Test
+    public void testOnDown_OnTab() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Press down on second tab.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+
+        // Verify.
+        assertFalse("New tab button should not be pressed.",
+                mStripLayoutHelper.getNewTabButton().isPressed());
+        assertEquals("Second tab should be interacting tab.", tabs[1],
+                mStripLayoutHelper.getInteractingTab());
+        assertFalse("Should not start reorder mode when pressing down on tab without mouse.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        verify(tabs[1], never()).setClosePressed(anyBoolean());
+    }
+
+    @Test
+    public void testOnDown_OnTab_WithMouse() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Press down on second tab with mouse.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, 0);
+
+        // Verify.
+        assertFalse("New tab button should not be pressed.",
+                mStripLayoutHelper.getNewTabButton().isPressed());
+        assertEquals("Second tab should be interacting tab.", tabs[1],
+                mStripLayoutHelper.getInteractingTab());
+        assertTrue("Should start reorder mode when pressing down on tab with mouse.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        verify(tabs[1], never()).setClosePressed(anyBoolean());
+    }
+
+    @Test
+    public void testOnDown_OnTabCloseButton() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Press down on second tab's close button.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+
+        // Verify.
+        assertFalse("New tab button should not be pressed.",
+                mStripLayoutHelper.getNewTabButton().isPressed());
+        assertEquals("Second tab should be interacting tab.", tabs[1],
+                mStripLayoutHelper.getInteractingTab());
+        assertFalse("Should not start reorder mode from close button.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        verify(tabs[1]).setClosePressed(eq(true));
+    }
+
+    @Test
+    public void testOnDown_OnTabCloseButton_WithMouse() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+
+        // Press down on second tab's close button with mouse.
+        when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, true, 0);
+
+        // Verify.
+        assertFalse("New tab button should not be pressed.",
+                mStripLayoutHelper.getNewTabButton().isPressed());
+        assertEquals("Second tab should be interacting tab.", tabs[1],
+                mStripLayoutHelper.getInteractingTab());
+        assertFalse("Should not start reorder mode from close button.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        verify(tabs[1]).setClosePressed(eq(true));
+    }
+
+    @Test
+    public void testOnDown_WhileScrolling() {
+        // Initialize and assert scroller is finished.
+        initializeTest(false, false, 0);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        assertTrue("Scroller should be finished right after initializing.",
+                mStripLayoutHelper.getScroller().isFinished());
+
+        // Start scroll and assert scroller is not finished.
+        mStripLayoutHelper.getScroller().startScroll(0, 0, 0, 0, TIMESTAMP, 1000);
+        assertFalse("Scroller should not be finished after starting scroll.",
+                mStripLayoutHelper.getScroller().isFinished());
+
+        // Press down on second tab and assert scroller is finished.
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.onDown(TIMESTAMP, 150f, 0f, false, 0);
+        assertFalse("New tab button should not be pressed.",
+                mStripLayoutHelper.getNewTabButton().isPressed());
+        assertNull("Should not set an interacting tab when pressing down to stop scrolling.",
+                mStripLayoutHelper.getInteractingTab());
+        assertTrue("Scroller should be force finished after pressing down on strip.",
+                mStripLayoutHelper.getScroller().isFinished());
+    }
+
+    @Test
     public void testOnLongPress_OnTab() {
         // Initialize.
         initializeTest(false, false, 0);
@@ -1269,6 +1414,7 @@ public class StripLayoutHelperTest {
         when(tab.getWidth()).thenReturn(tabWidth);
         when(tab.getId()).thenReturn(id);
         when(tab.getDrawX()).thenReturn(mDrawX);
+        when(tab.getVisiblePercentage()).thenReturn(1f);
         return tab;
     }
 

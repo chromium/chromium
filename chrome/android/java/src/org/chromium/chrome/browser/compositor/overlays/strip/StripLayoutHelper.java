@@ -2248,6 +2248,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
+     * @return The currently interacting tab.
+     */
+    @VisibleForTesting
+    StripLayoutTab getInteractingTab() {
+        return mInteractingTab;
+    }
+
+    /**
      * Disables animations for testing purposes.
      */
     @VisibleForTesting
