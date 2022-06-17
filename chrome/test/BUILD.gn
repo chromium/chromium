@@ -7758,6 +7758,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser/ash/system_web_apps:unit_tests",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/web_applications:unit_tests",
       "//chrome/browser/web_applications:web_applications_unit_tests",

@@ -23,15 +23,15 @@ source_set("system_web_apps") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/system_web_apps/types:types",
+    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/web_applications:web_applications",
+    "//chrome/browser/web_applications",
     "//chrome/common",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/pref_registry:pref_registry",
     "//components/webapps/browser",
     "//content/public/browser",
-    "//ui/base/idle:idle",
+    "//ui/base/idle",
   ]
 
   if (is_chromeos_ash) {
@@ -54,4 +54,29 @@ source_set("system_web_apps") {
       deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (is_chromeos) {
+    sources = [ "system_web_app_manager_unittest.cc" ]
+  }
+
+  deps = [
+    ":system_web_apps",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/webapps/browser:constants",
+    "//content/test:test_support",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
+    "//url",
+  ]
 }
