@@ -32,8 +32,9 @@ namespace content {
 //    at this point (ThreadPool will accept but not run tasks until
 //    PostCreateThreads).
 //
-//  - PostEarlyInitialization: things to be be as soon as possible but can/must
-//    wait after the few things in BrowserMainLoop's own EarlyInitialization.
+//  - PostEarlyInitialization: things to be be done as soon as possible but that
+//    can/must wait until after the few things in BrowserMainLoop's own
+//    EarlyInitialization have completed.
 //
 //  - ToolkitInitialized: similar to PostEarlyInitialization but for the UI
 //    toolkit. Allows an embedder to do any extra toolkit initialization.
@@ -41,9 +42,8 @@ namespace content {
 //  - PreCreateMainMessageLoop: things to be done at some generic time before
 //    the creation of the main message loop.
 //
-//  - PostCreateMainMessageLoop: things to be done as early as possible but
-//    which need the main message loop to be around (i.e. BrowserThread::UI is
-//    up).
+//  - PostCreateMainMessageLoop: things to be done as early as possible but that
+//    need the main message loop to be around (i.e. BrowserThread::UI is up).
 //
 //  - PreCreateThreads: things that don't need to happen super early but still
 //    need to happen during single-threaded initialization (e.g. immutable
