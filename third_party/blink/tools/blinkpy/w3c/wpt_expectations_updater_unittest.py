@@ -168,17 +168,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'crbug.com/626703 [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]\n'
         )
 
-    def test_cmd_arg_include_unexpected_pass_raieses_exception(self):
-        host = self.mock_host()
-        expectations_path = \
-            host.port_factory.get().path_to_generic_test_expectations_file()
-        host.filesystem.write_text_file(expectations_path,
-                                        WPTExpectationsUpdater.MARKER_COMMENT + '\n')
-        updater = WPTExpectationsUpdater(host, args=['--include-unexpected-pass'])
-        with self.assertRaises(AssertionError) as ctx:
-            updater.run()
-        self.assertIn('--include-unexpected-pass', str(ctx.exception))
-
     def test_get_failing_results_dict_only_passing_results(self):
         host = self.mock_host()
         result = """

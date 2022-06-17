@@ -96,11 +96,6 @@ class WPTExpectationsUpdater(object):
         log_level = logging.DEBUG if self.options.verbose else logging.INFO
         configure_logging(logging_level=log_level, include_time=True)
 
-        if not (self.options.android_product
-                or self.options.update_android_expectations_only):
-            assert not self.options.include_unexpected_pass, (
-                'Command line argument --include-unexpected-pass is not '
-                'supported in desktop mode.')
         self.patchset = self.options.patchset
 
         if (self.options.clean_up_test_expectations or
@@ -139,17 +134,6 @@ class WPTExpectationsUpdater(object):
             help='Only cleanup expectations deleted or renamed in current CL. '
                  'If flag is not used then a full cleanup of deleted or '
                  'renamed tests will be done in expectations.')
-        # TODO(rmhasan): Move below arguments to the
-        # AndroidWPTExpectationsUpdater add_arguments implementation.
-        # Also look into using sub parsers to separate android and
-        # desktop specific arguments.
-        parser.add_argument(
-            '--update-android-expectations-only', action='store_true',
-            help='Update and clean up only Android test expectations.')
-        parser.add_argument(
-            '--android-product', action='append', default=[],
-            help='Android products whose baselines will be updated.',
-            choices=PRODUCTS)
         parser.add_argument(
             '--include-unexpected-pass',
             action='store_true',
