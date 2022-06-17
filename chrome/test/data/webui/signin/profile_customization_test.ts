@@ -102,7 +102,10 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
       assertEquals(
           app.$.title.innerText,
           inDialogDesign ? STATIC_TITLE : WELCOME_TEXT_1);
-      assertEquals('rgb(0, 255, 0)', getComputedStyle(header).backgroundColor);
+      if (!inDialogDesign) {
+        assertEquals(
+            'rgb(0, 255, 0)', getComputedStyle(header).backgroundColor);
+      }
       checkImageUrl('#avatar', AVATAR_URL_1);
       assertFalse(isChildVisible(app, '#badge'));
       // Update the info.
@@ -116,7 +119,9 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
       assertEquals(
           app.$.title.innerText,
           inDialogDesign ? STATIC_TITLE : WELCOME_TEXT_2);
-      assertEquals(color2, getComputedStyle(header).backgroundColor);
+      if (!inDialogDesign) {
+        assertEquals(color2, getComputedStyle(header).backgroundColor);
+      }
       checkImageUrl('#avatar', AVATAR_URL_2);
       assertTrue(isChildVisible(app, '#badge'));
     });

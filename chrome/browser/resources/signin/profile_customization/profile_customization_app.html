@@ -8,7 +8,13 @@
   #header {
     background-color: var(--header-background-color);
     height: 124px;
-    margin-bottom: 16px
+    margin-bottom: 16px;
+  }
+
+  .in-dialog-design #header {
+    background: center 18px no-repeat
+        url(./images/profile_customization_illustration.svg);
+    height: 170px;
   }
 
   #avatarContainer {
@@ -20,6 +26,11 @@
     position: absolute;
     top: 30px;
     width: var(--avatar-size);
+  }
+
+  .in-dialog-design #avatarContainer {
+    --avatar-image-width: 72px;
+    top: 90px;
   }
 
   #avatar {
@@ -40,9 +51,14 @@
     border-radius: 50%;
     bottom: var(--badge-offset);
     height: var(--badge-width);
+    inset-inline-end: var(--badge-offset);
     position: absolute;
-    right: var(--badge-offset);
     width: var(--badge-width);
+  }
+
+  .in-dialog-design .work-badge {
+    --badge-width: 24px;
+    bottom: 0;
   }
 
   .work-badge > iron-icon {
@@ -92,6 +108,10 @@
     margin: 16px auto;
   }
 
+  .in-dialog-design #pickThemeContainer {
+    margin: 4px auto 26px auto;
+  }
+
   #themeSelector {
     --cr-customize-themes-grid-gap: 7px;
     --cr-customize-themes-icon-size: 36px;
@@ -106,12 +126,12 @@
     width: 111px;
   }
 
-  #title.in-dialog-design {
+  .in-dialog-design #title {
     font-size: 20px;
     line-height: 24px;
   }
 
-  .action-container.in-dialog-design {
+  .in-dialog-design .action-container {
     padding: 0 24px 24px;
   }
 
@@ -126,7 +146,8 @@
 </style>
 
 <div role="dialog" id="customizeDialog" aria-labelledby="title"
-    aria-describedby="content">
+    aria-describedby="content"
+    class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
   <div id="header">
     <div id="avatarContainer">
       <img id="avatar" alt="" src="[[pictureUrl_]]">
@@ -137,8 +158,7 @@
   </div>
 
   <div id="body">
-    <div id="title"
-        class$="[[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
+    <div id="title">
       <template is="dom-if" if="[[!profileCustomizationInDialogDesign_]]">
         [[welcomeTitle_]]
       </template>
@@ -161,8 +181,7 @@
     </cr-customize-themes>
   </div>
 
-  <div class$="action-container
-      [[getDialogDesignClass_(profileCustomizationInDialogDesign_)]]">
+  <div class="action-container">
     <cr-button id="doneButton" class="action-button"
         disabled="[[isDoneButtonDisabled_(profileName_)]]"
         on-click="onDoneCustomizationClicked_" autofocus>

@@ -39,6 +39,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
 
   input_files = [
+    "profile_customization/images/profile_customization_illustration.svg",
     "sync_confirmation/sync_confirmation.html",
     "sync_confirmation/sync_disabled_confirmation.html",
     "sync_confirmation/sync_loading_confirmation.html",
