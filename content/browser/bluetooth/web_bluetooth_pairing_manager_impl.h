@@ -72,6 +72,10 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
                            CredentialPromptPINCancelled);
   FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
                            CredentialPromptPasskeyCancelled);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PairConfirmPromptSuccess);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PairConfirmPromptCancelled);
 
   // Pair the Bluetooth device identified by |device_id|. |num_pair_attempts|
   // represents the number of pairing attempts for the specified device which
@@ -93,8 +97,12 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
 
   void OnPinCodeResult(
       blink::WebBluetoothDeviceId device_id,
-      WebBluetoothPairingManagerDelegate::CredentialPromptResult status,
+      WebBluetoothPairingManagerDelegate::PairPromptResult status,
       const std::string& result);
+
+  void OnPairConfirmResult(
+      blink::WebBluetoothDeviceId device_id,
+      WebBluetoothPairingManagerDelegate::PairPromptResult status);
 
   // device::BluetoothDevice::PairingDelegate implementation:
   void RequestPinCode(device::BluetoothDevice* device) override;

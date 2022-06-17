@@ -465,6 +465,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       const std::u16string& device_identifier,
       BluetoothCredentialsCallback callback) override;
 
+  void PromptForBluetoothPairConfirm(
+      const std::u16string& device_identifier,
+      BluetoothPairConfirmCallback callback) override;
+
+  void PairConfirmed(const blink::WebBluetoothDeviceId& device_id) override;
   // Used to open a BluetoothChooser and start a device discovery session.
   std::unique_ptr<BluetoothDeviceChooserController> device_chooser_controller_;
 

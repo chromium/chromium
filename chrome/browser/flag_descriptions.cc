@@ -5906,6 +5906,14 @@ const char kOzonePlatformHintDescription[] =
     "\"X11\". \"Auto\" selects Wayland if possible, X11 otherwise. ";
 #endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+const char kWebBluetoothConfirmPairingSupportName[] =
+    "Web Bluetooth confirm pairing support";
+const char kWebBluetoothConfirmPairingSupportDescription[] =
+    "Enable confirm-only and confirm-pin pairing mode support for Web "
+    "Bluetooth";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_LINUX)
 const char kCleanUndecryptablePasswordsLinuxName[] =
     "Cleanup local undecryptable passwords during initial sync flow";

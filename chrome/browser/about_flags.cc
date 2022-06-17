@@ -8779,6 +8779,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    {"enable-web-bluetooth-confirm-pairing-support",
+     flag_descriptions::kWebBluetoothConfirmPairingSupportName,
+     flag_descriptions::kWebBluetoothConfirmPairingSupportDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(device::features::kWebBluetoothConfirmPairingSupport)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_TEST_FAKE_BLUETOOTH_LE_DEVICE_WINRT_H_
 
 #include <windows.devices.bluetooth.h>
+#include <windows.devices.enumeration.h>
 #include <windows.foundation.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
@@ -132,6 +133,8 @@ class FakeBluetoothLEDeviceWinrt
 
   void SimulateDevicePaired(bool is_paired);
   void SimulatePairingPinCode(std::string pin_code);
+  void SimulatePairingKind(
+      ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind);
   absl::optional<BluetoothUUID> GetTargetGattService() const;
   void SimulateGattConnection();
   void SimulateGattConnectionError(

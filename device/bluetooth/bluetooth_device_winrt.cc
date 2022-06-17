@@ -390,7 +390,8 @@ void BluetoothDeviceWinrt::SetPasskey(uint32_t passkey) {
 }
 
 void BluetoothDeviceWinrt::ConfirmPairing() {
-  NOTIMPLEMENTED();
+  if (pairing_)
+    pairing_->ConfirmPairing();
 }
 
 void BluetoothDeviceWinrt::RejectPairing() {

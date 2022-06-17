@@ -38,6 +38,11 @@ DEVICE_BASE_EXPORT extern const base::Feature kWebXrHandInput;
 DEVICE_BASE_EXPORT extern const base::Feature kWebXrHitTest;
 DEVICE_BASE_EXPORT extern const base::Feature kWebXrIncubations;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+DEVICE_BASE_EXPORT extern const base::Feature
+    kWebBluetoothConfirmPairingSupport;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 }  // namespace features
 }  // namespace device
 

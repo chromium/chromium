@@ -259,6 +259,12 @@ void FakeBluetoothLEDeviceWinrt::SimulatePairingPinCode(std::string pin_code) {
       Make<FakeDeviceInformationPairingWinrt>(std::move(pin_code)));
 }
 
+void FakeBluetoothLEDeviceWinrt::SimulatePairingKind(
+    ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind) {
+  device_information_ = Make<FakeDeviceInformationWinrt>(
+      Make<FakeDeviceInformationPairingWinrt>(pairing_kind));
+}
+
 absl::optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
     const {
   if (!service_uuid_)

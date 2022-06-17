@@ -89,6 +89,7 @@ using ABI::Windows::Devices::Bluetooth::Advertisement::
     IBluetoothLEAdvertisementWatcher;
 using ABI::Windows::Devices::Bluetooth::Advertisement::
     IBluetoothLEManufacturerDataFactory;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
 using ABI::Windows::Devices::Enumeration::IDeviceInformation;
 using ABI::Windows::Devices::Enumeration::IDeviceInformationStatics;
 using ABI::Windows::Devices::Radios::IRadioStatics;
@@ -703,6 +704,9 @@ BluetoothTestWinrt::BluetoothTestWinrt() {
   } else {
     disabled.push_back(kNewBLEGattSessionHandling);
   }
+  // TODO(crbug.com/1335586): Remove once `kWebBluetoothConfirmPairingSupport`
+  // is enabled by default.
+  enabled.push_back(features::kWebBluetoothConfirmPairingSupport);
   scoped_feature_list_.InitWithFeatures(enabled, disabled);
 }
 
@@ -879,6 +883,14 @@ void BluetoothTestWinrt::SimulatePairingPinCode(BluetoothDevice* device,
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
   DCHECK(ble_device);
   ble_device->SimulatePairingPinCode(std::move(pin_code));
+}
+
+void BluetoothTestWinrt::SimulatePairingKind(BluetoothDevice* device,
+                                             DevicePairingKinds pairing_kind) {
+  auto* const ble_device =
+      static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
+  DCHECK(ble_device);
+  ble_device->SimulatePairingKind(pairing_kind);
 }
 
 void BluetoothTestWinrt::SimulateAdvertisementStarted(

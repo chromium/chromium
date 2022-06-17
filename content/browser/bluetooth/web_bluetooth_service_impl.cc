@@ -180,19 +180,37 @@ void BluetoothDelegateCredentialsCallback(
     WebBluetoothPairingManagerDelegate::BluetoothCredentialsCallback callback,
     BluetoothDelegate::DeviceCredentialsPromptResult status,
     const std::u16string& result) {
-  WebBluetoothPairingManagerDelegate::CredentialPromptResult delegate_result;
+  WebBluetoothPairingManagerDelegate::PairPromptResult delegate_result;
   switch (status) {
     case BluetoothDelegate::DeviceCredentialsPromptResult::kSuccess:
       delegate_result =
-          WebBluetoothPairingManagerDelegate::CredentialPromptResult::kSuccess;
+          WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess;
       break;
     case BluetoothDelegate::DeviceCredentialsPromptResult::kCancelled:
-      delegate_result = WebBluetoothPairingManagerDelegate::
-          CredentialPromptResult::kCancelled;
+      delegate_result =
+          WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled;
       break;
   }
 
   std::move(callback).Run(delegate_result, base::UTF16ToUTF8(result));
+}
+
+void BluetoothDelegatePairConfirmCallback(
+    WebBluetoothPairingManagerDelegate::BluetoothPairConfirmCallback callback,
+    BluetoothDelegate::DevicePairConfirmPromptResult status) {
+  WebBluetoothPairingManagerDelegate::PairPromptResult delegate_result;
+  switch (status) {
+    case BluetoothDelegate::DevicePairConfirmPromptResult::kSuccess:
+      delegate_result =
+          WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess;
+      break;
+    case BluetoothDelegate::DevicePairConfirmPromptResult::kCancelled:
+      delegate_result =
+          WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled;
+      break;
+  }
+
+  std::move(callback).Run(delegate_result);
 }
 
 bool& ShouldIgnoreVisibilityRequirementsForTesting() {
@@ -2072,7 +2090,8 @@ void WebBluetoothServiceImpl::OnCharacteristicReadValue(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
 #if PAIR_BLUETOOTH_ON_DEMAND()
-    if (error_code.value() == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED) {
+    if (error_code.value() == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED ||
+        error_code.value() == GattErrorCode::GATT_ERROR_NOT_PAIRED) {
       BluetoothDevice* device = GetCachedDevice(
           GetCharacteristicDeviceID(characteristic_instance_id));
       if (device && !device->IsPaired()) {
@@ -2641,6 +2660,17 @@ void WebBluetoothServiceImpl::SetPinCode(
   device->SetPinCode(pincode);
 }
 
+void WebBluetoothServiceImpl::PairConfirmed(
+    const blink::WebBluetoothDeviceId& device_id) {
+  DCHECK(device_id.IsValid());
+
+  BluetoothDevice* device = GetCachedDevice(device_id);
+  if (!device)
+    return;
+
+  device->ConfirmPairing();
+}
+
 void WebBluetoothServiceImpl::PromptForBluetoothCredentials(
     const std::u16string& device_identifier,
     BluetoothCredentialsCallback callback) {
@@ -2650,13 +2680,30 @@ void WebBluetoothServiceImpl::PromptForBluetoothCredentials(
       GetContentClient()->browser()->GetBluetoothDelegate();
   if (!delegate) {
     std::move(callback).Run(
-        WebBluetoothPairingManagerDelegate::CredentialPromptResult::kCancelled,
-        "");
+        WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled, "");
     return;
   }
   delegate->ShowDeviceCredentialsPrompt(
       render_frame_host(), device_identifier,
       base::BindOnce(&BluetoothDelegateCredentialsCallback,
+                     std::move(callback)));
+}
+
+void WebBluetoothServiceImpl::PromptForBluetoothPairConfirm(
+    const std::u16string& device_identifier,
+    BluetoothPairConfirmCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+  if (!delegate) {
+    std::move(callback).Run(
+        WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled);
+    return;
+  }
+  delegate->ShowDevicePairConfirmPrompt(
+      render_frame_host(), device_identifier,
+      base::BindOnce(&BluetoothDelegatePairConfirmCallback,
                      std::move(callback)));
 }
 

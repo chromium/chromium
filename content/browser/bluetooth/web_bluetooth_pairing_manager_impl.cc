@@ -267,14 +267,27 @@ void WebBluetoothPairingManagerImpl::RequestPinCode(BluetoothDevice* device) {
 
 void WebBluetoothPairingManagerImpl::OnPinCodeResult(
     blink::WebBluetoothDeviceId device_id,
-    WebBluetoothPairingManagerDelegate::CredentialPromptResult status,
+    WebBluetoothPairingManagerDelegate::PairPromptResult status,
     const std::string& result) {
   switch (status) {
-    case WebBluetoothPairingManagerDelegate::CredentialPromptResult::kCancelled:
+    case WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled:
       pairing_manager_delegate_->CancelPairing(device_id);
       break;
-    case WebBluetoothPairingManagerDelegate::CredentialPromptResult::kSuccess:
+    case WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess:
       pairing_manager_delegate_->SetPinCode(device_id, result);
+      break;
+  }
+}
+
+void WebBluetoothPairingManagerImpl::OnPairConfirmResult(
+    blink::WebBluetoothDeviceId device_id,
+    WebBluetoothPairingManagerDelegate::PairPromptResult status) {
+  switch (status) {
+    case WebBluetoothPairingManagerDelegate::PairPromptResult::kCancelled:
+      pairing_manager_delegate_->CancelPairing(device_id);
+      break;
+    case WebBluetoothPairingManagerDelegate::PairPromptResult::kSuccess:
+      pairing_manager_delegate_->PairConfirmed(device_id);
       break;
   }
 }
@@ -310,8 +323,12 @@ void WebBluetoothPairingManagerImpl::ConfirmPasskey(BluetoothDevice* device,
 }
 
 void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
-  device->CancelPairing();
-  NOTIMPLEMENTED();
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
+  pairing_manager_delegate_->PromptForBluetoothPairConfirm(
+      device->GetNameForDisplay(),
+      base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
+                     weak_ptr_factory_.GetWeakPtr(), device_id));
 }
 
 }  // namespace content

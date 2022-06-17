@@ -12,6 +12,8 @@ namespace device {
 
 namespace {
 
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ProvidePin;
 using ABI::Windows::Devices::Enumeration::DevicePairingProtectionLevel;
 using ABI::Windows::Devices::Enumeration::DevicePairingResult;
 using ABI::Windows::Devices::Enumeration::DeviceUnpairingResult;
@@ -30,6 +32,11 @@ FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
     std::string pin)
     : custom_(Make<FakeDeviceInformationCustomPairingWinrt>(this,
                                                             std::move(pin))) {}
+
+FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
+    DevicePairingKinds pairing_kind)
+    : custom_(
+          Make<FakeDeviceInformationCustomPairingWinrt>(this, pairing_kind)) {}
 
 FakeDeviceInformationPairingWinrt::~FakeDeviceInformationPairingWinrt() =
     default;
