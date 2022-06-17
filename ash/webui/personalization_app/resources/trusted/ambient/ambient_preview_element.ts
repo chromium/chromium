@@ -174,7 +174,7 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   private getCollageContainerClass_(): string {
-    return `collage-${this.collageImages_.length}`;
+    return `collage-${this.collageImages_.length} clickable`;
   }
 
   private getCollageItems_(): AmbientModeAlbum[] {
