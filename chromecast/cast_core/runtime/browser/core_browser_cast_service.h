@@ -24,7 +24,6 @@ namespace chromecast {
 
 class CastWebService;
 class WebCryptoServer;
-class RuntimeApplicationWatcher;
 
 namespace receiver {
 class MediaManager;
@@ -47,9 +46,10 @@ class CoreBrowserCastService
 
   CoreBrowserCastService(CastWebService* web_service,
                          NetworkContextGetter network_context_getter,
-                         media::VideoPlaneController* video_plane_controller,
-                         RuntimeApplicationWatcher* application_watcher);
-  ~CoreBrowserCastService() override;
+                         media::VideoPlaneController* video_plane_controller);
+
+  // Flags if buffering is enabled.
+  RuntimeApplicationDispatcher* app_dispatcher() { return &app_dispatcher_; }
 
   // Returns WebCryptoServer.
   virtual WebCryptoServer* GetWebCryptoServer();
@@ -57,7 +57,7 @@ class CoreBrowserCastService
   // Returns MediaManager.
   virtual receiver::MediaManager* GetMediaManager();
 
- protected:
+ private:
   // CastService implementation:
   void InitializeInternal() override;
   void FinalizeInternal() override;

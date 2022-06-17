@@ -8,6 +8,7 @@
 #include "base/process/process.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/cast_core/cast_core_switches.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/metrics/cast_event_builder_simple.h"
 
 namespace chromecast {
@@ -15,15 +16,11 @@ namespace chromecast {
 CoreBrowserCastService::CoreBrowserCastService(
     CastWebService* web_service,
     NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller,
-    RuntimeApplicationWatcher* application_watcher)
+    media::VideoPlaneController* video_plane_controller)
     : app_dispatcher_(web_service,
                       this,
                       std::move(network_context_getter),
-                      video_plane_controller,
-                      application_watcher) {}
-
-CoreBrowserCastService::~CoreBrowserCastService() = default;
+                      video_plane_controller) {}
 
 void CoreBrowserCastService::InitializeInternal() {}
 

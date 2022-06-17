@@ -25,7 +25,11 @@ CastRuntimeContentBrowserClient::CastRuntimeContentBrowserClient(
     CastFeatureListCreator* feature_list_creator)
     : shell::CastContentBrowserClient(feature_list_creator) {}
 
-CastRuntimeContentBrowserClient::~CastRuntimeContentBrowserClient() = default;
+CastRuntimeContentBrowserClient::~CastRuntimeContentBrowserClient() {
+  if (core_browser_cast_service_) {
+    core_browser_cast_service_->app_dispatcher()->RemoveObserver(this);
+  }
+}
 
 CoreBrowserCastService* CastRuntimeContentBrowserClient::GetCastService() {
   return core_browser_cast_service_;
@@ -48,9 +52,11 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
       },
       this);
   auto core_browser_cast_service = std::make_unique<CoreBrowserCastService>(
-      web_service, std::move(network_context_getter), video_plane_controller,
-      this);
+      web_service, std::move(network_context_getter), video_plane_controller);
   core_browser_cast_service_ = core_browser_cast_service.get();
+
+  core_browser_cast_service_->app_dispatcher()->AddObserver(this);
+
   return core_browser_cast_service;
 }
 
@@ -80,50 +86,19 @@ bool CastRuntimeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
   return origin.host() == kCastWebUIHomeHost;
 }
 
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
-    const network::ResourceRequest& request,
-    content::BrowserContext* browser_context,
-    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  auto url_rewrite_rules_throttle =
-      CreateUrlRewriteRulesThrottle(wc_getter.Run());
-  if (url_rewrite_rules_throttle) {
-    throttles.emplace_back(std::move(url_rewrite_rules_throttle));
-  }
-  return throttles;
-}
-
-std::unique_ptr<blink::URLLoaderThrottle>
-CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
-    content::WebContents* web_contents) {
-  DCHECK(runtime_application_);
-
-  const auto& rules = runtime_application_->GetCastWebContents()
-                          ->url_rewrite_rules_manager()
-                          ->GetCachedRules();
-  if (!rules) {
-    LOG(WARNING) << "Can't create URL throttle as URL rules are not available";
-    return nullptr;
-  }
-
-  return std::make_unique<url_rewrite::URLLoaderThrottle>(
-      rules, base::BindRepeating(&IsHeaderCorsExempt));
-}
-
 bool CastRuntimeContentBrowserClient::IsBufferingEnabled() {
-  bool is_buffering_enabled = !is_runtime_application_for_streaming_.load();
-  LOG_IF(INFO, !is_buffering_enabled) << "Buffering has been disabled!";
-  return is_buffering_enabled;
+  return is_buffering_enabled_.load();
 }
 
-void CastRuntimeContentBrowserClient::OnRuntimeApplicationChanged(
-    RuntimeApplication* application) {
-  runtime_application_ = application;
-  is_runtime_application_for_streaming_.store(
-      runtime_application_ && runtime_application_->IsStreamingApplication());
+void CastRuntimeContentBrowserClient::OnForegroundApplicationChanged(
+    RuntimeApplication* app) {
+  bool enabled = true;
+  // Buffering must be disabled for streaming applications.
+  if (app && app->IsStreamingApplication()) {
+    enabled = false;
+  }
+  is_buffering_enabled_.store(enabled);
+  LOG(INFO) << "Buffering is " << (enabled ? "enabled" : "disabled");
 }
 
 }  // namespace chromecast

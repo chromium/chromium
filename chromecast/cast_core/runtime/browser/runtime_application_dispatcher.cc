@@ -7,12 +7,12 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_watcher.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
@@ -32,13 +32,11 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
     CastWebService* web_service,
     CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
     cast_streaming::NetworkContextGetter network_context_getter,
-    media::VideoPlaneController* video_plane_controller,
-    RuntimeApplicationWatcher* application_watcher)
+    media::VideoPlaneController* video_plane_controller)
     : web_service_(web_service),
       network_context_getter_(std::move(network_context_getter)),
       metrics_recorder_(event_builder_factory),
       video_plane_controller_(video_plane_controller),
-      application_watcher_(application_watcher),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(web_service_);
 
@@ -48,6 +46,18 @@ RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
 RuntimeApplicationDispatcher::~RuntimeApplicationDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
+}
+
+void RuntimeApplicationDispatcher::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void RuntimeApplicationDispatcher::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(observer);
+  observers_.RemoveObserver(observer);
 }
 
 bool RuntimeApplicationDispatcher::Start(
@@ -156,9 +166,9 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
                                                    web_service_, task_runner_);
   }
 
-  if (application_watcher_) {
-    application_watcher_->OnRuntimeApplicationChanged(app_.get());
-  }
+  base::ranges::for_each(observers_, [app = app_.get()](auto& observer) {
+    observer.OnForegroundApplicationChanged(app);
+  });
 
   app_->Load(
       std::move(request),
@@ -358,22 +368,14 @@ void RuntimeApplicationDispatcher::OnMetricsRecorderServiceStopped(
 
 void RuntimeApplicationDispatcher::ResetApp() {
   app_.reset();
-  if (application_watcher_) {
-    application_watcher_->OnRuntimeApplicationChanged(nullptr);
-  }
+  base::ranges::for_each(observers_, [](auto& observer) {
+    observer.OnForegroundApplicationChanged(nullptr);
+  });
 }
 
 const std::string& RuntimeApplicationDispatcher::GetCastMediaServiceEndpoint()
     const {
   return app_->GetCastMediaServiceEndpoint();
-}
-
-CastWebService* RuntimeApplicationDispatcher::GetCastWebService() const {
-  return web_service_;
-}
-
-RuntimeApplication* RuntimeApplicationDispatcher::GetRuntimeApplication() {
-  return app_.get();
 }
 
 }  // namespace chromecast
