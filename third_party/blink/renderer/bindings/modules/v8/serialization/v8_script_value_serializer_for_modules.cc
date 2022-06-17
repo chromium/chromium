@@ -594,8 +594,15 @@ bool V8ScriptValueSerializerForModules::WriteMediaSourceHandle(
   // MediaSourceHandleImpl. Add the internal state of |handle| to it and
   // serialize it using the index of that state in the vector.
   auto& attachments = attachment->Attachments();
+
+  scoped_refptr<MediaSourceAttachment> media_source_attachment =
+      handle->TakeAttachment();
+  // The two handle checks, above, (!is_serialized() and !is_used()) should
+  // prevent us from ever having a missing |media_source_attachment| here.
+  DCHECK(media_source_attachment);
+
   attachments.push_back(MediaSourceHandleAttachment::HandleInternals{
-      .attachment = handle->GetAttachment(),
+      .attachment = std::move(media_source_attachment),
       .internal_blob_url = handle->GetInternalBlobURL()});
   handle->mark_serialized();
   const uint32_t index = static_cast<uint32_t>(attachments.size() - 1);

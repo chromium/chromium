@@ -18,7 +18,9 @@ class CORE_EXPORT MediaSourceHandle : public GarbageCollectedMixin {
   MediaSourceHandle& operator=(const MediaSourceHandle&) = delete;
   virtual ~MediaSourceHandle() = default;
 
-  virtual scoped_refptr<MediaSourceAttachment> GetAttachment() = 0;
+  // Removes our reference on the attachment, giving it to the caller.
+  virtual scoped_refptr<MediaSourceAttachment> TakeAttachment() = 0;
+
   virtual String GetInternalBlobURL() = 0;
 
   void mark_used() { used_ = true; }

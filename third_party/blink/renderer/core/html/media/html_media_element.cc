@@ -1383,8 +1383,13 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
   bool attempt_load = true;
 
   if (src_object_media_source_handle_) {
-    media_source_attachment_ = src_object_media_source_handle_->GetAttachment();
-    DCHECK(media_source_attachment_);
+    media_source_attachment_ =
+        src_object_media_source_handle_->TakeAttachment();
+
+    // If the attachment is nullptr, then fail the load.
+    if (!media_source_attachment_) {
+      attempt_load = false;
+    }
   } else {
     media_source_attachment_ =
         MediaSourceAttachment::LookupMediaSource(url.GetString());
