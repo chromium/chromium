@@ -168,8 +168,8 @@ class AutocompleteResult {
 
   // If the top match is a Search Entity, and it was deduplicated with a
   // non-entity match, split off the non-entity match from the list of
-  // duplicates and promote it to the top.
-  static void DiscourageTopMatchFromBeingSearchEntity(ACMatches* matches);
+  // duplicates, promote it to the top, and return true.
+  static bool DiscourageTopMatchFromBeingSearchEntity(ACMatches* matches);
 
   // Just a helper function to encapsulate the logic of deciding how many
   // matches to keep, with respect to configured maximums, URL limits,

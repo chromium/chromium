@@ -1564,6 +1564,104 @@ TEST_F(AutocompleteResultTest, SortAndCullPreferEntities) {
   EXPECT_EQ(u"oo", result.match_at(1)->inline_autocompletion);
 }
 
+TEST_F(AutocompleteResultTest,
+       SortAndCullPreferNonEntitiesForDefaultSuggestion) {
+  // When the top scoring allowed_to_be_default suggestion is a search entity,
+  // and there is a duplicate non-entity search suggest that is also
+  // allowed_to_be_default, prefer the latter.
+
+  std::vector<EntityTestData> test_cases = {
+      {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, GetProvider(1),
+       "http://search/?q=foo", 1000, true},
+      {AutocompleteMatchType::SEARCH_SUGGEST, GetProvider(1),
+       "http://search/?q=foo2", 1200},
+      // A duplicate search suggestion should be preferred to a search entity
+      // suggestion, even if the former is scored lower.
+      {AutocompleteMatchType::SEARCH_SUGGEST, GetProvider(1),
+       "http://search/?q=foo", 900, true},
+  };
+  ACMatches matches;
+  PopulateEntityTestCases(test_cases, &matches);
+
+  // Simulate the search provider pre-grouping duplicate suggestions. We want
+  // to make sure `stripped_destination_url` is correctly appended to pre-duped
+  // suggestions.
+  matches[0].duplicate_matches.push_back(matches.back());
+  matches.pop_back();
+
+  AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResult result;
+  result.AppendMatches(matches);
+  result.SortAndCull(input, template_url_service_.get());
+
+  ASSERT_EQ(result.size(), 3u);
+
+  auto* match = result.match_at(0);
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST);
+  // Should not inherit the search entity suggestion's relevance; only the
+  // non-dup suggestion inherits from the dup suggestions; not vice versa.
+  EXPECT_EQ(match->relevance, 900);
+  EXPECT_TRUE(match->allowed_to_be_default_match);
+  EXPECT_EQ(match->stripped_destination_url.spec(), "http://search/?q=foo");
+
+  match = result.match_at(1);
+  // The search entity suggestion should be ranked higher than the higher
+  // scoring 'foo2' search suggestion. When demoting default entity suggestions,
+  // they are moved to position 2 rather than re-ranked according to their
+  // relevance.
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  EXPECT_EQ(match->relevance, 1000);
+  EXPECT_TRUE(match->allowed_to_be_default_match);
+  EXPECT_EQ(match->stripped_destination_url.spec(), "http://search/?q=foo");
+
+  match = result.match_at(2);
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_EQ(match->relevance, 1200);
+  EXPECT_FALSE(match->allowed_to_be_default_match);
+  EXPECT_EQ(match->stripped_destination_url.spec(), "http://search/?q=foo2");
+}
+
+TEST_F(AutocompleteResultTest,
+       SortAndCullDontPreferNonEntityNonDefaultForDefaultSuggestion) {
+  // When the top scoring allowed_to_be_default suggestion is a search entity,
+  // and there are no duplicate allowed_to_be_default suggestions, keep the
+  // search entity suggestion default.
+
+  std::vector<EntityTestData> test_cases = {
+      {AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, GetProvider(1),
+       "http://search/?q=foo", 1000, true},
+      // A duplicate non-allowed_to_be_default search suggestion should not be
+      // preferred to a lower ranked search entity suggestion.
+      {AutocompleteMatchType::SEARCH_SUGGEST, GetProvider(1),
+       "http://search/?q=foo", 1300},
+      // A non-duplicate allowed_to_be_default search suggestion should not be
+      // preferred to a higher ranked search entity suggestion.
+      {AutocompleteMatchType::SEARCH_SUGGEST, GetProvider(1),
+       "http://search/?q=foo2", 900, true},
+  };
+  ACMatches matches;
+  PopulateEntityTestCases(test_cases, &matches);
+
+  AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResult result;
+  result.AppendMatches(matches);
+  result.SortAndCull(input, template_url_service_.get());
+
+  ASSERT_EQ(result.size(), 2u);
+
+  auto* match = result.match_at(0);
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  EXPECT_EQ(match->relevance, 1300);
+  EXPECT_TRUE(match->allowed_to_be_default_match);
+
+  match = result.match_at(1);
+  EXPECT_EQ(match->type, AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_EQ(match->relevance, 900);
+  EXPECT_TRUE(match->allowed_to_be_default_match);
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullPreferEntitiesFillIntoEditMustMatch) {
   // clang-format off
   std::vector<EntityTestData> test_cases = {

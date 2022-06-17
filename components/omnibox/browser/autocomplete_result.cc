@@ -293,7 +293,15 @@ void AutocompleteResult::SortAndCull(
 
     RotateMatchToFront(top_match, &matches_);
 
-    DiscourageTopMatchFromBeingSearchEntity(&matches_);
+    // The search provider may pre-deduplicate search suggestions. It's possible
+    // for the un-deduped search suggestion that replaces a default search
+    // entity suggestion to not have had `ComputeStrippedDestinationURL()`
+    // invoked. Make sure to invoke it now as `AutocompleteController` relies on
+    // `stripped_destination_url` to detect result changes. If
+    // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
+    // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
+    if (DiscourageTopMatchFromBeingSearchEntity(&matches_))
+      matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
   }
 
   // Limit URL matches per OmniboxMaxURLMatches.
@@ -647,14 +655,14 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
 }
 
 // static
-void AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
+bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
     ACMatches* matches) {
   if (matches->empty())
-    return;
+    return false;
 
   auto top_match = matches->begin();
   if (top_match->type != ACMatchType::SEARCH_SUGGEST_ENTITY)
-    return;
+    return false;
 
   // Search the duplicates for an equivalent non-entity search suggestion.
   for (auto it = top_match->duplicate_matches.begin();
@@ -675,8 +683,9 @@ void AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
     // Promote the non-entity match to the top, then immediately return, since
     // all our iterators are invalid after the insertion.
     matches->insert(matches->begin(), std::move(non_entity_match_copy));
-    return;
+    return true;
   }
+  return false;
 }
 
 // static
