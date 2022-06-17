@@ -17,6 +17,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Controller;
+import org.chromium.chromecast.base.Observers;
+import org.chromium.chromecast.base.Scope;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -90,11 +92,20 @@ public class CastWebContentsComponent {
     class ActivityDelegate implements Delegate {
         private static final String TAG = "CastWebContent_AD";
         private boolean mStarted;
+        private Scope mVisibilityScope;
+        private ServiceDelegate mBackgroundService = new ServiceDelegate();
 
         @Override
         public void start(StartParams params) {
             if (mStarted) return; // No-op if already started.
             if (DEBUG) Log.d(TAG, "start: SHOW_WEB_CONTENT in activity");
+            mVisibilityScope = mVisibility.subscribe(Observers.onEnter(visibility -> {
+                if (visibility == CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN) {
+                    mBackgroundService.start(params);
+                } else if (visibility == CastWebContentsIntentUtils.VISIBITY_TYPE_FULL_SCREEN) {
+                    mBackgroundService.stop(params.context);
+                }
+            }));
             startCastActivity(params.context, params.webContents, mEnableTouchInput,
                     mIsRemoteControlMode, mTurnOnScreen);
             mStarted = true;
@@ -102,6 +113,8 @@ public class CastWebContentsComponent {
 
         @Override
         public void stop(Context context) {
+            mVisibilityScope.close();
+            mBackgroundService.stop(context);
             sendStopWebContentEvent();
             mStarted = false;
         }
@@ -131,25 +144,25 @@ public class CastWebContentsComponent {
             public void onServiceConnected(ComponentName name, IBinder service) {}
 
             @Override
-            public void onServiceDisconnected(ComponentName name) {
-                if (DEBUG) Log.d(TAG, "onServiceDisconnected");
-
-                if (mComponentClosedHandler != null) mComponentClosedHandler.onComponentClosed();
-            }
+            public void onServiceDisconnected(ComponentName name) {}
         };
+        private boolean mBound;
 
         @Override
         public void start(StartParams params) {
             if (DEBUG) Log.d(TAG, "start");
             Intent intent = CastWebContentsIntentUtils.requestStartCastService(
                     params.context, params.webContents, mSessionId);
-            params.context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            mBound = params.context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
 
         @Override
         public void stop(Context context) {
             if (DEBUG) Log.d(TAG, "stop");
-            context.unbindService(mConnection);
+            if (mBound) {
+                context.unbindService(mConnection);
+                mBound = false;
+            }
         }
     }
 
@@ -162,6 +175,7 @@ public class CastWebContentsComponent {
     private final String mSessionId;
     private final SurfaceEventHandler mSurfaceEventHandler;
     private final Controller<WebContents> mHasWebContentsState = new Controller<>();
+    private final Controller<Integer> mVisibility = new Controller<>();
     private Delegate mDelegate;
     private boolean mStarted;
     private boolean mEnableTouchInput;
@@ -206,6 +220,7 @@ public class CastWebContentsComponent {
             if (mComponentClosedHandler != null) mComponentClosedHandler.onComponentClosed();
         } else if (CastWebContentsIntentUtils.isIntentOfVisibilityChange(intent)) {
             int visibilityType = CastWebContentsIntentUtils.getVisibilityType(intent);
+            mVisibility.set(visibilityType);
             if (DEBUG) {
                 Log.d(TAG,
                         "onReceive ACTION_ON_VISIBILITY_CHANGE instance=" + mSessionId
@@ -279,6 +294,7 @@ public class CastWebContentsComponent {
         mHasWebContentsState.reset();
         if (DEBUG) Log.d(TAG, "Call delegate to stop");
         mDelegate.stop(context);
+        mDelegate = null;
         mStarted = false;
     }
 
