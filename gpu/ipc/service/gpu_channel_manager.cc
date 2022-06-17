@@ -823,6 +823,15 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
     context =
         gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
+
+    if (!context && !features::UseGles2ForOopR()) {
+      LOG(ERROR) << "Failed to create GLES3 context, fallback to GLES2.";
+      attribs.client_major_es_version = 2;
+      attribs.client_minor_es_version = 0;
+      context =
+          gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
+    }
+
     if (!context) {
       // TODO(piman): This might not be fatal, we could recurse into
       // CreateGLContext to get more info, tho it should be exceedingly
