@@ -351,17 +351,6 @@ TEST_F(
     async function() {
       const website = `<input type="text" id="testinput"></input>`;
       const rootWebArea = await this.runWithLoadedTree(website);
-      // SA initially focuses this node; wait for it first.
-      await new Promise(resolve => {
-        chrome.commandLinePrivate.hasSwitch(
-            'lacros-chrome-path', async hasLacrosChromePath => {
-              if (!hasLacrosChromePath) {
-                await this.untilFocusIs(
-                    {className: 'BrowserNonClientFrameViewChromeOS'});
-              }
-              resolve();
-            });
-      });
 
       // Move to the text field.
       Navigator.byItem.moveTo_(this.findNodeById('testinput'));
