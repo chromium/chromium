@@ -439,9 +439,9 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram, 1);
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 1);
   histogram_tester.ExpectBucketCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram,
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
 
   // Test that the shill error propagates to the error callback.
@@ -452,9 +452,9 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
 
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram, 2);
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram,
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
@@ -559,7 +559,7 @@ TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 0);
+      CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 0);
 
   // Test that the success callback gets called when removing a PIN lock.
   network_device_handler_->RequirePin(kDefaultCellularDevicePath, false,
@@ -567,6 +567,8 @@ TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
                                       GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, ChangePinBlockedByPolicy) {
@@ -602,7 +604,7 @@ TEST_F(NetworkDeviceHandlerTest, EnterPinWhenSimPinLockPolicyRestricted) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram, 0);
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 0);
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
 
@@ -616,7 +618,7 @@ TEST_F(NetworkDeviceHandlerTest, EnterPinWhenSimPinLockPolicyRestricted) {
   base::RunLoop().RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
-      CellularMetricsLogger::kSimPinLockSuccessHistogram, 1);
+      CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 1);
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinUnlockSuccessHistogram, 1);
 }

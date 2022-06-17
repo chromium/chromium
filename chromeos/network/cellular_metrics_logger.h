@@ -49,7 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       public NetworkConnectionObserver {
  public:
   // Histograms associated with SIM Pin operations.
-  static const char kSimPinLockSuccessHistogram[];
+  static const char kSimPinRequireLockSuccessHistogram[];
+  static const char kSimPinRemoveLockSuccessHistogram[];
   static const char kSimPinUnlockSuccessHistogram[];
   static const char kSimPinUnblockSuccessHistogram[];
   static const char kSimPinChangeSuccessHistogram[];
@@ -65,10 +66,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // PIN operations that are tracked by metrics.
   enum class SimPinOperation {
-    kLock = 0,
-    kUnlock = 1,
-    kUnblock = 2,
-    kChange = 3,
+    kRequireLock = 0,
+    kRemoveLock = 1,
+    kUnlock = 2,
+    kUnblock = 3,
+    kChange = 4,
   };
 
   // Records the result of pin operations performed.

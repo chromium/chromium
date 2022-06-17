@@ -622,17 +622,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.Pin.{SimPinOperation}"
-    enum="SimPinOperationResult" expires_after="2022-09-01">
+    enum="SimPinOperationResult" expires_after="2023-06-01">
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Tracks the rate of success of various pin operations. Note: This histogram
     was expired from 2022-03-01 to 2022-03-23; data may be missing.
   </summary>
   <token key="SimPinOperation">
     <variant name="ChangeSuccess"/>
-    <variant name="LockSuccess"/>
+    <variant name="LockSuccess" summary="Deprecated on 2022-07-16."/>
+    <variant name="RemoveLockSuccess"/>
+    <variant name="RequireLockSuccess"/>
     <variant name="UnblockSuccess"/>
     <variant name="UnlockSuccess"/>
   </token>

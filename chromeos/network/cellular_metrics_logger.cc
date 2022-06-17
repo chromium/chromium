@@ -67,8 +67,12 @@ const char CellularMetricsLogger::kPSimAllConnectionResultHistogram[] =
     "Network.Cellular.PSim.ConnectionResult.All";
 
 // static
-const char CellularMetricsLogger::kSimPinLockSuccessHistogram[] =
-    "Network.Cellular.Pin.LockSuccess";
+const char CellularMetricsLogger::kSimPinRequireLockSuccessHistogram[] =
+    "Network.Cellular.Pin.RequireLockSuccess";
+
+// static
+const char CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram[] =
+    "Network.Cellular.Pin.RemoveLockSuccess";
 
 // static
 const char CellularMetricsLogger::kSimPinUnlockSuccessHistogram[] =
@@ -121,8 +125,11 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
           : SimPinOperationResult::kSuccess;
 
   switch (pin_operation) {
-    case SimPinOperation::kLock:
-      base::UmaHistogramEnumeration(kSimPinLockSuccessHistogram, result);
+    case SimPinOperation::kRequireLock:
+      base::UmaHistogramEnumeration(kSimPinRequireLockSuccessHistogram, result);
+      return;
+    case SimPinOperation::kRemoveLock:
+      base::UmaHistogramEnumeration(kSimPinRemoveLockSuccessHistogram, result);
       return;
     case SimPinOperation::kUnlock:
       base::UmaHistogramEnumeration(kSimPinUnlockSuccessHistogram, result);
