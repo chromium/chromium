@@ -836,6 +836,9 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/contextualsearch/|' \
                   'components/contextual_search/',
     },
+    'core_timing': {
+      'filepath': 'third_party/blink/renderer/core/timing/' \
+    },
     'core_web_vitals_plm': {
       'filepath': 'chrome/browser/page_load_metrics/observers/core/|' \
                   'components/page_load_metrics/browser/observers/core/',
@@ -2481,6 +2484,7 @@
     'contextual_search': ['donnd+watch@chromium.org',
                           'twellington+watch@chromium.org',
                           'gangwu+watch@chromium.org'],
+    'core_timing': ['core-timing-reviews@chromium.org'],
     'core_web_vitals_plm': ['core-web-vitals-plm-reviews@chromium.org'],
     'core_web_vitals_wpt': ['chrome-speed-metrics-core+watchlist@google.com',
                             'lighthouse-eng-external+watch-speed-metrics@google.com'],
