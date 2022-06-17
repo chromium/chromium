@@ -199,6 +199,14 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // the current month's first row.
   void ScrollOneMonthWithAnimation(bool scroll_up);
 
+  // Sets up the `temp_header_` to prepare for the header animation and returns
+  // the moving transform for the header.
+  gfx::Transform GetHeaderMovingAndPrepareAnimation(
+      bool scroll_up,
+      const std::string& animation_name,
+      const std::u16string& temp_month,
+      const std::u16string& temp_year);
+
   // Scrolls up/down one row based on `scroll_up`.
   void ScrollOneRowWithAnimation(bool scroll_up);
 
@@ -271,6 +279,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Adjusts the Chrome Vox box position for date cells in the scroll view.
   void AdjustDateCellVoxBounds();
 
+  // Performs cleanup on temporary views after the scroll animation is complete,
+  // and re-enables the month and header animation.
+  void OnScrollMonthAnimationComplete(bool scroll_up);
+
   // Handles the position and status of `event_list_view_` and other views after
   // the opening event list animation or closing event list animation. Such as
   // restoring the position of them, re-enabling animation and etc.
@@ -281,6 +293,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // `scrolling_settled_timer_` to update the `on_screen_month_` map after the
   // resetting to today animation.
   void OnResetToTodayAnimationComplete();
+
+  // Enables the month and header animation, restores the header and content
+  // opacity.
+  void OnResetToTodayFadeInAnimationComplete();
 
   // Tries to focus the preferred CalendarDateCellView. If `prefer_today` is
   // true, preferred CalendarDateCellView is todays CalendarDateCellView,
@@ -328,6 +344,8 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   CalendarMonthView* next_month_ = nullptr;
   CalendarMonthView* next_next_month_ = nullptr;
   CalendarHeaderView* header_ = nullptr;
+  // Temporary header, used for animations.
+  CalendarHeaderView* temp_header_ = nullptr;
   views::Button* reset_to_today_button_ = nullptr;
   views::Button* settings_button_ = nullptr;
   IconButton* up_button_ = nullptr;
