@@ -747,15 +747,11 @@ void WebrtcTransport::ApplySessionOptions(const SessionOptions& options) {
   if (video_codec) {
     preferred_video_codec_ = *video_codec;
   }
-  absl::optional<std::string> video_frame_rate =
-      session_options().Get("Video-Frame-Rate");
-  if (video_frame_rate) {
-    int frame_rate;
-    if (base::StringToInt(*video_frame_rate, &frame_rate)) {
-      // Clamp the range to prevent a bad experience in case of a client bug.
-      frame_rate = base::clamp<int>(frame_rate, kTargetFrameRate, 1000);
-      desired_video_frame_rate_ = frame_rate;
-    }
+  absl::optional<int> frame_rate = session_options().GetInt("Video-Frame-Rate");
+  if (frame_rate) {
+    // Clamp the range to prevent a bad experience in case of a client bug.
+    frame_rate = base::clamp<int>(frame_rate.value(), kTargetFrameRate, 1000);
+    desired_video_frame_rate_ = frame_rate.value();
   }
 }
 

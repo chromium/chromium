@@ -5,6 +5,7 @@
 #include "remoting/protocol/webrtc_video_encoder_wrapper.h"
 
 #include "base/test/task_environment.h"
+#include "remoting/base/session_options.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -202,7 +203,7 @@ class WebrtcVideoEncoderWrapperTest : public testing::Test {
   std::unique_ptr<WebrtcVideoEncoderWrapper> InitEncoder(SdpVideoFormat sdp,
                                                          VideoCodec codec) {
     auto encoder = std::make_unique<WebrtcVideoEncoderWrapper>(
-        sdp, task_environment_.GetMainThreadTaskRunner(),
+        sdp, SessionOptions(), task_environment_.GetMainThreadTaskRunner(),
         observer_.GetWeakPtr());
     encoder->InitEncode(&codec, kVideoEncoderSettings);
     encoder->RegisterEncodeCompleteCallback(&callback_);

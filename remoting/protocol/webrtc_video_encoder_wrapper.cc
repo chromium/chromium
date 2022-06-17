@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
@@ -18,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/session_options.h"
 #include "remoting/codec/webrtc_video_encoder_av1.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/video_channel_state_observer.h"
@@ -35,9 +37,6 @@
 namespace remoting::protocol {
 
 namespace {
-
-constexpr base::TimeDelta kTargetFrameInterval =
-    base::Milliseconds(1000 / kTargetFrameRate);
 
 // Maximum quantizer at which to encode frames. Lowering this value will
 // improve image quality (in cases of low-bandwidth or large frames) at the
@@ -91,10 +90,20 @@ std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
 
 WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
     const webrtc::SdpVideoFormat& format,
+    const SessionOptions& session_options,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     base::WeakPtr<VideoChannelStateObserver> video_channel_state_observer)
     : main_task_runner_(main_task_runner),
       video_channel_state_observer_(video_channel_state_observer) {
+  // Set the target frame rate based on the session options.
+  absl::optional<int> frame_rate = session_options.GetInt("Video-Frame-Rate");
+  if (frame_rate) {
+    // Clamp the range to prevent a bad experience in case of a client bug.
+    frame_rate = base::clamp<int>(frame_rate.value(), kTargetFrameRate, 1000);
+    target_frame_rate_ = frame_rate.value();
+  }
+  target_frame_interval_ = base::Milliseconds(1000 / target_frame_rate_);
+
   codec_type_ = webrtc::PayloadStringToCodecType(format.name);
   switch (codec_type_) {
     case webrtc::kVideoCodecVP8:
@@ -285,11 +294,11 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   // SetRates() must be called prior to Encode(), with a non-zero bitrate.
   DCHECK_NE(0, bitrate_kbps_);
   frame_params.bitrate_kbps = bitrate_kbps_;
-  frame_params.duration = kTargetFrameInterval;
+  frame_params.duration = target_frame_interval_;
 
   // TODO(crbug.com/1192865): Copy the FPS estimator from the scheduler,
   // instead of hard-coding this value here.
-  frame_params.fps = kTargetFrameRate;
+  frame_params.fps = target_frame_rate_;
 
   frame_params.vpx_min_quantizer =
       ShouldDropQualityForLargeFrame(*desktop_frame) ? kMaxQuantizer
@@ -495,7 +504,7 @@ bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
         updated_area * kEstimatedBytesPerMegapixel / kPixelsPerMegapixel;
     base::TimeDelta expected_send_delay =
         base::Seconds(expected_frame_size * 8 / (bitrate_kbps_ * 1000.0));
-    if (expected_send_delay > kTargetFrameInterval) {
+    if (expected_send_delay > target_frame_interval_) {
       should_drop_quality = true;
     }
   }

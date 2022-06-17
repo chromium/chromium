@@ -137,6 +137,7 @@ void WebrtcConnectionToClient::ApplySessionOptions(
   session_options_ = options;
   DCHECK(transport_);
   transport_->ApplySessionOptions(options);
+  video_encoder_factory_->ApplySessionOptions(options);
 }
 
 PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {
