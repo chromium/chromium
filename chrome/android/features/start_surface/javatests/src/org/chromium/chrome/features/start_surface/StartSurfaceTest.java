@@ -68,7 +68,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -119,6 +119,7 @@ import java.util.concurrent.ExecutionException;
 @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@DoNotBatch(reason = "This test suite tests startup behaviors.")
 public class StartSurfaceTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = sClassParamsForStartSurfaceTest;
@@ -435,38 +436,6 @@ public class StartSurfaceTest {
         waitForStableView(cta.findViewById(R.id.search_box_text));
         onView(withId(R.id.search_box_text)).perform(click());
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    @DisabledTest(message = "http://crbug/1120698 - NoInstant_Return version is flaky on bots.")
-    public void testSearchInIncognitoSingleSurface() {
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        if (isInstantReturn()) {
-            // TODO(crbug.com/1076274): hide toolbar to make incognito switch visible.
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { cta.getTabModelSelector().selectModel(true); });
-
-            // TODO(crbug.com/1097001): remove after fixing the default focus issue, which might
-            // relate to crbug.com/1076274 above since it doesn't exist for the other combinations.
-            assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
-        } else {
-            onViewWaiting(withId(R.id.incognito_toggle_tabs)).perform(click());
-        }
-        assertTrue(cta.getTabModelSelector().isIncognitoSelected());
-
-        onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
-        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
     }
 
     @Test
