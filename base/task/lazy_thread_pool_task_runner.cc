@@ -4,6 +4,7 @@
 
 #include "base/task/lazy_thread_pool_task_runner.h"
 
+#include <atomic>
 #include <utility>
 
 #include "base/check_op.h"
@@ -21,7 +22,7 @@ ScopedLazyTaskRunnerListForTesting* g_scoped_lazy_task_runner_list_for_testing =
 
 template <typename TaskRunnerType, bool com_sta>
 void LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::Reset() {
-  subtle::AtomicWord state = subtle::Acquire_Load(&state_);
+  uintptr_t state = state_.load(std::memory_order_acquire);
 
   DCHECK_NE(state, kLazyInstanceStateCreating) << "Race: all threads should be "
                                                   "unwound in unittests before "
@@ -36,7 +37,7 @@ void LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::Reset() {
   task_runner->Release();
 
   // Clear the state.
-  subtle::NoBarrier_Store(&state_, 0);
+  state_.store(0, std::memory_order_relaxed);
 }
 
 template <>
@@ -94,7 +95,7 @@ template <typename TaskRunnerType, bool com_sta>
 scoped_refptr<TaskRunnerType>
 LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::Get() {
   return WrapRefCounted(subtle::GetOrCreateLazyPointer(
-      &state_, &LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::CreateRaw,
+      state_, &LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::CreateRaw,
       reinterpret_cast<void*>(this), nullptr, nullptr));
 }
 
