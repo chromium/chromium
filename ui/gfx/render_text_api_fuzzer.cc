@@ -211,6 +211,16 @@ gfx::Range ConsumeRange(FuzzedDataProvider* fdp, size_t max) {
   return gfx::Range(start, end);
 }
 
+// Eliding behaviors are not all fully supported by RenderText. Ignore
+// unsupported cases. This is causing clusterfuzz to fail with invalid
+// tests (http://crbug.com/1185542). Remove when https://crbug.com/1085014 is
+// fixed.
+bool DoesDisplayRangeSupportElideBehavior(const gfx::RenderText* render_text) {
+  const gfx::ElideBehavior behavior = render_text->elide_behavior();
+  return behavior != gfx::ELIDE_HEAD && behavior != gfx::ELIDE_MIDDLE &&
+         behavior != gfx::ELIDE_EMAIL;
+}
+
 const int kMaxStringLength = 128;
 
 }  // anonymous namespace
@@ -365,10 +375,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                       fdp.ConsumeIntegralInRange<int>(0, 30)));
         break;
       case RenderTextAPI::kGetSubstringBounds:
+        // RenderText doesn't support that case (https://crbug.com/1085014).
+        if (!DoesDisplayRangeSupportElideBehavior(render_text.get()))
+          break;
+
         render_text->GetSubstringBounds(
             ConsumeRange(&fdp, render_text->text().length()));
         break;
       case RenderTextAPI::kGetCursorSpan:
+        // RenderText doesn't support that case (https://crbug.com/1085014).
+        if (!DoesDisplayRangeSupportElideBehavior(render_text.get()))
+          break;
+
         render_text->GetCursorSpan(
             ConsumeRange(&fdp, render_text->text().length()));
         break;
