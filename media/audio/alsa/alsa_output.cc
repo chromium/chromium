@@ -541,10 +541,13 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
     next_fill_time = base::Milliseconds(10);
   }
 
-  task_runner_->PostDelayedTask(FROM_HERE,
-                                base::BindOnce(&AlsaPcmOutputStream::WriteTask,
-                                               weak_factory_.GetWeakPtr()),
-                                next_fill_time);
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      base::BindOnce(&AlsaPcmOutputStream::WriteTask,
+                     weak_factory_.GetWeakPtr()),
+      next_fill_time.is_zero() ? base::TimeTicks()
+                               : base::TimeTicks::Now() + next_fill_time,
+      base::subtle::DelayPolicy::kPrecise);
 }
 
 std::string AlsaPcmOutputStream::FindDeviceForChannels(uint32_t channels) {

@@ -24,6 +24,10 @@ class WebRtcTaskQueue;
 namespace webrtc {
 class ThreadWrapper;
 }  // namespace webrtc
+namespace media {
+class AlsaPcmOutputStream;
+class FakeAudioWorker;
+}  // namespace media
 
 namespace base {
 
@@ -55,6 +59,8 @@ class PostDelayedTaskPassKey {
   friend class blink::WebRtcTaskQueue;
   friend class PostDelayedTaskPassKeyForTesting;
   friend class webrtc::ThreadWrapper;
+  friend class media::AlsaPcmOutputStream;
+  friend class media::FakeAudioWorker;
 };
 
 class PostDelayedTaskPassKeyForTesting : public PostDelayedTaskPassKey {};
