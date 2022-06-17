@@ -435,4 +435,14 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         String suffix = result ? "Success" : "Canceled";
         RecordHistogram.recordMediumTimesHistogram(histogramPrefix + suffix, duration);
     }
+
+    @VisibleForTesting
+    float getDragStartXDp() {
+        return mDragStartXDp;
+    }
+
+    @VisibleForTesting
+    float getDragStartYDp() {
+        return mDragStartYDp;
+    }
 }
