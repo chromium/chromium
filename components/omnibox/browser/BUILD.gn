@@ -450,7 +450,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
     deps = [
       ":browser_java",
-      ":test_util_java",
+      ":junit_test_support",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
@@ -459,9 +459,9 @@ if (is_android) {
     ]
   }
 
-  android_library("test_util_java") {
+  android_library("junit_test_support") {
     testonly = true
-    sources = [ "//components/omnibox/browser/android/javatests/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java" ]
+    sources = [ "//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java" ]
     deps = [
       "//components/omnibox/browser:browser_java",
       "//components/query_tiles:query_tile_java",

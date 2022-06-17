@@ -460,7 +460,7 @@ robolectric_library("junit") {
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
     "//components/omnibox/browser:browser_java",
-    "//components/omnibox/browser:test_util_java",
+    "//components/omnibox/browser:junit_test_support",
     "//components/permissions/android:java",
     "//components/search_engines/android:java",
     "//components/signin/public/android:java",
