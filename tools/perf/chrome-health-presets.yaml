@@ -7,21 +7,6 @@
 presets:
   chrome_health:
     telemetry_batch_experiment:
-      - benchmark: loading.desktop
-        configs:
-          - mac-laptop_low_end-perf
-          - mac-m1_mini_2020-perf
-          - linux-perf
-          - win-10-perf
-        stories:
-          - AirBnB_cold
-          - AllRecipes_cold
-      - benchmark: loading.mobile
-        configs:
-          - android-pixel4-perf
-        stories:
-          - Amazon
-          - Dailymotion
       - benchmark: speedometer2-chrome-health
         configs:
           - mac-laptop_low_end-perf
@@ -66,6 +51,57 @@ presets:
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
+        stories:
+          - motionmark_ramp_composite
+      - benchmark: rendering.mobile.notracing
+        configs:
+          - android-pixel4-perf
+        stories:
+          - motionmark_ramp_composite
+  chrome_health_pgo:
+    telemetry_batch_experiment:
+      - benchmark: speedometer2-chrome-health
+        configs:
+          - mac-laptop_low_end-perf-pgo
+          - mac-m1_mini_2020-perf-pgo
+          - linux-perf-pgo
+          - win-10-perf-pgo
+          - android-pixel4-perf
+        stories:
+          - Speedometer2
+      - benchmark: rendering.desktop
+        configs:
+          - mac-laptop_low_end-perf-pgo
+          - mac-m1_mini_2020-perf-pgo
+          - linux-perf-pgo
+          - win-10-perf-pgo
+        stories:
+          - motionmark_ramp_canvas_arcs
+          - motionmark_ramp_canvas_lines
+          - motionmark_ramp_design
+          - motionmark_ramp_images
+          - motionmark_ramp_leaves
+          - motionmark_ramp_multiply
+          - motionmark_ramp_paths
+          - motionmark_ramp_suits
+      - benchmark: rendering.mobile
+        configs:
+          - android-pixel4-perf
+        stories:
+          - motionmark_ramp_canvas_arcs
+          - motionmark_ramp_canvas_lines
+          - motionmark_ramp_design
+          - motionmark_ramp_images
+          - motionmark_ramp_leaves
+          - motionmark_ramp_multiply
+          - motionmark_ramp_paths
+          - motionmark_ramp_suits
+      - benchmark: rendering.desktop.notracing
+        configs:
+          - mac-laptop_low_end-perf-pgo
+          - mac-m1_mini_2020-perf-pgo
+          - linux-perf-pgo
+          - win-10-perf-pgo
         stories:
           - motionmark_ramp_composite
       - benchmark: rendering.mobile.notracing
