@@ -136,6 +136,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =
         {};
+
+    // Max size for textures.
+    int max_texture_size = 0;
   };
 
   // Constructor for skia-based compositing.

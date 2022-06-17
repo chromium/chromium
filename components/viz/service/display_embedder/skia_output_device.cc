@@ -113,6 +113,7 @@ SkiaOutputDevice::SkiaOutputDevice(
       latency_tracker_runner_(CreateLatencyTracerRunner()) {
   DCHECK(gr_context);
   capabilities_.max_render_target_size = gr_context->maxRenderTargetSize();
+  capabilities_.max_texture_size = gr_context->maxTextureSize();
 }
 
 SkiaOutputDevice::~SkiaOutputDevice() {
