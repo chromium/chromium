@@ -775,7 +775,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kDefaultClipboardSetting,
     prefs::kManagedDefaultClipboardSetting,
-    base::Value::Type::LIST },
+    base::Value::Type::INTEGER },
   { key::kClipboardAllowedForUrls,
     prefs::kManagedClipboardAllowedForUrls,
     base::Value::Type::LIST },

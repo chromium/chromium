@@ -5345,6 +5345,13 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "prefs": {
+          "profile.managed_default_content_settings.clipboard": {
+            "default_value": 0
+          }
+        }
+      },
+      {
         "policies": {
           "DefaultClipboardSetting": 2
         },
