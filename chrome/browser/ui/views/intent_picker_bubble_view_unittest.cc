@@ -447,10 +447,6 @@ TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
 #define MAYBE_KeyboardNavigation KeyboardNavigation
 #endif
 TEST_P(IntentPickerBubbleViewLayoutTest, MAYBE_KeyboardNavigation) {
-  if (GetParam() == BubbleInterfaceType::kGridView) {
-    // TODO(crbug.com/1321501): Support keyboard navigation in grid view.
-    GTEST_SKIP();
-  }
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);

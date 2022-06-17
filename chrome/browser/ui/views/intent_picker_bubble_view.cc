@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -30,6 +32,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,6 +79,7 @@ constexpr int kGridItemTopInset = 12;
 constexpr int kGridItemInset = 2;
 constexpr int kGridItemInteriorPadding = 8;
 constexpr int kGridItemBorderRadius = 4;
+constexpr int kGridItemGroupId = 1;
 
 bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
   return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
@@ -98,12 +102,18 @@ using AppSelectedCallback = base::RepeatingCallback<void(size_t, bool)>;
 // apps.
 class IntentPickerAppGridButton : public views::Button {
  public:
+  // Callback for when this app is selected. Parameter is true if the dialog
+  // should be immediately accepted.
+  using ButtonSelectedCallback = base::RepeatingCallback<void(bool)>;
+
   METADATA_HEADER(IntentPickerAppGridButton);
 
-  IntentPickerAppGridButton(PressedCallback callback,
+  IntentPickerAppGridButton(ButtonSelectedCallback selected_callback,
                             const ui::ImageModel& icon_model,
                             const std::string& display_name)
-      : views::Button(std::move(callback)) {
+      : views::Button(base::BindRepeating(&IntentPickerAppGridButton::OnPressed,
+                                          base::Unretained(this))),
+        selected_callback_(std::move(selected_callback)) {
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
         gfx::Insets::TLBR(kGridItemTopInset, kGridItemInset, kGridItemInset,
@@ -129,6 +139,8 @@ class IntentPickerAppGridButton : public views::Button {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetAccessibleName(name_label->GetText());
     SetPreferredSize(gfx::Size(kGridItemPreferredSize, kGridItemPreferredSize));
+
+    SetGroup(kGridItemGroupId);
   }
   IntentPickerAppGridButton(const IntentPickerAppGridButton&) = delete;
   IntentPickerAppGridButton& operator=(const IntentPickerAppGridButton&) =
@@ -149,6 +161,31 @@ class IntentPickerAppGridButton : public views::Button {
     node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
                                          : ax::mojom::CheckedState::kFalse);
   }
+  bool IsGroupFocusTraversable() const override { return false; }
+  views::View* GetSelectedViewForGroup(int group) override {
+    if (group != kGridItemGroupId)
+      return nullptr;
+
+    Views siblings = parent()->children();
+    auto it = base::ranges::find_if(siblings, [](auto* v) {
+      return static_cast<IntentPickerAppGridButton*>(v)->selected_;
+    });
+
+    return it != siblings.end() ? *it : nullptr;
+  }
+  void OnFocus() override {
+    Button::OnFocus();
+    if (select_on_focus_)
+      selected_callback_.Run(false);
+  }
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
+    if (action_data.action == ax::mojom::Action::kFocus) {
+      base::AutoReset<bool> reset(&select_on_focus_, false);
+      RequestFocus();
+      return true;
+    }
+    return Button::HandleAccessibleAction(action_data);
+  }
 
  private:
   void UpdateBackground() {
@@ -166,7 +203,13 @@ class IntentPickerAppGridButton : public views::Button {
         views::CreateThemedRoundedRectBackground(color, kGridItemBorderRadius));
   }
 
+  void OnPressed(const ui::Event& event) {
+    selected_callback_.Run(IsDoubleClick(event));
+  }
+
   bool selected_ = false;
+  bool select_on_focus_ = true;
+  ButtonSelectedCallback selected_callback_;
 };
 
 BEGIN_METADATA(IntentPickerAppGridButton, views::Button)
@@ -221,8 +264,9 @@ class IntentPickerAppGridView
 
     for (size_t i = 0; i < apps.size(); i++) {
       auto app_button = std::make_unique<IntentPickerAppGridButton>(
-          base::BindRepeating(&IntentPickerAppGridView::OnAppPressed,
-                              base::Unretained(this), i),
+          base::BindRepeating(
+              &IntentPickerAppGridView::SetSelectedIndexInternal,
+              base::Unretained(this), i),
           apps[i].icon_model, apps[i].display_name);
       table_view->AddChildView(std::move(app_button));
     }
@@ -240,15 +284,17 @@ class IntentPickerAppGridView
   size_t GetSelectedIndex() const override { return selected_app_index_; }
 
  private:
-  void OnAppPressed(size_t index, const ui::Event& event) {
-    SetSelectedIndexInternal(index, IsDoubleClick(event));
-  }
-
-  void SetSelectedIndexInternal(size_t index, bool accepted) {
+  void SetSelectedIndexInternal(size_t new_index, bool accepted) {
     GetButtonAtIndex(selected_app_index_)->SetSelected(false);
-    selected_app_index_ = index;
-    GetButtonAtIndex(selected_app_index_)->SetSelected(true);
-    selected_callback_.Run(index, accepted);
+    GetButtonAtIndex(new_index)->SetSelected(true);
+
+    if (GetButtonAtIndex(selected_app_index_)->HasFocus()) {
+      GetButtonAtIndex(new_index)->RequestFocus();
+    }
+
+    selected_app_index_ = new_index;
+
+    selected_callback_.Run(new_index, accepted);
   }
 
   IntentPickerAppGridButton* GetButtonAtIndex(size_t index) {
