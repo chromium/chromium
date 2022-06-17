@@ -6555,9 +6555,14 @@ class CompositedSelectionBoundsTest
     blink::Node* layer_owner_node_for_start = V8Node::ToImplWithTypeCheck(
         v8::Isolate::GetCurrent(),
         expected_result.Get(context, 0).ToLocalChecked());
-    ASSERT_TRUE(layer_owner_node_for_start);
-    int start_layer_id = LayerIdFromNode(layer_tree_host->root_layer(),
-                                         layer_owner_node_for_start);
+    // Hidden selection does not always have a layer (might be hidden due to not
+    // having been painted.
+    ASSERT_TRUE(layer_owner_node_for_start || selection.start.hidden);
+    int start_layer_id = 0;
+    if (layer_owner_node_for_start) {
+      start_layer_id = LayerIdFromNode(layer_tree_host->root_layer(),
+                                       layer_owner_node_for_start);
+    }
     if (selection_is_caret) {
       // The selection data are recorded on the caret layer which is the next
       // layer for the current test cases.
@@ -6579,9 +6584,15 @@ class CompositedSelectionBoundsTest
     blink::Node* layer_owner_node_for_end = V8Node::ToImplWithTypeCheck(
         v8::Isolate::GetCurrent(),
         expected_result.Get(context, 5).ToLocalChecked());
-    ASSERT_TRUE(layer_owner_node_for_end);
-    int end_layer_id = LayerIdFromNode(layer_tree_host->root_layer(),
-                                       layer_owner_node_for_end);
+    // Hidden selection does not always have a layer (might be hidden due to not
+    // having been painted.
+    ASSERT_TRUE(layer_owner_node_for_end || selection.end.hidden);
+    int end_layer_id = 0;
+    if (layer_owner_node_for_end) {
+      end_layer_id = LayerIdFromNode(layer_tree_host->root_layer(),
+                                     layer_owner_node_for_end);
+    }
+
     if (selection_is_caret) {
       // The selection data are recorded on the caret layer which is the next
       // layer for the current test cases.
@@ -6715,6 +6726,12 @@ TEST_F(CompositedSelectionBoundsTest, SVGBasic) {
 }
 TEST_F(CompositedSelectionBoundsTest, SVGTextWithFragments) {
   RunTest("composited_selection_bounds_svg_text_with_fragments.html");
+}
+TEST_F(CompositedSelectionBoundsTest, LargeSelectionScroll) {
+  RunTest("composited_selection_bounds_large_selection_scroll.html");
+}
+TEST_F(CompositedSelectionBoundsTest, LargeSelectionNoScroll) {
+  RunTest("composited_selection_bounds_large_selection_noscroll.html");
 }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)

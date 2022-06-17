@@ -1016,15 +1016,19 @@ ConvertPaintedSelectionBoundToLayerSelectionBound(
   return layer_bound;
 }
 
-void PaintChunksToCcLayer::UpdateLayerSelection(
+bool PaintChunksToCcLayer::UpdateLayerSelection(
     cc::Layer& layer,
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks,
     cc::LayerSelection& layer_selection) {
   gfx::Vector2dF layer_offset = layer.offset_to_transform_parent();
+  bool any_selection_was_painted = false;
   for (const auto& chunk : chunks) {
     if (!chunk.layer_selection_data)
       continue;
+
+    any_selection_was_painted |=
+        chunk.layer_selection_data->any_selection_was_painted;
 
     auto chunk_state = chunk.properties.GetPropertyTreeState().Unalias();
     if (chunk.layer_selection_data->start) {
@@ -1043,6 +1047,8 @@ void PaintChunksToCcLayer::UpdateLayerSelection(
       layer_selection.end.layer_id = layer.id();
     }
   }
+
+  return any_selection_was_painted;
 }
 
 void PaintChunksToCcLayer::UpdateLayerProperties(

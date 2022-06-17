@@ -22,6 +22,7 @@ namespace blink {
 struct PLATFORM_EXPORT LayerSelectionData {
   absl::optional<PaintedSelectionBound> start;
   absl::optional<PaintedSelectionBound> end;
+  bool any_selection_was_painted = false;
 };
 
 }  // namespace blink
