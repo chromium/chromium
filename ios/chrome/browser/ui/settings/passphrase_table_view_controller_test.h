@@ -43,6 +43,7 @@ class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
 
  protected:
   void SetUp() override;
+  void TearDown() override;
 
   void SetUpNavigationController(UIViewController* test_controller);
 
