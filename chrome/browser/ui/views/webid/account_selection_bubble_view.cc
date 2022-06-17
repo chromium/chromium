@@ -61,6 +61,12 @@ constexpr int kLeftRightPadding = 12;
 constexpr int kVerticalSpacing = 8;
 // The height of the progress bar shown when showing "Verifying...".
 constexpr int kProgressBarHeight = 2;
+// The size of the space between the right boundary of the WebContents and the
+// right boundary of the bubble.
+constexpr int kRightMargin = 40;
+// The size of the space between the top boundary of the WebContents and the top
+// boundary of the bubble.
+constexpr int kTopMargin = 16;
 
 constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -254,8 +260,12 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     TabStripModel* tab_strip_model,
     base::OnceCallback<void(const content::IdentityRequestAccount&)>
         on_account_selected_callback)
-    : views::BubbleDialogDelegateView(anchor_view,
-                                      views::BubbleBorder::Arrow::TOP_RIGHT),
+    : views::BubbleDialogDelegateView(
+          anchor_view,
+          // Note that BOTTOM_RIGHT means the bubble's bottom and right are
+          // anchored to the `anchor_view`, which effectively means the bubble
+          // will be on top of the `anchor_view`, aligned on its right side.
+          views::BubbleBorder::Arrow::BOTTOM_RIGHT),
       idp_for_display_(base::UTF8ToUTF16(idp_for_display)),
       brand_text_color_(idp_metadata.brand_text_color),
       brand_background_color_(idp_metadata.brand_background_color),
@@ -298,6 +308,35 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
+
+gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
+  // The bubble initially looks like this relative to the contents_web_view:
+  //                        |--------|
+  //                        |        |
+  //                        | bubble |
+  //                        |        |
+  //       |-------------------------|
+  //       |                         |
+  //       | contents_web_view       |
+  //       |          ...            |
+  //       |-------------------------|
+  // Thus, we need to move the bubble to the left by kRightMargin and down by
+  // the size of the bubble plus kTopMargin in order to achieve what we want:
+  //       |-------------------------|
+  //       |               kTopMargin|
+  //       |         |--------|      |
+  //       |         |        |kRight|
+  //       |         | bubble |Margin|
+  //       |         |--------|      |
+  //       |                         |
+  //       | contents_web_view       |
+  //       |          ...            |
+  //       |-------------------------|
+  return views::BubbleDialogDelegateView::GetBubbleBounds() +
+         gfx::Vector2d(-kRightMargin,
+                       GetWidget()->client_view()->GetPreferredSize().height() +
+                           kTopMargin);
+}
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
     const std::u16string& title,

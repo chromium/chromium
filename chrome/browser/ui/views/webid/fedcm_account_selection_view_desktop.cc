@@ -54,7 +54,7 @@ void FedCmAccountSelectionView::Show(
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  views::View* anchor_view = browser_view->top_container();
+  views::View* anchor_view = browser_view->contents_web_view();
   TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
   tab_strip_model->AddObserver(this);
   bubble_widget_ =
