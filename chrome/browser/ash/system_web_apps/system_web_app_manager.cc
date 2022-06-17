@@ -44,7 +44,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
@@ -548,16 +547,6 @@ void SystemWebAppManager::SetUpdatePolicyForTesting(UpdatePolicy policy) {
 
 void SystemWebAppManager::ResetOnAppsSynchronizedForTesting() {
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
-}
-
-// static
-void SystemWebAppManager::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(::prefs::kSystemWebAppLastUpdateVersion, "");
-  registry->RegisterStringPref(::prefs::kSystemWebAppLastInstalledLocale, "");
-  registry->RegisterStringPref(::prefs::kSystemWebAppLastAttemptedVersion, "");
-  registry->RegisterStringPref(::prefs::kSystemWebAppLastAttemptedLocale, "");
-  registry->RegisterIntegerPref(::prefs::kSystemWebAppInstallFailureCount, 0);
 }
 
 const base::Version& SystemWebAppManager::CurrentVersion() const {

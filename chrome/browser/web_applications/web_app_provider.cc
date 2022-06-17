@@ -14,12 +14,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/daily_metrics_helper.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
-#include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
@@ -29,7 +25,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
-#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
@@ -45,7 +40,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -354,19 +348,6 @@ void WebAppProvider::OnSyncBridgeReady() {
 void WebAppProvider::CheckIsConnected() const {
   DCHECK(connected_) << "Attempted to access Web App subsystem while "
                         "WebAppProvider is not connected.";
-}
-
-// static
-void WebAppProvider::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  UserUninstalledPreinstalledWebAppPrefs::RegisterProfilePrefs(registry);
-  ExternallyInstalledWebAppPrefs::RegisterProfilePrefs(registry);
-  PreinstalledWebAppManager::RegisterProfilePrefs(registry);
-  WebAppPolicyManager::RegisterProfilePrefs(registry);
-  WebAppPrefsUtilsRegisterProfilePrefs(registry);
-  IsolationPrefsUtilsRegisterProfilePrefs(registry);
-  RegisterInstallBounceMetricProfilePrefs(registry);
-  RegisterDailyWebAppMetricsProfilePrefs(registry);
 }
 
 void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {

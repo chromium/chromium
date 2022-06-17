@@ -129,8 +129,6 @@ class WebAppProvider : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   // Signals when app registry becomes ready.
   const base::OneShotEvent& on_registry_ready() const {
     return on_registry_ready_;

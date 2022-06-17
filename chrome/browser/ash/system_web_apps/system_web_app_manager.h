@@ -132,8 +132,6 @@ class SystemWebAppManager : public KeyedService,
   // system restart, e.g.
   void InstallSystemAppsForTesting();
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   // Returns the app id for the given System App |type|.
   absl::optional<web_app::AppId> GetAppIdForSystemApp(
       SystemWebAppType type) const;

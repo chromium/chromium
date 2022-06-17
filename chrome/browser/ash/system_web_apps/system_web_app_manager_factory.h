@@ -42,12 +42,14 @@ class SystemWebAppManagerFactory : public BrowserContextKeyedServiceFactory {
   // Called by SystemWebAppManager static methods.
   static SystemWebAppManager* GetForProfile(Profile* profile);
 
-  // BrowserContextKeyedServiceFactory
+  // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace ash

@@ -9,7 +9,9 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
 
@@ -64,6 +66,15 @@ bool SystemWebAppManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return web_app::GetBrowserContextForWebApps(context);
+}
+
+void SystemWebAppManagerFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterStringPref(::prefs::kSystemWebAppLastUpdateVersion, "");
+  registry->RegisterStringPref(::prefs::kSystemWebAppLastInstalledLocale, "");
+  registry->RegisterStringPref(::prefs::kSystemWebAppLastAttemptedVersion, "");
+  registry->RegisterStringPref(::prefs::kSystemWebAppLastAttemptedLocale, "");
+  registry->RegisterIntegerPref(::prefs::kSystemWebAppInstallFailureCount, 0);
 }
 
 }  //  namespace ash
