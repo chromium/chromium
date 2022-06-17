@@ -32,10 +32,14 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
   MojoResult result =
       (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
-    if (!base::FeatureList::IsEnabled(features::kOptimizeNetworkBuffers) &&
-        *num_bytes > kMaxBufSize) {
-      *num_bytes = kMaxBufSize;
+    uint32_t max_bytes = kMaxBufSize;
+    if (base::FeatureList::IsEnabled(features::kOptimizeNetworkBuffers)) {
+      max_bytes = features::kOptimizeNetworkBuffersBytesReadLimit.Get();
     }
+
+    if (*num_bytes > max_bytes)
+      *num_bytes = max_bytes;
+
     *pending = new NetToMojoPendingBuffer(std::move(*handle), buf);
   }
   return result;
