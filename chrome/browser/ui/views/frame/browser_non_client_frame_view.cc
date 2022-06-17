@@ -161,9 +161,10 @@ SkColor BrowserNonClientFrameView::GetCaptionColor(
 
 SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
-  return GetColorProvider()->GetColor(ShouldPaintAsActive(active_state)
-                                          ? ui::kColorFrameActive
-                                          : ui::kColorFrameInactive);
+  return GetThemeProvider()->GetColor(
+      ShouldPaintAsActive(active_state)
+          ? ThemeProperties::COLOR_FRAME_ACTIVE
+          : ThemeProperties::COLOR_FRAME_INACTIVE);
 }
 
 void BrowserNonClientFrameView::UpdateFrameColor() {

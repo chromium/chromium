@@ -37,10 +37,6 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/views/linux_ui/linux_ui.h"
-#endif
-
 // Tests web-app windows that use the OpaqueBrowserFrameView implementation
 // for their non client frames.
 class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
@@ -56,13 +52,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
 
   static GURL GetAppURL() { return GURL("https://test.org"); }
 
-  void SetUpOnMainThread() override {
-    SetThemeMode(ThemeMode::kDefault);
-#if BUILDFLAG(IS_LINUX)
-    views::LinuxUI::instance()->SetUseSystemThemeCallback(
-        base::BindRepeating([](aura::Window* window) { return false; }));
-#endif
-  }
+  void SetUpOnMainThread() override { SetThemeMode(ThemeMode::kDefault); }
 
   bool InstallAndLaunchWebApp(
       absl::optional<SkColor> theme_color = absl::nullopt) {
@@ -227,7 +217,6 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {
 // Tests for the appearance of the origin text in the titlebar. The origin text
 // shows and then hides both when the window is first opened and any time the
 // titlebar's appearance changes.
-// TODO(crbug.com/1337118): Revise this test.
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
   ui_test_utils::UrlLoadObserver url_observer(
       GetAppURL(), content::NotificationService::AllSources());
