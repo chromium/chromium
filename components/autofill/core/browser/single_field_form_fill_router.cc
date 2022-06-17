@@ -22,7 +22,7 @@ SingleFieldFormFillRouter::~SingleFieldFormFillRouter() = default;
 
 void SingleFieldFormFillRouter::OnWillSubmitForm(
     const FormData& form,
-    raw_ptr<const FormStructure> form_structure,
+    const FormStructure* form_structure,
     bool is_autocomplete_enabled) {
   if (form_structure)
     DCHECK(form.fields.size() == form_structure->field_count());

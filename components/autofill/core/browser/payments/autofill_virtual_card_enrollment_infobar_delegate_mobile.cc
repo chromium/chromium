@@ -48,7 +48,7 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetLearnMoreLinkText()
   return virtual_card_enroll_bubble_controller_->GetLearnMoreLinkText();
 }
 
-raw_ptr<const gfx::ImageSkia>
+const gfx::ImageSkia*
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIcon() const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()

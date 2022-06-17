@@ -44,7 +44,7 @@ class AutofillVirtualCardEnrollmentInfoBarDelegateMobile
   std::u16string GetLearnMoreLinkText() const;
 
   // Issuer icon for the card.
-  raw_ptr<const gfx::ImageSkia> GetIssuerIcon() const;
+  const gfx::ImageSkia* GetIssuerIcon() const;
 
   // The label for the card to show in the content of the infobar.
   std::u16string GetCardLabel() const;

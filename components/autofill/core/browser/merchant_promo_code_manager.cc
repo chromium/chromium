@@ -58,9 +58,8 @@ void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
   // TODO(crbug.com/1190334): Add promo code suggestion accepted metrics here.
 }
 
-void MerchantPromoCodeManager::Init(
-    raw_ptr<PersonalDataManager> personal_data_manager,
-    bool is_off_the_record) {
+void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
+                                    bool is_off_the_record) {
   personal_data_manager_ = personal_data_manager;
   is_off_the_record_ = is_off_the_record;
 }

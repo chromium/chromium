@@ -21,7 +21,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
   MOCK_METHOD(void,
               OnWillSubmitForm,
               (const FormData& form,
-               raw_ptr<const FormStructure> form_structure,
+               const FormStructure* form_structure,
                bool is_autocomplete_enabled),
               (override));
   MOCK_METHOD(void,

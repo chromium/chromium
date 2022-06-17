@@ -46,7 +46,7 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   void set_upload_request_card(const CreditCard& card);
 
-  raw_ptr<payments::PaymentsClient::UploadRequestDetails> upload_request();
+  payments::PaymentsClient::UploadRequestDetails* upload_request();
 
  private:
   void OnDidUploadCard(

@@ -296,7 +296,7 @@ class PersonalDataManager : public KeyedService,
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 
   // Returns the customized credit card art image for the |card_art_url|.
-  virtual raw_ptr<gfx::Image> GetCreditCardArtImageForUrl(
+  virtual gfx::Image* GetCreditCardArtImageForUrl(
       const GURL& card_art_url) const;
 
   // Returns the cached card art image for the |card_art_url| if it was synced
@@ -305,8 +305,7 @@ class PersonalDataManager : public KeyedService,
   // optimization for situations where a separate fetch request after trying to
   // retrieve local card art images is not needed. If the card art image is not
   // present in the cache, this function will return a nullptr.
-  raw_ptr<gfx::Image> GetCachedCardArtImageForUrl(
-      const GURL& card_art_url) const;
+  gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
   // Returns the profiles to suggest to the user, ordered by frecency.
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;

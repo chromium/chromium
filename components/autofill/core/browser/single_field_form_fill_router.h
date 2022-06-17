@@ -38,7 +38,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   // means there were fields in the form that were not able to be parsed as
   // autofill fields.
   virtual void OnWillSubmitForm(const FormData& form,
-                                raw_ptr<const FormStructure> form_structure,
+                                const FormStructure* form_structure,
                                 bool is_autocomplete_enabled);
 
   // SingleFieldFormFiller overrides:
