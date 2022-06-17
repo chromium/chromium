@@ -54,6 +54,7 @@ constexpr int kRowMinHeight = 60;
 // Other misc sizes.
 constexpr int kCloseButtonSize = 24;
 constexpr int kCloseButtonSide = 12;
+constexpr int kCloseButtonLeftSide = 8;
 constexpr int kCornerRadius = 16;
 constexpr int kSideInset = 20;
 constexpr int kToggleInset = 16;
@@ -65,11 +66,11 @@ constexpr int kTitleFontSize = 20;
 constexpr int kBodyFontSize = 13;
 
 // About Alpha style.
-constexpr int kAlphaFontSize = 11;
+constexpr int kAlphaFontSize = 10;
 constexpr int kAlphaCornerRadius = 4;
 constexpr int kAlphaHeight = 16;
 constexpr int kAlphaSidePadding = 4;
-constexpr int kAlphaLeftMargin = 12;
+constexpr int kAlphaLeftMargin = 8;
 
 constexpr char kFeedbackUrl[] =
     "https://docs.google.com/forms/d/e/"
@@ -219,8 +220,8 @@ void InputMenuView::Init() {
     close_button->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     close_button->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kCloseButtonSide, kCloseButtonSide, kCloseButtonSide,
-                          kCloseButtonSide)));
+        gfx::Insets::TLBR(kCloseButtonSide, kCloseButtonLeftSide,
+                          kCloseButtonSide, kCloseButtonSide)));
     close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     const auto button_name =
