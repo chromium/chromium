@@ -387,17 +387,6 @@ TEST_F(
       const website =
           `<input type="text" id="testinput"></input><button>ok</button>`;
       const rootWebArea = await this.runWithLoadedTree(website);
-      // SA initially focuses this node in Ash Chrome; wait for it first.
-      await new Promise(resolve => {
-        chrome.commandLinePrivate.hasSwitch(
-            'lacros-chrome-path', async hasLacrosChromePath => {
-              if (!hasLacrosChromePath) {
-                await this.untilFocusIs(
-                    {className: 'BrowserNonClientFrameViewChromeOS'});
-              }
-              resolve();
-            });
-      });
 
       // Move to the text field.
       Navigator.byItem.moveTo_(this.findNodeById('testinput'));
@@ -420,9 +409,9 @@ TEST_F(
 
       // Wait for the keyboard to become invisible and the ok button to be
       // focused by automation.
-      await new Promise(resolve => {
-        okButton.addEventListener(chrome.automation.EventType.FOCUS, resolve);
-      });
+      await new Promise(
+          resolve => okButton.addEventListener(
+              chrome.automation.EventType.FOCUS, resolve));
       await new Promise(resolve => {
         keyboard.automationNode.addEventListener(
             chrome.automation.EventType.STATE_CHANGED, event => {
