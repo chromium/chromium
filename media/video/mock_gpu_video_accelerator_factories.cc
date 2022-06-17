@@ -74,7 +74,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     return gfx::SHARED_MEMORY_BUFFER;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
   }
   ClientBuffer AsClientBuffer() override {

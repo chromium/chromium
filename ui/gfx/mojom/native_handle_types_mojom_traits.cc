@@ -47,6 +47,8 @@ bool StructTraits<
                                    gfx::NativePixmapHandle* out) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   out->modifier = data.modifier();
+  out->supports_zero_copy_webgpu_import =
+      data.supports_zero_copy_webgpu_import();
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)

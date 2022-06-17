@@ -23,10 +23,11 @@ struct NativePixmapPlane {
 struct NativePixmapHandle {
   array<NativePixmapPlane> planes;
 
-  [EnableIf=is_linux]
+  [EnableIf=is_linux_or_chromeos_ash]
   uint64 modifier;
-  [EnableIf=is_chromeos_ash]
-  uint64 modifier;
+
+  [EnableIf=is_linux_or_chromeos_ash]
+  bool supports_zero_copy_webgpu_import;
 
   [EnableIf=is_fuchsia]
   mojo_base.mojom.UnguessableToken? buffer_collection_id;
