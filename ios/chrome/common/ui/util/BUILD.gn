@@ -17,6 +17,8 @@ source_set("util") {
     "device_util.mm",
     "pointer_interaction_util.h",
     "pointer_interaction_util.mm",
+    "text_view_util.h",
+    "text_view_util.mm",
   ]
   deps = [
     "//base",

@@ -13,6 +13,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
@@ -265,7 +266,7 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
     [footerString appendAttributedString:manageMetricsReported];
   }
 
-  UITextView* textView = [[UITextView alloc] init];
+  UITextView* textView = CreateUITextViewWithTextKit1();
   textView.scrollEnabled = NO;
   textView.editable = NO;
   textView.adjustsFontForContentSizeCategory = YES;

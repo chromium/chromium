@@ -19,6 +19,7 @@
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
@@ -704,7 +705,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
     NSLinkAttributeName : l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS),
   };
 
-  UITextView* captionTextView = [[UITextView alloc] init];
+  UITextView* captionTextView = CreateUITextViewWithTextKit1();
   captionTextView.attributedText =
       AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
   captionTextView.editable = NO;

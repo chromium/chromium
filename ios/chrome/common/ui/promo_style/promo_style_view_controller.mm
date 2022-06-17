@@ -17,6 +17,7 @@
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
 #include "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -506,7 +507,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   }
   if (!_disclaimerView) {
     // Set up disclaimer view.
-    _disclaimerView = [[UITextView alloc] init];
+    _disclaimerView = CreateUITextViewWithTextKit1();
     _disclaimerView.accessibilityIdentifier =
         kPromoStyleDisclaimerViewAccessibilityIdentifier;
     _disclaimerView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);

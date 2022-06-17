@@ -12,6 +12,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -56,7 +57,7 @@ const CGFloat kAvatarSize = 24;
   _avatarBadge.clipsToBounds = YES;
   [self.contentView addSubview:_avatarBadge];
 
-  _linkAndEmailTextView = [[UITextView alloc] init];
+  _linkAndEmailTextView = CreateUITextViewWithTextKit1();
   _linkAndEmailTextView.translatesAutoresizingMaskIntoConstraints = NO;
   _linkAndEmailTextView.scrollEnabled = NO;
   _linkAndEmailTextView.editable = NO;

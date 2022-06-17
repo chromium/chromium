@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
@@ -317,7 +318,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (UITextView*)footerLabel {
   if (!_footerLabel) {
-    _footerLabel = [[UITextView alloc] initWithFrame:CGRectZero];
+    _footerLabel = CreateUITextViewWithTextKit1();
     _footerLabel.backgroundColor = self.backgroundColor;
     _footerLabel.delegate = self;
 
@@ -534,7 +535,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (UITextView*)messageTextView {
   if (!_messageTextView) {
-    _messageTextView = [[UITextView alloc] initWithFrame:CGRectZero];
+    _messageTextView = CreateUITextViewWithTextKit1();
     [_messageTextView setBackgroundColor:self.backgroundColor];
     [_messageTextView setAttributedText:[self messageTextViewAttributedText]];
     _messageTextView.textContainer.lineFragmentPadding = 0.0f;

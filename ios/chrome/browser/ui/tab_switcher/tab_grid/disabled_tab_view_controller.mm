@@ -12,6 +12,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -113,7 +114,7 @@ NSAttributedString* GetBodyString(TabGridPage page) {
   topLabel.numberOfLines = 0;
   topLabel.textAlignment = NSTextAlignmentCenter;
 
-  UITextView* bottomTextView = [[UITextView alloc] init];
+  UITextView* bottomTextView = CreateUITextViewWithTextKit1();
   bottomTextView.translatesAutoresizingMaskIntoConstraints = NO;
   bottomTextView.attributedText = GetBodyString(self.page);
   bottomTextView.scrollEnabled = NO;

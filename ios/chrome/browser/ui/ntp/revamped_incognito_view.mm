@@ -20,6 +20,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"
@@ -355,7 +356,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   [self.stackView addArrangedSubview:doesNotSection];
 
   // Learn more.
-  UITextView* learnMore = [[UITextView alloc] initWithFrame:CGRectZero];
+  UITextView* learnMore = CreateUITextViewWithTextKit1();
   learnMore.scrollEnabled = NO;
   learnMore.editable = NO;
   learnMore.delegate = self;
