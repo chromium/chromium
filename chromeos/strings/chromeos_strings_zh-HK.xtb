@@ -159,7 +159,7 @@
 <translation id="225692081236532131">啟用狀態</translation>
 <translation id="2271469253353559191">暗光模式時間表</translation>
 <translation id="2275586345903859204">維修程序已完成</translation>
-<translation id="2276999893457278469">頂端說明內容</translation>
+<translation id="2276999893457278469">熱門說明內容</translation>
 <translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
 <translation id="2294753434210277304">插入具有已下載 Chromebook 復原程式映像的外部儲存空間，例如 USB 磁碟或 SD 卡</translation>
 <translation id="2307344026739914387">使用目前的配對金鑰</translation>
@@ -181,7 +181,7 @@
 <translation id="2418150275289244458">在設定中開啟</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 張圖，總共有 <ph name="TOTAL_PAGES" /> 張</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
-<translation id="2447969267935997922">安裝程序已完成，你現在可以移除 USB 隨身碟或 SD 卡。</translation>
+<translation id="2447969267935997922">安裝完成。您現在可以移除 USB 磁碟或 SD 卡。</translation>
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="2480034874476596812">手動關閉</translation>
@@ -863,7 +863,7 @@
 <translation id="885701979325669005">儲存設備</translation>
 <translation id="8863170912498892583">啟用深色主題背景</translation>
 <translation id="8863888432376731307">取得「<ph name="QUERY" />」和其他查詢內容的<ph name="INTENT" /></translation>
-<translation id="8864415976656252616">沒有任何建議內容，請查看頁面頂端的說明內容。</translation>
+<translation id="8864415976656252616">沒有建議內容。請查看熱門說明內容。</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型係平板電腦。</translation>
 <translation id="8881098542468797602">已通過測試</translation>

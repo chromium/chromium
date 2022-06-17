@@ -11,7 +11,7 @@
 <translation id="1008186147501209563">匯出書籤</translation>
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="1009476156254802388">「<ph name="WEB_DRIVE" />」位置</translation>
-<translation id="1009663062402466586">現已提供遊戲控制項</translation>
+<translation id="1009663062402466586">您現可使用遊戲控制項</translation>
 <translation id="1010498023906173788">此分頁已連線至序列連接埠。</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{網頁沒有回應}other{網頁沒有回應}}</translation>
 <translation id="1011355516189274711">「文字轉語音」音量</translation>
@@ -857,7 +857,7 @@
 <translation id="1795214765651529549">使用經典主題</translation>
 <translation id="1796105431091975902">選取 Ansible 腳本以新增</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
-<translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
+<translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="1800502858278951817">沒有擴充程式要求讀取和變更 <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
@@ -1021,7 +1021,7 @@
 <translation id="1940546824932169984">已連接的裝置</translation>
 <translation id="1941410638996203291">開始時間：<ph name="TIME" /></translation>
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
-<translation id="1941995177877935582">顯示機碼對應</translation>
+<translation id="1941995177877935582">顯示對應鍵</translation>
 <translation id="1942128823046546853">讀取及變更您在所有網站上的所有資料</translation>
 <translation id="1942600407708803723">蓋上機蓋時關機</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
@@ -2638,7 +2638,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下檔案</translation>
 <translation id="3484273680291419129">正在移除有害的軟件…</translation>
 <translation id="3484869148456018791">取得新憑證</translation>
-<translation id="3486950712960783074">你的行程詳情</translation>
+<translation id="3486950712960783074">您的行程</translation>
 <translation id="3487007233252413104">匿名函數</translation>
 <translation id="3490695139702884919">正在下載… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">您子女的帳戶尚未設定 Family Link 家長監控設定。設定完成後，即可新增家長監控設定。您可在「探索」應用程式中找到家長監控設定的相關資料。</translation>
@@ -7434,7 +7434,7 @@
 <translation id="8242426110754782860">Proceed</translation>
 <translation id="8243948765190375130">媒體質素可能會降低</translation>
 <translation id="8244514732452879619">快到睡覺時間了</translation>
-<translation id="8245361042748627813">這個捷徑已變更。請使用 <ph name="NEW_SHORTCUT_KEY" />，透過系統對話方塊進行列印。</translation>
+<translation id="8245361042748627813">此快速鍵已變更。請使用 <ph name="NEW_SHORTCUT_KEY" /> 以便透過系統對話框列印。</translation>
 <translation id="8246776524656196770">使用 PIN (個人識別碼) 保護您的安全密鑰</translation>
 <translation id="8248050856337841185">貼上(&amp;P)</translation>
 <translation id="8248381369318572865">存取麥克風，並分析您的語音</translation>
@@ -7739,7 +7739,7 @@
 <translation id="8561565784790166472">執行時請特別注意</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">嘗試降級應用程式。</translation>
-<translation id="8569673829373920831">進一步瞭解<ph name="APP_NAME" /></translation>
+<translation id="8569673829373920831">進一步了解 <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">找不到目的地</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8571687764447439720">新增 Kerberos 票證</translation>
@@ -8266,7 +8266,7 @@
 <translation id="9078316009970372699">停用「即時網絡共享」</translation>
 <translation id="9078842827190780028">透過側面板查看更多搜尋結果</translation>
 <translation id="9079267182985899251">系統即將停止支援此選項。如要分享分頁畫面，請使用 <ph name="GOOGLE_MEET" />。</translation>
-<translation id="9080971985541434310">推測你的興趣喜好 - Chrome 可以推測你感興趣的主題</translation>
+<translation id="9080971985541434310">推測您的興趣 - Chrome 可以推測您的興趣</translation>
 <translation id="9081543426177426948">在無痕模式下無法儲存您瀏覽的網站</translation>
 <translation id="9084064520949870008">在視窗中開啟</translation>
 <translation id="9085256200913095638">複製已選取的分頁</translation>
