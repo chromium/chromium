@@ -727,29 +727,11 @@ typedef void (*Map2Procf)(const SkScalar mat[][4],
                           const float src2[],
                           int count,
                           float dst4[]);
-typedef void (*Map2Procd)(const SkScalar mat[][4],
-                          const double src2[],
-                          int count,
-                          double dst4[]);
 
 static void map2_if(const SkScalar mat[][4],
                     const float* SK_RESTRICT src2,
                     int count,
                     float* SK_RESTRICT dst4) {
-  for (int i = 0; i < count; ++i) {
-    dst4[0] = src2[0];
-    dst4[1] = src2[1];
-    dst4[2] = 0;
-    dst4[3] = 1;
-    src2 += 2;
-    dst4 += 4;
-  }
-}
-
-static void map2_id(const SkScalar mat[][4],
-                    const double* SK_RESTRICT src2,
-                    int count,
-                    double* SK_RESTRICT dst4) {
   for (int i = 0; i < count; ++i) {
     dst4[0] = src2[0];
     dst4[1] = src2[1];
@@ -777,20 +759,6 @@ static void map2_tf(const SkScalar mat[][4],
   }
 }
 
-static void map2_td(const SkScalar mat[][4],
-                    const double* SK_RESTRICT src2,
-                    int count,
-                    double* SK_RESTRICT dst4) {
-  for (int n = 0; n < count; ++n) {
-    dst4[0] = src2[0] + mat[3][0];
-    dst4[1] = src2[1] + mat[3][1];
-    dst4[2] = mat[3][2];
-    dst4[3] = 1;
-    src2 += 2;
-    dst4 += 4;
-  }
-}
-
 static void map2_sf(const SkScalar mat[][4],
                     const float* SK_RESTRICT src2,
                     int count,
@@ -800,20 +768,6 @@ static void map2_sf(const SkScalar mat[][4],
     dst4[0] = float(mat[0][0] * src2[0] + mat[3][0]);
     dst4[1] = float(mat[1][1] * src2[1] + mat[3][1]);
     dst4[2] = mat32;
-    dst4[3] = 1;
-    src2 += 2;
-    dst4 += 4;
-  }
-}
-
-static void map2_sd(const SkScalar mat[][4],
-                    const double* SK_RESTRICT src2,
-                    int count,
-                    double* SK_RESTRICT dst4) {
-  for (int n = 0; n < count; ++n) {
-    dst4[0] = mat[0][0] * src2[0] + mat[3][0];
-    dst4[1] = mat[1][1] * src2[1] + mat[3][1];
-    dst4[2] = mat[3][2];
     dst4[3] = 1;
     src2 += 2;
     dst4 += 4;
@@ -840,22 +794,6 @@ static void map2_af(const SkScalar mat[][4],
   }
 }
 
-static void map2_ad(const SkScalar mat[][4],
-                    const double* SK_RESTRICT src2,
-                    int count,
-                    double* SK_RESTRICT dst4) {
-  for (int n = 0; n < count; ++n) {
-    double sx = src2[0];
-    double sy = src2[1];
-    dst4[0] = mat[0][0] * sx + mat[1][0] * sy + mat[3][0];
-    dst4[1] = mat[0][1] * sx + mat[1][1] * sy + mat[3][1];
-    dst4[2] = mat[0][2] * sx + mat[1][2] * sy + mat[3][2];
-    dst4[3] = 1;
-    src2 += 2;
-    dst4 += 4;
-  }
-}
-
 static void map2_pf(const SkScalar mat[][4],
                     const float* SK_RESTRICT src2,
                     int count,
@@ -873,21 +811,6 @@ static void map2_pf(const SkScalar mat[][4],
   }
 }
 
-static void map2_pd(const SkScalar mat[][4],
-                    const double* SK_RESTRICT src2,
-                    int count,
-                    double* SK_RESTRICT dst4) {
-  for (int n = 0; n < count; ++n) {
-    double sx = src2[0];
-    double sy = src2[1];
-    for (int i = 0; i < 4; i++) {
-      dst4[i] = mat[0][i] * sx + mat[1][i] * sy + mat[3][i];
-    }
-    src2 += 2;
-    dst4 += 4;
-  }
-}
-
 void Matrix44::map2(const float src2[], int count, float dst4[]) const {
   static const Map2Procf gProc[] = {map2_if, map2_tf, map2_sf, map2_sf,
                                     map2_af, map2_af, map2_af, map2_af};
@@ -895,55 +818,6 @@ void Matrix44::map2(const float src2[], int count, float dst4[]) const {
   TypeMask mask = this->getType();
   Map2Procf proc = (mask & kPerspective_Mask) ? map2_pf : gProc[mask];
   proc(fMat, src2, count, dst4);
-}
-
-void Matrix44::map2(const double src2[], int count, double dst4[]) const {
-  static const Map2Procd gProc[] = {map2_id, map2_td, map2_sd, map2_sd,
-                                    map2_ad, map2_ad, map2_ad, map2_ad};
-
-  TypeMask mask = this->getType();
-  Map2Procd proc = (mask & kPerspective_Mask) ? map2_pd : gProc[mask];
-  proc(fMat, src2, count, dst4);
-}
-
-bool Matrix44::preserves2dAxisAlignment(SkScalar epsilon) const {
-  // Can't check (mask & kPerspective_Mask) because Z isn't relevant here.
-  if (0 != perspX() || 0 != perspY())
-    return false;
-
-  // A matrix with two non-zeroish values in any of the upper right
-  // rows or columns will skew.  If only one value in each row or
-  // column is non-zeroish, we get a scale plus perhaps a 90-degree
-  // rotation.
-  int col0 = 0;
-  int col1 = 0;
-  int row0 = 0;
-  int row1 = 0;
-
-  // Must test against epsilon, not 0, because we can get values
-  // around 6e-17 in the matrix that "should" be 0.
-
-  if (SkScalarAbs(fMat[0][0]) > epsilon) {
-    col0++;
-    row0++;
-  }
-  if (SkScalarAbs(fMat[0][1]) > epsilon) {
-    col1++;
-    row0++;
-  }
-  if (SkScalarAbs(fMat[1][0]) > epsilon) {
-    col0++;
-    row1++;
-  }
-  if (SkScalarAbs(fMat[1][1]) > epsilon) {
-    col1++;
-    row1++;
-  }
-  if (col0 > 1 || col1 > 1 || row0 > 1 || row1 > 1) {
-    return false;
-  }
-
-  return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
