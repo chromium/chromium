@@ -28,14 +28,23 @@
       }
 
       #app-list-view-container {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        gap: 16px 0;
+        grid-template-areas:
+            'select'
+            'list';
+        grid-template-rows: 20px 1fr;
+        height: 95%;
       }
 
       #selectAllButton {
         display: flex;
+        grid-area: select;
         justify-content: flex-end;
-        margin-bottom: 16px;
+      }
+
+      #appView {
+        grid-area: list;
       }
 
       #app-list-view-container-new {
@@ -60,8 +69,8 @@
       <template is="dom-if" if="[[!isOobeNewRecommendAppsEnabled_]]">
         <div id="app-list-view-container" slot="content">
           <div id="selectAllButton">
-            <a class="oobe-local-link focus-on-show" is="action-link"
-                on-click="onSelectAll_">
+            <a id="selectAllLink" class="oobe-local-link focus-on-show"
+                is="action-link" on-click="onSelectAll_">
               [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
             </a>
           </div>

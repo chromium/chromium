@@ -204,17 +204,12 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Handles event when contents in the webview is generated.
    */
   onFullyLoaded_() {
+    this.setUIStep(RecommendAppsUiState.LIST);
     if (this.isOobeNewRecommendAppsEnabled_) {
-      this.setUIStep(RecommendAppsUiState.LIST);
+      this.shadowRoot.querySelector('#appsList').focus();
       return;
     }
-    // Can't use this.$.appView here as the element is in a <dom-if>.
-    const appListView = this.shadowRoot.querySelector('#appView');
-    appListView.executeScript({code: 'getHeight();'}, function(result) {
-      appListView.setAttribute('style', 'height: ' + result + 'px');
-    });
-    this.setUIStep(RecommendAppsUiState.LIST);
-    this.$.installButton.focus();
+    this.shadowRoot.querySelector('#selectAllLink').focus();
   }
 
   /**
