@@ -66,12 +66,12 @@ AccessibilityExtensionAutomationUtilE2ETest =
 TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'GetAncestors',
     async function() {
-      const root = await this.runWithLoadedTree(this.basicDoc());
+      let current = await this.runWithLoadedTree(this.basicDoc());
       let expectedLength = 1;
-      while (root) {
-        const ancestors = getNonDesktopAncestors(root);
+      while (current) {
+        const ancestors = getNonDesktopAncestors(current);
         assertEquals(expectedLength++, ancestors.length);
-        root = root.firstChild;
+        current = current.firstChild;
       }
     });
 
