@@ -1452,7 +1452,7 @@ enum WebFeature {
   kClientHintsDeviceMemory_DEPRECATED = 2017,
   kCSSRegisterProperty = 2018,
   kRelativeOrientationSensorConstructor = 2019,
-  kSmoothScrollJSInterventionActivated = 2020,
+  kOBSOLETE_kSmoothScrollJSInterventionActivated = 2020,
   kBudgetAPIGetCost = 2021,
   kBudgetAPIGetBudget = 2022,
   kCrossOriginMainFrameNulledNonEmptyNameAccessed = 2023,
