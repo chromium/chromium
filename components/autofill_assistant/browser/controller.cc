@@ -148,29 +148,22 @@ content::WebContents* Controller::GetWebContents() {
   return web_contents();
 }
 
-constexpr char kAboutBlankURL[] = "about:blank";
-content::WebContents* Controller::GetWebContentsForJsExecution() {
-  if (!web_contents_for_js_execution_) {
-    // To execute JS flows we create a new web contents that persists
-    // across navigations.
-    web_contents_for_js_execution_ =
-        content::WebContents::Create(content::WebContents::CreateParams(
-            GetWebContents()->GetBrowserContext()));
-    // Navigate to a blank page to connect to a frame tree.
-    web_contents_for_js_execution_->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(GURL(kAboutBlankURL)));
+void Controller::SetJsFlowLibrary(const std::string& js_flow_library) {
+  if (js_flow_library.empty()) {
+    return;
   }
 
-  return web_contents_for_js_execution_.get();
+  GetJsFlowDevtoolsWrapper()->SetJsFlowLibrary(js_flow_library);
+  GetService()->UpdateJsFlowLibraryLoaded(!js_flow_library.empty());
 }
 
-void Controller::SetJsFlowLibrary(const std::string& js_flow_library) {
-  js_flow_library_ = js_flow_library;
-  GetService()->UpdateJsFlowLibraryLoaded(!js_flow_library_.empty());
-}
+JsFlowDevtoolsWrapper* Controller::GetJsFlowDevtoolsWrapper() {
+  if (!js_flow_devtools_wrapper_) {
+    js_flow_devtools_wrapper_ = std::make_unique<JsFlowDevtoolsWrapper>(
+        GetWebContents()->GetBrowserContext());
+  }
 
-const std::string* Controller::GetJsFlowLibrary() const {
-  return &js_flow_library_;
+  return js_flow_devtools_wrapper_.get();
 }
 
 std::string Controller::GetEmailAddressForAccessTokenAccount() {

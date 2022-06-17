@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
+#include "components/autofill_assistant/browser/js_flow_devtools_wrapper.h"
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"
@@ -63,12 +64,9 @@ class ScriptExecutorDelegate {
   virtual password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() = 0;
   virtual content::WebContents* GetWebContents() = 0;
-  // Get dummy web contents that can be used for JS execution. The web contents
-  // is created on the first call.
-  virtual content::WebContents* GetWebContentsForJsExecution() = 0;
 
   virtual void SetJsFlowLibrary(const std::string& js_flow_library) = 0;
-  virtual const std::string* GetJsFlowLibrary() const = 0;
+  virtual JsFlowDevtoolsWrapper* GetJsFlowDevtoolsWrapper() = 0;
 
   virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;

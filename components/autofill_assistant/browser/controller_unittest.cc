@@ -2396,13 +2396,6 @@ TEST_F(ControllerTest, AttachesAvailableModelVersionForCommandLineSwitch) {
                          TriggerContext::Options()));
 }
 
-TEST_F(ControllerTest, SettingJsFlowLibraryWorks) {
-  const std::string js_flow_library = "const st = 2;";
-  EXPECT_EQ(*controller_->GetJsFlowLibrary(), "");
-  controller_->SetJsFlowLibrary(js_flow_library);
-  EXPECT_EQ(*controller_->GetJsFlowLibrary(), js_flow_library);
-}
-
 TEST_F(ControllerTest, UpdatesJsFlowLibraryLoaded) {
   EXPECT_CALL(*mock_service_, UpdateJsFlowLibraryLoaded(true));
 
@@ -2410,7 +2403,7 @@ TEST_F(ControllerTest, UpdatesJsFlowLibraryLoaded) {
 }
 
 TEST_F(ControllerTest, JsFlowLibraryNotLoadedForEmpty) {
-  EXPECT_CALL(*mock_service_, UpdateJsFlowLibraryLoaded(false));
+  EXPECT_CALL(*mock_service_, UpdateJsFlowLibraryLoaded(true)).Times(0);
 
   controller_->SetJsFlowLibrary("");
 }
