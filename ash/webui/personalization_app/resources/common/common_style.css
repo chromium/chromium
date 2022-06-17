@@ -252,6 +252,7 @@ cr-button + cr-button {
   bottom: 0;
   box-sizing: border-box;
   left: 0;
+  pointer-events: none;
   position: absolute;
   right: 0;
   top: 0;
