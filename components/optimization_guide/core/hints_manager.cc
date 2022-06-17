@@ -390,7 +390,8 @@ void HintsManager::OnHintsComponentAvailable(const HintsComponentInfo& info) {
     return;
   }
 
-  if (failed_component_version_ &&
+  if (features::ShouldCheckFailedComponentVersionPref() &&
+      failed_component_version_ &&
       failed_component_version_->CompareTo(info.version) >= 0) {
     OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
         << "Skipping processing OptimizationHints component version: "
