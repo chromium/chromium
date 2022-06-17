@@ -11,7 +11,6 @@
 
 namespace gfx {
 class Point;
-class Size;
 }
 
 namespace aura {
@@ -26,8 +25,6 @@ void SetHostDispatcher(WindowTreeHost* host,
 void DisableIME(WindowTreeHost* host);
 void DisableNativeWindowOcclusionTracking(WindowTreeHost* host);
 const base::flat_set<WindowTreeHost*>& GetThrottledHosts();
-void CallOnHostResizedInPixels(WindowTreeHost* host,
-                               const gfx::Size& size_in_pixels);
 
 }  // namespace test
 }  // namespace aura
