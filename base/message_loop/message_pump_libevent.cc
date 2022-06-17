@@ -198,11 +198,23 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
     if (run_state.should_quit)
       break;
 
-    // Process native events if any are ready. Do not block waiting for more.
-    {
-      auto scoped_do_work_item = delegate->BeginWorkItem();
-      event_base_loop(event_base_, EVLOOP_NONBLOCK);
-    }
+    // Process native events if any are ready. Do not block waiting for more. Do
+    // not instantiate a ScopedDoWorkItem for this call as:
+    //  - This most often ends up calling OnLibeventNotification() below which
+    //    already instantiates a ScopedDoWorkItem (and doing so twice would
+    //    incorrectly appear as nested work).
+    //  - "ThreadController active" is already up per the above DoWork() so this
+    //    would only be about detecting #task-in-task-implies-nested
+    //    (ref. thread_controller.h).
+    //  - This can result in the same work as the
+    //    event_base_loop(event_base_, EVLOOP_ONCE) call at the end of this
+    //    method and that call definitely can't be in a ScopedDoWorkItem as
+    //    it includes sleep.
+    //  - The only downside is that, if a native task other than
+    //    OnLibeventNotification() did enter a nested loop from here, it
+    //    wouldn't be labeled as such in tracing by "ThreadController active".
+    //    Contact gab@/scheduler-dev@ if a problematic trace emerges.
+    event_base_loop(event_base_, EVLOOP_NONBLOCK);
 
     bool attempt_more_work = immediate_work_available || processed_io_events_;
     processed_io_events_ = false;
@@ -303,10 +315,6 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
                                                  void* context) {
   FdWatchController* controller = static_cast<FdWatchController*>(context);
   DCHECK(controller);
-  TRACE_EVENT("toplevel", "OnLibevent", "fd", fd);
-
-  TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION heap_profiler_scope(
-      controller->created_from_location().file_name());
 
   MessagePumpLibevent* pump = controller->pump();
   pump->processed_io_events_ = true;
@@ -316,6 +324,12 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
   Delegate::ScopedDoWorkItem scoped_do_work_item;
   if (pump->run_state_)
     scoped_do_work_item = pump->run_state_->delegate->BeginWorkItem();
+
+  // Trace events must begin after the above BeginWorkItem() so that the
+  // ensuing "ThreadController active" outscopes all the events under it.
+  TRACE_EVENT("toplevel", "OnLibevent", "fd", fd);
+  TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION heap_profiler_scope(
+      controller->created_from_location().file_name());
 
   if ((flags & (EV_READ | EV_WRITE)) == (EV_READ | EV_WRITE)) {
     // Both callbacks will be called. It is necessary to check that |controller|

@@ -155,17 +155,10 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
-    if ((GetParam() == MessagePumpType::UI &&
-         std::is_same<MessagePumpForUI, MessagePumpLibevent>::value) ||
-        (GetParam() == MessagePumpType::IO &&
-         std::is_same<MessagePumpForIO, MessagePumpLibevent>::value)) {
-      // MessagePumpLibEvent checks for native notifications once after
-      // processing a DoWork().
-      EXPECT_CALL(delegate, MockOnBeginWorkItem);
-      EXPECT_CALL(delegate, MockOnEndWorkItem);
-    }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
+    // MessagePumpLibEvent checks for native notifications once after processing
+    // a DoWork() but only instantiates a ScopedDoWorkItem that triggers
+    // MessagePumpLibevent::OnLibeventNotification() which this test does not
+    // so there are no post-work expectations at the moment.
   }
 
   std::unique_ptr<MessagePump> message_pump_;
