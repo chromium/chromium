@@ -92,12 +92,6 @@ D3D11Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
                        device);
   }
 
-  D3D11_VIDEO_PROCESSOR_CAPS caps = {0};
-  if (SUCCEEDED(processor_enumerator_->GetVideoProcessorCaps(&caps))) {
-    supports_tone_mapping_ =
-        caps.FeatureCaps & D3D11_VIDEO_PROCESSOR_FEATURE_CAPS_METADATA_HDR10;
-  }
-
   hr = video_device_->CreateVideoProcessor(processor_enumerator_.Get(), 0,
                                            &video_processor_);
   if (!SUCCEEDED(hr)) {

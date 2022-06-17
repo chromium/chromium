@@ -253,7 +253,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       is_hdr_supported_ ? TextureSelector::HDRMode::kSDROrHDR
                         : TextureSelector::HDRMode::kSDROnly,
       &format_checker, video_device_, device_context_, media_log_.get(),
-      use_shared_handle);
+      config_.color_space_info().ToGfxColorSpace(), use_shared_handle);
   if (!texture_selector_)
     return D3D11Status::Codes::kCreateTextureSelectorFailed;
 

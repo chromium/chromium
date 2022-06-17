@@ -62,7 +62,7 @@ class D3D11TextureSelectorUnittest : public ::testing::Test {
     auto media_log = std::make_unique<NullMediaLog>();
     return TextureSelector::Create(prefs, workarounds, decoder_output_format,
                                    hdr_mode, &format_checker_, nullptr, nullptr,
-                                   media_log.get());
+                                   media_log.get(), gfx::ColorSpace());
   }
 
   // Set the format checker to succeed any check, except for |disallowed|.

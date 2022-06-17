@@ -58,8 +58,6 @@ class MEDIA_GPU_EXPORT VideoProcessorProxy
                                     UINT stream_count,
                                     D3D11_VIDEO_PROCESSOR_STREAM* streams);
 
-  bool supports_tone_mapping() const { return supports_tone_mapping_; }
-
  protected:
   virtual ~VideoProcessorProxy();
   friend class base::RefCounted<VideoProcessorProxy>;
@@ -70,7 +68,6 @@ class MEDIA_GPU_EXPORT VideoProcessorProxy
   ComD3D11VideoProcessor video_processor_;
   ComD3D11DeviceContext device_context_;
   ComD3D11VideoContext video_context_;
-  bool supports_tone_mapping_ = false;
 };
 
 }  // namespace media
