@@ -258,6 +258,8 @@ class HIDDetectionScreen : public BaseScreen,
 
   bool devices_enumerated_ = false;
 
+  size_t num_pairing_attempts_ = 0;
+
   base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
 };
 

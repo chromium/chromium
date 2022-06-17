@@ -36,6 +36,10 @@ bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device);
 // Record each HID that is connected while the HID detection screen is shown.
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device);
 
+// Record the total number of bluetooth pairing attempts while the HID detection
+// is shown.
+void RecordBluetoothPairingAttempts(size_t attempts);
+
 }  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_UTILS_H_

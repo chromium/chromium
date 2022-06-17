@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 
@@ -34,6 +35,11 @@ namespace {
 
 using ::testing::_;
 using HidType = hid_detection::HidType;
+using NiceMockDevice =
+    std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>;
+
+const uint32_t kTestBluetoothClass = 1337u;
+const char kTestBluetoothName[] = "testName";
 
 const test::UIPath kHidContinueButton = {"hid-detection",
                                          "hid-continue-button"};
@@ -97,7 +103,55 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
                                         hid_type, count);
   }
 
+  void AssertBluetoothPairingAttemptsCount(int count) {
+    histogram_tester_.ExpectBucketCount(
+        "OOBE.HidDetectionScreen.BluetoothPairingAttempts", count, 1);
+  }
+
+  void AssetBluetoothPairingAttemptsMetricCount(int count) {
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.HidDetectionScreen.BluetoothPairingAttempts", count);
+  }
+
+  bool HasPendingConnectCallback() const {
+    return !connect_callback_.is_null();
+  }
+
+  void InvokePendingConnectCallback(bool success) {
+    if (success) {
+      std::move(connect_callback_).Run(absl::nullopt);
+    } else {
+      std::move(connect_callback_)
+          .Run(device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    }
+  }
+
+  void AddDevice(const device::BluetoothDeviceType device_type) {
+    // We use the number of devices created in this test as the address.
+    std::string address = base::NumberToString(num_devices_created_);
+    ++num_devices_created_;
+
+    auto mock_device =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            /*adapter=*/nullptr, kTestBluetoothClass, kTestBluetoothName,
+            address, /*paired=*/false, /*connected=*/false);
+    ON_CALL(*mock_device, Connect_(testing::_, testing::_))
+        .WillByDefault(testing::Invoke(
+            [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
+                   device::BluetoothDevice::ConnectCallback& callback) {
+              connect_callback_ = std::move(callback);
+            }));
+    ON_CALL(*mock_device, GetDeviceType())
+        .WillByDefault(testing::Return(device_type));
+
+    hid_detection_screen_->DeviceAdded(/*adapter=*/nullptr, mock_device.get());
+  }
+
   test::HIDControllerMixin hid_controller_{&mixin_host_};
+
+  size_t num_devices_created_ = 0u;
+
+  device::BluetoothDevice::ConnectCallback connect_callback_;
 
  private:
   HIDDetectionScreen* hid_detection_screen_;
@@ -114,6 +168,52 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, NoDevicesConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
   EXPECT_FALSE(GetExitResult().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+                       BluetoothPairingAttemptsSimultaneous) {
+  OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+
+  // Two simultaneous pairing attempts of the same type.
+  AddDevice(device::BluetoothDeviceType::MOUSE);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  AddDevice(device::BluetoothDeviceType::MOUSE);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  // Invoke the first device's connect callback since the second device will
+  // never be attempted to be connected with.
+  InvokePendingConnectCallback(/*success=*/false);
+
+  // Two simultaneous pairing attempts of different types.
+  AddDevice(device::BluetoothDeviceType::KEYBOARD);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  AddDevice(device::BluetoothDeviceType::MOUSE);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback(/*success=*/false);
+
+  // Bluetooth pairing attempt counts should only emit after the welcome screen.
+  AssetBluetoothPairingAttemptsMetricCount(/*count=*/0);
+
+  ContinueToWelcomeScreen();
+  AssertBluetoothPairingAttemptsCount(/*count=*/3);
+}
+
+IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+                       BluetoothPairingAttemptsSequential) {
+  OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+
+  AddDevice(device::BluetoothDeviceType::MOUSE);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback(/*success=*/true);
+  hid_controller_.AddMouse(device::mojom::InputDeviceType::TYPE_BLUETOOTH);
+  AddDevice(device::BluetoothDeviceType::MOUSE);
+  ASSERT_FALSE(HasPendingConnectCallback());
+
+  AddDevice(device::BluetoothDeviceType::KEYBOARD);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback(/*success=*/false);
+
+  ContinueToWelcomeScreen();
+  AssertBluetoothPairingAttemptsCount(/*count=*/2);
 }
 
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {

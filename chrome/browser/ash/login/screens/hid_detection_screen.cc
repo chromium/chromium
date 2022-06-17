@@ -137,6 +137,7 @@ void HIDDetectionScreen::OverrideInputDeviceManagerBinderForTesting(
 }
 
 void HIDDetectionScreen::OnContinueButtonClicked() {
+  hid_detection::RecordBluetoothPairingAttempts(num_pairing_attempts_);
   CleanupOnExit();
   Exit(Result::NEXT);
 }
@@ -339,6 +340,7 @@ void HIDDetectionScreen::ConnectBTDevice(device::BluetoothDevice* device) {
     mouse_is_pairing_ = true;
     keyboard_is_pairing_ = true;
   }
+  ++num_pairing_attempts_;
   device->Connect(this, base::BindOnce(&HIDDetectionScreen::OnConnect,
                                        weak_ptr_factory_.GetWeakPtr(),
                                        device->GetAddress(), device_type));

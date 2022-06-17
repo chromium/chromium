@@ -178,6 +178,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
+    units="attempts" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the total number of pairing attempts with Bluetooth human interface
+    devices (HID). This metric is emitted after the HID detection screen exits
+    in OOBE. It does not include devices attempted to be paired with before or
+    after the HID detection screen.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.HidDetectionScreen.HidConnected" enum="HidType"
     expires_after="2023-05-06">
   <owner>gordonseto@google.com</owner>

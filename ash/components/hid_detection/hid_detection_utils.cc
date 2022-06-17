@@ -72,4 +72,9 @@ void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
                                 hid_type.value());
 }
 
+void RecordBluetoothPairingAttempts(size_t attempts) {
+  base::UmaHistogramCounts100(
+      "OOBE.HidDetectionScreen.BluetoothPairingAttempts", attempts);
+}
+
 }  // namespace ash::hid_detection
