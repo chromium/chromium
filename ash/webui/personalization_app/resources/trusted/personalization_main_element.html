@@ -6,7 +6,7 @@
       '. . middle       . .'
       '. . rbg-keyboard . .'
       '. . .            . .';
-    grid-template-columns: 1fr minmax(24px, 72px) minmax(480px, 960px) minmax(24px, 72px) 1fr;
+    grid-template-columns: 1fr 24px minmax(480px, 960px) 24px 1fr;
     grid-template-rows: 108px 1fr auto 32px;
     height: 100%;
     position: relative;
@@ -21,7 +21,7 @@
     display: grid;
     gap: 16px;
     grid-area: middle;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   }
 
   keyboard-backlight {
