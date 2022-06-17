@@ -52,9 +52,6 @@
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest.testAutostart
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyYear
 
-# crbug.com/1061178
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
-
 # crbug.com/1146477
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonthAndYear
