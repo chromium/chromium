@@ -15,7 +15,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
@@ -67,6 +68,8 @@ ci.builder(
             ],
         },
     },
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -105,9 +108,7 @@ ci.builder(
             ],
         },
     },
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -139,9 +140,7 @@ ci.builder(
         short_name = "asn",
     ),
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -173,9 +172,7 @@ ci.builder(
         short_name = "cfi",
     ),
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -209,9 +206,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -246,9 +241,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -276,9 +269,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -310,9 +301,7 @@ ci.builder(
         short_name = "arm",
     ),
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -339,9 +328,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -367,6 +354,8 @@ ci.builder(
         short_name = "a64",
     ),
     main_console_view = "main",
+    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = None,
 )
 
 ci.builder(
@@ -400,9 +389,7 @@ ci.builder(
         short_name = "kvn",
     ),
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -462,9 +449,7 @@ ci.builder(
             ],
         },
     },
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -502,9 +487,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -541,9 +524,7 @@ ci.builder(
     tree_closing = False,
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -573,9 +554,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -606,9 +585,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -638,9 +615,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.thin_tester(
@@ -703,9 +678,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 # For Chromebox for meetings(CfM)
@@ -734,7 +707,5 @@ ci.builder(
         short_name = "cfm",
     ),
     main_console_view = "main",
-    goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
 )
