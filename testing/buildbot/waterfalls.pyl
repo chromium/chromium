@@ -4111,6 +4111,15 @@
       'GPU Linux Builder (dbg)': {},
       'GPU Mac Builder': {},
       'GPU Mac Builder (dbg)': {},
+      'GPU Mac Builder (reclient shadow)': {
+        'additional_compile_targets': [
+            'angle_unittests',
+            'browser_tests',
+            'gl_tests',
+            'gl_unittests',
+            'telemetry_gpu_integration_test',
+        ],
+      },
       'Linux Debug (NVIDIA)': {
         'browser_config': 'debug',
         'os_type': 'linux',

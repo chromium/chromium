@@ -518,6 +518,7 @@
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols',
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
+      'GPU Mac Builder (reclient shadow)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient',
       'GPU Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
