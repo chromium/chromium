@@ -368,4 +368,40 @@ TEST_F(ContainerQueryEvaluatorTest, LegacyPrinting) {
   EXPECT_EQ(inner->ComputedStyleRef().ZIndex(), 1);
 }
 
+TEST_F(ContainerQueryEvaluatorTest, Printing) {
+  ScopedLayoutNGPrintingForTest ng_printing_scope(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @page { size: 400px 400px; }
+      body { margin: 0; }
+      #container {
+        container-type: size;
+        width: 50vw;
+      }
+
+      @container (width = 200px) {
+        #target { color: green; }
+      }
+    </style>
+    <div id="container">
+      <span id="target"></span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_NE(
+      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      Color(0, 128, 0));
+
+  constexpr gfx::SizeF initial_page_size(400, 400);
+  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().View()->UpdateLifecyclePhasesForPrinting();
+
+  EXPECT_EQ(
+      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      Color(0, 128, 0));
+}
+
 }  // namespace blink
