@@ -218,7 +218,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.AnnotationsEnabled" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -231,7 +231,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2022-10-04">
+    expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -243,7 +243,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
-    expires_after="2022-12-04">
+    expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
-    expires_after="2022-12-04">
+    expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
-    units="notifications" expires_after="2022-10-01">
+    units="notifications" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -281,7 +281,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationReachedCap"
-    enum="Boolean" expires_after="2022-10-01">
+    enum="Boolean" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -344,7 +344,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.SignIn.AccountWaaStatus"
-    enum="AccountWaaStatusForCommerce" expires_after="2022-12-04">
+    enum="AccountWaaStatusForCommerce" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -356,7 +356,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.TabEligible" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -370,7 +370,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.{ManagementType}.Count"
-    units="subscriptions" expires_after="2022-10-01">
+    units="subscriptions" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -384,8 +384,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.CloseReason"
-    enum="BottomSheet.StateChangeReason" expires_after="2022-10-01">
+    enum="BottomSheet.StateChangeReason" expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the reason that the merchant trust bottom sheet is closed. Recorded
@@ -394,8 +395,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.DurationFullyOpened" units="ms"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust bottom sheet is
@@ -404,8 +406,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.DurationHalfOpened" units="ms"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust bottom sheet is
@@ -414,8 +417,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.DurationPeeked" units="ms"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust bottom sheet is
@@ -424,8 +428,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.IsFullyViewed" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the merchant trust bottom sheet is fully expanded. Recorded
@@ -434,8 +439,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.IsHalfViewed" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the merchant trust bottom sheet is half expanded. Recorded
@@ -444,7 +450,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.OpenSource"
-    enum="MerchantTrustBottomSheetOpenedSource" expires_after="2022-10-01">
+    enum="MerchantTrustBottomSheetOpenedSource" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -454,8 +460,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.Message.ClearReason"
-    enum="MerchantTrustMessageClearReason" expires_after="2022-11-20">
+    enum="MerchantTrustMessageClearReason" expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records why the prepared merchant trust message is cleared. Recorded when
@@ -466,8 +473,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.Message.DismissReason"
-    enum="MessageDismissReason" expires_after="2022-11-20">
+    enum="MessageDismissReason" expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the reason that the merchant trust message is dismissed. Implemented
@@ -476,8 +484,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.Message.DurationPrepared" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds from the merchant trust message being
@@ -486,8 +495,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.Message.DurationShown" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-04-25">
   <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the duration in milliseconds that the merchant trust message is
@@ -496,7 +506,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.BrowsingTime" units="ms"
-    expires_after="2022-12-11">
+    expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -509,7 +519,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="MerchantTrust.MessageImpact.BrowsingTime.Rating{MessageStarRating}"
-    units="ms" expires_after="M105">
+    units="ms" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -523,7 +533,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.NavigationCount"
-    units="navigations" expires_after="2022-12-11">
+    units="navigations" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -536,7 +546,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="MerchantTrust.MessageImpact.NavigationCount.Rating{MessageStarRating}"
-    units="navigations" expires_after="M105">
+    units="navigations" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -550,7 +560,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2022-11-13">
+    enum="BooleanVisible" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
