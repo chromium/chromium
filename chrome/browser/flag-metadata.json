@@ -2906,6 +2906,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-vbr-encode-acceleration",
+    "owners": [ "chromeos-gfx-video@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-virtual-keyboard",
     "owners": [ "//ash/keyboard/OWNERS" ],
     // Useful for debugging the virtual keyboard on non-tablet devices.

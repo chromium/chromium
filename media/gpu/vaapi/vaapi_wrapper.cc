@@ -627,17 +627,6 @@ bool IsVAProfileSupported(VAProfile va_profile) {
                       }) != profiles.end();
 }
 
-bool IsImplementedVbr(VideoCodecProfile codec_profile) {
-  switch (codec_profile) {
-    case H264PROFILE_BASELINE:
-    case H264PROFILE_MAIN:
-    case H264PROFILE_HIGH:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
   if (!IsModeEncoding(mode)) {
     return va_profile == VAProfileAV1Profile0 &&
@@ -1597,6 +1586,24 @@ bool IsLowPowerEncSupported(VAProfile va_profile) {
   return false;
 }
 
+bool IsVBREncodingSupported(VAProfile va_profile) {
+  if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding))
+    return false;
+
+  auto mode = VaapiWrapper::CodecMode::kCodecModeMax;
+  switch (va_profile) {
+    case VAProfileH264ConstrainedBaseline:
+    case VAProfileH264Main:
+    case VAProfileH264High:
+      mode = VaapiWrapper::CodecMode::kEncodeVariableBitrate;
+      break;
+    default:
+      return false;
+  }
+
+  return VASupportedProfiles::Get().IsProfileSupported(mode, va_profile);
+}
+
 }  // namespace
 
 NativePixmapAndSizeInfo::NativePixmapAndSizeInfo() = default;
@@ -1717,9 +1724,7 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
     profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     // This code assumes that the resolutions are the same between CBR and VBR.
     // This is checked in a test in vaapi_unittest.cc: VbrAndCbrResolutionsMatch
-    if (IsImplementedVbr(media_profile) &&
-        VASupportedProfiles::Get().IsProfileSupported(kEncodeVariableBitrate,
-                                                      va_profile)) {
+    if (IsVBREncodingSupported(va_profile)) {
       profile.rate_control_modes |=
           media::VideoEncodeAccelerator::kVariableMode;
     }

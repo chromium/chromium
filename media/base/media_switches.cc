@@ -786,6 +786,11 @@ const base::Feature kUseRealColorSpaceForAndroidVideo{
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// Enable Variable Bitrate encoding with hardware accelerated encoders on
+// ChromeOS.
+const base::Feature kChromeOSHWVBREncoding{"ChromeOSHWVBREncoding",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable the hardware-accelerated direct video decoder instead of the one
 // needing the VdaVideoDecoder adapter. This flag is used mainly as a
 // chrome:flag for developers debugging issues as well as to be able to

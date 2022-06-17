@@ -174,6 +174,10 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   combined_enabled_features.push_back(media::kVaapiVideoEncodeLinux);
 #endif
 
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  combined_enabled_features.push_back(media::kChromeOSHWVBREncoding);
+#endif
+
   const uint32_t target_bitrate = encode_bitrate.value_or(
       GetDefaultTargetBitrate(video->Resolution(), video->FrameRate()));
   // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.

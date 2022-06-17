@@ -55125,6 +55125,7 @@ from previous Chrome versions.
   <int value="-1992999120" label="composite-after-paint"/>
   <int value="-1992488524" label="AutofillAcrossIframes:disabled"/>
   <int value="-1990614981" label="StoragePressureUI:disabled"/>
+  <int value="-1990238241" label="ChromeOSHWVBREncoding:enabled"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
   <int value="-1989134646" label="PhoneHubUseBle:disabled"/>
   <int value="-1989024058" label="SystemEmojiPickerSearchExtension:disabled"/>
@@ -57201,6 +57202,7 @@ from previous Chrome versions.
   <int value="-681535143"
       label="UserCloudSigninRestrictionPolicyFetcher:enabled"/>
   <int value="-681434111" label="WebFeed:disabled"/>
+  <int value="-681160117" label="ChromeOSHWVBREncoding:disabled"/>
   <int value="-680787130" label="ExperimentalVRFeatures:disabled"/>
   <int value="-680589442" label="MacRTL:disabled"/>
   <int value="-679585025" label="CaptureModeSelfieCamera:disabled"/>

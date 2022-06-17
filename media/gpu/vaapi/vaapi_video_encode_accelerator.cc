@@ -249,11 +249,16 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  if (codec != VideoCodec::kH264 &&
-      config.bitrate.mode() == Bitrate::Mode::kVariable) {
-    MEDIA_LOG(ERROR, media_log.get())
-        << "Variable bitrate is only supported with H264 encoding.";
-    return false;
+  if (config.bitrate.mode() == Bitrate::Mode::kVariable) {
+    if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
+      MEDIA_LOG(ERROR, media_log.get()) << "Variable bitrate is disabled.";
+      return false;
+    }
+    if (codec != VideoCodec::kH264) {
+      MEDIA_LOG(ERROR, media_log.get())
+          << "Variable bitrate is only supported with H264 encoding.";
+      return false;
+    }
   }
 
   if (config.input_format != PIXEL_FORMAT_I420 &&
