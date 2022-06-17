@@ -25,7 +25,7 @@
 
 namespace content {
 class WebContents;
-class RenderFrameHost;
+struct GlobalRenderFrameHostId;
 }  // namespace content
 
 namespace autofill_assistant {
@@ -229,12 +229,12 @@ class CssElementFinder : public BaseElementFinder {
   int current_filter_index_range_start_ = -1;
 
   // Pointer to the current frame
-  raw_ptr<content::RenderFrameHost> current_frame_ = nullptr;
+  content::GlobalRenderFrameHostId current_frame_global_id_;
 
   // The frame id to use to execute devtools Javascript calls within the
   // context of the frame. Might be empty if no frame id needs to be
   // specified.
-  std::string current_frame_id_;
+  std::string current_frame_devtools_id_;
 
   // Object IDs of the current set matching elements. Cleared once it's used
   // to query or filter.

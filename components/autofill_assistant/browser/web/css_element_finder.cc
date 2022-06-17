@@ -106,11 +106,12 @@ void CssElementFinder::Start(const ElementFinderResult& start_element,
     return;
   }
 
-  current_frame_ = start_element.render_frame_host();
-  if (current_frame_ == nullptr) {
-    current_frame_ = web_contents_->GetPrimaryMainFrame();
+  auto* frame = start_element.render_frame_host();
+  if (frame == nullptr) {
+    frame = web_contents_->GetPrimaryMainFrame();
   }
-  current_frame_id_ = start_element.node_frame_id();
+  current_frame_global_id_ = frame->GetGlobalId();
+  current_frame_devtools_id_ = start_element.node_frame_id();
   frame_stack_ = start_element.frame_stack();
 
   if (start_element.object_id().empty()) {
@@ -154,7 +155,7 @@ void CssElementFinder::ResultFound(const std::string& object_id) {
 
   devtools_client_->GetDOM()->DescribeNode(
       dom::DescribeNodeParams::Builder().SetObjectId(object_id).Build(),
-      current_frame_id_,
+      current_frame_devtools_id_,
       base::BindOnce(&CssElementFinder::OnDescribeNodeForId,
                      weak_ptr_factory_.GetWeakPtr(), object_id));
 }
@@ -171,10 +172,10 @@ void CssElementFinder::OnDescribeNodeForId(
 
 void CssElementFinder::BuildAndSendResult(const std::string& object_id) {
   ElementFinderResult result;
-  result.SetRenderFrameHost(current_frame_);
+  result.SetRenderFrameHostGlobalId(current_frame_global_id_);
   result.SetObjectId(object_id);
   result.SetBackendNodeId(backend_node_id_);
-  result.SetNodeFrameId(current_frame_id_);
+  result.SetNodeFrameId(current_frame_devtools_id_);
   result.SetFrameStack(frame_stack_);
 
   SendResult(OkClientStatus(), result);
@@ -372,7 +373,7 @@ void CssElementFinder::MoveMatchesToJSArrayRecursive(size_t index) {
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(function)
           .Build(),
-      current_frame_id_,
+      current_frame_devtools_id_,
       base::BindOnce(&CssElementFinder::OnMoveMatchesToJSArrayRecursive,
                      weak_ptr_factory_.GetWeakPtr(), index));
 }
@@ -404,7 +405,7 @@ void CssElementFinder::OnMoveMatchesToJSArrayRecursive(
 
 void CssElementFinder::GetDocumentElement() {
   devtools_client_->GetRuntime()->Evaluate(
-      std::string(kGetDocumentElement), current_frame_id_,
+      std::string(kGetDocumentElement), current_frame_devtools_id_,
       base::BindOnce(&CssElementFinder::OnGetDocumentElement,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -447,7 +448,7 @@ void CssElementFinder::ApplyJsFilters(
             .SetArguments(builder.BuildArgumentList())
             .SetFunctionDeclaration(function)
             .Build(),
-        current_frame_id_,
+        current_frame_devtools_id_,
         base::BindOnce(&CssElementFinder::OnApplyJsFilters,
                        weak_ptr_factory_.GetWeakPtr(), task_id));
   }
@@ -512,7 +513,7 @@ void CssElementFinder::ResolvePseudoElement(
         dom::DescribeNodeParams::Builder()
             .SetObjectId(object_ids[task_id])
             .Build(),
-        current_frame_id_,
+        current_frame_devtools_id_,
         base::BindOnce(&CssElementFinder::OnDescribeNodeForPseudoElement,
                        weak_ptr_factory_.GetWeakPtr(), pseudo_type, task_id));
   }
@@ -539,7 +540,7 @@ void CssElementFinder::OnDescribeNodeForPseudoElement(
             dom::ResolveNodeParams::Builder()
                 .SetBackendNodeId(pseudo_element->GetBackendNodeId())
                 .Build(),
-            current_frame_id_,
+            current_frame_devtools_id_,
             base::BindOnce(&CssElementFinder::OnResolveNodeForPseudoElement,
                            weak_ptr_factory_.GetWeakPtr(), task_id));
         return;
@@ -565,7 +566,7 @@ void CssElementFinder::OnResolveNodeForPseudoElement(
 void CssElementFinder::EnterFrame(const std::string& object_id) {
   devtools_client_->GetDOM()->DescribeNode(
       dom::DescribeNodeParams::Builder().SetObjectId(object_id).Build(),
-      current_frame_id_,
+      current_frame_devtools_id_,
       base::BindOnce(&CssElementFinder::OnDescribeNodeForFrame,
                      weak_ptr_factory_.GetWeakPtr(), object_id));
 }
@@ -592,7 +593,7 @@ void CssElementFinder::OnDescribeNodeForFrame(
       return;
     }
 
-    frame_stack_.push_back({object_id, current_frame_id_});
+    frame_stack_.push_back({object_id, current_frame_devtools_id_});
 
     auto* frame =
         FindCorrespondingRenderFrameHost(node->GetFrameId(), web_contents_);
@@ -601,15 +602,15 @@ void CssElementFinder::OnDescribeNodeForFrame(
       GiveUpWithError(ClientStatus(FRAME_HOST_NOT_FOUND));
       return;
     }
-    current_frame_ = frame;
+    current_frame_global_id_ = frame->GetGlobalId();
 
     if (node->HasContentDocument()) {
       // If the frame has a ContentDocument it's considered a local frame. In
-      // this case, current_frame_ doesn't change and can directly use the
+      // this case, current frame doesn't change and can directly use the
       // content document as root for the evaluation.
       backend_ids.emplace_back(node->GetContentDocument()->GetBackendNodeId());
     } else {
-      current_frame_id_ = node->GetFrameId();
+      current_frame_devtools_id_ = node->GetFrameId();
       // Kick off another find element chain to walk down the OOP iFrame.
       GetDocumentElement();
       return;
@@ -627,7 +628,7 @@ void CssElementFinder::OnDescribeNodeForFrame(
         dom::ResolveNodeParams::Builder()
             .SetBackendNodeId(backend_ids[0])
             .Build(),
-        current_frame_id_,
+        current_frame_devtools_id_,
         base::BindOnce(&CssElementFinder::OnResolveNode,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -695,7 +696,7 @@ void CssElementFinder::ReportMatchingElementsArrayRecursive(
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kGetArrayElement))
           .Build(),
-      current_frame_id_,
+      current_frame_devtools_id_,
       base::BindOnce(&CssElementFinder::OnReportMatchingElementsArrayRecursive,
                      weak_ptr_factory_.GetWeakPtr(), task_id, array_object_id,
                      std::move(acc), index));
