@@ -431,7 +431,7 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'CloseChromeVox', async function() {
 // stopSpeech command.
 TEST_F('ChromeVoxUserActionMonitorTest', 'StopPropagation', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
+  const keyboardHandler = BackgroundKeyboardHandler.instance;
   let finished = false;
   let executedCommand = false;
   const actions = [{
@@ -441,9 +441,7 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'StopPropagation', async function() {
   }];
   const onFinished = () => finished = true;
   UserActionMonitor.create(actions, onFinished);
-  ChromeVoxKbHandler.commandHandler = function(command) {
-    executedCommand = true;
-  };
+  ChromeVoxKbHandler.commandHandler = command => executedCommand = true;
   assertFalse(finished);
   assertFalse(executedCommand);
   keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
