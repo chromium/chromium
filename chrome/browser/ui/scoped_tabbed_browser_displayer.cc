@@ -10,11 +10,15 @@
 
 namespace chrome {
 
-ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(Profile* profile) {
+ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(
+    Profile* profile,
+    bool should_trigger_session_restore) {
   browser_ = FindTabbedBrowser(profile, false);
   if (!browser_ && Browser::GetCreationStatusForProfile(profile) ==
                        Browser::CreationStatus::kOk) {
-    browser_ = Browser::Create(Browser::CreateParams(profile, true));
+    Browser::CreateParams params(profile, /*user_gesture=*/true);
+    params.should_trigger_session_restore = should_trigger_session_restore;
+    browser_ = Browser::Create(params);
   }
 }
 

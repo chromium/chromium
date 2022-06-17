@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -599,12 +600,16 @@ void BrowserServiceLacros::NewTabWithProfile(
     return;
   }
 
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
-  if (browser) {
-    chrome::NewTab(browser);
-  } else {
-    chrome::NewEmptyWindow(profile, should_trigger_session_restore);
+  Browser* browser;
+  {
+    chrome::ScopedTabbedBrowserDisplayer displayer(
+        profile, should_trigger_session_restore);
+    browser = displayer.browser();
+    if (browser)
+      chrome::NewTab(browser);
   }
+  if (browser)
+    browser->SetFocusToLocationBar();
   std::move(callback).Run();
 }
 

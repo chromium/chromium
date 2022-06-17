@@ -203,7 +203,6 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   // `NewTab()` should create a new window if the system has only one
   // profile.
   NewTabSync(/*should_trigger_session_restore=*/true);
-  ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_FALSE(ProfilePicker::IsOpen());
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -499,19 +498,21 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   auto* new_browser = chrome::FindBrowserWithProfile(profile);
   ASSERT_TRUE(new_browser);
   auto* new_tab_strip = new_browser->tab_strip_model();
-  ASSERT_EQ(2, new_tab_strip->count());
+  ASSERT_EQ(3, new_tab_strip->count());
 
-  EXPECT_EQ("/title1.html",
+  EXPECT_EQ("",  // The new tab.
             new_tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
-  EXPECT_EQ("/title2.html",
+  EXPECT_EQ("/title1.html",
             new_tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path());
+  EXPECT_EQ("/title2.html",
+            new_tab_strip->GetWebContentsAt(2)->GetLastCommittedURL().path());
 
-  // A second call to NewTab() ignores session restore and adds a new tab to
-  // the existing browser.
+  // A second call to NewTab() ignores session restore and adds yet another new
+  // tab to the existing browser.
   NewTabSync(/*should_trigger_session_restore=*/true);
 
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  ASSERT_EQ(3, new_tab_strip->count());
+  ASSERT_EQ(4, new_tab_strip->count());
 }
 
 // Tests that requesting an incognito window when incognito mode is disallowed
