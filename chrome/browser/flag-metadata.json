@@ -5066,7 +5066,7 @@
       "dullweber",
       "sauski",
       "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 103
+    "expiry_milestone": 108
   },
   {
     "name": "privacy-sandbox-v3-desktop",
@@ -5074,7 +5074,7 @@
       "dullweber",
       "sauski",
       "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 103
+    "expiry_milestone": 108
   },
   {
     "name": "private-network-access-respect-preflight-results",
