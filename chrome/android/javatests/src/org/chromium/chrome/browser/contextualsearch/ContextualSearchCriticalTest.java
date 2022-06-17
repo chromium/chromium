@@ -205,15 +205,13 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     }
 
     /**
-     * Tests swiping panel up and down after a tap search will only load the Content once.
+     * Tests that moving panel up and down after a resolving search will only load the Content once.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    // Previously flaky. See https://crbug.com/1032955
-    @DisabledTest(message = "https://crbug.com/1291558")
     public void testResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
@@ -226,9 +224,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
-        // Swiping the Panel down should not change the visibility or load content again.
-        swipePanelDown();
-        waitForPanelToPeek();
+        // Shrinking the Panel down should not change the visibility or load content again.
+        peekPanel();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
@@ -244,16 +241,14 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     }
 
     /**
-     * Tests swiping panel up and down after a non-resolving search will only load the Content
-     * once.
+     * Tests that moving the panel up and down after a non-resolving search will only load the
+     * Content once.
      */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    // Previously flaky https://crbug.com/1032760 on sdk<P.
-    @DisabledTest(message = "https://crbug.com/1291558")
     public void testNonResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
@@ -267,9 +262,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
-        // Swiping the Panel down should not change the visibility or load content again.
-        swipePanelDown();
-        waitForPanelToPeek();
+        // Shrinking the Panel down should not change the visibility or load content again.
+        peekPanel();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
