@@ -133,6 +133,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta>
     kAutofillIgnoreEarlyClicksOnPopupDuration;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillIgnoreUnmappableAutocompleteValues;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillServerTypeTakesPrecedence;

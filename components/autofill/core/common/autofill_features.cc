@@ -358,6 +358,13 @@ const base::FeatureParam<base::TimeDelta>
         &kAutofillIgnoreEarlyClicksOnPopup, "duration",
         base::Milliseconds(250)};
 
+// When enabled, HTML autocomplete values that do not map to any known type, but
+// look reasonable (e.g. contain "address") are simply ignored. Without the
+// feature, Autofill is disabled on such fields.
+const base::Feature kAutofillIgnoreUnmappableAutocompleteValues{
+    "AutofillIgnoreUnmappableAutocompleteValues",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
 const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode{

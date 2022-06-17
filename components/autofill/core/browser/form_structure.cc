@@ -231,15 +231,30 @@ absl::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
              : absl::nullopt;
 }
 
-// Tries mapping a non-standardized html autocomplete `value` to an
-// HtmlFieldType.
-absl::optional<HtmlFieldType> ParseAutocompleteAttributeExtensions(
+// Maps `value`s that Autofill has proposed for the HTML autocomplete standard,
+// but which are not standardized, to their HtmlFieldType.
+absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
     base::StringPiece value) {
-  static constexpr auto extensions =
+  static constexpr auto proposed_attributes =
       base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
           {"address", HTML_TYPE_STREET_ADDRESS},
-          {"company", HTML_TYPE_ORGANIZATION},
           {"coupon-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"username", HTML_TYPE_EMAIL},
+      });
+
+  auto* it = proposed_attributes.find(value);
+  return it != proposed_attributes.end()
+             ? absl::optional<HtmlFieldType>(it->second)
+             : absl::nullopt;
+}
+
+// Maps non standardized `value`s for the HTML autocomplete attribute to an
+// HtmlFieldType. This is primarily a list of "reasonable guesses".
+absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
+    base::StringPiece value) {
+  static constexpr auto non_standardized_attributes =
+      base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+          {"company", HTML_TYPE_ORGANIZATION},
           {"first-name", HTML_TYPE_GIVEN_NAME},
           {"gift-code", HTML_TYPE_MERCHANT_PROMO_CODE},
           {"locality", HTML_TYPE_ADDRESS_LEVEL2},
@@ -250,12 +265,24 @@ absl::optional<HtmlFieldType> ParseAutocompleteAttributeExtensions(
           {"tel-ext", HTML_TYPE_TEL_EXTENSION},
           {"upi", HTML_TYPE_UPI_VPA},
           {"upi-vpa", HTML_TYPE_UPI_VPA},
-          {"username", HTML_TYPE_EMAIL},
       });
 
-  auto* it = extensions.find(value);
-  return it != extensions.end() ? absl::optional<HtmlFieldType>(it->second)
-                                : absl::nullopt;
+  auto* it = non_standardized_attributes.find(value);
+  return it != non_standardized_attributes.end()
+             ? absl::optional<HtmlFieldType>(it->second)
+             : absl::nullopt;
+}
+
+// If the autocomplete `value` doesn't match any of Autofill's supported values,
+// Autofill should remain enabled for good intended values. This function checks
+// if there is reason to believe so, by matching `value` against patterns like
+// "address".
+// Ignoring autocomplete="off" and alike is treated separately in
+// `ParseFieldTypesFromAutocompleteAttributes()`.
+bool ShouldIgnoreAutocompleteValue(const std::string& value) {
+  // For now, only ignore unrecognizable autocomplete attributes containing
+  // "address".
+  return MatchesPattern(base::UTF8ToUTF16(value), u"address");
 }
 
 // Returns the Chrome Autofill-supported field type corresponding to a given
@@ -276,11 +303,24 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
 
   absl::optional<HtmlFieldType> type =
       ParseStandardizedAutocompleteAttribute(value);
-  if (!type.has_value())
-    type = ParseAutocompleteAttributeExtensions(value);
+  if (!type.has_value()) {
+    type = ParseProposedAutocompleteAttribute(value);
+    if (!type.has_value())
+      type = ParseNonStandarizedAutocompleteAttribute(value);
+  }
 
-  return type.has_value() ? RationalizeAutocompleteType(type.value(), field)
-                          : HTML_TYPE_UNRECOGNIZED;
+  if (type.has_value())
+    return RationalizeAutocompleteType(type.value(), field);
+
+  // `value` cannot be mapped to any HtmlFieldType. By classifying the field
+  // as HTML_TYPE_UNRECOGNIZED Autofill is effectively disabled. Instead, check
+  // if we have reason to ignore the value and treat the field as
+  // HTML_TYPE_UNSPECIFIED. This makes us ignore the autocomplete value.
+  return ShouldIgnoreAutocompleteValue(value) &&
+                 base::FeatureList::IsEnabled(
+                     features::kAutofillIgnoreUnmappableAutocompleteValues)
+             ? HTML_TYPE_UNSPECIFIED
+             : HTML_TYPE_UNRECOGNIZED;
 }
 
 std::ostream& operator<<(std::ostream& out,
