@@ -6026,7 +6026,8 @@ def CheckBatchAnnotation(input_api, output_api):
     test_class_declaration = input_api.re.compile(r'^\s*public\sclass.*Test')
     uiautomator_test = input_api.re.compile(r'[uU]i[aA]utomator')
 
-    errors = []
+    missing_annotation_errors = []
+    extra_annotation_errors = []
 
     def _FilterFile(affected_file):
         return input_api.FilterSourceFile(
@@ -6054,16 +6055,26 @@ def CheckBatchAnnotation(input_api, output_api):
         if (is_instrumentation_test and
             not batch_matched and
             not do_not_batch_matched):
-          errors.append(str(f.LocalPath()))
+          missing_annotation_errors.append(str(f.LocalPath()))
+        if (not is_instrumentation_test and
+            (batch_matched or
+             do_not_batch_matched)):
+          extra_annotation_errors.append(str(f.LocalPath()))
 
     results = []
 
-    if errors:
+    if missing_annotation_errors:
         results.append(
             output_api.PresubmitPromptWarning(
                 """
 Instrumentation tests should use either @Batch or @DoNotBatch. If tests are not
 safe to run in batch, please use @DoNotBatch with reasons.
-""", errors))
+""", missing_annotation_errors))
+    if extra_annotation_errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Robolectric tests do not need a @Batch or @DoNotBatch annotations.
+""", extra_annotation_errors))
 
     return results

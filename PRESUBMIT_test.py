@@ -4556,12 +4556,24 @@ class CheckBatchAnnotation(unittest.TestCase):
     mock_input.files = [
         MockFile('path/OneTest.java', ['public class OneTest']),
         MockFile('path/TwoTest.java', ['public class TwoTest']),
+        MockFile('path/ThreeTest.java',
+                 ['@Batch(Batch.PER_CLASS)',
+                  'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                  'public class Three {']),
+        MockFile('path/FourTest.java',
+                 ['@DoNotBatch(reason = "dummy reason 1")',
+                  'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                  'public class Four {']),
     ]
     errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
-    self.assertEqual(1, len(errors))
+    self.assertEqual(2, len(errors))
     self.assertEqual(2, len(errors[0].items))
     self.assertIn('OneTest.java', errors[0].items[0])
     self.assertIn('TwoTest.java', errors[0].items[1])
+    self.assertEqual(2, len(errors[1].items))
+    self.assertIn('ThreeTest.java', errors[1].items[0])
+    self.assertIn('FourTest.java', errors[1].items[1])
+
 
   def testAnnotationsPresent(self):
     """Examples of when there is @Batch or @DoNotBatch is correctly flagged."""
