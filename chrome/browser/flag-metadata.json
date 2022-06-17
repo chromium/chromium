@@ -4618,14 +4618,14 @@
       "expiry_milestone": 105
   },
   {
-    "name": "omnibox-on-device-head-suggestions-incognito",
+    "name": "omnibox-on-device-head-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 120
   },
   {
-    "name": "omnibox-on-device-head-suggestions-non-incognito",
+    "name": "omnibox-on-device-head-suggestions-incognito",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-on-focus-suggestions-contextual-web",

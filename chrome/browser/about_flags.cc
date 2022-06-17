@@ -5168,6 +5168,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kBlurWithEscape)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN)
+    {"omnibox-on-device-head-suggestions",
+     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsName,
+     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsDescription, kOsWin,
+     FEATURE_VALUE_TYPE(omnibox::kOnDeviceHeadProviderNonIncognito)},
+    {"omnibox-on-device-head-suggestions-incognito",
+     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsIncognitoName,
+     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsIncognitoDescription,
+     kOsWin, FEATURE_VALUE_TYPE(omnibox::kOnDeviceHeadProviderIncognito)},
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"scheduler-configuration", flag_descriptions::kSchedulerConfigurationName,

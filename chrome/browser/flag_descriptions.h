@@ -1038,6 +1038,12 @@ extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 
+extern const char kOmniboxOnDeviceHeadSuggestionsName[];
+extern const char kOmniboxOnDeviceHeadSuggestionsDescription[];
+
+extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];
+extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
+
 extern const char kOmniboxRichAutocompletionName[];
 extern const char kOmniboxRichAutocompletionDescription[];
 extern const char kOmniboxRichAutocompletionMinCharName[];

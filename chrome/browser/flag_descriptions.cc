@@ -1844,6 +1844,21 @@ const char kOmniboxZeroSuggestPrefetchingDescription[] =
     "in the HTTP cache. If no or zero duration is provided, the existing "
     "in-memory cache will used instead of HTTP cache.";
 
+const char kOmniboxOnDeviceHeadSuggestionsName[] =
+    "Omnibox on device head suggestions (non-incognito only)";
+const char kOmniboxOnDeviceHeadSuggestionsDescription[] =
+    "Google head non personalized search suggestions provided by a compact on "
+    "device model for non-incognito. Turn off this feature if you have other "
+    "apps running which affects local file access (e.g. anti-virus software) "
+    "and are experiencing searchbox typing lags.";
+const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[] =
+    "Omnibox on device head suggestions (incognito only)";
+const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[] =
+    "Google head non personalized search suggestions provided by a compact on "
+    "device model for incognito. Turn off this feature if you have other "
+    "apps running which affects local file access (e.g. anti-virus software) "
+    "and are experiencing searchbox typing lags.";
+
 const char kOmniboxRichAutocompletionName[] = "Omnibox Rich Autocompletion";
 const char kOmniboxRichAutocompletionDescription[] =
     "Allow autocompletion for titles and non-prefixes. I.e. suggestions whose "
