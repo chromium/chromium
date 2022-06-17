@@ -97,13 +97,14 @@ let kRTCReceivedRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
   });
 
 /*
- * RTCInboundRTPStreamStats
+ * RTCInboundRtpStreamStats
  * https://w3c.github.io/webrtc-stats/#inboundrtpstats-dict*
  * @private
  */
 let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   trackId: 'string',
-  receiverId: 'string',
+  trackIdentifier: 'string',
+  mid: 'string',
   remoteId: 'string',
   framesDecoded: 'number',
   keyFramesDecoded: 'number',
@@ -183,8 +184,8 @@ let kRTCSentRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
 let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   trackId: 'string',
   mediaSourceId: 'string',
-  senderId: 'string',
   remoteId: 'string',
+  mid: 'string',
   retransmittedPacketsSent: 'number',
   retransmittedBytesSent: 'number',
   headerBytesSent: 'number',
