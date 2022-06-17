@@ -517,7 +517,7 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1507170440449692343">Ovoj stranici je blokiran pristup vašoj kameri.</translation>
 <translation id="1507246803636407672">&amp;Odbaci</translation>
-<translation id="1507884455975553832">Prenosite aplikacije za slanje poruka</translation>
+<translation id="1507884455975553832">Prenosite aplikacije za razmjenu poruka</translation>
 <translation id="1509163368529404530">&amp;Vrati grupu</translation>
 <translation id="1509281256533087115">Pristupiti bilo kojem uređaju <ph name="DEVICE_NAME_AND_VENDOR" /> putem USB-a</translation>
 <translation id="1510238584712386396">Pokretač</translation>
@@ -724,7 +724,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1682548588986054654">&amp;Novi anoniman prozor</translation>
 <translation id="1682867089915960590">Uključiti navigaciju kursorom?</translation>
 <translation id="1684279041537802716">Boja za isticanje</translation>
-<translation id="168511795252678620">Nedavne fotografije i aplikacije za slanje poruka</translation>
+<translation id="168511795252678620">Nedavne fotografije i aplikacije za razmjenu poruka</translation>
 <translation id="1686550358074589746">Omogući pisanje klizanjem prstom</translation>
 <translation id="168715261339224929">Da biste imali svoje oznake na svim svojim uređajima, uključite sinhronizaciju.</translation>
 <translation id="1688867105868176567">Obrisati podatke web lokacije?</translation>
@@ -6276,7 +6276,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7152478047064750137">Za ovu ekstenziju nisu potrebna posebna odobrenja</translation>
 <translation id="7154130902455071009">Promijenite početnu stranicu na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Postojeća fotografija sa kamere ili fajl</translation>
-<translation id="7155352398126583949">Obavještenja i aplikacije za slanje poruka</translation>
+<translation id="7155352398126583949">Obavještenja i aplikacije za razmjenu poruka</translation>
 <translation id="7163202347044721291">Potvrđivanje koda za aktivaciju...</translation>
 <translation id="716640248772308851">Ekstenzija "<ph name="EXTENSION" />" može čitati fajlove za slike, videozapise i zvuk u označenim lokacijama.</translation>
 <translation id="7167486101654761064">&amp;Uvijek otvori ovu vrstu datoteka</translation>
@@ -7585,7 +7585,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8439506636278576865">Ponudi prijevod stranica na ovom jeziku</translation>
 <translation id="8440630305826533614">Linux aplikacije</translation>
 <translation id="8443795068008423036">Provjerite je li uređaj ažuriran i pokušajte ponovo</translation>
-<translation id="8445046761938045900">Nedavne fotografije, obavještenja i aplikacije za slanje poruka</translation>
+<translation id="8445046761938045900">Nedavne fotografije, obavještenja i aplikacije za razmjenu poruka</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8447409163267621480">Uključite Ctrl ili Alt</translation>
 <translation id="844850004779619592">Nisu pronađene komande</translation>
