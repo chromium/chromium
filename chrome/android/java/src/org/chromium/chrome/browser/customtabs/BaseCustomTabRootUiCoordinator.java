@@ -55,7 +55,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}.
  */
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
-    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
@@ -148,7 +147,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(),
                 ephemeralTabCoordinatorSupplier, false, null);
         // clang-format on
-        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
@@ -204,12 +202,17 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 != null : "IntentDataProvider needs to be non-null after preInflationStartup";
 
         mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(mActivity,
-                mCompositorViewHolderSupplier, intentDataProvider.getInitialActivityHeight(),
-                mMultiWindowModeStateDispatcher,
+                intentDataProvider.getInitialActivityHeight(), mMultiWindowModeStateDispatcher,
                 intentDataProvider.getColorProvider().getNavigationBarColor(),
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor(),
                 CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
                 mActivityLifecycleDispatcher);
+    }
+
+    @Override
+    public void onPostInflationStartup() {
+        super.onPostInflationStartup();
+        mCustomTabHeightStrategy.onPostInflationStartup();
     }
 
     /**
