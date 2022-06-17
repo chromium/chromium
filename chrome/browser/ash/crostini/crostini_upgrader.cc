@@ -69,7 +69,7 @@ CrostiniUpgrader* CrostiniUpgrader::GetForProfile(Profile* profile) {
 
 CrostiniUpgrader::CrostiniUpgrader(Profile* profile)
     : profile_(profile),
-      container_id_("", ""),
+      container_id_(kCrostiniDefaultVmType, "", ""),
       log_sequence_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       current_log_file_(absl::nullopt),

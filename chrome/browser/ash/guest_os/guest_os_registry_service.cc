@@ -669,7 +669,8 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
           &GuestOsRegistryService::ApplyContainerBadge,
           weak_ptr_factory_.GetWeakPtr(),
           crostini::GetContainerBadgeColor(
-              profile_, guest_os::GuestId(reg->VmName(), reg->ContainerName())),
+              profile_, guest_os::GuestId(reg->VmType(), reg->VmName(),
+                                          reg->ContainerName())),
           std::move(callback));
     }
   }
@@ -1099,7 +1100,8 @@ void GuestOsRegistryService::RequestContainerAppIcon(
   }
 
   crostini::CrostiniManager::GetForProfile(profile_)->GetContainerAppIcons(
-      guest_os::GuestId(registration->VmName(), registration->ContainerName()),
+      guest_os::GuestId(registration->VmType(), registration->VmName(),
+                        registration->ContainerName()),
       desktop_file_ids,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       icon_scale,

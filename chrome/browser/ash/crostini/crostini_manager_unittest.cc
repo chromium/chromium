@@ -298,7 +298,7 @@ class CrostiniManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   CrostiniManager* crostini_manager_;
   const guest_os::GuestId container_id_ =
-      guest_os::GuestId(kVmName, kContainerName);
+      guest_os::GuestId(kCrostiniDefaultVmType, kVmName, kContainerName);
   device::FakeUsbDeviceManager fake_usb_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -2539,7 +2539,8 @@ class CrostiniManagerUpgradeContainerTest
     }
   }
 
-  guest_os::GuestId container_id_ = guest_os::GuestId(kVmName, kContainerName);
+  guest_os::GuestId container_id_ =
+      guest_os::GuestId(kCrostiniDefaultVmType, kVmName, kContainerName);
 
   UpgradeContainerProgressStatus final_status_ =
       UpgradeContainerProgressStatus::FAILED;

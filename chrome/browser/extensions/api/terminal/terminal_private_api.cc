@@ -320,8 +320,8 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
                   crostini::kCrostiniDefaultContainerName);
     GetSwitch(params_args, &cmdline, kSwitchCurrentWorkingDir, "");
     std::string startup_id = params_args.GetSwitchValueASCII(kSwitchStartupId);
-    container_id_ =
-        std::make_unique<guest_os::GuestId>(vm_name, container_name);
+    container_id_ = std::make_unique<guest_os::GuestId>(
+        crostini::kCrostiniDefaultVmType, vm_name, container_name);
     VLOG(1) << "Starting " << *container_id_
             << ", cmdline=" << cmdline.GetCommandLineString();
 

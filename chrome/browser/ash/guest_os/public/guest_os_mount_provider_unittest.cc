@@ -106,7 +106,8 @@ class GuestOsMountProviderTest : public testing::Test {
 
   // guestos_${UserHash}_${encode(kGuestId.ToString())}. Note that UserHash
   // is an empty string in these tests.
-  const guest_os::GuestId kGuestId = guest_os::GuestId("cow", "ptery/daccy");
+  const guest_os::GuestId kGuestId =
+      guest_os::GuestId(guest_os::VmType::TERMINA, "cow", "ptery/daccy");
   const std::string kMountName = std::string{"guestos++cow+ptery%2Fdaccy"};
 
   content::BrowserTaskEnvironment task_environment_;
