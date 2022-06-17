@@ -103,8 +103,8 @@ HRESULT LaunchCmd(const std::wstring& cmd,
 }
 
 // Extracts a string from a VARIANT if the VARIANT is VT_BSTR or VT_BSTR |
-// VT_BYREF. Returns an empty string if the VARIANT is not a BSTR.
-std::wstring StringFromVariant(const VARIANT& source) {
+// VT_BYREF. Returns absl::nullopt if the VARIANT is not a BSTR.
+absl::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   if (V_VT(&source) == VT_BSTR) {
     return V_BSTR(&source);
   }
@@ -114,117 +114,6 @@ std::wstring StringFromVariant(const VARIANT& source) {
   }
 
   return {};
-}
-
-// Formats a single `parameter` and returns the result. Any placeholder `%N` in
-// `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
-// be escaped with a `%`.
-//
-// Returns `absl::nullopt` if:
-// * a placeholder %N is encountered where N > substitutions.size().
-// * a literal `%` is not escaped with a `%`.
-//
-// See examples in the LegacyAppCommandWebImplTest.FormatParameters* unit tests.
-absl::optional<std::wstring> FormatParameter(
-    const std::vector<std::wstring>& substitutions,
-    const std::wstring& parameter) {
-  DCHECK_LE(substitutions.size(), 9U);
-
-  std::wstring formatted_parameter;
-  for (auto i = parameter.begin(); i != parameter.end(); ++i) {
-    if (*i != '%') {
-      formatted_parameter.push_back(*i);
-      continue;
-    }
-
-    if (++i == parameter.end())
-      return absl::nullopt;
-
-    if (*i == '%') {
-      formatted_parameter.push_back('%');
-      continue;
-    }
-
-    if (*i < '1' || *i > '9')
-      return absl::nullopt;
-
-    const size_t index = *i - '1';
-    if (index >= substitutions.size())
-      return absl::nullopt;
-
-    formatted_parameter.append(substitutions[index]);
-  }
-
-  return formatted_parameter;
-}
-
-// Quotes `input` if necessary so that it will be interpreted as a single
-// command-line parameter according to the rules for ::CommandLineToArgvW.
-//
-// ::CommandLineToArgvW has a special interpretation of backslash characters
-// when they are followed by a quotation mark character ("). This interpretation
-// assumes that any preceding argument is a valid file system path, or else it
-// may behave unpredictably.
-//
-// This special interpretation controls the "in quotes" mode tracked by the
-// parser. When this mode is off, whitespace terminates the current argument.
-// When on, whitespace is added to the argument like all other characters.
-
-// * 2n backslashes followed by a quotation mark produce n backslashes followed
-// by begin/end quote. This does not become part of the parsed argument, but
-// toggles the "in quotes" mode.
-// * (2n) + 1 backslashes followed by a quotation mark again produce n
-// backslashes followed by a quotation mark literal ("). This does not toggle
-// the "in quotes" mode.
-// * n backslashes not followed by a quotation mark simply produce n
-// backslashes.
-//
-// See examples in the LegacyAppCommandWebImplTest.ParameterQuoting unit test.
-std::wstring QuoteForCommandLineToArgvW(const std::wstring& input) {
-  if (input.empty())
-    return L"\"\"";
-
-  std::wstring output;
-  const bool contains_whitespace =
-      input.find_first_of(L" \t") != std::wstring::npos;
-  if (contains_whitespace)
-    output.push_back(L'"');
-
-  size_t slash_count = 0;
-  for (auto i = input.begin(); i != input.end(); ++i) {
-    if (*i == L'"') {
-      // Before a quote, output 2n backslashes.
-      while (slash_count > 0) {
-        output.append(L"\\\\");
-        --slash_count;
-      }
-      output.append(L"\\\"");
-    } else if (*i != L'\\' || i + 1 == input.end()) {
-      // At the end of the string, or before a regular character, output queued
-      // slashes.
-      while (slash_count > 0) {
-        output.push_back(L'\\');
-        --slash_count;
-      }
-      // If this is a slash, it's also the last character. Otherwise, it is just
-      // a regular non-quote/non-slash character.
-      output.push_back(*i);
-    } else if (*i == L'\\') {
-      // This is a slash, possibly followed by a quote, not the last character.
-      // Queue it up and output it later.
-      ++slash_count;
-    }
-  }
-
-  if (contains_whitespace)
-    output.push_back(L'"');
-
-  return output;
-}
-
-bool IsParentOf(int key, const base::FilePath& child) {
-  base::FilePath path;
-  return base::PathService::Get(key, &path) && path.IsParent(child);
 }
 
 }  // namespace
@@ -738,57 +627,16 @@ HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
   return web_impl->Initialize(scope, command_format);
 }
 
-bool LegacyAppCommandWebImpl::InitializeExecutable(
+HRESULT LegacyAppCommandWebImpl::Initialize(
     UpdaterScope scope,
-    const base::FilePath& exe_path) {
-  if (!exe_path.IsAbsolute() ||
-      (scope == UpdaterScope::kSystem &&
-       !IsParentOf(base::DIR_PROGRAM_FILESX86, exe_path) &&
-       !IsParentOf(base::DIR_PROGRAM_FILES6432, exe_path))) {
-    return false;
-  }
-
-  executable_ = exe_path;
-  return true;
-}
-
-HRESULT LegacyAppCommandWebImpl::Initialize(UpdaterScope scope,
-                                            std::wstring command_format) {
-  int num_args = 0;
-  ScopedLocalAlloc args(::CommandLineToArgvW(&command_format[0], &num_args));
-  if (!args.is_valid() || num_args < 1)
-    return E_INVALIDARG;
-
-  const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
-  if (!InitializeExecutable(scope, base::FilePath(argv[0])))
-    return E_INVALIDARG;
-
-  parameters_.clear();
-  for (int i = 1; i < num_args; ++i)
-    parameters_.push_back(argv[i]);
-
-  return S_OK;
+    const std::wstring& command_format) {
+  return GetAppCommandFormatComponents(scope, command_format, executable_,
+                                       parameters_);
 }
 
 absl::optional<std::wstring> LegacyAppCommandWebImpl::FormatCommandLine(
-    const std::vector<std::wstring>& parameters) const {
-  std::wstring formatted_command_line;
-  for (size_t i = 0; i < parameters_.size(); ++i) {
-    absl::optional<std::wstring> formatted_parameter =
-        FormatParameter(parameters, parameters_[i]);
-    if (!formatted_parameter) {
-      VLOG(1) << __func__ << " FormatParameter failed";
-      return absl::nullopt;
-    }
-
-    formatted_command_line.append(
-        QuoteForCommandLineToArgvW(*formatted_parameter));
-
-    if (i + 1 < parameters_.size())
-      formatted_command_line.push_back(L' ');
-  }
-
-  return formatted_command_line;
+    const std::vector<std::wstring>& substitutions) const {
+  return FormatAppCommandLine(parameters_, substitutions);
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
@@ -822,30 +670,28 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT parameter1,
-                                              VARIANT parameter2,
-                                              VARIANT parameter3,
-                                              VARIANT parameter4,
-                                              VARIANT parameter5,
-                                              VARIANT parameter6,
-                                              VARIANT parameter7,
-                                              VARIANT parameter8,
-                                              VARIANT parameter9) {
-  if (executable_.empty() || process_.IsValid()) {
-    return E_UNEXPECTED;
-  }
-
-  std::vector<std::wstring> parameters;
-  for (const VARIANT& parameter :
-       {parameter1, parameter2, parameter3, parameter4, parameter5, parameter6,
-        parameter7, parameter8, parameter9}) {
-    const std::wstring parameter_string = StringFromVariant(parameter);
-    if (parameter_string.empty())
+STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
+                                              VARIANT substitution2,
+                                              VARIANT substitution3,
+                                              VARIANT substitution4,
+                                              VARIANT substitution5,
+                                              VARIANT substitution6,
+                                              VARIANT substitution7,
+                                              VARIANT substitution8,
+                                              VARIANT substitution9) {
+  std::vector<std::wstring> substitutions;
+  for (const VARIANT& substitution :
+       {substitution1, substitution2, substitution3, substitution4,
+        substitution5, substitution6, substitution7, substitution8,
+        substitution9}) {
+    const absl::optional<std::wstring> substitution_string =
+        StringFromVariant(substitution);
+    if (!substitution_string)
       break;
-    parameters.push_back(parameter_string);
+    substitutions.push_back(substitution_string.value());
   }
 
-  absl::optional<std::wstring> command_line = FormatCommandLine(parameters);
+  absl::optional<std::wstring> command_line = FormatCommandLine(substitutions);
   if (!command_line)
     return E_INVALIDARG;
 

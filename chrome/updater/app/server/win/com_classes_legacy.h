@@ -240,20 +240,23 @@ class LegacyAppCommandWebImpl
   IFACEMETHODIMP get_exitCode(DWORD* exit_code) override;
   IFACEMETHODIMP get_output(BSTR* output) override;
 
-  // Executes the AppCommand with the optional parameters provided. `execute`
-  // will fail if the number of non-empty VARIANT parameters provided to
+  // Executes the AppCommand with the optional substitutions provided. `execute`
+  // fails if the number of non-empty VARIANT substitutions provided to
   // `execute` are less than the number of parameter placeholders in the
   // loaded-from-the-registry command format. Each placeholder %N is replaced
-  // with the corresponding `parameterN`.
-  IFACEMETHODIMP execute(VARIANT parameter1,
-                         VARIANT parameter2,
-                         VARIANT parameter3,
-                         VARIANT parameter4,
-                         VARIANT parameter5,
-                         VARIANT parameter6,
-                         VARIANT parameter7,
-                         VARIANT parameter8,
-                         VARIANT parameter9) override;
+  // with the corresponding `substitutionN`.
+  // An empty (VT_EMPTY) or invalid (non BSTR) substitution causes the following
+  // substitutions to be ignored; for example, if `substitution2` is VT_EMPTY,
+  // then `substitution3` through `substitution9` will be ignored.
+  IFACEMETHODIMP execute(VARIANT substitution1,
+                         VARIANT substitution2,
+                         VARIANT substitution3,
+                         VARIANT substitution4,
+                         VARIANT substitution5,
+                         VARIANT substitution6,
+                         VARIANT substitution7,
+                         VARIANT substitution8,
+                         VARIANT substitution9) override;
 
   // Overrides for IDispatch.
   // TODO(crbug/1316683): Implement the IDispatch methods for the AppCommand
@@ -279,11 +282,10 @@ class LegacyAppCommandWebImpl
       const std::wstring& command_id,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl);
 
-  bool InitializeExecutable(UpdaterScope scope, const base::FilePath& exe_path);
-  HRESULT Initialize(UpdaterScope scope, std::wstring command_format);
+  HRESULT Initialize(UpdaterScope scope, const std::wstring& command_format);
 
   absl::optional<std::wstring> FormatCommandLine(
-      const std::vector<std::wstring>& parameters) const;
+      const std::vector<std::wstring>& substitutions) const;
 
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;
