@@ -17,6 +17,11 @@ void SaveDmTokenInSharedPreferences(const std::string& dm_token) {
       env, base::android::ConvertUTF8ToJavaString(env, dm_token));
 }
 
+void DeleteDmTokenFromSharedPreferences() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CloudManagementSharedPreferences_deleteDmToken(env);
+}
+
 std::string ReadDmTokenFromSharedPreferences() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ConvertJavaStringToUTF8(

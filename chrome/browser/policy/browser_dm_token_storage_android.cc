@@ -27,6 +27,11 @@ bool StoreDmTokenInSharedPreferences(const std::string& dm_token) {
   return true;
 }
 
+bool DeleteDmTokenFromSharedPreferences() {
+  android::DeleteDmTokenFromSharedPreferences();
+  return true;
+}
+
 }  // namespace
 
 BrowserDMTokenStorageAndroid::BrowserDMTokenStorageAndroid()
@@ -69,6 +74,11 @@ BrowserDMTokenStorage::StoreTask BrowserDMTokenStorageAndroid::SaveDMTokenTask(
     const std::string& token,
     const std::string& client_id) {
   return base::BindOnce(&StoreDmTokenInSharedPreferences, token);
+}
+
+BrowserDMTokenStorage::StoreTask
+BrowserDMTokenStorageAndroid::DeleteDMTokenTask(const std::string& client_id) {
+  return base::BindOnce(&DeleteDmTokenFromSharedPreferences);
 }
 
 scoped_refptr<base::TaskRunner>

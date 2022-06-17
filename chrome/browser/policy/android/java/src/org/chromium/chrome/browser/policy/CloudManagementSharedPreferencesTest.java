@@ -35,6 +35,28 @@ public class CloudManagementSharedPreferencesTest {
 
     @Test
     @SmallTest
+    public void testDeleteDmToken() {
+        CloudManagementSharedPreferences.saveDmToken(DM_TOKEN);
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
+                DM_TOKEN);
+        CloudManagementSharedPreferences.deleteDmToken();
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
+                "");
+    }
+
+    @Test
+    @SmallTest
+    public void testDeleteEmptyDmToken() {
+        CloudManagementSharedPreferences.deleteDmToken();
+        Assert.assertEquals(SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.CLOUD_MANAGEMENT_DM_TOKEN, ""),
+                "");
+    }
+
+    @Test
+    @SmallTest
     public void testReadDmToken() {
         Assert.assertEquals(CloudManagementSharedPreferences.readDmToken(), "");
 
