@@ -77,12 +77,6 @@ UrlLoader::UrlLoader(base::WeakPtr<Client> client)
 
 UrlLoader::~UrlLoader() = default;
 
-// Modeled on `content::PepperURLLoaderHost::OnHostMsgGrantUniversalAccess()`.
-void UrlLoader::GrantUniversalAccess() {
-  DCHECK_EQ(state_, LoadingState::kWaitingToOpen);
-  grant_universal_access_ = true;
-}
-
 // Modeled on `content::PepperURLLoaderHost::OnHostMsgOpen()`.
 void UrlLoader::Open(const UrlRequest& request,
                      base::OnceCallback<void(int)> callback) {
@@ -140,7 +134,7 @@ void UrlLoader::Open(const UrlRequest& request,
 
   // TODO(crbug.com/822081): Revisit whether we need universal access.
   blink::WebAssociatedURLLoaderOptions options;
-  options.grant_universal_access = grant_universal_access_;
+  options.grant_universal_access = true;
   ignore_redirects_ = request.ignore_redirects;
   blink_loader_ = client_->CreateAssociatedURLLoader(options);
   blink_loader_->LoadAsynchronously(blink_request, this);

@@ -409,9 +409,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);
 
-  // Creates a URL loader with universal access.
-  std::unique_ptr<UrlLoader> CreateUrlLoaderInternal();
-
   // Handles message for saving the PDF.
   void HandleSaveMessage(const base::Value::Dict& message);
   void SaveToBuffer(const std::string& token);

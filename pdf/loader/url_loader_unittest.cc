@@ -189,12 +189,6 @@ class UrlLoaderTest : public testing::Test {
   blink::WebURLRequest saved_request_;
 };
 
-TEST_F(UrlLoaderTest, GrantUniversalAccess) {
-  loader_->GrantUniversalAccess();
-  loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_TRUE(fake_client_.saved_options().grant_universal_access);
-}
-
 TEST_F(UrlLoaderTest, Open) {
   EXPECT_CALL(*mock_url_loader_, LoadAsynchronously);
   EXPECT_CALL(mock_callback_, Run).Times(0);
@@ -204,7 +198,7 @@ TEST_F(UrlLoaderTest, Open) {
   request.method = "FAKE";
   loader_->Open(request, mock_callback_.Get());
 
-  EXPECT_FALSE(fake_client_.saved_options().grant_universal_access);
+  EXPECT_TRUE(fake_client_.saved_options().grant_universal_access);
   EXPECT_EQ(GURL("http://example.com/fake.pdf"), GURL(saved_request_.Url()));
   EXPECT_EQ("FAKE", saved_request_.HttpMethod().Ascii());
   EXPECT_EQ(GURL(kOriginUrl),

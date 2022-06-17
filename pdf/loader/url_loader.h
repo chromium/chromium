@@ -125,11 +125,6 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
   UrlLoader& operator=(const UrlLoader&) = delete;
   ~UrlLoader() override;
 
-  // Tries to grant the loader the capability to make unrestricted cross-origin
-  // requests ("universal access," in `blink::SecurityOrigin` terms). Must be
-  // called before `Open()`.
-  void GrantUniversalAccess();
-
   // Mimic `pp::URLLoader`:
   void Open(const UrlRequest& request, base::OnceCallback<void(int)> callback);
   void ReadResponseBody(base::span<char> buffer,
@@ -178,7 +173,6 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
   void SetLoadComplete(int32_t result);
 
   base::WeakPtr<Client> client_;
-  bool grant_universal_access_ = false;
 
   LoadingState state_ = LoadingState::kWaitingToOpen;
   int32_t complete_result_ = 0;

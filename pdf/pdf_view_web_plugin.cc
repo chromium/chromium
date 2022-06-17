@@ -837,7 +837,7 @@ void PdfViewWebPlugin::LoadUrl(base::StringPiece url,
   request.method = "GET";
   request.ignore_redirects = true;
 
-  std::unique_ptr<UrlLoader> loader = CreateUrlLoaderInternal();
+  auto loader = std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
   UrlLoader* raw_loader = loader.get();
   raw_loader->Open(request,
                    base::BindOnce(std::move(callback), std::move(loader)));
@@ -857,7 +857,7 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
   request.method = "POST";
   request.body.assign(static_cast<const char*>(data), length);
 
-  form_loader_ = CreateUrlLoaderInternal();
+  form_loader_ = std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
   form_loader_->Open(request, base::BindOnce(&PdfViewWebPlugin::DidFormOpen,
                                              weak_factory_.GetWeakPtr()));
 }
@@ -878,13 +878,7 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
     SetContentRestrictions(kContentRestrictionSave | kContentRestrictionPrint);
   }
 
-  return CreateUrlLoaderInternal();
-}
-
-std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
-  auto loader = std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
-  loader->GrantUniversalAccess();
-  return loader;
+  return std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
