@@ -290,8 +290,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void ClearDomainReliability(mojom::ClearDataFilterPtr filter,
                               DomainReliabilityClearMode mode,
                               ClearDomainReliabilityCallback callback) override;
-  void GetDomainReliabilityJSON(
-      GetDomainReliabilityJSONCallback callback) override;
   void CloseAllConnections(CloseAllConnectionsCallback callback) override;
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override;
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,

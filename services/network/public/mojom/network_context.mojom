@@ -1004,9 +1004,6 @@ interface NetworkContext {
   ClearDomainReliability(ClearDataFilter? filter,
                          DomainReliabilityClearMode mode) => ();
 
-  // Returns a JSON value containing data for displaying on a debugging page.
-  GetDomainReliabilityJSON() => (mojo_base.mojom.Value data);
-
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.
   // |reporting_source| is a token which identifies the document or worker with

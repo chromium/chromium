@@ -30,10 +30,6 @@
 #include "net/http/http_response_info.h"
 #include "net/socket/connection_attempts.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace net {
 class URLRequest;
 class URLRequestContext;
@@ -124,10 +120,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
   void ClearBrowsingData(
       DomainReliabilityClearMode mode,
       const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
-
-  // Gets a Value containing data that can be formatted into a web page for
-  // debugging purposes.
-  base::Value GetWebUIData() const;
 
   // Returns pointer to the added context.
   const DomainReliabilityContext* AddContextForTesting(

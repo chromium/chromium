@@ -1266,18 +1266,6 @@ void NetworkContext::ClearDomainReliability(
   std::move(callback).Run();
 }
 
-void NetworkContext::GetDomainReliabilityJSON(
-    GetDomainReliabilityJSONCallback callback) {
-  if (!domain_reliability_monitor_) {
-    base::Value data(base::Value::Type::DICTIONARY);
-    data.SetStringKey("error", "no_service");
-    std::move(callback).Run(std::move(data));
-    return;
-  }
-
-  std::move(callback).Run(domain_reliability_monitor_->GetWebUIData());
-}
-
 void NetworkContext::CloseAllConnections(CloseAllConnectionsCallback callback) {
   net::HttpNetworkSession* http_session =
       url_request_context_->http_transaction_factory()->GetSession();

@@ -81,8 +81,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   // |uploader_| needs to be set before any contexts are created.
   void SetUploader(DomainReliabilityUploader* uploader);
 
-  base::Value GetWebUIData() const;
-
   size_t contexts_size_for_testing() const { return contexts_.size(); }
 
  private:
