@@ -347,7 +347,7 @@
 <translation id="3958548648197196644">Kiivi</translation>
 <translation id="3966388904776714213">Äänisoitin</translation>
 <translation id="3971140002794351170">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
-<translation id="3973925058222872294">englanti (Iso-Britannia)</translation>
+<translation id="3973925058222872294">englanti (Yhdistynyt kuningaskunta)</translation>
 <translation id="3975895378829046965">foneettinen bangla</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4017788180641807848">englanti (Yhdysvallat), Workman-näppäimistö</translation>
@@ -838,7 +838,7 @@
 <translation id="8087576439476816834">Lataa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Jaettu minulle</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
-<translation id="8128733386027980860">englanti (Iso-Britannia), Dvorak-näppäimistö</translation>
+<translation id="8128733386027980860">englanti (Yhdistynyt kuningaskunta), Dvorak-näppäimistö</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> on jaettu sinulle. Et voi poistaa sitä, koska et ole tiedoston omistaja.</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
 <translation id="8147028810663464959">Merkkileveys on täysleveä</translation>
