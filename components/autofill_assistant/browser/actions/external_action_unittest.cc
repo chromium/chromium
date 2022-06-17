@@ -10,7 +10,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/actions/wait_for_dom_test_base.h"
-#include "components/autofill_assistant/browser/external_action_test.pb.h"
+#include "components/autofill_assistant/browser/external_action_extension_test.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,11 +52,11 @@ class ExternalActionTest : public WaitForDomTestBase {
 external::Result MakeResult(bool success) {
   external::Result result;
   result.set_success(success);
-  testing::TestExternalResultProto test_external_result_proto;
-  test_external_result_proto.set_text("test text");
+  testing::TestResultExtension test_extension_proto;
+  test_extension_proto.set_text("test text");
 
-  test_external_result_proto.SerializeToString(
-      result.mutable_result_info()->mutable_result_payload());
+  *result.mutable_result_info()->MutableExtension(
+      testing::test_result_extension) = std::move(test_extension_proto);
   return result;
 }
 
@@ -75,17 +75,12 @@ TEST_F(ExternalActionTest, Success) {
           });
   Run();
   EXPECT_THAT(returned_processed_action_proto->status(), Eq(ACTION_APPLIED));
-  ASSERT_TRUE(returned_processed_action_proto->external_action_result()
+  EXPECT_TRUE(returned_processed_action_proto->has_external_action_result());
+  EXPECT_THAT(returned_processed_action_proto->external_action_result()
                   .result_info()
-                  .has_result_payload());
-  testing::TestExternalResultProto test_external_result_proto;
-  bool parse_success = test_external_result_proto.ParseFromString(
-      returned_processed_action_proto->external_action_result()
-          .result_info()
-          .result_payload());
-  EXPECT_TRUE(parse_success);
-
-  EXPECT_THAT(test_external_result_proto.text(), Eq("test text"));
+                  .GetExtension(testing::test_result_extension)
+                  .text(),
+              Eq("test text"));
 }
 
 TEST_F(ExternalActionTest, ExternalFailure) {
@@ -104,17 +99,11 @@ TEST_F(ExternalActionTest, ExternalFailure) {
   EXPECT_THAT(returned_processed_action_proto->status(),
               Eq(UNKNOWN_ACTION_STATUS));
   EXPECT_TRUE(returned_processed_action_proto->has_external_action_result());
-  ASSERT_TRUE(returned_processed_action_proto->external_action_result()
+  EXPECT_THAT(returned_processed_action_proto->external_action_result()
                   .result_info()
-                  .has_result_payload());
-  testing::TestExternalResultProto test_external_result_proto;
-  bool parse_success = test_external_result_proto.ParseFromString(
-      returned_processed_action_proto->external_action_result()
-          .result_info()
-          .result_payload());
-  EXPECT_TRUE(parse_success);
-
-  EXPECT_THAT(test_external_result_proto.text(), Eq("test text"));
+                  .GetExtension(testing::test_result_extension)
+                  .text(),
+              Eq("test text"));
 }
 
 TEST_F(ExternalActionTest, FailsIfProtoExtensionInfoNotSet) {
