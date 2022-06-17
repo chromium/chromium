@@ -86,46 +86,12 @@ struct UrlResponse final {
   std::string headers;
 };
 
-// Abstraction for a Blink or Pepper URL loader.
-class UrlLoader {
- public:
-  UrlLoader(const UrlLoader&) = delete;
-  UrlLoader& operator=(const UrlLoader&) = delete;
-  virtual ~UrlLoader();
-
-  // Tries to grant the loader the capability to make unrestricted cross-origin
-  // requests ("universal access," in `blink::SecurityOrigin` terms). Must be
-  // called before `Open()`.
-  virtual void GrantUniversalAccess() = 0;
-
-  // Mimic `pp::URLLoader`:
-  virtual void Open(const UrlRequest& request,
-                    base::OnceCallback<void(int)> callback) = 0;
-  virtual void ReadResponseBody(base::span<char> buffer,
-                                base::OnceCallback<void(int)> callback) = 0;
-  virtual void Close() = 0;
-
-  // Returns the URL response (not including the body). Only valid after
-  // `Open()` completes.
-  const UrlResponse& response() const { return response_; }
-
- protected:
-  UrlLoader();
-
-  UrlResponse& mutable_response() { return response_; }
-
- private:
-  UrlResponse response_;
-};
-
 // A Blink URL loader. This implementation tries to emulate a combination of
 // `content::PepperURLLoaderHost` and `ppapi::proxy::URLLoaderResource`.
-class BlinkUrlLoader final : public UrlLoader,
-                             public blink::WebAssociatedURLLoaderClient {
+class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
  public:
-  // Client interface required by `BlinkUrlLoader`. Instances should be passed
-  // using weak pointers, as the loader can be shared, and may outlive the
-  // client.
+  // Client interface required by `UrlLoader`. Instances should be passed using
+  // weak pointers, as the loader can be shared, and may outlive the client.
   class Client {
    public:
     // Returns `true` if the client is still usable. The client may require
@@ -154,18 +120,25 @@ class BlinkUrlLoader final : public UrlLoader,
     ~Client() = default;
   };
 
-  explicit BlinkUrlLoader(base::WeakPtr<Client> client);
-  BlinkUrlLoader(const BlinkUrlLoader&) = delete;
-  BlinkUrlLoader& operator=(const BlinkUrlLoader&) = delete;
-  ~BlinkUrlLoader() override;
+  explicit UrlLoader(base::WeakPtr<Client> client);
+  UrlLoader(const UrlLoader&) = delete;
+  UrlLoader& operator=(const UrlLoader&) = delete;
+  ~UrlLoader() override;
 
-  // UrlLoader:
-  void GrantUniversalAccess() override;
-  void Open(const UrlRequest& request,
-            base::OnceCallback<void(int)> callback) override;
+  // Tries to grant the loader the capability to make unrestricted cross-origin
+  // requests ("universal access," in `blink::SecurityOrigin` terms). Must be
+  // called before `Open()`.
+  void GrantUniversalAccess();
+
+  // Mimic `pp::URLLoader`:
+  void Open(const UrlRequest& request, base::OnceCallback<void(int)> callback);
   void ReadResponseBody(base::span<char> buffer,
-                        base::OnceCallback<void(int)> callback) override;
-  void Close() override;
+                        base::OnceCallback<void(int)> callback);
+  void Close();
+
+  // Returns the URL response (not including the body). Only valid after
+  // `Open()` completes.
+  const UrlResponse& response() const { return response_; }
 
   // blink::WebAssociatedURLLoaderClient:
   bool WillFollowRedirect(
@@ -214,6 +187,8 @@ class BlinkUrlLoader final : public UrlLoader,
 
   bool ignore_redirects_ = false;
   base::OnceCallback<void(int)> open_callback_;
+
+  UrlResponse response_;
 
   // Thresholds control buffer throttling, as defined in `UrlRequest`.
   size_t buffer_lower_threshold_ = 0;

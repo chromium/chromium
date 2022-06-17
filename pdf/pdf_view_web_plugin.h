@@ -72,7 +72,7 @@ class PdfAccessibilityDataHandler;
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,
-                               public BlinkUrlLoader::Client,
+                               public UrlLoader::Client,
                                public PostMessageReceiver::Client,
                                public PdfAccessibilityActionHandler,
                                public PreviewModeClient::Client {
@@ -300,7 +300,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
 
-  // BlinkUrlLoader::Client:
+  // UrlLoader::Client:
   bool IsValid() const override;
   blink::WebURL CompleteURL(const blink::WebString& partial_url) const override;
   net::SiteForCookies SiteForCookies() const override;

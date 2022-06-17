@@ -72,23 +72,20 @@ UrlResponse& UrlResponse::operator=(const UrlResponse& other) = default;
 UrlResponse& UrlResponse::operator=(UrlResponse&& other) noexcept = default;
 UrlResponse::~UrlResponse() = default;
 
-UrlLoader::UrlLoader() = default;
-UrlLoader::~UrlLoader() = default;
-
-BlinkUrlLoader::BlinkUrlLoader(base::WeakPtr<Client> client)
+UrlLoader::UrlLoader(base::WeakPtr<Client> client)
     : client_(std::move(client)) {}
 
-BlinkUrlLoader::~BlinkUrlLoader() = default;
+UrlLoader::~UrlLoader() = default;
 
 // Modeled on `content::PepperURLLoaderHost::OnHostMsgGrantUniversalAccess()`.
-void BlinkUrlLoader::GrantUniversalAccess() {
+void UrlLoader::GrantUniversalAccess() {
   DCHECK_EQ(state_, LoadingState::kWaitingToOpen);
   grant_universal_access_ = true;
 }
 
 // Modeled on `content::PepperURLLoaderHost::OnHostMsgOpen()`.
-void BlinkUrlLoader::Open(const UrlRequest& request,
-                          base::OnceCallback<void(int)> callback) {
+void UrlLoader::Open(const UrlRequest& request,
+                     base::OnceCallback<void(int)> callback) {
   DCHECK_EQ(state_, LoadingState::kWaitingToOpen);
   DCHECK(callback);
   state_ = LoadingState::kOpening;
@@ -150,8 +147,8 @@ void BlinkUrlLoader::Open(const UrlRequest& request,
 }
 
 // Modeled on `ppapi::proxy::URLLoaderResource::ReadResponseBody()`.
-void BlinkUrlLoader::ReadResponseBody(base::span<char> buffer,
-                                      base::OnceCallback<void(int)> callback) {
+void UrlLoader::ReadResponseBody(base::span<char> buffer,
+                                 base::OnceCallback<void(int)> callback) {
   // Can be in `kLoadComplete` if still reading after loading finished.
   DCHECK(state_ == LoadingState::kStreamingData ||
          state_ == LoadingState::kLoadComplete)
@@ -172,13 +169,13 @@ void BlinkUrlLoader::ReadResponseBody(base::span<char> buffer,
 }
 
 // Modeled on `ppapi::proxy::URLLoadResource::Close()`.
-void BlinkUrlLoader::Close() {
+void UrlLoader::Close() {
   if (state_ != LoadingState::kLoadComplete)
     AbortLoad(Result::kErrorAborted);
 }
 
 // Modeled on `content::PepperURLLoaderHost::WillFollowRedirect()`.
-bool BlinkUrlLoader::WillFollowRedirect(
+bool UrlLoader::WillFollowRedirect(
     const blink::WebURL& new_url,
     const blink::WebURLResponse& redirect_response) {
   DCHECK_EQ(state_, LoadingState::kOpening);
@@ -191,33 +188,33 @@ bool BlinkUrlLoader::WillFollowRedirect(
   return !ignore_redirects_;
 }
 
-void BlinkUrlLoader::DidSendData(uint64_t bytes_sent,
-                                 uint64_t total_bytes_to_be_sent) {
+void UrlLoader::DidSendData(uint64_t bytes_sent,
+                            uint64_t total_bytes_to_be_sent) {
   // Doesn't apply to PDF viewer requests.
   NOTREACHED();
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidReceiveResponse()`.
-void BlinkUrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
+void UrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
   DCHECK_EQ(state_, LoadingState::kOpening);
 
   // Modeled on `content::DataFromWebURLResponse()`.
-  mutable_response().status_code = response.HttpStatusCode();
+  response_.status_code = response.HttpStatusCode();
 
-  HeadersToString headers_to_string(mutable_response().headers);
+  HeadersToString headers_to_string(response_.headers);
   response.VisitHttpHeaderFields(&headers_to_string);
 
   state_ = LoadingState::kStreamingData;
   std::move(open_callback_).Run(Result::kSuccess);
 }
 
-void BlinkUrlLoader::DidDownloadData(uint64_t data_length) {
+void UrlLoader::DidDownloadData(uint64_t data_length) {
   // Doesn't apply to PDF viewer requests.
   NOTREACHED();
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidReceiveData()`.
-void BlinkUrlLoader::DidReceiveData(const char* data, int data_length) {
+void UrlLoader::DidReceiveData(const char* data, int data_length) {
   DCHECK_EQ(state_, LoadingState::kStreamingData);
 
   // It's surprisingly difficult to guarantee that this is always >0.
@@ -236,7 +233,7 @@ void BlinkUrlLoader::DidReceiveData(const char* data, int data_length) {
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidFinishLoading()`.
-void BlinkUrlLoader::DidFinishLoading() {
+void UrlLoader::DidFinishLoading() {
   DCHECK_EQ(state_, LoadingState::kStreamingData);
 
   SetLoadComplete(Result::kSuccess);
@@ -244,7 +241,7 @@ void BlinkUrlLoader::DidFinishLoading() {
 }
 
 // Modeled on `content::PepperURLLoaderHost::DidFail()`.
-void BlinkUrlLoader::DidFail(const blink::WebURLError& error) {
+void UrlLoader::DidFail(const blink::WebURLError& error) {
   DCHECK(state_ == LoadingState::kOpening ||
          state_ == LoadingState::kStreamingData)
       << static_cast<int>(state_);
@@ -265,7 +262,7 @@ void BlinkUrlLoader::DidFail(const blink::WebURLError& error) {
   AbortLoad(pp_error);
 }
 
-void BlinkUrlLoader::AbortLoad(int32_t result) {
+void UrlLoader::AbortLoad(int32_t result) {
   DCHECK_LT(result, 0);
 
   SetLoadComplete(result);
@@ -280,7 +277,7 @@ void BlinkUrlLoader::AbortLoad(int32_t result) {
 }
 
 // Modeled on `ppapi::proxy::URLLoaderResource::FillUserBuffer()`.
-void BlinkUrlLoader::RunReadCallback() {
+void UrlLoader::RunReadCallback() {
   if (!read_callback_)
     return;
 
@@ -310,7 +307,7 @@ void BlinkUrlLoader::RunReadCallback() {
   std::move(read_callback_).Run(num_bytes);
 }
 
-void BlinkUrlLoader::SetLoadComplete(int32_t result) {
+void UrlLoader::SetLoadComplete(int32_t result) {
   DCHECK_NE(state_, LoadingState::kLoadComplete);
   DCHECK_LE(result, 0);
 

@@ -882,7 +882,7 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
 }
 
 std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
-  auto loader = std::make_unique<BlinkUrlLoader>(weak_factory_.GetWeakPtr());
+  auto loader = std::make_unique<UrlLoader>(weak_factory_.GetWeakPtr());
   loader->GrantUniversalAccess();
   return loader;
 }
