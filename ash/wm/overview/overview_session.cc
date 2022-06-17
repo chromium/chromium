@@ -870,15 +870,8 @@ void OverviewSession::OnWindowActivating(
 
   auto* grid = GetGridWithRootWindow(gained_active->GetRootWindow());
   DCHECK(grid);
-  const auto& windows = grid->window_list();
-  auto iter = std::find_if(
-      windows.begin(), windows.end(),
-      [gained_active](const std::unique_ptr<OverviewItem>& window) {
-        return window->Contains(gained_active);
-      });
-
-  if (iter != windows.end())
-    selected_item_ = iter->get();
+  if (OverviewItem* item = grid->GetOverviewItemContaining(gained_active))
+    selected_item_ = item;
 
   // Don't restore window activation on exit if a window was just activated.
   RestoreWindowActivation(false);
