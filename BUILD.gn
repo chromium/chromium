@@ -1671,7 +1671,6 @@ if (enable_js_type_check) {
       "chrome/test:closure_compile",
       "components/neterror/resources:closure_compile",
       "components/security_interstitials:closure_compile",
-      "components/sync/driver/resources:closure_compile",
       "mojo/public/tools/bindings/generators/js_templates/lite/test:closure_compile",
       "ui/webui/resources:closure_compile",
     ]
