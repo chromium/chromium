@@ -2266,6 +2266,7 @@ if (enable_java_templates) {
   #     uncompressed in the APK. Must be unset or true if load_library_from_apk
   #     is set to true.
   #   uncompress_dex: Store final .dex files uncompressed in the apk.
+  #   omit_dex: If true, do not build or include classes.dex.
   #   strip_resource_names: True if resource names should be stripped from the
   #     resources.arsc file in the apk or module.
   #   strip_unused_resources: True if unused resources should be stripped from
@@ -2349,6 +2350,7 @@ if (enable_java_templates) {
           defined(invoker.is_base_module) && invoker.is_base_module
     }
 
+    _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
     _enable_multidex =
         !defined(invoker.enable_multidex) || invoker.enable_multidex
 
@@ -2488,12 +2490,13 @@ if (enable_java_templates) {
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     assert(_rebased_build_config != "")  # Mark as used.
 
-    _generate_buildconfig_java = !defined(invoker.apk_under_test)
+    _generate_buildconfig_java = !defined(invoker.apk_under_test) && !_omit_dex
     if (defined(invoker.generate_buildconfig_java)) {
       _generate_buildconfig_java = invoker.generate_buildconfig_java
     }
 
-    _generate_productconfig_java = defined(invoker.product_config_java_packages)
+    _generate_productconfig_java =
+        defined(invoker.product_config_java_packages) && !_omit_dex
 
     # JNI generation usually goes hand-in-hand with buildconfig generation.
     _generate_final_jni = _generate_buildconfig_java
@@ -2557,7 +2560,7 @@ if (enable_java_templates) {
       _incremental_apk_path = "${_final_apk_path_no_ext}_incremental.apk"
     }
 
-    if (!_incremental_apk) {
+    if (!_incremental_apk && !_omit_dex) {
       # Bundle modules don't build the dex here, but need to write this path
       # to their .build_config.json file.
       if (_proguard_enabled) {
@@ -2814,8 +2817,9 @@ if (enable_java_templates) {
     } else {
       _generate_native_libraries_java =
           (!_is_bundle_module || _is_base_module) &&
-          (_native_libs_deps != [] || _secondary_abi_native_libs_deps != []) &&
-          !_uses_static_library_synchronized_proguard
+          (_native_libs_deps != [] || _secondary_abi_native_libs_deps != [] ||
+           defined(invoker.static_library_provider)) &&
+          !_uses_static_library_synchronized_proguard && !_omit_dex
     }
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
@@ -2824,7 +2828,17 @@ if (enable_java_templates) {
         # Do not add a dep on the generated_file target in order to avoid having
         # to build the native libraries before this target. The dependency is
         # instead captured via a depfile.
-        if (_native_libs_deps != []) {
+        if (_uses_static_library) {
+          _prefix = get_label_info(invoker.static_library_provider,
+                                   "target_gen_dir") + "/" +
+                    get_label_info(invoker.static_library_provider, "name")
+          if (defined(invoker.static_library_provider_use_secondary_abi) &&
+              invoker.static_library_provider_use_secondary_abi) {
+            native_libraries_list_file = "${_prefix}.secondary_abi_native_libs"
+          } else {
+            native_libraries_list_file = "${_prefix}.native_libs"
+          }
+        } else if (_native_libs_deps != []) {
           native_libraries_list_file = _shared_library_list_file
         } else {
           native_libraries_list_file = _secondary_abi_shared_library_list_file
@@ -2927,6 +2941,8 @@ if (enable_java_templates) {
           invoker.add_view_trace_events && enable_trace_event_bytecode_rewriting
     }
 
+    # We cannot skip this target when omit_dex = true because it writes the
+    # build_config.json.
     java_library_impl(_java_target_name) {
       forward_variables_from(invoker,
                              [
@@ -3056,7 +3072,7 @@ if (enable_java_templates) {
 
     if (_uses_static_library_synchronized_proguard) {
       _final_dex_target_dep = "${invoker.static_library_provider}__dexsplitter"
-    } else if (_is_bundle_module && _proguard_enabled) {
+    } else if ((_is_bundle_module && _proguard_enabled) || _omit_dex) {
       _final_deps += [ ":$_java_target_name" ]
     } else if (_incremental_apk) {
       if (defined(invoker.enable_proguard_checks)) {
@@ -3334,7 +3350,7 @@ if (enable_java_templates) {
         deps = _invoker_deps + [ ":$_build_config_target" ]
 
         if ((!_proguard_enabled || _incremental_apk) &&
-            enable_jdk_library_desugaring) {
+            enable_jdk_library_desugaring && !_omit_dex) {
           _all_jdk_libs = "//build/android:all_jdk_libs"
           deps += [ _all_jdk_libs ]
           jdk_libs_dex = get_label_info(_all_jdk_libs, "target_out_dir") +
@@ -3615,6 +3631,7 @@ if (enable_java_templates) {
                                "expected_libs_and_assets_base",
                                "generate_buildconfig_java",
                                "generate_final_jni",
+                               "generate_native_libraries_java",
                                "include_size_info",
                                "input_jars_paths",
                                "use_modern_linker",
@@ -3639,6 +3656,7 @@ if (enable_java_templates) {
                                "native_lib_placeholders",
                                "never_incremental",
                                "no_xml_namespaces",
+                               "omit_dex",
                                "png_to_webp",
                                "post_process_package_resources_script",
                                "processor_args_javac",
@@ -3662,6 +3680,7 @@ if (enable_java_templates) {
                                "srcjar_deps",
                                "static_library_dependent_targets",
                                "static_library_provider",
+                               "static_library_provider_use_secondary_abi",
                                "static_library_synchronized_proguard",
                                "target_sdk_version",
                                "testonly",
@@ -3762,6 +3781,7 @@ if (enable_java_templates) {
                                "load_library_from_apk",
                                "loadable_modules",
                                "product_config_java_packages",
+                               "main_component_library",
                                "manifest_package",
                                "max_sdk_version",
                                "min_sdk_version",
@@ -3789,6 +3809,7 @@ if (enable_java_templates) {
                                "short_resource_paths",
                                "srcjar_deps",
                                "static_library_provider",
+                               "static_library_provider_use_secondary_abi",
                                "static_library_synchronized_proguard",
                                "strip_resource_names",
                                "strip_unused_resources",

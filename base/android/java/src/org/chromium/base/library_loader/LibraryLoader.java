@@ -812,7 +812,9 @@ public class LibraryLoader {
 
         // Load libraries using the system linker.
         for (String library : NativeLibraries.LIBRARIES) {
-            if (!isInZipFile()) {
+            // TODO(crbug.com/1337134): Always use System.loadLibrary().
+            boolean isTrichrome = !forceSystemLinker() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+            if (!isInZipFile() || isTrichrome) {
                 System.loadLibrary(library);
             } else {
                 // Load directly from the APK.

@@ -10,6 +10,7 @@
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="31"/>
   <application
       android:extractNativeLibs="false"
+      android:hasCode="false"
       android:icon="@drawable/icon_webview"
       android:label="Trichrome Library"
       android:multiArch="true"
