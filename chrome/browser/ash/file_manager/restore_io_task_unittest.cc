@@ -189,7 +189,7 @@ TEST_F(RestoreIOTaskTest, RestorePathsShouldNotReferenceParent) {
   run_loop.Run();
 }
 
-TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceed) {
+TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceedAndCreateDirectory) {
   EnsureTrashDirectorySetup(downloads_dir_);
 
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
@@ -219,6 +219,8 @@ TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceed) {
                      file_system_context_, temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
+
+  EXPECT_TRUE(base::PathExists(downloads_dir_.Append("bar")));
 }
 
 }  // namespace

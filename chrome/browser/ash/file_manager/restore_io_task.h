@@ -52,6 +52,16 @@ class RestoreIOTask : public IOTask {
   //   - Has an identical item in the files directory with no .trashinfo suffix
   void ValidateTrashInfo(size_t idx);
 
+  // Make sure the enclosing folder where the trashed file to be restored to
+  // actually exists. In the event the file path has been removed, recreate it.
+  void EnsureParentRestorePathExists(size_t idx,
+                                     const base::FilePath& trash_parent_path,
+                                     const base::FilePath& restore_path);
+
+  void OnParentRestorePathExists(size_t idx,
+                                 const base::FilePath& restore_path,
+                                 base::File::Error status);
+
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<Profile> profile_;
 

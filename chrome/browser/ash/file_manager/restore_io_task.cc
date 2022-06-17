@@ -6,11 +6,27 @@
 
 #include "base/callback.h"
 #include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace file_manager {
 namespace io_task {
+
+namespace {
+
+base::File::Error CreateNestedPath(const base::FilePath& restore_path) {
+  if (base::PathExists(restore_path)) {
+    return base::File::FILE_OK;
+  }
+  base::File::Error status;
+  if (!base::CreateDirectoryAndGetError(restore_path, &status)) {
+    return status;
+  }
+  return base::File::FILE_OK;
+}
+
+}  // namespace
 
 RestoreIOTask::RestoreIOTask(
     std::vector<storage::FileSystemURL> file_urls,
@@ -134,8 +150,31 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
     return;
   }
 
-  // TODO(b/231830250): Implement the logic to make sure the enclosing path is
-  // setup and move the actual item to it's final location.
+  EnsureParentRestorePathExists(idx, trash_location.DirName(), restore_path);
+}
+
+void RestoreIOTask::EnsureParentRestorePathExists(
+    size_t idx,
+    const base::FilePath& trash_parent_path,
+    const base::FilePath& restore_path) {
+  base::FilePath final_restore_path = trash_parent_path.Append(restore_path);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateNestedPath, final_restore_path.DirName()),
+      base::BindOnce(&RestoreIOTask::OnParentRestorePathExists,
+                     weak_ptr_factory_.GetWeakPtr(), idx, final_restore_path));
+}
+
+void RestoreIOTask::OnParentRestorePathExists(
+    size_t idx,
+    const base::FilePath& restore_path,
+    base::File::Error status) {
+  if (status != base::File::FILE_OK) {
+    progress_.sources[idx].error = status;
+    Complete(State::kError);
+    return;
+  }
+
   Complete(State::kSuccess);
 }
 
