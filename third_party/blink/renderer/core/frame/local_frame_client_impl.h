@@ -147,6 +147,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidChangeCpuTiming(base::TimeDelta) override;
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
   void DidObserveNewFeatureUsage(const UseCounterFeature&) override;
+  void DidObserveSoftNavigation(uint32_t count) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,

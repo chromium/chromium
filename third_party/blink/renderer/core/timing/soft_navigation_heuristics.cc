@@ -112,6 +112,10 @@ void SoftNavigationHeuristics::CheckSoftNavigation(ScriptState* script_state) {
           window->AddConsoleMessage(console_message);
           // TODO(yoav): trace event as well.
         }
+        if (LocalFrameClient* frame_client = frame->Client()) {
+          // This notifies UKM about this soft navigation.
+          frame_client->DidObserveSoftNavigation(soft_navigation_count_);
+        }
       }
     }
   }

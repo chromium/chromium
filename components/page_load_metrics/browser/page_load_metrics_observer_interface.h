@@ -313,6 +313,10 @@ class PageLoadMetricsObserverInterface {
   virtual void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                               const mojom::PageLoadTiming& timing) = 0;
 
+  // The callback is invoked when a soft navigation is detected.
+  // See https://bit.ly/soft-navigation for more details.
+  virtual void OnSoftNavigationCountUpdated() = 0;
+
   virtual void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) = 0;
 

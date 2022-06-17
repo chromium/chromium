@@ -583,6 +583,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // reported.
   virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
+  // A new soft navigation was observed.
+  virtual void DidObserveSoftNavigation(uint32_t count) {}
+
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }

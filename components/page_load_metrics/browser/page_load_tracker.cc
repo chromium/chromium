@@ -872,6 +872,18 @@ void PageLoadTracker::OnSubFrameMobileFriendlinessChanged(
   }
 }
 
+void PageLoadTracker::OnSoftNavigationCountChanged(
+    uint32_t soft_navigation_count) {
+  DCHECK(soft_navigation_count >= soft_navigation_count_);
+  if (soft_navigation_count == soft_navigation_count_) {
+    return;
+  }
+  soft_navigation_count_ = soft_navigation_count;
+  for (const auto& observer : observers_) {
+    observer->OnSoftNavigationCountUpdated();
+  }
+}
+
 void PageLoadTracker::OnPrefetchLikely() {
   for (const auto& observer : observers_) {
     observer->OnPrefetchLikely();
@@ -1073,6 +1085,10 @@ ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {
   return source_id_;
 }
 
+uint32_t PageLoadTracker::GetSoftNavigationCount() const {
+  return soft_navigation_count_;
+}
+
 bool PageLoadTracker::IsFirstNavigationInWebContents() const {
   return is_first_navigation_in_web_contents_;
 }
@@ -1139,18 +1155,19 @@ void PageLoadTracker::UpdateMetrics(
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
     mojom::InputTimingPtr input_timing_delta,
-    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+    uint32_t soft_navigation_count) {
   if (parent_tracker_) {
     parent_tracker_->UpdateMetrics(
         render_frame_host, timing.Clone(), metadata.Clone(), features,
         resources, render_data.Clone(), cpu_timing.Clone(),
-        input_timing_delta.Clone(), mobile_friendliness);
+        input_timing_delta.Clone(), mobile_friendliness, soft_navigation_count);
   }
   metrics_update_dispatcher_.UpdateMetrics(
       render_frame_host, std::move(timing), std::move(metadata),
       std::move(features), resources, std::move(render_data),
       std::move(cpu_timing), std::move(input_timing_delta),
-      std::move(mobile_friendliness));
+      std::move(mobile_friendliness), soft_navigation_count);
 }
 
 void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {

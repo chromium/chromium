@@ -123,7 +123,7 @@ class MetricsWebContentsObserverTest
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(absl::in_place), timing.Clone(),
-        mojom::InputTimingPtr(absl::in_place), blink::MobileFriendliness());
+        mojom::InputTimingPtr(absl::in_place), blink::MobileFriendliness(), 0);
   }
 
   void SimulateTimingUpdate(const mojom::PageLoadTiming& timing,
@@ -148,7 +148,7 @@ class MetricsWebContentsObserverTest
                                 mojom::FrameRenderDataUpdatePtr(absl::in_place),
                                 mojom::CpuTimingPtr(absl::in_place),
                                 mojom::InputTimingPtr(absl::in_place),
-                                blink::MobileFriendliness());
+                                blink::MobileFriendliness(), 0);
   }
 
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>

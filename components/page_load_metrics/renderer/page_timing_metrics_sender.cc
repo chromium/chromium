@@ -95,6 +95,12 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
   EnsureSendTimer();
 }
 
+void PageTimingMetricsSender::DidObserveSoftNavigation(uint32_t count) {
+  DCHECK(count > soft_navigation_count_);
+  soft_navigation_count_ = count;
+  EnsureSendTimer();
+}
+
 void PageTimingMetricsSender::DidObserveLayoutShift(
     double score,
     bool after_input_or_scroll) {
@@ -319,7 +325,8 @@ void PageTimingMetricsSender::SendNow() {
   }
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(input_timing_delta_), mobile_friendliness_);
+                      std::move(input_timing_delta_), mobile_friendliness_,
+                      soft_navigation_count_);
   input_timing_delta_ = mojom::InputTiming::New();
   mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
@@ -335,6 +342,9 @@ void PageTimingMetricsSender::SendNow() {
   render_data_.ng_layout_block_count_delta = 0;
   render_data_.all_layout_call_count_delta = 0;
   render_data_.ng_layout_call_count_delta = 0;
+  // As PageTimingMetricsSender is owned by MetricsRenderFrameObserver, which is
+  // instantiated for each frame, there's no need to make soft_navigation_count_
+  // zero here, as its value only increments through the lifetime of the frame.
 }
 
 void PageTimingMetricsSender::DidObserveInputDelay(

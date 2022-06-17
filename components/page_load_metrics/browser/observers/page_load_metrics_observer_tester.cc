@@ -225,6 +225,15 @@ void PageLoadMetricsObserverTester::SimulateRenderDataUpdate(
                                blink::MobileFriendliness(), rfh);
 }
 
+void PageLoadMetricsObserverTester::SimulateSoftNavigationCountUpdate(
+    uint32_t soft_navigation_count) {
+  SimulatePageLoadTimingUpdate(
+      mojom::PageLoadTiming(), mojom::FrameMetadata(),
+      /* new_features= */ {}, mojom::FrameRenderDataUpdate(),
+      mojom::CpuTiming(), mojom::InputTiming(), blink::MobileFriendliness(),
+      web_contents()->GetPrimaryMainFrame(), soft_navigation_count);
+}
+
 void PageLoadMetricsObserverTester::SimulatePageLoadTimingUpdate(
     const mojom::PageLoadTiming& timing,
     const mojom::FrameMetadata& metadata,
@@ -233,11 +242,13 @@ void PageLoadMetricsObserverTester::SimulatePageLoadTimingUpdate(
     const mojom::CpuTiming& cpu_timing,
     const mojom::InputTiming& input_timing,
     const blink::MobileFriendliness& mobile_friendliness,
-    content::RenderFrameHost* rfh) {
+    content::RenderFrameHost* rfh,
+    uint32_t soft_navigation_count) {
   metrics_web_contents_observer_->OnTimingUpdated(
       rfh, timing.Clone(), metadata.Clone(), new_features,
       std::vector<mojom::ResourceDataUpdatePtr>(), render_data.Clone(),
-      cpu_timing.Clone(), input_timing.Clone(), mobile_friendliness);
+      cpu_timing.Clone(), input_timing.Clone(), mobile_friendliness,
+      soft_navigation_count);
   // If sending the timing update caused the PageLoadMetricsUpdateDispatcher to
   // schedule a buffering timer, then fire it now so metrics are dispatched to
   // observers.
@@ -263,7 +274,7 @@ void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
       std::vector<blink::UseCounterFeature>(), resources,
       mojom::FrameRenderDataUpdatePtr(absl::in_place),
       mojom::CpuTimingPtr(absl::in_place),
-      mojom::InputTimingPtr(absl::in_place), blink::MobileFriendliness());
+      mojom::InputTimingPtr(absl::in_place), blink::MobileFriendliness(), 0);
 }
 
 void PageLoadMetricsObserverTester::SimulateLoadedResource(

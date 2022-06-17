@@ -111,7 +111,8 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
         const mojom::InputTimingPtr& input_timing,
-        const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
+        const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+        uint32_t soft_navigation_count);
 
    private:
     std::vector<mojom::PageLoadTimingPtr> expected_timings_;
@@ -139,15 +140,16 @@ class FakePageTimingSender : public PageTimingSender {
 
   ~FakePageTimingSender() override;
 
-  void SendTiming(const mojom::PageLoadTimingPtr& timing,
-                  const mojom::FrameMetadataPtr& metadata,
-                  const std::vector<blink::UseCounterFeature>& new_features,
-                  std::vector<mojom::ResourceDataUpdatePtr> resources,
-                  const mojom::FrameRenderDataUpdate& render_data,
-                  const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::InputTimingPtr new_input_timing,
-                  const absl::optional<blink::MobileFriendliness>&
-                      mobile_friendliness) override;
+  void SendTiming(
+      const mojom::PageLoadTimingPtr& timing,
+      const mojom::FrameMetadataPtr& metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      const mojom::FrameRenderDataUpdate& render_data,
+      const mojom::CpuTimingPtr& cpu_timing,
+      mojom::InputTimingPtr new_input_timing,
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+      uint32_t soft_navigation_count) override;
 
   void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) override;

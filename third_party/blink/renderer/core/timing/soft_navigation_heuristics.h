@@ -38,7 +38,7 @@ class SoftNavigationHeuristics
   void ClickEventEnded(ScriptState*, bool is_cancelled);
   void SawURLChange(ScriptState*);
   void ModifiedDOM(ScriptState*);
-  unsigned SoftNavigationCount() { return soft_navigation_count_; }
+  uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(const scheduler::TaskId&) override;
@@ -58,7 +58,7 @@ class SoftNavigationHeuristics
 
   WTF::HashSet<scheduler::TaskIdType> potential_soft_navigation_task_ids_;
   FlagTypeSet flag_set_;
-  unsigned soft_navigation_count_ = 0;
+  uint32_t soft_navigation_count_ = 0;
 };
 
 class SoftNavigationEventScope {

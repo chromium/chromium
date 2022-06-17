@@ -25,10 +25,11 @@ void FakePageTimingSender::SendTiming(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::InputTimingPtr new_input_timing,
-    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+    uint32_t soft_navigation_count) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, new_input_timing,
-                           mobile_friendliness);
+                           mobile_friendliness, soft_navigation_count);
 }
 
 void FakePageTimingSender::SetUpSmoothnessReporting(
@@ -143,7 +144,8 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
     const mojom::InputTimingPtr& new_input_timing,
-    const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
+    const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+    uint32_t soft_navigation_count) {
   actual_timings_.push_back(timing.Clone());
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
@@ -173,6 +175,7 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   VerifyExpectedMainFrameIntersectionRect();
   VerifyExpectedMainFrameViewportRect();
   VerifyExpectedMobileFriendliness();
+  // TODO(yoav): Verify that soft nav count matches expectations.
 }
 
 }  // namespace page_load_metrics

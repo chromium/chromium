@@ -735,6 +735,13 @@ void LocalFrameClientImpl::DidObserveNewFeatureUsage(
     web_frame_->Client()->DidObserveNewFeatureUsage(feature);
 }
 
+// A new soft navigation was observed.
+void LocalFrameClientImpl::DidObserveSoftNavigation(uint32_t count) {
+  if (WebLocalFrameClient* client = web_frame_->Client()) {
+    client->DidObserveSoftNavigation(count);
+  }
+}
+
 void LocalFrameClientImpl::DidObserveLayoutShift(double score,
                                                  bool after_input_or_scroll) {
   if (WebLocalFrameClient* client = web_frame_->Client())

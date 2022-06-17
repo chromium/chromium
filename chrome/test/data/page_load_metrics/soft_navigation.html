@@ -1,0 +1,23 @@
+<html>
+  <head>
+<style>
+#button {width: 200px; height: 200px; }
+</style>
+  </head>
+<body>
+  <main>
+  <button id="button">Click me!</button>
+  </main>
+  <script>
+    const button = document.getElementById("button");
+    button.addEventListener("click", e => {
+      history.pushState({}, "", "foobar.html");
+      const content = document.createElement("div");
+      content.innerHTML = "This is some content";
+      document.getElementsByTagName("main")[0].insertBefore(content, button);
+      e.preventDefault();
+      return false;
+    });
+
+  </script>
+</body>

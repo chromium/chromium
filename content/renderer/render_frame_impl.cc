@@ -4426,6 +4426,12 @@ void RenderFrameImpl::DidObserveNewFeatureUsage(
     observer.DidObserveNewFeatureUsage(feature);
 }
 
+void RenderFrameImpl::DidObserveSoftNavigation(uint32_t count) {
+  for (auto& observer : observers_) {
+    observer.DidObserveSoftNavigation(count);
+  }
+}
+
 void RenderFrameImpl::DidObserveLayoutShift(double score,
                                             bool after_input_or_scroll) {
   for (auto& observer : observers_)

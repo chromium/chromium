@@ -208,6 +208,9 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // This propagates feature usage to the browser process for histograms.
   virtual void DidObserveNewFeatureUsage(const UseCounterFeature&) {}
 
+  // A new soft navigation was observed.
+  virtual void DidObserveSoftNavigation(uint32_t count) {}
+
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }

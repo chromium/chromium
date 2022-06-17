@@ -170,6 +170,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
       const std::string& mime_type) const override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {}
+  void OnSoftNavigationCountUpdated() override {}
   void OnMobileFriendlinessUpdate(
       const blink::MobileFriendliness& mobile_friendliness) override {}
   void OnInputTimingUpdate(

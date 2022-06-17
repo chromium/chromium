@@ -41,6 +41,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     kLayoutShift = 1 << 11,
     kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 12,
     kFirstScrollDelay = 1 << 13,
+    kSoftNavigationCountUpdated = 1 << 14,
   };
   using FrameTreeNodeId =
       page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
@@ -188,6 +189,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   void OnTimingUpdated(content::RenderFrameHost* subframe_rfh,
                        const page_load_metrics::mojom::PageLoadTiming& timing);
 
+  void OnSoftNavigationCountUpdated();
+
   // Updates observed page fields when a timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied
   // after update.
@@ -295,6 +298,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
 
   bool attach_on_tracker_creation_ = false;
   bool did_add_observer_ = false;
+  bool soft_navigation_count_updated_ = false;
 
   double last_main_frame_layout_shift_score_ = 0;
 

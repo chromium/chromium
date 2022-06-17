@@ -769,6 +769,8 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetNet_MediaBytes2(
       ukm::GetExponentialBucketMinForBytes(media_bytes_));
 
+  builder.SetSoftNavigationCount(GetDelegate().GetSoftNavigationCount());
+
   if (main_frame_timing_)
     ReportMainResourceTimingMetrics(builder);
 

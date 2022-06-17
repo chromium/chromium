@@ -49,21 +49,22 @@ class MojoPageTimingSender : public PageTimingSender {
 
   ~MojoPageTimingSender() override = default;
 
-  void SendTiming(const mojom::PageLoadTimingPtr& timing,
-                  const mojom::FrameMetadataPtr& metadata,
-                  const std::vector<blink::UseCounterFeature>& new_features,
-                  std::vector<mojom::ResourceDataUpdatePtr> resources,
-                  const mojom::FrameRenderDataUpdate& render_data,
-                  const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::InputTimingPtr input_timing_delta,
-                  const absl::optional<blink::MobileFriendliness>&
-                      mobile_friendliness) override {
+  void SendTiming(
+      const mojom::PageLoadTimingPtr& timing,
+      const mojom::FrameMetadataPtr& metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      const mojom::FrameRenderDataUpdate& render_data,
+      const mojom::CpuTimingPtr& cpu_timing,
+      mojom::InputTimingPtr input_timing_delta,
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness,
+      uint32_t soft_navigation_count) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(input_timing_delta),
-        std::move(mobile_friendliness));
+        std::move(mobile_friendliness), soft_navigation_count);
   }
 
   void SetUpSmoothnessReporting(
@@ -137,6 +138,12 @@ void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(
     const blink::UseCounterFeature& feature) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveNewFeatureUsage(feature);
+}
+
+void MetricsRenderFrameObserver::DidObserveSoftNavigation(uint32_t count) {
+  if (page_timing_metrics_sender_) {
+    page_timing_metrics_sender_->DidObserveSoftNavigation(count);
+  }
 }
 
 void MetricsRenderFrameObserver::DidObserveLayoutShift(

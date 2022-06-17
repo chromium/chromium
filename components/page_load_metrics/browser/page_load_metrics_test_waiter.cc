@@ -49,6 +49,8 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
 
+  void OnSoftNavigationCountUpdated() override;
+
   void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
                          const mojom::CpuTiming& timing) override;
 
@@ -222,6 +224,10 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
     run_loop_->Quit();
 }
 
+void PageLoadMetricsTestWaiter::OnSoftNavigationCountUpdated() {
+  soft_navigation_count_updated_ = true;
+}
+
 void PageLoadMetricsTestWaiter::OnCpuTimingUpdated(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::CpuTiming& timing) {
@@ -386,6 +392,10 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
       matched_bits.Set(TimingField::kLayoutShift);
     last_main_frame_layout_shift_score_ = layout_shift_score;
   }
+  if (soft_navigation_count_updated_) {
+    soft_navigation_count_updated_ = false;
+    matched_bits.Set(TimingField::kSoftNavigationCountUpdated);
+  }
 
   return matched_bits;
 }
@@ -534,6 +544,11 @@ void WaiterMetricsObserver::OnTimingUpdate(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (waiter_)
     waiter_->OnTimingUpdated(subframe_rfh, timing);
+}
+
+void WaiterMetricsObserver::OnSoftNavigationCountUpdated() {
+  if (waiter_)
+    waiter_->OnSoftNavigationCountUpdated();
 }
 
 void WaiterMetricsObserver::OnCpuTimingUpdate(

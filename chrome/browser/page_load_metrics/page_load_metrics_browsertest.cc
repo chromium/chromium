@@ -2984,6 +2984,35 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForClick) {
       {url, embedded_test_server()->GetURL("/title1.html")});
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, SoftNavigation) {
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  GURL url =
+      embedded_test_server()->GetURL("/page_load_metrics/soft_navigation.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  waiter->Wait();
+
+  waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
+  content::SimulateMouseClickAt(
+      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
+
+  waiter->Wait();
+
+  // Force navigation to another page, which should force logging of histograms
+  // persisted at the end of the page load lifetime.
+  NavigateToUntrackedUrl();
+
+  VerifyNavigationMetrics({url});
+  int64_t value = GetUKMPageLoadMetric(PageLoad::kSoftNavigationCountName);
+  ASSERT_EQ(value, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForOmniboxMatch) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   content::SetupCrossSiteRedirector(embedded_test_server());

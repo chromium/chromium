@@ -70,6 +70,7 @@ class FakePageLoadMetricsObserverDelegate
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
+  uint32_t GetSoftNavigationCount() const override;
   bool IsFirstNavigationInWebContents() const override;
 
   // Helpers to add a BackForwardCacheRestore to this fake.
