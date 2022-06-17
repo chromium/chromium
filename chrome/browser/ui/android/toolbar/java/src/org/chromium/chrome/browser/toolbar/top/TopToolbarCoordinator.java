@@ -113,9 +113,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
-     * @param startSurfaceAsHomepageSupplier Supplier of whether start surface should be shown as
-     *         homepage.
-     * @param homepageManagedByPolicySupplier Supplier of whether the homepage is managed by policy.
      * @param identityDiscStateSupplier Supplier of the state change of identity disc button.
      * @param invalidatorCallback Callback that will be invoked  when the toolbar attempts to
      *        invalidate the drawing surface.  This will give the object that registers as the host
@@ -147,8 +144,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
-            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
-            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
@@ -170,17 +165,10 @@ public class TopToolbarCoordinator implements Toolbar {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
-            View.OnClickListener homeButtonOnClickListener = v -> {
-                if (tabController != null) {
-                    tabController.openHomepage();
-                }
-            };
             mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
                     userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
                     overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
-                    isGridTabSwitcherEnabled, homepageEnabledSupplier,
-                    startSurfaceAsHomepageSupplier, homepageManagedByPolicySupplier,
-                    homeButtonOnClickListener, isTabGroupsAndroidContinuationEnabled,
+                    isGridTabSwitcherEnabled, isTabGroupsAndroidContinuationEnabled,
                     isIncognitoModeEnabledSupplier, profileSupplier,
                     startSurfaceLogoClickedCallback);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {

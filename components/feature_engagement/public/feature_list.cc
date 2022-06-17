@@ -106,7 +106,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHWebFeedPostFollowDialogFeature,
     &kIPHSharedHighlightingBuilder,
     &kIPHSharedHighlightingReceiverFeature,
-    &kIPHStartSurfaceTabSwitcherHomeButton,
     &kIPHSharingHubWebnotesStylizeFeature,
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_IOS)

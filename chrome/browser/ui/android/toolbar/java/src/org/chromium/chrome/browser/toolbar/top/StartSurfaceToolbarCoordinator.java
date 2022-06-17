@@ -62,10 +62,7 @@ public class StartSurfaceToolbarCoordinator {
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
-            ObservableSupplier<Boolean> homepageEnabledSupplier,
-            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
-            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            OnClickListener homeButtonOnClickHandler, boolean isTabGroupsAndroidContinuationEnabled,
+            boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> logoClickedCallback) {
@@ -92,13 +89,10 @@ public class StartSurfaceToolbarCoordinator {
                             iphCommandBuilder.setAnchorView(mView.getIdentityDiscView()).build());
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
-                StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
-                homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
-                homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
-                isTabGroupsAndroidContinuationEnabled, userEducationHelper,
-                isIncognitoModeEnabledSupplier, profileSupplier, logoClickedCallback);
+                isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
+                profileSupplier, logoClickedCallback);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -257,7 +251,6 @@ public class StartSurfaceToolbarCoordinator {
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
 
-        mToolbarMediator.setHomeButtonView(mView.findViewById(R.id.home_button_on_tab_switcher));
         mToolbarMediator.onLogoViewReady(mView.findViewById(R.id.logo));
 
         if (StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue()) {

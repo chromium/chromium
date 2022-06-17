@@ -77,7 +77,6 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
         FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
         FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
-        FeatureConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE,
         FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE,
         FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE,
         FeatureConstants.VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE,
@@ -379,12 +378,6 @@ public @interface FeatureConstants {
      * An IPH feature to inform users about the link-to-text on selection share.
      */
     String SHARED_HIGHLIGHTING_BUILDER_FEATURE = "IPH_SharedHighlightingBuilder";
-
-    /**
-     * An IPH feature to prompt users to click home button on the tab switcher surface when start
-     * surface is enabled.
-     */
-    String START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE = "IPH_StartSurfaceTabSwitcherHomeButton";
 
     /**
      * An IPH feature encouraging users to create highlights.

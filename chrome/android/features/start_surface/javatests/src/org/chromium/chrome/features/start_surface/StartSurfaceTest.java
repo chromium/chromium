@@ -43,7 +43,6 @@ import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
@@ -189,11 +188,8 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
-        "/home_button_on_grid_tab_switcher/false"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
     public void testShow_SingleAsHomepage() {
-        // clang-format on
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -213,7 +209,6 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         waitForView(allOf(
                 withParent(withId(R.id.secondary_tasks_surface_view)), withId(R.id.tab_list_view)));
-        assertEquals(cta.findViewById(R.id.home_button_on_tab_switcher).getVisibility(), View.GONE);
 
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));

@@ -200,8 +200,6 @@ chromium-metrics-reviews@google.com.
       summary="A text bubble showing that a product can be tracked from the
                overflow menu"/>
   <variant name="IPH_SideSearch" summary="side search discovery"/>
-  <variant name="IPH_StartSurfaceTabSwitcherHomeButton"
-      summary="home button on the tab switcher when start surface is enabled"/>
   <variant name="IPH_TabGroupsDragAndDrop"
       summary="educating user to drop one tab on another tab to create group"/>
   <variant name="IPH_TabGroupsQuicklyComparePages"

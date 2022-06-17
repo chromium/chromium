@@ -18,11 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
@@ -36,9 +34,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 class StartSurfaceToolbarView extends RelativeLayout {
     private LinearLayout mNewTabViewWithText;
     private NewTabButton mNewTabButton;
-    private boolean mIsNewTabButtonAtStart;
     private boolean mShouldShowNewTabViewText;
-    private HomeButton mHomeButton;
     private LogoView mLogo;
     private View mTabSwitcherButtonView;
 
@@ -49,12 +45,8 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private ColorStateList mLightIconTint;
     private ColorStateList mDarkIconTint;
 
-    private ObservableSupplier<Boolean> mHomepageEnabledSupplier;
-    private ObservableSupplier<Boolean> mHomepageManagedByPolicySupplier;
-    private boolean mIsHomeButtonInitialized;
     private boolean mIsShowing;
 
-    private boolean mIsMenuVisible;
     private boolean mIsNewTabViewVisible;
 
     public StartSurfaceToolbarView(Context context, AttributeSet attrs) {
@@ -66,7 +58,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         super.onFinishInflate();
         mNewTabViewWithText = findViewById(R.id.new_tab_view);
         mNewTabButton = findViewById(R.id.new_tab_button);
-        mHomeButton = findViewById(R.id.home_button_on_tab_switcher);
         ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
         mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
         mLogo = findViewById(R.id.logo);
@@ -114,7 +105,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param isVisible Whether the menu button is visible.
      */
     void setMenuButtonVisibility(boolean isVisible) {
-        mIsMenuVisible = isVisible;
         // TODO(crbug.com/1258204): Update the paddings of mIdentityDiscButton when it's moved to
         // start and remove final values here.
         final int buttonPaddingLeft = getContext().getResources().getDimensionPixelOffset(
@@ -124,7 +114,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
                            : getContext().getResources().getDimensionPixelOffset(
                                    R.dimen.start_surface_toolbar_button_padding_to_edge));
         mIdentityDiscButton.setPadding(buttonPaddingLeft, 0, buttonPaddingRight, 0);
-        updateNewTabButtonPadding();
     }
 
     /**
@@ -136,76 +125,12 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
-     * @param isAtStart Whether the new tab button is at start.
-     */
-    void setNewTabButtonAtStart(boolean isAtStart) {
-        if (mIsNewTabButtonAtStart == isAtStart) return;
-        mIsNewTabButtonAtStart = isAtStart;
-
-        if (mIsNewTabButtonAtStart) {
-            ((LayoutParams) mNewTabButton.getLayoutParams()).removeRule(RelativeLayout.START_OF);
-        } else {
-            ((LayoutParams) mNewTabButton.getLayoutParams())
-                    .addRule(RelativeLayout.START_OF, R.id.menu_anchor);
-        }
-        updateNewTabButtonPadding();
-    }
-
-    /**
      * Set the visibility of new tab view text.
      * @param isVisible Whether the new tab view text is visible.
      */
     void setNewTabViewTextVisibility(boolean isVisible) {
         mShouldShowNewTabViewText = isVisible;
         updateNewTabButtonVisibility();
-    }
-
-    /**
-     * @param isVisible Whether the home button is visible.
-     */
-    void setHomeButtonVisibility(boolean isVisible) {
-        mayInitializeHomeButton();
-        mHomeButton.setVisibility(getVisibility(isVisible));
-    }
-
-    /**
-     * @param homepageEnabledSupplier Supplier of whether homepage is enabled.
-     */
-    void setHomepageEnabledSupplier(ObservableSupplier<Boolean> homepageEnabledSupplier) {
-        assert mHomepageEnabledSupplier == null;
-        mHomepageEnabledSupplier = homepageEnabledSupplier;
-    }
-
-    /**
-     * @param homepageManagedByPolicySupplier Supplier of whether the homepage is managed by policy.
-     */
-    void setHomepageManagedByPolicySupplier(
-            ObservableSupplier<Boolean> homepageManagedByPolicySupplier) {
-        assert mHomepageManagedByPolicySupplier == null;
-        mHomepageManagedByPolicySupplier = homepageManagedByPolicySupplier;
-    }
-
-    /**
-     * Initializes the home button if not yet.
-     */
-    private void mayInitializeHomeButton() {
-        if (mIsHomeButtonInitialized || mHomepageEnabledSupplier == null
-                || mHomepageManagedByPolicySupplier == null) {
-            return;
-        }
-
-        // The long click which shows the change homepage settings is disabled when the Start
-        // surface is enabled.
-        mHomeButton.init(mHomepageEnabledSupplier, null, mHomepageManagedByPolicySupplier);
-        mIsHomeButtonInitialized = true;
-    }
-
-    /**
-     * @param homeButtonClickHandler The callback that will be notified when the home button is
-     *                               pressed.
-     */
-    void setHomeButtonClickHandler(OnClickListener homeButtonClickHandler) {
-        mHomeButton.setOnClickListener(homeButtonClickHandler);
     }
 
     /**
@@ -358,18 +283,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         } else {
             mNewTabViewWithText.getParent().requestChildFocus(mNewTabButton, mNewTabButton);
         }
-    }
-
-    private void updateNewTabButtonPadding() {
-        final int buttonPaddingLeft = getContext().getResources().getDimensionPixelOffset(
-                mIsNewTabButtonAtStart ? R.dimen.start_surface_toolbar_button_padding_to_edge
-                                       : R.dimen.start_surface_toolbar_button_padding_to_button);
-        final int buttonPaddingRight =
-                getResources().getDimensionPixelOffset(mIsNewTabButtonAtStart || !mIsMenuVisible
-                                ? R.dimen.start_surface_toolbar_button_padding_to_edge
-                                : R.dimen.start_surface_toolbar_button_padding_to_button);
-        mNewTabButton.setPadding(buttonPaddingLeft, mNewTabButton.getPaddingTop(),
-                buttonPaddingRight, mNewTabButton.getPaddingBottom());
     }
 
     private void updatePrimaryColorAndTint(boolean isIncognito) {

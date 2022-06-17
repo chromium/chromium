@@ -1022,8 +1022,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, mOverviewModeMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
-                mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
-                mHomepageManagedByPolicySupplier,
+                mHomepageEnabledSupplier,
                 mIdentityDiscStateSupplier, (client) -> {
                     if (invalidator != null) {
                         invalidator.invalidate(client);

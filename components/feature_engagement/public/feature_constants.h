@@ -162,7 +162,6 @@ extern const base::Feature kIPHWebFeedFollowFeature;
 extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
 extern const base::Feature kIPHSharedHighlightingBuilder;
 extern const base::Feature kIPHSharedHighlightingReceiverFeature;
-extern const base::Feature kIPHStartSurfaceTabSwitcherHomeButton;
 extern const base::Feature kIPHSharingHubWebnotesStylizeFeature;
 #endif  // BUILDFLAG(IS_ANDROID)
 

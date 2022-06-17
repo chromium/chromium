@@ -49,12 +49,6 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "open_ntp_instead_of_start", false);
 
-    private static final String HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM =
-            "home_button_on_grid_tab_switcher";
-    public static final BooleanCachedFieldTrialParameter HOME_BUTTON_ON_GRID_TAB_SWITCHER =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM, false);
-
     private static final String TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM =
             "tab_count_button_on_start_surface";
     public static final BooleanCachedFieldTrialParameter TAB_COUNT_BUTTON_ON_START_SURFACE =
