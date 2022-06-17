@@ -254,9 +254,8 @@ function initializeFPSPanels() {
 // If rAF is running at 60 fps, skip every other frame so the demo is
 // running at 30 fps.
 // 30 fps is 33 milliseconds/frame. To prevent skipping frames accidentally
-// when rAF is running near 30fps with small delta, use 32 ms instead of 33 ms
-// for comparison.
-const kFrameTime30Fps = 32;
+// when rAF is running near 30fps, we use 5ms delta for jittering.
+const kFrameTime30Fps = 33 - 5;
 
 // The time of last FPS update.
 let fpsPrevTime = performance.now();
