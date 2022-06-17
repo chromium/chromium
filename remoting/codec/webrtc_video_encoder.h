@@ -108,9 +108,11 @@ class WebrtcVideoEncoder {
 
   virtual ~WebrtcVideoEncoder() {}
 
-  // Request that the encoder provide lossless encoding, or color, if possible.
+  // Encoder configurable settings, may be provided via SDP or OOB via a
+  // proprietary message.
   virtual void SetLosslessEncode(bool want_lossless) {}
   virtual void SetLosslessColor(bool want_lossless) {}
+  virtual void SetEncoderSpeed(int encoder_speed) {}
 
   // Encode an image stored in |frame|. If frame.updated_region() is empty
   // then the encoder may return a frame (e.g. to top-off previously-encoded

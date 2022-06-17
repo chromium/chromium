@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
@@ -50,6 +51,11 @@ constexpr int kDefaultTargetBitrateKbps = 1000;
 // above in less than 10 frames.
 // TODO(zijiehe): This value is for VP8 only; reconsider the value for VP9.
 constexpr int kVp8MinimumTargetBitrateKbpsPerMegapixel = 2500;
+
+// Default values for the encoder speed of the supported codecs.
+constexpr int kVp9LosslessEncodeSpeed = 5;
+constexpr int kVp9DefaultEncoderSpeed = 6;
+constexpr int kVp9MaxEncoderSpeed = 9;
 
 void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
                               const webrtc::DesktopSize& size) {
@@ -140,12 +146,12 @@ void SetVp8CodecOptions(vpx_codec_ctx_t* codec) {
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set noise sensitivity";
 }
 
-void SetVp9CodecOptions(vpx_codec_ctx_t* codec, bool lossless_encode) {
-  // Request the lowest-CPU usage that VP9 supports, which depends on whether
-  // we are encoding lossy or lossless.
+void SetVp9CodecOptions(vpx_codec_ctx_t* codec,
+                        bool lossless_encode,
+                        int encoder_speed) {
   // Note that this knob uses the same parameter name as VP8.
-  int cpu_used = lossless_encode ? 5 : 6;
-  vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, cpu_used);
+  vpx_codec_err_t ret =
+      vpx_codec_control(codec, VP8E_SET_CPUUSED, encoder_speed);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
 
   // Turn on row-based multi-threading if more than one thread is available.
@@ -194,8 +200,13 @@ void WebrtcVideoEncoderVpx::SetTickClockForTests(
 }
 
 void WebrtcVideoEncoderVpx::SetLosslessEncode(bool want_lossless) {
-  if (use_vp9_ && (want_lossless != lossless_encode_)) {
+  if (!use_vp9_)
+    return;
+
+  if (want_lossless != lossless_encode_) {
     lossless_encode_ = want_lossless;
+    SetEncoderSpeed(lossless_encode_ ? kVp9LosslessEncodeSpeed
+                                     : kVp9DefaultEncoderSpeed);
     if (codec_)
       Configure(webrtc::DesktopSize(codec_->config.enc->g_w,
                                     codec_->config.enc->g_h));
@@ -203,7 +214,10 @@ void WebrtcVideoEncoderVpx::SetLosslessEncode(bool want_lossless) {
 }
 
 void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
-  if (use_vp9_ && (want_lossless != lossless_color_)) {
+  if (!use_vp9_)
+    return;
+
+  if (want_lossless != lossless_color_) {
     lossless_color_ = want_lossless;
     // TODO(wez): Switch to ConfigureCodec() path once libvpx supports it.
     // See https://code.google.com/p/webm/issues/detail?id=913.
@@ -212,6 +226,14 @@ void WebrtcVideoEncoderVpx::SetLosslessColor(bool want_lossless) {
     //                                codec_->config.enc->g_h));
     codec_.reset();
   }
+}
+
+void WebrtcVideoEncoderVpx::SetEncoderSpeed(int encoder_speed) {
+  if (!use_vp9_)
+    return;
+
+  vp9_encoder_speed_ = base::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
+                                        kVp9MaxEncoderSpeed);
 }
 
 void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
@@ -340,6 +362,10 @@ WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
       bitrate_filter_(kVp8MinimumTargetBitrateKbpsPerMegapixel) {
   // Indicates config is still uninitialized.
   config_.g_timebase.den = 0;
+
+  if (use_vp9_) {
+    SetEncoderSpeed(kVp9DefaultEncoderSpeed);
+  }
 }
 
 void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
@@ -400,7 +426,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
 
   // Apply further customizations to the codec now it's initialized.
   if (use_vp9_) {
-    SetVp9CodecOptions(codec_.get(), lossless_encode_);
+    SetVp9CodecOptions(codec_.get(), lossless_encode_, vp9_encoder_speed_);
   } else {
     SetVp8CodecOptions(codec_.get());
   }
