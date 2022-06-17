@@ -7,6 +7,11 @@
 
 namespace translate {
 
+// Histogram for recording the UI events related to the Translate
+// bubble.
+constexpr char kTranslateBubbleUiEventHistogramName[] =
+    "Translate.BubbleUiEvent";
+
 enum class TranslateBubbleUiEvent {
   // Update TranslateBubbleUiEvent in enums.xml when making changes.
   // Start with 1 to match existing UMA values: see http://crbug.com/612558

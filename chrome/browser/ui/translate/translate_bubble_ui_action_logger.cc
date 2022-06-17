@@ -11,7 +11,7 @@ namespace translate {
 
 void ReportTranslateBubbleUiAction(translate::TranslateBubbleUiEvent action) {
   UMA_HISTOGRAM_ENUMERATION(
-      "Translate.BubbleUiEvent", action,
+      kTranslateBubbleUiEventHistogramName, action,
       translate::TranslateBubbleUiEvent::TRANSLATE_BUBBLE_UI_EVENT_MAX);
 }
 
