@@ -126,11 +126,11 @@ bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
     return false;
   }
 
-  // Set a new exporter for this request.
-  exporter_ = exporter_for_testing_
-                  ? std::move(exporter_for_testing_)
-                  : std::make_unique<password_manager::PasswordManagerExporter>(
-                        presenter_, on_export_progress_callback_);
+  if (!exporter_) {
+    // Set a new exporter for this request.
+    exporter_ = std::make_unique<password_manager::PasswordManagerExporter>(
+        presenter_, on_export_progress_callback_);
+  }
 
   // Start serialising while the user selects a file.
   exporter_->PreparePasswordsForExport();
@@ -153,7 +153,7 @@ PasswordManagerPorter::GetExportProgressStatus() {
 
 void PasswordManagerPorter::SetExporterForTesting(
     std::unique_ptr<password_manager::PasswordManagerExporter> exporter) {
-  exporter_for_testing_ = std::move(exporter);
+  exporter_ = std::move(exporter);
 }
 
 void PasswordManagerPorter::Import(content::WebContents* web_contents) {

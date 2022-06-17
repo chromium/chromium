@@ -93,10 +93,6 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
   // PasswordManagerExporter instance for each export.
   raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   ProgressCallback on_export_progress_callback_;
-  // If |exporter_for_testing_| is set, the next export will make it the current
-  // exporter, instead of creating a new instance.
-  std::unique_ptr<password_manager::PasswordManagerExporter>
-      exporter_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_H_
