@@ -81,7 +81,9 @@ int HttpCache::Writers::Read(scoped_refptr<IOBuffer> buf,
                              CompletionOnceCallback callback,
                              Transaction* transaction) {
   DCHECK(buf);
-  DCHECK_GT(buf_len, 0);
+  // TODO(https://crbug.com/1335423): Change to DCHECK_GT() or remove after bug
+  // is fixed.
+  CHECK_GT(buf_len, 0);
   DCHECK(!callback.is_null());
   DCHECK(transaction);
 
