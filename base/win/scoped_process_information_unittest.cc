@@ -123,7 +123,13 @@ TEST_F(ScopedProcessInformationTest, TakeWholeStruct) {
   EXPECT_FALSE(process_info.IsValid());
 }
 
-TEST_F(ScopedProcessInformationTest, Duplicate) {
+// Disabled due to flakiness on Windows builds. http://crbug.com/1337165
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Duplicate DISABLED_Duplicate
+#else
+#define MAYBE_Duplicate Duplicate
+#endif
+TEST_F(ScopedProcessInformationTest, MAYBE_Duplicate) {
   PROCESS_INFORMATION temp_process_information;
   DoCreateProcess("ReturnSeven", &temp_process_information);
   base::win::ScopedProcessInformation process_info;
