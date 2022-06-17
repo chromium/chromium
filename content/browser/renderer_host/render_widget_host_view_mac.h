@@ -678,6 +678,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // This also allows the screen_infos_ to only be updated outside of resize by
   // holding any updates temporarily in this variable.
   absl::optional<display::ScreenInfos> new_screen_infos_from_shim_;
+  display::ScreenInfos original_screen_infos_;
 
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more
