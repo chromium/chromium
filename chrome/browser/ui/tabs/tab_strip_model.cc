@@ -472,6 +472,12 @@ TabStripModel::DetachWebContentsImpl(int index_before_any_removals,
     return nullptr;
   CHECK(ContainsIndex(index_at_time_of_removal));
 
+  for (auto& observer : observers_) {
+    observer.OnTabWillBeRemoved(
+        contents_data_[index_at_time_of_removal]->web_contents(),
+        index_at_time_of_removal);
+  }
+
   FixOpeners(index_at_time_of_removal);
 
   // Ask the delegate to save an entry for this tab in the historical tab

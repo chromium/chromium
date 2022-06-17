@@ -662,6 +662,12 @@ void BrowserTabStripController::OnTabWillBeAdded() {
   tabstrip_->EndDrag(EndDragReason::END_DRAG_MODEL_ADDED_TAB);
 }
 
+void BrowserTabStripController::OnTabWillBeRemoved(
+    content::WebContents* contents,
+    int index) {
+  tabstrip_->OnTabWillBeRemoved(contents, index);
+}
+
 void BrowserTabStripController::OnTabGroupChanged(
     const TabGroupChange& change) {
   switch (change.type) {

@@ -602,7 +602,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
   }
 
   if (current_state_ == DragState::kWaitingToDragTabs ||
-      current_state_ == DragState::kWaitingToStop ||
       current_state_ == DragState::kStopped)
     return;
 
@@ -706,13 +705,10 @@ void TabDragController::EndDrag(EndDragReason reason) {
   if (reason == END_DRAG_CAPTURE_LOST && attached_context_hidden_)
     return;
 
-  // If we're dragging a window, end the move loop, returning control to
-  // RunMoveLoop() which will end the drag.
-  if (current_state_ == DragState::kDraggingWindow) {
-    current_state_ = DragState::kWaitingToStop;
+  // End the move loop if we're in one. Note that the drag will end (just below)
+  // before the move loop actually exits.
+  if (current_state_ == DragState::kDraggingWindow && in_move_loop_)
     GetAttachedBrowserWidget()->EndMoveLoop();
-    return;
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // It's possible that in Chrome OS we defer the windows that are showing in
@@ -1607,10 +1603,6 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   widget_observation_.Reset();
   move_loop_widget_ = nullptr;
 
-  if (current_state_ == DragState::kDraggingWindow) {
-    current_state_ = DragState::kWaitingToStop;
-  }
-
   if (current_state_ == DragState::kWaitingToDragTabs) {
     DCHECK(tab_strip_to_attach_to_after_exit_);
     gfx::Point point_in_screen(GetCursorScreenPoint());
@@ -1625,7 +1617,7 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
     if (!ref)
       return;
     tab_strip_to_attach_to_after_exit_ = nullptr;
-  } else if (current_state_ == DragState::kWaitingToStop) {
+  } else if (current_state_ == DragState::kDraggingWindow) {
     EndDrag(result == views::Widget::MoveLoopResult::kCanceled
                 ? END_DRAG_CANCEL
                 : END_DRAG_COMPLETE);

@@ -127,12 +127,6 @@ class TabDragController : public views::WidgetObserver {
     return current_state_ == DragState::kDraggingWindow;
   }
 
-  // Returns true if the nested move loop end was requested and we are waiting
-  // it to actually happen.
-  bool is_waiting_to_stop() const {
-    return current_state_ == DragState::kWaitingToStop;
-  }
-
   // Returns the tab group being dragged, if any. Will only return a value if
   // the user is dragging a tab group header, not an individual tab or tabs from
   // a group.
@@ -182,14 +176,12 @@ class TabDragController : public views::WidgetObserver {
     // a regular drag and drop session is running (i.e. no window is being
     // dragged).  The dragged tabs are detached immediately (with one exception;
     // see |attached_context_hidden_|'s comment), but |attached_context_| stays
-    // valid.  On platforms where this state is used, the kDraggingWindow,
-    // kWaitingToDragTabs, and kWaitingToStop states are not used.
+    // valid.  On platforms where this state is used, the kDraggingWindow and
+    // kWaitingToDragTabs states are not used.
     kDraggingUsingSystemDragAndDrop,
     // The session is waiting for the nested move loop to exit to transition
     // to kDraggingTabs.  Not used on all platforms.
     kWaitingToDragTabs,
-    // The session is waiting for the nested move loop to exit to end the drag.
-    kWaitingToStop,
     // The drag session has completed or been canceled.
     kStopped
   };

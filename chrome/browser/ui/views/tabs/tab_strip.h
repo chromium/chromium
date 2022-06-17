@@ -132,6 +132,8 @@ class TabStrip : public views::View,
                    int model_index,
                    bool was_active);
 
+  void OnTabWillBeRemoved(content::WebContents* contents, int model_index);
+
   // Sets the tab data at the specified model index.
   void SetTabData(int model_index, TabRendererData data);
 
