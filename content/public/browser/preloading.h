@@ -20,8 +20,12 @@ enum class PreloadingType {
   // which will be added later to PreloadingType as we expand.
   kUnspecified = 0,
 
-  // TODO(crbug.com/1309934): Add more preloading types from 1 - 3 as we
-  // integrate Preloading logging with various preloading types.
+  // TODO(crbug.com/1309934): Add preloading types 1 and 3 as we integrate
+  // Preloading logging with various preloading types.
+
+  // Establishes a connection (including potential TLS handshake) with an
+  // origin.
+  kPreconnect = 2,
 
   // This speedup technique comes with the most impact and overhead. We preload
   // and render a page before the user navigates to it. This will make the next
@@ -50,7 +54,8 @@ enum class PreloadingPredictor {
 
 // This constant is used to define the value from which embedders can add more
 // enums beyond this value. We mask it by 100 to avoid usage of the same numbers
-// for logging.
+// for logging. This constant determines the value of enumerations persisted
+// into logs so should not be changed.
 static constexpr int64_t kPreloadingPredictorContentEnd = 100;
 
 // Defines if a preloading operation is eligible for a given preloading
@@ -67,8 +72,34 @@ enum class PreloadingEligibility {
   // predictor.
   kEligible = 1,
 
-  // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
-  // each preloading operation.
+  // Preloading operation was ineligible because preloading was disabled.
+  kPreloadingDisabled = 2,
+};
+
+// This constant is used to define the value from which embedders can add more
+// enums beyond this value.
+static constexpr int64_t kPreloadingEligibilityContentEnd = 100;
+
+// The outcome of the holdback check. This is not part of eligibility status to
+// clarify that this check needs to happen after we are done verifying the
+// eligibility of a preloading attempt. In general, eligibility checks can be
+// reordered, but the holdback check always needs to come after verifying that
+// the preloading attempt was eligible.
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PreloadingHoldbackStatus {
+  // The preloading holdback status has not been set yet. This should only
+  // happen when the preloading attempt was not eligible.
+  kUnspecified = 0,
+
+  // The preload was eligible to be triggered and was not disabled via a field
+  // trial holdback. Given enough time, the preload will trigger.
+  kAllowed = 1,
+
+  // The preload was eligible to be triggered but was disabled via a field
+  // trial holdback. This is useful for measuring the impact of preloading.
+  kHoldback = 2,
 };
 
 // Defines the post-triggering outcome once the preloading operation is
@@ -77,12 +108,9 @@ enum class PreloadingEligibility {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PreloadingTriggeringOutcome {
-  // No TriggeringOutcome is present.
+  // The outcome is kUnspecified for attempts that were not triggered due to
+  // various ineligibility reasons or due to a field trial holdback.
   kUnspecified = 0,
-
-  // Status is NotTriggered for attempts that were not triggered due to various
-  // ineligibility reasons.
-  kNotTriggered = 1,
 
   // For attempts that we wanted to trigger, but for which we already had an
   // equivalent attempt (same preloading operation and same URL/target) in
@@ -103,6 +131,18 @@ enum class PreloadingTriggeringOutcome {
 
   // Preloading was triggered but encountered an error and failed.
   kFailure = 6,
+
+  // Some preloading features don't provide a way to keep track of the
+  // progression of the preloading attempt. In those cases, we just log
+  // kTriggeredButOutcomeUnknown, meaning that preloading was triggered but we
+  // don't know if it was successful.
+  kTriggeredButOutcomeUnknown = 7,
+};
+
+enum class PreloadingFailureReason {
+  // The failure reason is unspecified if the triggering outcome is not
+  // kFailure.
+  kUnspecified = 0,
 };
 
 }  // namespace content

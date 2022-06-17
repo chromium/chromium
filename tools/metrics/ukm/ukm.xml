@@ -16688,6 +16688,15 @@ be describing additional metrics about the same event.
       specific to the preloading type.
     </summary>
   </metric>
+  <metric name="HoldbackStatus">
+    <summary>
+      The outcome of the holdback check. This is not part of eligibility status
+      to make clarify that this check needs to happen after we are done
+      verifying the eligibility of a preloading attempt. In general, eligibility
+      checks can be reordered, but the holdback check always needs to come after
+      verifying that the preloading attempt was eligible.
+    </summary>
+  </metric>
   <metric name="PreloadingPredictor">
     <summary>
       The type of preloading predictor which made the prediction. Values are
@@ -16740,6 +16749,15 @@ be describing additional metrics about the same event.
   <metric name="FailureReason">
     <summary>
       Reason why the preloading operation failed.
+    </summary>
+  </metric>
+  <metric name="HoldbackStatus">
+    <summary>
+      The outcome of the holdback check. This is not part of eligibility status
+      to make clarify that this check needs to happen after we are done
+      verifying the eligibility of a preloading attempt. In general, eligibility
+      checks can be reordered, but the holdback check always needs to come after
+      verifying that the preloading attempt was eligible.
     </summary>
   </metric>
   <metric name="PreloadingPredictor">

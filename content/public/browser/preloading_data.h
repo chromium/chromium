@@ -39,8 +39,18 @@ class CONTENT_EXPORT PreloadingAttempt {
   // called once per preloading attempt.
   virtual void SetEligibility(PreloadingEligibility eligibility) = 0;
 
-  // Updates the preload outcome after it was triggered.
-  // - Initially set to kNotTriggered.
+  // Sets the outcome of the holdback check used to implement counterfactual
+  // experiments. This is not part of eligibility status to clarify that this
+  // check needs to happen after we are done verifying the eligibility of a
+  // preloading attempt. In general, eligibility checks can be reordered, but
+  // the holdback check always needs to come after verifying that the preloading
+  // attempt was eligible. This must only be called after calling
+  // SetEligibility(kEligible) and should not be called more than once.
+  virtual void SetHoldbackStatus(PreloadingHoldbackStatus holdback_status) = 0;
+
+  // Updates the preload outcome after it was triggered. This should only be
+  // called for eligible attempts with a kAllowed holdback status.
+  // - Initially set to kUnspecified.
   // - After triggering this if there is already a preloading attempt available
   // for the same URL we set to kDuplicate, or
   // - kRunning (for preloading methods with given enough time, we expect to

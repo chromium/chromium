@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_ATTEMPT_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_ATTEMPT_IMPL_H_
 
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -18,6 +19,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   // PreloadingAttempt implementation:
   void SetEligibility(PreloadingEligibility eligibility) override;
+  void SetHoldbackStatus(PreloadingHoldbackStatus holdback_status) override;
   void SetTriggeringOutcome(
       PreloadingTriggeringOutcome triggering_outcome) override;
 
@@ -32,9 +34,9 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   void RecordPreloadingAttemptUKMs(ukm::SourceId navigated_page,
                                    const GURL& navigated_url);
 
-  // Sets the specific failure reason specific to the PreloadingType once the
-  // PreloadingTriggeringOutcome is set to kFailure.
-  void SetFailureReason(int64_t reason);
+  // Sets the specific failure reason specific to the PreloadingType. This also
+  // sets the PreloadingTriggeringOutcome to kFailure.
+  void SetFailureReason(PreloadingFailureReason reason);
 
   explicit PreloadingAttemptImpl(
       PreloadingPredictor predictor,
@@ -47,10 +49,14 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // preloading logging reason. Zero as a failure reason signifies no reason is
   // specified. This value is casted from preloading specific enum to int64_t
   // instead of having an enum declaration for each case.
-  int64_t failure_reason_ = 0;
+  PreloadingFailureReason failure_reason_ =
+      PreloadingFailureReason::kUnspecified;
 
   // Specifies the eligibility status for this PreloadingAttempt.
   PreloadingEligibility eligibility_ = PreloadingEligibility::kUnspecified;
+
+  PreloadingHoldbackStatus holdback_status_ =
+      PreloadingHoldbackStatus::kUnspecified;
 
   // Specifies the triggering outcome for this PreloadingAttempt.
   PreloadingTriggeringOutcome triggering_outcome_ =

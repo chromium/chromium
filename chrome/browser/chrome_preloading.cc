@@ -8,3 +8,8 @@ content::PreloadingPredictor ToPreloadingPredictor(
     ChromePreloadingPredictor predictor) {
   return static_cast<content::PreloadingPredictor>(predictor);
 }
+
+content::PreloadingEligibility ToPreloadingEligibility(
+    ChromePreloadingEligibility eligibility) {
+  return static_cast<content::PreloadingEligibility>(eligibility);
+}
