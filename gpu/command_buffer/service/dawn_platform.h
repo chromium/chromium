@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 
-#include <dawn_platform/DawnPlatform.h>
+#include <dawn/platform/DawnPlatform.h>
 
 namespace gpu {
 namespace webgpu {

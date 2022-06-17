@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_MEMORY_TRANSFER_SERVICE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_MEMORY_TRANSFER_SERVICE_H_
 
-#include <dawn_wire/WireClient.h>
+#include <dawn/wire/WireClient.h>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

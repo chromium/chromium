@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_SERVICE_SERIALIZER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_SERVICE_SERIALIZER_H_
 
-#include <dawn_wire/WireClient.h>
+#include <dawn/wire/WireClient.h>
 
 #include <memory>
 

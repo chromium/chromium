@@ -6,8 +6,8 @@
 
 #include <dawn/native/DawnNative.h>
 #include <dawn/native/OpenGLBackend.h>
-#include <dawn_platform/DawnPlatform.h>
-#include <dawn_wire/WireServer.h>
+#include <dawn/platform/DawnPlatform.h>
+#include <dawn/wire/WireServer.h>
 
 #include <algorithm>
 #include <memory>
