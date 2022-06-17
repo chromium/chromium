@@ -395,6 +395,8 @@ try_.builder(
         "ci/Linux ChromiumOS MSan Tests",
     ],
     goma_jobs = goma.jobs.J150,
+    ssd = True,
+    cores = 16,
 )
 
 try_.builder(
