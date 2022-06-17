@@ -102,7 +102,11 @@
   }
 
   #imageContainer img.disabled {
-    opacity: var(--cros-disabled-opacity);
+    /**
+     * Use 50% for image instead of default cros-disabled-opacity.
+     * TODO(b/236415314) get this into design system as a semantic value.
+     */
+    opacity: 50%;
   }
 
   :host(:not([main-page])) #collageContainer,
