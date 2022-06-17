@@ -1505,13 +1505,12 @@ class ExtensionUpdaterTest : public testing::Test {
     CRXFileInfo crx_file_info;
     base::Version version("0.0.1");
     std::set<int> requests({0});
+    ExtensionDownloaderTask task = CreateDownloaderTask(id);
+    task.fetch_priority = fetch_priority;
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            ExtensionDownloaderTask(id, GURL() /*update_url*/,
-                                    ManifestLocation::kInternal,
-                                    false /*is_corrupt_reinstall*/,
-                                    0 /*request_id*/, fetch_priority),
-            test_url, hash, version.GetString(), requests, fetch_priority);
+            std::move(task), test_url, hash, version.GetString(), requests,
+            fetch_priority);
 
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
@@ -1554,12 +1553,8 @@ class ExtensionUpdaterTest : public testing::Test {
     requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            ExtensionDownloaderTask(
-                id, GURL() /*update_url*/, ManifestLocation::kInternal,
-                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
-                DownloadFetchPriority::kBackground),
-            test_url, hash, version.GetString(), requests,
-            DownloadFetchPriority::kBackground);
+            CreateDownloaderTask(id), test_url, hash, version.GetString(),
+            requests, DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
 
     if (pending) {
@@ -1832,12 +1827,8 @@ class ExtensionUpdaterTest : public testing::Test {
     requests.insert(0);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> extension_fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            ExtensionDownloaderTask(
-                id, GURL() /*update_url*/, ManifestLocation::kInternal,
-                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
-                DownloadFetchPriority::kBackground),
-            test_url, hash, version.GetString(), requests,
-            DownloadFetchPriority::kBackground);
+            CreateDownloaderTask(id), test_url, hash, version.GetString(),
+            requests, DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(extension_fetch),
                                                absl::nullopt);
 
@@ -2058,19 +2049,11 @@ class ExtensionUpdaterTest : public testing::Test {
     // Start two fetches
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch1 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            ExtensionDownloaderTask(
-                id1, GURL() /*update_url*/, ManifestLocation::kInternal,
-                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
-                DownloadFetchPriority::kBackground),
-            url1, hash1, version1, requests,
+            CreateDownloaderTask(id1), url1, hash1, version1, requests,
             DownloadFetchPriority::kBackground);
     std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch2 =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
-            ExtensionDownloaderTask(
-                id2, GURL() /*update_url*/, ManifestLocation::kInternal,
-                false /*is_corrupt_reinstall*/, 0 /*request_id*/,
-                DownloadFetchPriority::kBackground),
-            url2, hash2, version2, requests,
+            CreateDownloaderTask(id2), url2, hash2, version2, requests,
             DownloadFetchPriority::kBackground);
     updater.downloader_->FetchUpdatedExtension(std::move(fetch1),
                                                absl::optional<std::string>());
@@ -2696,25 +2679,22 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   std::string id = crx_file::id_util::GenerateId("foo");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
-      0, DownloadFetchPriority::kBackground)));
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(
+      CreateDownloaderTask(id, GURL("http://example.com/update"))));
   helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with invalid update URLs should be rejected.
   id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground)));
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+      CreateDownloaderTask(id, GURL("http:google.com:foo"))));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      std::string(), GURL(), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground)));
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+      CreateDownloaderTask(std::string(), GURL())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2731,8 +2711,7 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
   EXPECT_TRUE(helper->downloader().AddPendingExtension(
-      ExtensionDownloaderTask(id, GURL(), ManifestLocation::kInternal, false, 0,
-                              DownloadFetchPriority::kBackground)));
+      CreateDownloaderTask(id, GURL())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2747,51 +2726,57 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   auto helper = std::make_unique<ExtensionDownloaderTestHelper>();
   EXPECT_EQ(0u, ManifestFetchersCount(&helper->downloader()));
 
-  // First, verify that adding valid extensions does invoke the callbacks on
-  // the delegate.
-  std::string id = crx_file::id_util::GenerateId("foo");
-  EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
-      .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
-      0, DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  Mock::VerifyAndClearExpectations(&helper->delegate());
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // First, verify that adding valid extensions does invoke the callbacks on
+    // the delegate.
+    ExtensionId id = crx_file::id_util::GenerateId("foo");
+    EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
+        .WillOnce(Return(false));
+    ExtensionDownloaderTask task =
+        CreateDownloaderTask(id, GURL("http://example.com/update"));
+    task.version = base::Version(kVersion);
+    EXPECT_TRUE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    Mock::VerifyAndClearExpectations(&helper->delegate());
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
-  // Extensions with invalid update URLs should be rejected.
-  id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // Extensions with invalid update URLs should be rejected.
+    ExtensionId id = crx_file::id_util::GenerateId("foo2");
+    ExtensionDownloaderTask task =
+        CreateDownloaderTask(id, GURL("http:google.com:foo"));
+    task.version = base::Version(kVersion);
+    EXPECT_FALSE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
-  // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      std::string(), GURL(), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // Extensions with empty IDs should be rejected.
+    ExtensionDownloaderTask task = CreateDownloaderTask(std::string(), GURL());
+    task.version = base::Version(kVersion);
+    EXPECT_FALSE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
   // Reset the ExtensionDownloader so that it drops the current fetcher.
   helper = std::make_unique<ExtensionDownloaderTestHelper>();
   EXPECT_EQ(0u, ManifestFetchersCount(&helper->downloader()));
 
-  // Extensions with empty update URLs should have a default one
-  // filled in.
-  id = crx_file::id_util::GenerateId("foo3");
-  EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
-      .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
-      id, GURL(), ManifestLocation::kInternal, false, 0,
-      DownloadFetchPriority::kBackground, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string())));
-  helper->downloader().StartAllPending(nullptr);
-  EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  {
+    // Extensions with empty update URLs should have a default one
+    // filled in.
+    ExtensionId id = crx_file::id_util::GenerateId("foo3");
+    EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
+        .WillOnce(Return(false));
+    ExtensionDownloaderTask task = CreateDownloaderTask(id, GURL());
+    task.version = base::Version(kVersion);
+    EXPECT_TRUE(helper->downloader().AddPendingExtension(std::move(task)));
+    helper->downloader().StartAllPending(nullptr);
+    EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
+  }
 
   RunUntilIdle();
   auto* request = &(*helper->test_url_loader_factory().pending_requests())[0];

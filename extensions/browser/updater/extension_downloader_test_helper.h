@@ -127,6 +127,12 @@ class ExtensionDownloaderTestHelper {
   ExtensionDownloader downloader_;
 };
 
+// Creates a downloader task with most arguments set to default values.
+// Note that as ExtensionDownloaderTask is just a simple struct, callers can
+// configure additional properties if needed.
+ExtensionDownloaderTask CreateDownloaderTask(const ExtensionId& id,
+                                             const GURL& update_url = {});
+
 // Creates extension info and associated task, adds both to `fetch_data`.
 void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
                                        const ExtensionId& id,

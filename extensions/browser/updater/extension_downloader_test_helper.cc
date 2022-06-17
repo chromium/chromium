@@ -121,6 +121,14 @@ ExtensionDownloaderTestHelper::CreateDownloader() {
       &delegate_, test_shared_url_loader_factory_, GetTestVerifierFormat());
 }
 
+ExtensionDownloaderTask CreateDownloaderTask(const ExtensionId& id,
+                                             const GURL& update_url) {
+  return ExtensionDownloaderTask(
+      id, update_url, mojom::ManifestLocation::kInternal,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      DownloadFetchPriority::kBackground);
+}
+
 void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
                                        const ExtensionId& id,
                                        const std::string& version,
@@ -130,10 +138,7 @@ void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
                            ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
                            std::string(), mojom::ManifestLocation::kInternal,
                            DownloadFetchPriority::kBackground);
-  fetch_data->AddAssociatedTask(ExtensionDownloaderTask(
-      id, update_url, mojom::ManifestLocation::kInternal,
-      false /* is_corrupt_reinstall */, 0 /* request_id */,
-      DownloadFetchPriority::kBackground));
+  fetch_data->AddAssociatedTask(CreateDownloaderTask(id, update_url));
 }
 
 void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
