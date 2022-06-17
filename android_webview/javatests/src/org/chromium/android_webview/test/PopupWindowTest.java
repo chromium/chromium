@@ -28,7 +28,6 @@ import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptReq
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -495,7 +494,6 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1336342")
     public void testSingleWindowModeJsInjection() throws Throwable {
         // Choose a free port which is different from |mWebServer| so they have different origins.
         TestWebServer crossOriginWebServer = TestWebServer.startAdditional();
@@ -578,6 +576,13 @@ public class PopupWindowTest {
         Assert.assertNotNull("rect should not be null", rect);
         Assert.assertNotNull("mainFrameReplyProxy should not be null.", mainFrameReplyProxy);
         Assert.assertNotNull("iframeReplyProxy should not be null.", iframeReplyProxy);
+
+        // Wait for the page to finish rendering entirely before
+        // attempting to click the iframe_link
+        // We need this because we're using the DOMUtils
+        // Long term we plan to switch to JSUtils to avoid this
+        // https://crbug.com/1334843
+        mParentContentsClient.getOnPageCommitVisibleHelper().waitForFirst();
 
         // Step 4. Click iframe_link to give user gesture.
         DOMUtils.clickRect(mParentContents.getWebContents(), rect);
