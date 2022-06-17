@@ -114,7 +114,12 @@ void ChangeMetricsReportingStateWithReply(
     OnMetricsReportingCallbackType callback_fn,
     ChangeMetricsReportingStateCalledFrom called_from) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (IsMetricsReportingPolicyManaged()) {
+  // Chrome OS manages metrics settings externally and changes to reporting
+  // should be propagated to metrics service regardless if the policy is managed
+  // or not.
+  if (IsMetricsReportingPolicyManaged() &&
+      called_from !=
+          ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange) {
     if (!callback_fn.is_null()) {
       const bool metrics_enabled =
           ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();

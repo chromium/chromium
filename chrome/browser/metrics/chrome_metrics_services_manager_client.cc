@@ -155,7 +155,9 @@ bool IsClientInSampleImpl(PrefService* local_state) {
 // reporting setting changes.
 void OnCrosMetricsReportingSettingChange() {
   bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
-  ChangeMetricsReportingState(enable_metrics);
+  ChangeMetricsReportingState(
+      enable_metrics,
+      ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange);
 
   // TODO(crbug.com/1234538): This call ensures that structured metrics' state
   // is deleted when the reporting state is disabled. Long-term this should
