@@ -16,29 +16,6 @@ namespace blink {
 
 namespace {
 
-const NGLayoutResult* GetClonableLayoutResult(
-    const LayoutBox& layout_box,
-    const NGPhysicalBoxFragment& fragment) {
-  if (const NGBlockBreakToken* break_token = fragment.BreakToken()) {
-    if (!break_token->IsRepeated())
-      return layout_box.GetLayoutResult(break_token->SequenceNumber());
-  }
-  // Cloned results may already have been added (so we can't just pick the last
-  // one), but the break tokens have not yet been updated. Look for the first
-  // result without a break token (or with a repeated break token, in case we've
-  // already been through this). This will actually be the very first result,
-  // unless there's a fragmentation context established inside the repeated
-  // root.
-  for (const NGLayoutResult* result : layout_box.GetLayoutResults()) {
-    const NGBlockBreakToken* break_token =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment()).BreakToken();
-    if (!break_token || break_token->IsRepeated())
-      return result;
-  }
-  NOTREACHED();
-  return nullptr;
-}
-
 // Remove all cloned results, but keep the first original one(s).
 void RemoveClonedResults(LayoutBox& layout_box) {
   for (wtf_size_t idx = 0; idx < layout_box.PhysicalFragmentCount(); idx++) {
@@ -149,7 +126,10 @@ void NGFragmentRepeater::CloneChildFragments(
         child.fragment = &child_result->PhysicalFragment();
       } else if (child_box->IsFragmentainerBox()) {
         child_box = NGPhysicalBoxFragment::Clone(*child_box);
-        CloneChildFragments(*child_box);
+        NGFragmentRepeater child_repeater(
+            is_first_clone_, is_last_fragment_,
+            /* is_inside_nested_fragmentainer */ true);
+        child_repeater.CloneChildFragments(*child_box);
         child.fragment = child_box;
       }
     } else if (child->IsLineBox()) {
@@ -212,6 +192,31 @@ const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
     layout_box.FinalizeLayoutResults();
   }
   return cloned_result;
+}
+
+const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
+    const LayoutBox& layout_box,
+    const NGPhysicalBoxFragment& fragment) const {
+  if (const NGBlockBreakToken* break_token = fragment.BreakToken()) {
+    if (!break_token->IsRepeated())
+      return layout_box.GetLayoutResult(break_token->SequenceNumber());
+  }
+  // Cloned results may already have been added (so we can't just pick the last
+  // one), but the break tokens have not yet been updated. Look for the first
+  // result without a break token. Or look for the first result with a repeated
+  // break token (unless the repeated break token is the result of an inner
+  // fragmentation context), in case we've already been through this. This will
+  // actually be the very first result, unless there's a fragmentation context
+  // established inside the repeated root.
+  for (const NGLayoutResult* result : layout_box.GetLayoutResults()) {
+    const NGBlockBreakToken* break_token =
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment()).BreakToken();
+    if (!break_token ||
+        (break_token->IsRepeated() && !is_inside_nested_fragmentainer_))
+      return result;
+  }
+  NOTREACHED();
+  return nullptr;
 }
 
 }  // namespace blink

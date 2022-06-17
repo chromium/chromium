@@ -952,8 +952,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
                                               section_index);
 
     if (repeat_mode != kNotRepeated) {
-      if (repeat_mode == kMayRepeatAgain)
-        section_space_builder.SetIsRepeatable();
+      section_space_builder.SetIsRepeatable(repeat_mode == kMayRepeatAgain);
     } else if (ConstraintSpace().HasBlockFragmentation()) {
       SetupSpaceBuilderForFragmentation(
           ConstraintSpace(), section, block_offset, &section_space_builder,
