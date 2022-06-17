@@ -70,8 +70,6 @@ constexpr int kAlphaCornerRadius = 4;
 constexpr int kAlphaHeight = 16;
 constexpr int kAlphaSidePadding = 4;
 constexpr int kAlphaLeftMargin = 12;
-constexpr SkColor kAlphaBgColor = SkColorSetA(gfx::kGoogleBlue300, 0x4D);
-constexpr SkColor kAlphaTextColor = gfx::kGoogleBlue200;
 
 constexpr char kFeedbackUrl[] =
     "https://docs.google.com/forms/d/e/"
@@ -191,7 +189,8 @@ void InputMenuView::Init() {
     auto* alpha_label =
         header_view->AddChildView(ash::login_views_utils::CreateBubbleLabel(
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
-            /*view_defining_max_width=*/nullptr, kAlphaTextColor,
+            /*view_defining_max_width=*/nullptr, /*color=*/
+            arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection),
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
                           gfx::Font::Weight::MEDIUM)));
@@ -199,8 +198,9 @@ void InputMenuView::Init() {
     alpha_label->SetPreferredSize(gfx::Size(
         alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
         kAlphaHeight));
-    alpha_label->SetBackground(
-        views::CreateRoundedRectBackground(kAlphaBgColor, kAlphaCornerRadius));
+    alpha_label->SetBackground(views::CreateRoundedRectBackground(
+        arc::GetCrOSColor(cros_styles::ColorName::kHighlightColor),
+        kAlphaCornerRadius));
 
     game_control_toggle_ =
         header_view->AddChildView(std::make_unique<views::ToggleButton>(
