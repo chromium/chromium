@@ -232,22 +232,4 @@ const base::Feature kVmGmsCoreLowMemoryKillerProtection{
 const base::Feature kVmBroadcastPreNotifyANR{"ArcVmBroadcastPreAnrHandling",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If set, enable responsive balloon sizing. Concierge will listen on a VSOCK
-// for connections from LMKD in Android. When LMKD is about to kill an App, it
-// will signal the balloon sizing code, which may deflate the balloon instead
-// of killing the app.
-const base::FeatureParam<bool> kVmBalloonPolicyResponsive{&kVmBalloonPolicy,
-                                                          "responsive", false};
-
-// The amount of time LMKD will wait for a response from concierge before
-// killing an app.
-const base::FeatureParam<int> kVmBalloonPolicyResponsiveTimeoutMs{
-    &kVmBalloonPolicy, "responsive_timeout_ms", 100};
-
-// If an app should not be killed, the balloon will be deflated by
-// min(app_size, responsive_max_deflate_bytes), so that large apps don't
-// completely deflate the balloon.
-const base::FeatureParam<int> kVmBalloonPolicyResponsiveMaxDeflateBytes{
-    &kVmBalloonPolicy, "responsive_max_deflate_bytes", 256 * 1024 * 1024};
-
 }  // namespace arc
