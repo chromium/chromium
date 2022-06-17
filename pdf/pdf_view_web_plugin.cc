@@ -978,7 +978,13 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 
 void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
-  static constexpr auto kMessageHandlers =
+
+  // Settings this as const instead of constexpr to workaround a bug
+  // in GCC, that will try to reinterpret_cast the method pointers.
+  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105996
+  // TODO(crbug.com/1302059): make it constexpr again when we get rid
+  // of PdfViewPluginBase
+  static const auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
            &PdfViewWebPlugin::HandleDisplayAnnotationsMessage},
