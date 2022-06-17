@@ -4,14 +4,14 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 import {getRequiredElement} from 'chrome://resources/js/util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {Splitter} from './splitter.js';
 
 // clang-format on
 
-function setUp() {
+export function setUp() {
   const html = `
     <div id="previous"></div>
     <div id="splitter"></div>
@@ -20,7 +20,7 @@ function setUp() {
   document.body.innerHTML = html;
 }
 
-function testSplitter_IgnoresRightMouse() {
+export function testSplitterIgnoresRightMouse() {
   const splitter = getRequiredElement('splitter');
   decorate(splitter, Splitter);
 
@@ -33,7 +33,7 @@ function testSplitter_IgnoresRightMouse() {
   assertTrue(downLeft.defaultPrevented);
 }
 
-function testSplitter_ResizePreviousElement() {
+export function testSplitterResizePreviousElement() {
   const splitter = getRequiredElement('splitter');
   decorate(splitter, Splitter);
   splitter.resizeNextElement = false;
@@ -62,7 +62,7 @@ function testSplitter_ResizePreviousElement() {
   assertEquals(100, afterWidth - beforeWidth);
 }
 
-function testSplitter_ResizeNextElement() {
+export function testSplitterResizeNextElement() {
   const splitter = getRequiredElement('splitter');
   decorate(splitter, Splitter);
   splitter.resizeNextElement = true;
@@ -88,10 +88,3 @@ function testSplitter_ResizeNextElement() {
   const afterWidth = parseFloat(nextElement.style.width);
   assertEquals(100, afterWidth - beforeWidth);
 }
-
-Object.assign(window, {
-  setUp,
-  testSplitter_IgnoresRightMouse,
-  testSplitter_ResizePreviousElement,
-  testSplitter_ResizeNextElement,
-});

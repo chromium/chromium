@@ -262,7 +262,6 @@ if (is_chromeos_ash) {
     "js/cr/ui/list_selection_model.m.js",
     "js/cr/ui/list_single_selection_model.m.js",
     "js/cr/ui/list_selection_controller.m.js",
-    "js/cr/ui/splitter.js",
     "js/cr/ui/store_client.js",
   ]
 }

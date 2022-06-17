@@ -98,15 +98,6 @@ js_library("position_util_test") {
   ]
 }
 
-js_library("splitter_test") {
-  deps = [
-    "../../..:chai_assert",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:splitter",
-  ]
-}
-
 js_type_check("closure_compile") {
   deps = [
     ":array_data_model_test",
@@ -116,7 +107,6 @@ js_type_check("closure_compile") {
     ":menu_button_test",
     ":menu_test",
     ":position_util_test",
-    ":splitter_test",
   ]
 
   if (is_chromeos_ash) {

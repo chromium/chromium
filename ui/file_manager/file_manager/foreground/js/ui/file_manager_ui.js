@@ -7,7 +7,6 @@ import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
-import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
@@ -44,6 +43,7 @@ import {MultiMenuButton} from './multi_menu_button.js';
 import {ProgressCenterPanel} from './progress_center_panel.js';
 import {ProvidersMenu} from './providers_menu.js';
 import {SearchBox} from './search_box.js';
+import {Splitter} from './splitter.js';
 
 
 /**

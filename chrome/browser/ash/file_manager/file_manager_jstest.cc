@@ -255,6 +255,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ProvidersModel) {
   RunTestURL("foreground/js/providers_model_unittest.m_gen.html");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Splitter) {
+  RunTestURL("foreground/js/ui/splitter_unittest_gen.html");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SpinnerController) {
   RunTestURL("foreground/js/spinner_controller_unittest.m_gen.html");
 }
