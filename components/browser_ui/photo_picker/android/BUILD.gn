@@ -126,18 +126,30 @@ robolectric_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("test_support_java") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//build/android:build_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceHostTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoderTest.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDialogTest.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java",
   ]
   deps = [
     ":java",
     ":java_resources",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
