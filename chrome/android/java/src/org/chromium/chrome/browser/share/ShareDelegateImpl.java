@@ -18,10 +18,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
@@ -39,9 +37,6 @@ import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementation of share interface. Mostly a wrapper around ShareSheetCoordinator.
@@ -110,21 +105,13 @@ public class ShareDelegateImpl implements ShareDelegate {
             boolean shareDirectly) {
         if (currentTab == null) return;
 
-        List<Class<? extends Activity>> classesToEnable = new ArrayList<>(2);
-
-        if (PrintShareActivity.featureIsAvailable(currentTab)) {
-            classesToEnable.add(PrintShareActivity.class);
-        }
-
-        if (SendTabToSelfShareActivity.featureIsAvailable(currentTab)) {
-            classesToEnable.add(SendTabToSelfShareActivity.class);
-        }
-
-        if (!classesToEnable.isEmpty()) {
-            OptionalShareTargetsManager.getInstance().enableOptionalShareActivities(activity,
-                    classesToEnable, () -> triggerShare(currentTab, shareOrigin, shareDirectly));
-            return;
-        }
+//        List<Class<? extends Activity>> classesToEnable = new ArrayList<>(2);
+//
+//        if (!classesToEnable.isEmpty()) {
+//            OptionalShareTargetsManager.getInstance().enableOptionalShareActivities(activity,
+//                    classesToEnable, () -> triggerShare(currentTab, shareOrigin, shareDirectly));
+//            return;
+//        }
 
         triggerShare(currentTab, shareOrigin, shareDirectly);
     }

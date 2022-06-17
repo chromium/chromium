@@ -125,8 +125,6 @@ chrome_browser_sharing::MessageType SharingPayloadCaseToMessageType(
       return chrome_browser_sharing::ACK_MESSAGE;
     case chrome_browser_sharing::SharingMessage::kClickToCallMessage:
       return chrome_browser_sharing::CLICK_TO_CALL_MESSAGE;
-    case chrome_browser_sharing::SharingMessage::kSharedClipboardMessage:
-      return chrome_browser_sharing::SHARED_CLIPBOARD_MESSAGE;
     case chrome_browser_sharing::SharingMessage::kSmsFetchRequest:
       return chrome_browser_sharing::SMS_FETCH_REQUEST;
     case chrome_browser_sharing::SharingMessage::kRemoteCopyMessage:

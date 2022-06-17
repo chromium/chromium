@@ -29,10 +29,6 @@
 #include "components/sync_device_info/device_info.h"
 #include "crypto/ec_private_key.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/android/chrome_jni_headers/SharingJNIBridge_jni.h"
-#endif
-
 using instance_id::InstanceID;
 using sync_pb::SharingSpecificFields;
 
@@ -300,29 +296,16 @@ SharingDeviceRegistration::GetEnabledFeatures(bool supports_vapid) const {
 }
 
 bool SharingDeviceRegistration::IsClickToCallSupported() const {
-#if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_SharingJNIBridge_isTelephonySupported(env);
-#else
   return false;
-#endif
 }
 
 bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
   // Check the enterprise policy for Shared Clipboard.
-  if (pref_service_ &&
-      !pref_service_->GetBoolean(prefs::kSharedClipboardEnabled)) {
-    return false;
-  }
-  return true;
+  return false;
 }
 
 bool SharingDeviceRegistration::IsSmsFetcherSupported() const {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(kWebOTPCrossDevice);
-#else
   return false;
-#endif
 }
 
 bool SharingDeviceRegistration::IsRemoteCopySupported() const {

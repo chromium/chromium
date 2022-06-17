@@ -44,7 +44,6 @@ import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -80,7 +79,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationManager;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationPresenceController;
 import org.chromium.chrome.browser.incognito.IncognitoProfileDestroyer;
@@ -105,7 +103,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -446,12 +443,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
 
                 private void closeIfNoTabsAndHomepageEnabled(boolean isPendingClosure) {
-                    if (getTabModelSelector().getTotalTabCount() == 0) {
-                        // If the last tab is closed, and homepage is enabled, then exit Chrome.
-                        if (HomepageManager.shouldCloseAppWithZeroTabs()) {
-                            finish();
-                        }
-                    }
 
                     boolean gridTabSwitcherEnabled = true;
                     boolean overviewVisible = mOverviewModeController.overviewVisible();
@@ -784,9 +775,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TraceEvent.begin("ChromeTabbedActivity.onNewIntentWithNative");
 
             super.onNewIntentWithNative(intent);
-            if (IntentUtils.isMainIntentFromLauncher(intent)) {
-                logMainIntentBehavior(intent);
-            }
 
             if (CommandLine.getInstance().hasSwitch(ContentSwitches.ENABLE_TEST_INTENTS)) {
                 handleDebugIntent(intent);
@@ -867,28 +855,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         || StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
     }
 
-    private void logMainIntentBehavior(Intent intent) {
-        assert IntentUtils.isMainIntentFromLauncher(intent);
-        // TODO(tedchoc): We should cache the last visible time and reuse it to avoid different
-        //                values of this depending on when it is called after the activity was
-        //                shown.
-
-        // Temporary safety check to make sure none of this code runs if the feature is
-        // disabled.
-        if (ReengagementNotificationController.isEnabled()) {
-            if (mCallbackController != null) {
-                new OneShotCallback<>(
-                        mTabModelProfileSupplier, mCallbackController.makeCancelable(profile -> {
-                            assert profile != null : "Unexpectedly null profile from TabModel.";
-                            if (profile == null) return;
-
-                            TrackerFactory.getTrackerForProfile(profile).notifyEvent(
-                                    EventConstants.STARTED_FROM_MAIN_INTENT);
-                        }));
-            }
-        }
-    }
-
     @VisibleForTesting
     public ChromeInactivityTracker getInactivityTrackerForTesting() {
         return mInactivityTracker;
@@ -942,7 +908,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
                 if (IntentUtils.isMainIntentFromLauncher(intent)) {
                     isMainIntentFromLauncher = true;
-                    logMainIntentBehavior(intent);
                 }
             }
 
@@ -1011,16 +976,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // If the start surface or grid tab switcher will be shown on start, do not create a new
         // tab.
         if (!shouldShowOverviewPageOnStart()) {
-            String url = HomepageManager.getHomepageUri();
-            if (TextUtils.isEmpty(url)) {
-                url = UrlConstants.NTP_URL;
-            } else {
-                // Migrate legacy NTP URLs (chrome://newtab) to the newer format
-                // (chrome-native://newtab)
-                if (UrlUtilities.isNTPUrl(url)) {
-                    url = UrlConstants.NTP_URL;
-                }
-            }
+            String url = "https://www.baidu.com";
 
             getTabCreator(false).launchUrl(url, TabLaunchType.FROM_STARTUP);
         }

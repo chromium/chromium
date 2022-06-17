@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -334,8 +333,6 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(
                 () -> IncognitoTabLauncher.updateComponentEnabledState());
 
-        deferredStartupHandler.addDeferredTask(
-                () -> SharedClipboardShareActivity.updateComponentEnabledState());
         deferredStartupHandler.addDeferredTask(
                 () -> OfflineContentAvailabilityStatusProvider.getInstance());
         deferredStartupHandler.addDeferredTask(

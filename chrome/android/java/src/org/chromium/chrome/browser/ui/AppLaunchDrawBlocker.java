@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -184,7 +183,7 @@ public class AppLaunchDrawBlocker {
         boolean isNtpUrl = UrlUtilities.isCanonicalizedNTPUrl(url);
 
         boolean shouldBlockWithoutIntent = shouldBlockDrawForNtpOnColdStartWithoutIntent(
-                tabState, HomepageManager.isHomepageNonNtpPreNative(), true);
+                tabState, true, true);
 
         if (shouldBlockDrawForNtpOnColdStartWithIntent(hasValidIntentUrl, isNtpUrl,
                     IntentHandler.shouldIntentShowNewTabOmniboxFocused(mIntentSupplier.get()),

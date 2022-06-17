@@ -14,7 +14,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -459,7 +458,7 @@ public class TabModelImpl extends TabModelJniBridge {
         for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
         // Force close immediately upon exit or if Chrome needs to close with a zero-state.
-        if (uponExit || HomepageManager.shouldCloseAppWithZeroTabs()) {
+        if (uponExit) {
             commitAllTabClosures();
 
             for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
