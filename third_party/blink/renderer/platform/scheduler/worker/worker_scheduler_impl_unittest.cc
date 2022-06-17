@@ -40,7 +40,7 @@ void AppendToVectorTestTask(Vector<String>* vector, String value) {
   vector->push_back(value);
 }
 
-void RunChainedTask(scoped_refptr<base::sequence_manager::TaskQueue> task_queue,
+void RunChainedTask(scoped_refptr<NonMainThreadTaskQueue> task_queue,
                     int count,
                     base::TimeDelta duration,
                     scoped_refptr<base::TestMockTimeTaskRunner> environment,
@@ -54,7 +54,7 @@ void RunChainedTask(scoped_refptr<base::sequence_manager::TaskQueue> task_queue,
 
   // Add a delay of 50ms to ensure that wake-up based throttling does not affect
   // us.
-  task_queue->task_runner()->PostDelayedTask(
+  task_queue->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RunChainedTask, task_queue, count - 1, duration,
                      environment, base::Unretained(tasks)),
@@ -232,8 +232,10 @@ TEST_F(WorkerSchedulerImplTest, ThrottleWorkerScheduler_RunThrottledTasks) {
 
   Vector<base::TimeTicks> tasks;
 
-  worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RunChainedTask,
+  worker_scheduler_->ThrottleableTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
                                 base::TimeDelta(), mock_task_runner_,
                                 base::Unretained(&tasks)));
@@ -263,8 +265,10 @@ TEST_F(WorkerSchedulerImplTest,
 
   Vector<base::TimeTicks> tasks;
 
-  worker_scheduler_->ThrottleableTaskQueue()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RunChainedTask,
+  worker_scheduler_->ThrottleableTaskQueue()
+      ->GetTaskRunnerWithDefaultTaskType()
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&RunChainedTask,
                                 worker_scheduler_->ThrottleableTaskQueue(), 5,
                                 base::Milliseconds(100), mock_task_runner_,
                                 base::Unretained(&tasks)));

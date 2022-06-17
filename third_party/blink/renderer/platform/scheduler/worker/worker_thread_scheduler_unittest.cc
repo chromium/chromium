@@ -154,7 +154,8 @@ class WorkerThreadSchedulerTest : public testing::Test {
     scheduler_->Init();
     scheduler_->AttachToCurrentThread();
     default_task_queue_ = scheduler_->CreateTaskQueue("test_tq");
-    default_task_runner_ = default_task_queue_->CreateTaskRunner(0);
+    default_task_runner_ =
+        default_task_queue_->GetTaskRunnerWithDefaultTaskType();
     idle_task_runner_ = scheduler_->IdleTaskRunner();
   }
 
@@ -218,7 +219,7 @@ class WorkerThreadSchedulerTest : public testing::Test {
       sequence_manager_;
   Vector<String> timeline_;
   std::unique_ptr<WorkerThreadSchedulerForTest> scheduler_;
-  scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue_;
+  scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
   scoped_refptr<SingleThreadIdleTaskRunner> idle_task_runner_;
 };

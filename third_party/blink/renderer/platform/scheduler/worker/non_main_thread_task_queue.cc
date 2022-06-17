@@ -18,17 +18,18 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
     const TaskQueue::Spec& spec,
     NonMainThreadSchedulerImpl* non_main_thread_scheduler,
     bool can_be_throttled)
-    : TaskQueue(std::move(impl), spec),
+    : task_queue_(base::MakeRefCounted<TaskQueue>(std::move(impl), spec)),
       non_main_thread_scheduler_(non_main_thread_scheduler) {
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
-  if (GetTaskQueueImpl() && spec.should_notify_observers) {
+  if (task_queue_->HasImpl() && spec.should_notify_observers) {
     if (can_be_throttled) {
-      throttler_.emplace(this, non_main_thread_scheduler->GetTickClock());
+      throttler_.emplace(task_queue_.get(),
+                         non_main_thread_scheduler->GetTickClock());
     }
     // TaskQueueImpl may be null for tests.
-    GetTaskQueueImpl()->SetOnTaskCompletedHandler(base::BindRepeating(
+    task_queue_->SetOnTaskCompletedHandler(base::BindRepeating(
         &NonMainThreadTaskQueue::OnTaskCompleted, base::Unretained(this)));
   }
 }
@@ -38,7 +39,7 @@ NonMainThreadTaskQueue::~NonMainThreadTaskQueue() = default;
 void NonMainThreadTaskQueue::ShutdownTaskQueue() {
   non_main_thread_scheduler_ = nullptr;
   throttler_.reset();
-  TaskQueue::ShutdownTaskQueue();
+  task_queue_->ShutdownTaskQueue();
 }
 
 void NonMainThreadTaskQueue::OnTaskCompleted(
@@ -90,13 +91,13 @@ void NonMainThreadTaskQueue::OnWebSchedulingPriorityChanged() {
   DCHECK(web_scheduling_priority_);
   switch (web_scheduling_priority_.value()) {
     case WebSchedulingPriority::kUserBlockingPriority:
-      SetQueuePriority(TaskQueue::QueuePriority::kHighPriority);
+      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kHighPriority);
       return;
     case WebSchedulingPriority::kUserVisiblePriority:
-      SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
+      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kNormalPriority);
       return;
     case WebSchedulingPriority::kBackgroundPriority:
-      SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
+      task_queue_->SetQueuePriority(TaskQueue::QueuePriority::kLowPriority);
       return;
   }
 }
