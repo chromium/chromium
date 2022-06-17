@@ -98729,6 +98729,14 @@ others/histograms.xml -->
   <int value="927" label="ERROR_VOLLEY_TIMEOUT"/>
   <int value="961" label="ERROR_INSTALL_APK_VERIFICATION_OTHER"/>
   <int value="963" label="ERROR_INSTALL_APK_COPY_FAILURE"/>
+  <int value="1008" label="ERROR_DOWNLOAD_INTERNAL_FREE_SPACE"/>
+  <int value="1010" label="ERROR_DELIVERY_RESPONSE_NOT_FOUND"/>
+  <int value="1148" label="ERROR_INSTALLER_NO_ACTIVE_DOWNLOADDATA"/>
+  <int value="1149" label="ERROR_INSTALLER_TASK_START_FAILED"/>
+  <int value="1402" label="ERROR_VOLLEY_DFE_SERVER"/>
+  <int value="1404" label="ERROR_VOLLEY_NO_CONNECTION"/>
+  <int value="1407" label="ERROR_VOLLEY_TIMEOUT"/>
+  <int value="5200" label="ERROR_DOWNLOAD_FAILED"/>
 </enum>
 
 <enum name="WebApkInstallInfoBarShown">
