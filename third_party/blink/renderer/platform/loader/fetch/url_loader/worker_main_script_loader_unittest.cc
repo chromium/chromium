@@ -147,12 +147,13 @@ class WorkerMainScriptLoaderTest : public testing::Test {
   class MockResourceLoadObserver : public ResourceLoadObserver {
    public:
     MOCK_METHOD2(DidStartRequest, void(const FetchParameters&, ResourceType));
-    MOCK_METHOD5(WillSendRequest,
+    MOCK_METHOD6(WillSendRequest,
                  void(const ResourceRequest&,
                       const ResourceResponse& redirect_response,
                       ResourceType,
                       const ResourceLoaderOptions&,
-                      RenderBlockingBehavior));
+                      RenderBlockingBehavior,
+                      const Resource*));
     MOCK_METHOD3(DidChangePriority,
                  void(uint64_t identifier,
                       ResourceLoadPriority,

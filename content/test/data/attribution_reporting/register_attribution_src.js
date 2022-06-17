@@ -7,9 +7,31 @@ function createAttributionSrcImg(src) {
   img.attributionSrc = src;
 }
 
+function createAttributionEligibleImgSrc(src) {
+  const img = document.createElement('img');
+  img.setAttribute('attributionsrc', '');
+  img.src = src;
+}
+
 function createAttributionSrcScript(src) {
   const script = document.createElement('script');
   script.setAttribute('attributionsrc', src);
+}
+
+function doAttributionEligibleFetch(url) {
+  const headers = {
+    'Attribution-Reporting-Eligible': 'event-source'
+  };
+  // Optionally set keepalive to ensure the request outlives the page.
+  window.fetch(url,
+               { headers, keepalive: true});
+}
+
+function doAttributionEligibleXHR(url) {
+  const req = new XMLHttpRequest();
+  req.open('GET', url);
+  req.setRequestHeader('Attribution-Reporting-Eligible', 'event-source');
+  req.send();
 }
 
 function createAttributionSrcAnchor({

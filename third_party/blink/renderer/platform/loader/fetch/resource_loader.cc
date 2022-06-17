@@ -911,9 +911,9 @@ bool ResourceLoader::WillFollowRedirect(
                            unused_virtual_time_pauser, resource_->GetType());
   DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->WillSendRequest(*new_request, redirect_response,
-                              resource_->GetType(), options,
-                              initial_request.GetRenderBlockingBehavior());
+    observer->WillSendRequest(
+        *new_request, redirect_response, resource_->GetType(), options,
+        initial_request.GetRenderBlockingBehavior(), resource_);
   }
 
   // First-party cookie logic moved from DocumentLoader in Blink to
