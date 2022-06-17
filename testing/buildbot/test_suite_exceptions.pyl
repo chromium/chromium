@@ -1088,11 +1088,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter',
         ],
       },
-      'android-pie-x86-rel': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
     },
   },
   'chrome_sizes': {
