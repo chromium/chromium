@@ -17,14 +17,17 @@ class Profile;
 
 namespace guest_os {
 
-// A unique identifier for our guests.
+// A unique identifier for our containers.
 struct GuestId {
-  GuestId(std::string vm_name, std::string container_name) noexcept;
+  GuestId(VmType vm_type,
+          std::string vm_name,
+          std::string container_name) noexcept;
   explicit GuestId(const base::Value&) noexcept;
 
   base::flat_map<std::string, std::string> ToMap() const;
   base::Value::Dict ToDictValue() const;
 
+  VmType vm_type;
   std::string vm_name;
   std::string container_name;
 };
@@ -38,7 +41,7 @@ inline bool operator!=(const GuestId& lhs, const GuestId& rhs) noexcept {
 std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id);
 
 // Returns a list of all containers in prefs.
-std::vector<GuestId> GetContainers(Profile* profile);
+std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type);
 
 // Remove duplicate containers in the existing kGuestOsContainers pref.
 void RemoveDuplicateContainerEntries(PrefService* prefs);
@@ -51,8 +54,9 @@ void AddContainerToPrefs(Profile* profile,
 // Remove a deleted container from the kGuestOsContainers pref.
 void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id);
 
-// Remove a deleted container from the kGuestOsContainers pref.
-void RemoveVmFromPrefs(Profile* profile, const std::string& vm_name);
+// Remove all containers for the specified |vm_type| from the kGuestOsContainers
+// pref.
+void RemoveVmFromPrefs(Profile* profile, VmType vm_type);
 
 // Returns a pref value stored for a specific container.
 const base::Value* GetContainerPrefValue(Profile* profile,

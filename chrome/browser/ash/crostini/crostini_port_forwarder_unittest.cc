@@ -32,8 +32,11 @@ class CrostiniPortForwarderTest : public testing::Test {
  public:
   CrostiniPortForwarderTest()
       : default_container_id_(DefaultContainerId()),
-        other_container_id_(guest_os::GuestId("other", "other")),
-        inactive_container_id_(guest_os::GuestId("inactive", "inactive")) {}
+        other_container_id_(
+            guest_os::GuestId(kCrostiniDefaultVmType, "other", "other")),
+        inactive_container_id_(
+            guest_os::GuestId(kCrostiniDefaultVmType, "inactive", "inactive")) {
+  }
 
   CrostiniPortForwarderTest(const CrostiniPortForwarderTest&) = delete;
   CrostiniPortForwarderTest& operator=(const CrostiniPortForwarderTest&) =

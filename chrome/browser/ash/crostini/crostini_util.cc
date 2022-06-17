@@ -52,6 +52,8 @@ const char kCrostiniImageAliasPattern[] = "debian/%s";
 const char kCrostiniContainerDefaultVersion[] = "bullseye";
 const char kCrostiniContainerFlag[] = "crostini-container-install-version";
 
+const guest_os::VmType kCrostiniDefaultVmType =
+    guest_os::VmType::ApplicationList_VmType_TERMINA;
 const char kCrostiniDefaultVmName[] = "termina";
 const char kCrostiniDefaultContainerName[] = "penguin";
 const char kCrostiniDefaultUsername[] = "emperor";
@@ -112,7 +114,8 @@ void OnSharePathForLaunchApplication(
         "failed to share paths to launch " + app_id + ":" + failure_reason,
         CrostiniResult::SHARE_PATHS_FAILED);
   }
-  const guest_os::GuestId container_id(registration.VmName(),
+  const guest_os::GuestId container_id(registration.VmType(),
+                                       registration.VmName(),
                                        registration.ContainerName());
   crostini::CrostiniManager::GetForProfile(profile)->LaunchContainerApplication(
       container_id, registration.DesktopFileId(), args, registration.IsScaled(),
@@ -297,7 +300,7 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
     return std::move(callback).Run(
         false, "LaunchCrostiniApp called with an unknown app_id: " + app_id);
   }
-  guest_os::GuestId container_id(registration->VmName(),
+  guest_os::GuestId container_id(registration->VmType(), registration->VmName(),
                                  registration->ContainerName());
 
   if (crostini_manager->IsUncleanStartup()) {
@@ -451,7 +454,8 @@ std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
 
 const guest_os::GuestId& DefaultContainerId() {
   static const base::NoDestructor<guest_os::GuestId> container_id(
-      kCrostiniDefaultVmName, kCrostiniDefaultContainerName);
+      kCrostiniDefaultVmType, kCrostiniDefaultVmName,
+      kCrostiniDefaultContainerName);
   return *container_id;
 }
 
@@ -492,7 +496,8 @@ void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
 }
 
 bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
-  for (const auto& container : guest_os::GetContainers(profile)) {
+  for (const auto& container :
+       guest_os::GetContainers(profile, kCrostiniDefaultVmType)) {
     if (container.container_name != container_id.container_name &&
         container.vm_name == container_id.vm_name) {
       if (CrostiniManager::GetForProfile(profile)->GetContainerInfo(

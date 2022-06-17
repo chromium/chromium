@@ -21,9 +21,12 @@ class GuestIdTest : public testing::Test {
 };
 
 TEST_F(GuestIdTest, GuestIdEquality) {
-  auto container1 = GuestId{"test1", "test2"};
-  auto container2 = GuestId{"test1", "test2"};
-  auto container3 = GuestId{"test2", "test1"};
+  auto container1 =
+      GuestId{VmType::ApplicationList_VmType_TERMINA, "test1", "test2"};
+  auto container2 =
+      GuestId{VmType::ApplicationList_VmType_TERMINA, "test1", "test2"};
+  auto container3 =
+      GuestId{VmType::ApplicationList_VmType_BOREALIS, "test2", "test1"};
 
   ASSERT_TRUE(container1 == container2);
   ASSERT_FALSE(container1 == container3);
@@ -34,26 +37,40 @@ TEST_F(GuestIdTest, GuestIdFromDictValue) {
   base::Value dict(base::Value::Type::DICT);
   dict.SetStringKey(prefs::kVmNameKey, "foo");
   dict.SetStringKey(prefs::kContainerNameKey, "bar");
-  EXPECT_TRUE(GuestId(dict) == GuestId("foo", "bar"));
+  EXPECT_TRUE(GuestId(dict) ==
+              GuestId(VmType::ApplicationList_VmType_TERMINA, "foo", "bar"));
+
+  dict.SetIntKey(prefs::kVmTypeKey, 0);
+  dict.SetStringKey(prefs::kVmNameKey, "foo");
+  dict.SetStringKey(prefs::kContainerNameKey, "bar");
+  EXPECT_TRUE(GuestId(dict) ==
+              GuestId(VmType::ApplicationList_VmType_TERMINA, "foo", "bar"));
+
+  dict.SetIntKey(prefs::kVmTypeKey, 1);
+  dict.SetStringKey(prefs::kVmNameKey, "foo");
+  dict.SetStringKey(prefs::kContainerNameKey, "bar");
+  EXPECT_TRUE(GuestId(dict) ==
+              GuestId(VmType::ApplicationList_VmType_PLUGIN_VM, "foo", "bar"));
 }
 
 TEST_F(GuestIdTest, GuestIdFromNonDictValue) {
   base::Value non_dict("not a dict value");
-  EXPECT_TRUE(GuestId(non_dict) == GuestId("", ""));
+  EXPECT_TRUE(GuestId(non_dict) ==
+              GuestId(VmType::ApplicationList_VmType_UNKNOWN, "", ""));
 }
 
 TEST_F(GuestIdTest, DuplicateContainerNamesInPrefsAreRemoved) {
-  GuestId container1("test1", "test1");
+  GuestId container1(VmType::ApplicationList_VmType_TERMINA, "test1", "test1");
   base::Value::Dict dictionary1 = container1.ToDictValue();
   dictionary1.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 1");
   dictionary1.Set(prefs::kContainerOsVersionKey, 1);
 
-  GuestId container2("test1", "test2");
+  GuestId container2(VmType::ApplicationList_VmType_TERMINA, "test1", "test2");
   base::Value::Dict dictionary2 = container2.ToDictValue();
   dictionary2.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 2");
   dictionary2.Set(prefs::kContainerOsVersionKey, 2);
 
-  GuestId container3("test2", "test1");
+  GuestId container3(VmType::ApplicationList_VmType_TERMINA, "test2", "test1");
   base::Value::Dict dictionary3 = container3.ToDictValue();
   dictionary3.Set(prefs::kContainerOsPrettyNameKey, "Test OS Name 3");
   dictionary3.Set(prefs::kContainerOsVersionKey, 3);
@@ -87,8 +104,12 @@ TEST_F(GuestIdTest, GetContainers) {
   ])");
   ASSERT_TRUE(pref.has_value());
   profile_.GetPrefs()->Set(prefs::kGuestOsContainers, std::move(*pref));
-  std::vector<GuestId> expected = {GuestId("vm1", "c1"), GuestId("vm2", "c2")};
-  EXPECT_EQ(GetContainers(&profile_), expected);
+  std::vector<GuestId> expected = {
+      GuestId(VmType::ApplicationList_VmType_TERMINA, "vm1", "c1"),
+      GuestId(VmType::ApplicationList_VmType_TERMINA, "vm2", "c2"),
+      GuestId(VmType::ApplicationList_VmType_TERMINA, "vm3", "")};
+  EXPECT_EQ(GetContainers(&profile_, VmType::ApplicationList_VmType_TERMINA),
+            expected);
 }
 
 TEST_F(GuestIdTest, VmTypeFromPref) {

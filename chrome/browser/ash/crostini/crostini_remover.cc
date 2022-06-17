@@ -76,7 +76,7 @@ void CrostiniRemover::UninstallTerminaFinished(bool success) {
 
   profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
-  guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmName);
+  guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmType);
   profile_->GetPrefs()->ClearPref(prefs::kCrostiniDefaultContainerConfigured);
   std::move(callback_).Run(CrostiniResult::SUCCESS);
 }

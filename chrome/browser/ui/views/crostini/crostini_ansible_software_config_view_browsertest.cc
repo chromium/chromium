@@ -29,8 +29,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
  public:
   CrostiniAnsibleSoftwareConfigViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/),
-        container_id_(crostini::kCrostiniDefaultVmName,
-                      crostini::kCrostiniDefaultContainerName),
+        container_id_(crostini::DefaultContainerId()),
         network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
     scoped_feature_list_.InitAndEnableFeature(

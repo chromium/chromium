@@ -399,7 +399,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       // kCrostiniDefaultContainerName is not used in the following function
       // since we are only starting the VM.
       crostini_manager->RestartCrostiniWithOptions(
-          guest_os::GuestId(vm_name, crostini::kCrostiniDefaultContainerName),
+          GuestId(crostini::kCrostiniDefaultVmType, vm_name,
+                  crostini::kCrostiniDefaultContainerName),
           std::move(options),
           base::BindOnce(&OnVmRestartedForSeneschal, profile_, vm_name,
                          std::move(callback), std::move(request)));
