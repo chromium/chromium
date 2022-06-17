@@ -10,7 +10,6 @@ assert(enable_extensions)
 # TODO(crbug.com/1065748): Delete web_applications/extensions/ directory.
 source_set("extensions") {
   sources = [
-    "bookmark_app_provider.cc",
     "bookmark_app_util.cc",
     "bookmark_app_util.h",
     "extension_status_utils.cc",
