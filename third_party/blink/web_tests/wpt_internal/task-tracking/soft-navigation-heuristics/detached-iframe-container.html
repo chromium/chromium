@@ -8,19 +8,15 @@
 </head>
 <body>
 <script>
-  promise_test(t => {
-    return new Promise(resolve => {
+  promise_test(async t => {
       const frame = document.createElement("iframe");
-      frame.addEventListener("load", async () => {
-        // Wait for iframe to be detached.
-        while(frame.contentWindow) {
-          await new Promise(r => setTimeout(r, 10));
-        }
-        resolve();
+      const loaded = new Promise(resolve => {
+        frame.addEventListener("load", resolve());
       });
       frame.src = "../resources/event-click-detaching-frame.html";
       document.body.appendChild(frame);
-    });
+      await loaded;
+      t.step_wait(() => !frame.contentWindow);
   }, "Test that an event click that detaches the iframe on which it was fired" +
      " doesn't crash");
 </script>

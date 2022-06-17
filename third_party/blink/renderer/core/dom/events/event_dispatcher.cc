@@ -208,8 +208,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
 
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
   if (is_click && event_->isTrusted() && frame) {
-    // TODO(yoav): Pass along if this is a semantic element or not.
-    if (window) {
+    if (window && frame->IsMainFrame()) {
       soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
           SoftNavigationHeuristics::From(*window),
           ToScriptStateForMainWorld(frame));

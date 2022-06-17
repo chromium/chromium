@@ -13,33 +13,33 @@
   <a id=link>Click me!</a>
   </main>
   <script>
-    promise_test(t => {
-      return new Promise(resolve => {
-        const link = document.getElementById("link");
-        link.addEventListener("click", e => {
-          setTimeout(async () => {
-            // Fetch some content
-            const response = await fetch("../resources/content.json");
-            const json = await response.json();
-            // Change the URL
-            history.pushState({}, '', "/foobar.html");
-            // Add the content
-            const main = document.getElementById("main");
-            const content = document.createTextNode(json["content"]);
-            main.appendChild(content);
-            setTimeout(()=>{
-              assert_equals(document.softNavigations, 1);
-              resolve();
-            }, 10);
-          }, 0);
-          e.preventDefault();
-          return false;
-        });
-        if (test_driver) {
-          test_driver.click(link);
-        }
-      });
+    promise_test(async t => {
+      const link = document.getElementById("link");
+      const clicked = new Promise(resolve => {
+        link.addEventListener("click", async e => {
+          // Jump through a task, to ensure task tracking is working properly.
+          await new Promise(r => setTimeout(r, 0));
 
+          // Fetch some content
+          const response = await fetch("../resources/content.json");
+          const json = await response.json();
+
+          // Change the URL
+          history.pushState({}, '', "/foobar.html");
+
+          // Add the content to the main element
+          const main = document.getElementById("main");
+          const content = document.createTextNode(json["content"]);
+          main.appendChild(content);
+
+          resolve();
+        });
+      });
+      if (test_driver) {
+        test_driver.click(link);
+      }
+      await clicked;
+      assert_equals(document.softNavigations, 1);
     }, "Test that a soft navigation is detected");
   </script>
 </body>

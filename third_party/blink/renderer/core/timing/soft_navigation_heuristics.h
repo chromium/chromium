@@ -35,9 +35,9 @@ class SoftNavigationHeuristics
 
   // The class's API.
   void UserInitiatedClick(ScriptState*);
-  void ClickEventEnded(ScriptState*, bool is_cancelled);
+  void ClickEventEnded(ScriptState*);
   void SawURLChange(ScriptState*);
-  void ModifiedDOM(ScriptState*);
+  void ModifiedMain(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
@@ -47,10 +47,9 @@ class SoftNavigationHeuristics
   void CheckSoftNavigation(ScriptState*);
   enum FlagType : uint8_t {
     kURLChange,
-    kDOMModification,
-    kEventCancelled,
+    kMainModification,
   };
-  using FlagTypeSet = base::EnumSet<FlagType, kURLChange, kEventCancelled>;
+  using FlagTypeSet = base::EnumSet<FlagType, kURLChange, kMainModification>;
 
   bool IsCurrentTaskDescendantOfClickEventHandler(ScriptState*);
   bool SetFlagIfDescendantAndCheck(ScriptState*, FlagType);
@@ -68,10 +67,7 @@ class SoftNavigationEventScope {
       : heuristics_(heuristics), script_state_(script_state) {
     heuristics->UserInitiatedClick(script_state);
   }
-  ~SoftNavigationEventScope() {
-    heuristics_->ClickEventEnded(
-        script_state_, result_ == DispatchEventResult::kCanceledByEventHandler);
-  }
+  ~SoftNavigationEventScope() { heuristics_->ClickEventEnded(script_state_); }
   void SetResult(DispatchEventResult result) { result_ = result; }
 
  private:

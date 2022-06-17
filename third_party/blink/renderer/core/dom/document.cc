@@ -1754,16 +1754,18 @@ bool Document::prerendering() const {
   return IsPrerendering();
 }
 uint32_t Document::softNavigations() const {
-  if (LocalDOMWindow* window = domWindow()) {
-    if (LocalFrame* frame = window->GetFrame()) {
-      if (frame->IsMainFrame()) {
-        SoftNavigationHeuristics* heuristics =
-            SoftNavigationHeuristics::From(*window);
-        return heuristics->SoftNavigationCount();
-      }
-    }
+  LocalDOMWindow* window = domWindow();
+  if (!window) {
+    return 0;
   }
-  return 0;
+  LocalFrame* frame = window->GetFrame();
+  if (!frame || !frame->IsMainFrame()) {
+    return 0;
+  }
+  SoftNavigationHeuristics* heuristics =
+      SoftNavigationHeuristics::From(*window);
+  DCHECK(heuristics);
+  return heuristics->SoftNavigationCount();
 }
 
 bool Document::hidden() const {
