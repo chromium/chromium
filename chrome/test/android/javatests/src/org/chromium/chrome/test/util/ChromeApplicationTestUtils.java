@@ -17,7 +17,6 @@ import org.junit.Assert;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Log;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -158,7 +157,6 @@ public class ChromeApplicationTestUtils {
 
             Coordinates coord = Coordinates.createFor(tab.getWebContents());
             float scale = coord.getPageScaleFactor();
-            Log.i(TAG, "PageScaleFactor = " + scale);
             Criteria.checkThat(
                     (double) scale, Matchers.not(Matchers.closeTo(initialScale, FLOAT_EPSILON)));
         });
