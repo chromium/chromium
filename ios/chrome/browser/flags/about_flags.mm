@@ -980,6 +980,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-password-ui-split", flag_descriptions::kIOSPasswordUISplitName,
      flag_descriptions::kIOSPasswordUISplitDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordUISplit)},
+    {"omnibox-adaptive-suggestions-count",
+     flag_descriptions::kAdaptiveSuggestionsCountName,
+     flag_descriptions::kAdaptiveSuggestionsCountDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kAdaptiveSuggestionsCount)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

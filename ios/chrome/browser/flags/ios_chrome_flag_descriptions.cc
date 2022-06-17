@@ -15,6 +15,11 @@ const char kAddPasswordsInSettingsName[] = "Add passwords in settings";
 const char kAddPasswordsInSettingsDescription[] =
     "Enables manually creating password credentials from the settings";
 
+const char kAdaptiveSuggestionsCountName[] = "Omnibox adaptive suggestions";
+const char kAdaptiveSuggestionsCountDescription[] =
+    "Allows Omnibox to dynamically adjust number of offered suggestions to "
+    "fill in the space between Omnibox and the soft keyboard.";
+
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =

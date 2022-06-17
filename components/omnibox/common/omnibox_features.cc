@@ -243,7 +243,7 @@ const base::Feature kDocumentProviderAso{"OmniboxDocumentProviderAso",
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).
 const base::Feature kAdaptiveSuggestionsCount{"OmniboxAdaptiveSuggestionsCount",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+                                              enabled_by_default_android_only};
 
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.

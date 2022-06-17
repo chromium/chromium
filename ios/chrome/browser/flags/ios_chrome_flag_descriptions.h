@@ -16,6 +16,11 @@ namespace flag_descriptions {
 extern const char kAddPasswordsInSettingsName[];
 extern const char kAddPasswordsInSettingsDescription[];
 
+// Title and description for the flag to enable kAdaptiveSuggestionsCount flag
+// on iOS.
+extern const char kAdaptiveSuggestionsCountName[];
+extern const char kAdaptiveSuggestionsCountDescription[];
+
 // Title and description for the flag to control upstreaming credit cards.
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];
