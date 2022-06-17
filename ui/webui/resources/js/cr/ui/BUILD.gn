@@ -38,7 +38,6 @@ preprocess_if_expr("preprocess_src") {
   in_files = [
     "drag_wrapper.js",
     "focus_grid.js",
-    "focus_outline_manager.js",
     "store.js",
   ]
 
@@ -48,6 +47,7 @@ preprocess_if_expr("preprocess_src") {
       "command.js",
       "context_menu_handler.js",
       "focus_manager.js",
+      "focus_outline_manager.js",
       "focus_row.js",
       "focus_row_behavior.js",
       "focus_without_ink.js",

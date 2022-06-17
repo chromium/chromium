@@ -71,6 +71,8 @@ preprocess_if_expr("preprocess_src") {
     "search_highlight_utils.js",
     "test_loader.js",
     "test_loader_util.js",
+
+    # Used by security interstitials and ios inspect UI
     "util.js",
     "webui_resource_test.js",
     "webview_manager.js",
