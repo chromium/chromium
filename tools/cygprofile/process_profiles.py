@@ -26,12 +26,11 @@ def _Median(items):
   sorted_items = sorted(items)
   if len(sorted_items) & 1:
     return sorted_items[len(sorted_items) // 2]
-  else:
-    return (sorted_items[len(sorted_items) // 2 - 1] +
-            sorted_items[len(sorted_items) // 2]) // 2
+  return (sorted_items[len(sorted_items) // 2 - 1] +
+          sorted_items[len(sorted_items) // 2]) // 2
 
 
-class SymbolOffsetProcessor(object):
+class SymbolOffsetProcessor:
   """Utility for processing symbols in binaries.
 
   This class is used to translate between general offsets into a binary and the
@@ -324,7 +323,7 @@ class SymbolOffsetProcessor(object):
     return self._offset_to_symbol_info
 
 
-class ProfileManager(object):
+class ProfileManager:
   """Manipulates sets of profiles.
 
   A "profile set" refers to a set of data from an instrumented version of chrome
@@ -363,7 +362,8 @@ class ProfileManager(object):
     time. This files can be grouped into run sets that are within 30 seconds of
     each other. Each run set is then grouped into phases as before.
   """
-  class AnnotatedOffset(object):
+
+  class AnnotatedOffset:
     """Describes an offset with how it appeared in a profile set.
 
     Each offset is annotated with the phase and process that it appeared in, and
@@ -390,10 +390,10 @@ class ProfileManager(object):
       return self._count.get((phase, process), 0)
 
     def Processes(self):
-      return set(k[1] for k in self._count.keys())
+      return set(key[1] for key in self._count)
 
     def Phases(self):
-      return set(k[0] for k in self._count.keys())
+      return set(key[0] for key in self._count)
 
     def Offset(self):
       return self._offset
@@ -401,7 +401,7 @@ class ProfileManager(object):
     def SetOffset(self, o):
       self._offset = o
 
-  class _RunGroup(object):
+  class _RunGroup:
     RUN_GROUP_THRESHOLD_NS = 30e9
 
     def __init__(self):
@@ -638,7 +638,6 @@ def main():
   logging.info('Merging dumps')
   dump_files = args.dumps.split(',')
   profile_manager = ProfileManager(dump_files)
-  profile_manager.SortByTimestamp()
   dumps = profile_manager.GetMergedOffsets()
 
   instrumented_native_lib = os.path.join(args.instrumented_build_dir,
@@ -648,7 +647,7 @@ def main():
 
   instrumented_processor = SymbolOffsetProcessor(instrumented_native_lib)
 
-  reached_offsets = instrumented_processor.GetReachedOffsetsFromDumps(dumps)
+  reached_offsets = instrumented_processor.GetReachedOffsetsFromDump(dumps)
   if args.offsets_output:
     with file(args.offsets_output, 'w') as f:
       f.write('\n'.join(map(str, reached_offsets)))

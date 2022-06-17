@@ -42,7 +42,7 @@ def ParseOrderfile(filename):
   if not lines[0].startswith('.text.'):
     for entry in lines:
       symbol_name = entry.rstrip('\n')
-      assert symbol_name != '*' and symbol_name != '.text'
+      assert symbol_name not in ('*', '.text')
       already_seen.add(symbol_name)
       symbols.append(symbol_name)
   else:

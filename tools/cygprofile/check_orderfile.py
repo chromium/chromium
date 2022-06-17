@@ -75,6 +75,7 @@ def main():
   if not _VerifySymbolOrder([sym.strip() for sym in file(orderfile_filename)],
                             symbol_infos, options.threshold):
     return 1
+  return 0
 
 
 if __name__ == '__main__':
