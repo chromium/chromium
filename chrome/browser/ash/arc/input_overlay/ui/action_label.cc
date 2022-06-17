@@ -311,6 +311,8 @@ void ActionLabel::SetToEditMode() {
     SetVisible(true);
 
   SetInstallFocusRingOnFocus(true);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kCornerRadiusView);
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetHaloInset(kHaloInset);
   focus_ring->SetHaloThickness(kHaloThickness);
