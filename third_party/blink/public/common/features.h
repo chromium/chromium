@@ -782,6 +782,9 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // See https://crbug.com/1330675.
 BLINK_COMMON_EXPORT extern const base::Feature kLocalFrameRootPrePostFCPMetrics;
 
+// Stylus handwriting recognition to text input feature.
+BLINK_COMMON_EXPORT extern const base::Feature kStylusWritingToInput;
+
 // TODO(https://crbug.com/1201109): temporary flag to disable new ArrayBuffer
 // size limits, so that tests can be written against code receiving these
 // buffers. Remove when the bindings code instituting these limits is removed.

@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
@@ -487,6 +488,26 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
 
 void WebFrameWidgetImpl::DragSourceSystemDragEnded() {
   CancelDrag();
+}
+
+void WebFrameWidgetImpl::OnStartStylusWriting() {
+  // Focus the stylus writable element for current touch sequence as we have
+  // detected writing has started.
+  LocalFrame* frame = GetPage()->GetFocusController().FocusedFrame();
+  if (!frame)
+    return;
+  Element* stylus_writable_element =
+      frame->GetEventHandler().CurrentTouchDownElement();
+  if (!stylus_writable_element)
+    return;
+  if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
+    text_control->Focus();
+  } else if (auto* html_element =
+                 DynamicTo<HTMLElement>(stylus_writable_element)) {
+    html_element->Focus();
+  }
+  // TODO(rbug.com/1330821): If we are unable to focus writable element for any
+  // reason, notify browser about the same.
 }
 
 void WebFrameWidgetImpl::SetBackgroundOpaque(bool opaque) {

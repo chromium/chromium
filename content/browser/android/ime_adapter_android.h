@@ -110,8 +110,11 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
 
   // Called from native -> java
   void CancelComposition();
-  void FocusedNodeChanged(bool is_editable_node);
+  void FocusedNodeChanged(bool is_editable_node,
+                          const gfx::Rect& node_bounds_in_screen);
   void SetCharacterBounds(const std::vector<gfx::RectF>& rects);
+  // Requests to start stylus writing and returns true if successful.
+  bool RequestStartStylusWriting();
 
   base::android::ScopedJavaLocalRef<jobject> java_ime_adapter_for_testing(
       JNIEnv* env) {

@@ -1171,4 +1171,8 @@ int PointerEventManager::GetPointerEventId(
   return pointer_event_factory_.GetPointerEventId(web_pointer_properties);
 }
 
+Element* PointerEventManager::CurrentTouchDownElement() {
+  return touch_event_manager_->CurrentTouchDownElement();
+}
+
 }  // namespace blink

@@ -363,23 +363,28 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
           EXPECT_EQ(TouchAction::kAuto, widget->LastTouchAction())
               << failure_context_pos;
         } else if (expected_action == "none") {
-          EXPECT_EQ(TouchAction::kNone, widget->LastTouchAction())
+          EXPECT_EQ(TouchAction::kNone, widget->LastTouchAction() &
+                                            ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-x") {
           EXPECT_EQ(TouchAction::kPanX, widget->LastTouchAction() &
-                                            ~TouchAction::kInternalPanXScrolls)
+                                            ~TouchAction::kInternalPanXScrolls &
+                                            ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-y") {
-          EXPECT_EQ(TouchAction::kPanY, widget->LastTouchAction())
+          EXPECT_EQ(TouchAction::kPanY, widget->LastTouchAction() &
+                                            ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "pan-x-y") {
           EXPECT_EQ(TouchAction::kPan, widget->LastTouchAction() &
-                                           ~TouchAction::kInternalPanXScrolls)
+                                           ~TouchAction::kInternalPanXScrolls &
+                                           ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else if (expected_action == "manipulation") {
-          EXPECT_EQ(
-              TouchAction::kManipulation,
-              widget->LastTouchAction() & ~TouchAction::kInternalPanXScrolls)
+          EXPECT_EQ(TouchAction::kManipulation,
+                    widget->LastTouchAction() &
+                        ~TouchAction::kInternalPanXScrolls &
+                        ~TouchAction::kInternalNotWritable)
               << failure_context_pos;
         } else {
           FAIL() << "Unrecognized expected-action " << expected_action << " "

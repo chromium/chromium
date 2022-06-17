@@ -2888,6 +2888,15 @@ void RenderWidgetHostImpl::OnImeCancelComposition() {
     view_->ImeCancelComposition();
 }
 
+RenderWidgetHostViewBase* RenderWidgetHostImpl::GetRenderWidgetHostViewBase() {
+  return GetView();
+}
+
+void RenderWidgetHostImpl::OnStartStylusWriting() {
+  if (blink_frame_widget_)
+    blink_frame_widget_->OnStartStylusWriting();
+}
+
 bool RenderWidgetHostImpl::IsWheelScrollInProgress() {
   return is_in_gesture_scroll_[static_cast<int>(
       blink::WebGestureDevice::kTouchpad)];

@@ -1090,7 +1090,13 @@ void RenderWidgetHostViewAndroid::FocusedNodeChanged(
     bool is_editable_node,
     const gfx::Rect& node_bounds_in_screen) {
   if (ime_adapter_android_)
-    ime_adapter_android_->FocusedNodeChanged(is_editable_node);
+    ime_adapter_android_->FocusedNodeChanged(is_editable_node,
+                                             node_bounds_in_screen);
+}
+
+bool RenderWidgetHostViewAndroid::RequestStartStylusWriting() {
+  return ime_adapter_android_ &&
+         ime_adapter_android_->RequestStartStylusWriting();
 }
 
 void RenderWidgetHostViewAndroid::RenderProcessGone() {

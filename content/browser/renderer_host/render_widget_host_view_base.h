@@ -245,6 +245,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void FocusedNodeChanged(bool is_editable_node,
                                   const gfx::Rect& node_bounds_in_screen) {}
 
+  // Requests to start stylus writing and returns true if successful.
+  virtual bool RequestStartStylusWriting();
+
   // This method will clear any cached fallback surface. For use in response to
   // a CommitPending where there is no content for TakeFallbackContentFrom.
   virtual void ClearFallbackSurfaceForCommitPending() {}

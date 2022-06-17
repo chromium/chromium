@@ -76,6 +76,12 @@ interface FrameWidget {
   // Notifies the Widget that the system drag and drop operation has ended.
   DragSourceSystemDragEnded();
 
+  // Notifies the Widget that stylus writing has started. This is used primarily
+  // to focus the input element where writing was detected to allow committing
+  // recognized text. Stylus writing ends with a Ime commit and we do not need
+  // another message that writing has ended.
+  OnStartStylusWriting();
+
   // Makes the Widget background transparent or opaque.
   SetBackgroundOpaque(bool opaque);
 

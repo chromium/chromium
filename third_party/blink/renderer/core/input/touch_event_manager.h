@@ -56,6 +56,9 @@ class CORE_EXPORT TouchEventManager final
       const WebPointerEvent&,
       const event_handling_util::PointerEventTarget&);
 
+  // Return the touch down element of current touch sequence.
+  Element* CurrentTouchDownElement();
+
  private:
   // Class represending one touch point event with its coalesced events and
   // related attributes.

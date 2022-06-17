@@ -101,8 +101,11 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
   }
   bool is_child_document = element && element == document_element &&
                            element->GetDocument().LocalOwner();
-  if (scrolls_overflow || is_child_document)
-    return touch_action | TouchAction::kPan | TouchAction::kInternalPanXScrolls;
+  if (scrolls_overflow || is_child_document) {
+    return touch_action | TouchAction::kPan |
+           TouchAction::kInternalPanXScrolls |
+           TouchAction::kInternalNotWritable;
+  }
   return touch_action;
 }
 
@@ -630,6 +633,16 @@ bool StyleAdjuster::IsEditableElement(Element* element,
   return false;
 }
 
+bool StyleAdjuster::IsPasswordFieldWithUnrevealedPassword(Element* element) {
+  if (!element)
+    return false;
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
+    return (input->type() == input_type_names::kPassword) &&
+           !input->ShouldRevealPassword();
+  }
+  return false;
+}
+
 void StyleAdjuster::AdjustEffectiveTouchAction(
     ComputedStyle& style,
     const ComputedStyle& parent_style,
@@ -662,6 +675,12 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     if ((element_touch_action & TouchAction::kPanX) != TouchAction::kNone) {
       element_touch_action |= TouchAction::kInternalPanXScrolls;
     }
+
+    // kInternalNotWritable is only for internal usage, GetTouchAction()
+    // doesn't contain this bit. We set this bit when kPan is set so it can be
+    // cleared for eligible non-password editable areas later on.
+    if ((element_touch_action & TouchAction::kPan) != TouchAction::kNone)
+      element_touch_action |= TouchAction::kInternalNotWritable;
   }
 
   if (!element) {
@@ -675,6 +694,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   if (is_child_document && element->GetDocument().GetFrame()) {
     inherited_action &=
         TouchAction::kPan | TouchAction::kInternalPanXScrolls |
+        TouchAction::kInternalNotWritable |
         element->GetDocument().GetFrame()->InheritedEffectiveTouchAction();
   }
 
@@ -694,6 +714,13 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
   if (::features::IsSwipeToMoveCursorEnabled() &&
       IsEditableElement(element, style)) {
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kStylusWritingToInput) &&
+      (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
+      IsEditableElement(element, style) &&
+      !IsPasswordFieldWithUnrevealedPassword(element)) {
+    element_touch_action &= ~TouchAction::kInternalNotWritable;
   }
 
   // Apply the adjusted parent effective touch actions.

@@ -514,7 +514,7 @@ TEST_P(ScrollingTest, touchAction) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanX | TouchAction::kPanDown |
-      TouchAction::kInternalPanXScrolls);
+      TouchAction::kInternalPanXScrolls | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 1000));
 }
@@ -526,18 +526,18 @@ TEST_P(ScrollingTest, touchActionRegions) {
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanDown | TouchAction::kPanX |
-      TouchAction::kInternalPanXScrolls);
+      TouchAction::kInternalPanXScrolls | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanDown | TouchAction::kPanRight |
-      TouchAction::kInternalPanXScrolls);
+      TouchAction::kInternalPanXScrolls | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 50));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanDown);
+      TouchAction::kPanDown | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 1);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 100, 100, 100));
 }
@@ -574,7 +574,8 @@ TEST_P(ScrollingTest, touchActionNesting) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 }
@@ -611,7 +612,8 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   const auto* cc_layer = ScrollingContentsLayerByDOMElementId("scrollable");
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(5, 5, 150, 100));
 
@@ -619,7 +621,8 @@ TEST_P(ScrollingTest, nestedTouchActionInvalidation) {
   scrollable->setAttribute("style", "touch-action: none", ASSERT_NO_EXCEPTION);
   ForceFullCompositingUpdate();
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_TRUE(region.IsEmpty());
 }
 
@@ -648,7 +651,8 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
   const auto* cc_layer = MainFrameScrollingContentsLayer();
 
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 150, 50));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -659,13 +663,15 @@ TEST_P(ScrollingTest, nestedTouchActionChangesUnion) {
   ForceFullCompositingUpdate();
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanY);
+      TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanX | TouchAction::kInternalPanXScrolls);
+      TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_TRUE(region.IsEmpty());
+  // kInternalNotWritable is set when any of the pans are allowed.
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kNone);
+      TouchAction::kNone | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 150, 50));
 }
 
@@ -691,7 +697,7 @@ TEST_P(ScrollingTest, touchActionEditableElement) {
   ForceFullCompositingUpdate();
   const auto* cc_layer = MainFrameScrollingContentsLayer();
   cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kManipulation);
+      TouchAction::kManipulation | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 50));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -705,7 +711,8 @@ TEST_P(ScrollingTest, touchActionEditableElement) {
 
   cc_layer = ScrollingContentsLayerByDOMElementId("touchaction");
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kManipulation | TouchAction::kInternalPanXScrolls);
+      TouchAction::kManipulation | TouchAction::kInternalPanXScrolls |
+      TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 100));
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kNone);
@@ -784,7 +791,7 @@ TEST_P(ScrollingTest, touchActionBlockingHandler) {
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 100));
 
   region = cc_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanY);
+      TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.GetRegionComplexity(), 2);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 1000, 1000));
 }
@@ -816,12 +823,12 @@ TEST_P(ScrollingTest, touchActionOnScrollingElement) {
       ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region =
       scrolling_contents_layer->touch_action_region().GetRegionForTouchAction(
-          TouchAction::kPanY);
+          TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 150));
 
   const auto* container_layer = MainFrameScrollingContentsLayer();
   region = container_layer->touch_action_region().GetRegionForTouchAction(
-      TouchAction::kPanY);
+      TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
 }
 

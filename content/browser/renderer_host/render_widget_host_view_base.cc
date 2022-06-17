@@ -499,6 +499,10 @@ RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessibleForWindow() {
   return nullptr;
 }
 
+bool RenderWidgetHostViewBase::RequestStartStylusWriting() {
+  return false;
+}
+
 bool RenderWidgetHostViewBase::RequestRepaintForTesting() {
   return false;
 }

@@ -1535,6 +1535,10 @@ const base::Feature kEarlyExitOnNoopClassOrStyleChange{
 const base::Feature kLocalFrameRootPrePostFCPMetrics{
     "LocalFrameRootPrePostFCPMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// TODO(mahesh.ma): Enable for supported Android versions once feature is ready.
+const base::Feature kStylusWritingToInput{"StylusWritingToInput",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDisableArrayBufferSizeLimitsForTesting{
     "DisableArrayBufferSizeLimitsForTesting",
     base::FEATURE_DISABLED_BY_DEFAULT};

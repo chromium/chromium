@@ -575,6 +575,16 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
     }
   }
 
+  // Re-enable not writable bit if effective touch action does not allow panning
+  // in all directions as writing can be started in any direction. Also, enable
+  // this bit if pointer type is not stylus.
+  if ((effective_touch_action & TouchAction::kPan) != TouchAction::kNone &&
+      ((event.pointer_type != WebPointerProperties::PointerType::kPen &&
+        event.pointer_type != WebPointerProperties::PointerType::kEraser) ||
+       (effective_touch_action & TouchAction::kPan) != TouchAction::kPan)) {
+    effective_touch_action |= TouchAction::kInternalNotWritable;
+  }
+
   should_enforce_vertical_scroll_ =
       touch_sequence_document_->IsVerticalScrollEnforced();
   if (should_enforce_vertical_scroll_ &&
@@ -696,6 +706,13 @@ void TouchEventManager::AllTouchesReleasedCleanup() {
 
 bool TouchEventManager::IsAnyTouchActive() const {
   return !touch_attribute_map_.IsEmpty();
+}
+
+Element* TouchEventManager::CurrentTouchDownElement() {
+  if (touch_attribute_map_.IsEmpty() || touch_attribute_map_.size() > 1)
+    return nullptr;
+  Node* touch_node = touch_attribute_map_.begin()->value->target_;
+  return touch_node ? DynamicTo<Element>(*touch_node) : nullptr;
 }
 
 WebInputEventResult TouchEventManager::EnsureVerticalScrollIsPossible(

@@ -1413,6 +1413,10 @@ Element* EventHandler::GetElementUnderMouse() {
   return mouse_event_manager_->GetElementUnderMouse();
 }
 
+Element* EventHandler::CurrentTouchDownElement() {
+  return pointer_event_manager_->CurrentTouchDownElement();
+}
+
 bool EventHandler::IsPointerIdActiveOnFrame(PointerId pointer_id,
                                             LocalFrame* frame) const {
   DCHECK(frame_ == &frame_->LocalFrameRoot() || frame_ == frame);

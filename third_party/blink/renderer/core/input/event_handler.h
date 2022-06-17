@@ -284,6 +284,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   Element* GetElementUnderMouse();
 
+  Element* CurrentTouchDownElement();
+
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(
       const WebMouseEvent&,
