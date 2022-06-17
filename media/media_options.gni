@@ -304,8 +304,8 @@ declare_args() {
 }
 
 declare_args() {
-  # The audio service must be sandboxed for us to do audio processing there.
-  # Currently it is so only on Win and Mac.
+  # Currently it is available on Win, Mac and Linux, since it requires the audio
+  # service to run in a separate process.
   chrome_wide_echo_cancellation_supported = is_win || is_mac || is_linux
 }
 
