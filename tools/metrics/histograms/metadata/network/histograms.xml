@@ -2440,6 +2440,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.SessionTagState.{Event}"
+    enum="WiFiSessionTagState" expires_after="2022-12-01">
+  <owner>norvez@chromium.org</owner>
+  <owner>druth@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS metric reporting the state of the &quot;session tag&quot; state
+    machine that tags {Event} structured metrics events. The state of the
+    session tag is emitted at the same time as the {Event} structured metric
+    event is emitted. Details at go/cros-wifi-metrics-session-tag-dd.
+  </summary>
+  <token key="Event">
+    <variant name="ConnectionAttempt"/>
+    <variant name="ConnectionAttemptResult"/>
+    <variant name="Disconnection"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Shill.Wifi.SignalAtDisconnect" units="negative dBm"
     expires_after="2022-12-01">
   <owner>kuabhs@chromium.org</owner>

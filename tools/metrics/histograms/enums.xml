@@ -101238,6 +101238,12 @@ Called by update_scheduler_enums.py.-->
   <int value="7" label="Internal error"/>
 </enum>
 
+<enum name="WiFiSessionTagState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unexpected"/>
+  <int value="2" label="Expected"/>
+</enum>
+
 <enum name="WiFiStatusCode">
   <int value="0" label="kStatusCodeSuccessful"/>
   <int value="1" label="kStatusCodeFailure"/>
