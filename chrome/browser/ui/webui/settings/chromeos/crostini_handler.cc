@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -205,7 +206,7 @@ void CrostiniHandler::OnJavascriptAllowed() {
 
   // Observe changes to containers in general
   pref_change_registrar_.Add(
-      crostini::prefs::kCrostiniContainers,
+      guest_os::prefs::kGuestOsContainers,
       base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                           handler_weak_ptr_factory_.GetWeakPtr(),
                           base::Value::List()));
@@ -758,13 +759,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
 
   base::Value::List container_info_list;
 
-  const base::Value::List& containers =
-      profile_->GetPrefs()
-          ->Get(crostini::prefs::kCrostiniContainers)
-          ->GetList();
-
-  for (const auto& dict : containers) {
-    guest_os::GuestId container_id(dict);
+  for (const auto& container_id : guest_os::GetContainers(profile_)) {
     base::Value::Dict container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info =

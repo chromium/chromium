@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/crostini/throttle/crostini_throttle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -1061,9 +1062,11 @@ void CrostiniManager::SetContainerOsRelease(
   ContainerOsVersion version = VersionFromOsRelease(os_release);
   // Store the os release version in prefs. We can use this value to decide if
   // an upgrade can be offered.
-  UpdateContainerPref(profile_, container_id, prefs::kContainerOsVersionKey,
+  UpdateContainerPref(profile_, container_id,
+                      guest_os::prefs::kContainerOsVersionKey,
                       base::Value(static_cast<int>(version)));
-  UpdateContainerPref(profile_, container_id, prefs::kContainerOsPrettyNameKey,
+  UpdateContainerPref(profile_, container_id,
+                      guest_os::prefs::kContainerOsPrettyNameKey,
                       base::Value(os_release.pretty_name()));
 
   absl::optional<ContainerOsVersion> old_version;
@@ -1151,7 +1154,7 @@ bool CrostiniManager::IsContainerUpgradeable(
   } else {
     // Check prefs instead.
     const base::Value* value = GetContainerPrefValue(
-        profile_, container_id, prefs::kContainerOsVersionKey);
+        profile_, container_id, guest_os::prefs::kContainerOsVersionKey);
     if (value) {
       version = static_cast<ContainerOsVersion>(value->GetInt());
     }
@@ -1250,7 +1253,7 @@ CrostiniManager::CrostiniManager(Profile* profile)
   // which is fine, since e.g. force-quitting a running VM because policy
   // changed isn't something we're going to do.
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    for (const auto& container : GetContainers(profile_)) {
+    for (const auto& container : guest_os::GetContainers(profile_)) {
       RegisterContainer(container);
     }
   }

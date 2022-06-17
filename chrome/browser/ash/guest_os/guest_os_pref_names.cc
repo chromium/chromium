@@ -39,10 +39,20 @@ const char kAppStartupNotifyKey[] = "startup_notify";
 const char kAppInstallTimeKey[] = "install_time";
 const char kAppLastLaunchTimeKey[] = "last_launch_time";
 
+// GuestOsContainerId
+const char kGuestOsContainers[] = "crostini.containers";
+const char kVmKey[] = "vm_name";
+const char kContainerKey[] = "container_name";
+const char kContainerOsVersionKey[] = "container_os_version";
+const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
+// SkColor used to assign badges to apps associated with this container.
+const char kContainerColorKey[] = "badge_color";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGuestOSPathsSharedToVms);
   registry->RegisterDictionaryPref(kGuestOsMimeTypes);
   registry->RegisterDictionaryPref(kGuestOsRegistry);
+  registry->RegisterListPref(kGuestOsContainers);
 }
 
 }  // namespace prefs

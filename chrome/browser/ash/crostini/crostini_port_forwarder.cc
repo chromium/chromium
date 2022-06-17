@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -100,8 +101,9 @@ void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
   new_port_metadata.SetIntKey(kPortProtocolKey,
                               static_cast<int>(key.protocol_type));
   new_port_metadata.SetStringKey(kPortLabelKey, label);
-  new_port_metadata.SetStringKey(prefs::kVmKey, key.container_id.vm_name);
-  new_port_metadata.SetStringKey(prefs::kContainerKey,
+  new_port_metadata.SetStringKey(guest_os::prefs::kVmKey,
+                                 key.container_id.vm_name);
+  new_port_metadata.SetStringKey(guest_os::prefs::kContainerKey,
                                  key.container_id.container_name);
   all_ports->Append(std::move(new_port_metadata));
 }

@@ -229,13 +229,6 @@ void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
       base::BindOnce(&CrostiniInstaller::OnAvailableDiskSpace,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // The default value of kCrostiniContainers is set to migrate existing
-  // crostini users who don't have the pref set. If crostini is being installed,
-  // then we know the user must not actually have any containers yet, so we set
-  // this pref to the empty list.
-  profile_->GetPrefs()->Set(crostini::prefs::kCrostiniContainers,
-                            base::Value(base::Value::Type::LIST));
-
   // Reset mic permissions, we don't want it to persist across
   // re-installation.
   profile_->GetPrefs()->SetBoolean(prefs::kCrostiniMicAllowed, false);

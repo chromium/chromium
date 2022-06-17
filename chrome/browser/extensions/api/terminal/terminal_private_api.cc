@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -97,10 +98,10 @@ const char kCwdTerminalIdPrefix[] = "terminal_id:";
 // Prefs that we read and observe.
 static const base::NoDestructor<std::vector<std::string>> kPrefsReadAllowList{{
     ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-    crostini::prefs::kCrostiniContainers,
     crostini::prefs::kCrostiniEnabled,
     crostini::prefs::kCrostiniTerminalSettings,
     crostini::prefs::kTerminalSshAllowedByPolicy,
+    guest_os::prefs::kGuestOsContainers,
 }};
 
 void CloseTerminal(const std::string& terminal_id,

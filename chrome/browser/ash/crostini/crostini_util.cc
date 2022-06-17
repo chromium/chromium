@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
@@ -359,80 +360,18 @@ base::FilePath ContainerChromeOSBaseDirectory() {
   return base::FilePath("/mnt/chromeos");
 }
 
-namespace {
-
-bool MatchContainerDict(const base::Value& dict,
-                        const guest_os::GuestId& container_id) {
-  const std::string* vm_name = dict.FindStringKey(prefs::kVmKey);
-  const std::string* container_name = dict.FindStringKey(prefs::kContainerKey);
-  return (vm_name && *vm_name == container_id.vm_name) &&
-         (container_name && *container_name == container_id.container_name);
-}
-
-}  // namespace
-
-void RemoveDuplicateContainerEntries(PrefService* prefs) {
-  ListPrefUpdate updater(prefs, crostini::prefs::kCrostiniContainers);
-
-  std::set<guest_os::GuestId> seen_containers;
-  auto& containers = updater->GetList();
-  for (auto it = containers.begin(); it != containers.end();) {
-    guest_os::GuestId containerId(*it);
-    if (seen_containers.find(containerId) == seen_containers.end()) {
-      seen_containers.insert(containerId);
-      it++;
-    } else {
-      it = containers.erase(it);
-    }
-  }
-}
-
-std::vector<guest_os::GuestId> GetContainers(Profile* profile) {
-  std::vector<guest_os::GuestId> result;
-  const base::Value::List& container_list =
-      profile->GetPrefs()
-          ->GetList(crostini::prefs::kCrostiniContainers)
-          ->GetList();
-  for (const auto& container : container_list) {
-    guest_os::GuestId id(container);
-    if (!id.vm_name.empty() && !id.container_name.empty()) {
-      result.push_back(std::move(id));
-    }
-  }
-  return result;
-}
-
 void AddNewLxdContainerToPrefs(Profile* profile,
                                const guest_os::GuestId& container_id) {
-  ListPrefUpdate updater(profile->GetPrefs(),
-                         crostini::prefs::kCrostiniContainers);
-  auto it = std::find_if(
-      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
-      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it != updater->GetListDeprecated().end()) {
-    return;
-  }
-
-  base::Value new_container(base::Value::Type::DICTIONARY);
-  new_container.SetKey(prefs::kVmKey, base::Value(container_id.vm_name));
-  new_container.SetKey(prefs::kContainerKey,
-                       base::Value(container_id.container_name));
-  new_container.SetIntKey(prefs::kContainerOsVersionKey,
-                          static_cast<int>(ContainerOsVersion::kUnknown));
-  new_container.SetStringKey(prefs::kContainerOsPrettyNameKey, "");
-  updater->Append(std::move(new_container));
+  base::Value::Dict properties;
+  properties.Set(guest_os::prefs::kContainerOsVersionKey,
+                 static_cast<int>(ContainerOsVersion::kUnknown));
+  properties.Set(guest_os::prefs::kContainerOsPrettyNameKey, "");
+  guest_os::AddContainerToPrefs(profile, container_id, std::move(properties));
 }
 
 void RemoveLxdContainerFromPrefs(Profile* profile,
                                  const guest_os::GuestId& container_id) {
-  auto* pref_service = profile->GetPrefs();
-  ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
-  updater->EraseListIter(
-      std::find_if(updater->GetListDeprecated().begin(),
-                   updater->GetListDeprecated().end(), [&](const auto& dict) {
-                     return MatchContainerDict(dict, container_id);
-                   }));
-
+  guest_os::RemoveContainerFromPrefs(profile, container_id);
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
       ->ClearApplicationList(guest_os::VmType::TERMINA, container_id.vm_name,
                              container_id.container_name);
@@ -440,39 +379,10 @@ void RemoveLxdContainerFromPrefs(Profile* profile,
       ->ClearMimeTypes(container_id.vm_name, container_id.container_name);
 }
 
-const base::Value* GetContainerPrefValue(Profile* profile,
-                                         const guest_os::GuestId& container_id,
-                                         const std::string& key) {
-  const base::Value* containers =
-      profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
-  if (!containers) {
-    return nullptr;
-  }
-  for (const auto& dict : containers->GetListDeprecated()) {
-    if (MatchContainerDict(dict, container_id))
-      return dict.FindKey(key);
-  }
-  return nullptr;
-}
-
-void UpdateContainerPref(Profile* profile,
-                         const guest_os::GuestId& container_id,
-                         const std::string& key,
-                         base::Value value) {
-  ListPrefUpdate updater(profile->GetPrefs(),
-                         crostini::prefs::kCrostiniContainers);
-  auto it = std::find_if(
-      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
-      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it != updater->GetListDeprecated().end()) {
-    it->SetKey(key, std::move(value));
-  }
-}
-
 SkColor GetContainerBadgeColor(Profile* profile,
                                const guest_os::GuestId& container_id) {
-  const base::Value* badge_color_value =
-      GetContainerPrefValue(profile, container_id, prefs::kContainerColorKey);
+  const base::Value* badge_color_value = GetContainerPrefValue(
+      profile, container_id, guest_os::prefs::kContainerColorKey);
   if (badge_color_value) {
     return badge_color_value->GetIfInt().value_or(SK_ColorTRANSPARENT);
   } else {
@@ -483,8 +393,9 @@ SkColor GetContainerBadgeColor(Profile* profile,
 void SetContainerBadgeColor(Profile* profile,
                             const guest_os::GuestId& container_id,
                             SkColor badge_color) {
-  UpdateContainerPref(profile, container_id, prefs::kContainerColorKey,
-                      base::Value(static_cast<int>(badge_color)));
+  guest_os::UpdateContainerPref(profile, container_id,
+                                guest_os::prefs::kContainerColorKey,
+                                base::Value(static_cast<int>(badge_color)));
 
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
       ->ContainerBadgeColorChanged(container_id);
@@ -493,7 +404,7 @@ void SetContainerBadgeColor(Profile* profile,
 bool IsContainerVersionExpired(Profile* profile,
                                const guest_os::GuestId& container_id) {
   auto* value = GetContainerPrefValue(profile, container_id,
-                                      prefs::kContainerOsVersionKey);
+                                      guest_os::prefs::kContainerOsVersionKey);
   if (!value)
     return false;
 
@@ -581,23 +492,16 @@ void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
 }
 
 bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
-  bool is_last_container = true;
-  base::Value::ConstListView containers =
-      profile->GetPrefs()
-          ->GetList(prefs::kCrostiniContainers)
-          ->GetListDeprecated();
-  for (const auto& dict : containers) {
-    guest_os::GuestId container(dict);
+  for (const auto& container : guest_os::GetContainers(profile)) {
     if (container.container_name != container_id.container_name &&
         container.vm_name == container_id.vm_name) {
       if (CrostiniManager::GetForProfile(profile)->GetContainerInfo(
               container)) {
-        is_last_container = false;
-        break;
+        return false;
       }
     }
   }
-  return is_last_container;
+  return true;
 }
 
 }  // namespace crostini

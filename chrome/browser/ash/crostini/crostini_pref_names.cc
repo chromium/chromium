@@ -22,15 +22,8 @@ const char kCrostiniEnabled[] = "crostini.enabled";
 // List of USB devices with their system guid, a name/description and their
 // enabled state for use with Crostini.
 const char kCrostiniSharedUsbDevices[] = "crostini.shared_usb_devices";
-const char kCrostiniContainers[] = "crostini.containers";
 // Dictionary of terminal UI settings such as font style, colors, etc.
 const char kCrostiniTerminalSettings[] = "crostini.terminal_settings";
-const char kVmKey[] = "vm_name";
-const char kContainerKey[] = "container_name";
-const char kContainerOsVersionKey[] = "container_os_version";
-const char kContainerOsPrettyNameKey[] = "container_os_pretty_name";
-// SkColor used to assign badges to apps associated with this container.
-const char kContainerColorKey[] = "badge_color";
 // Boolean preferences indicating whether Crostini is allowed to use mic.
 const char kCrostiniMicAllowed[] = "crostini.mic_allowed";
 
@@ -102,7 +95,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kCrostiniSharedUsbDevices);
   registry->RegisterBooleanPref(kCrostiniMicAllowed, false);
   registry->RegisterBooleanPref(kTerminalSshAllowedByPolicy, true);
-  registry->RegisterListPref(kCrostiniContainers);
   registry->RegisterBooleanPref(crostini::prefs::kReportCrostiniUsageEnabled,
                                 false);
   registry->RegisterStringPref(kCrostiniLastLaunchTerminaComponentVersion,

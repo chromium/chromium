@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -711,20 +712,20 @@ TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerCreated) {
   const base::Value* pref =
-      profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+      profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->GetList().size(), 0);
   crostini_manager()->CreateLxdContainer(
       container_id(), absl::nullopt, absl::nullopt,
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
-  pref = profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  pref = profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->GetList().size(), 1);
 }
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
   const base::Value* pref =
-      profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+      profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->GetList().size(), 0);
   vm_tools::cicerone::CreateLxdContainerResponse response;
   response.set_status(vm_tools::cicerone::CreateLxdContainerResponse::EXISTS);
@@ -734,7 +735,7 @@ TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
-  pref = profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  pref = profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->GetList().size(), 1);
 }
 
@@ -1561,7 +1562,7 @@ TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
 
   // The data for this container should also be stored in prefs.
   const base::Value* os_release_pref_value = GetContainerPrefValue(
-      profile(), container_id(), prefs::kContainerOsVersionKey);
+      profile(), container_id(), guest_os::prefs::kContainerOsVersionKey);
   EXPECT_NE(os_release_pref_value, nullptr);
   EXPECT_EQ(os_release_pref_value->GetInt(),
             static_cast<int>(ContainerOsVersion::kDebianBuster));

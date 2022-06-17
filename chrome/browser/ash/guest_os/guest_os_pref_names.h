@@ -10,9 +10,13 @@ class PrefRegistrySimple;
 namespace guest_os {
 namespace prefs {
 
+// GuestOsSharedPath
 extern const char kGuestOSPathsSharedToVms[];
 
+// GuestOsMimeTypes
 extern const char kGuestOsMimeTypes[];
+
+// GuestOsRegistry
 extern const char kGuestOsRegistry[];
 extern const char kAppDesktopFileIdKey[];
 extern const char kAppVmTypeKey[];
@@ -32,6 +36,14 @@ extern const char kAppStartupWMClassKey[];
 extern const char kAppStartupNotifyKey[];
 extern const char kAppInstallTimeKey[];
 extern const char kAppLastLaunchTimeKey[];
+
+// GuestOsContainerId
+extern const char kGuestOsContainers[];
+extern const char kVmKey[];
+extern const char kContainerKey[];
+extern const char kContainerOsVersionKey[];
+extern const char kContainerOsPrettyNameKey[];
+extern const char kContainerColorKey[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

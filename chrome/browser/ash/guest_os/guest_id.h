@@ -11,6 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 
+class PrefService;
+class Profile;
+
 namespace guest_os {
 
 // A unique identifier for our guests.
@@ -32,6 +35,34 @@ inline bool operator!=(const GuestId& lhs, const GuestId& rhs) noexcept {
 }
 
 std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id);
+
+// Returns a list of all containers in prefs.
+std::vector<GuestId> GetContainers(Profile* profile);
+
+// Remove duplicate containers in the existing kGuestOsContainers pref.
+void RemoveDuplicateContainerEntries(PrefService* prefs);
+
+// Add a new container to the kGuestOsContainers pref
+void AddContainerToPrefs(Profile* profile,
+                         const GuestId& container_id,
+                         base::Value::Dict properties);
+
+// Remove a deleted container from the kGuestOsContainers pref.
+void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id);
+
+// Remove a deleted container from the kGuestOsContainers pref.
+void RemoveVmFromPrefs(Profile* profile, const std::string& vm_name);
+
+// Returns a pref value stored for a specific container.
+const base::Value* GetContainerPrefValue(Profile* profile,
+                                         const GuestId& container_id,
+                                         const std::string& key);
+
+// Sets a pref value for a specific container.
+void UpdateContainerPref(Profile* profile,
+                         const GuestId& container_id,
+                         const std::string& key,
+                         base::Value value);
 
 }  // namespace guest_os
 
