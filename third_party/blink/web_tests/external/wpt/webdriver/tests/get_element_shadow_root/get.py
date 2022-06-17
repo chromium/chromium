@@ -32,17 +32,16 @@ def test_element_not_found(session):
     assert_error(result, "no such element")
 
 
-def test_element_stale(session, checkbox_dom):
-    session.url = checkbox_dom
-    element = session.find.css("custom-checkbox-element", all=False)
-    session.refresh()
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, checkbox_dom, as_frame):
+    element = stale_element(checkbox_dom, "custom-checkbox-element", as_frame=as_frame)
 
     result = get_shadow_root(session, element.id)
     assert_error(result, "stale element reference")
 
 
-def test_get_shadow_root(session, checkbox_dom):
-    session.url = checkbox_dom
+def test_get_shadow_root(session, inline, checkbox_dom):
+    session.url = inline(checkbox_dom)
     expected = session.execute_script(
         "return document.querySelector('custom-checkbox-element').shadowRoot.host")
     custom_element = session.find.css("custom-checkbox-element", all=False)

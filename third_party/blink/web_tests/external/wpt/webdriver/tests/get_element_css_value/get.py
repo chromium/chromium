@@ -1,3 +1,5 @@
+import pytest
+
 from tests.support.asserts import assert_error, assert_success
 
 
@@ -34,10 +36,9 @@ def test_element_not_found(session):
     assert_error(result, "no such element")
 
 
-def test_element_stale(session, inline):
-    session.url = inline("<input>")
-    element = session.find.css("input", all=False)
-    session.refresh()
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, as_frame):
+    element = stale_element("<input>", "input", as_frame=as_frame)
 
     result = get_element_css_value(session, element.id, "display")
     assert_error(result, "stale element reference")

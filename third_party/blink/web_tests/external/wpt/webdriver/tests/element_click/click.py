@@ -1,3 +1,4 @@
+import pytest
 from webdriver import Element
 
 from tests.support.asserts import assert_error, assert_success
@@ -38,3 +39,11 @@ def test_no_browsing_context(session, closed_frame):
 
     response = element_click(session, element)
     assert_error(response, "no such window")
+
+
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, as_frame):
+    element = stale_element("<div>", "div", as_frame=as_frame)
+
+    response = element_click(session, element)
+    assert_error(response, "stale element reference")

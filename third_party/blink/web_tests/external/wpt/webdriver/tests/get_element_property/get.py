@@ -33,13 +33,12 @@ def test_element_not_found(session):
     assert_error(response, "no such element")
 
 
-def test_element_stale(session, inline):
-    session.url = inline("<input id=foobar>")
-    element = session.find.css("input", all=False)
-    session.refresh()
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, as_frame):
+    element = stale_element("<input>", "input", as_frame=as_frame)
 
-    response = get_element_property(session, element.id, "id")
-    assert_error(response, "stale element reference")
+    result = get_element_property(session, element.id, "id")
+    assert_error(result, "stale element reference")
 
 
 def test_property_non_existent(session, inline):

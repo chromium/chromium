@@ -2,7 +2,7 @@
 
 import pytest
 
-from webdriver.error import NoSuchWindowException
+from webdriver.error import NoSuchWindowException, StaleElementReferenceException
 
 from tests.perform_actions.support.mouse import get_inview_center, get_viewport_rect
 from tests.perform_actions.support.refine import get_events
@@ -24,6 +24,14 @@ def test_no_top_browsing_context(session, closed_window, mouse_chain):
 def test_no_browsing_context(session, closed_frame, mouse_chain):
     with pytest.raises(NoSuchWindowException):
         mouse_chain.click().perform()
+
+
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, mouse_chain, as_frame):
+    element = stale_element("<input>", "input", as_frame=as_frame)
+
+    with pytest.raises(StaleElementReferenceException):
+        mouse_chain.click(element=element).perform()
 
 
 def test_click_at_coordinates(session, test_actions_page, mouse_chain):
