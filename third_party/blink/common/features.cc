@@ -1213,7 +1213,7 @@ const base::Feature kClientHintsViewportWidth_DEPRECATED{
 // If enabled, the setTimeout(..., 0) will not clamp to 1ms.
 // Tracking bug: https://crbug.com/402694.
 const base::Feature kSetTimeoutWithoutClamp{"SetTimeoutWithoutClamp",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
