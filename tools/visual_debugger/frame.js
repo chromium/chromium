@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Enum class to identify horizontal or vertical flips
+class FlipEnum {
+  static HorizontalFlip = new FlipEnum(1);
+  static VerticalFlip = new FlipEnum(2);
+
+  constructor(id) {
+    this.id = id;
+  }
+}
+
 // Represents a single frame, and contains all associated data.
 //
 class DrawFrame {
@@ -49,9 +59,17 @@ class DrawFrame {
       (this.submissionCount() - 1);
   }
 
-  updateCanvasSize(canvas, scale) {
-    canvas.width = this.size_.width * scale;
-    canvas.height = this.size_.height * scale;
+  updateCanvasOrientationAndSize(canvas, orientationDeg, scale) {
+    // Swap canvas width/height for 90 or 270 deg rotations
+    if (orientationDeg === 90 || orientationDeg === 270) {
+      canvas.width = this.size_.height * scale;
+      canvas.height = this.size_.width * scale;
+    }
+    // Restore original canvas width/height for 0 or 180 deg rotations
+    else {
+      canvas.width = this.size_.width * scale;
+      canvas.height = this.size_.height * scale;
+    }
   }
 
   getFilter(source_index) {
@@ -73,29 +91,92 @@ class DrawFrame {
     return filter;
   }
 
-  draw(canvas, scale) {
+  draw(canvas, context, scale, orientationDeg, transformMatrix) {
     for (const call of this.drawCalls_) {
       if (call.drawIndex_ > this.submissionFreezeIndex()) break;
 
-      call.draw(canvas, scale);
+      call.draw(canvas, context, scale, orientationDeg, transformMatrix);
     }
 
-    canvas.fillStyle = 'black';
-    canvas.font = "16px Courier bold";
-    canvas.fillText(this.num_, 3, 15);
+    context.fillStyle = 'black';
+    context.font = "16px Courier bold";
+
+    const frameNumberPosX = 3;
+    const frameNumberPosY = 15;
+    const newFrameNumPos = this.rotateFlipText(frameNumberPosX, frameNumberPosY,
+                                        orientationDeg, scale, transformMatrix);
+
+    context.fillText(this.num_, newFrameNumPos[0], newFrameNumPos[1]);
 
     for (const text of this.drawTexts_) {
+      const textPosX = text.pos[0];
+      const textPosY = text.pos[1];
+
       if (text.drawindex > this.submissionFreezeIndex()) break;
 
       let filter = this.getFilter(text.source_index);
       if (!filter) continue;
 
+      const newTextPos = this.rotateFlipText(textPosX, textPosY,
+                                              orientationDeg, scale,
+                                              transformMatrix);
+
       var color = (filter && filter.drawColor) ?
         filter.drawColor : text.option.color;
-      canvas.fillStyle = color;
+      context.fillStyle = color;
       // TODO: This should also create some DrawText object or something.
-      canvas.fillText(text.text, text.pos[0] * scale, text.pos[1] * scale);
+      context.fillText(text.text, newTextPos[0], newTextPos[1]);
     }
+  }
+
+  // Rotates and flips texts
+  rotateFlipText(textPosX, textPosY, orientationDeg, scale, transformMatrix) {
+    var translationX = 0;
+    var translationY = 0;
+
+    // Determine amount of translation depending on orientation.
+    // We want to put the texts back in frame.
+    switch(orientationDeg) {
+      default:
+        break;
+      case 90:
+        translationX = canvas.width/scale;
+        break;
+      case 180:
+        translationX = canvas.width/scale;
+        translationY = canvas.height/scale;
+        break;
+      case 270:
+        translationY = canvas.height/scale;
+        break;
+      case FlipEnum.HorizontalFlip.id:
+        translationX = canvas.width/scale;
+        break;
+      case FlipEnum.VerticalFlip.id:
+        translationY = canvas.height/scale;
+        break;
+    }
+
+    var newTextPosX;
+    var newTextPosY;
+    // Use rotation/mirroring matrix to get rotated/flipped coords
+    switch (orientationDeg) {
+      default:
+        newTextPosX = textPosX * transformMatrix[0][0] +
+                      textPosY * transformMatrix[0][1] + translationX;
+        newTextPosY = textPosX * transformMatrix[1][0] +
+                      textPosY * transformMatrix[1][1] + translationY;
+        break;
+      case FlipEnum.HorizontalFlip.id:
+        newTextPosX = -textPosX + translationX;
+        newTextPosY = textPosY;
+        break;
+      case FlipEnum.VerticalFlip.id:
+        newTextPosX = textPosX;
+        newTextPosY = -textPosY + translationY;
+        break;
+    }
+    return [newTextPosX * scale, newTextPosY * scale];
   }
 
   appendLogs(logContainer) {
@@ -140,6 +221,8 @@ class Viewer {
 
     this.currentFrameIndex_ = -1;
     this.viewScale = 1.0;
+    this.viewOrientation = 0;
+    this.transformMatrix = [[1,0],[0,1]]; // Identity matrix
   }
 
   updateCurrentFrame() {
@@ -170,11 +253,23 @@ class Viewer {
     }
   }
 
+  updateTransformMatrix(orientationDeg) {
+    const orientationRad = orientationDeg * (Math.PI/180.0);
+    // Clockwise rotation Matrix
+    this.transformMatrix =
+                      [[Math.cos(orientationRad), -Math.sin(orientationRad)],
+                      [Math.sin(orientationRad), Math.cos(orientationRad)]];
+  }
+
   redrawCurrentFrame_() {
     const frame = this.getCurrentFrame();
     if (!frame) return;
-    frame.updateCanvasSize(this.canvas_, this.viewScale);
-    frame.draw(this.drawContext_, this.viewScale);
+    frame.updateCanvasOrientationAndSize(this.canvas_,
+                this.viewOrientation, this.viewScale);
+    this.updateTransformMatrix(this.viewOrientation);
+    frame.draw(this.canvas_, this.drawContext_,
+                this.viewScale, this.viewOrientation,
+                this.transformMatrix);
   }
 
   updateLogs_() {
@@ -192,6 +287,10 @@ class Viewer {
 
   setViewerScale(scaleAsInt) {
     this.viewScale = scaleAsInt / 100.0;
+  }
+
+  setViewerOrientation(orientationAsInt) {
+    this.viewOrientation = orientationAsInt;
   }
 
   freezeFrame(frameIndex, drawIndex) {
@@ -266,6 +365,18 @@ class Player {
 
   setViewerScale(scaleAsString) {
     this.viewer_.setViewerScale(parseInt(scaleAsString));
+    this.refresh();
+  }
+
+  setViewerOrientation(orientationAsString) {
+    // Set orientationAsInt as selected orientation degree
+    // Horizontal Flip enum or Vertical Flip enum
+    const orientationAsInt = parseInt(orientationAsString) >= 0 ?
+      parseInt(orientationAsString) :
+      (orientationAsString === "Horizontal Flip" ?
+          FlipEnum.HorizontalFlip.id : FlipEnum.VerticalFlip.id);
+
+    this.viewer_.setViewerOrientation(orientationAsInt);
     this.refresh();
   }
 

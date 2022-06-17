@@ -234,6 +234,19 @@
       <option>200%</option>
     </select>
   </div>
+
+  <div style='float: right' class='sectionTitle'>
+  Orientation
+    <select id="viewerorientation">
+      <option class="default-orientation">0 deg clockwise</option>
+      <option class="default-orientation">90 deg clockwise</option>
+      <option class="default-orientation">180 deg clockwise</option>
+      <option class="default-orientation">270 deg clockwise</option>
+      <option class="default-orientation">Horizontal Flip</option>
+      <option class="default-orientation">Vertical Flip</option>
+    </select>
+  </div>
+
   <div class='section'>
     <canvas id='canvas'></canvas>
   </div>
@@ -406,6 +419,19 @@
     const viewerScale = document.querySelector("#viewerscale");
     viewerScale.addEventListener('input', () => {
       player.setViewerScale(viewerScale.value);
+    });
+    const viewerOrientation = document.querySelector("#viewerorientation");
+    viewerOrientation.addEventListener('input', () => {
+      player.setViewerOrientation(viewerOrientation.value);
+    });
+    viewerOrientation.addEventListener('change', () => {
+      // change dropdown style when rotation occurs
+      if (viewerOrientation.value !== "0 deg clockwise") {
+        document.getElementById("viewerorientation").className = "selected-orientation";
+      }
+      else {
+        document.getElementById("viewerorientation").className = "default-orientation";
+      }
     });
   }
 
