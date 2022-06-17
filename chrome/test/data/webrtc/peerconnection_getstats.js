@@ -313,18 +313,19 @@ addRTCStatsToAllowlist(
 
 /*
  * RTCMediaStreamStats
- * https://w3c.github.io/webrtc-stats/#msstats-dict*
+ * https://w3c.github.io/webrtc-stats/#obsolete-rtcmediastreamstats-members
  * @private
  */
 let kRTCMediaStreamStats = new RTCStats(null, {
   streamIdentifier: 'string',
   trackIds: 'sequence_string',
 });
-addRTCStatsToAllowlist(Presence.MANDATORY, 'stream', kRTCMediaStreamStats);
+// It's OPTIONAL because this dictionary has become obsolete.
+addRTCStatsToAllowlist(Presence.OPTIONAL, 'stream', kRTCMediaStreamStats);
 
 /**
- * RTCMediaHandlerStats
- * https://w3c.github.io/webrtc-stats/#mststats-dict*
+ * RTCMediaStreamTrackStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcmediastreamtrackstats
  * @private
  */
 let kRTCMediaStreamTrackStats = new RTCStats('track', {
