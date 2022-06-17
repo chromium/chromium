@@ -23,7 +23,6 @@
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/variations_seed_processor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/device_form_factor.h"
 
 namespace variations {
 namespace {
