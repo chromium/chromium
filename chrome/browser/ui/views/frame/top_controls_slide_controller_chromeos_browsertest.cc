@@ -1049,7 +1049,13 @@ class PageStateUpdateWaiter : content::WebContentsObserver {
 // Verifies that we ignore the shown ratios sent from widgets other than that of
 // the main frame (such as widgets of the drop-down menus in web pages).
 // https://crbug.com/891471.
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
+// TODO(1337418): Flaky for dbg and ASan builds.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+#define MAYBE_TestDropDowns DISABLED_TestDropDowns
+#else
+#define MAYBE_TestDropDowns TestDropDowns
+#endif
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, MAYBE_TestDropDowns) {
   browser_view()->frame()->Maximize();
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
