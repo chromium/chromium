@@ -1522,7 +1522,8 @@ TEST_F(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
+//  Disabled due to excessive flakiness. http://crbug.com/1337168
+TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
