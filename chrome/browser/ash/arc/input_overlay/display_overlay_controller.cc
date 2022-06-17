@@ -352,6 +352,8 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveNudgeView();
       break;
     case DisplayMode::kEducation:
+      // Force recreating educational view as it is responsive to width changes.
+      RemoveEducationalView();
       AddEducationalView();
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);

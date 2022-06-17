@@ -19,6 +19,7 @@
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -28,14 +29,18 @@ namespace arc {
 namespace input_overlay {
 
 namespace {
-// About the dialog view style.
-constexpr int kDialogWidth = 416;
-constexpr int kDialogHeight = 380;
+// Full view size.
+constexpr int kDialogWidthLandscape = 416;
+constexpr int kDialogHeightLandscape = 380;
+constexpr int kDialogWidthPortrait = 320;
+constexpr int kDialogHeightPortrait = 305;
+
+// About title style.
 constexpr int kDialogShadowElevation = 3;
 constexpr int kDialogCornerRadius = 12;
 
-// About title style.
-constexpr int kTitleFontSize = 20;
+constexpr int kTitleFontSizeLandscape = 20;
+constexpr int kTitleFontSizePortrait = 18;
 
 // About description style.
 constexpr int kDescriptionFontSize = 13;
@@ -48,25 +53,69 @@ constexpr int kAlphaSidePadding = 4;
 constexpr int kAlphaLeftMargin = 12;
 
 // Misc spacing.
-constexpr int kBorderRow1 = 16;
-constexpr int kBorderRow2 = 20;
-constexpr int kBorderRow3 = 32;
-constexpr int kBorderRow4 = 36;
-constexpr int kBorderSides = 40;
+constexpr int kBorderRowLandscape1 = 16;
+constexpr int kBorderRowLandscape2 = 20;
+constexpr int kBorderRowLandscape3 = 32;
+constexpr int kBorderRowLandscape4 = 36;
+constexpr int kBorderSidesLandscape = 40;
+
+// Phone size.
+constexpr int kBorderRowPortrait1 = 16;
+constexpr int kBorderRowPortrait2 = 12;
+constexpr int kBorderRowPortrait3 = 24;
+constexpr int kBorderRowPortrait4 = 28;
+constexpr int kBorderSidesPortrait = 32;
+
+// Banner size.
+constexpr int kBannerHeightPortrait = 125;
 
 // About focus ring.
 // Gap between focus ring outer edge to label.
 constexpr float kHaloInset = -4;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 2;
+
+// Helper methods to retrieve the right dimensions/font-sizes.
+int GetBorderRow1(bool portrait_mode) {
+  return portrait_mode ? kBorderRowPortrait1 : kBorderRowLandscape1;
+}
+
+int GetBorderRow2(bool portrait_mode) {
+  return portrait_mode ? kBorderRowPortrait2 : kBorderRowLandscape2;
+}
+
+int GetBorderRow3(bool portrait_mode) {
+  return portrait_mode ? kBorderRowPortrait3 : kBorderRowLandscape3;
+}
+
+int GetBorderRow4(bool portrait_mode) {
+  return portrait_mode ? kBorderRowPortrait4 : kBorderRowLandscape4;
+}
+
+int GetBorderSides(bool portrait_mode) {
+  return portrait_mode ? kBorderSidesPortrait : kBorderSidesLandscape;
+}
+
+int GetDialogWidth(bool portrait_mode) {
+  return portrait_mode ? kDialogWidthPortrait : kDialogWidthLandscape;
+}
+
+int GetDialogHeight(bool portrait_mode) {
+  return portrait_mode ? kDialogHeightPortrait : kDialogHeightLandscape;
+}
+
+int GetTitleFontSize(bool portrait_mode) {
+  return portrait_mode ? kTitleFontSizePortrait : kTitleFontSizeLandscape;
+}
+
 }  // namespace
 
 // static
 EducationalView* EducationalView::Show(
     DisplayOverlayController* display_overlay_controller,
     views::View* parent) {
-  auto educational_view =
-      std::make_unique<EducationalView>(display_overlay_controller);
+  auto educational_view = std::make_unique<EducationalView>(
+      display_overlay_controller, parent->width());
   educational_view->Init(parent);
   auto* view_ptr = parent->AddChildView(std::move(educational_view));
   view_ptr->AddShadow();
@@ -75,8 +124,11 @@ EducationalView* EducationalView::Show(
 }
 
 EducationalView::EducationalView(
-    DisplayOverlayController* display_overlay_controller)
-    : display_overlay_controller_(display_overlay_controller) {}
+    DisplayOverlayController* display_overlay_controller,
+    int parent_width)
+    : display_overlay_controller_(display_overlay_controller) {
+  portrait_mode_ = parent_width < kDialogWidthLandscape;
+}
 
 EducationalView::~EducationalView() {}
 
@@ -99,11 +151,23 @@ void EducationalView::Init(views::View* parent) {
                 ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK
                 : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION);
     CHECK(skia_banner);
-    auto banner = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromImageSkia(*skia_banner));
-    banner->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(kBorderRow4, kBorderRow4, kBorderRow1, kBorderRow4));
+
+    // Resize to a smaller banner iff in portrait mode.
+    gfx::ImageSkia resized_banner;
+    if (portrait_mode_) {
+      // TODO(djacobo): Confirm scale factor, for now 70% looks fine.
+      resized_banner = gfx::ImageSkiaOperations::CreateResizedImage(
+          *skia_banner, skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(kDialogWidthPortrait * 0.7, kBannerHeightPortrait * 0.7));
+    }
+    auto banner =
+        std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
+            portrait_mode_ ? resized_banner : *skia_banner));
+    banner->SetProperty(views::kMarginsKey,
+                        gfx::Insets::TLBR(GetBorderRow4(portrait_mode_),
+                                          GetBorderRow4(portrait_mode_),
+                                          GetBorderRow1(portrait_mode_),
+                                          GetBorderRow4(portrait_mode_)));
     AddChildView(std::move(banner));
   }
   {
@@ -121,7 +185,8 @@ void EducationalView::Init(views::View* parent) {
             ash::AshColorProvider::ContentLayerType::kTextColorPrimary),
         /*font_list=*/
         gfx::FontList({ash::login_views_utils::kGoogleSansFont},
-                      gfx::Font::FontStyle::NORMAL, kTitleFontSize,
+                      gfx::Font::FontStyle::NORMAL,
+                      GetTitleFontSize(portrait_mode_),
                       gfx::Font::Weight::MEDIUM)));
 
     auto* alpha_label =
@@ -143,8 +208,9 @@ void EducationalView::Init(views::View* parent) {
     alpha_label->SetProperty(views::kMarginsKey,
                              gfx::Insets::TLBR(0, kAlphaLeftMargin, 0, 0));
     container_view->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(kBorderRow1, kBorderSides, 0, kBorderSides));
+        views::kMarginsKey, gfx::Insets::TLBR(GetBorderRow1(portrait_mode_),
+                                              GetBorderSides(portrait_mode_), 0,
+                                              GetBorderSides(portrait_mode_)));
     AddChildView(std::move(container_view));
   }
   {
@@ -164,8 +230,10 @@ void EducationalView::Init(views::View* parent) {
     description_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_CENTER);
     description_label->SetProperty(
-        views::kMarginsKey, gfx::Insets::TLBR(kBorderRow2, kBorderSides,
-                                              kBorderRow3, kBorderSides));
+        views::kMarginsKey, gfx::Insets::TLBR(GetBorderRow2(portrait_mode_),
+                                              GetBorderSides(portrait_mode_),
+                                              GetBorderRow3(portrait_mode_),
+                                              GetBorderSides(portrait_mode_)));
     description_label->SetMultiLine(true);
     description_label->SetSize(gfx::Size());
   }
@@ -191,7 +259,8 @@ void EducationalView::Init(views::View* parent) {
     focus_ring->SetColor(cros_styles::ResolveColor(
         cros_styles::ColorName::kFocusRingColor, IsDarkModeEnabled()));
   }
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBorderRow4, 0)));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, GetBorderRow4(portrait_mode_), 0)));
   const auto ui_size = GetPreferredSize();
   SetSize(ui_size);
   const auto parent_size = parent->size();
@@ -210,10 +279,9 @@ void EducationalView::OnAcceptedPressed() {
 }
 
 gfx::Size EducationalView::CalculatePreferredSize() const {
-  // TODO(djacobo): This is needed as in portrait mode width() may be smaller
-  // than the banner at the top. Compare against specs and this.parent() size.
   auto available_size = View::CalculatePreferredSize();
-  auto spec_size = gfx::Size(kDialogWidth, kDialogHeight);
+  auto spec_size = gfx::Size(GetDialogWidth(portrait_mode_),
+                             GetDialogHeight(portrait_mode_));
 
   return gfx::Size(std::min(available_size.width(), spec_size.width()),
                    std::min(available_size.height(), spec_size.height()));
