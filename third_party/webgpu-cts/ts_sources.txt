@@ -122,6 +122,7 @@ src/webgpu/listing.ts
 src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
 src/webgpu/api/operation/uncapturederror.spec.ts
+src/webgpu/api/operation/adapter/requestAdapterInfo.spec.ts
 src/webgpu/api/operation/adapter/requestDevice.spec.ts
 src/webgpu/api/operation/adapter/requestDevice_limits.spec.ts
 src/webgpu/api/operation/buffers/mapping_test.ts
