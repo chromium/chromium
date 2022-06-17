@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/blocked_action_dialog_view.h"
+#include "chrome/browser/ui/views/extensions/reload_page_dialog_view.h"
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -23,29 +23,25 @@
 
 namespace extensions {
 
-void ShowBlockedActionDialog(Browser* browser,
-                             const ExtensionId& extension_id,
-                             bool is_updating_permissions,
-                             base::OnceClosure callback) {
-  ShowBlockedActionDialogView(browser, extension_id, is_updating_permissions,
-                              std::move(callback));
+void ShowReloadPageDialog(Browser* browser,
+                          const ExtensionId& extension_id,
+                          bool is_updating_permissions,
+                          base::OnceClosure callback) {
+  ShowReloadPageDialogView(browser, extension_id, is_updating_permissions,
+                           std::move(callback));
 }
 
 }  // namespace extensions
 
 // static
-void ShowBlockedActionDialogView(Browser* browser,
-                                 const extensions::ExtensionId& extension_id,
-                                 bool is_updating_permissions,
-                                 base::OnceClosure callback) {
+void ShowReloadPageDialogView(Browser* browser,
+                              const extensions::ExtensionId& extension_id,
+                              bool is_updating_permissions,
+                              base::OnceClosure callback) {
   ExtensionsToolbarContainer* const container =
       GetExtensionsToolbarContainer(browser);
   DCHECK(container);
 
-  // TODO(emiliapaz): Under the new flag, this dialog is also shown when
-  // revoking permissions. Thus, the name `BlockedActionDialog` is not
-  // applicable anymore. Consider renaming this to `ReloadPageBubble` or
-  // something similar.
   ui::DialogModel::Builder dialog_builder;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {

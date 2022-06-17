@@ -178,15 +178,15 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Log metrics.
   void LogUMA() const;
 
-  // Shows the bubble to prompt the user to refresh the page to run the blocked
-  // actions for the given |extension|. |callback| is invoked when the bubble is
-  // closed.
-  void ShowBlockedActionBubble(const Extension* extension,
-                               bool update_permissions,
-                               base::OnceClosure callback);
+  // Shows the bubble to prompt the user to refresh the page to run or not the
+  // action for the given |extension|. |callback| is invoked when the
+  // bubble is closed.
+  void ShowReloadPageBubble(const Extension* extension,
+                            bool update_permissions,
+                            base::OnceClosure callback);
 
-  // Called when the blocked actions bubble is closed.
-  void OnBlockedActionBubbleClosed(
+  // Called when the reload page bubble is accepted.
+  void OnReloadPageBubbleAccepted(
       const std::string& extension_id,
       const GURL& page_url,
       SitePermissionsHelper::SiteAccess current_access,

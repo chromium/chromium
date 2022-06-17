@@ -7,17 +7,17 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 
-class BlockedActionDialogViewBrowserTest : public ExtensionsDialogBrowserTest {
+class ReloadPageDialogViewBrowserTest : public ExtensionsDialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto extension = InstallExtension("Extension");
     bool show_checkbox = true;
-    extensions::ShowBlockedActionDialog(browser(), extension->id(),
-                                        show_checkbox, base::DoNothing());
+    extensions::ShowReloadPageDialog(browser(), extension->id(), show_checkbox,
+                                     base::DoNothing());
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BlockedActionDialogViewBrowserTest, InvokeUi) {
+IN_PROC_BROWSER_TEST_F(ReloadPageDialogViewBrowserTest, InvokeUi) {
   ShowAndVerifyUi();
 }

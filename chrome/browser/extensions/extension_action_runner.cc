@@ -100,9 +100,9 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
 
       // Running the action does not update permissions.
       constexpr bool update_permissions = false;
-      ShowBlockedActionBubble(
+      ShowReloadPageBubble(
           extension, update_permissions,
-          base::BindOnce(&ExtensionActionRunner::OnBlockedActionBubbleClosed,
+          base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
                          weak_factory_.GetWeakPtr(), extension->id(), url,
                          kExpectedSiteAccess, kExpectedSiteAccess));
 
@@ -142,20 +142,22 @@ void ExtensionActionRunner::HandlePageAccessModified(
     SitePermissionsHelper::SiteAccess current_access,
     SitePermissionsHelper::SiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
-
-  // If we are restricting page access, just change permissions.
-  if (new_access == SitePermissionsHelper::SiteAccess::kOnClick) {
-    UpdatePageAccessSettings(extension, current_access, new_access);
-    return;
-  }
-
+  bool revoking_permissions =
+      new_access == SitePermissionsHelper::SiteAccess::kOnClick;
   int blocked_actions = GetBlockedActions(extension->id());
-  // Refresh the page if there are pending actions which mandate a refresh.
-  if (blocked_actions & kRefreshRequiredActionsMask) {
+
+  // Show the reload page dialog if revoking permissions, or increasing
+  // permissions with pending actions that mandate a page refresh. While
+  // revoking permissions doesn't necessarily mandate a page refresh, it is
+  // complicated to determine when an extension has affected the page. Showing a
+  // reload page bubble after the user blocks the extension re enforces the user
+  // confidence on blocking the extension. Also, this scenario should not be
+  // that common and therefore hopefully is not too noisy.
+  if (revoking_permissions || blocked_actions & kRefreshRequiredActionsMask) {
     constexpr bool update_permissions = true;
-    ShowBlockedActionBubble(
+    ShowReloadPageBubble(
         extension, update_permissions,
-        base::BindOnce(&ExtensionActionRunner::OnBlockedActionBubbleClosed,
+        base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
                        weak_factory_.GetWeakPtr(), extension->id(),
                        web_contents()->GetLastCommittedURL(), current_access,
                        new_access));
@@ -360,16 +362,9 @@ void ExtensionActionRunner::LogUMA() const {
   }
 }
 
-void ExtensionActionRunner::ShowBlockedActionBubble(
-    const Extension* extension,
-    bool update_permissions,
-    base::OnceClosure callback) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  ExtensionsContainer* const extensions_container =
-      browser ? browser->window()->GetExtensionsContainer() : nullptr;
-  if (!extensions_container)
-    return;
-
+void ExtensionActionRunner::ShowReloadPageBubble(const Extension* extension,
+                                                 bool update_permissions,
+                                                 base::OnceClosure callback) {
   // For testing, simulate the bubble being accepted by directly invoking the
   // callback, or rejected by skipping the callback.
   if (accept_bubble_for_testing_.has_value()) {
@@ -380,19 +375,24 @@ void ExtensionActionRunner::ShowBlockedActionBubble(
     return;
   }
 
-  ShowBlockedActionDialog(browser, extension->id(), update_permissions,
-                          std::move(callback));
+  // TODO(emiliapaz): Consider showing the dialog as a modal if container
+  // doesn't exist. Currently we get the extension's icon via the action
+  // controller from the container, so the container must exist.
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  ExtensionsContainer* const extensions_container =
+      browser ? browser->window()->GetExtensionsContainer() : nullptr;
+  if (!extensions_container)
+    return;
+
+  ShowReloadPageDialog(browser, extension->id(), update_permissions,
+                       std::move(callback));
 }
 
-void ExtensionActionRunner::OnBlockedActionBubbleClosed(
+void ExtensionActionRunner::OnReloadPageBubbleAccepted(
     const std::string& extension_id,
     const GURL& page_url,
     SitePermissionsHelper::SiteAccess current_access,
     SitePermissionsHelper::SiteAccess new_access) {
-  // Blocked action dialog could have only be shown if the extension's action
-  // was blocked, which means the current site access must be "on click".
-  DCHECK_EQ(current_access, SitePermissionsHelper::SiteAccess::kOnClick);
-
   // If the web contents have navigated to a different origin, do nothing.
   if (!url::IsSameOriginWith(page_url, web_contents()->GetLastCommittedURL()))
     return;

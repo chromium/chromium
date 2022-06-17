@@ -756,6 +756,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                                ContextMenuSource::kMenuItem));
   ASSERT_TRUE(context_menu);
   {
+    // Since we are revoking permissions, automatically accept the reload page
+    // bubble to update the permissions.
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    extensions::ExtensionActionRunner::GetForWebContents(web_contents)
+        ->accept_bubble_for_testing(true);
     content::WindowedNotificationObserver permissions_observer(
         extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
         content::NotificationService::AllSources());

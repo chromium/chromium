@@ -19,14 +19,14 @@ class ImageSkia;
 
 namespace extensions {
 
-// Shows a dialog when an extension requires a refresh after gaining access to
-// the current site in order to run its blocked action. The dialog content is
-// based on whether caller `is_updating_permissions`. When the dialog is
-// accepted, `callback` is invoked.
-void ShowBlockedActionDialog(Browser* browser,
-                             const ExtensionId& extension_id,
-                             bool is_updating_permissions,
-                             base::OnceClosure callback);
+// Shows a dialog when an extension requires a refresh for the extension action
+// to run or be blocked. The dialog content is based on whether caller
+// `is_updating_permissions`. When the dialog is accepted, `callback` is
+// invoked.
+void ShowReloadPageDialog(Browser* browser,
+                          const ExtensionId& extension_id,
+                          bool is_updating_permissions,
+                          base::OnceClosure callback);
 
 #if BUILDFLAG(IS_CHROMEOS)
 
