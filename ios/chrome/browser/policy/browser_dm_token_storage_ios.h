@@ -34,6 +34,9 @@ class BrowserDMTokenStorageIOS : public BrowserDMTokenStorage::Delegate {
   BrowserDMTokenStorage::StoreTask SaveDMTokenTask(
       const std::string& token,
       const std::string& client_id) override;
+  // TODO(crbug.com/1318153) Override once all delegates implement this.
+  BrowserDMTokenStorage::StoreTask DeleteDMTokenTask(
+      const std::string& client_id);
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
   scoped_refptr<base::TaskRunner> task_runner_;
@@ -41,6 +44,8 @@ class BrowserDMTokenStorageIOS : public BrowserDMTokenStorage::Delegate {
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageIOSTest, InitClientId);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageIOSTest, InitEnrollmentToken);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageIOSTest, StoreAndLoadDMToken);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageIOSTest, DeleteDMToken);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageIOSTest, DeleteEmptyDMToken);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageIOSTest,
                            InitDMTokenWithoutDirectory);
 };
