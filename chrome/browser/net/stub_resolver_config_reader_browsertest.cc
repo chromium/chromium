@@ -233,7 +233,6 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
 // ChromeOS includes its own special functionality to set default policies if
 // any policies are set.  This function is not declared and cannot be invoked
 // in non-CrOS builds. Expect these enterprise user defaults to disable DoH.
-// ouroboros
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, SpecialPolicies) {
   // Applies the special ChromeOS defaults to `policy_map_`.
