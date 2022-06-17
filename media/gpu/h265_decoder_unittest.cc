@@ -518,7 +518,7 @@ TEST_F(H265DecoderTest, SetStreamRetry) {
     EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(0))).Times(1);
     EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(0))).Times(1);
   }
-  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode(false));
   EXPECT_TRUE(decoder_->Flush());
 }
 

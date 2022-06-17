@@ -329,6 +329,23 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         if (par_res != H265Parser::kOk)
           SET_ERROR_AND_RETURN();
 
+        // For ARC CTS tests they expect us to request the buffers after only
+        // processing the SPS/PPS, we can't wait until we get the first IDR. To
+        // resolve the problem that was created by originally doing that, only
+        // do it if we don't have an active PPS set yet so it won't disturb an
+        // active stream.
+        if (curr_pps_id_ == -1) {
+          bool need_new_buffers = false;
+          if (!ProcessPPS(pps_id, &need_new_buffers)) {
+            SET_ERROR_AND_RETURN();
+          }
+
+          if (need_new_buffers) {
+            curr_nalu_.reset();
+            return kConfigChange;
+          }
+        }
+
         break;
       case H265NALU::EOS_NUT:
         first_picture_ = true;
