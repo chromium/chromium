@@ -59,6 +59,8 @@ class ChromeFeaturesServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
  private:
+  friend class ChromeFeaturesServiceProviderTest;
+
   // Called from ExportedObject when IsCrostiniEnabled() is exported as a D-Bus
   // method or failed to be exported.
   void OnExported(const std::string& interface_name,
@@ -66,7 +68,13 @@ class ChromeFeaturesServiceProvider
                   bool success);
 
   // Called on UI thread in response to a D-Bus request.
+  // For arbitrary platform-side features, use the FeatureLibrary class in
+  // platform2, rather than directly calling this dbus method.
   void IsFeatureEnabled(dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender response_sender);
+  // Use the FeatureLibrary class in platform2 rather than directly calling
+  // this dbus method.
+  void GetFeatureParams(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
   void IsCrostiniEnabled(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);

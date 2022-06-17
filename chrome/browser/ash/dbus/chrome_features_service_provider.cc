@@ -97,6 +97,13 @@ void ChromeFeaturesServiceProvider::Start(
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
       chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceGetFeatureParamsMethod,
+      base::BindRepeating(&ChromeFeaturesServiceProvider::GetFeatureParams,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      chromeos::kChromeFeaturesServiceInterface,
       chromeos::kChromeFeaturesServiceIsCrostiniEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::IsCrostiniEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -223,6 +230,111 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   }
   SendResponse(method_call, std::move(response_sender),
                state == base::FeatureList::OVERRIDE_ENABLE_FEATURE);
+}
+
+void ChromeFeaturesServiceProvider::GetFeatureParams(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  dbus::MessageReader array_reader(nullptr);
+  if (!reader.PopArray(&array_reader)) {
+    LOG(ERROR) << "Failed to read array of feature names.";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS,
+            "Could not pop string array of feature names"));
+    return;
+  }
+
+  std::vector<std::string> features;
+  std::map<std::string, std::map<std::string, std::string>> params_map;
+  std::map<std::string, bool> enabled_map;
+  while (array_reader.HasMoreData()) {
+    std::string feature_name;
+
+    if (!array_reader.PopString(&feature_name)) {
+      LOG(ERROR) << "Failed to pop feature_name from array.";
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS,
+              "Missing or invalid feature_name string arg in array."));
+      return;
+    }
+
+    if (feature_name.find(kCrOSLateBootFeaturePrefix) != 0) {
+      LOG(ERROR) << "Unexpected feature name '" << feature_name << "'";
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(method_call,
+                                                   DBUS_ERROR_INVALID_ARGS,
+                                                   "Unexpected feature name."));
+      return;
+    }
+
+    features.push_back(feature_name);
+
+    base::FeatureList::OverrideState state =
+        feature_list_accessor_->GetOverrideStateByFeatureName(feature_name);
+    if (state == base::FeatureList::OVERRIDE_ENABLE_FEATURE) {
+      enabled_map[feature_name] = true;
+    } else if (state == base::FeatureList::OVERRIDE_DISABLE_FEATURE) {
+      enabled_map[feature_name] = false;
+    }
+    // else leave it out of the map.
+
+    std::map<std::string, std::string> per_feature_map;
+    if (!feature_list_accessor_->GetParamsByFeatureName(feature_name,
+                                                        &per_feature_map)) {
+      LOG(ERROR) << "No trial found for '" << feature_name << "', skipping.";
+      continue;
+    }
+    params_map[feature_name] = std::move(per_feature_map);
+  }
+
+  // Build response
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  dbus::MessageWriter array_writer(nullptr);
+  // A map from feature name to:
+  // * two booleans:
+  //   * Whether to use the override (or the default),
+  //   * What the override state is (only valid if we should use the
+  //     override value).
+  // * Another map, from parameter name to value.
+  writer.OpenArray("{s(bba{ss})}", &array_writer);
+  for (const auto& feature_name : features) {
+    dbus::MessageWriter feature_dict_writer(nullptr);
+    array_writer.OpenDictEntry(&feature_dict_writer);
+    feature_dict_writer.AppendString(feature_name);
+    dbus::MessageWriter struct_writer(nullptr);
+    feature_dict_writer.OpenStruct(&struct_writer);
+
+    if (enabled_map.find(feature_name) != enabled_map.end()) {
+      struct_writer.AppendBool(true);  // Use override
+      struct_writer.AppendBool(enabled_map[feature_name]);
+    } else {
+      struct_writer.AppendBool(false);  // Ignore override
+      struct_writer.AppendBool(false);  // Arbitrary choice
+    }
+
+    dbus::MessageWriter sub_array_writer(nullptr);
+    struct_writer.OpenArray("{ss}", &sub_array_writer);
+    if (params_map.find(feature_name) != params_map.end()) {
+      const auto& submap = params_map[feature_name];
+      for (const auto& [key, value] : submap) {
+        dbus::MessageWriter dict_writer(nullptr);
+        sub_array_writer.OpenDictEntry(&dict_writer);
+        dict_writer.AppendString(key);
+        dict_writer.AppendString(value);
+        sub_array_writer.CloseContainer(&dict_writer);
+      }
+    }
+    struct_writer.CloseContainer(&sub_array_writer);
+    feature_dict_writer.CloseContainer(&struct_writer);
+    array_writer.CloseContainer(&feature_dict_writer);
+  }
+  writer.CloseContainer(&array_writer);
+  std::move(response_sender).Run(std::move(response));
 }
 
 void ChromeFeaturesServiceProvider::IsCrostiniEnabled(

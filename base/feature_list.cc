@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
@@ -752,6 +753,15 @@ FeatureList::Accessor::Accessor(FeatureList* feature_list)
 FeatureList::OverrideState FeatureList::Accessor::GetOverrideStateByFeatureName(
     StringPiece feature_name) {
   return feature_list_->GetOverrideStateByFeatureName(feature_name);
+}
+
+bool FeatureList::Accessor::GetParamsByFeatureName(
+    StringPiece feature_name,
+    std::map<std::string, std::string>* params) {
+  base::FieldTrial* trial =
+      feature_list_->GetAssociatedFieldTrialByFeatureName(feature_name);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
 }
 
 }  // namespace base
