@@ -3235,6 +3235,14 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         current_instance->GetStoragePartitionConfig());
   }
 
+  // Child frames (including fenced frames and portals) should always use the
+  // same StoragePartition as their parent.
+  RenderFrameHostImpl* parent = GetParentFrameOrOuterDocument();
+  if (parent) {
+    url_info_init.WithStoragePartitionConfig(
+        parent->GetSiteInstance()->GetStoragePartitionConfig());
+  }
+
   if (GetWebBundleURL().is_valid()) {
     // Web Bundle navigations should use the origin of the bundle rather than
     // the target URL.
@@ -4020,20 +4028,12 @@ void NavigationRequest::OnStartChecksComplete(
     return;
   }
 
-  // Use the SiteInstance of the navigating RenderFrameHost to get access to
-  // the StoragePartition. Using the url of the navigation will result in a
-  // wrong StoragePartition being picked when a WebView is navigating.
-  DCHECK_NE(AssociatedSiteInstanceType::NONE, associated_site_instance_type_);
-  RenderFrameHostImpl* navigating_frame_host =
-      associated_site_instance_type_ == AssociatedSiteInstanceType::SPECULATIVE
-          ? frame_tree_node_->render_manager()->speculative_frame_host()
-          : frame_tree_node_->current_frame_host();
-  DCHECK(navigating_frame_host);
-
+  // |site_info_|'s StoragePartitionConfig should refer to the correct
+  // StoragePartition for this navigation.
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
   StoragePartition* partition = browser_context->GetStoragePartition(
-      navigating_frame_host->GetSiteInstance());
+      site_info_.storage_partition_config());
   DCHECK(partition);
 
   // |loader_| should not exist if the service worker handle
