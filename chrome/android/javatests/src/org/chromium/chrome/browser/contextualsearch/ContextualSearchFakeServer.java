@@ -84,6 +84,12 @@ class ContextualSearchFakeServer
         void triggerResolve(String nodeId) throws TimeoutException;
 
         /**
+         * Simulates a long press trigger on the given node and waits for the panel to peek.
+         * @param nodeId A string containing the node ID.
+         */
+        void triggerLongPress(String nodeId) throws TimeoutException;
+
+        /**
          * Waits for the selected text string to be the given string, and asserts.
          * @param text The string to wait for the selection to become.
          */
@@ -166,6 +172,14 @@ class ContextualSearchFakeServer
         public abstract void simulate() throws InterruptedException, TimeoutException;
 
         /**
+         * Simulates a fake search by long press.
+         *
+         * @throws InterruptedException
+         * @throws TimeoutException
+         */
+        public abstract void simulateLongPress() throws InterruptedException, TimeoutException;
+
+        /**
          * @return The search term that will be used in the contextual search.
          */
         public abstract String getSearchTerm();
@@ -203,6 +217,15 @@ class ContextualSearchFakeServer
         public void simulate() throws InterruptedException, TimeoutException {
             mTestHost.triggerNonResolve(getNodeId());
             mTestHost.waitForSelectionToBe(mSearchTerm);
+        }
+
+        @Override
+        public void simulateLongPress() throws InterruptedException, TimeoutException {
+            boolean previousOptedInState = mPolicy.overrideDecidedStateForTesting(false);
+
+            mTestHost.triggerLongPress(getNodeId());
+            mTestHost.waitForSelectionToBe(mSearchTerm);
+            mPolicy.overrideDecidedStateForTesting(previousOptedInState);
         }
 
         @Override
@@ -274,6 +297,35 @@ class ContextualSearchFakeServer
                 mTestHost.triggerNonResolve(getNodeId());
             }
             mTestHost.waitForSelectionToBe(getSearchTerm());
+
+            if (mPolicy.shouldPreviousGestureResolve()) {
+                // Now wait for the Search Term Resolution to start.
+                mTestHost.waitForSearchTermResolutionToStart(this);
+
+                // Simulate a Search Term Resolution.
+                simulateSearchTermResolution();
+
+                // Now wait for the simulated Search Term Resolution to finish.
+                mTestHost.waitForSearchTermResolutionToFinish(this);
+            } else {
+                mDidFinishResolution = true;
+            }
+        }
+
+        @Override
+        public void simulateLongPress() throws InterruptedException, TimeoutException {
+            mActiveResolveSearch = this;
+
+            // When a resolution is needed, the simulation does not start until the system
+            // requests one, and it does not finish until the simulated resolution happens.
+            mDidStartResolution = false;
+            mDidFinishResolution = false;
+
+            boolean previousOptedInState =
+                    mPolicy.overrideDecidedStateForTesting(mPolicy.shouldPreviousGestureResolve());
+            mTestHost.triggerLongPress(getNodeId());
+            mTestHost.waitForSelectionToBe(getSearchTerm());
+            mPolicy.overrideDecidedStateForTesting(previousOptedInState);
 
             if (mPolicy.shouldPreviousGestureResolve()) {
                 // Now wait for the Search Term Resolution to start.

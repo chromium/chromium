@@ -525,6 +525,11 @@ public class ContextualSearchInstrumentationBase {
         }
 
         @Override
+        public void triggerLongPress(String nodeId) throws TimeoutException {
+            longPressNode(nodeId);
+        }
+
+        @Override
         public void waitForSelectionToBe(final String text) {
             CriteriaHelper.pollInstrumentationThread(() -> {
                 Criteria.checkThat(getSelectedText(), Matchers.is(text));
@@ -647,6 +652,14 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Simulates a long press trigger on the given node and waits for the panel to peek.
+     * @param nodeId A string containing the node ID.
+     */
+    protected void triggerLongPress(String nodeId) throws TimeoutException {
+        mTestHost.triggerLongPress(nodeId);
+    }
+
+    /**
      * Waits for the selected text string to be the given string, and asserts.
      * @param text The string to wait for the selection to become.
      */
@@ -749,6 +762,19 @@ public class ContextualSearchInstrumentationBase {
         ContextualSearchFakeServer.FakeNonResolveSearch search =
                 mFakeServer.getFakeNonResolveSearch(nodeId);
         search.simulate();
+        waitForPanelToPeek();
+    }
+
+    /**
+     * Simulates a non-resolving search by long press.
+     *
+     * @param nodeId The id of the node to be triggered.
+     */
+    protected void simulateNonResolveSearchByLongPress(String nodeId)
+            throws InterruptedException, TimeoutException {
+        ContextualSearchFakeServer.FakeNonResolveSearch search =
+                mFakeServer.getFakeNonResolveSearch(nodeId);
+        search.simulateLongPress();
         waitForPanelToPeek();
     }
 
