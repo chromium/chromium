@@ -18,7 +18,9 @@ message Action {
 
 // Extended by the integrator.
 message ActionInfo {
-  extensions 100 to max;
+  optional bytes action_payload = 1;
+
+  reserved 100 to max;
 }
 
 // The result of the execution of |Action|
@@ -33,7 +35,9 @@ message Result {
 
 // Extended by the integrator.
 message ResultInfo {
-  extensions 100 to max;
+  optional bytes result_payload = 1;
+
+  reserved 100 to max;
 }
 
 // An update on the status of the DOM conditions for the current action.
