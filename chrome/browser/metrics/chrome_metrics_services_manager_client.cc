@@ -98,10 +98,12 @@ namespace {
 // Posts |GoogleUpdateSettings::StoreMetricsClientInfo| on blocking pool thread
 // because it needs access to IO and cannot work from UI thread.
 void PostStoreMetricsClientInfo(const metrics::ClientInfo& client_info) {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GoogleUpdateSettings::StoreMetricsClientInfo,
-                     client_info));
+  // This must happen on the same sequence as the tasks to enable/disable
+  // metrics reporting. Otherwise, this may run while disabling metrics
+  // reporting if the user quickly enables and disables metrics reporting.
+  GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&GoogleUpdateSettings::StoreMetricsClientInfo,
+                                client_info));
 }
 
 // Appends a group to the sampling controlling |trial|. The group will be
