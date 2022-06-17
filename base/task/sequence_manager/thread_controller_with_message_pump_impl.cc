@@ -17,6 +17,7 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/message_loop/message_pump_mac.h"
@@ -449,6 +450,22 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
+  struct OnIdle {
+    explicit OnIdle(ThreadControllerWithMessagePumpImpl& outer)
+        : outer_(outer) {}
+
+    // Very last step before going idle, must be fast as this is hidden from the
+    // DoIdleWork trace event below.
+    ~OnIdle() { outer_.run_level_tracker_.OnIdle(); }
+
+   private:
+    ThreadControllerWithMessagePumpImpl& outer_;
+  };
+  absl::optional<OnIdle> on_idle;
+
+  // Must be after `on_idle` as this trace event's scope must end before the END
+  // of the "ThreadController active" trace event emitted from
+  // `run_level_tracker_.OnIdle()`.
   TRACE_EVENT0("sequence_manager", "SequenceManager::DoIdleWork");
 
   // A hang watch scope should already be in place in most cases but some
@@ -486,11 +503,13 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
     return false;
   }
 
-  run_level_tracker_.OnIdle();
   // This is mostly redundant with the identical call in BeforeWait (upcoming)
   // but some uninstrumented MessagePump impls don't call BeforeWait so it must
   // also be done here.
   hang_watch_scope_.reset();
+
+  // All return paths below are truly idle.
+  on_idle.emplace(*this);
 
   // Check if any runloop timeout has expired.
   if (main_thread_only().quit_runloop_after != TimeTicks::Max() &&
