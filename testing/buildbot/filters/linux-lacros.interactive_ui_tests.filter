@@ -6,7 +6,6 @@
 -AppWindowTest.RuntimeFullscreenToAlwaysOnTop
 -BookmarkBarViewTest*
 -ChromeVisibilityObserverInteractiveTest.VisibilityTest
--ClipboardTest/PlatformClipboardTest.ReadAvailablePlatformSpecificFormatNamesTest
 -CrossSiteSubframe/DragAndDropBrowserTest*
 -DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
 -DesktopWindowTreeHostPlatformImplTest.CaptureEventForwarding
@@ -15,36 +14,17 @@
 -ExtensionApiTest.WindowOpenFocus
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
 -MenuViewDragAndDropTestTestInMenuDrag.TestInMenuDrag
--OmniboxViewViewsTest.DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade
 -OmniboxViewViewsTest.SelectionClipboard
 -SameSiteSubframe*
 -SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
--StartupBrowserCreatorTest.LastUsedProfileActivated
 -TabDragging*
 -TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
 -WidgetInputMethodInteractiveTest.Activation
 -WidgetInputMethodInteractiveTest.OneWindow
 -WidgetInputMethodInteractiveTest.TwoWindows
 
-# TODO(https://crbug.com/991596): Setup guest profiles correctly for tests.
-# Lacros has restrictions on the main profile (it must match the device account
-# profile) so this test doesn't pass.
--AllGuestProfileTypes/GuestToolbarViewTest.*
-
-# TODO(crbug.com/1122089):
-# Following tests were flaky. We disable them first until we have time to investigate.
--BrowserCommandControllerInteractiveTest.ShortcutsShouldTakeEffectInBrowserFullscreen
--ExtensionApiTest.DisplayModeWindowIsInFullscreen
--ExtensionCrashRecoveryTest.TwoExtensionsReloadIndependently
--KeyboardLockInteractiveBrowserTest.SubsequentLockCallSupersedesPreviousCall
--NewTabPageDoodleShareDialogFocusTest.All
--PlatformNotificationServiceBrowserTest.TestShouldDisplayMultiFullscreen
--PopupBlockerBrowserTest.BlockWebContentsCreationIncognito
--NotificationsApiTest*
-
 # TODO(crbug.com/1195712): Implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand
-
 # TODO(crbug.com/1208111): Flaky test.
 -MenuControllerUITest.TestMouseOverShownMenu
 
@@ -55,9 +35,4 @@
 -CommandsApiTest.DontOverwriteSystemShortcuts
 -CommandsApiTest.PageActionKeyUpdated
 -CommandsApiTest.UnpinnedPageActionTriggers
--SameSiteSubframe/DragAndDropBrowserTest.DragUpdateScreenCoordinates/0
--ExtensionsToolbarInteractiveUiTest.DoubleClickToolbarActionToClose
--OmniboxViewViewsTest.TextElideStatus
--TabDragCaptureLostTest.ReleaseCaptureOnDrag
 -PrivacySandboxDialogViewInteractiveUiTest.EscapeClosesNotice
--PrivacySandboxDialogViewInteractiveUiTest.EscapeDoesntCloseConsent

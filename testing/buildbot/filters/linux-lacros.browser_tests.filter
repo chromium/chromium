@@ -1,15 +1,12 @@
 # TODO(crbug.com/1111979) Enable all tests on lacros.
 -AccessContextAuditBrowserTest.CheckSessionOnly
 -AccessContextAuditBrowserTest.RemoveRecords
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityIgnoreDisplayNoneFrame
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/*
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/*
 -BluetoothApiTest.*
 -BluetoothLowEnergyApiTest.*
 -BluetoothPrivateApiTest.*
 -BrowserTest.RestorePinnedTabs
--BrowserViewTest.DevToolsUpdatesBrowserWindow
--BrowserViewTest.F6CyclesThroughCaptionBubbleToo
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -ContextMenuBrowserTest.OpenLinkInProfile
@@ -21,43 +18,17 @@
 -OmniboxPopupContentsViewTest.ClickOmnibox
 -OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
 -OutOfProcessPPAPITest.Printing
--PageLoadMetricsBrowserTest.MainFrameIntersectionsMainFrame
--PreservedWindowPlacement.Test
 -ProfileListDesktopBrowserTest.SwitchToProfile
--SSLUITest.TestCloseTabWithUnsafePopup
 -TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
 -TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
--AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
--All/MultiActionAPITest.PopupCreation/*
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
--BrowserTest.GetSizeForNewRenderView
 -ContentSettingsTest.AllowCookiesForASessionUsingExceptions
 -CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
--CustomTabBarViewBrowserTest.IsNotCreatedInPopup
 -DevToolsTest.TestDispatchKeyEventShowsAutoFill
--FindInPageControllerTest.FindMovesOnTabClose_Issue1343052
--FindInPageControllerTest.FindMovesWhenObscuring
--FindInPageControllerTest.SingleOccurrence
--GlobalErrorBubbleTest.InvokeUi_ExternalInstallBubbleAlert
--MediaRouterUIBrowserTest.EphemeralToolbarIconForDialog
--PDFExtensionClipboardTest.CombinedShiftArrowPresses
--PopupTrackerBrowserTest.ControlClick_HasTracker
--TabActivityWatcherTest.AllWindowMetricsArePopulated
-# https://crbug.com/1197201
-# Following tests fail when Mirror is enabled on Lacros. They try to update
-# credentials in Ash Account Manager, which is currently not possible in
-# browser_tests because of lack of crosapi.
--DiceBrowserTest.*
--DiceBrowsingDataRemoverBrowserTest.*
--ExtensionBrowsingDataTest.*
--UserPolicySigninServiceTest.*
--UserPolicySigninServiceSyncNotRequiredTest.AcceptManagementDeclineSync
-
 # #TODO (b/235882005): These tests fail due to a NOT_IMPLEMENTED_LOG_ONCE()
 # within the  wayland_surface.cc implementation. This implementation is
 # currently used by linux-lacros. This causes our focused dialog object to
