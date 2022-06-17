@@ -32,8 +32,8 @@ TEST_F(GuestIdTest, GuestIdEquality) {
 
 TEST_F(GuestIdTest, GuestIdFromDictValue) {
   base::Value dict(base::Value::Type::DICT);
-  dict.SetStringKey(prefs::kVmKey, "foo");
-  dict.SetStringKey(prefs::kContainerKey, "bar");
+  dict.SetStringKey(prefs::kVmNameKey, "foo");
+  dict.SetStringKey(prefs::kContainerNameKey, "bar");
   EXPECT_TRUE(GuestId(dict) == GuestId("foo", "bar"));
 }
 
@@ -89,6 +89,16 @@ TEST_F(GuestIdTest, GetContainers) {
   profile_.GetPrefs()->Set(prefs::kGuestOsContainers, std::move(*pref));
   std::vector<GuestId> expected = {GuestId("vm1", "c1"), GuestId("vm2", "c2")};
   EXPECT_EQ(GetContainers(&profile_), expected);
+}
+
+TEST_F(GuestIdTest, VmTypeFromPref) {
+  EXPECT_EQ(VmType::UNKNOWN, VmTypeFromPref(base::Value("not-dict")));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  EXPECT_EQ(VmType::TERMINA, VmTypeFromPref(dict));
+  dict.SetIntKey("vm_type", 1);
+  EXPECT_EQ(VmType::PLUGIN_VM, VmTypeFromPref(dict));
+  dict.SetIntKey("vm_type", 999);
+  EXPECT_EQ(VmType::UNKNOWN, VmTypeFromPref(dict));
 }
 
 }  // namespace guest_os

@@ -18,8 +18,9 @@ namespace guest_os {
 namespace {
 
 bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
-  const std::string* vm_name = dict.FindStringKey(prefs::kVmKey);
-  const std::string* container_name = dict.FindStringKey(prefs::kContainerKey);
+  const std::string* vm_name = dict.FindStringKey(prefs::kVmNameKey);
+  const std::string* container_name =
+      dict.FindStringKey(prefs::kContainerNameKey);
   return (vm_name && *vm_name == container_id.vm_name) &&
          (container_name && *container_name == container_id.container_name);
 }
@@ -40,8 +41,8 @@ GuestId::GuestId(const base::Value& value) noexcept {
   const std::string* vm = nullptr;
   const std::string* container = nullptr;
   if (dict != nullptr) {
-    vm = dict->FindString(prefs::kVmKey);
-    container = dict->FindString(prefs::kContainerKey);
+    vm = dict->FindString(prefs::kVmNameKey);
+    container = dict->FindString(prefs::kContainerNameKey);
   }
   vm_name = vm ? *vm : "";
   container_name = container ? *container : "";
@@ -49,15 +50,15 @@ GuestId::GuestId(const base::Value& value) noexcept {
 
 base::flat_map<std::string, std::string> GuestId::ToMap() const {
   base::flat_map<std::string, std::string> extras;
-  extras[prefs::kVmKey] = vm_name;
-  extras[prefs::kContainerKey] = container_name;
+  extras[prefs::kVmNameKey] = vm_name;
+  extras[prefs::kContainerNameKey] = container_name;
   return extras;
 }
 
 base::Value::Dict GuestId::ToDictValue() const {
   base::Value::Dict dict;
-  dict.Set(prefs::kVmKey, vm_name);
-  dict.Set(prefs::kContainerKey, container_name);
+  dict.Set(prefs::kVmNameKey, vm_name);
+  dict.Set(prefs::kContainerNameKey, container_name);
   return dict;
 }
 
@@ -116,8 +117,8 @@ void AddContainerToPrefs(Profile* profile,
   }
 
   base::Value new_container(base::Value::Type::DICTIONARY);
-  new_container.SetKey(prefs::kVmKey, base::Value(container_id.vm_name));
-  new_container.SetKey(prefs::kContainerKey,
+  new_container.SetKey(prefs::kVmNameKey, base::Value(container_id.vm_name));
+  new_container.SetKey(prefs::kContainerNameKey,
                        base::Value(container_id.container_name));
   for (const auto item : properties) {
     if (base::Contains(*kPropertiesAllowList, item.first)) {
@@ -143,7 +144,7 @@ void RemoveVmFromPrefs(Profile* profile, const std::string& vm_name) {
   updater->EraseListIter(std::find_if(
       updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
       [&](const auto& dict) {
-        const std::string* dict_vm_name = dict.FindStringKey(prefs::kVmKey);
+        const std::string* dict_vm_name = dict.FindStringKey(prefs::kVmNameKey);
         return dict_vm_name && *dict_vm_name == vm_name;
       }));
 }
@@ -176,6 +177,24 @@ void UpdateContainerPref(Profile* profile,
       it->SetKey(key, std::move(value));
     }
   }
+}
+
+VmType VmTypeFromPref(const base::Value& pref) {
+  if (!pref.is_dict()) {
+    return VmType::UNKNOWN;
+  }
+
+  // Default is TERMINA(0) if field not present since this field was introduced
+  // when only TERMINA was using prefs..
+  auto type = pref.FindIntKey(guest_os::prefs::kVmTypeKey);
+  if (!type.has_value()) {
+    return VmType::TERMINA;
+  }
+  if (*type < vm_tools::apps::VmType_MIN ||
+      *type > vm_tools::apps::VmType_MAX) {
+    return VmType::UNKNOWN;
+  }
+  return static_cast<guest_os::VmType>(*type);
 }
 
 }  // namespace guest_os

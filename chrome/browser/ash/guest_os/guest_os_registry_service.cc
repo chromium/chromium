@@ -126,11 +126,10 @@ void PopulatePrefRegistrationFromApp(base::Value& pref_registration,
                                      base::Value name) {
   pref_registration.SetKey(guest_os::prefs::kAppDesktopFileIdKey,
                            base::Value(app.desktop_file_id()));
-  pref_registration.SetIntKey(guest_os::prefs::kAppVmTypeKey,
+  pref_registration.SetIntKey(guest_os::prefs::kVmTypeKey,
                               static_cast<int>(vm_type));
-  pref_registration.SetKey(guest_os::prefs::kAppVmNameKey,
-                           base::Value(vm_name));
-  pref_registration.SetKey(guest_os::prefs::kAppContainerNameKey,
+  pref_registration.SetKey(guest_os::prefs::kVmNameKey, base::Value(vm_name));
+  pref_registration.SetKey(guest_os::prefs::kContainerNameKey,
                            base::Value(container_name));
   pref_registration.SetKey(guest_os::prefs::kAppNameKey, std::move(name));
   pref_registration.SetKey(guest_os::prefs::kAppCommentKey,
@@ -330,21 +329,15 @@ std::string GuestOsRegistryService::Registration::DesktopFileId() const {
 }
 
 VmType GuestOsRegistryService::Registration::VmType() const {
-  if (!pref_.is_dict()) {
-    return VmType::TERMINA;
-  }
-  // The VmType field is new, existing Apps that do not include it must be
-  // TERMINA (0) Apps, as Plugin VM apps are not yet in production.
-  return static_cast<guest_os::VmType>(
-      pref_.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0));
+  return VmTypeFromPref(pref_);
 }
 
 std::string GuestOsRegistryService::Registration::VmName() const {
-  return GetString(guest_os::prefs::kAppVmNameKey);
+  return GetString(guest_os::prefs::kVmNameKey);
 }
 
 std::string GuestOsRegistryService::Registration::ContainerName() const {
-  return GetString(guest_os::prefs::kAppContainerNameKey);
+  return GetString(guest_os::prefs::kContainerNameKey);
 }
 
 std::string GuestOsRegistryService::Registration::Name() const {
@@ -630,9 +623,8 @@ void GuestOsRegistryService::RecordStartupMetrics() {
       continue;
     }
 
-    int vm_type =
-        item.second.FindIntKey(guest_os::prefs::kAppVmTypeKey).value_or(0);
-    num_apps[vm_type]++;
+    VmType vm_type = VmTypeFromPref(item.second);
+    num_apps[static_cast<int>(vm_type)]++;
   }
 }
 
@@ -952,9 +944,9 @@ void GuestOsRegistryService::UpdateApplicationList(
 
     for (const auto item : apps->DictItems()) {
       std::string vm_name =
-          GetStringKey(item.second, guest_os::prefs::kAppVmNameKey);
+          GetStringKey(item.second, guest_os::prefs::kVmNameKey);
       std::string container_name =
-          GetStringKey(item.second, guest_os::prefs::kAppContainerNameKey);
+          GetStringKey(item.second, guest_os::prefs::kContainerNameKey);
       if (vm_name.empty() || container_name.empty()) {
         LOG(WARNING) << "Detected app with empty vm or container name";
         removed_apps.push_back(item.first);

@@ -16,12 +16,14 @@ extern const char kGuestOSPathsSharedToVms[];
 // GuestOsMimeTypes
 extern const char kGuestOsMimeTypes[];
 
+// GuestOsRegistry and GuestId
+extern const char kVmTypeKey[];
+extern const char kVmNameKey[];
+extern const char kContainerNameKey[];
+
 // GuestOsRegistry
 extern const char kGuestOsRegistry[];
 extern const char kAppDesktopFileIdKey[];
-extern const char kAppVmTypeKey[];
-extern const char kAppVmNameKey[];
-extern const char kAppContainerNameKey[];
 extern const char kAppCommentKey[];
 extern const char kAppExtensionsKey[];
 extern const char kAppMimeTypesKey[];
@@ -37,10 +39,8 @@ extern const char kAppStartupNotifyKey[];
 extern const char kAppInstallTimeKey[];
 extern const char kAppLastLaunchTimeKey[];
 
-// GuestOsContainerId
+// GuestId
 extern const char kGuestOsContainers[];
-extern const char kVmKey[];
-extern const char kContainerKey[];
 extern const char kContainerOsVersionKey[];
 extern const char kContainerOsPrettyNameKey[];
 extern const char kContainerColorKey[];

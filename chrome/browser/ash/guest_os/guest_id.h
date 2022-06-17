@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 
 class PrefService;
 class Profile;
@@ -63,6 +64,10 @@ void UpdateContainerPref(Profile* profile,
                          const GuestId& container_id,
                          const std::string& key,
                          base::Value value);
+
+// Get "vm_type" int from pref and convert to VmType using TERMINA(0) as default
+// if field is not present.
+VmType VmTypeFromPref(const base::Value& pref);
 
 }  // namespace guest_os
 

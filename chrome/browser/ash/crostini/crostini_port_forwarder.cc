@@ -101,9 +101,9 @@ void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
   new_port_metadata.SetIntKey(kPortProtocolKey,
                               static_cast<int>(key.protocol_type));
   new_port_metadata.SetStringKey(kPortLabelKey, label);
-  new_port_metadata.SetStringKey(guest_os::prefs::kVmKey,
+  new_port_metadata.SetStringKey(guest_os::prefs::kVmNameKey,
                                  key.container_id.vm_name);
-  new_port_metadata.SetStringKey(guest_os::prefs::kContainerKey,
+  new_port_metadata.SetStringKey(guest_os::prefs::kContainerNameKey,
                                  key.container_id.container_name);
   all_ports->Append(std::move(new_port_metadata));
 }
