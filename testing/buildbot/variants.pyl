@@ -1003,8 +1003,8 @@
   'CROS_OCTOPUS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '103.0.5060.37',
-      'cros_img': 'octopus-release/R103-14816.49.0',
+      'cros_chrome_version': '103.0.5060.53',
+      'cros_img': 'octopus-release/R103-14816.64.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_BETA',
@@ -1039,8 +1039,8 @@
   'CROS_STRONGBAD_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '103.0.5060.33',
-      'cros_img': 'strongbad-release/R103-14816.41.0',
+      'cros_chrome_version': '103.0.5060.53',
+      'cros_img': 'strongbad-release/R103-14816.64.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_BETA',
