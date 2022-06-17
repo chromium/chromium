@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,7 +55,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.ArrayList;
@@ -100,8 +101,6 @@ public class PartialCustomTabHeightStrategyTest {
     private Display mDisplay;
     @Mock
     private PartialCustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
-    @Mock
-    private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock
@@ -183,10 +182,15 @@ public class PartialCustomTabHeightStrategyTest {
                 .getRealMetrics(any(DisplayMetrics.class));
     }
 
+    @After
+    public void tearDown() {
+        // Reset the multi-window mode.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+    }
+
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx) {
-        PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(mActivity,
-                heightPx, mMultiWindowModeStateDispatcher, null, null, mOnResizedCallback,
-                mActivityLifecycleDispatcher);
+        PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
+                mActivity, heightPx, null, null, mOnResizedCallback, mActivityLifecycleDispatcher);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
         return pcct;
@@ -288,7 +292,7 @@ public class PartialCustomTabHeightStrategyTest {
 
     @Test
     public void moveUp_multiwindowModeUnresizable() {
-        when(mMultiWindowModeStateDispatcher.isInMultiWindowMode()).thenReturn(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
 
         // Pass null because we have a mock Activity and we don't depend on the GestureDetector
@@ -344,7 +348,8 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
-        strategy.onMultiWindowModeChanged(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        strategy.onConfigurationChanged(mConfiguration);
 
         // action down
         assertFalse(handleStrategy.onInterceptTouchEvent(
