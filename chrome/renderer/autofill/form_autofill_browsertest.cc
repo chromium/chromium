@@ -50,8 +50,7 @@ using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
 
-namespace autofill {
-namespace form_util {
+namespace autofill::form_util {
 
 namespace {
 
@@ -2527,6 +2526,7 @@ TEST_F(FormAutofillTest,
   expected.autocomplete_attribute = "off";
   expected.should_autocomplete = false;
   expected.is_focusable = true;
+  expected.is_visible = true;
   expected.text_direction = base::i18n::LEFT_TO_RIGHT;
 
   expected.value = u"CA";
@@ -5658,5 +5658,4 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
   EXPECT_EQ(u"aria description", fields[2].aria_description);
 }
 
-}  // namespace form_util
-}  // namespace autofill
+}  // namespace autofill::form_util
