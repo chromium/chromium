@@ -32,6 +32,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
 

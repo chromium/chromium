@@ -1240,7 +1240,9 @@ void WebFrameWidgetImpl::SetNeedsRecalculateRasterScales() {
 void WebFrameWidgetImpl::SetBackgroundColor(SkColor color) {
   if (!View()->does_composite())
     return;
-  widget_base_->LayerTreeHost()->set_background_color(color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  widget_base_->LayerTreeHost()->set_background_color(
+      SkColor4f::FromColor(color));
 }
 
 void WebFrameWidgetImpl::SetOverscrollBehavior(
@@ -2829,7 +2831,7 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   // Set up some initial state before we are setting the layer.
   if (ForSubframe() && layer) {
     // Child local roots will always have a transparent background color.
-    widget_base_->LayerTreeHost()->set_background_color(SK_ColorTRANSPARENT);
+    widget_base_->LayerTreeHost()->set_background_color(SkColors::kTransparent);
     // Pass the limits even though this is for subframes, as the limits will
     // be needed in setting the raster scale.
     SetPageScaleStateAndLimits(1.f, false /* is_pinch_gesture_active */,

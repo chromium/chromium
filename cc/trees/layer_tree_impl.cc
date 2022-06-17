@@ -152,7 +152,7 @@ LayerTreeImpl::LayerTreeImpl(
       is_first_frame_after_commit_tracker_(-1),
       hud_layer_(nullptr),
       property_trees_(host_impl),
-      background_color_(0),
+      background_color_(SkColors::kTransparent),
       last_scrolled_scroll_node_index_(kInvalidPropertyNodeId),
       page_scale_factor_(page_scale_factor),
       min_page_scale_factor_(0),

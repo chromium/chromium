@@ -806,10 +806,12 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   data_for_recursion.animation_axis_aligned_since_render_target = true;
   data_for_recursion.not_axis_aligned_since_last_clip = false;
 
-  SkColor root_background_color = layer_tree_host_->background_color();
-  if (SkColorGetA(root_background_color) != 255)
-    root_background_color = SkColorSetA(root_background_color, 255);
-  data_for_recursion.safe_opaque_background_color = root_background_color;
+  SkColor4f root_background_color =
+      layer_tree_host_->background_color().isOpaque()
+          ? layer_tree_host_->background_color()
+          : layer_tree_host_->background_color().makeOpaque();
+  data_for_recursion.safe_opaque_background_color =
+      root_background_color.toSkColor();
 
   property_trees_.clear();
   transform_tree_.set_device_scale_factor(

@@ -508,7 +508,8 @@ void Compositor::SetDisplayTransformHint(gfx::OverlayTransform hint) {
 }
 
 void Compositor::SetBackgroundColor(SkColor color) {
-  host_->set_background_color(color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  host_->set_background_color(SkColor4f::FromColor(color));
   ScheduleDraw();
 }
 

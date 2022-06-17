@@ -429,7 +429,6 @@ void RenderWidgetHostViewAndroid::LostFocus() {
 void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
     const cc::RenderFrameMetadata& metadata) {
   bool is_transparent = metadata.has_transparent_background;
-  SkColor root_background_color = metadata.root_background_color;
 
   if (!using_browser_compositor_) {
     // DevTools ScreenCast support for Android WebView.
@@ -480,8 +479,10 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
       metadata.bottom_controls_shown_ratio,
       metadata.bottom_controls_min_height_offset);
 
-  SetContentBackgroundColor(is_transparent ? SK_ColorTRANSPARENT
-                                           : root_background_color);
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  SetContentBackgroundColor(is_transparent
+                                ? SK_ColorTRANSPARENT
+                                : metadata.root_background_color.toSkColor());
 
   if (overscroll_controller_) {
     overscroll_controller_->OnFrameMetadataUpdated(

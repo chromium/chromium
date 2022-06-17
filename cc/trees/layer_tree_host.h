@@ -498,10 +498,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->max_page_scale_factor;
   }
 
-  void set_background_color(SkColor color) {
+  void set_background_color(SkColor4f color) {
     pending_commit_state()->background_color = color;
   }
-  SkColor background_color() const {
+  SkColor4f background_color() const {
     return pending_commit_state()->background_color;
   }
 

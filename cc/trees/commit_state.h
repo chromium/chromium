@@ -102,7 +102,7 @@ struct CC_EXPORT CommitState {
   LayerSelection selection;
   LayerTreeDebugState debug_state;
   OverscrollBehavior overscroll_behavior;
-  SkColor background_color = SK_ColorWHITE;
+  SkColor4f background_color = SkColors::kWhite;
   ViewportPropertyIds viewport_property_ids;
   viz::LocalSurfaceId local_surface_id_from_parent;
   base::TimeDelta previous_surfaces_visual_update_duration;

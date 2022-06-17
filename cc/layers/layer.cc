@@ -576,12 +576,9 @@ SkColor4f Layer::SafeOpaqueBackgroundColor(
 }
 
 SkColor4f Layer::SafeOpaqueBackgroundColor() const {
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   SkColor4f host_background_color =
-      IsAttached()
-          ? SkColor4f::FromColor(
-                layer_tree_host()->pending_commit_state()->background_color)
-          : layer_tree_inputs()->safe_opaque_background_color;
+      IsAttached() ? layer_tree_host()->pending_commit_state()->background_color
+                   : layer_tree_inputs()->safe_opaque_background_color;
   return SafeOpaqueBackgroundColor(host_background_color);
 }
 
@@ -1469,9 +1466,8 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->SetElementId(inputs.element_id);
   layer->SetHasTransformNode(has_transform_node());
   layer->SetBackgroundColor(inputs.background_color);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-  layer->SetSafeOpaqueBackgroundColor(SafeOpaqueBackgroundColor(
-      SkColor4f::FromColor(commit_state.background_color)));
+  layer->SetSafeOpaqueBackgroundColor(
+      SafeOpaqueBackgroundColor(commit_state.background_color));
   layer->SetBounds(inputs.bounds);
   layer->SetTransformTreeIndex(transform_tree_index(property_trees));
   layer->SetEffectTreeIndex(effect_tree_index(property_trees));

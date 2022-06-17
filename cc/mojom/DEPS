@@ -1,4 +1,5 @@
 include_rules = [
   "+mojo/public/cpp/base",
   "+services/viz/public/cpp/compositing",
+  "+skia/public/mojom",
 ]

@@ -50,9 +50,7 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
                              /*is_overlay*/ true),
       thumb_thickness_(thumb_thickness),
       track_start_(track_start),
-      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-      color_(SkColor4f::FromColor(
-          tree_impl->settings().solid_color_scrollbar_color)) {}
+      color_(tree_impl->settings().solid_color_scrollbar_color) {}
 
 void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);

@@ -3208,7 +3208,7 @@ class LayerTreeHostTestCommit : public LayerTreeHostTest {
   void BeginTest() override {
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(20, 20), 1.f,
                                                viz::LocalSurfaceId());
-    layer_tree_host()->set_background_color(SK_ColorGRAY);
+    layer_tree_host()->set_background_color(SkColors::kGray);
     layer_tree_host()->SetEventListenerProperties(
         EventListenerClass::kMouseWheel, EventListenerProperties::kPassive);
     layer_tree_host()->SetEventListenerProperties(
@@ -3224,7 +3224,7 @@ class LayerTreeHostTestCommit : public LayerTreeHostTest {
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* impl) override {
     EXPECT_EQ(gfx::Rect(20, 20), impl->active_tree()->GetDeviceViewport());
-    EXPECT_EQ(SK_ColorGRAY, impl->active_tree()->background_color());
+    EXPECT_EQ(SkColors::kGray, impl->active_tree()->background_color());
     EXPECT_EQ(EventListenerProperties::kPassive,
               impl->active_tree()->event_listener_properties(
                   EventListenerClass::kMouseWheel));
@@ -3254,7 +3254,7 @@ class LayerTreeHostTestFrameTimeUpdatesAfterActivationFails
   void BeginTest() override {
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(20, 20), 1.f,
                                                viz::LocalSurfaceId());
-    layer_tree_host()->set_background_color(SK_ColorGRAY);
+    layer_tree_host()->set_background_color(SkColors::kGray);
 
     PostSetNeedsCommitToMainThread();
   }
@@ -3307,7 +3307,7 @@ class LayerTreeHostTestFrameTimeUpdatesAfterDraw : public LayerTreeHostTest {
   void BeginTest() override {
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(20, 20), 1.f,
                                                viz::LocalSurfaceId());
-    layer_tree_host()->set_background_color(SK_ColorGRAY);
+    layer_tree_host()->set_background_color(SkColors::kGray);
 
     PostSetNeedsCommitToMainThread();
   }

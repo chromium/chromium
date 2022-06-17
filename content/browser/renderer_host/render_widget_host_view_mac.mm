@@ -705,10 +705,11 @@ void RenderWidgetHostViewMac::OnGestureEvent(
 
 void RenderWidgetHostViewMac::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   last_frame_root_background_color_ = host()
                                           ->render_frame_metadata_provider()
                                           ->LastRenderFrameMetadata()
-                                          .root_background_color;
+                                          .root_background_color.toSkColor();
 }
 
 void RenderWidgetHostViewMac::RenderProcessGone() {

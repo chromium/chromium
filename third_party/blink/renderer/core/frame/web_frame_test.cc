@@ -8705,7 +8705,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
 
   Element* overlay = document->getElementById("overlay");
   EXPECT_FALSE(Fullscreen::IsFullscreenElement(*overlay));
-  EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()), SK_AlphaOPAQUE);
+  EXPECT_TRUE(layer_tree_host->background_color().isOpaque());
 
   // It's not legal to switch the fullscreen element while in immersive-ar mode,
   // so set the fullscreen element first before activating that. This requires
@@ -8729,8 +8729,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   web_view_impl->DidEnterFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   EXPECT_TRUE(Fullscreen::IsFullscreenElement(*overlay));
-  EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()),
-            SK_AlphaTRANSPARENT);
+  EXPECT_TRUE(!layer_tree_host->background_color().isOpaque());
 
   root_layer = layer_tree_host->root_layer();
   EXPECT_EQ(0u, CcLayersByName(root_layer, view_background_layer_name).size());
@@ -8741,7 +8740,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   web_view_impl->DidExitFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   EXPECT_FALSE(Fullscreen::IsFullscreenElement(*overlay));
-  EXPECT_EQ(SkColorGetA(layer_tree_host->background_color()), SK_AlphaOPAQUE);
+  EXPECT_TRUE(layer_tree_host->background_color().isOpaque());
   document->SetIsXrOverlay(false, overlay);
 
   root_layer = layer_tree_host->root_layer();

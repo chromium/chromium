@@ -3113,7 +3113,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorMatchesCompositorFrame) {
   view_->SetSize(frame_size);
   view_->Show();
   cc::RenderFrameMetadata metadata;
-  metadata.root_background_color = SK_ColorRED;
+  metadata.root_background_color = SkColors::kRed;
   view_->SetRenderFrameMetadata(metadata);
   view_->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks::Now());
   ui::Layer* parent_layer = view_->GetNativeView()->layer();
@@ -3134,7 +3134,7 @@ TEST_F(RenderWidgetHostViewAuraTest, BackgroundColorOrder) {
   // If the content background color is available, ignore the default background
   // color setting.
   cc::RenderFrameMetadata metadata;
-  metadata.root_background_color = SK_ColorWHITE;
+  metadata.root_background_color = SkColors::kWhite;
   view_->SetRenderFrameMetadata(metadata);
   view_->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks::Now());
   ASSERT_TRUE(view_->GetBackgroundColor());

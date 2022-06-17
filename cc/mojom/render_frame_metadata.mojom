@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Contains information to assist in making a decision about forwarding
@@ -27,7 +28,7 @@ struct RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
   // content area if the primary surface is unavailable and fallback is not
   // specified.
-  uint32 root_background_color;
+  skia.mojom.SkColor4f root_background_color;
 
   // Scroll offset of the root layer. This optional parameter is only sent
   // during tests.

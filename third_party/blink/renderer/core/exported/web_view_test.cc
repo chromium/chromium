@@ -497,7 +497,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   // The color should be passed to the compositor.
   cc::LayerTreeHost* host = widget->LayerTreeHostForTesting();
   EXPECT_EQ(SK_ColorBLUE, web_view->BackgroundColor());
-  EXPECT_EQ(SK_ColorBLUE, host->background_color());
+  EXPECT_EQ(SkColors::kBlue, host->background_color());
 
   web_view->Close();
 }

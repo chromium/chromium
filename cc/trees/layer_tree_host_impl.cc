@@ -1442,7 +1442,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
             active_tree_->GetDeviceViewport().origin());
 #endif
   bool has_transparent_background =
-      SkColorGetA(active_tree_->background_color()) != SK_AlphaOPAQUE;
+      !active_tree_->background_color().isOpaque();
   auto* root_render_surface = active_tree_->RootRenderSurface();
   if (root_render_surface && !has_transparent_background) {
     frame->render_passes.back()->has_transparent_background = false;
@@ -1454,9 +1454,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     if (num_missing_tiles > 0)
       fill_region = root_render_surface->content_rect();
 
-    AppendQuadsToFillScreen(frame->render_passes.back().get(),
-                            root_render_surface,
-                            active_tree_->background_color(), fill_region);
+    // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+    AppendQuadsToFillScreen(
+        frame->render_passes.back().get(), root_render_surface,
+        active_tree_->background_color().toSkColor(), fill_region);
   }
 
   RemoveRenderPasses(frame);
@@ -2258,7 +2259,9 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 
   metadata.page_scale_factor = active_tree_->current_page_scale_factor();
   metadata.scrollable_viewport_size = active_tree_->ScrollableViewportSize();
-  metadata.root_background_color = active_tree_->background_color();
+
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  metadata.root_background_color = active_tree_->background_color().toSkColor();
   metadata.may_throttle_if_undrawn_frames = may_throttle_if_undrawn_frames_;
 
   if (active_tree_->has_presentation_callbacks()) {
