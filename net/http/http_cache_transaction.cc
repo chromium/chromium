@@ -3950,7 +3950,7 @@ void HttpCache::Transaction::ChecksumHeaders() {
       "cross-origin-embedder-policy",
       "cross-origin-opener-policy",
       "cross-origin-resource-policy",
-      "location"
+      "location",
       "sec-websocket-accept",
       "sec-websocket-extensions",
       "sec-websocket-key",
