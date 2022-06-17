@@ -4,32 +4,38 @@
 
 package org.chromium.chrome.browser.uid;
 
-import android.support.test.InstrumentationRegistry;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 
-import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Unit tests for {@link UuidBasedUniqueIdentificationGenerator}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(UniqueIdentificationGeneratorFactoryTest.IDENTITY_GENERATOR_BATCH_NAME)
 public class UuidBasedUniqueIdentificationGeneratorTest {
-    private static final String FLAG_UUID = "uuid";
-
-    private AdvancedMockContext mContext;
+    // Tell R8 this class is spied on and shouldn't be made final.
+    @Spy
+    UuidBasedUniqueIdentificationGenerator mGenerator;
 
     @Before
     public void setUp() {
-        mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
         SharedPreferencesManager.getInstance().disableKeyCheckerForTesting();
     }
 
@@ -39,22 +45,22 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
     public void testGenerationAndRestorationOfUuid() {
         String preferenceKey = "some_preference_key";
         String expectedUniqueId = "myUuid";
-        TestGenerator generator = new TestGenerator(mContext, preferenceKey, expectedUniqueId);
+        UuidBasedUniqueIdentificationGenerator generator =
+                createSpiedGenerator(preferenceKey, expectedUniqueId);
 
         // Get a unique ID and ensure it is as expected.
         Assert.assertEquals(expectedUniqueId, generator.getUniqueId(null));
+        verify(generator, times(1)).getUUID();
 
         // Asking for a unique ID again, should not try to regenerate it.
-        mContext.clearFlag(FLAG_UUID);
         Assert.assertEquals(expectedUniqueId, generator.getUniqueId(null));
-        Assert.assertFalse(mContext.isFlagSet(FLAG_UUID));
+        verify(generator, times(1)).getUUID();
 
         // After a restart, the TestGenerator should read the UUID from a preference, instead of
         // asking for it.
-        mContext.clearFlag(FLAG_UUID);
-        generator = new TestGenerator(mContext, preferenceKey, null);
+        generator = createSpiedGenerator(preferenceKey, null);
         Assert.assertEquals(expectedUniqueId, generator.getUniqueId(null));
-        Assert.assertFalse(mContext.isFlagSet(FLAG_UUID));
+        verify(generator, never()).getUUID();
     }
 
     @Test
@@ -65,36 +71,30 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
         String preferenceKey2 = "some_other_preference_key";
         String expectedUniqueId1 = "myUuid";
         String expectedUniqueId2 = "myOtherUuid";
-        TestGenerator generator1 = new TestGenerator(mContext, preferenceKey1, expectedUniqueId1);
-        TestGenerator generator2 = new TestGenerator(mContext, preferenceKey2, expectedUniqueId2);
+        UuidBasedUniqueIdentificationGenerator generator1 =
+                createSpiedGenerator(preferenceKey1, expectedUniqueId1);
+        UuidBasedUniqueIdentificationGenerator generator2 =
+                createSpiedGenerator(preferenceKey2, expectedUniqueId2);
 
         // Get a unique ID and ensure it is as expected.
         Assert.assertEquals(expectedUniqueId1, generator1.getUniqueId(null));
         Assert.assertEquals(expectedUniqueId2, generator2.getUniqueId(null));
+        verify(generator1, times(1)).getUUID();
+        verify(generator2, times(1)).getUUID();
 
         // Asking for a unique ID again, should not try to regenerate it.
-        mContext.clearFlag(FLAG_UUID);
         Assert.assertEquals(expectedUniqueId1, generator1.getUniqueId(null));
-        Assert.assertFalse(mContext.isFlagSet(FLAG_UUID));
-        mContext.clearFlag(FLAG_UUID);
         Assert.assertEquals(expectedUniqueId2, generator2.getUniqueId(null));
-        Assert.assertFalse(mContext.isFlagSet(FLAG_UUID));
+        verify(generator1, times(1)).getUUID();
+        verify(generator2, times(1)).getUUID();
     }
 
-    private static class TestGenerator extends UuidBasedUniqueIdentificationGenerator {
-        private final AdvancedMockContext mContext;
-        private final String mUuid;
-
-        TestGenerator(AdvancedMockContext context, String preferenceKey, String uuid) {
-            super(context, preferenceKey);
-            mContext = context;
-            mUuid = uuid;
-        }
-
-        @Override
-        String getUUID() {
-            mContext.setFlag(FLAG_UUID);
-            return mUuid;
-        }
+    private UuidBasedUniqueIdentificationGenerator createSpiedGenerator(
+            String preferenceKey, String uuidToReturn) {
+        Context context = ApplicationProvider.getApplicationContext();
+        UuidBasedUniqueIdentificationGenerator spiedGenerator =
+                Mockito.spy(new UuidBasedUniqueIdentificationGenerator(context, preferenceKey));
+        doReturn(uuidToReturn).when(spiedGenerator).getUUID();
+        return spiedGenerator;
     }
 }
