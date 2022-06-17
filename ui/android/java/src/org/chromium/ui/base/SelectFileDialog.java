@@ -15,12 +15,14 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
@@ -44,6 +46,9 @@ import org.chromium.ui.permissions.PermissionConstants;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -657,13 +662,31 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         return photoFile;
     }
 
-    private static boolean isUnderAppDir(String path, Context context) {
+    private static boolean isPathUnderAppDir(String path, Context context) {
         File file = new File(path);
         File dataDir = ContextCompat.getDataDir(context);
         try {
             String pathCanonical = file.getCanonicalPath();
             String dataDirCanonical = dataDir.getCanonicalPath();
             return pathCanonical.startsWith(dataDirCanonical);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    public static boolean isContentUriUnderAppDir(Uri uri, Context context) {
+        assert !ThreadUtils.runningOnUiThread();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return false;
+        }
+        try {
+            ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+            int fd = pfd.getFd();
+            // Use the file descriptor to find out the read file path thru symbolic link.
+            Path fdPath = Paths.get("/proc/self/fd/" + fd);
+            Path filePath = Files.readSymbolicLink(fdPath);
+            return isPathUnderAppDir(filePath.toString(), context);
         } catch (Exception e) {
             return false;
         }
@@ -700,7 +723,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             String path = ContentResolver.SCHEME_FILE.equals(mCameraOutputUri.getScheme())
                     ? mCameraOutputUri.getPath() : mCameraOutputUri.toString();
 
-            if (!isUnderAppDir(mCameraOutputUri.getSchemeSpecificPart(),
+            if (!isPathUnderAppDir(mCameraOutputUri.getSchemeSpecificPart(),
                         mWindowAndroid.getApplicationContext())) {
                 onFileSelected(
                         mNativeSelectFileDialog, path, mCameraOutputUri.getLastPathSegment());
@@ -930,7 +953,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         @Override
         public Boolean doInBackground() {
             // Don't allow invalid file path or files under app dir to be uploaded.
-            return !isUnderAppDir(mFilePath, mContext)
+            return !isPathUnderAppDir(mFilePath, mContext)
                     && !FileUtils.getAbsoluteFilePath(mFilePath).isEmpty();
         }
 
@@ -958,6 +981,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
 
         @Override
+        @SuppressLint("NewApi")
         public String[] doInBackground() {
             mFilePaths = new String[mUris.length];
             String[] displayNames = new String[mUris.length];
@@ -967,11 +991,15 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                     // device was observed to return a file:// URI instead, so convert if necessary.
                     // See https://crbug.com/752834 for context.
                     if (ContentResolver.SCHEME_FILE.equals(mUris[i].getScheme())) {
-                        if (isUnderAppDir(mUris[i].getSchemeSpecificPart(), mContext)) {
+                        if (isPathUnderAppDir(mUris[i].getSchemeSpecificPart(), mContext)) {
                             return null;
                         }
                         mFilePaths[i] = mUris[i].getSchemeSpecificPart();
                     } else {
+                        if (ContentResolver.SCHEME_CONTENT.equals(mUris[i].getScheme())
+                                && isContentUriUnderAppDir(mUris[i], mContext)) {
+                            return null;
+                        }
                         mFilePaths[i] = mUris[i].toString();
                     }
 
