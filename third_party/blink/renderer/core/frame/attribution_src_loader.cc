@@ -400,6 +400,11 @@ void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
     RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kReceived);
   }
 
+  // Eagerly reset the data host so that the receiver is closed and any buffered
+  // triggers are flushed as soon as possible. See crbug.com/1336797 for
+  // details.
+  data_host_.reset();
+
   keep_alive_.Clear();
 }
 
