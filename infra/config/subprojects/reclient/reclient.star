@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os")
+load("//lib/builders.star", "cpu", "os", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
@@ -224,6 +224,7 @@ fyi_reclient_test_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    xcode = xcode.x13main,
 )
 
 fyi_reclient_staging_builder(
@@ -246,4 +247,5 @@ fyi_reclient_staging_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    xcode = xcode.x13main,
 )

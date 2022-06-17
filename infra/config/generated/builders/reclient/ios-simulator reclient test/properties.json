@@ -56,5 +56,6 @@
     ]
   },
   "builder_group": "chromium.reclient.fyi",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "xcode_build_version": "13c100"
 }
