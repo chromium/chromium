@@ -161,9 +161,9 @@ void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
   signal_to_task_queue_map_.insert(
       signal,
       MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority));
-  signal->AddPriorityChangeAlgorithm(WTF::Bind(&DOMScheduler::OnPriorityChange,
-                                               WrapWeakPersistent(this),
-                                               WrapWeakPersistent(signal)));
+  signal->AddPriorityChangeAlgorithm(
+      WTF::BindRepeating(&DOMScheduler::OnPriorityChange,
+                         WrapWeakPersistent(this), WrapWeakPersistent(signal)));
 }
 
 void DOMScheduler::OnPriorityChange(DOMTaskSignal* signal) {
