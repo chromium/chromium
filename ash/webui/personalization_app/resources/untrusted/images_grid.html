@@ -26,6 +26,7 @@
               aria-selected$="[[getAriaSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]"
               aria-label$="[[getAriaLabel_(item)]]">
             <div class="photo-images-container">
+              <div class="photo-images-border"></div>
               <template is="dom-repeat" items="[[item.preview]]" as="preview">
                 <img is="cr-auto-img" class$="[[getClassForImg_(index, item)]]"
                     auto-src="[[preview.url]]" aria-hidden="true" clear-src>

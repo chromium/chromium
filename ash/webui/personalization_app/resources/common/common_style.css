@@ -109,7 +109,6 @@ iron-list {
 
 .photo-images-container {
   background-color: var(--personalization-app-grid-item-background-color);
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   box-sizing: border-box;
   display: flex;
@@ -182,6 +181,9 @@ iron-icon[icon='personalization:checkmark'] {
   animation-fill-mode: forwards;
   animation-name: resize;
   animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
+}
+
+.photo-inner-container[aria-selected='true'] .photo-images-border {
   border: 0;
 }
 
@@ -233,11 +235,27 @@ cr-button + cr-button {
 }
 
 .preview-image-container {
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+}
+
+/**
+ * Hover a border over the image container to avoid sub pixel rounding issues
+ * with chrome scaling images.
+ */
+.preview-image-border,
+.photo-images-border {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  bottom: 0;
+  box-sizing: border-box;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
 }
 
 .preview-image {

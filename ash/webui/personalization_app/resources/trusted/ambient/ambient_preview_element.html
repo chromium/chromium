@@ -173,6 +173,7 @@
   <template is="dom-if" if="[[!loading_]]">
     <template is="dom-if" if="[[!ambientModeEnabled_]]">
       <div id="imageContainer" class="preview-image-container" aria-hidden="true">
+        <div class="preview-image-border"></div>
         <img class="preview-image disabled" src="//personalization/common/slideshow.png">
       </div>
       <div id="messageContainer">
@@ -190,6 +191,7 @@
            Currently, we show blank containers -->
       <template is="dom-if" if="[[previewAlbums_]]">
         <div id="imageContainer" class="preview-image-container">
+          <div class="preview-image-border"></div>
           <template is="dom-if" if="[[clickable]]">
             <img class="preview-image clickable" is="cr-auto-img"
                 on-click="onClickPreviewImage_"
