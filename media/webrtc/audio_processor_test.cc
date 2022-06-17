@@ -38,16 +38,18 @@ using ::testing::Return;
 namespace media {
 namespace {
 
+// TODO(crbug.com/1334991): Clarify WebRTC audio processing support for 96 kHz
+// input.
 static const int kSupportedSampleRates[] = {8000,
                                             16000,
                                             22050,
                                             32000,
                                             44100,
                                             48000
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
                                             ,
                                             96000
-#endif  // BUILDFLAG(IS_CHROMECAST)
+#endif
 };
 
 using MockProcessedCaptureCallback =
