@@ -652,11 +652,11 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', async function() {
 
   // Swap in functions below so we can track the number of times
   // UserActionMonitor is created and destroyed.
-  UserActionMonitor.create = (actions, callback) => {
+  this.getPanelWindow().BackgroundBridge.UserActionMonitor.create = () => {
     userActionMonitorCreatedCount += 1;
     isUserActionMonitorActive = true;
   };
-  UserActionMonitor.destroy = () => {
+  this.getPanelWindow().BackgroundBridge.UserActionMonitor.destroy = () => {
     userActionMonitorDestroyedCount += 1;
     isUserActionMonitorActive = false;
   };
