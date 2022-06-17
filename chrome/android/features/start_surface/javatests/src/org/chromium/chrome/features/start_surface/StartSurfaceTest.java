@@ -413,7 +413,6 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1170673 - NoInstant_NoReturn version is flaky")
     public void testSearchInSingleSurface() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -425,13 +424,18 @@ public class StartSurfaceTest {
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
 
         onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> StartSurfaceTestUtils.isKeyboardShown(mActivityTestRule));
         onViewWaiting(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(2));
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+        ChromeTabUtils.waitForTabPageLoaded(cta.getActivityTab(), (String) null);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-        onViewWaiting(withId(R.id.search_box_text));
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
         TextView urlBar = cta.findViewById(R.id.url_bar);
         Assert.assertFalse(urlBar.isFocused());
         waitForStableView(cta.findViewById(R.id.search_box_text));
