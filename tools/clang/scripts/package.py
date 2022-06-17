@@ -256,20 +256,23 @@ def main():
     ])
   else:
     want.extend([
-      'bin/clang',
+        'bin/clang',
 
-      # Add LLD.
-      'bin/lld',
+        # Add LLD.
+        'bin/lld',
 
-      # Add llvm-ar for LTO.
-      'bin/llvm-ar',
+        # Add llvm-ar for LTO.
+        'bin/llvm-ar',
 
-      # Include libclang_rt.builtins.a for Fuchsia targets.
-      'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
-      'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
+        # llvm-ml for Windows cross builds.
+        'bin/llvm-ml',
 
-      # Add llvm-readobj (symlinked from llvm-readelf) for extracting SONAMEs.
-      'bin/llvm-readobj',
+        # Include libclang_rt.builtins.a for Fuchsia targets.
+        'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
+        'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
+
+        # Add llvm-readobj (symlinked from llvm-readelf) for extracting SONAMEs.
+        'bin/llvm-readobj',
     ])
     if not args.build_mac_arm:
       # TODO(thakis): Figure out why this doesn't build in --build-mac-arm

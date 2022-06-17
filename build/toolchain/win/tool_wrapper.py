@@ -155,7 +155,8 @@ class WinTool(object):
       # separator, convert it to '\\' when running on Windows.
       args = list(args) # *args is a tuple by default, which is read-only
       args[0] = args[0].replace('/', '\\')
-    popen = subprocess.Popen(args, shell=True, env=env,
+    # See comment in ExecLinkWrapper() for why shell=False on non-win.
+    popen = subprocess.Popen(args, shell=sys.platform == 'win32', env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = popen.communicate()
     for line in out.decode('utf8').splitlines():

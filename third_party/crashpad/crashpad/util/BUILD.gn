@@ -517,40 +517,23 @@ crashpad_static_library("util") {
       "win/xp_compat.h",
     ]
 
-    # There's no ml.exe yet in cross builds, so provide broken-but-not-asm
-    # versions of the functions defined in .asm files.
-    #
-    # CaptureContext() in capture_context_broken.cc just calls CHECK(false).
-    # SafeTerminateProcess() in safe_terminate_process.cc just calls regular
-    # TerminateProcess() without the protection against broken third-party
-    # patching of TerminateProcess().
-    #
-    # TODO(thakis): Use the .asm file in cross builds somehow,
-    # https://crbug.com/762167.
-    if (host_os == "win") {
-      if (current_cpu != "arm64") {
-        sources += [
-          "misc/capture_context_win.asm",
-          "win/safe_terminate_process.asm",
-        ]
-      } else {
-        # Most Crashpad builds use Microsoft's armasm64.exe macro assembler for
-        # .asm source files. When building in Chromium, clang-cl is used as the
-        # assembler instead. Since the two assemblers recognize different
-        # assembly dialects, the same .asm file can't be used for each. As a
-        # workaround, use a prebuilt .obj file when the Microsoft-dialect
-        # assembler isn't available.
-        if (crashpad_is_in_chromium) {
-          sources += [ "misc/capture_context_win_arm64.obj" ]
-        } else {
-          sources += [ "misc/capture_context_win_arm64.asm" ]
-        }
-      }
-    } else {
+    if (current_cpu != "arm64") {
       sources += [
-        "misc/capture_context_broken.cc",
-        "win/safe_terminate_process_broken.cc",
+        "misc/capture_context_win.asm",
+        "win/safe_terminate_process.asm",
       ]
+    } else {
+      # Most Crashpad builds use Microsoft's armasm64.exe macro assembler for
+      # .asm source files. When building in Chromium, clang-cl is used as the
+      # assembler instead. Since the two assemblers recognize different
+      # assembly dialects, the same .asm file can't be used for each. As a
+      # workaround, use a prebuilt .obj file when the Microsoft-dialect
+      # assembler isn't available.
+      if (crashpad_is_in_chromium) {
+        sources += [ "misc/capture_context_win_arm64.obj" ]
+      } else {
+        sources += [ "misc/capture_context_win_arm64.asm" ]
+      }
     }
   }
 

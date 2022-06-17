@@ -256,7 +256,7 @@ template("msvc_toolchain") {
       } else {
         if (toolchain_is_clang) {
           prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-          ml = "$prefix/llvm-ml.exe"
+          ml = "$prefix/llvm-ml${_exe}"
           if (toolchain_args.current_cpu == "x64") {
             ml += " -m64"
           } else {
@@ -288,6 +288,7 @@ template("msvc_toolchain") {
         }
       }
       if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
+        # TODO(thakis): Stop using asm-wrapper when using clang.
         command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
       } else {
         # armasm64.exe does not support definitions passed via the command
