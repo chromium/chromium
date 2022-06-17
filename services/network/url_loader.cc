@@ -912,6 +912,7 @@ class URLLoader::FileOpenerForUpload {
 
     network_context_client_->OnFileUploadRequested(
         process_id_, /*async=*/true, batch_paths,
+        url_loader_->url_request_->url(),
         base::BindOnce(&FileOpenerForUpload::OnFilesForUploadOpened,
                        weak_ptr_factory_.GetWeakPtr(), num_files_to_request));
   }

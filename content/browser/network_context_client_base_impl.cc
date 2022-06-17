@@ -10,8 +10,11 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/file_access/scoped_file_access.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_context_client_base.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
@@ -29,7 +32,8 @@ void HandleFileUploadRequest(
     const std::vector<base::FilePath>& file_paths,
     network::mojom::NetworkContextClient::OnFileUploadRequestedCallback
         callback,
-    scoped_refptr<base::TaskRunner> task_runner) {
+    scoped_refptr<base::TaskRunner> task_runner,
+    file_access::ScopedFileAccess scoped_file_access) {
   std::vector<base::File> files;
   uint32_t file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
                         (async ? base::File::FLAG_ASYNC : 0);
@@ -66,17 +70,32 @@ void HandleFileUploadRequest(
 
 }  // namespace
 
-void NetworkContextOnFileUploadRequested(
+void OnScopedFilesAccessAcquired(
     int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
     network::mojom::NetworkContextClient::OnFileUploadRequestedCallback
-        callback) {
+        callback,
+    file_access::ScopedFileAccess scoped_file_access) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&HandleFileUploadRequest, process_id, async, file_paths,
                      std::move(callback),
-                     base::SequencedTaskRunnerHandle::Get()));
+                     base::SequencedTaskRunnerHandle::Get(),
+                     std::move(scoped_file_access)));
+}
+
+void NetworkContextOnFileUploadRequested(
+    int32_t process_id,
+    bool async,
+    const std::vector<base::FilePath>& file_paths,
+    const GURL& destination_url,
+    network::mojom::NetworkContextClient::OnFileUploadRequestedCallback
+        callback) {
+  GetContentClient()->browser()->RequestFilesAccess(
+      file_paths, destination_url,
+      base::BindOnce(&OnScopedFilesAccessAcquired, process_id, async,
+                     file_paths, std::move(callback)));
 }
 
 NetworkContextClientBase::NetworkContextClientBase() = default;
@@ -86,9 +105,10 @@ void NetworkContextClientBase::OnFileUploadRequested(
     int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
+    const GURL& destination_url,
     OnFileUploadRequestedCallback callback) {
   NetworkContextOnFileUploadRequested(process_id, async, file_paths,
-                                      std::move(callback));
+                                      destination_url, std::move(callback));
 }
 
 void NetworkContextClientBase::OnCanSendReportingReports(

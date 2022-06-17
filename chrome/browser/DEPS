@@ -152,6 +152,7 @@ include_rules = [
   "+components/feature_engagement",
   "+components/feed",
   "+components/feedback",
+  "+components/file_access",
   "+components/find_in_page",
   "+components/flags_ui",
   "+components/app_restore",

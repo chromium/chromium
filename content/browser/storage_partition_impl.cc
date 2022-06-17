@@ -2006,9 +2006,10 @@ void StoragePartitionImpl::OnFileUploadRequested(
     int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
+    const GURL& destination_url,
     OnFileUploadRequestedCallback callback) {
   NetworkContextOnFileUploadRequested(process_id, async, file_paths,
-                                      std::move(callback));
+                                      destination_url, std::move(callback));
 }
 
 void StoragePartitionImpl::OnCanSendReportingReports(

@@ -98,6 +98,7 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   // string patterns.
   std::map<UrlConditionId, std::string> dst_pattterns_mapping_;
 
+  // System-wide singleton instantiated when required by rules configuration.
   std::unique_ptr<DlpReportingManager> reporting_manager_;
 };
 

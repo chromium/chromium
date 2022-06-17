@@ -15,9 +15,8 @@
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
-    : public DlpClient,
-      public DlpClient::TestInterface {
+class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
+                                            public DlpClient::TestInterface {
  public:
   FakeDlpClient();
   FakeDlpClient(const FakeDlpClient&) = delete;
@@ -33,6 +32,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
                        GetFilesSourcesCallback callback) const override;
   void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
                           CheckFilesTransferCallback callback) const override;
+  void RequestFileAccess(const dlp::RequestFileAccessRequest request,
+                         RequestFileAccessCallback callback) override;
   bool IsAlive() const override;
   DlpClient::TestInterface* GetTestInterface() override;
 
@@ -41,9 +42,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
   void SetFakeSource(const std::string& fake_source) override;
   void SetCheckFilesTransferResponse(
       dlp::CheckFilesTransferResponse response) override;
+  void SetFileAccessAllowed(bool allowed) override;
 
  private:
   int set_dlp_files_policy_count_ = 0;
+  bool file_access_allowed_ = true;
   base::flat_map<ino_t, std::string> files_database_;
   absl::optional<std::string> fake_source_;
   absl::optional<dlp::CheckFilesTransferResponse>

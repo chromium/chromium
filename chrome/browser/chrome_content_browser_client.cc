@@ -426,6 +426,7 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -2720,6 +2721,27 @@ bool ChromeContentBrowserClient::AllowSignedExchange(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile->GetPrefs()->GetBoolean(prefs::kSignedHTTPExchangeEnabled);
+}
+
+void ChromeContentBrowserClient::RequestFilesAccess(
+    const std::vector<base::FilePath>& files,
+    const GURL& destination_url,
+    base::OnceCallback<void(file_access::ScopedFileAccess)>
+        continuation_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS)
+  auto* delegate = policy::DlpScopedFileAccessDelegate::Get();
+  if (delegate) {
+    delegate->RequestFilesAccess(files, destination_url,
+                                 std::move(continuation_callback));
+  } else {
+    std::move(continuation_callback)
+        .Run(file_access::ScopedFileAccess::Allowed());
+  }
+#else
+  std::move(continuation_callback)
+      .Run(file_access::ScopedFileAccess::Allowed());
+#endif
 }
 
 void ChromeContentBrowserClient::AllowWorkerFileSystem(

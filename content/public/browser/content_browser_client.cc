@@ -429,6 +429,15 @@ void ContentBrowserClient::UpdateRendererPreferencesForWorker(
   // |browser_context| may be null (e.g. during shutdown of a service worker).
 }
 
+void ContentBrowserClient::RequestFilesAccess(
+    const std::vector<base::FilePath>& files,
+    const GURL& destination_url,
+    base::OnceCallback<void(file_access::ScopedFileAccess)>
+        continuation_callback) {
+  std::move(continuation_callback)
+      .Run(file_access::ScopedFileAccess::Allowed());
+}
+
 void ContentBrowserClient::AllowWorkerFileSystem(
     const GURL& url,
     BrowserContext* browser_context,

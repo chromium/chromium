@@ -5307,6 +5307,8 @@ static_library("browser") {
       "chromeos/policy/dlp/dlp_rules_manager_factory.h",
       "chromeos/policy/dlp/dlp_rules_manager_impl.cc",
       "chromeos/policy/dlp/dlp_rules_manager_impl.h",
+      "chromeos/policy/dlp/dlp_scoped_file_access_delegate.cc",
+      "chromeos/policy/dlp/dlp_scoped_file_access_delegate.h",
       "chromeos/policy/dlp/dlp_warn_dialog.cc",
       "chromeos/policy/dlp/dlp_warn_dialog.h",
       "chromeos/policy/dlp/dlp_warn_notifier.cc",

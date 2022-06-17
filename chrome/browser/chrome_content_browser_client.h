@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -269,6 +270,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool DoesSchemeAllowCrossOriginSharedWorker(
       const std::string& scheme) override;
   bool AllowSignedExchange(content::BrowserContext* browser_context) override;
+  void RequestFilesAccess(
+      const std::vector<base::FilePath>& files,
+      const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>
+          continuation_callback) override;
   void AllowWorkerFileSystem(
       const GURL& url,
       content::BrowserContext* browser_context,

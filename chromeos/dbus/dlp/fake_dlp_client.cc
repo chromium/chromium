@@ -72,6 +72,14 @@ void FakeDlpClient::CheckFilesTransfer(
   std::move(callback).Run(response);
 }
 
+void FakeDlpClient::RequestFileAccess(
+    const dlp::RequestFileAccessRequest request,
+    RequestFileAccessCallback callback) {
+  dlp::RequestFileAccessResponse response;
+  response.set_allowed(file_access_allowed_);
+  std::move(callback).Run(response, base::ScopedFD());
+}
+
 bool FakeDlpClient::IsAlive() const {
   return true;
 }
@@ -91,6 +99,10 @@ void FakeDlpClient::SetFakeSource(const std::string& fake_source) {
 void FakeDlpClient::SetCheckFilesTransferResponse(
     dlp::CheckFilesTransferResponse response) {
   check_files_transfer_response_ = response;
+}
+
+void FakeDlpClient::SetFileAccessAllowed(bool allowed) {
+  file_access_allowed_ = allowed;
 }
 
 }  // namespace chromeos

@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/quarantine_connection.h"
+#include "components/file_access/scoped_file_access.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -747,6 +748,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void UpdateRendererPreferencesForWorker(
       BrowserContext* browser_context,
       blink::RendererPreferences* out_prefs);
+
+  // Requests access to |files| in order to be sent to |destination_url|.
+  // |continuation_callback| is called with a token that should be held until
+  // `open()` operation on the files is finished.
+  virtual void RequestFilesAccess(
+      const std::vector<base::FilePath>& files,
+      const GURL& destination_url,
+      base::OnceCallback<void(file_access::ScopedFileAccess)>
+          continuation_callback);
 
   // Allow the embedder to control if access to file system by a shared worker
   // is allowed.
