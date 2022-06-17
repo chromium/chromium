@@ -4,15 +4,10 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.text.TextUtils;
-
 import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Encapsulates the response from the server to a Resolve request (as a single immutable object).
@@ -217,51 +212,6 @@ public class ResolvedSearchTerm {
         return mRelatedSearchesJson;
     }
 
-    @Override
-    public String toString() {
-        List<String> sections = buildTextSections();
-        return TextUtils.join(", ", sections);
-    }
-
-    private List<String> buildTextSections() {
-        List<String> sections = new ArrayList<String>();
-        if (mIsNetworkUnavailable) {
-            sections.add("Network unavailable!");
-        } else if (mResponseCode != HttpURLConnection.HTTP_OK) {
-            sections.add("ResponseCode:" + mResponseCode);
-        } else if (!relatedSearchesJson().isEmpty()) {
-            sections.add("Related Searches JSON: " + mRelatedSearchesJson);
-        } else {
-            if (mDoPreventPreload) sections.add("Preventing preload!");
-            if (!TextUtils.isEmpty(mSearchTerm)) sections.add("Search for '" + mSearchTerm + "'");
-            if (!TextUtils.isEmpty(mDisplayText)) {
-                sections.add("displayed as '" + mDisplayText + "'");
-            }
-            if (!TextUtils.isEmpty(mMid)) sections.add("MID:'" + mMid + "'");
-            if (mSelectionStartAdjust != 0 || mSelectionEndAdjust != 0) {
-                sections.add(
-                        "selection adjust:" + mSelectionStartAdjust + "," + mSelectionEndAdjust);
-            }
-            if (!TextUtils.isEmpty(mContextLanguage) && mContextLanguage.equals("en")) {
-                sections.add("mContextLanguage:'" + mContextLanguage + "'");
-            }
-            if (!TextUtils.isEmpty(mThumbnailUrl)) sections.add("has thumbnail URL");
-            if (!TextUtils.isEmpty(mCaption)) sections.add("caption:'" + mCaption + "'");
-            if (!TextUtils.isEmpty(mQuickActionUri)) sections.add("has Quick Action URI");
-            if (!TextUtils.isEmpty(mQuickActionUri)) {
-                sections.add("quick Action Category:" + mQuickActionCategory);
-            }
-            if (!TextUtils.isEmpty(mSearchUrlFull)) {
-                sections.add("search Url full:'" + mSearchUrlFull + "'");
-            }
-            if (!TextUtils.isEmpty(mSearchUrlPreload)) {
-                sections.add("search Url preload:'" + mSearchUrlPreload + "'");
-            }
-            if (mCardTagEnum != CardTag.CT_NONE) sections.add("Card-Tag:" + mCardTagEnum);
-        }
-        return sections;
-    }
-
     /** The builder for {@link ResolvedSearchTerm} objects. */
     public static class Builder {
         private boolean mIsNetworkUnavailable;
@@ -284,28 +234,6 @@ public class ResolvedSearchTerm {
         @CardTag
         private int mCardTagEnum;
         private String mRelatedSearchesJson;
-
-        /** Starts building using the given {@link ResolvedSearchTerm}. */
-        public Builder(ResolvedSearchTerm resolvedSearchTerm) {
-            mIsNetworkUnavailable = resolvedSearchTerm.mIsNetworkUnavailable;
-            mResponseCode = resolvedSearchTerm.mResponseCode;
-            mSearchTerm = resolvedSearchTerm.mSearchTerm;
-            mDisplayText = resolvedSearchTerm.mDisplayText;
-            mAlternateTerm = resolvedSearchTerm.mAlternateTerm;
-            mMid = resolvedSearchTerm.mMid;
-            mDoPreventPreload = resolvedSearchTerm.mDoPreventPreload;
-            mSelectionStartAdjust = resolvedSearchTerm.mSelectionStartAdjust;
-            mSelectionEndAdjust = resolvedSearchTerm.mSelectionEndAdjust;
-            mContextLanguage = resolvedSearchTerm.mContextLanguage;
-            mThumbnailUrl = resolvedSearchTerm.mThumbnailUrl;
-            mCaption = resolvedSearchTerm.mCaption;
-            mQuickActionUri = resolvedSearchTerm.mQuickActionUri;
-            mQuickActionCategory = resolvedSearchTerm.mQuickActionCategory;
-            mSearchUrlFull = resolvedSearchTerm.mSearchUrlFull;
-            mSearchUrlPreload = resolvedSearchTerm.mSearchUrlPreload;
-            mCardTagEnum = resolvedSearchTerm.mCardTagEnum;
-            mRelatedSearchesJson = resolvedSearchTerm.mRelatedSearchesJson;
-        }
 
         /**
          * Builds a response to the
