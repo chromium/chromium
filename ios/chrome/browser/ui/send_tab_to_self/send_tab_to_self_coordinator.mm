@@ -52,6 +52,9 @@ NSString* const kActivityServicesSnackbarCategory =
                                         InfobarModalPositioner,
                                         SendTabToSelfModalDelegate>
 
+@property(nonatomic, assign, readonly) GURL url;
+@property(nonatomic, copy, readonly) NSString* title;
+
 // The TableViewController that shows the Send Tab To Self UI.
 @property(nonatomic, strong)
     SendTabToSelfTableViewController* sendTabToSelfViewController;
@@ -59,6 +62,22 @@ NSString* const kActivityServicesSnackbarCategory =
 @end
 
 @implementation SendTabToSelfCoordinator
+
+#pragma mark - Public
+
+- (id)initWithBaseViewController:(UIViewController*)baseViewController
+                         browser:(Browser*)browser
+                             url:(const GURL&)url
+                           title:(NSString*)title {
+  self = [super initWithBaseViewController:baseViewController browser:browser];
+  if (!self) {
+    return nil;
+  }
+
+  _url = url;
+  _title = title;
+  return self;
+}
 
 #pragma mark - ChromeCoordinator Methods
 
@@ -104,7 +123,7 @@ NSString* const kActivityServicesSnackbarCategory =
   self.sendTabToSelfViewController = nil;
 }
 
-#pragma mark-- UIViewControllerTransitioningDelegate
+#pragma mark - UIViewControllerTransitioningDelegate
 
 - (UIPresentationController*)
     presentationControllerForPresentedViewController:
@@ -145,7 +164,7 @@ NSString* const kActivityServicesSnackbarCategory =
   return contentSize.height + navigationBarHeight;
 }
 
-#pragma mark-- SendTabToSelfModalDelegate
+#pragma mark - SendTabToSelfModalDelegate
 
 - (void)dismissViewControllerAnimated:(BOOL)animated
                            completion:(void (^)())completion {
@@ -163,8 +182,11 @@ NSString* const kActivityServicesSnackbarCategory =
       self.browser->GetCommandDispatcher(), SnackbarCommands);
 
   // TODO(crbug.com/970284) log histogram of send event.
-  SendTabToSelfBrowserAgent::FromBrowser(self.browser)
-      ->SendCurrentTabToDevice(cacheGUID);
+  SendTabToSelfSyncServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState())
+      ->GetSendTabToSelfModel()
+      ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
+                 base::SysNSStringToUTF8(cacheGUID));
 
   [toolbarHandler triggerToolsMenuButtonAnimation];
 

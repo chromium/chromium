@@ -3800,10 +3800,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // TODO(crbug.com/972114) Move showSendTabToSelfUI or reroute to
 // browserCoordinator.
-- (void)showSendTabToSelfUI {
-  self.sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:self.browser];
+- (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
+  self.sendTabToSelfCoordinator =
+      [[SendTabToSelfCoordinator alloc] initWithBaseViewController:self
+                                                           browser:self.browser
+                                                               url:url
+                                                             title:title];
   [self.sendTabToSelfCoordinator start];
 }
 

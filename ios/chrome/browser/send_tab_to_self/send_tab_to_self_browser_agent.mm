@@ -45,22 +45,6 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() {}
 
-void SendTabToSelfBrowserAgent::SendCurrentTabToDevice(
-    NSString* target_device_id) {
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  if (!web_state) {
-    return;
-  }
-
-  GURL url_to_share = web_state->GetLastCommittedURL();
-  if (url_to_share.is_empty()) {
-    return;
-  }
-
-  model_->AddEntry(url_to_share, base::UTF16ToUTF8(web_state->GetTitle()),
-                   base::SysNSStringToUTF8(target_device_id));
-}
-
 void SendTabToSelfBrowserAgent::SendTabToSelfModelLoaded() {
   // TODO(crbug.com/949756): Push changes that happened before the model was
   // loaded.

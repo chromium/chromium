@@ -65,8 +65,9 @@ class GURL;
 // Shows the bookmarks manager.
 - (void)showBookmarksManager;
 
-// Shows the dialog for sending the current tab between a user's devices.
-- (void)showSendTabToSelfUI;
+// Shows the dialog for sending the page with |url| and |title| between a user's
+// devices.
+- (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title;
 
 // Prepares the browser to display a popup menu.
 - (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;

@@ -36,10 +36,6 @@ class SendTabToSelfBrowserAgent
  public:
   ~SendTabToSelfBrowserAgent() override;
 
-  // Add a new entry to the SendTabToSelfModel for the active web state of the
-  // browser.
-  void SendCurrentTabToDevice(NSString* target_device_id);
-
   // SendTabToSelfModelObserver::
   // Keeps track of when the model is loaded so that updates to the
   // model can be pushed afterwards.

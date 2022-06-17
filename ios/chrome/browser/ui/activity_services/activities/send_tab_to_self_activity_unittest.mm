@@ -65,9 +65,10 @@ TEST_F(SendTabToSelfActivityTest, DataFalse_ActivityDisabled) {
 
 // Tests that executing the activity triggers the right handler method.
 TEST_F(SendTabToSelfActivityTest, ExecuteActivity_CallsHandler) {
-  [[mocked_handler_ expect] showSendTabToSelfUI];
-
   ShareToData* data = CreateData(true);
+
+  [[mocked_handler_ expect] showSendTabToSelfUI:data.shareURL title:data.title];
+
   SendTabToSelfActivity* activity =
       [[SendTabToSelfActivity alloc] initWithData:data handler:mocked_handler_];
 
