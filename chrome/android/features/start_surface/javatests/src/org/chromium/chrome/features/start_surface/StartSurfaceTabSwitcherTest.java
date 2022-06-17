@@ -47,6 +47,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
@@ -79,6 +80,7 @@ import java.util.List;
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+@DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class StartSurfaceTabSwitcherTest {
@@ -146,9 +148,8 @@ public class StartSurfaceTabSwitcherTest {
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
     public void testShow_SingleAsTabSwitcher() {
         if (mImmediateReturn) {
-            StartSurfaceTestUtils.waitForOverviewVisible(
-                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-            StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+            StartSurfaceTestUtils.waitForOverviewVisible(mLayoutChangedCallbackHelper,
+                    mCurrentlyActiveLayout, mActivityTestRule.getActivity());
             if (isInstantReturn()) {
                 // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
                 // omnibox.
@@ -181,8 +182,7 @@ public class StartSurfaceTabSwitcherTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.VISIBLE);
 
@@ -270,10 +270,8 @@ public class StartSurfaceTabSwitcherTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(()
-                                            -> cta.getLayoutManager() != null
-                        && cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         onViewWaiting(withId(R.id.logo));
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
@@ -382,8 +380,7 @@ public class StartSurfaceTabSwitcherTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
 

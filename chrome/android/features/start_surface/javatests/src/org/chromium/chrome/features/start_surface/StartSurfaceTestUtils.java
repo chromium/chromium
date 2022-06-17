@@ -194,12 +194,17 @@ public class StartSurfaceTestUtils {
      * @param layoutChangedCallbackHelper The call back function to help check whether layout is
      *         changed.
      * @param currentlyActiveLayout The current active layout.
+     * @param cta The ChromeTabbedActivity under test.
      */
-    public static void waitForOverviewVisible(
-            CallbackHelper layoutChangedCallbackHelper, @LayoutType int currentlyActiveLayout) {
-        if (currentlyActiveLayout == LayoutType.TAB_SWITCHER) return;
+    public static void waitForOverviewVisible(CallbackHelper layoutChangedCallbackHelper,
+            @LayoutType int currentlyActiveLayout, ChromeTabbedActivity cta) {
+        if (currentlyActiveLayout == LayoutType.TAB_SWITCHER) {
+            StartSurfaceTestUtils.waitForTabModel(cta);
+            return;
+        }
         try {
             layoutChangedCallbackHelper.waitForNext(30L, TimeUnit.SECONDS);
+            StartSurfaceTestUtils.waitForTabModel(cta);
         } catch (TimeoutException ex) {
             assert false : "Timeout waiting for browser to enter tab switcher / start surface.";
         }

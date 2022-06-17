@@ -38,6 +38,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -79,6 +80,7 @@ import java.util.concurrent.TimeoutException;
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+@DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class StartSurfaceMVTilesTest {
@@ -154,10 +156,9 @@ public class StartSurfaceMVTilesTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
         if (isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
@@ -178,10 +179,10 @@ public class StartSurfaceMVTilesTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse(startSurfaceCoordinator.isMVTilesCleanedUpForTesting());
         });
@@ -204,8 +205,7 @@ public class StartSurfaceMVTilesTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
 
@@ -237,9 +237,8 @@ public class StartSurfaceMVTilesTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+        StartSurfaceTestUtils.waitForOverviewVisible(mLayoutChangedCallbackHelper,
+                mCurrentlyActiveLayout, mActivityTestRule.getActivity());
 
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToDismiss);
@@ -270,10 +269,9 @@ public class StartSurfaceMVTilesTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         SiteSuggestion siteToOpen = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToOpen);
@@ -296,10 +294,9 @@ public class StartSurfaceMVTilesTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         SiteSuggestion siteToOpen = mMostVisitedSites.getCurrentSites().get(1);
         final View tileView = getTileViewFor(siteToOpen);

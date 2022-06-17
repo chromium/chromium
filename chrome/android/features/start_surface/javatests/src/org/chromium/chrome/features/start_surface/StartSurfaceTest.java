@@ -18,10 +18,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -109,8 +107,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Integration tests of the {@link StartSurface} for cases with tabs. See {@link
  * StartSurfaceNoTabsTest} for test that have no tabs. See {@link StartSurfaceTabSwitcherTest},
- * {@link StartSurfaceMVTilesTest}, {@link StartSurfaceBackButtonTest}, {@link
- * StartSurfaceFinaleTest} for more tests.
+ * {@link StartSurfaceMVTilesTest}, {@link StartSurfaceBackButtonTest} for more tests.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -196,8 +193,7 @@ public class StartSurfaceTest {
         }
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text)).check(matches(isDisplayed()));
@@ -229,8 +225,7 @@ public class StartSurfaceTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text));
@@ -276,9 +271,9 @@ public class StartSurfaceTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text));
@@ -324,9 +319,9 @@ public class StartSurfaceTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text));
@@ -394,7 +389,7 @@ public class StartSurfaceTest {
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
         if (mImmediateReturn) {
             StartSurfaceTestUtils.waitForOverviewVisible(
-                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+                    mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
             onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         } else {
             int container_id = ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
@@ -412,11 +407,10 @@ public class StartSurfaceTest {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
         CriteriaHelper.pollInstrumentationThread(
@@ -428,7 +422,7 @@ public class StartSurfaceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         TextView urlBar = cta.findViewById(R.id.url_bar);
@@ -546,8 +540,8 @@ public class StartSurfaceTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertEquals(isSingleTabSwitcher,
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForOverviewVisible(mLayoutChangedCallbackHelper,
+                mCurrentlyActiveLayout, mActivityTestRule.getActivity());
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
@@ -610,9 +604,8 @@ public class StartSurfaceTest {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
 
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
+        StartSurfaceTestUtils.waitForOverviewVisible(mLayoutChangedCallbackHelper,
+                mCurrentlyActiveLayout, mActivityTestRule.getActivity());
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
@@ -632,8 +625,7 @@ public class StartSurfaceTest {
         BottomSheetTestSupport bottomSheetTestSupport = new BottomSheetTestSupport(
                 cta.getRootUiCoordinatorForTesting().getBottomSheetController());
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
@@ -679,8 +671,7 @@ public class StartSurfaceTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         // Scroll the toolbar.
@@ -712,7 +703,7 @@ public class StartSurfaceTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         onViewWaiting(allOf(withId(R.id.mv_tiles_container), isDisplayed()));
 
         // Launches the first site in mv tiles.
@@ -776,8 +767,9 @@ public class StartSurfaceTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
@@ -995,8 +987,7 @@ public class StartSurfaceTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -1065,8 +1056,7 @@ public class StartSurfaceTest {
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
         Assert.assertEquals(0, RenderProcessHostUtils.getCurrentRenderProcessCount());
 
