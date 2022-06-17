@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -578,13 +577,10 @@ public class FeedSurfaceCoordinator
 
     private RecyclerView setUpView() {
         mContentManager = new NtpListContentManager();
-        Context context = new ContextThemeWrapper(mActivity,
-                (mShowDarkBackground ? R.style.ThemeOverlay_Feed_Dark
-                                     : R.style.ThemeOverlay_Feed_Light));
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
-            mDependencyProvider =
-                    new FeedSurfaceScopeDependencyProvider(mActivity, context, mShowDarkBackground);
+            mDependencyProvider = new FeedSurfaceScopeDependencyProvider(
+                    mActivity, mActivity, mShowDarkBackground);
 
             mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
             if (mScrollableContainerDelegate != null) {
@@ -608,7 +604,7 @@ public class FeedSurfaceCoordinator
             }
 
         } else {
-            mHybridListRenderer = new NativeViewListRenderer(context);
+            mHybridListRenderer = new NativeViewListRenderer(mActivity);
         }
 
         RecyclerView view;
@@ -617,7 +613,7 @@ public class FeedSurfaceCoordinator
             view = (RecyclerView) mHybridListRenderer.bind(mContentManager, mViewportView);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
-            view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(context));
+            view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
 
             // Work around https://crbug.com/943873 where default focus highlight shows up after
             // toggling dark mode.

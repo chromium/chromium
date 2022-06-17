@@ -3,20 +3,5 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-  <!-- TODO(crbug.com/1039415): All of this should be swapped for pre-defined styles.
-       See ui/android/java/res/values-v17/styles.xml -->
-
-  <!-- TODO(crbug.com/1039415): See if this can be simplified.
-       Android can swap themes for us automatically if we use styles with the
-       same name in values and values-night.-->
-  <style name="ThemeOverlay.Feed.Light" parent="">
-    <!-- TODO(crbug.com/1039415): This is an old text style color (changed for
-     Modern update back in 2018). Swap for @color/default_text_color.-->
-    <item name="feedSpinnerColor">@color/modern_blue_600</item>
-  </style>
-
-  <style name="ThemeOverlay.Feed.Dark" parent="">
-    <item name="feedSpinnerColor">@color/modern_blue_300</item>
-  </style>
+<resources>
 </resources>

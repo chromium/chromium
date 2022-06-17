@@ -6,7 +6,6 @@ package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -28,9 +27,7 @@ public class FeedPlaceholderCoordinator {
     public FeedPlaceholderCoordinator(
             Activity activity, ViewGroup parentView, boolean isBackgroundDark) {
         mParentView = parentView;
-        mContext = new ContextThemeWrapper(activity,
-                (isBackgroundDark ? R.style.ThemeOverlay_Feed_Dark
-                                  : R.style.ThemeOverlay_Feed_Light));
+        mContext = activity;
     }
 
     public void setUpPlaceholderView() {

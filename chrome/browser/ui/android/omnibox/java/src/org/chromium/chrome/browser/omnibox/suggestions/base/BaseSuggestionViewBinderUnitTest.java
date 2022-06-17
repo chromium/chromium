@@ -68,7 +68,6 @@ public class BaseSuggestionViewBinderUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         // First set the app theme, then apply the feed theme overlay.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mActivity.setTheme(R.style.ThemeOverlay_Feed_Light);
         mResources = mActivity.getResources();
 
         when(mContentView.getContext()).thenReturn(mActivity);
