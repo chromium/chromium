@@ -21,7 +21,6 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/notification_service.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -96,7 +95,8 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
   registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
                  content::NotificationService::AllSources());
 
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
   StartPortalDetection();
 }
 
@@ -110,10 +110,6 @@ NetworkPortalDetectorImpl::~NetworkPortalDetectorImpl() {
   captive_portal_detector_->Cancel();
   captive_portal_detector_.reset();
   observers_.Clear();
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
-  }
   for (auto& observer : observers_)
     observer.OnShutdown();
 }
@@ -250,6 +246,10 @@ void NetworkPortalDetectorImpl::DefaultNetworkChanged(
       ScheduleAttempt(base::TimeDelta());
     }
   }
+}
+
+void NetworkPortalDetectorImpl::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 int NetworkPortalDetectorImpl::NoResponseResultCount() {

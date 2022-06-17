@@ -12,12 +12,14 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_handler_callbacks.h"
 // TODO(https://crbug.com/1164001): restore network_state.h as forward
 // declaration after it is moved to ash.
 #include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace base {
@@ -138,9 +140,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
 
  protected:
   // For unit tests.
-  void set_state_for_test(PlanActivationState state) {
-    state_ = state;
-  }
+  void set_state_for_test(PlanActivationState state) { state_ = state; }
   virtual const NetworkState* GetNetworkState(const std::string& service_path);
   virtual const NetworkState* GetDefaultNetwork();
 
@@ -155,6 +155,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
   // NetworkStateHandlerObserver overrides.
   void DefaultNetworkChanged(const NetworkState* network) override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
+  void OnShuttingDown() override;
 
   void GetPropertiesFailure(const std::string& error_name,
                             std::unique_ptr<base::DictionaryValue> error_data);
@@ -255,6 +256,10 @@ class MobileActivator : public NetworkStateHandlerObserver {
   base::OneShotTimer reconnect_timeout_timer_;
   // Cellular plan payment time.
   base::Time cellular_plan_payment_time_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;
   base::WeakPtrFactory<MobileActivator> weak_ptr_factory_{this};

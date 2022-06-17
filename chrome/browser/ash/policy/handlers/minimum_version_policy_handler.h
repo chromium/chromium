@@ -9,12 +9,14 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/version.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 class PrefRegistrySimple;
@@ -145,6 +147,7 @@ class MinimumVersionPolicyHandler
 
   // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void OnShuttingDown() override;
 
   // UpdateEngineClient::Observer:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
@@ -311,6 +314,10 @@ class MinimumVersionPolicyHandler
   // Handles showing in-session update required notifications on the basis of
   // current network and time to reach the deadline.
   std::unique_ptr<ash::UpdateRequiredNotification> notification_handler_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   // List of registered observers.
   base::ObserverList<Observer>::Unchecked observers_;

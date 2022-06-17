@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -226,7 +225,8 @@ void AuthPolicyCredentialsManager::StartObserveNetwork() {
   if (is_observing_network_)
     return;
   is_observing_network_ = true;
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 }
 
 void AuthPolicyCredentialsManager::StopObserveNetwork() {
@@ -234,8 +234,7 @@ void AuthPolicyCredentialsManager::StopObserveNetwork() {
     return;
   DCHECK(NetworkHandler::IsInitialized());
   is_observing_network_ = false;
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 void AuthPolicyCredentialsManager::UpdateDisplayAndGivenName(

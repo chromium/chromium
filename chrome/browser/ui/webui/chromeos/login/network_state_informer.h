@@ -13,9 +13,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace base {
@@ -27,11 +29,10 @@ namespace chromeos {
 // Class which observes network state changes and calls registered callbacks.
 // State is considered changed if connection or the active network has been
 // changed. Also, it answers to the requests about current network state.
-class NetworkStateInformer
-    : public chromeos::NetworkStateHandlerObserver,
-      public chromeos::NetworkPortalDetector::Observer,
-      public CaptivePortalWindowProxyDelegate,
-      public base::RefCounted<NetworkStateInformer> {
+class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
+                             public chromeos::NetworkPortalDetector::Observer,
+                             public CaptivePortalWindowProxyDelegate,
+                             public base::RefCounted<NetworkStateInformer> {
  public:
   enum State {
     OFFLINE = 0,
@@ -97,6 +98,10 @@ class NetworkStateInformer
   base::Value proxy_config_;
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkStateInformer> weak_ptr_factory_{this};
 };

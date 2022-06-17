@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -52,19 +51,14 @@ NetworkSettingsServiceAsh::NetworkSettingsServiceAsh(PrefService* local_state)
   }
   // Uninitialized in unit_tests.
   if (chromeos::NetworkHandler::IsInitialized()) {
-    chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-        this, FROM_HERE);
+    network_state_handler_observer_.Observe(
+        chromeos::NetworkHandler::Get()->network_state_handler());
   }
   observers_.set_disconnect_handler(base::BindRepeating(
       &NetworkSettingsServiceAsh::OnDisconnect, base::Unretained(this)));
 }
 
 NetworkSettingsServiceAsh::~NetworkSettingsServiceAsh() {
-  // Uninitialized in unit_tests.
-  if (chromeos::NetworkHandler::IsInitialized()) {
-    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
-  }
   if (profile_manager_) {
     profile_manager_->RemoveObserver(this);
   }

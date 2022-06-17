@@ -13,6 +13,7 @@
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state_handler.h"
@@ -271,6 +272,9 @@ class TetherService
   secure_channel::SecureChannelClient* secure_channel_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   chromeos::NetworkStateHandler* network_state_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
   session_manager::SessionManager* session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl>

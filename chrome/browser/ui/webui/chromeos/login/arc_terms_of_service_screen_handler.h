@@ -10,9 +10,11 @@
 
 #include "ash/components/settings/timezone_settings.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -194,6 +196,10 @@ class ArcTermsOfServiceScreenHandler
   // To track if a child account is being set up.
   bool is_child_account_;
 
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
 };
 
@@ -205,6 +211,6 @@ namespace ash {
 using ::chromeos::ArcTermsOfServiceScreenHandler;
 using ::chromeos::ArcTermsOfServiceScreenView;
 using ::chromeos::ArcTermsOfServiceScreenViewObserver;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ARC_TERMS_OF_SERVICE_SCREEN_HANDLER_H_

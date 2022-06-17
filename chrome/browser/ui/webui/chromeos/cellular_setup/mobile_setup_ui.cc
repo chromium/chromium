@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -253,6 +254,11 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   // connection state. This value is reflected in portal webui for lte networks.
   // Initial value is true.
   bool lte_portal_reachable_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   base::WeakPtrFactory<MobileSetupHandler> weak_ptr_factory_{this};
 };
 
@@ -391,8 +397,7 @@ void MobileSetupHandler::Reset() {
     ash::MobileActivator::GetInstance()->RemoveObserver(this);
     ash::MobileActivator::GetInstance()->TerminateActivation();
   } else if (type_ == TYPE_PORTAL_LTE) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
+    network_state_handler_observer_.Reset();
   }
 }
 
@@ -432,7 +437,7 @@ void MobileSetupHandler::HandleGetDeviceInfo(const base::ListValue* args) {
     if (network->network_technology() == shill::kNetworkTechnologyLte ||
         network->network_technology() == shill::kNetworkTechnologyLteAdvanced) {
       type_ = TYPE_PORTAL_LTE;
-      nsh->AddObserver(this, FROM_HERE);
+      network_state_handler_observer_.Observe(nsh);
       // Update the network status and notify the webui. This is the initial
       // network state so the webui should be notified no matter what.
       UpdatePortalReachability(network, true /* force notification */);

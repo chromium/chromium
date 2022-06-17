@@ -17,7 +17,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -133,16 +132,15 @@ void NetworkScreen::SetNetworkStateHelperForTest(
 void NetworkScreen::SubscribeNetworkNotification() {
   if (!is_network_subscribed_) {
     is_network_subscribed_ = true;
-    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
-                                                                FROM_HERE);
+    network_state_handler_observer_.Observe(
+        NetworkHandler::Get()->network_state_handler());
   }
 }
 
 void NetworkScreen::UnsubscribeNetworkNotification() {
   if (is_network_subscribed_) {
     is_network_subscribed_ = false;
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
+    network_state_handler_observer_.Reset();
   }
 }
 

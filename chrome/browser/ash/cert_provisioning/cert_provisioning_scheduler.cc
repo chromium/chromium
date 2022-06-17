@@ -152,17 +152,13 @@ CertProvisioningSchedulerImpl::CertProvisioningSchedulerImpl(
 
   scoped_platform_keys_service_observation_.Observe(platform_keys_service_);
 
-  network_state_handler_->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(network_state_handler_);
 
   ScheduleInitialUpdate();
   ScheduleDailyUpdate();
 }
 
-CertProvisioningSchedulerImpl::~CertProvisioningSchedulerImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
-}
+CertProvisioningSchedulerImpl::~CertProvisioningSchedulerImpl() = default;
 
 void CertProvisioningSchedulerImpl::ScheduleInitialUpdate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
@@ -33,6 +34,7 @@
 #include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -571,6 +573,7 @@ class CrostiniManager : public KeyedService,
   // chromeos::NetworkStateHandlerObserver overrides:
   void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
                                  active_networks) override;
+  void OnShuttingDown() override;
 
   // chromeos::PowerManagerClient::Observer overrides:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
@@ -969,6 +972,10 @@ class CrostiniManager : public KeyedService,
   base::flat_map<guest_os::GuestId,
                  guest_os::GuestOsTerminalProviderRegistry::Id>
       terminal_provider_ids_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

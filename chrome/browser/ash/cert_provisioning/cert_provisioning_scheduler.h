@@ -219,6 +219,10 @@ class CertProvisioningSchedulerImpl
   // |platform_keys_service_| can be nullptr if it has been shut down.
   platform_keys::PlatformKeysService* platform_keys_service_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   PrefChangeRegistrar pref_change_registrar_;
   WorkerMap workers_;
   // Contains cert profile ids that will be renewed before next daily update.

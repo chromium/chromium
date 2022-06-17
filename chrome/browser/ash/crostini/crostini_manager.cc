@@ -1233,8 +1233,8 @@ CrostiniManager::CrostiniManager(Profile* profile)
     chromeos::AnomalyDetectorClient::Get()->AddObserver(this);
   }
   if (chromeos::NetworkHandler::IsInitialized()) {
-    chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
-        this, ::base::Location::Current());
+    network_state_handler_observer_.Observe(
+        chromeos::NetworkHandler::Get()->network_state_handler());
   }
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
@@ -1262,10 +1262,6 @@ CrostiniManager::CrostiniManager(Profile* profile)
 
 CrostiniManager::~CrostiniManager() {
   RemoveDBusObservers();
-  if (chromeos::NetworkHandler::IsInitialized()) {
-    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, ::base::Location::Current());
-  }
 }
 
 base::WeakPtr<CrostiniManager> CrostiniManager::GetWeakPtr() {
@@ -3884,6 +3880,10 @@ void CrostiniManager::ActiveNetworksChanged(
     crostini::CrostiniPortForwarder::GetForProfile(profile_)
         ->ActiveNetworksChanged(device->interface());
   }
+}
+
+void CrostiniManager::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void CrostiniManager::SuspendImminent(

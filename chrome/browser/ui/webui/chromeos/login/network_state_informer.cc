@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -86,17 +85,13 @@ NetworkStateInformer::State GetStateForDefaultNetwork() {
 NetworkStateInformer::NetworkStateInformer() : state_(OFFLINE) {}
 
 NetworkStateInformer::~NetworkStateInformer() {
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-        this, FROM_HERE);
-  }
   network_portal_detector::GetInstance()->RemoveObserver(this);
 }
 
 void NetworkStateInformer::Init() {
   UpdateState();
-  NetworkHandler::Get()->network_state_handler()->AddObserver(
-      this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 
   network_portal_detector::GetInstance()->AddAndFireObserver(this);
 }

@@ -30,7 +30,6 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -125,7 +124,8 @@ SystemProxyManager::SystemProxyManager(PrefService* local_state) {
       base::BindRepeating(&SystemProxyManager::OnKerberosEnabledChanged,
                           weak_factory_.GetWeakPtr()));
   DCHECK(NetworkHandler::IsInitialized());
-  NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(
+      NetworkHandler::Get()->network_state_handler());
 
   system_proxy_state_ = DetermineSystemProxyState(/*policy_enabled=*/false);
 
@@ -142,8 +142,6 @@ SystemProxyManager::~SystemProxyManager() {
     SendShutDownRequest(system_proxy::TrafficOrigin::ALL);
   }
   DCHECK(NetworkHandler::IsInitialized());
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
 }
 
 // static

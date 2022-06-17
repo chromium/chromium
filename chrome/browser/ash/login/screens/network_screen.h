@@ -11,10 +11,12 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -151,6 +153,10 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   NetworkScreenView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkScreen> weak_ptr_factory_{this};
 };

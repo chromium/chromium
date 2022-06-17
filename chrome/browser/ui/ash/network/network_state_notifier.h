@@ -11,9 +11,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/network/network_connection_observer.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -89,6 +91,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
                                      const std::string& new_service_path,
                                      const std::string& old_guid,
                                      const std::string& new_guid) override;
+  void OnShuttingDown() override;
 
   void OnConnectErrorGetProperties(
       const std::string& error_name,
@@ -138,6 +141,10 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
 
   // Tracks GUIDs of activating cellular networks for activation notification.
   std::set<std::string> cellular_activating_guids_;
+
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkStateNotifier> weak_ptr_factory_{this};
 };

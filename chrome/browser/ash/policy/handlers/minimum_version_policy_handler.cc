@@ -32,7 +32,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -521,7 +520,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
     chromeos::NetworkStateHandler* network_state_handler =
         chromeos::NetworkHandler::Get()->network_state_handler();
     if (!network_state_handler->HasObserver(this))
-      network_state_handler->AddObserver(this, FROM_HERE);
+      network_state_handler_observer_.Observe(network_state_handler);
   }
 }
 
@@ -582,12 +581,12 @@ void MinimumVersionPolicyHandler::DefaultNetworkChanged(
   }
 }
 
+void MinimumVersionPolicyHandler::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
+}
+
 void MinimumVersionPolicyHandler::StopObservingNetwork() {
-  if (!chromeos::NetworkHandler::IsInitialized())
-    return;
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  network_state_handler->RemoveObserver(this, FROM_HERE);
+  network_state_handler_observer_.Reset();
 }
 
 void MinimumVersionPolicyHandler::UpdateOverMeteredPermssionGranted() {

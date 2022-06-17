@@ -23,7 +23,6 @@
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_name_util.h"
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/shill_property_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -172,7 +171,7 @@ NetworkStateNotifier::NetworkStateNotifier() {
   if (!NetworkHandler::IsInitialized())
     return;
   NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
-  handler->AddObserver(this, FROM_HERE);
+  network_state_handler_observer_.Observe(handler);
   NetworkStateHandler::NetworkStateList active_networks;
   handler->GetActiveNetworkListByType(NetworkTypePattern::Default(),
                                       &active_networks);
@@ -183,8 +182,6 @@ NetworkStateNotifier::NetworkStateNotifier() {
 NetworkStateNotifier::~NetworkStateNotifier() {
   if (!NetworkHandler::IsInitialized())
     return;
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                 FROM_HERE);
   NetworkHandler::Get()->network_connection_handler()->RemoveObserver(this);
 }
 
@@ -220,6 +217,10 @@ void NetworkStateNotifier::NetworkIdentifierTransitioned(
   }
 
   connect_error_notification_network_guid_ = new_guid;
+}
+
+void NetworkStateNotifier::OnShuttingDown() {
+  network_state_handler_observer_.Reset();
 }
 
 void NetworkStateNotifier::ConnectSucceeded(const std::string& service_path) {
