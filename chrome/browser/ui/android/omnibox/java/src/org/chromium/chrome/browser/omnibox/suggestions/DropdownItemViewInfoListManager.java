@@ -41,11 +41,6 @@ class DropdownItemViewInfoListManager {
         mManagedModel = managedModel;
     }
 
-    /** @return Total count of view infos that may be shown in the Omnibox Suggestions list. */
-    int getSuggestionsCount() {
-        return mSourceViewInfoList.size();
-    }
-
     /**
      * Sets the layout direction to be used for any new suggestion views.
      * @see View#setLayoutDirection(int)
