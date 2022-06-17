@@ -115,7 +115,7 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 // TODO(gab): Implement storing/loading for all ClientInfo fields on POSIX.
 std::unique_ptr<metrics::ClientInfo>
 GoogleUpdateSettings::LoadMetricsClientInfo() {
-  std::unique_ptr<metrics::ClientInfo> client_info(new metrics::ClientInfo);
+  auto client_info = std::make_unique<metrics::ClientInfo>();
 
   base::AutoLock lock(g_posix_client_id_lock.Get());
   if (g_posix_client_id.Get().empty())
