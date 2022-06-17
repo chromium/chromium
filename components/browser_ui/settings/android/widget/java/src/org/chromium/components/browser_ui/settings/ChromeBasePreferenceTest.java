@@ -14,6 +14,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 
+import android.app.Activity;
+
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 import androidx.test.espresso.ViewInteraction;
@@ -21,16 +23,15 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableList;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.List;
 
@@ -38,36 +39,33 @@ import java.util.List;
  * Tests of {@link ChromeBasePreference}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ChromeBasePreferenceTest extends BlankUiTestActivityTestCase {
+public class ChromeBasePreferenceTest {
+    @ClassRule
+    public static final DisableAnimationsTestRule disableAnimationsRule =
+            new DisableAnimationsTestRule();
+    @Rule
+    public final BlankUiTestActivitySettingsTestRule mSettingsRule =
+            new BlankUiTestActivitySettingsTestRule();
+
     private static final String TITLE = "Preference Title";
     private static final String SUMMARY = "This is a summary.";
 
+    private Activity mActivity;
     private PreferenceFragmentCompat mPreferenceFragment;
     private PreferenceScreen mPreferenceScreen;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPreferenceFragment = new PlaceholderSettingsForTest();
-            getActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(android.R.id.content, mPreferenceFragment)
-                    .commit();
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mPreferenceFragment.getPreferenceManager(), Matchers.notNullValue());
-            Criteria.checkThat(mPreferenceFragment.getPreferenceScreen(), Matchers.notNullValue());
-        });
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPreferenceScreen = mPreferenceFragment.getPreferenceScreen(); });
+    @Before
+    public void setUp() {
+        mSettingsRule.launchPreference(PlaceholderSettingsForTest.class);
+        mActivity = mSettingsRule.getActivity();
+        mPreferenceFragment = mSettingsRule.getPreferenceFragment();
+        mPreferenceScreen = mSettingsRule.getPreferenceScreen();
     }
 
     @Test
     @SmallTest
     public void testUnmanagedPreference() {
-        ChromeBasePreference preference = new ChromeBasePreference(getActivity());
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
         preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.UNMANAGED_DELEGATE);
@@ -83,7 +81,7 @@ public class ChromeBasePreferenceTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testPolicyManagedPreferenceWithoutSummary() {
-        ChromeBasePreference preference = new ChromeBasePreference(getActivity());
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
@@ -99,14 +97,14 @@ public class ChromeBasePreferenceTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testPolicyManagedPreferenceWithSummary() {
-        ChromeBasePreference preference = new ChromeBasePreference(getActivity());
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setSummary(SUMMARY);
         preference.setManagedPreferenceDelegate(ManagedPreferencesUtilsTest.POLICY_DELEGATE);
         mPreferenceScreen.addPreference(preference);
 
         List<String> expectedSummaryContains = ImmutableList.of(
-                SUMMARY, getActivity().getString(R.string.managed_by_your_organization));
+                SUMMARY, mActivity.getString(R.string.managed_by_your_organization));
 
         Assert.assertFalse(preference.isEnabled());
 
@@ -119,7 +117,7 @@ public class ChromeBasePreferenceTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testSingleCustodianManagedPreference() {
-        ChromeBasePreference preference = new ChromeBasePreference(getActivity());
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(
                 ManagedPreferencesUtilsTest.SINGLE_CUSTODIAN_DELEGATE);
@@ -136,7 +134,7 @@ public class ChromeBasePreferenceTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testMultipleCustodianManagedPreference() {
-        ChromeBasePreference preference = new ChromeBasePreference(getActivity());
+        ChromeBasePreference preference = new ChromeBasePreference(mActivity);
         preference.setTitle(TITLE);
         preference.setManagedPreferenceDelegate(
                 ManagedPreferencesUtilsTest.MULTI_CUSTODIAN_DELEGATE);

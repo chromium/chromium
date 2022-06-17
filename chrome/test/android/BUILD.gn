@@ -401,6 +401,7 @@ android_library("chrome_java_test_support_common") {
   visibility = [
     ":*",
     "//chrome/android/features/tab_ui:unit_device_javatests",
+    "//chrome/browser/ui/android/night_mode:unit_device_javatests",
     "//chrome/browser/ui/android/omnibox:unit_device_javatests",
   ]
   sources = [

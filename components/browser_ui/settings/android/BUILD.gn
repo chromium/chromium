@@ -106,7 +106,18 @@ android_library("unit_device_javatests") {
 android_library("test_support_java") {
   testonly = true
 
-  sources = [ "widget/java/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/settings/BlankUiTestActivitySettingsTestRule.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java",
+  ]
 
-  deps = [ "//third_party/androidx:androidx_preference_preference_java" ]
+  deps = [
+    "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//ui/android:ui_java_test_support",
+  ]
 }
