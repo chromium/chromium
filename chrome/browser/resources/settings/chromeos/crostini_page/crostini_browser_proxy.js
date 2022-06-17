@@ -17,9 +17,9 @@ import {loadTimeData} from '../../i18n_setup.js';
  * @typedef {{vm_name: string,
  *            container_name: string}}
  */
-export let ContainerId;
+export let GuestId;
 
-/** @type {!ContainerId} */ export const DEFAULT_CONTAINER_ID = {
+/** @type {!GuestId} */ export const DEFAULT_CONTAINER_ID = {
   vm_name: DEFAULT_CROSTINI_VM,
   container_name: DEFAULT_CROSTINI_CONTAINER,
 };
@@ -35,10 +35,12 @@ export const CrostiniPortProtocol = {
 };
 
 /**
+ * Note: key names are kept to match c++ style keys in prefs, they must stay in
+ * sync.
  * @typedef {{label: string,
  *            port_number: number,
  *            protocol_type: !CrostiniPortProtocol,
- *            container_id: !ContainerId}}
+ *            container_id: !GuestId}}
  */
 export let CrostiniPortSetting;
 
@@ -53,9 +55,11 @@ export let CrostiniPortSetting;
 export let CrostiniDiskInfo;
 
 /**
+ * Note: key names are kept to match c++ style keys in prefs, they must stay in
+ * sync.
  * @typedef {{port_number: number,
  *            protocol_type: !CrostiniPortProtocol,
- *            container_id: !ContainerId}}
+ *            container_id: !GuestId}}
  */
 export let CrostiniPortActiveSetting;
 
@@ -73,7 +77,7 @@ export const MAX_VALID_PORT_NUMBER = 65535;  // Maximum 16-bit integer value.
 
 /**
  * |ipv4| below is null if the container is not currently running.
- * @typedef {{id: !ContainerId,
+ * @typedef {{id: !GuestId,
  *            ipv4: ?string}}
  */
 export let ContainerInfo;
@@ -105,13 +109,13 @@ export class CrostiniBrowserProxy {
 
   /**
    * Export crostini container.
-   * @param {!ContainerId} containerId container id of container to export.
+   * @param {!GuestId} containerId container id of container to export.
    */
   exportCrostiniContainer(containerId) {}
 
   /**
    * Import crostini container.
-   * @param {!ContainerId} containerId container id of container to import.
+   * @param {!GuestId} containerId container id of container to import.
    */
   importCrostiniContainer(containerId) {}
 
@@ -170,7 +174,7 @@ export class CrostiniBrowserProxy {
   checkCrostiniMicSharingStatus(proposedValue) {}
 
   /**
-   * @param {!ContainerId} containerId id of container to add port forwarding.
+   * @param {!GuestId} containerId id of container to add port forwarding.
    * @param {number} portNumber Port number to start forwarding.
    * @param {!CrostiniPortProtocol} protocol Networking protocol to use.
    * @param {string} label Label for this port.
@@ -180,7 +184,7 @@ export class CrostiniBrowserProxy {
   addCrostiniPortForward(containerId, portNumber, protocol, label) {}
 
   /**
-   * @param {!ContainerId} containerId id from which to remove port forwarding.
+   * @param {!GuestId} containerId id from which to remove port forwarding.
    * @param {number} portNumber Port number to stop forwarding and remove.
    * @param {!CrostiniPortProtocol} protocol Networking protocol to use.
    * @return {!Promise<boolean>} Whether requested port was deallocated and
@@ -189,13 +193,13 @@ export class CrostiniBrowserProxy {
   removeCrostiniPortForward(containerId, portNumber, protocol) {}
 
   /**
-   * @param {!ContainerId} containerId id from which to remove all port
+   * @param {!GuestId} containerId id from which to remove all port
    *     forwarding.
    */
   removeAllCrostiniPortForwards(containerId) {}
 
   /**
-   * @param {!ContainerId} containerId id for which to activate port forward.
+   * @param {!GuestId} containerId id for which to activate port forward.
    * @param {number} portNumber Existing port number to activate.
    * @param {!CrostiniPortProtocol} protocol Networking protocol for existing
    * port rule to activate.
@@ -205,7 +209,7 @@ export class CrostiniBrowserProxy {
   activateCrostiniPortForward(containerId, portNumber, protocol) {}
 
   /**
-   * @param {!ContainerId} containerId id for which to deactivate port forward.
+   * @param {!GuestId} containerId id for which to deactivate port forward.
    * @param {number} portNumber Existing port number to activate.
    * @param {!CrostiniPortProtocol} protocol Networking protocol for existing
    * port rule to deactivate.
@@ -240,7 +244,7 @@ export class CrostiniBrowserProxy {
   getCrostiniMicSharingEnabled() {}
 
   /**
-   * @param {!ContainerId} containerId id of container to create.
+   * @param {!GuestId} containerId id of container to create.
    * @param {?URL} imageServer url of lxd container server from which to fetch
    * @param {?string} imageAlias name of image to fetch e.g. 'debian/bullseye'
    * @param {?string} ansiblePlaybook file location of an Ansible playbook to
@@ -249,7 +253,7 @@ export class CrostiniBrowserProxy {
   createContainer(containerId, imageServer, imageAlias, ansiblePlaybook) {}
 
   /**
-   * @param {!ContainerId} containerId id of container to delete.
+   * @param {!GuestId} containerId id of container to delete.
    */
   deleteContainer(containerId) {}
 
@@ -260,13 +264,13 @@ export class CrostiniBrowserProxy {
   requestContainerInfo() {}
 
   /**
-   * @param {!ContainerId} containerId container id to update.
+   * @param {!GuestId} containerId container id to update.
    * @param {!skia.mojom.SkColor} badge_color new badge color for the container.
    */
   setContainerBadgeColor(containerId, badge_color) {}
 
   /**
-   * @param {!ContainerId} containerId id of container to stop, recovering
+   * @param {!GuestId} containerId id of container to stop, recovering
    * CPU and other resources.
    */
   stopContainer(containerId) {}

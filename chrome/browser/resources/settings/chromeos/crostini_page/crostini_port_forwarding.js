@@ -28,7 +28,7 @@ import {afterNextRender, flush, html, mixinBehaviors, PolymerElement, TemplateIn
 import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-import {ContainerId, ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, GuestId, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 import {containerLabel, equalContainerId} from './crostini_container_select.js';
 
 
@@ -212,7 +212,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   onShowRemoveSinglePortMenuClick_(event) {
     const dataSet = /** @type {{portNumber: string, protocolType: string}} */
         (event.currentTarget.dataset);
-    const id = /** @type {ContainerId} */
+    const id = /** @type {GuestId} */
         (event.currentTarget['dataContainerId']);
     this.lastMenuOpenedPort_ = {
       port_number: Number(dataSet.portNumber),
@@ -271,7 +271,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   onPortActivationChange_(event) {
     const dataSet = /** @type {{portNumber: string, protocolType: string}} */
         (event.currentTarget.dataset);
-    const id = /** @type {ContainerId} */
+    const id = /** @type {GuestId} */
         (event.currentTarget['dataContainerId']);
     const portNumber = Number(dataSet.portNumber);
     const protocolType = /** @type {!CrostiniPortProtocol} */
@@ -298,7 +298,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
   /**
    * @param {!Array<!CrostiniPortSetting>} allPorts
-   * @param {!ContainerId} id
+   * @param {!GuestId} id
    * @return boolean
    * @private
    */
@@ -309,7 +309,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   }
 
   /**
-   * @param {!ContainerId} id
+   * @param {!GuestId} id
    * @return string
    * @private
    */
@@ -319,7 +319,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
   /**
    * @param {!Array<!CrostiniPortSetting>} allPorts
-   * @param {!ContainerId} id
+   * @param {!GuestId} id
    * @return boolean
    * @private
    */
@@ -328,7 +328,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   }
 
   /**
-   * @param {!ContainerId} id
+   * @param {!GuestId} id
    * @return function
    * @private
    */

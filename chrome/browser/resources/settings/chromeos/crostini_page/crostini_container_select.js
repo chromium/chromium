@@ -11,11 +11,11 @@ import '../../settings_shared_css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerId, ContainerInfo, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {ContainerInfo, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM, GuestId} from './crostini_browser_proxy.js';
 
 /**
- * @param {!ContainerId} first
- * @param {!ContainerId} second
+ * @param {!GuestId} first
+ * @param {!GuestId} second
  * @return boolean
  */
 export function equalContainerId(first, second) {
@@ -24,7 +24,7 @@ export function equalContainerId(first, second) {
 }
 
 /**
- * @param {!ContainerId} id
+ * @param {!GuestId} id
  * @return string
  */
 export function containerLabel(id) {
@@ -48,7 +48,7 @@ class ContainerSelectElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * @type {!ContainerId}
+       * @type {!GuestId}
        */
       selectedContainerId: {
         type: Object,
@@ -81,7 +81,7 @@ class ContainerSelectElement extends PolymerElement {
   }
 
   /**
-   * @param {!ContainerId} id
+   * @param {!GuestId} id
    * @return string
    * @private
    */

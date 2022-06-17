@@ -18,7 +18,7 @@ import './crostini_container_select.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, microTask, PolymerElement, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContainerId, ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {ContainerInfo, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, GuestId, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class CrostiniPortForwardingAddPortDialog extends PolymerElement {
@@ -66,7 +66,7 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
       },
 
       /**
-       * @type {!ContainerId}
+       * @type {!GuestId}
        */
       containerId_: {
         type: Object,
