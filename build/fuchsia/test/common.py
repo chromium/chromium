@@ -54,7 +54,7 @@ def _run_repair_command(output):
 
 
 def run_ffx_command(cmd: Iterable[str],
-                    node_name: Optional[str] = None,
+                    target_id: Optional[str] = None,
                     check: bool = True,
                     suppress_repair: bool = False,
                     **kwargs) -> subprocess.CompletedProcess:
@@ -68,7 +68,8 @@ def run_ffx_command(cmd: Iterable[str],
 
     Args:
         cmd: A sequence of arguments to ffx.
-        node_name: Whether to execute the command for a specific target.
+        target_id: Whether to execute the command for a specific target. The
+            target_id could be in the form of a nodename or an address.
         check: If True, CalledProcessError is raised if ffx returns a non-zero
             exit code.
         suppress_repair: If True, do not attempt to find and run a repair
@@ -80,8 +81,8 @@ def run_ffx_command(cmd: Iterable[str],
     """
 
     ffx_cmd = [_FFX_TOOL]
-    if node_name:
-        ffx_cmd.extend(('--target', node_name))
+    if target_id:
+        ffx_cmd.extend(('--target', target_id))
     ffx_cmd.extend(cmd)
     try:
         return subprocess.run(ffx_cmd, check=check, encoding='utf-8', **kwargs)
@@ -91,16 +92,16 @@ def run_ffx_command(cmd: Iterable[str],
 
     # If the original command failed but a repair command was found and
     # succeeded, try one more time with the original command.
-    return run_ffx_command(cmd, node_name, check, True, **kwargs)
+    return run_ffx_command(cmd, target_id, check, True, **kwargs)
 
 
 def run_continuous_ffx_command(cmd: Iterable[str],
-                               node_name: Optional[str] = None,
+                               target_id: Optional[str] = None,
                                **kwargs) -> subprocess.Popen:
     """Runs an ffx command asynchronously."""
     ffx_cmd = [_FFX_TOOL]
-    if node_name:
-        ffx_cmd.extend(('--target', node_name))
+    if target_id:
+        ffx_cmd.extend(('--target', target_id))
     ffx_cmd.extend(cmd)
     return subprocess.Popen(ffx_cmd, encoding='utf-8', **kwargs)
 
@@ -126,8 +127,19 @@ def register_common_args(parser: ArgumentParser) -> None:
         '--out-dir',
         '-C',
         type=os.path.realpath,
-        help=('Path to the directory in which build files are located. '
-              'Defaults to current directory.'))
+        help='Path to the directory in which build files are located. ')
+
+
+def register_device_args(parser: ArgumentParser) -> None:
+    """Register device arguments."""
+    device_args = parser.add_argument_group('device', 'device arguments')
+    device_args.add_argument('--target-id',
+                             help=('Specify the target device. This could be '
+                                   'a node-name (e.g. fuchsia-emulator) or an '
+                                   'an ip address along with an optional port '
+                                   '(e.g. [fe80::e1c4:fd22:5ee5:878e]:22222, '
+                                   '1.2.3.4, 1.2.3.4:33333). If unspecified, '
+                                   'the default target in ffx will be used.'))
 
 
 def get_component_uri(package: str) -> str:
@@ -135,17 +147,19 @@ def get_component_uri(package: str) -> str:
     return f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
 
 
-def resolve_packages(packages: List[str]) -> None:
+def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
     for package in packages:
         # Try destroying the component to force an update.
         run_ffx_command(
             ['component', 'destroy', f'/core/ffx-laboratory:{package}'],
+            target_id,
             check=False)
 
         run_ffx_command([
             'component', 'create', f'/core/ffx-laboratory:{package}',
             f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
-        ])
+        ], target_id)
         run_ffx_command(
-            ['component', 'resolve', f'/core/ffx-laboratory:{package}'])
+            ['component', 'resolve', f'/core/ffx-laboratory:{package}'],
+            target_id)

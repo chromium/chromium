@@ -7,7 +7,7 @@ import subprocess
 
 from abc import ABC, abstractmethod
 from argparse import Namespace
-from typing import List
+from typing import List, Optional
 
 from common import read_package_paths
 
@@ -15,8 +15,12 @@ from common import read_package_paths
 class TestRunner(ABC):
     """Base class that handles running a test."""
 
-    def __init__(self, out_dir: str, test_args: Namespace,
-                 packages: List[str]) -> None:
+    def __init__(self,
+                 out_dir: str,
+                 test_args: Namespace,
+                 packages: List[str],
+                 target_id: Optional[str] = None) -> None:
+        self._target_id = target_id
         self._out_dir = out_dir
         self._test_args = test_args
         self._packages = packages

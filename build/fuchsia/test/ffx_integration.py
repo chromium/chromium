@@ -62,6 +62,12 @@ class ScopedFfxConfig(AbstractContextManager):
         return False
 
 
+def test_connection(target_id: Optional[str]) -> None:
+    """Run an echo test to verify that the device can be connected to."""
+
+    run_ffx_command(('target', 'echo'), target_id)
+
+
 class FfxTestRunner(AbstractContextManager):
     """A context manager that manages a session for running a test via `ffx`.
 

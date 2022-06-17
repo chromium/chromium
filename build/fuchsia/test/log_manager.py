@@ -15,7 +15,7 @@ from contextlib import AbstractContextManager
 from typing import Iterable, Optional, TextIO
 
 from common import read_package_paths, register_common_args, \
-                   run_continuous_ffx_command
+                   register_device_args, run_continuous_ffx_command
 
 
 class LogManager(AbstractContextManager):
@@ -65,7 +65,8 @@ class LogManager(AbstractContextManager):
 def start_system_log(log_manager: LogManager,
                      log_to_stdout: bool,
                      pkg_paths: Optional[Iterable[str]] = None,
-                     log_args: Optional[Iterable[str]] = None) -> None:
+                     log_args: Optional[Iterable[str]] = None,
+                     target_id: Optional[str] = None) -> None:
     """
     Start system logging.
 
@@ -74,6 +75,7 @@ def start_system_log(log_manager: LogManager,
         log_to_stdout: If set to True, print logs directly to stdout.
         pkg_paths: Path to the packages
         log_args: Arguments forwarded to `ffx log` command.
+        target_id: Specify a target to use.
     """
 
     if not log_manager.is_logging_enabled() and not log_to_stdout:
@@ -96,9 +98,11 @@ def start_system_log(log_manager: LogManager,
     if log_args:
         log_cmd.extend(log_args)
     if symbol_paths:
-        log_proc = run_continuous_ffx_command(log_cmd, stdout=subprocess.PIPE)
+        log_proc = run_continuous_ffx_command(log_cmd,
+                                              target_id,
+                                              stdout=subprocess.PIPE)
         log_manager.add_log_process(log_proc)
-        symbolize_cmd = (['debug', 'symbolize', '--'])
+        symbolize_cmd = (['debug', 'symbolize', '--', '--omit-module-lines'])
         for symbol_path in symbol_paths:
             symbolize_cmd.extend(['--ids-txt', symbol_path])
         log_manager.add_log_process(
@@ -127,6 +131,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     register_common_args(parser)
+    register_device_args(parser)
     parser.add_argument('--packages',
                         action='append',
                         help='Name of the packages to symbolize.')
@@ -140,9 +145,10 @@ def main():
                 read_package_paths(manager_args.out_dir, package))
     with LogManager(None) as log_manager:
         try:
-            start_system_log(log_manager, True, package_paths, system_log_args)
+            start_system_log(log_manager, True, package_paths, system_log_args,
+                             manager_args.target_id)
             while True:
-                time.sleep(10)
+                time.sleep(10000)
         except (KeyboardInterrupt, SystemExit):
             pass
 

@@ -11,10 +11,10 @@ import shutil
 import subprocess
 import sys
 
-from typing import List
+from typing import List, Optional
 
-from common import get_component_uri, register_common_args, resolve_packages, \
-                   run_ffx_command
+from common import get_component_uri, register_common_args, \
+                   register_device_args, resolve_packages, run_ffx_command
 from ffx_integration import FfxTestRunner
 from test_runner import TestRunner
 
@@ -34,9 +34,9 @@ def _copy_custom_output_file(test_runner: FfxTestRunner, file: str,
 class ExecutableTestRunner(TestRunner):
     """Test runner for running standalone test executables."""
 
-    def __init__(self, out_dir: str, test_args: List[str],
-                 test_name: str) -> None:
-        super().__init__(out_dir, test_args, [test_name])
+    def __init__(self, out_dir: str, test_args: List[str], test_name: str,
+                 target_id: Optional[str]) -> None:
+        super().__init__(out_dir, test_args, [test_name], target_id)
         self._test_name = test_name
         self._custom_artifact_directory = None
         self._isolated_script_test_output = None
@@ -101,11 +101,11 @@ class ExecutableTestRunner(TestRunner):
                 self._isolated_script_test_output)
 
     def run_test(self) -> subprocess.Popen:
-        resolve_packages(self.packages)
+        resolve_packages(self.packages, self._target_id)
         test_args = self._get_args()
         with FfxTestRunner() as test_runner:
             test_proc = test_runner.run_test(
-                get_component_uri(self._test_name), test_args)
+                get_component_uri(self._test_name), test_args, self._target_id)
 
             # Symbolize output from test process and print to terminal.
             symbolize_cmd = ['debug', 'symbolize', '--']
@@ -140,9 +140,10 @@ def main():
     parser = argparse.ArgumentParser()
     register_gtest_args(parser)
     register_common_args(parser)
+    register_device_args(parser)
     runner_args, test_args = parser.parse_known_args()
     runner = ExecutableTestRunner(runner_args.out_dir, runner_args.test_name,
-                                  test_args)
+                                  test_args, runner_args.target_id)
     return runner.run_test()
 
 
