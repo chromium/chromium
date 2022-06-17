@@ -142,11 +142,6 @@ const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 
-// Enables buttons to permanently appear on the tabstrip when
-// scrollable-tabstrip is enabled. https://crbug.com/1116118
-const base::Feature kScrollableTabStripButtons{
-    "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Directly controls the "new" badge (as opposed to old "master switch"; see
 // https://crbug.com/1169907 for master switch deprecation and
 // https://crbug.com/968587 for the feature itself)

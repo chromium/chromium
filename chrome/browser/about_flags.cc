@@ -5438,11 +5438,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabScrollingVariations,
                                     "TabScrolling")},
 
-    {"scrollable-tabstrip-buttons",
-     flag_descriptions::kScrollableTabStripButtonsName,
-     flag_descriptions::kScrollableTabStripButtonsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kScrollableTabStripButtons)},
-
     {"side-panel-improved-clobbering",
      flag_descriptions::kSidePanelImprovedClobberingName,
      flag_descriptions::kSidePanelImprovedClobberingDescription, kOsDesktop,
