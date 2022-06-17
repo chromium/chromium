@@ -291,6 +291,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1662550410081243962">Gardar e autocompletar métodos de pago</translation>
 <translation id="1663943134801823270">As tarxetas e enderezos proceden de Chrome. Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora.</translation>
+<translation id="1673886523110456987">Paga coa tarxeta <ph name="CARD_DETAIL" /> para usar a oferta</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
@@ -589,6 +590,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2523886232349826891">Gardada só neste dispositivo</translation>
 <translation id="2524461107774643265">Engadir máis información</translation>
 <translation id="2529899080962247600">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Unha vez alcanzada esa cantidade, ignoraranse as demais entradas.</translation>
+<translation id="253493526287553278">Ver detalles do código promocional</translation>
 <translation id="2535585790302968248">Abrir unha nova pestana do modo de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2536110899380797252">Engadir enderezo</translation>
@@ -1105,6 +1107,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3986705137476756801">Desactivar polo momento a función Subtítulos instantáneos</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Compensación mediante empurro</translation>
+<translation id="3992684624889376114">Acerca desta páxina</translation>
 <translation id="3996311196211510766">O sitio <ph name="ORIGIN" /> solicitou que se aplicase unha política de orixe
     a todas as solicitudes que reciba, pero actualmente non se pode aplicar esta política.</translation>
 <translation id="4006465311664329701">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
@@ -1280,6 +1283,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4435702339979719576">Postal)</translation>
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
 <translation id="4441832193888514600">Ignorada porque a política só se pode configurar como unha política de usuario da nube.</translation>
+<translation id="4442470707340296952">Pestanas de Chrome</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451135742916150903">Pode pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="4452328064229197696">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais de Google recomenda que comprobes os contrasinais gardados.</translation>
@@ -1554,6 +1558,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Equipo</translation>
+<translation id="5177076414499237632">Máis información sobre o tema e a fonte desta páxina</translation>
 <translation id="5179510805599951267">Non está en <ph name="ORIGINAL_LANGUAGE" />? Informar deste erro</translation>
 <translation id="518639307526414276">Produtos de alimentación e coidado de mascotas</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>

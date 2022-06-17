@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="147809995039451286">Kan de update niet downloaden</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Verzenden</translation>
 <translation id="1491076385728777984">Firmware op <ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Kan afbeeldingen niet laden. Check de netwerkverbinding of probeer de afbeeldingen opnieuw te laden.</translation>
 <translation id="1751249301761991853">Persoonlijk</translation>
 <translation id="1753496554272155572">Achtergrondvoorbeeld sluiten</translation>
+<translation id="1755556344721611131">App Diagnostische gegevens</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6659594942844771486">Browsertabblad</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
+<translation id="6721744718589119342">We kunnen je een e-mail sturen als we meer informatie nodig hebben of als er updates zijn</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6723847290197874913">Achtergrondverlichting toetsenbord</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
@@ -718,6 +721,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
+<translation id="73631062356239394">Diagnostische gegevens delen</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
@@ -923,6 +927,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Je toetsenbord kan automatisch worden afgestemd op je achtergrond</translation>
 <translation id="9204237731135241582">Kan geen verbinding maken met de gateway vanuit Android-apps</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>
 <translation id="922179502584117429">Huidige versie <ph name="VERSION_NUMBER" /> is verouderd</translation>

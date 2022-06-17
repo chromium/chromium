@@ -508,6 +508,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="3740525748616366977">Gesproken zoekopdracht is niet beschikbaar op dit apparaat</translation>
 <translation id="3749259744154402564">Niet ondersteund</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
+<translation id="377124182565324804"><ph name="SITE" /> toevoegen</translation>
 <translation id="3771290962915251154">Deze instelling staat uit omdat ouderlijk toezicht is aangezet</translation>
 <translation id="3771694256347217732">Servicevoorwaarden van Google</translation>
 <translation id="3773856050682458546">Basisgegevens en informatie over de websites die je bezoekt en de apps die je gebruikt</translation>
@@ -590,6 +591,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="4256782883801055595">Opensource-licenties</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je browsegeschiedenis, een lijst van de sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="4263656433980196874">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op volledige hoogte geopend</translation>
+<translation id="4266054596873078491">Log in bij deze site en Chrome met je Google-account.</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4290281343757112331">Later downloaden?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Schermvergrendeling aanzetten via Android-instellingen<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="4425140285732600465">Prijs wordt gevolgd. Krijg meldingen bij een prijsdaling op een site.</translation>
 <translation id="442518031075347249">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Advertentiepersonalisatie</translation>
-<translation id="4450672886426705087">Zoekresultaten van Google.</translation>
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Als je een ander apparaat koppelt via een QR-code, kan het apparaat deze telefoon gebruiken als beveiligingssleutel. Als je het verwijdert, moet je een QR-code scannen om het opnieuw te koppelen.</translation>
@@ -791,6 +792,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
 <translation id="5339031667684712858">Door jou verwijderde sites</translation>
 <translation id="5342314432463739672">Rechtenverzoeken</translation>
+<translation id="53537532693258630">Hier zie je sites die je hebt verwijderd</translation>
 <translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="5368227114232678694">Gebruik de incognitomodus als je privé wilt browsen op dit apparaat</translation>
 <translation id="5375577065097716013">Afbeelding zoeken met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
@@ -1497,6 +1499,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="8993760627012879038">Een nieuw venster openen in de incognitomodus</translation>
 <translation id="8996847606757455498">Een andere provider kiezen</translation>
 <translation id="8998729206196772491">Je logt in met een account dat wordt beheerd door <ph name="MANAGED_DOMAIN" /> waarmee je de eigenaar beheer geeft over je Chrome-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chrome, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
+<translation id="9021388532480169802">Site toegevoegd</translation>
 <translation id="9022774213089566801">Veelbezocht</translation>
 <translation id="9028914725102941583">Zet de synchronisatie aan om content op apparaten te delen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video's}}</translation>

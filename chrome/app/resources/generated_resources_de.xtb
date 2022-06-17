@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
 <translation id="1056898198331236512">Warnung</translation>
-<translation id="105822690353767994">Erlaube, dass die Erweiterung auf dieser Website immer ausgeführt werden darf, wenn diese Meldung nicht mehr angezeigt werden soll.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Gib deine neue PIN ein. Eine PIN muss aus mindestens einem Zeichen bestehen und kann Buchstaben, Zahlen und andere Zeichen enthalten.}other{Gib deine neue PIN ein. Eine PIN muss aus mindestens # Zeichen bestehen und kann Buchstaben, Zahlen und andere Zeichen enthalten.}}</translation>
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
@@ -1418,7 +1417,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Folgende Tasten werden nicht unterstützt: Tabulatortaste, Umschalttaste, Steuerungtaste, Esc-Taste, Feststelltaste, Lautstärketaste</translation>
 <translation id="2309620859903500144">Diese Website darf nicht auf meine Bewegungs- oder Lichtsensoren zugreifen.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Seiten-URL</translation>
 <translation id="2314165183524574721">Die aktuelle Sichtbarkeitseinstellung ist "Verborgen"</translation>
 <translation id="2314774579020744484">Sprache, in die Seiten übersetzt werden sollen</translation>
@@ -2572,6 +2570,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> kann <ph name="FILENAME" /> aufrufen</translation>
 <translation id="3445047461171030979">Schnelle Antworten bei Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344537926140058498">Deine Organisation hat diese Datei blockiert, weil sie sensible oder gefährliche Inhalte enthält. Bitte den Inhaber, das Problem zu beheben.</translation>
 <translation id="3445925074670675829">USB-C-Gerät</translation>
 <translation id="3446274660183028131">Bitte Parallels Desktop starten, um Windows zu installieren.</translation>
 <translation id="344630545793878684">Deine Daten auf verschiedenen Websites lesen</translation>
@@ -2620,6 +2619,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> darf die folgenden Dateien aufrufen</translation>
 <translation id="3484273680291419129">Schädliche Software wird entfernt...</translation>
 <translation id="3484869148456018791">Neues Zertifikat anfordern</translation>
+<translation id="3486950712960783074">Meine Reise</translation>
 <translation id="3487007233252413104">Anonyme Funktion</translation>
 <translation id="3490695139702884919">Wird heruntergeladen... <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Das Konto deines Kindes ist nicht für die Jugendschutzeinstellungen von Family Link eingerichtet. Du kannst die Jugendschutzeinstellungen hinzufügen, sobald du die Einrichtung beendet hast. Informationen zu den Jugendschutzeinstellungen findest du in der App "Entdecken".</translation>
@@ -2932,6 +2932,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" />Dein <ph name="DEVICE_TYPE" /> wird von deiner Organisation verwaltet<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> nach "<ph name="SEARCH_TERMS" />" durchsuchen</translation>
 <translation id="3798449238516105146">Version</translation>
+<translation id="3798632811625902122">Das Bluetooth-Gerät „<ph name="DEVICE" />“ bittet um Erlaubnis für Kopplung.</translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
 <translation id="3800806661949714323">Alle anzeigen (empfohlen)</translation>
 <translation id="3800828618615365228">Google Chrome und Chrome OS – zusätzliche Nutzungsbedingungen</translation>
@@ -3128,6 +3129,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="3971764089670057203">Fingerabdrücke für diesen Sicherheitsschlüssel</translation>
 <translation id="3973005893595042880">Nutzer nicht zulässig</translation>
+<translation id="3973062011568994448">Wähle eine CSV-Datei aus, um Passwörter zu importieren.</translation>
 <translation id="3973660817924297510">Passwörter werden geprüft (<ph name="CHECKED_PASSWORDS" /> von <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Mit „Weiter“ bewegst du den Fokus auf dem Bildschirm nach vorn</translation>
 <translation id="3975201861340929143">Erklärung</translation>
@@ -4596,6 +4598,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5466374726908360271">Ei&amp;nfügen und nach "<ph name="SEARCH_TERMS" />" suchen</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> blockiert</translation>
 <translation id="5468173180030470402">Nach Dateifreigaben wird gesucht</translation>
+<translation id="5468881191994555667">Datei auswählen</translation>
 <translation id="5469852975082458401">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Wenn du die Tastaturnavigation deaktivieren möchtest, drücke F7.</translation>
 <translation id="5470735824776589490">Für das Zurücksetzen deines Geräts mit Powerwash ist ein Neustart erforderlich. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hallo! Ich bin die Stimme deiner Sprachausgabe.</translation>
@@ -4918,6 +4921,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5792295754950501287">Weitere Aktionen für <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Tippe auf die Ein/Aus-Taste</translation>
 <translation id="5793339252089865437">Wenn du das Update über dein Mobilfunknetz herunterlädst, können zusätzliche Gebühren anfallen.</translation>
+<translation id="5793420564274426163">Kopplung bestätigen</translation>
 <translation id="5794034487966529952">Auf dem Desktop „<ph name="DESK_TITLE" />“ sind <ph name="NUM_BROWSERS" /> Browserfenster geöffnet</translation>
 <translation id="5794414402486823030">Immer mit System Viewer öffnen</translation>
 <translation id="5794700615121138172">Freigegebene Linux-Ordner</translation>
@@ -5039,7 +5043,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 
   Öffentlicher Exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> Bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Dein Smartphone und <ph name="DEVICE_TYPE" /> sind miteinander verbunden</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="59174027418879706">Aktiviert</translation>
 <translation id="5920543303088087579">Die Möglichkeit einer Verbindung zu diesem Netzwerk wurde von deinem Administrator deaktiviert</translation>
@@ -5174,7 +5177,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Wenn du diese Funktion deaktivierst, kann das Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ im Google-Konto deines Kindes aktiviert ist, werden die Daten deines Kindes möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com findest du weitere Informationen zu dieser Einstellung. Dort erfährst du auch, wie du sie ändern kannst.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Deine Organisation hat diese Datei blockiert, weil sie gegen eine Sicherheitsrichtlinie verstößt</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Zum Starten des Streams Zugriffscode eingeben</translation>
 <translation id="6052976518993719690">SSL-Zertifizierungsstelle</translation>
 <translation id="6053401458108962351">&amp;Browserdaten löschen...</translation>
@@ -6324,6 +6326,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7191159667348037">Unbekannter Drucker (USB)</translation>
 <translation id="7193051357671784796">Diese App wurde von deiner Organisation hinzugefügt. Starte die App neu, um die Installation abzuschließen.</translation>
 <translation id="7193374945610105795">Für <ph name="ORIGIN" /> sind keine Passwörter gespeichert</translation>
+<translation id="7194873994243265344">Deine Organisation hat diese Datei blockiert, weil sie verschlüsselt ist. Bitte den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="7196913789568937443">In Google Drive sichern: Du kannst deine Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. Deine Sicherung enthält App-Daten. Sicherungen werden bei Google hochgeladen und mit dem Passwort deines Google-Kontos verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Cleverer suchen und surfen mit Google</translation>
 <translation id="719791532916917144">Tastenkürzel</translation>
@@ -6342,6 +6345,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7211783048245131419">Es wurde noch keine Schaltertaste zugewiesen</translation>
 <translation id="7212097698621322584">Gib deine aktuelle PIN ein, um sie zu ändern. Falls du deine PIN nicht kennst, musst du den Sicherheitsschlüssel zurücksetzen und dann eine neue PIN erstellen.</translation>
 <translation id="7213903639823314449">In der Adressleiste verwendete Suchmaschine</translation>
+<translation id="721490496276866468">Passwörter importieren</translation>
 <translation id="7216595297012131718">Ordne Sprachen in der gewünschten Reihenfolge an</translation>
 <translation id="7219473482981809164">Es wurden mehrere Profile zum Download gefunden. Wähle diejenigen aus, die du herunterladen möchtest, bevor du fortfährst.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Keine schwachen Passwörter}=1{1 schwaches Passwort}other{{NUM_WEAK} schwache Passwörter}}</translation>
@@ -6975,6 +6979,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7826190688224781865">Geschäfts-ID-Code des Händlers</translation>
 <translation id="7826249772873145665">ADB-Fehlerbehebung deaktiviert</translation>
 <translation id="7826254698725248775">In Konflikt stehende Gerätekennung.</translation>
+<translation id="7828642077514646543">Fehler: Zertifikat konnte nicht entschlüsselt werden</translation>
 <translation id="7828731929332799387">Dadurch werden alle Cookies und Websitedaten von Drittanbietern gelöscht. Möchtest du fortfahren?</translation>
 <translation id="7829877209233347340">Es muss sich zuerst ein Elternteil anmelden und seine Zustimmung geben, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7412,6 +7417,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8242426110754782860">Fortfahren</translation>
 <translation id="8243948765190375130">Die Medienqualität ist möglicherweise beeinträchtigt</translation>
 <translation id="8244514732452879619">Zeit, das Licht auszumachen</translation>
+<translation id="8245361042748627813">Diese Verknüpfung wurde geändert. Verwende <ph name="NEW_SHORTCUT_KEY" />, um über das Systemdialogfeld zu drucken.</translation>
 <translation id="8246776524656196770">Du kannst deinen Sicherheitsschlüssel mit einer persönlichen Identifikationsnummer (PIN) schützen</translation>
 <translation id="8248050856337841185">&amp;Einfügen</translation>
 <translation id="8248381369318572865">Auf dein Mikrofon zugreifen und deine Spracheingabe analysieren</translation>
@@ -7716,6 +7722,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8561565784790166472">Vorsicht</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Du hast versucht, ein Downgrade der App auszuführen.</translation>
+<translation id="8569673829373920831">Mehr zu <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Keine Ziele gefunden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8571687764447439720">Kerberos-Ticket hinzufügen</translation>
@@ -7934,6 +7941,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> wird automatisch in # Sekunde gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}other{<ph name="DEVICE_TYPE" /> wird automatisch in # Sekunden gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}}</translation>
+<translation id="8776294611668764629">Deine Organisation hat diese Datei blockiert, weil sie zu groß für einen Sicherheitscheck ist. Du kannst Dateien mit einer Größe von bis zu 50 MB öffnen.</translation>
 <translation id="8777628254805677039">Root-Passwort</translation>
 <translation id="8779944680596936487">Websitebetreiber können Cookies nur verwenden, um deine Browseraktivitäten auf der eigenen Website zu sehen</translation>
 <translation id="8780123805589053431">Bildbeschreibungen von Google verwenden</translation>
@@ -7998,7 +8006,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Smartphones verwalten</translation>
 <translation id="8841843049738266382">Nutzer auf der Zulassungsliste ansehen und ändern</translation>
-<translation id="8842059467121215385">Seite aktualisieren, um „<ph name="EXTENSION_NAME" />“ zu verwenden</translation>
 <translation id="8842594465773264717">Diesen Fingerabdruck löschen</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8846132060409673887">Hersteller und Modell dieses Computers auslesen</translation>
@@ -8452,7 +8459,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="992778845837390402">Sicherung für Linux wird gerade ausgeführt</translation>
 <translation id="993540765962421562">Die Installation wird ausgeführt</translation>
 <translation id="994289308992179865">Sch&amp;leife</translation>
-<translation id="995571563161129624">Hinweis: Wenn du Benachrichtigungen auf deinem Chromebook schließt, werden sie auch auf dem Smartphone geschlossen</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Sichere Verbindung wird hergestellt...</translation>
 <translation id="996803490569799917">Erinnerungen deiner Liebsten und mehr</translation>

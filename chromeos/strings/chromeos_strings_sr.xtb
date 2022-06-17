@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> управља овим уређајем и може да прати ваше активности.</translation>
 <translation id="147809995039451286">Преузимање ажурирања није успело</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1483493594462132177">Пошаљи</translation>
 <translation id="1491076385728777984">Ажурира се фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
 <translation id="150962533380566081">Неважећи PUK.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Учитавање слика није успело. Проверите мрежну везу или пробајте да поново учитате слику.</translation>
 <translation id="1751249301761991853">Лично</translation>
 <translation id="1753496554272155572">Изађите из прегледа позадине</translation>
+<translation id="1755556344721611131">Апликација Дијагностика</translation>
 <translation id="175763766237925754">Добар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@
 <translation id="6659594942844771486">Картица</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
+<translation id="6721744718589119342">Можда ћемо вам имејлом затражити више информација или новости</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723847290197874913">Позадинско осветљење тастатуре</translation>
 <translation id="672609503628871915">Прикажи шта је ново</translation>
@@ -718,6 +721,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Притисните тастер за претрагу и размак да бисте видели резултат у Google претрази.</translation>
 <translation id="7343649194310845056">Мрежни уређаји</translation>
 <translation id="7359657277149375382">Тип датотеке</translation>
+<translation id="73631062356239394">Дели дијагностичке податке</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Шифра артикла</translation>
 <translation id="7397270852490618635">Искључите светлу тему</translation>
@@ -923,6 +927,7 @@
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>
 <translation id="917720651393141712">Тестирај</translation>
+<translation id="9188992814426075118">Тастатура може аутоматски да се подудара са позадином</translation>
 <translation id="9204237731135241582">Контакт са мрежним пролазом не успева из Android апликација</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
 <translation id="922179502584117429">Актуелна верзија <ph name="VERSION_NUMBER" /> је застарела</translation>

@@ -345,6 +345,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2861923151411510142">Algunhas funcións de Chrome non estarán dispoñibles</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871733351037274014">Precargar páxinas</translation>
+<translation id="2886836735871983413">A medida que navegues pola Web, aquí aparecerá unha lista de sitios</translation>
 <translation id="2888126860611144412">Acerca de Chrome</translation>
 <translation id="2891154217021530873">Detén a carga da páxina</translation>
 <translation id="2892647708214602204">Cando este ficheiro estea listo, verás unha notificación</translation>
@@ -372,6 +373,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2987620471460279764">O texto compartiuse desde outro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2992473221983447149">Descricións de imaxes</translation>
+<translation id="2994959273484668146">Quitar <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
 <translation id="2997081575621687554">Cando un sitio de Google solicita precargar ligazóns da súa páxina de forma privada, Chrome encripta e precarga as páxinas correspondentes a través dos nosos servidores sen cookies. Deste xeito, ocúltaselle a túa identidade ao sitio precargado.</translation>
@@ -521,6 +523,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
+<translation id="3874520961715512166">Quitouse o sitio</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
 <translation id="3899682235662194879">Pecha todas as pestanas do modo de incógnito</translation>
@@ -558,6 +561,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
 <translation id="4096227151372679484">Fluxo para gardar marcadores aberto a media pantalla</translation>
 <translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
+<translation id="4101475238162928417">Sincroniza os datos para ter todos os teus contrasinais, marcadores e máis nos teus outros dispositivos</translation>
 <translation id="410351446219883937">Reprodución automática</translation>
 <translation id="4106587138345390261">Chrome está probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -611,7 +615,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
 <translation id="442518031075347249">Deixarás de poder utilizar a tarxeta virtual con Google Pay. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalización de anuncios</translation>
-<translation id="4450672886426705087">Resultados da busca de Google.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Se vinculas cun código QR outro dispositivo, este poderá utilizar o teléfono como chave de seguranza. Se o quitas, terás que escanear outro código QR para vinculalo de novo.</translation>
@@ -728,6 +731,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4985248278475639481">Acerca da personalización de anuncios</translation>
 <translation id="4987271110129728827">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar unha busca web.</translation>
 <translation id="4988526792673242964">Páxinas</translation>
+<translation id="499724277181351974">Ir a: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seguir este sitio aquí</translation>
 <translation id="500351648694011114">Navega de xeito máis fácil</translation>
 <translation id="5004416275253351869">Controis de actividade de Google</translation>
@@ -977,6 +981,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 Os sitios poden enviar un token de confianza ao teu navegador en función de como interactúes con eles (por exemplo, ao iniciares sesión nunha conta de forma periódica). Máis tarde, se outros sitios que visites consultan e atopan un token de confianza válido, será máis probable que te traten como unha persoa, e non como un bot.
 
 Os tokens de confianza melloran a privacidade na Web e non se poden usar para descubrir quen es.</translation>
+<translation id="6394791151443660613">Buscar: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIGAZÓN</translation>
 <translation id="6397616442223433927">De novo en liña</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> o <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1196,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="749294055653435199">Google Lens non está dispoñible neste dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizouse <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Agarda…</translation>
+<translation id="7502234197872745058">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK1" />pecha sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Non hai actualizacións dispoñibles</translation>
 <translation id="7507207699631365376">Consulta a <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> deste fornecedor</translation>
 <translation id="7514365320538308">Descargar</translation>

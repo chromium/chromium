@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
 <translation id="147809995039451286">Актуализацията не бе изтеглена</translation>
 <translation id="1478594628797167447">Скенер</translation>
+<translation id="1483493594462132177">Изпращане</translation>
 <translation id="1491076385728777984">Фърмуерът на <ph name="DEVICE_NAME" /> се актуализира</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
@@ -654,6 +655,7 @@
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
+<translation id="6721744718589119342">Възможно е да ви изпратим имейл за още информация или актуализации</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6723847290197874913">Фоново осветление на клавиатурата</translation>
 <translation id="672609503628871915">Вижте новите неща</translation>
@@ -718,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
 <translation id="7359657277149375382">Файлов тип</translation>
+<translation id="73631062356239394">Споделяне на диагностични данни</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
@@ -923,6 +926,7 @@
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>
 <translation id="917720651393141712">Тест</translation>
+<translation id="9188992814426075118">Фоновото осветление на клавиатурата може да се променя автоматично спрямо тапета ви</translation>
 <translation id="9204237731135241582">Не може да бъде установена връзка с шлюза от приложения за Android</translation>
 <translation id="9211490828691860325">Всички работни кътове</translation>
 <translation id="922179502584117429">Текущата версия <ph name="VERSION_NUMBER" /> не е актуална</translation>

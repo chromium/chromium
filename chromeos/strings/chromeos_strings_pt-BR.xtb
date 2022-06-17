@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
 <translation id="147809995039451286">Não foi possível fazer o download da atualização</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Enviar</translation>
 <translation id="1491076385728777984">Atualizando firmware no <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
 <translation id="150962533380566081">PUK inválida.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Não foi possível carregar as imagens. Verifique sua conexão de rede ou tente carregar novamente.</translation>
 <translation id="1751249301761991853">Pessoal</translation>
 <translation id="1753496554272155572">Sair da visualização do plano de fundo</translation>
+<translation id="1755556344721611131">App Diagnóstico</translation>
 <translation id="175763766237925754">Bom (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6659594942844771486">Guia</translation>
 <translation id="6692996468359469499">Veja informações relacionadas à sua seleção</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
+<translation id="6721744718589119342">Podemos enviar e-mails a você pedindo mais informações ou atualizações</translation>
 <translation id="6723839937902243910">Energia</translation>
 <translation id="6723847290197874913">Luz de fundo do teclado</translation>
 <translation id="672609503628871915">Veja o que há de novo</translation>

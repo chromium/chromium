@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">חיפוש קולי לא זמין במכשיר הזה</translation>
 <translation id="3749259744154402564">הפעולה לא נתמכת</translation>
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
+<translation id="377124182565324804">הוספה של <ph name="SITE" /></translation>
 <translation id="3771290962915251154">ההגדרה הזו מושבתת מאחר שבקרת ההורים מופעלת</translation>
 <translation id="3771694256347217732">‏תנאים והגבלות של Google</translation>
 <translation id="3773856050682458546">נתונים בסיסיים בנוסף למידע על האתרים שביקרת בהם והאפליקציות שהשתמשת בהן</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chrome במכשיר הזה.</translation>
 <translation id="4263656433980196874">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בגובה מלא</translation>
+<translation id="4266054596873078491">‏יש להיכנס לאתר הזה ול-Chrome באמצעות חשבון Google שלך.</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="4290281343757112331">להוריד מאוחר יותר במקום זאת?</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
 <translation id="442518031075347249">‏לא תהיה לך יותר אפשרות להשתמש בכרטיס הווירטואלי באמצעות Google Pay. <ph name="BEGIN_LINK1" />כאן יש מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">התאמה אישית של מודעות</translation>
-<translation id="4450672886426705087">‏תוצאות חיפוש מ-Google.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">‏קישור של מכשיר אחר באמצעות קוד QR יאפשר לך להשתמש בטלפון הזה כמפתח אבטחה. אם הקישור יוסר, יהיה עליך לסרוק קוד QR כדי לקשר שוב את המכשיר.</translation>
@@ -732,6 +733,7 @@
 <translation id="4985248278475639481">מידע על התאמה אישית של מודעות</translation>
 <translation id="4987271110129728827">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לבצע חיפוש באינטרנט.</translation>
 <translation id="4988526792673242964">דפים</translation>
+<translation id="499724277181351974">ניווט: <ph name="WEBSITE_TITLE" />:‏ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">כאן ניתן לעקוב אחר האתר הזה</translation>
 <translation id="500351648694011114">גלישה קלה יותר</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
@@ -790,6 +792,7 @@
 <translation id="5329858041417644019">הדפדפן שלך לא מנוהל</translation>
 <translation id="5339031667684712858">אתרים שהסרת</translation>
 <translation id="5342314432463739672">בקשות הרשאה</translation>
+<translation id="53537532693258630">אתרים שהסרת יופיעו כאן</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5368227114232678694">כדי לגלוש בפרטיות במכשיר, כדאי לנסות את המצב הפרטי</translation>
 <translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@
 על סמך הפעולות שלך באתר, למשל כניסות שגרתיות לחשבון, האתר יכול להנפיק אסימון מהימנות לדפדפן שלך. לאחר מכן, אם אתרים אחרים שביקרת בהם בודקים ומוצאים אסימון מהימנות תקף, יש סיכוי גבוה יותר שהם יתייחסו אליך כאל אדם ולא כבוט.
 
 אסימוני מהימנות משפרים את הפרטיות באינטרנט ולא ניתן להשתמש בהם כדי לגלות את הזהות שלך.</translation>
+<translation id="6394791151443660613">חיפוש: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">קישור</translation>
 <translation id="6397616442223433927">חזרה למצב אונליין</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> בכתובת <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998729206196772491">‏בחרת להיכנס עם חשבון המנוהל על-ידי <ph name="MANAGED_DOMAIN" /> ולהעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google.</translation>
+<translation id="9021388532480169802">האתר נוסף</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
 <translation id="9028914725102941583">יש להפעיל את הסנכרון כדי להפעיל שיתוף בין מכשירים</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{סרטון אחד (#)}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>

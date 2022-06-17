@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{ظرف ۱ هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}one{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}other{ظرف {NUM_WEEKS} هفته <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید}}</translation>
 <translation id="1056898198331236512">اخطار</translation>
-<translation id="105822690353767994">اگر نمی‌خواهید دیگر این پیام را ببینید، اجرای افزونه را در این سایت همیشه مجاز کنید.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{پین جدید را وارد کنید. پین باید حداقل یک نویسه داشته باشد و می‌تواند حاوی حرف، عدد، و دیگر نویسه‌ها باشد.}one{پین جدید را وارد کنید. پین باید حداقل # نویسه داشته باشد و می‌تواند حاوی حرف، عدد، و دیگر نویسه‌ها باشد.}other{پین جدید را وارد کنید. پین باید حداقل # نویسه داشته باشد و می‌تواند حاوی حرف، عدد، و دیگر نویسه‌ها باشد.}}</translation>
 <translation id="1059484610606223931">‏پروتکل انتقال ابرمتن (HTTPS)</translation>
@@ -1433,7 +1432,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">این کلیدها پشتیبانی نمی‌شوند: جهش، تبدیل، کنترل، گریز، کلید قفل تبدیل، میزان صدا</translation>
 <translation id="2309620859903500144">دسترسی این سایت به حسگرهای نور یا حرکت مسدود شده است.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">نشانی وب صفحه</translation>
 <translation id="2314165183524574721">تنظیم نمایان بودن کنونی «پنهان» است</translation>
 <translation id="2314774579020744484">زبان استفاده‌شده هنگام ترجمه صفحات</translation>
@@ -2587,6 +2585,7 @@
 <translation id="3444726579402183581"><ph name="ORIGIN" /> خواهد توانست <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="3445047461171030979">‏پاسخ‌های سریع «دستیار Google»</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
+<translation id="344537926140058498">سازمانتان این فایل را مسدود کرده است زیرا محتوای حساس یا خطرناک دارد. از مالک فایل بخواهید مشکل آن را برطرف کند.</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
 <translation id="3446274660183028131">‏لطفاً برای نصب Windows، ‏Parallels Desktop را راه‌اندازی کنید.</translation>
 <translation id="344630545793878684">خواندن داده‌های شما در تعدادی از وب‌سایت‌ها</translation>
@@ -3145,6 +3144,7 @@
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3971764089670057203">اثر انگشت‌ها در این کلید امنیتی</translation>
 <translation id="3973005893595042880">کاربر مجاز نیست</translation>
+<translation id="3973062011568994448">‏برای درون‌بردن گذرواژه‌ها، فایل CSV را انتخاب کنید.</translation>
 <translation id="3973660817924297510">درحال بررسی کردن گذرواژه‌ها (<ph name="CHECKED_PASSWORDS" /> از <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">برای بردن تمرکز به‌سمت جلو در صفحه، از دکمه «بعدی» استفاده کنید</translation>
 <translation id="3975201861340929143">توضیح</translation>
@@ -4614,6 +4614,7 @@
 <translation id="5466374726908360271">جای‌گذاری و جستجوی «<ph name="SEARCH_TERMS" />»</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود شده‌اند</translation>
 <translation id="5468173180030470402">درحال یافتن دستگاه ذخیره‌سازی متصل به شبکه</translation>
+<translation id="5468881191994555667">انتخاب فایل</translation>
 <translation id="5469852975082458401">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، F7 را فشار دهید.</translation>
 <translation id="5470735824776589490">‏قبل از اینکه دستگاه شما با Powerwash بازنشانی شود، راه‌اندازی مجدد لازم است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">سلام! من صدای نوشتار به گفتار شما هستم.</translation>
@@ -5060,7 +5061,6 @@
 
   نمای عمومی (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> بیت):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">تلفن و <ph name="DEVICE_TYPE" /> متصل شدند</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="59174027418879706">فعال شد</translation>
 <translation id="5920543303088087579">سرپرستتان اتصال به این شبکه را غیرفعال کرده است</translation>
@@ -5196,7 +5196,6 @@
     <ph name="BEGIN_PARAGRAPH3" />خاموش کردن این ویژگی بر توانایی این دستگاه در ارسال اطلاعات موردنیاز برای سرویس‌های ضروری، ازجمله امنیت و به‌روزرسانی‌های سیستم، تأثیر نمی‌گذارد.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />اگر تنظیم «فعالیت وب و برنامه» تکمیلی برای «حساب Google» فرزندتان روشن باشد، ممکن است داده‌های فرزندتان در این حساب ذخیره شود. در families.google.com، درباره این تنظیمات و نحوه تغییر آن‌ها بیشتر بدانید.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">سازمان شما این فایل را به‌دلیل عدم رعایت خط‌مشی امنیتی مسدود کرد</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">برای شروع پخش محتوا، کد دسترسی را تایپ کنید</translation>
 <translation id="6052976518993719690">‏اعتبار گواهی SSL</translation>
 <translation id="6053401458108962351">&amp;حذف داده‌های مرور...</translation>
@@ -6348,6 +6347,7 @@
 <translation id="7191159667348037">‏چاپگر ناشناس (USB)</translation>
 <translation id="7193051357671784796">این برنامه توسط سازمانتان اضافه شده است. برای تکمیل نصب، برنامه را بازراه‌اندازی کنید.</translation>
 <translation id="7193374945610105795">هیچ گذرواژه‌ای برای <ph name="ORIGIN" /> ذخیره نشده است</translation>
+<translation id="7194873994243265344">سازمانتان این فایل را مسدود کرده است زیرا فایل رمزگشایی شده است. از مالک فایل بخواهید آن را رمزگشایی کند.</translation>
 <translation id="7196913789568937443">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و با استفاده از گذرواژه حساب Google رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">‏دریافت «جستجوی Google» و هوشمندی‌های Google هنگام مرور</translation>
 <translation id="719791532916917144">میان‌بر صفحه‌کلید</translation>
@@ -6366,6 +6366,7 @@
 <translation id="7211783048245131419">هنوز کلیدی تخصیص داده نشده است</translation>
 <translation id="7212097698621322584">پین کنونی‌تان را برای تغییر پین وارد کنید. اگر پین‌ خود را نمی‌دانید، باید کلید امنیتی را بازنشانی کنید و سپس پین جدیدی ایجاد کنید.</translation>
 <translation id="7213903639823314449">موتور جستجوی مورداستفاده در نوار نشانی</translation>
+<translation id="721490496276866468">درون‌بردن گذرواژه‌ها</translation>
 <translation id="7216595297012131718">زبان‌ها را براساس ترجیحتان مرتب کنید</translation>
 <translation id="7219473482981809164">چند نمایه پیدا کردیم که برای بارگیری دردسترس هستند. قبل‌از ادامه، نمایه‌های موردنظرتان را برای بارگیری انتخاب کنید.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{گذرواژه ضعیفی ندارید}=1{۱ گذرواژه ضعیف}one{{NUM_WEAK} گذرواژه ضعیف}other{{NUM_WEAK} گذرواژه ضعیف}}</translation>
@@ -6998,6 +6999,7 @@
 <translation id="7826190688224781865">کد شناسه مغازه-فروشنده</translation>
 <translation id="7826249772873145665">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شد</translation>
 <translation id="7826254698725248775">شناسه دستگاه یکسان نیست.</translation>
+<translation id="7828642077514646543">خطا: گواهینامه رمزگشایی نمی‌شود</translation>
 <translation id="7828731929332799387">با این کار همه کوکی‌ها و داده‌های سایت موجود در بافت‌های شخص ثالث حذف می‌شود. می‌خواهید ادامه دهید؟</translation>
 <translation id="7829877209233347340">از ولی‌تان بخواهید به سیستم وارد شود و با افزودن حساب محل تحصیل موافقت کند</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7961,6 +7963,7 @@
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.}one{دستگاه <ph name="DEVICE_TYPE" /> شما # ثانیه دیگر به‌طور خودکار قفل خواهد شد.
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.}other{دستگاه <ph name="DEVICE_TYPE" /> شما # ثانیه دیگر به‌طور خودکار قفل خواهد شد.
 برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.}}</translation>
+<translation id="8776294611668764629">سازمانتان این فایل را مسدود کرده است زیرا حجم فایل برای بررسی امنیتی خیلی بزرگ است. می‌توانید فایل‌هایی تا حداکثر ۵۰ مگابایت را باز کنید.</translation>
 <translation id="8777628254805677039">گذرواژه کاربر ریشه</translation>
 <translation id="8779944680596936487">سایت‌ها فقط برای دیدن فعالیت مرور شما در سایت خودشان می‌توانند از کوکی‌ها استفاده کنند</translation>
 <translation id="8780123805589053431">‏دریافت توضیحات تصویر از Google</translation>
@@ -8025,7 +8028,6 @@
 <translation id="8838770651474809439">همبرگر</translation>
 <translation id="8838778928843281408">مدیریت تلفن‌ها</translation>
 <translation id="8841843049738266382">خواندن و تغییر دادن کاربران فهرست مجازها</translation>
-<translation id="8842059467121215385">بازآوری صفحه برای استفاده «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="8842594465773264717">حذف این اثر انگشت</translation>
 <translation id="8845001906332463065">دریافت راهنمایی</translation>
 <translation id="8846132060409673887">خواندن سازنده و مدل این رایانه</translation>
@@ -8479,7 +8481,6 @@
 <translation id="992778845837390402">‏درحال‌حاضر پشتیبان‌گیری Linux درحال انجام است</translation>
 <translation id="993540765962421562">نصب درحال انجام است.</translation>
 <translation id="994289308992179865">&amp;حلقه</translation>
-<translation id="995571563161129624">‏به‌یاد داشته باشید که اگر اعلان‌ها را در Chromebook رد کنید در تلفن نیز رد می‌شوند</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">در حال برقراری اتصال ایمن...</translation>
 <translation id="996803490569799917">خاطرات افراد موردعلاقه‌تان و موارد دیگر را ببینید</translation>

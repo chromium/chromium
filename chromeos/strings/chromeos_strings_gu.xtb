@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
 <translation id="147809995039451286">અપડેટ ડાઉનલોડ કરી શકાઈ નથી</translation>
 <translation id="1478594628797167447">સ્કૅનર</translation>
+<translation id="1483493594462132177">મોકલો</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> માટે ફર્મવેયર અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> આ વપરાશકર્તાને મેનેજ કરે છે તથા સેટિંગ અને વપરાશકર્તાની પ્રવૃત્તિને દૂરથી મેનેજ અને તેનું નિરીક્ષણ કરે એવું બની શકે.</translation>
 <translation id="150962533380566081">અમાન્ય PUK.</translation>
@@ -234,6 +235,7 @@
 <translation id="3083667275341675831">કનેક્ટિવિટીના નિદાનો</translation>
 <translation id="3084958266922136097">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
+<translation id="3096753366938912951">ઢાંકણાને સપાટ સપાટી પર મૂકો</translation>
 <translation id="3102119246920354026">કેશ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ડિવાઇસ કનેક્ટ થયેલું છે.</translation>
@@ -291,9 +293,11 @@
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
+<translation id="361575905210396100">તમારા પ્રતિસાદ બદલ આભાર</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
+<translation id="3643198267586205643">OS અપડેટ કરો</translation>
 <translation id="3643810137582748570">કેલિબ્રેશન છોડો</translation>
 <translation id="3651050199673793219">તાપમાનનો એકમ પસંદ કરો</translation>
 <translation id="3678765385266369662">તમે Write Protect કેવી રીતે બંધ કરવા માંગો છો તે પસંદ કરો</translation>
@@ -412,6 +416,7 @@
 <translation id="469379815867856270">સિગ્નલની પ્રબળતા</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
+<translation id="4740255236714854844">બેઝને સપાટ સપાટી પર મૂકો</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
 <translation id="4751272708893364980">RMA લૉગ જુઓ</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
@@ -459,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">જ્યારે તમારી સ્ક્રીન નિષ્ક્રિય હોય, ત્યારે ફોટા, સમય, હવામાન અને મીડિયાની માહિતી બતાવો.</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
+<translation id="5044978354634658544">USB દાખલ કરો</translation>
 <translation id="5049856988445523908">સિમ કાર્ડ લૉક છે (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">જૂથનું નામ</translation>
 <translation id="5051044138948155788">આ એકમાત્ર પેજ છે. આ તમને સ્કૅન શરૂ કરતી સ્ક્રીન પર લઈ જશે.</translation>
@@ -648,6 +654,7 @@
 <translation id="6659594942844771486">બ્રાઉઝર ટૅબ</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
+<translation id="6721744718589119342">વધુ માહિતી અથવા અપડેટ માટે, અમે તમને ઇમેઇલ મોકલી શકીએ છીએ</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6723847290197874913">કીબોર્ડ બૅકલાઇટ</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
@@ -712,6 +719,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchમાં પરિણામ જોવા માટે, Search અને Space કી દબાવો.</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
+<translation id="73631062356239394">ડાયગ્નોસ્ટિક ડેટા શેર કરો</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ઝાંખી થીમ બંધ કરો</translation>
@@ -742,6 +750,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" />ના રિપૅરમાં ભૂલ</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7665800271478495366">અવતાર બદલો</translation>
+<translation id="7682274994254393134">રિપૅર કરવાનું શરૂ કરો</translation>
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -916,6 +925,7 @@
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
+<translation id="9188992814426075118">તમારું કીબોર્ડ ઑટોમૅટિક રીતે તમારા વૉલપેપર સાથે મેળ કરી શકે છે</translation>
 <translation id="9204237731135241582">Android ઍપથી ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="9211490828691860325">તમામ ડેસ્ક</translation>
 <translation id="922179502584117429">હાલનું વર્ઝન <ph name="VERSION_NUMBER" /> જૂનું છે</translation>

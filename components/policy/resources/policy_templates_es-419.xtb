@@ -1775,6 +1775,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="283478052049914107">Si habilitas esta política e introduces un puerto no estándar (es decir, cualquiera que no sea el 80 ni el 443), ese puerto se incluirá en el SPN de Kerberos generado.
 
       Si la inhabilitas o no la estableces, el SPN de Kerberos que se genere no incluirá ningún puerto.</translation>
+<translation id="2835686964326214400">Establecer un cronograma personalizado para reiniciar los dispositivos</translation>
 <translation id="2838830882081735096">No permitir la migración de datos y ARC</translation>
 <translation id="2839294585867804686">Configuración de "Network File Shares"</translation>
 <translation id="284288632677954003">URL de un archivo XML que contiene URL que nunca deben abrirse en otro navegador</translation>
@@ -3022,6 +3023,16 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
           Si no la estableces, la función para resaltar el signo de intercalación estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="4186244263855283575">Permite establecer un cronograma personalizado para reiniciar los dispositivos. Si la política se establece como verdadera, el dispositivo se reiniciará según el cronograma. Para cancelar otros reinicios programados, debe quitarse la política.
+
+      En las sesiones de usuario y de invitado, se aplica lo siguiente:
+
+        * Se notificará a los usuarios que se realizará el reinicio 1 hora antes de la hora programada. Tendrán la opción de reiniciar en ese momento o esperar a que se realice a la hora programada. No se puede postergar el reinicio programado.
+
+        * Hay un período de gracia de 1 hora después de que se inicia el dispositivo. Durante este período, se omiten los reinicios programados y se reprograman para el día, la semana o el mes siguiente, según la configuración.
+
+      En las sesiones en modo kiosco, no hay períodos de gracia ni notificaciones sobre el reinicio.
+</translation>
 <translation id="4187576366596772431">Bloquear la API de WebHID en estos sitios</translation>
 <translation id="4192388905594723944">URL para la validación del token de autenticación del cliente de acceso remoto</translation>
 <translation id="4203055629055264833">Si habilitas la política o no la estableces, los usuarios podrán obtener la página de resultados más reciente del motor de búsqueda predeterminado en un panel lateral que podrán activar o desactivar mediante un ícono de la barra de herramientas.
@@ -3355,7 +3366,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
 <translation id="4632566332417930481">No permitir el uso de las Herramientas para desarrolladores en extensiones instaladas por una política empresarial; permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="4635284822166984665">La hora a la que el dispositivo comenzará a cargarse (según la zona horaria local del dispositivo).</translation>
-<translation id="4638532652671131094">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
 <translation id="4646626362889216307">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
 
       Usa el carácter comodín "*" para permitir la combinación de todas las políticas del diccionario compatibles.

@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 週間以内に <ph name="DEVICE_TYPE" />を更新してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" />を更新してください}}</translation>
 <translation id="1056898198331236512">警告</translation>
-<translation id="105822690353767994">今後このメッセージが表示されないようにする場合は、このサイトでの拡張機能の実行を常に許可します</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{新しい PIN を入力してください。PIN は 1 文字以上の長さにする必要があり、文字や数字などを含めることができます。}other{新しい PIN を入力してください。PIN は # 文字以上の長さにする必要があり、文字や数字などを含めることができます。}}</translation>
 <translation id="1059484610606223931">ハイパーテキスト トランスポート プロトコル（HTTPS）</translation>
@@ -1416,7 +1415,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Tab キー、Shift キー、Ctrl キー、Esc キー、CapsLock キー、音量キーは使用できません</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">ページの URL</translation>
 <translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314774579020744484">この言語を使用してページを翻訳します</translation>
@@ -2568,6 +2566,7 @@
 <translation id="3444726579402183581"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を読み取れるようになります</translation>
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
+<translation id="344537926140058498">このファイルには機密または危険なコンテンツが含まれているため、組織でブロックされました。所有者に修正するよう依頼してください。</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
@@ -3126,6 +3125,7 @@
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="3971764089670057203">このセキュリティ キーのフィンガープリント</translation>
 <translation id="3973005893595042880">ユーザーは許可されていません</translation>
+<translation id="3973062011568994448">パスワードをインポートするには、CSV ファイルを選択してください。</translation>
 <translation id="3973660817924297510">パスワードを確認しています（<ph name="CHECKED_PASSWORDS" /> 件目 / <ph name="TOTAL_PASSWORDS" /> 件中）…</translation>
 <translation id="3974514184580396500">画面上のフォーカスを次に移動させるには [次へ] を使用します</translation>
 <translation id="3975201861340929143">説明</translation>
@@ -4587,6 +4587,7 @@
 <translation id="5466374726908360271">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロックしました</translation>
 <translation id="5468173180030470402">ファイル共有を探しています</translation>
+<translation id="5468881191994555667">ファイルを選択</translation>
 <translation id="5469852975082458401">テキスト カーソルを使ってページ間を移動できます。オフにするには F7 キーを押します。</translation>
 <translation id="5470735824776589490">デバイスを Powerwash でリセットするにはまず再起動が必要です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">こんにちは。テキスト読み上げの音声です。</translation>
@@ -5033,7 +5034,6 @@
 
   公開指数（<ph name="PUBLIC_EXPONENT_NUM_BITS" /> ビット）:
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">スマートフォンと <ph name="DEVICE_TYPE" /> が接続されました</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
@@ -5166,7 +5166,6 @@
 <translation id="6051354611314852653">このデバイスの API アクセスを承認できませんでした。</translation>
 <translation id="6051638103735819069"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスから Google に自動レポートを送信するよう設定して、Chrome OS の改善にご協力ください。Google ではこの障害レポートに基づいて、優先度の高い順に問題の修正に取り組んでいます。障害レポートでは、Chrome OS がクラッシュした時間や使用された機能、通常のメモリ使用量、Android アプリの診断内容と使用状況が送信されます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートについては、お子様の Chrome OS デバイスの設定で、いつでも開始や停止が行えます。ドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />お子様の Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、お子様のデータをお子様の Google アカウントに保存できます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">このファイルはセキュリティ ポリシーを満たしていないため、組織でブロックされました</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">キャストを開始するにはアクセスコードを入力してください</translation>
 <translation id="6052976518993719690">SSL 認証局</translation>
 <translation id="6053401458108962351">閲覧履歴を消去(&amp;C)...</translation>
@@ -6314,6 +6313,7 @@
 <translation id="7191159667348037">不明なプリンタ（USB）</translation>
 <translation id="7193051357671784796">このアプリは組織によって追加されました。インストールを完了するにはアプリを再起動してください。</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> 用に保存されているパスワードはありません</translation>
+<translation id="7194873994243265344">このファイルは暗号化されているため、組織でブロックされました。所有者に復号するよう依頼してください。</translation>
 <translation id="7196913789568937443">Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google 検索や Google の最先端技術をブラウジングで活用できます</translation>
 <translation id="719791532916917144">キーボード ショートカット</translation>
@@ -6332,6 +6332,7 @@
 <translation id="7211783048245131419">割り当てられたスイッチはありません</translation>
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
 <translation id="7213903639823314449">アドレスバーで使用する検索エンジン</translation>
+<translation id="721490496276866468">パスワードをインポート</translation>
 <translation id="7216595297012131718">言語を希望の順序に並べ替えます</translation>
 <translation id="7219473482981809164">ダウンロード可能なプロファイルが複数見つかりました。続行する前に、ダウンロードするプロファイルを選択してください。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{脆弱なパスワードはありません}=1{脆弱なパスワード: 1 件}other{脆弱なパスワード: {NUM_WEAK} 件}}</translation>
@@ -6963,6 +6964,7 @@
 <translation id="7826190688224781865">販売店 ID コード</translation>
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
+<translation id="7828642077514646543">エラー: 証明書をデコードできません</translation>
 <translation id="7828731929332799387">サードパーティのコンテキストで使用される Cookie とサイトデータがすべて削除されます。続行しますか？</translation>
 <translation id="7829877209233347340">保護者の方に、ログインして学校用アカウントの追加を許可してもらってください。</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7924,6 +7926,7 @@
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
+<translation id="8776294611668764629">このファイルはセキュリティ チェックを受けるには大きすぎるため、組織でブロックされました。開けるファイルは 50 MB までです。</translation>
 <translation id="8777628254805677039">ルート パスワード</translation>
 <translation id="8779944680596936487">各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。</translation>
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
@@ -7988,7 +7991,6 @@
 <translation id="8838770651474809439">ハンバーガー</translation>
 <translation id="8838778928843281408">スマートフォンの管理</translation>
 <translation id="8841843049738266382">許可リストに登録されたユーザーの読み取りと変更</translation>
-<translation id="8842059467121215385">「<ph name="EXTENSION_NAME" />」を使用できるようページを更新してください</translation>
 <translation id="8842594465773264717">この指紋を削除</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8846132060409673887">このパソコンのメーカーと機種の情報を取得する</translation>
@@ -8442,7 +8444,6 @@
 <translation id="992778845837390402">現在、Linux のバックアップが進行中です</translation>
 <translation id="993540765962421562">インストールしています</translation>
 <translation id="994289308992179865">ループ(&amp;L)</translation>
-<translation id="995571563161129624">Chromebook で通知を閉じると、スマートフォンでも閉じられます</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">安全な接続を確立しています...</translation>
 <translation id="996803490569799917">大好きな人たちとの思い出などを見る</translation>

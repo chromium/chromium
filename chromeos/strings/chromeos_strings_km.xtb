@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍នេះ ហើយ​ប្រហែលជាអាច​តាមដាន​សកម្មភាព​របស់អ្នកបាន។</translation>
 <translation id="147809995039451286">មិនអាច​ទាញយក​កំណែថ្មី​បានទេ</translation>
 <translation id="1478594628797167447">ម៉ាស៊ីនស្កេន</translation>
+<translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1491076385728777984">កំពុងដំឡើងកំណែកម្មវិធី​បង្កប់នៅលើ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> គ្រប់គ្រង​អ្នកប្រើប្រាស់នេះ និង​អាចតាមដាន​សកម្មភាពអ្នកប្រើប្រាស់ និង​គ្រប់គ្រង​ការកំណត់ពីចម្ងាយបាន។</translation>
 <translation id="150962533380566081">PUK មិនត្រឹមត្រូវ។</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">មិនអាច​ផ្ទុក​រូបភាព​បានទេ។ សូម​ពិនិត្យមើល​ការតភ្ជាប់​បណ្ដាញ​របស់អ្នក ឬ​សាកល្បង​ផ្ទុក​រូបភាព​ម្ដងទៀត។</translation>
 <translation id="1751249301761991853">ផ្ទាល់ខ្លួន</translation>
 <translation id="1753496554272155572">ចេញពីការមើលផ្ទាំង​រូបភាពសាកល្បង</translation>
+<translation id="1755556344721611131">កម្មវិធី​វិភាគ</translation>
 <translation id="175763766237925754">ល្អ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -653,6 +655,7 @@
 <translation id="6659594942844771486">ផ្ទាំង</translation>
 <translation id="6692996468359469499">ទទួលបានព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើស​របស់អ្នក</translation>
 <translation id="6704062477274546131">ដំណោះស្រាយ DNS</translation>
+<translation id="6721744718589119342">យើងអាចផ្ញើ​អ៊ីមែលទៅអ្នក​សម្រាប់បច្ចុប្បន្នភាព ឬព័ត៌មានបន្ថែម</translation>
 <translation id="6723839937902243910">ថាមពល</translation>
 <translation id="6723847290197874913">ពន្លឺផ្នែកខាងក្រោយនៃក្ដារចុច</translation>
 <translation id="672609503628871915">មើលអ្វីដែលថ្មី</translation>
@@ -717,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; ចុច "ស្វែងរក" រួមជាមួយ "ដកឃ្លា" ដើម្បីមើល​លទ្ធផល​នៅក្នុង​កម្មវិធីស្វែងរក​នៅលើ Google។</translation>
 <translation id="7343649194310845056">ឧបករណ៍​បណ្ដាញ</translation>
 <translation id="7359657277149375382">ប្រភេទ​ឯកសារ</translation>
+<translation id="73631062356239394">ចែករំលែក​ទិន្នន័យ​វិភាគ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">បិទ​រចនាប័ទ្ម​ភ្លឺ</translation>
@@ -922,6 +926,7 @@
 <translation id="9149391708638971077">ដំណើរការតេស្តអង្គចងចាំ</translation>
 <translation id="9173638680043580060">នៅសល់​តិច​ជាង​មួយ​នាទី</translation>
 <translation id="917720651393141712">ធ្វើតេស្ត</translation>
+<translation id="9188992814426075118">ក្ដារចុច​របស់អ្នក​អាច​ត្រូវគ្នា​ជាមួយ​ផ្ទាំង​រូបភាព​របស់អ្នក​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="9204237731135241582">មិនអាចទាក់ទងច្រកពីកម្មវិធី Android បានទេ</translation>
 <translation id="9211490828691860325">តុនិម្មិត​ទាំងអស់</translation>
 <translation id="922179502584117429">កំណែបច្ចុប្បន្ន <ph name="VERSION_NUMBER" /> ហួសសម័យហើយ</translation>

@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Exportera bokmärken</translation>
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="1009476156254802388">Plats på <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Nu är spelkontroller tillgängliga</translation>
 <translation id="1010498023906173788">Fliken är kopplad till en serieport.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{sida svarar inte}other{sidor svarar inte}}</translation>
 <translation id="1011355516189274711">Volym för text till tal</translation>
@@ -55,7 +56,6 @@
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppdatera <ph name="DEVICE_TYPE" /> inom 1 vecka}other{Uppdatera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} veckor}}</translation>
 <translation id="1056898198331236512">Varning</translation>
-<translation id="105822690353767994">Tillåt att tillägget alltid körs på den här webbplatsen om du inte vill att meddelandet ska visas igen.</translation>
 <translation id="1058262162121953039">PUK-kod</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Ange den nya pinkoden. Pinkoden måste bestå av minst ett tecken. Du kan använda bokstäver, siffror och andra tecken.}other{Ange den nya pinkoden. Pinkoden måste bestå av minst # tecken. Du kan använda bokstäver, siffror och andra tecken.}}</translation>
 <translation id="1059484610606223931">HTTPS (Hypertext Transfer Protocol)</translation>
@@ -857,6 +857,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1795214765651529549">Använd klassiskt</translation>
 <translation id="1796105431091975902">Välj en Ansible Playbook att lägga till</translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
+<translation id="1797117170091578105">Spela med tangentbordet på Chromebook. Du kan tilldela tangenter specifika funktioner.</translation>
 <translation id="1800502858278951817">Inga tillägg har begärt behörighet att läsa och ändra <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Aktivera viloläge när fodralet stängs</translation>
 <translation id="1802687198411089702">Sidan svarar inte. Vänta tills den svarar eller avbryt.</translation>
@@ -1019,6 +1020,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1940546824932169984">Anslutna enheter</translation>
 <translation id="1941410638996203291">Starttid <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Visa tangentmappning</translation>
 <translation id="1942128823046546853">Läsa och ändra all din data på alla webbplatser</translation>
 <translation id="1942600407708803723">Stäng av när fodralet stängs</translation>
 <translation id="1944528062465413897">Kopplingskod för Bluetooth:</translation>
@@ -1431,8 +1433,8 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     Om du vill att barnet ska sluta använda Voice Match vid ett senare tillfälle tar du helt enkelt bort funktionen från Assistent-inställningarna. Öppna <ph name="VOICE_MATCH_SETTINGS_URL" /> i barnets konto om du vill visa eller radera ljudklipp från konfigurationen av Voice Match.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">Följande tangenter stöds inte: Tabb, Skift, Ctrl, Escape, Caps Lock, Volym</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Sidans webbadress</translation>
 <translation id="2314165183524574721">Den aktuella synlighetsinställningen är Dold</translation>
 <translation id="2314774579020744484">Språk som sidor ska översättas till</translation>
@@ -2756,6 +2758,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3613422051106148727">&amp;Öppna i ny flik</translation>
 <translation id="3615073365085224194">Tryck på fingeravtryckssensorn med fingret.</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> genomsöks.</translation>
+<translation id="3615596877979647433">Tangent saknas. Tryck på en tangent för att anpassa den</translation>
 <translation id="3616741288025931835">&amp;Rensa webbinformation...</translation>
 <translation id="3617891479562106823">Inga bakgrunder är tillgängliga. Försök igen senare.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -2911,6 +2914,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3764753550716962406">Vill du låta Google söka efter anpassade rabatter utifrån kundvagnen?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> skickas till <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> skickas till <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Det gick inte att läsa in offlinepolicyn för demoläge.</translation>
+<translation id="3766687283066842296">Läs mer om Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Glass</translation>
 <translation id="3771290962915251154">Inställningen är inaktiverad eftersom föräldrakontroller används</translation>
@@ -3352,6 +3356,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4193836101014293726">Det gick inte att radera den här profilen</translation>
 <translation id="419427585139779713">Mata in en stavelse i taget</translation>
 <translation id="4194570336751258953">Aktivera klick på styrplattan</translation>
+<translation id="4195378859392041564">Klicka på valfri tangent med musen och tryck sedan på en tangent på tangentbordet för att anpassa den</translation>
 <translation id="4195421689821407315">Osäker nedladdning</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
@@ -3417,6 +3422,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4258348331913189841">Filsystem</translation>
 <translation id="4259388776256904261">Det här kan ta en stund</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Avancerat skydd från Google för genomsökning? Stega till nedladdningsfältet med Skift + F6.</translation>
+<translation id="4260699894265914672">Tryck på en tangent för att anpassa den</translation>
 <translation id="4261429981378979799">Behörigheter för tillägg</translation>
 <translation id="4262004481148703251">Ignorera varning</translation>
 <translation id="4263223596040212967">Kontrollera tangentbordslayouten och försök igen.</translation>
@@ -4592,6 +4598,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5449716055534515760">Stäng fön&amp;ster</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerar offline)</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Visa fler sökresultat</translation>
 <translation id="5455603387986949153">Läsa serienummer för ChromeOS Flex-enheter och komponenter.</translation>
 <translation id="5457113250005438886">Ogiltigt</translation>
 <translation id="5457459357461771897">Läsa och ta bort foton, musik och andra media från datorn</translation>
@@ -5054,7 +5061,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 
   Publik exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bitar):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Telefonen och <ph name="DEVICE_TYPE" /> är anslutna</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="59174027418879706">Aktiverad</translation>
 <translation id="5920543303088087579">Administratören har inaktiverat möjligheten att ansluta till det här nätverket</translation>
@@ -5190,7 +5196,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Om inställningen Webb- och appaktivitet har aktiverats för ditt barns Google-konto kan barnets data sparas i Google-kontot. Läs mer om inställningarna och hur du ändrar dem på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Organisationen blockerade den här filen eftersom den inte uppfyller kraven i säkerhetspolicyn</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Skriv åtkomstkoden om du vill börja casta</translation>
 <translation id="6052976518993719690">SSL-certifikatauktoritet</translation>
 <translation id="6053401458108962351">&amp;Ta bort webbinformation...</translation>
@@ -7067,6 +7072,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Letar du efter webbläsarens komponenter? Besök</translation>
 <translation id="7903345046358933331">Sidan har slutat svara. Du kan vänta tills den svarar eller stänga den.</translation>
+<translation id="7903429136755645827">Klicka för att anpassa dina spelkontroller</translation>
 <translation id="7903742244674067440">Du har sparade certifikat som identifierar dessa certifikatutfärdare</translation>
 <translation id="7903925330883316394">Verktyg: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Gör Linux-portar tillgängliga för andra enheter på nätverket.</translation>
@@ -8016,7 +8022,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8838770651474809439">Hamburgare</translation>
 <translation id="8838778928843281408">Hantera telefoner</translation>
 <translation id="8841843049738266382">Läs och ändra användarna på godkännandelistan</translation>
-<translation id="8842059467121215385">Uppdatera sidan för att använda <ph name="EXTENSION_NAME" /></translation>
 <translation id="8842594465773264717">Radera fingeravtrycket</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8846132060409673887">Läsa information om datorns tillverkare och modell</translation>
@@ -8260,6 +8265,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9078316009970372699">Inaktivera direktinternetdelning</translation>
 <translation id="9078842827190780028">Se fler sökresultat i sidopanelen</translation>
 <translation id="9079267182985899251">Stödet för den här funktionen tas snart bort. Använd <ph name="GOOGLE_MEET" /> om du vill presentera en flik.</translation>
+<translation id="9080971985541434310">en uppskattning av dina intressen – Chrome kan göra en uppskattning av dina intressen</translation>
 <translation id="9081543426177426948">Webbplatser du besöker sparas inte i inkognitoläget</translation>
 <translation id="9084064520949870008">Öppna som fönster</translation>
 <translation id="9085256200913095638">Duplicera den valda fliken</translation>
@@ -8469,7 +8475,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="992778845837390402">Säkerhetskopiering av Linux pågår</translation>
 <translation id="993540765962421562">Installationen pågår</translation>
 <translation id="994289308992179865">&amp;Repetera</translation>
-<translation id="995571563161129624">Kom ihåg att om du stänger aviseringar på Chromebook stängs de även på telefonen</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Upprättar en säker anslutning...</translation>
 <translation id="996803490569799917">Se minnen med dem du tycker om och mycket annat</translation>

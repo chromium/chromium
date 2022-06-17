@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">নতুন ট্যাবে আসল ছবিটি খুলুন</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{১ সপ্তাহের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}one{{NUM_WEEKS} সপ্তাহের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}other{{NUM_WEEKS} সপ্তাহের মধ্যে <ph name="DEVICE_TYPE" /> আপডেট করুন}}</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
-<translation id="105822690353767994">আপনি এই মেসেজ আবার দেখতে না চাইলে এই সাইটে সবসময়ের জন্য এক্সটেনশন রান করার অনুমতি দিন।</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{নতুন পিন লিখুন। পিন কমপক্ষে একটি অক্ষরের হতে হবে এবং সেটিতে বর্ণ, সংখ্যা ও অন্যান্য অক্ষর থাকতে পারে।}one{নতুন পিন লিখুন। পিন কমপক্ষে #টি অক্ষরের হতে হবে এবং সেটিতে বর্ণ, সংখ্যা ও অন্যান্য অক্ষর থাকতে পারে।}other{নতুন পিন লিখুন। পিন কমপক্ষে #টি অক্ষরের হতে হবে এবং সেটিতে বর্ণ, সংখ্যা ও অন্যান্য অক্ষর থাকতে পারে।}}</translation>
 <translation id="1059484610606223931">হাইপারটেক্সট ট্রান্সপোর্ট প্রোটোকল (HTTPS)</translation>
@@ -1437,7 +1436,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">নিম্নলিখিত 'কী' কাজ করে না: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">এই সাইটটি আপনার মোশন এবং লাইট সেন্সর অ্যাক্সেস করতে পারবে না।</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">পৃষ্ঠার ইউআরএল</translation>
 <translation id="2314165183524574721">বর্তমানে 'ডিভাইসের দৃশ্যমানতা' সেটিং লুকানো রয়েছে</translation>
 <translation id="2314774579020744484">পৃষ্ঠা অনুবাদ করার সময় ব্যবহার করা ভাষা</translation>
@@ -3940,6 +3938,7 @@
 <translation id="4768332406694066911">আপনার পরিচয় শনাক্ত করে এমন সংস্থাগুলি থেকে শংসাপত্র আপনার কাছে আছে</translation>
 <translation id="4770119228883592393">অনুমতি চাওয়া হয়েছে, উত্তর দিতে ⌘ + 'বিকল্প' বোতাম + 'নিম্নমুখী তীরচিহ্ন' বোতাম প্রেস করুন</translation>
 <translation id="4773112038801431077">Linux আপগ্রেড করুন</translation>
+<translation id="4774337692467964393">Smart Lock চালু থাকলে, আপনার পিন বা পাসওয়ার্ড লিখতে হবে না</translation>
 <translation id="4775142426314270551">Google-কে অটোমেটিক ক্র্যাশ রিপোর্ট, ডায়াগনস্টিক ও ব্যবহারের ডেটা পাঠিয়ে Chrome ও ChromeOS-এর ফিচার ও পারফর্ম্যান্সের উন্নতিতে সাহায্য করুন। কিছু একত্রিত ডেটা Android অ্যাপ ও Google পার্টনারদেরও সাহায্য করবে। আপনার সন্তানের Google অ্যাকাউন্টের জন্য 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং চালু থাকলে, তার Google অ্যাকাউন্টে Android ডেটা সেভ করা থাকতে পারে।</translation>
 <translation id="477647109558161443">ডেস্কটপ শর্টকাট তৈরি করুন</translation>
 <translation id="4776594120007763294">পরে পড়ার জন্য কোনও একটি পৃষ্ঠা যোগ করতে, বোতামে ক্লিক করুন</translation>
@@ -3989,6 +3988,7 @@
 <translation id="4820236583224459650">অ্যাক্টিভ টিকিট হিসেবে সেট করুন</translation>
 <translation id="4821935166599369261">&amp;প্রোফাইলিং সক্ষমিত</translation>
 <translation id="4823484602432206655">ব্যবহারকারী এবং ডিভাইস সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
+<translation id="4823894915586516138">আপনি ফোন থেকে যেকোনও তথ্য অ্যাক্সেস করলে সেটি সহ এই <ph name="DEVICE_TYPE" />-এ আপনার ডেটা এই পিন বা পাসওয়ার্ডের মাধ্যমে সুরক্ষিত রাখা যায়</translation>
 <translation id="4824037980212326045">Linux-এর ব্যাক-আপ এবং রিস্টোর করা</translation>
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
 <translation id="4827675678516992122">কানেক্ট করা যায়নি</translation>
@@ -5068,7 +5068,6 @@
 
   সর্বজনীন প্রকাশক (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> বিট):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">আপনার ফোন এবং <ph name="DEVICE_TYPE" /> কানেক্ট আছে</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5920543303088087579">এই নেটওয়ার্কের সাথে সংযোগ আপনার প্রশাসক দ্বারা অক্ষম করা হয়েছে</translation>
@@ -5204,7 +5203,6 @@
     <ph name="BEGIN_PARAGRAPH3" />এই ফিচার বন্ধ করে দিলেও সিস্টেম আপডেট ও নিরাপত্তার মতো প্রয়োজনীয় পরিষেবা সংক্রান্ত তথ্য পাঠাতে ডিভাইসের কোনও অসুবিধা হবে না।<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />আপনার সন্তানের Google অ্যাকাউন্টের জন্য 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং চালু থাকলে, তার Google অ্যাকাউন্টে ডেটা সেভ করা থাকতে পারে। এই সেটিংস সম্পর্কে আরও জানুন এবং families.google.com থেকে কীভাবে অ্যাডজাস্ট করবেন তা জানুন।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">আপনার সংস্থা এই ফাইলটিকে ব্লক করেছে কারণ এটি নিরাপত্তা নীতি পূরণ করেনি</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">কাস্টিং শুরু করার জন্য অ্যাক্সেস কোড টাইপ করুন</translation>
 <translation id="6052976518993719690">SSL শংসাপত্র কর্তৃপক্ষ</translation>
 <translation id="6053401458108962351">ব্রাউজিং ডেটা সাফ করুন...</translation>
@@ -5650,6 +5648,7 @@
 <translation id="648927581764831596">কিছুই উপলব্ধ নয়</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="6491376743066338510">অনুমোদন ব্যর্থ হয়েছে</translation>
+<translation id="6492396476180293140">হার্ডওয়্যার সুইচের সাহায্যে ইন্টার্নাল ক্যামেরা বন্ধ করা হয়েছে</translation>
 <translation id="6494327278868541139">উন্নত সুরক্ষা সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6494445798847293442">কোনো শংসাকরণ কর্তৃপক্ষ নয়</translation>
 <translation id="6494974875566443634">কাস্টোমাইজ করা</translation>
@@ -8038,7 +8037,6 @@
 <translation id="8838770651474809439">হ্যামবার্গার</translation>
 <translation id="8838778928843281408">ফোন ম্যানেজ করুন</translation>
 <translation id="8841843049738266382">সাদা তালিকাভুক্ত ব্যবহারকারীদের তালিকা পড়ুন ও পরিবর্তন করুন</translation>
-<translation id="8842059467121215385">"<ph name="EXTENSION_NAME" />" ব্যবহার করতে, পৃষ্ঠা রিফ্রেশ করুন</translation>
 <translation id="8842594465773264717">এই ফিঙ্গারপ্রিন্ট মুছুন</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8846132060409673887">এই কম্পিউটারের প্রস্তুতকারক এবং মডেলটি পড়ুন</translation>
@@ -8492,7 +8490,6 @@
 <translation id="992778845837390402">বর্তমানে Linux-এর ব্যাক-আপ নেওয়া হচ্ছে</translation>
 <translation id="993540765962421562">ইনস্টল করা হচ্ছে</translation>
 <translation id="994289308992179865">&amp;লুপ</translation>
-<translation id="995571563161129624">মনে রাখবেন যে Chromebook-এ বিজ্ঞপ্তি বাতিল করলে আপনার ফোনেও তা বাতিল করা হবে</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">নিরাপদ সংযোগ স্থাপন করা হচ্ছে...</translation>
 <translation id="996803490569799917">আপনার প্রিয় মানুষের সাথে কাটানো সময়ের স্মৃতি দেখুন ও আরও অনেক কিছু করুন</translation>

@@ -508,6 +508,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="3740525748616366977">Glasovno pretraživanje nije dostupno na ovom uređaju</translation>
 <translation id="3749259744154402564">Nije podržano</translation>
 <translation id="3771033907050503522">Anonimne kartice</translation>
+<translation id="377124182565324804">Dodavanje: <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Ova postavka je onemogućena jer je uključen roditeljski nadzor</translation>
 <translation id="3771694256347217732">Googleovi Uslovi korištenja usluge</translation>
 <translation id="3773856050682458546">Osnovni podaci te informacije o web lokacijama koje posjećujete i aplikacijama koje koristite</translation>
@@ -590,6 +591,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> vaša historija pregledanja, zapisi o web lokacijama koje ste posjetili koristeći Chrome na ovom uređaju.</translation>
 <translation id="4263656433980196874">Korisnički interfejs za pristanak na glasovno pretraživanje putem Asistenta je otvoren na cijelom ekranu</translation>
+<translation id="4266054596873078491">Prijavite se na ovu web lokaciju i Chrome pomoću Google računa.</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
 <translation id="4290281343757112331">Preuzeti kasnije?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Uključite zaključavanje ekrana u postavkama Androida<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="4425140285732600465">Praćenje cijene. Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji.</translation>
 <translation id="442518031075347249">Više nećete moći koristiti virtuelnu karticu s Google Payom. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalizacija oglasa</translation>
-<translation id="4450672886426705087">Rezultati pretraživanja s Googlea.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Označeno u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Kada povežete drugi uređaj pomoću QR koda, može koristiti ovaj telefon kao sigurnosni ključ. Ako ga uklonite, morat ćete skenirati QR kôd da ga ponovo povežete.</translation>
@@ -791,6 +792,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5329858041417644019">Vašim preglednikom se ne upravlja</translation>
 <translation id="5339031667684712858">Web lokacije koje ste uklonili</translation>
 <translation id="5342314432463739672">Zahtjevi za odobrenje</translation>
+<translation id="53537532693258630">Ovdje će se pojaviti web lokacije koje ste uklonili</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
 <translation id="5368227114232678694">Da privatno pregledate na ovom uređaju, isprobajte anonimni način rada</translation>
 <translation id="5375577065097716013">Pretraži sliku uz Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1497,6 +1499,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="8993760627012879038">Otvori novu karticu u anonimnom načinu rada</translation>
 <translation id="8996847606757455498">Odaberite drugog pružaoca</translation>
 <translation id="8998729206196772491">Prijavljujete se pomoću računa kojim upravlja domena <ph name="MANAGED_DOMAIN" /> te njenom administratoru dajete kontrolu nad svojim Chrome podacima. Vaši podaci će se trajno povezati s ovim računom. Odjavljivanjem iz Chromea ćete izbrisati podatke s ovog uređaja, ali će oni ostati pohranjeni na vašem Google računu.</translation>
+<translation id="9021388532480169802">Web lokacija je dodana</translation>
 <translation id="9022774213089566801">Često posjećivano</translation>
 <translation id="9028914725102941583">Uključite sinhronizaciju da dijelite sadržaj na više uređaja</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videozapis}one{# videozapis}few{# videozapisa}other{# videozapisa}}</translation>

@@ -102,6 +102,7 @@
 <translation id="1480845547124508962"><ph name="CURRENT_TIME" />. Nyomja meg az Enter gombot a Naptár nézet megnyitásához.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> lecserélve erre: <ph name="SECOND_ITEM_TITLE" /></translation>
+<translation id="1500926532737552529">Az összes javaslat megjelenítése</translation>
 <translation id="1503394326855300303">Ennek a tulajdonosi fióknak kell lennie az első bejelentkezett fióknak a többfiókos bejelentkezés munkamenete során.</translation>
 <translation id="1510238584712386396">Indító</translation>
 <translation id="1516740043221086139">A Ne zavarjanak funkció be van kapcsolva.</translation>
@@ -705,6 +706,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
 <translation id="509790653408515442">Telefonja alkalmazásai itt jelennek majd meg streameléskor</translation>
+<translation id="5098537242461068432">Asztal és ablakok újra megnyitva</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
@@ -1173,6 +1175,7 @@ Frissen telepítve</translation>
 <translation id="7904094684485781019">A fiók rendszergazdája letiltotta a többfiókos bejelentkezést.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7930731167419639574">A beszéd feldolgozása helyben történik, a diktálás pedig offline működik.</translation>
+<translation id="7932451802722951285">Megnyitás a Google Naptárban</translation>
 <translation id="7933084174919150729">A Google Segéd csak az elsődleges profilhoz áll rendelkezésre.</translation>
 <translation id="79341161159229895">A fiókot a(z) <ph name="FIRST_PARENT_EMAIL" /> és a(z) <ph name="SECOND_PARENT_EMAIL" /> kezeli</translation>
 <translation id="793716872548410480">Nyomja le a(z) <ph name="SHORTCUT_KEY_NAME" /> + V billentyűkombinációt a vágólap megtekintéséhez. A rendszer az utoljára másolt öt elemet menti a vágólapra.</translation>

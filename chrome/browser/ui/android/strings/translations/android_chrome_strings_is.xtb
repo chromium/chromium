@@ -345,6 +345,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="2861923151411510142">Tilteknir Chrome eiginleikar verða ekki tiltækir lengur</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2871733351037274014">Forhlaða síðum</translation>
+<translation id="2886836735871983413">Listi yfir vefsvæði mun birtast hér þegar þú vafrar um vefinn</translation>
 <translation id="2888126860611144412">Um Chrome</translation>
 <translation id="2891154217021530873">Stöðva hleðslu síðu</translation>
 <translation id="2892647708214602204">Tilkynning birtist þegar þessi skrá er tilbúin</translation>
@@ -372,6 +373,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="2987620471460279764">Texta deilt úr öðru tæki</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
 <translation id="2992473221983447149">Myndalýsingar</translation>
+<translation id="2994959273484668146">Fjarlægja <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Búa til aðgangsorð</translation>
 <translation id="2996809686854298943">Vefslóð nauðsynleg</translation>
 <translation id="2997081575621687554">Þegar Google vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðu hjá sér dulkóðar Chrome og forhleður síðum í gegnum þjóna Google án fótspora. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig.</translation>
@@ -506,6 +508,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="3740525748616366977">Raddleit er ekki í boði í þessu tæki</translation>
 <translation id="3749259744154402564">Ekki stutt</translation>
 <translation id="3771033907050503522">Huliðsflipar</translation>
+<translation id="377124182565324804">Bæta <ph name="SITE" /> við</translation>
 <translation id="3771290962915251154">Þar sem kveikt er á barnalæsingu er slökkt á þessari stillingu</translation>
 <translation id="3771694256347217732">Þjónustuskilmálar Google</translation>
 <translation id="3773856050682458546">Grunngögn auk upplýsinga um vefsvæði sem þú opnar og forrit sem þú notar</translation>
@@ -521,6 +524,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="3856096718352044181">Gakktu úr skugga um að þetta sé staðfest veita eða reyndu aftur síðar</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3861633093716975811">Vinsæl myndskeið</translation>
+<translation id="3874520961715512166">Vefsvæði fjarlægt</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="3894427358181296146">Bæta möppu við</translation>
 <translation id="3899682235662194879">Loka öllum huliðsflipum</translation>
@@ -558,6 +562,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="4095146165863963773">Eyða forritsgögnum?</translation>
 <translation id="4096227151372679484">Vistun bókamerkja opnuð á hálfum skjánum</translation>
 <translation id="4099578267706723511">Hjálpaðu til við að bæta Google Chrome með því að senda talnagögn um notkun og tilkynningar um hrun til Google.</translation>
+<translation id="4101475238162928417">Samstilltu til að fá aðgangsorðin þín, bókamerkin og fleira í hinum tækjunum þínum</translation>
 <translation id="410351446219883937">Sjálfvirk spilun</translation>
 <translation id="4106587138345390261">Chrome er að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafn mikið af upplýsingum frá þér</translation>
 <translation id="4108314971463891922">Fylgja</translation>
@@ -586,6 +591,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="4256782883801055595">Leyfi opins kóða</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Hvaða gögn eru notuð:<ph name="END_BOLD" /> Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>
 <translation id="4263656433980196874">Samþykkisviðmót raddleitar Hjálpara opið á öllum skjánum</translation>
+<translation id="4266054596873078491">Skráðu þig inn á þetta vefsvæði og Chrome með Google reikningnum þínum.</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
 <translation id="4290281343757112331">Hlaða niður síðar?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Kveiktu á skjálás í stillingum Android<ph name="END_LINK" /></translation>
@@ -611,7 +617,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="4425140285732600465">Vaktar verð. Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði.</translation>
 <translation id="442518031075347249">Þú munt ekki lengur geta notað sýndarkortið þitt með Google Pay. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
-<translation id="4450672886426705087">Leitarniðurstöður Google.</translation>
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bókamerki var búið til í <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Þegar þú notar QR-kóða til að tengja annað tæki getur það notað þennan síma sem öryggislykil. Ef þú fjarlægir það þarftu að skanna QR-kóða til að tengja það aftur.</translation>
@@ -728,6 +733,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4985248278475639481">Um sérsniðnar auglýsingar</translation>
 <translation id="4987271110129728827">Finn ekki síðuna. Athugaðu stafsetninguna eða prófaðu vefleit.</translation>
 <translation id="4988526792673242964">Síður</translation>
+<translation id="499724277181351974">Opna: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Fylgja þessu vefsvæði hér</translation>
 <translation id="500351648694011114">Auðveldari vefskoðun</translation>
 <translation id="5004416275253351869">Virknistýringar Google</translation>
@@ -786,6 +792,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5329858041417644019">Vafrinn þinn er ekki í umsjón</translation>
 <translation id="5339031667684712858">Vefsvæði sem þú fjarlægðir</translation>
 <translation id="5342314432463739672">Heimildabeiðnir</translation>
+<translation id="53537532693258630">Vefsvæði sem þú fjarlægir munu birtast hér</translation>
 <translation id="5355191726083956201">Kveikt er á aukinni vörn</translation>
 <translation id="5368227114232678694">Prófaðu huliðsstillingu til að vafra í næði í þessu tæki</translation>
 <translation id="5375577065097716013">Leita að mynd með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
@@ -977,6 +984,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 Í samræmi við notkun þína á vefsvæði, til dæmis þegar þú skráir þig reglulega inn á reikning, getur viðkomandi vefsvæði úthlutað vafranum þínum traustum lykli. Þegar önnur vefsvæði sem þú opnar síðar leita að og finna gildan traustan lykil er líklegra að viðkomandi vefsvæði skilgreini þig sem manneskju en spjallara.
 
 Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til að persónugreina þig.</translation>
+<translation id="6394791151443660613">Leit: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">TENGILL</translation>
 <translation id="6397616442223433927">Nettenging komin aftur</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> á <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1199,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="749294055653435199">Google linsa er ekki í boði í þessu tæki</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppfært <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Augnablik…</translation>
+<translation id="7502234197872745058">Til að skrá þig út af Google reikningnum þínum á öllum vefsvæðum skaltu <ph name="BEGIN_LINK1" />skrá þig út af Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Uppfærslur eru ekki tiltækar</translation>
 <translation id="7507207699631365376">Sjá <ph name="BEGIN_LINK" />persónuverndarstefnu<ph name="END_LINK" /> þjónustuveitu</translation>
 <translation id="7514365320538308">Sækja</translation>
@@ -1490,6 +1499,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="8993760627012879038">Opna nýjan flipa í huliðsstillingu</translation>
 <translation id="8996847606757455498">Velja aðra veitu</translation>
 <translation id="8998729206196772491">Þú ert að skrá þig út af reikningi sem <ph name="MANAGED_DOMAIN" /> stýrir og veitir í leiðinni stjórnanda lénsins umsjón með Chrome gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chrome verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
+<translation id="9021388532480169802">Vefsvæði bætt við</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>
 <translation id="9028914725102941583">Kveiktu á samstillingu til að deila á milli tækja</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# myndskeið}one{# myndskeið}other{# myndskeið}}</translation>

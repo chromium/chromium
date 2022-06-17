@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">የድምፅ ፍለጋ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="3749259744154402564">የማይደገፍ</translation>
 <translation id="3771033907050503522">ማንነት የማያሳውቁ ትሮች</translation>
+<translation id="377124182565324804"><ph name="SITE" />ን አክል</translation>
 <translation id="3771290962915251154">የወላጅ መቆጣጠሪያዎች ስለበሩ ይህ ቅንብር ተሰናክሏል</translation>
 <translation id="3771694256347217732">የGoogle የአገልግሎት ውል</translation>
 <translation id="3773856050682458546">ስለሚጎበኟቸው ድር ጣቢያዎች እና ስለሚጠቀሙባቸው መተግበሪያዎች መሰረታዊ ውሂብ እና መረጃ</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">የክፍት ምንጭ ፍቃዶች</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="4263656433980196874">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ በሙሉ ቁመት ተከፍቷል</translation>
+<translation id="4266054596873078491">በGoogle መለያዎ ወደዚህ ጣቢያ እና Chrome ይግቡ።</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4290281343757112331">በምትኩ በኋላ ያውርዱ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገጽ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">ዋጋዎችን በመከታተል ላይ። በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ።</translation>
 <translation id="442518031075347249">ከእንግዲህ የእርስዎን ምናባዊ ካርድ በGoogle Pay መጠቀም አይችሉም። <ph name="BEGIN_LINK1" />ስለምናባዊ ካርዶች የበለጠ ይወቁ<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">ማስታወቂያን ግላዊነት ማላበስ</translation>
-<translation id="4450672886426705087">የፍለጋ ውጤቶችን ከGoogle።</translation>
 <translation id="4452411734226507615">የ<ph name="TAB_TITLE" /> ትር ዝጋ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ላይ ዕልባት ተደርጓል</translation>
 <translation id="4461614516424362539">ሌላ መሳሪያ ከQR ኮድ ጋር ሲያገናኙት ይህን ስልክ እንደ የደህንነት ቁልፍ ሊጠቀምበት ይችላል። ካስወገዱት፣ እንደገና ለማገናኘት የQR ኮድ መቃኘት አለብዎት።</translation>
@@ -732,6 +733,7 @@
 <translation id="4985248278475639481">ግላዊነት ስለማላበስ</translation>
 <translation id="4987271110129728827">ያንን ገጽ ማግኘት አልተቻለም። የፊደል አጻጻፍዎን ይመልከቱ ወይም የድር ፍለጋ ይሞክሩ።</translation>
 <translation id="4988526792673242964">ገፆች</translation>
+<translation id="499724277181351974">ይዳስሱ፦ <ph name="WEBSITE_TITLE" />፦ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ይህንን ጣቢያ እዚህ ይከተሉ</translation>
 <translation id="500351648694011114">ይበልጥ በቀላሉ ያስሱ</translation>
 <translation id="5004416275253351869">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
@@ -790,6 +792,7 @@
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>
 <translation id="5339031667684712858">ያስወገዷቸው ጣቢያዎች</translation>
 <translation id="5342314432463739672">የፈቃድ ጥያቄዎች</translation>
+<translation id="53537532693258630">እርስዎ ያስወገዷቸው ጣቢያዎች እዚህ ይመጣሉ</translation>
 <translation id="5355191726083956201">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="5368227114232678694">በዚህ መሳሪያ ላይ በግል ለማሰስ፣ ማንነት የማያሳውቅን ይሞክሩ</translation>
 <translation id="5375577065097716013">በ Google ሌንስ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ምስል ይፈልጉ</translation>
@@ -981,6 +984,7 @@
 ከጣቢያው ጋር ባለዎት መስተጋብር ላይ በመመስረት እንደ በመደበኛነት ወደ መለያ መግባት ያለ ያ ጣቢያ ለአሳሽዎ የእምነት ማስመሰያ ሊሰጥ ይችላል። በኋላ ላይ እርስዎ የሚጎበኟቸው ሌሎች ጣቢያዎች ካረጋገጡ እና ትክክለኛ የእምነት ማስመሰያ ካገኙ እርስዎን እንደ ቦት ሳይሆን እንደ ሰው ሊያስቡዎት ይችላሉ።
 
 የእምነት ማስመሰያዎች በድሩ ላይ ግላዊነትን ያሻሽላሉ እና እርስዎ ማን እንደሆኑ ለማወቅ ስራ ላይ መዋል አይችሉም።</translation>
+<translation id="6394791151443660613">ይፈልጉ፦ <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">አገናኝ</translation>
 <translation id="6397616442223433927">ወደ መስመር ላይ ይመለሱ</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> በ<ph name="VIOLATED_URL" /> ላይ</translation>
@@ -1495,6 +1499,7 @@
 <translation id="8993760627012879038">አዲስ ትር በማንነት የማያሳውቅ ሁነታ ውስጥ ክፈት</translation>
 <translation id="8996847606757455498">ሌላ አቅራቢ ይምረጡ</translation>
 <translation id="8998729206196772491">በ<ph name="MANAGED_DOMAIN" /> ወደሚተዳደር መለያ እየገቡና ሙሉውን የChrome ውሂብዎ ቁጥጥር ለአስተዳዳሪው እየሰጡ ነው። የእርስዎ ውሂብ እስከመጨረሻው ከዚህ መለያ ጋር ይተሳሰራል። ከChrome ዘግቶ መውጣት ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል፣ ነገር ግን በእርስዎ የGoogle መለያ ላይ እንደተከማቸ ይቆያል።</translation>
+<translation id="9021388532480169802">ጣቢያ ታክሏል</translation>
 <translation id="9022774213089566801">በተደጋጋሚነት የተጎበኙ</translation>
 <translation id="9028914725102941583">በተለያዩ መሣሪያዎች ላይ ለማጋራት ስምረትን ያብሩ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ቪዲዮ}one{# ቪዲዮዎች}other{# ቪዲዮዎች}}</translation>

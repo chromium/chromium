@@ -508,6 +508,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3740525748616366977">Nid yw chwilio â llais ar gael ar y ddyfais hon</translation>
 <translation id="3749259744154402564">Ni chefnogir</translation>
 <translation id="3771033907050503522">Tabiau Anhysbys</translation>
+<translation id="377124182565324804">Ychwanegu <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Mae'r gosodiad hwn wedi'i ddiffodd gan fod rheolaethau rhieni wedi'u troi ymlaen</translation>
 <translation id="3771694256347217732">Telerau Gwasanaeth Google</translation>
 <translation id="3773856050682458546">Data sylfaenol ynghyd â gwybodaeth am y gwefannau rydych yn ymweld â nhw a'r apiau rydych yn eu defnyddio</translation>
@@ -590,6 +591,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="4256782883801055595">Trwyddedau ffynhonnell agored</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
 <translation id="4263656433980196874">Agorwyd UI cydsyniad chwilio â llais Assistant ar uchder llawn</translation>
+<translation id="4266054596873078491">Mewngofnodi i'r wefan hon a Chrome gyda'ch Cyfrif Google.</translation>
 <translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
 <translation id="4290281343757112331">Lawrlwytho yn nes ymlaen yn lle hynny?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Trowch glo sgrîn ymlaen yn y gosodiadau Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="4425140285732600465">Yn dilyn y pris. Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="442518031075347249">Ni fyddwch yn gallu defnyddio eich cerdyn rhithwir gyda Google Pay mwyach. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personoleiddio hysbysebion</translation>
-<translation id="4450672886426705087">Chwilio canlyniadau o Google</translation>
 <translation id="4452411734226507615">Cau'r tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Wedi creu nod tudalen yn <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Pan fyddwch yn cysylltu dyfais arall â chod QR, gall ddefnyddio'r ffôn hwn fel allwedd ddiogelwch. Os byddwch yn ei thynnu, bydd yn rhaid i chi sganio cod QR i'w chysylltu eto.</translation>
@@ -732,6 +733,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4985248278475639481">Ynghylch personoleiddio hysbysebion</translation>
 <translation id="4987271110129728827">Methu â dod o hyd i'r dudalen honno. Gwiriwch eich sillafu neu rhowch gynnig ar chwiliad gwe.</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
+<translation id="499724277181351974">Llywio: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dilyn y wefan hon yma</translation>
 <translation id="500351648694011114">Pori'n haws</translation>
 <translation id="5004416275253351869">Rheolaethau gweithgarwch Google</translation>
@@ -790,6 +792,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5329858041417644019">Nid yw eich porwr yn cael ei reoli</translation>
 <translation id="5339031667684712858">Gwefannau a dynnwyd gennych</translation>
 <translation id="5342314432463739672">Ceisiadau am ganiatâd</translation>
+<translation id="53537532693258630">Bydd gwefannau a ddilëwyd gennych yn ymddangos yma</translation>
 <translation id="5355191726083956201">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="5368227114232678694">I bori'n breifat ar y ddyfais hon, rhowch gynnig ar Anhysbys</translation>
 <translation id="5375577065097716013">Chwilio â Google Lens <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 Yn seiliedig ar eich rhyngweithiad gyda gwefan, megis mewngofnodi i gyfrif yn rheolaidd, gall y wefan honno roi tocyn ymddiriedaeth i'ch porwr. Yn nes ymlaen, os bydd gwefannau eraill rydych yn ymweld â nhw yn dod o hyd i docyn ymddiriedaeth dilys, maent yn fwy tebygol o'ch trin fel person ac nid bot.
 
 Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnyddio i ddod o hyd i bwy ydych chi.</translation>
+<translation id="6394791151443660613">Chwilio: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">DOLEN</translation>
 <translation id="6397616442223433927">Yn ôl ar-lein</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ar <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="8993760627012879038">Agor tab newydd yn y Modd Anhysbys</translation>
 <translation id="8996847606757455498">Dewiswch ddarparwr arall</translation>
 <translation id="8998729206196772491">Rydych yn mewngofnodi gyda chyfrif a reolir gan <ph name="MANAGED_DOMAIN" /> ac yn rhoi rheolaeth dros eich data Chrome i'w weinyddwr. Bydd eich data yn cael eu cysylltu'n barhaol i'r cyfrif hwn. Bydd allgofnodi o Chrome yn dileu eich data o'r ddyfais hon, ond bydd yn parhau i gael ei storio yn eich Cyfrif Google.</translation>
+<translation id="9021388532480169802">Mae'r wefan wedi'i hychwanegu</translation>
 <translation id="9022774213089566801">Ymwelir yn aml</translation>
 <translation id="9028914725102941583">Trowch gysoni ymlaen i rannu ar draws dyfeisiau</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Fideo}zero{# Fideo}two{# Fideo}few{# Fideo}many{# Fideo}other{# Fideo}}</translation>

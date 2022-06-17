@@ -1315,6 +1315,7 @@
       Chrome 已在第 91 版停止支援將本政策設為「tls1」或「tls1.1」，目前則不再支援隱藏 TLS 1.0/1.1 警告。</translation>
 <translation id="2364639863953745682">Google 助理入門使用體驗的模式</translation>
 <translation id="2366301887862414321">允許使用者層級和系統層級的原生訊息傳遞主機</translation>
+<translation id="2382672620906337383">系統要在達到較高巢狀閾值後，才會延遲 JavaScript setTimeout()。</translation>
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
@@ -1741,6 +1742,7 @@
 <translation id="283478052049914107">如果將這項政策設為啟用並輸入非標準連接埠 (也就是 80 或 443 以外的連接埠)，系統會在已產生的 Kerberos SPN 中加入該連接埠。
 
       如果將這項政策設為停用或不設定，已產生的 Kerberos SPN 不會包含連接埠。</translation>
+<translation id="2835686964326214400">自訂重新啟動裝置的時間表</translation>
 <translation id="2838830882081735096">不允許資料遷移和 ARC</translation>
 <translation id="2839294585867804686">網路檔案共用功能設定</translation>
 <translation id="284288632677954003">XML 檔案的網址，其中包含一律不觸發瀏覽器切換的網址。</translation>
@@ -2295,6 +2297,7 @@
 <translation id="3387211681524224831">如果將這項政策設為啟用，系統不會儲存瀏覽記錄，並會停用分頁同步功能，且使用者無法變更這項設定。
 
       如果將這項政策設為停用或不設定，系統會儲存瀏覽記錄。</translation>
+<translation id="3387999258705169775">setTimeout() 巢狀函式的預設行為出現延遲。</translation>
 <translation id="3389088527709746815">針對遠端存取主機啟用 gnubby 驗證機制</translation>
 <translation id="3391457705621770207">你可以透過這項政策，決定使用者多久 (以毫秒為單位) 沒有執行活動，才會自動登入由 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策所指定的裝置本機帳戶。
 
@@ -2960,6 +2963,16 @@
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用插入點醒目顯示，但使用者隨時可以啟用。</translation>
 <translation id="4183229833636799228"><ph name="FLASH_PLUGIN_NAME" /> 預設設定</translation>
+<translation id="4186244263855283575">允許自訂重新啟動裝置的時間表。如果設為 True，裝置會根據時間表重新啟動。如要取消任何排定的重新啟動作業，你必須先移除這項政策。
+
+      使用者工作階段和訪客工作階段適用以下情況：
+
+        * 系統會在預定時間前 1 小時，通知使用者將執行重新啟動作業。使用者可以選擇立即重新啟動，或等待排定的重新啟動作業，但無法延後排定的重新啟動作業。
+
+        * 裝置啟動後會有 1 小時的寬限期。在這段期間，系統會略過已排定的重新啟動作業，並根據設定安排在下一個日期、週或月執行。
+
+      在資訊站工作階段中，沒有任何寬限期，也沒有重新啟動作業相關通知。
+</translation>
 <translation id="4187576366596772431">封鎖這些網站上的 WebHID API</translation>
 <translation id="4192388905594723944">用於驗證遠端存取用戶端驗證憑證的網址</translation>
 <translation id="4203055629055264833">如果將這項政策設為啟用或不設定，代表使用者可透過工具列上的切換圖示開啟側邊面板，查看預設搜尋引擎的最新搜尋結果。
@@ -4627,6 +4640,13 @@
       將政策設為有效的十六進位顏色，可讓系統根據該顏色自動產生主題，並套用至瀏覽器。使用者將無法變更這項政策設定的主題。
 
       如果不設定這項政策，使用者則可依照個人偏好變更瀏覽器的主題。</translation>
+<translation id="619376519309703699">這項政策提供了另一種停用第一方集合功能的方式。
+
+                  如果將這項政策設為啟用或不予設定，系統會啟用第一方集合功能。
+
+                  如果將這項政策設為停用，則系統會停用第一方集合功能。
+
+                  這項政策會控制 Chrome 是否支援第一方集合相關功能 (例如 SameParty Cookie 屬性)。</translation>
 <translation id="6195802366906945965">決定是否使用內建憑證驗證器來驗證伺服器憑證</translation>
 <translation id="6198947200418556248">這項政策已淘汰；如果仍需要舊版 Cookie 行為，請改用 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />。這項政策可以將所有 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站的網址是否相同時，略過網路通訊協定的比較。如需完整說明，請參閱 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
 
@@ -6997,6 +7017,7 @@
 <translation id="8749536858950505376">將這項政策設為 True 時，系統會將大型游標保持在啟用狀態。將這項政策設為 False 時，系統會將大型游標保持在停用狀態。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用大型游標，但使用者隨時可以啟用。</translation>
+<translation id="8750941317035081777">系統會在達到一般巢狀閾值後延遲 JavaScript setTimeout()。</translation>
 <translation id="8753264624162178499">使用者可以使用「以圖片形式列印」選項，允許先將 PDF 光柵化，再把列印工作傳送至目的地。</translation>
 <translation id="8757552286070680084">設定 Wilco DTC</translation>
 <translation id="8758831693895931466">啟用雲端管理強制註冊設定</translation>

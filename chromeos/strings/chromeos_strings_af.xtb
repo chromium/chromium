@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">Stoor na USB</translation>
 <translation id="1468664791493211953">Aanbiedings</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
+<translation id="147809995039451286">Kon nie die opdatering aflaai nie</translation>
 <translation id="1478594628797167447">Skandeerder</translation>
+<translation id="1483493594462132177">Stuur</translation>
 <translation id="1491076385728777984">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
@@ -101,6 +103,7 @@
 <translation id="1745577949879301685">Kon nie prente laai nie. Gaan jou netwerkverbinding na of probeer weer om die prente te laai.</translation>
 <translation id="1751249301761991853">Persoonlik</translation>
 <translation id="1753496554272155572">Verlaat muurpapiervoorskou</translation>
+<translation id="1755556344721611131">Diagnostiekprogram</translation>
 <translation id="175763766237925754">Goed (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -182,6 +185,7 @@
 <translation id="2418150275289244458">Maak in Instellings oop</translation>
 <translation id="2421798028054665193">Prent <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
+<translation id="2447969267935997922">Installasie is afgehandel. Jy kan nou jou USB-stokkie of SD-kaart verwyder.</translation>
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2480034874476596812">Skakel handmatig af</translation>
@@ -232,6 +236,7 @@
 <translation id="3083667275341675831">Konnektiwiteitdiagnostiek</translation>
 <translation id="3084958266922136097">Deaktiveer sluimerskerm</translation>
 <translation id="3091839911843451378">Misluk – Gestop</translation>
+<translation id="3096753366938912951">Plaas deksel op plat oppervlak</translation>
 <translation id="3102119246920354026">Kas</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Toestel is gekoppel.</translation>
@@ -289,9 +294,11 @@
 <translation id="3604713164406837697">Verander muurpapier</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3606583719724308068">Hoë traagheid na HTTPS-webwerwe</translation>
+<translation id="361575905210396100">Dankie vir jou terugvoer</translation>
 <translation id="3616113530831147358">Oudio</translation>
 <translation id="3621202678540785336">Invoer</translation>
 <translation id="3632579075709132555">Privaatheidskermwisselaar</translation>
+<translation id="3643198267586205643">Dateer bedryfstelsel op</translation>
 <translation id="3643810137582748570">Slaan kalibrering oor</translation>
 <translation id="3651050199673793219">Kies ’n temperatuureenheid</translation>
 <translation id="3678765385266369662">Kies hoe jy Skryf-beskerming wil afskakel</translation>
@@ -410,6 +417,7 @@
 <translation id="469379815867856270">Seinsterkte</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="473775607612524610">Dateer op</translation>
+<translation id="4740255236714854844">Plaas basis op plat oppervlak</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
 <translation id="4751272708893364980">Sien RMA-loglêers</translation>
 <translation id="4773299976671772492">Gestop</translation>
@@ -457,6 +465,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Wys foto's, die tyd, die weer, en media-inligting wanneer jou skerm onaktief is.</translation>
 <translation id="5039804452771397117">Laat toe</translation>
+<translation id="5044978354634658544">Sit USB in</translation>
 <translation id="5049856988445523908">SIM is gesluit (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepnaam</translation>
 <translation id="5051044138948155788">Dit is die enigste bladsy Dit sal jou na die skandering se beginskerm toe neem.</translation>
@@ -647,6 +656,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6659594942844771486">Oortjie</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
+<translation id="6721744718589119342">Ons sal dalk vir jou ’n e-pos stuur vir meer inligting of opdaterings</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
 <translation id="6723847290197874913">Sleutelbordagterlig</translation>
 <translation id="672609503628871915">Sien wat nuut is</translation>
@@ -711,6 +721,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
 <translation id="7359657277149375382">Lêertipe</translation>
+<translation id="73631062356239394">Deel diagnostiese data</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Skakel ligtema af</translation>
@@ -741,6 +752,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" />-herstelfout</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7665800271478495366">Verander avatar</translation>
+<translation id="7682274994254393134">Begin met herstelwerk</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -915,6 +927,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="9149391708638971077">Laat loop geheuetoets</translation>
 <translation id="9173638680043580060">Minder as 'n minuut oor</translation>
 <translation id="917720651393141712">Toets</translation>
+<translation id="9188992814426075118">Jou sleutelbord kan outomaties by jou muurpapier pas</translation>
 <translation id="9204237731135241582">Kan nie die deurgang van Android-programme af kontak nie</translation>
 <translation id="9211490828691860325">Alle lessenaars</translation>
 <translation id="922179502584117429">Huidige weergawe <ph name="VERSION_NUMBER" /> is verouderd</translation>

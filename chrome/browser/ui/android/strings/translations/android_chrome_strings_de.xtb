@@ -508,6 +508,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="3740525748616366977">Die Sprachsuche ist auf diesem Gerät nicht verfügbar</translation>
 <translation id="3749259744154402564">Nicht unterstützt</translation>
 <translation id="3771033907050503522">Inkognito-Tabs</translation>
+<translation id="377124182565324804"><ph name="SITE" /> hinzufügen</translation>
 <translation id="3771290962915251154">Diese Einstellung ist deaktiviert, weil die Jugendschutzeinstellungen aktiviert sind</translation>
 <translation id="3771694256347217732">Google-Nutzungsbedingungen</translation>
 <translation id="3773856050682458546">Die grundlegenden Daten plus Informationen über die Websites, die du besuchst, und die Apps, die du nutzt</translation>
@@ -590,6 +591,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="4256782883801055595">Open Source-Lizenzen</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
 <translation id="4263656433980196874">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant ganz geöffnet</translation>
+<translation id="4266054596873078491">Melde dich bei dieser Website und in Chrome mit deinem Google-Konto an.</translation>
 <translation id="4269820728363426813">URL kopieren</translation>
 <translation id="4290281343757112331">Später herunterladen?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Displaysperre in den Android-Einstellungen aktivieren<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="4425140285732600465">Preis wird beobachtet. Du wirst bei einem Preisnachlass benachrichtigt.</translation>
 <translation id="442518031075347249">Du kannst deine virtuelle Karte dann nicht mehr mit Google Pay verwenden. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalisierte Werbung</translation>
-<translation id="4450672886426705087">Google-Suchergebnisse.</translation>
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
 <translation id="4452548195519783679">Als Lesezeichen in "<ph name="FOLDER_NAME" />" gespeichert</translation>
 <translation id="4461614516424362539">Wenn du ein weiteres Gerät per QR-Code verknüpfst, kann es dieses Smartphone als Sicherheitsschlüssel verwenden. Wenn du es entfernst, musst du noch einmal einen QR-Code scannen, um es wieder zu verknüpfen.</translation>
@@ -791,6 +792,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5329858041417644019">Dein Browser wird nicht verwaltet</translation>
 <translation id="5339031667684712858">Entfernte Websites</translation>
 <translation id="5342314432463739672">Berechtigungsanfragen</translation>
+<translation id="53537532693258630">Die von dir entfernten Websites werden hier angezeigt</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5368227114232678694">Wenn du auf diesem Gerät privat surfen möchtest, probiere den Inkognitomodus aus</translation>
 <translation id="5375577065097716013">Bild an Google Lens senden <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -1497,6 +1499,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="8993760627012879038">Neuen Tab im Inkognitomodus öffnen</translation>
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>
 <translation id="8998729206196772491">Du meldest dich mit einem von <ph name="MANAGED_DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
+<translation id="9021388532480169802">Website wurde hinzugefügt</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
 <translation id="9028914725102941583">Synchronisierung aktivieren, um geräteübergreifend zu teilen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>

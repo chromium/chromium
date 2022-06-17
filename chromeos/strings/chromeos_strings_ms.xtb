@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">Simpan pada USB</translation>
 <translation id="1468664791493211953">Tawaran</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
+<translation id="147809995039451286">Tidak dapat memuat turun kemaskinian</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
+<translation id="1483493594462132177">Hantar</translation>
 <translation id="1491076385728777984">Mengemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
@@ -128,6 +130,7 @@
 <translation id="1999615961760456652">Portal Terbolot</translation>
 <translation id="2006864819935886708">Kesambungan</translation>
 <translation id="2008685064673031089">Carian nombor perdana</translation>
+<translation id="2011174342667534258">Versi SDK:</translation>
 <translation id="2016697457005847575">Cuba langkah penyelesaian masalah</translation>
 <translation id="2016848882344942759">--tiada label putih--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +162,7 @@
 <translation id="225692081236532131">Status pengaktifan</translation>
 <translation id="2271469253353559191">Jadual mod gelap</translation>
 <translation id="2275586345903859204">Pembaikan selesai</translation>
+<translation id="2276999893457278469">Kandungan bantuan paling popular</translation>
 <translation id="2287186687001756809">Tiada imej tersedia. Untuk menambah foto, lawati <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Masukkan storan luaran, seperti pemacu USB atau kad SD card, dengan imej Utiliti Pemulihan Chromebook yang dimuat turun</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci semasa</translation>
@@ -180,6 +184,7 @@
 <translation id="2418150275289244458">Buka dalam tetapan</translation>
 <translation id="2421798028054665193">Imej <ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
+<translation id="2447969267935997922">Pemasangan selesai. Kini anda boleh mengalih keluar pemacu USB atau kad SD anda.</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2461822463642141190">Semasa</translation>
 <translation id="2480034874476596812">Matikan secara manual</translation>
@@ -191,6 +196,7 @@
 <translation id="2517472476991765520">Imbas</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="253029298928638905">Memulakan semula...</translation>
+<translation id="2533048460510040082">Kandungan bantuan yang dicadangkan</translation>
 <translation id="2536159006530886390">Tidak dapat menyambung kepada Internet.</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
@@ -306,6 +312,7 @@
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
+<translation id="3824259034819781947">Lampirkan fail</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3856304145690230735">Giroskop Dasar</translation>
@@ -648,6 +655,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
+<translation id="6721744718589119342">Kami mungkin menghantar e-mel kepada anda untuk maklumat atau kemaskinian lanjut</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="6723847290197874913">Lampu latar papan kekunci</translation>
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
@@ -869,6 +877,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="885701979325669005">Storan</translation>
 <translation id="8863170912498892583">Dayakan tema gelap</translation>
 <translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan pelbagai lagi</translation>
+<translation id="8864415976656252616">Tiada kandungan yang dicadangkan. Lihat kandungan bantuan paling popular.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Peranti ialah tablet.</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>

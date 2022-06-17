@@ -27,6 +27,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver outras pestanas</translation>
+<translation id="1161340988127985692">Preguntar para abrir ligazóns doutras aplicacións no modo de incógnito</translation>
 <translation id="1164064664035028907">Usa o contrasinal seguro:</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Campo seguinte</translation>
@@ -292,6 +293,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3443810440409579745">Recibiuse unha pestana.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vista dividida</translation>
+<translation id="3450502512529866925">Engadir esta páxina aos marcadores</translation>
 <translation id="345565170154308620">Xestionar contrasinais…</translation>
 <translation id="3469166899695866866">Queres deter a descarga?</translation>
 <translation id="3470502288861289375">Copiando...</translation>
@@ -484,6 +486,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Podes gardar páxinas para lelas máis tarde ou sen conexión. Chrome preguntarache se queres gardar páxinas longas.</translation>
 <translation id="5094827893301452931">Completouse o chío.</translation>
+<translation id="509789154667432072">Engadir marcador</translation>
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5118764316110575523">Non</translation>
 <translation id="5127805178023152808">A sincronización está desactivada</translation>

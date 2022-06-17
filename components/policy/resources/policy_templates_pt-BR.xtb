@@ -3360,7 +3360,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="4635284822166984665">Horário em que o carregamento do dispositivo será iniciado, interpretado no fuso horário local do dispositivo.</translation>
-<translation id="4638532652671131094">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
       Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.
@@ -5309,17 +5308,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento de origem cruzada.</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
-<translation id="6740299900063889926">setTimeout(…, 0) normalmente é usado para dividir tarefas longas de JavaScript.
-          Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não serão ajustadas de forma tão agressiva.
-          Isso melhora a performance no curto prazo, mas os sites que abusam da API ainda têm os setTimeouts ajustados.
-
-          É possível que a ordem das tarefas em uma página da Web mude, levando a um comportamento inesperado em sites que dependem de uma ordem específica.
-          Também é possível que isso afete sites com muitas funções setTimeout() com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
-
-          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no Canal Stable.
-
-          Essa é uma política temporária e tem remoção planejada para a versão 107 do Chrome. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
-          </translation>
 <translation id="6740611636377710500">Permitir que este usuário execute o PluginVm.
 
       Se esta política for definida como falsa ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o usuário.

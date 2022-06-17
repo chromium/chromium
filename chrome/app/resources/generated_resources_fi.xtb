@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">Avaa alkuperäinen &amp;kuva uudessa välilehdessä</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Päivitä <ph name="DEVICE_TYPE" /> viikon sisällä}other{Päivitä <ph name="DEVICE_TYPE" /> {NUM_WEEKS} viikon sisällä}}</translation>
 <translation id="1056898198331236512">Varoitus</translation>
-<translation id="105822690353767994">Salli laajennuksen käyttö aina tällä sivustolla jos et halua nähdä tätä viestiä uudestaan.</translation>
 <translation id="1058262162121953039">PUK-koodi</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Lisää uusi PIN-koodisi. PIN-koodin on oltava vähintään yhden merkin pituinen, ja se voi sisältää kirjaimia, numeroita ja muita merkkejä.}other{Lisää uusi PIN-koodisi. PIN-koodin on oltava vähintään # merkin pituinen, ja se voi sisältää kirjaimia, numeroita ja muita merkkejä.}}</translation>
 <translation id="1059484610606223931">Suojattu hypertekstin siirtoprotokolla (HTTPS)</translation>
@@ -1435,7 +1434,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Seuraavia näppäimiä ei tueta: sarkain, vaihto, Control, Escape, Caps Lock, äänenvoimakkuus</translation>
 <translation id="2309620859903500144">Tältä sivustolta on estetty liikkeen- tai valontunnistimien käyttö.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Sivun URL-osoite</translation>
 <translation id="2314165183524574721">Näkyvyysasetus on piilotettu</translation>
 <translation id="2314774579020744484">Kieli, jolle sivuja käännetään</translation>
@@ -2589,6 +2587,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> voi nähdä tämän: <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Google Assistantin nopeat vastaukset</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344537926140058498">Organisaatiosi on estänyt tiedoston, koska siinä on arkaluontoista tai vaarallista sisältöä. Pyydä sen omistajaa korjaamaan asia.</translation>
 <translation id="3445925074670675829">C-tyypin USB-laite</translation>
 <translation id="3446274660183028131">Käynnistä Parallels Desktop Windowsin asentamista varten.</translation>
 <translation id="344630545793878684">Lukea tietojasi useissa sivustoissa</translation>
@@ -3144,6 +3143,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="3971764089670057203">Tämän suojausavaimen sormenjäljet</translation>
 <translation id="3973005893595042880">Käyttäjä ei ole sallittu</translation>
+<translation id="3973062011568994448">Jos haluat tuoda salasanoja, valitse CSV-tiedosto.</translation>
 <translation id="3973660817924297510">Tarkistetaan salasanoja (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Siirrä korostusta eteenpäin näytöllä valitsemalla Seuraava</translation>
 <translation id="3975201861340929143">Selitys</translation>
@@ -4613,6 +4613,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5466374726908360271">Liitä ja tee haku <ph name="SEARCH_TERMS" /></translation>
 <translation id="5467207440419968613">Estetty: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Etsitään jaettuja tiedostoja</translation>
+<translation id="5468881191994555667">Valitse tiedosto</translation>
 <translation id="5469852975082458401">Voit siirtyä sivuilla tekstikohdistimen avulla. Laita pois päältä painamalla F7.</translation>
 <translation id="5470735824776589490">Käynnistä laite uudelleen, jotta siihen voidaan palauttaa tehdasasetukset Powerwashin avulla. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hei! Olen tekstistä puheeksi ‑äänesi.</translation>
@@ -5059,7 +5060,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 
 Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Puhelimesi ja <ph name="DEVICE_TYPE" /> on yhdistetty</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="59174027418879706">Käytössä</translation>
 <translation id="5920543303088087579">Järjestelmänvalvoja on estänyt yhteyden muodostamisen tähän verkkoon.</translation>
@@ -5195,7 +5195,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
     <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Jos Verkko- ja sovellustoiminta ‑asetus on päällä lapsen Google-tilillä, dataa voidaan tallentaa hänen tililleen. Lue lisää näistä asetuksista ja niiden muuttamisesta osoitteesta families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Organisaatiosi on estänyt tämän tiedoston, koska se ei ole turvallisuuskäytännön mukainen</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Aloita striimaus kirjoittamalla käyttökoodi</translation>
 <translation id="6052976518993719690">SSL-varmenteen myöntäjä</translation>
 <translation id="6053401458108962351">&amp;Poista selaustiedot...</translation>
@@ -6345,6 +6344,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7191159667348037">Tuntematon tulostin (USB)</translation>
 <translation id="7193051357671784796">Organisaatiosi lisäsi tämän sovelluksen. Suorita sovelluksen asennus loppuun käynnistämällä se uudelleen.</translation>
 <translation id="7193374945610105795">Sivustolla <ph name="ORIGIN" /> ei ole tallennettuja salasanoja</translation>
+<translation id="7194873994243265344">Organisaatiosi on estänyt tiedoston, koska se on salattu. Pyydä sen omistajaa purkamaan salaus.</translation>
 <translation id="7196913789568937443">Varmuuskopioi Google Driveen. Palauta dataa tai vaihda laitetta helposti milloin tahansa. Varmuuskopio sisältää sovellusdatan. Varmuuskopiot ladataan Googleen ja salataan Google-tilisi salasanalla. <ph name="BEGIN_LINK1" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Käytä Google Hakua ja Googlen älykkäitä ratkaisuja selatessasi</translation>
 <translation id="719791532916917144">Pikanäppäin</translation>
@@ -6363,6 +6363,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7211783048245131419">Kytkimiä ei ole vielä määritetty</translation>
 <translation id="7212097698621322584">Lisää nykyinen PIN-koodisi muuttaaksesi sen. Jos et tiedä PIN-koodiasi, sinun on nollattava suojausavaimesi ja luotava uusi PIN-koodi.</translation>
 <translation id="7213903639823314449">Hakukone, jota käytetään osoitepalkissa</translation>
+<translation id="721490496276866468">Tuo salasanoja</translation>
 <translation id="7216595297012131718">Järjestä kielet haluamallasi tavalla.</translation>
 <translation id="7219473482981809164">Ladattavissa on useita profiileja. Valitse ladattavat profiilit ennen kuin jatkat.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Ei heikkoja salasanoja}=1{1 heikko salasana}other{{NUM_WEAK} heikkoa salasanaa}}</translation>
@@ -6995,6 +6996,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7826190688224781865">Jälleenmyyjän kauppatunnuskoodi</translation>
 <translation id="7826249772873145665">ADB-virheenkorjaus poistettu käytöstä</translation>
 <translation id="7826254698725248775">Ristiriitainen laitteen tunnus</translation>
+<translation id="7828642077514646543">Virhe: Varmenteen purku epäonnistui</translation>
 <translation id="7828731929332799387">Tämä poistaa kaikki kolmansien osapuolten yhteydessä saatavilla olevat evästeet ja sivustodatan. Haluatko jatkaa?</translation>
 <translation id="7829877209233347340">Pyydä vanhempaa kirjautumaan, jotta hän voi antaa luvan koulutilin lisäämiseen</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7957,6 +7959,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> lukitaan automaattisesti # sekunnin päästä.
 <ph name="DOMAIN" /> ei salli älykortin poistamista.}other{<ph name="DEVICE_TYPE" /> lukitaan automaattisesti # sekunnin päästä.
 <ph name="DOMAIN" /> ei salli älykortin poistamista.}}</translation>
+<translation id="8776294611668764629">Organisaatiosi on estänyt tiedoston, koska se on liian suuri tietoturvatarkistukseen. Voit avata korkeintaan 50 Mt:n kokoisia tiedostoja.</translation>
 <translation id="8777628254805677039">pääkäyttäjän salasana</translation>
 <translation id="8779944680596936487">Sivustot voivat nähdä selaustoimintaasi evästeiden kautta vain omalla sivustollaan</translation>
 <translation id="8780123805589053431">Käytä Googlen kuvaselityksiä</translation>
@@ -8021,7 +8024,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8838770651474809439">Hampurilainen</translation>
 <translation id="8838778928843281408">Valitse puhelimet</translation>
 <translation id="8841843049738266382">Lukea ja muokata sallittuja käyttäjiä</translation>
-<translation id="8842059467121215385">Päivitä sivu käyttääksesi laajennusta "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8842594465773264717">Poista tämä sormenjälki</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8846132060409673887">Lue tietokoneen valmistaja ja malli</translation>
@@ -8475,7 +8477,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="992778845837390402">Linux-varmuuskopiointi käynnissä</translation>
 <translation id="993540765962421562">Asennus käynnissä</translation>
 <translation id="994289308992179865">Toista &amp;jatkuvasti</translation>
-<translation id="995571563161129624">Muista, että jos ohitat ilmoituksia Chromebookilla, ne ohitetaan myös puhelimellasi</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Muodostetaan suojattua yhteyttä...</translation>
 <translation id="996803490569799917">Katso muistoja läheisistä ihmisistä sekä muista</translation>

@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">Зберегти на носій USB</translation>
 <translation id="1468664791493211953">Пропозиції</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> керує цим пристроєм і може відстежувати ваші дії.</translation>
+<translation id="147809995039451286">Не вдалося завантажити оновлення</translation>
 <translation id="1478594628797167447">Сканери</translation>
+<translation id="1483493594462132177">Надіслати</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />: оновлення мікропрограми на пристрої</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> керує цим користувачем і може віддалено змінювати налаштування та відстежувати його дії.</translation>
 <translation id="150962533380566081">Недійсний PUK-код.</translation>
@@ -101,6 +103,7 @@
 <translation id="1745577949879301685">Не вдалося завантажити зображення. Перевірте з’єднання з мережею або повторіть спробу.</translation>
 <translation id="1751249301761991853">Персоналізація</translation>
 <translation id="1753496554272155572">Закрити попередній перегляд фонового малюнка</translation>
+<translation id="1755556344721611131">Додаток Діагностика</translation>
 <translation id="175763766237925754">Добрий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -128,6 +131,7 @@
 <translation id="1999615961760456652">Адаптивний портал</translation>
 <translation id="2006864819935886708">Підключення</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
+<translation id="2011174342667534258">Версія пакета SDK:</translation>
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
 <translation id="2016848882344942759">--немає бренду продавця--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +163,7 @@
 <translation id="225692081236532131">Статус активації</translation>
 <translation id="2271469253353559191">Розклад для темного режиму</translation>
 <translation id="2275586345903859204">Ремонт завершено</translation>
+<translation id="2276999893457278469">Найпопулярніший довідковий контент</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Вставте зовнішній носій, наприклад носій USB або карту SD, на який завантажено зображення з Додатка для відновлення Chromebook</translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
@@ -180,6 +185,7 @@
 <translation id="2418150275289244458">Відкрити в налаштуваннях</translation>
 <translation id="2421798028054665193">Зображення <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
+<translation id="2447969267935997922">Встановлення завершено. Можете вийняти носій USB або карту SD.</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
 <translation id="2480034874476596812">Вимкнути вручну</translation>
@@ -191,6 +197,7 @@
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2526590354069164005">Google Desktop</translation>
 <translation id="253029298928638905">Перезапускається…</translation>
+<translation id="2533048460510040082">Рекомендований довідковий контент</translation>
 <translation id="2536159006530886390">Не вдається підключитися до мережі.</translation>
 <translation id="2570743873672969996">Тестування (<ph name="TEST_NAME" />)…</translation>
 <translation id="2584559707064218956">Щоб вибрати параметри, перейдіть у налаштування</translation>
@@ -229,6 +236,7 @@
 <translation id="3083667275341675831">Діагностика з'єднання</translation>
 <translation id="3084958266922136097">Деактивувати заставку</translation>
 <translation id="3091839911843451378">Не надруковано – друк зупинено</translation>
+<translation id="3096753366938912951">Покладіть пристрій кришкою на плоску поверхню</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3124039320086536031">Пристрій підключено.</translation>
@@ -286,9 +294,11 @@
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
+<translation id="361575905210396100">Дякуємо за відгук</translation>
 <translation id="3616113530831147358">Аудіо</translation>
 <translation id="3621202678540785336">Вхід</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
+<translation id="3643198267586205643">Оновіть ОС</translation>
 <translation id="3643810137582748570">Пропустити калібрування</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
 <translation id="3678765385266369662">Виберіть спосіб, у який хочете вимкнути захист від запису</translation>
@@ -303,6 +313,7 @@
 <translation id="3784455785234192852">Заблокувати</translation>
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
+<translation id="3824259034819781947">Вкласти файли</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3856304145690230735">Гіроскоп корпусу</translation>
@@ -406,6 +417,7 @@
 <translation id="469379815867856270">Потужність сигналу</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="473775607612524610">Оновити</translation>
+<translation id="4740255236714854844">Покладіть пристрій корпусом на плоску поверхню</translation>
 <translation id="4744944742468440486">Інформація, пов'язана з виділеним текстом</translation>
 <translation id="4751272708893364980">Переглянути журнали RMA</translation>
 <translation id="4773299976671772492">Зупинено</translation>
@@ -453,6 +465,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показувати фотографії, час, прогноз погоди й медіадані на неактивному екрані.</translation>
 <translation id="5039804452771397117">Дозволити</translation>
+<translation id="5044978354634658544">Вставте пристрій USB</translation>
 <translation id="5049856988445523908">SIM-карту заблоковано (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групи</translation>
 <translation id="5051044138948155788">Це єдина сторінка. Ви перейдете на екран початку сканування.</translation>
@@ -643,6 +656,7 @@
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
+<translation id="6721744718589119342">Ми можемо надсилати вам додаткову чи оновлену інформацію електронною поштою</translation>
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6723847290197874913">Підсвічування клавіатури</translation>
 <translation id="672609503628871915">Докладніше про нові функції</translation>
@@ -707,6 +721,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
+<translation id="73631062356239394">Поділитися даними діагностики</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Артикул</translation>
 <translation id="7397270852490618635">Вимкнути світлу тему</translation>
@@ -737,6 +752,7 @@
 <translation id="7657530360897961171">Помилка ремонту пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7665800271478495366">Змінити аватар</translation>
+<translation id="7682274994254393134">Початок ремонту</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -863,6 +879,7 @@
 <translation id="885701979325669005">Обсяг пам’яті</translation>
 <translation id="8863170912498892583">Увімкнути темну тему</translation>
 <translation id="8863888432376731307">Шукати <ph name="INTENT" /> для запиту "<ph name="QUERY" />" тощо</translation>
+<translation id="8864415976656252616">Немає рекомендованих матеріалів. Перегляньте найпопулярніший довідковий контент.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Це планшет.</translation>
 <translation id="8881098542468797602">Перевірку пройдено</translation>
@@ -910,6 +927,7 @@
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
 <translation id="917720651393141712">Перевірити</translation>
+<translation id="9188992814426075118">Колір підсвічування клавіатури може автоматично підлаштовуватися до фонового малюнка</translation>
 <translation id="9204237731135241582">Не вдається зв’язатися зі шлюзом із додатків для Android</translation>
 <translation id="9211490828691860325">Усі робочі столи</translation>
 <translation id="922179502584117429">Поточна версія <ph name="VERSION_NUMBER" /> застаріла</translation>

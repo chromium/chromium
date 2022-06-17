@@ -291,6 +291,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1662550410081243962">Saglabāt un aizpildīt maksājuma veidus</translation>
 <translation id="1663943134801823270">Kartes un adreses tiek iegūtas no Chrome. Varat pārvaldīt tās <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Turpmāk lapas, kas būs šādā valodā: <ph name="SOURCE_LANGUAGE" />, tiks tulkotas šādā valodā: <ph name="TARGET_LANGUAGE" />.</translation>
+<translation id="1673886523110456987">Norēķinieties ar karti <ph name="CARD_DETAIL" />, lai izmantotu piedāvājumu.</translation>
 <translation id="1674504678466460478">No <ph name="SOURCE_LANGUAGE" /> uz <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Vispirms īsākā mala</translation>
 <translation id="168693727862418163">Šo politikas vērtību neizdevās apstiprināt, izmantojot tās shēmu, un tā tiks ignorēta.</translation>
@@ -1106,6 +1107,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3986705137476756801">Pagaidām izslēgt subtitrus reāllaikā</translation>
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
 <translation id="3990250421422698716">Ofseta izlīdzināšana</translation>
+<translation id="3992684624889376114">Par šo lapu</translation>
 <translation id="3996311196211510766">Vietne <ph name="ORIGIN" /> ir pieprasījusi, lai izcelsmes politika attiektos uz visu
     tās pieprasījumu, taču šobrīd šo politiku nevar piemērot.</translation>
 <translation id="4006465311664329701">Maksājumu veidi, piedāvājumi un adreses no pakalpojuma Google Pay</translation>
@@ -1556,6 +1558,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Ierīce</translation>
+<translation id="5177076414499237632">Skatīt informāciju par šīs lapas avotu un tēmu</translation>
 <translation id="5179510805599951267">Vai nav valodā: <ph name="ORIGINAL_LANGUAGE" />? Ziņot par šo kļūdu</translation>
 <translation id="518639307526414276">Mājdzīvnieku barība un preces mājdzīvnieku aprūpei</translation>
 <translation id="5190835502935405962">Grāmatzīmju josla</translation>

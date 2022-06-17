@@ -508,6 +508,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="3740525748616366977">Meklēšana ar balsi šajā ierīcē nav pieejama.</translation>
 <translation id="3749259744154402564">Darbība netiek atbalstīta</translation>
 <translation id="3771033907050503522">Inkognito režīma cilnes</translation>
+<translation id="377124182565324804">Pievienot vietni <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Šis iestatījums ir atspējots, jo ir ieslēgta vecāku kontrole</translation>
 <translation id="3771694256347217732">Google pakalpojumu sniegšanas noteikumi</translation>
 <translation id="3773856050682458546">Gan pamatdati, gan informācija par jūsu apmeklētajām vietnēm un izmantotajām lietotnēm</translation>
@@ -590,6 +591,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="4256782883801055595">Atklātā pirmkoda licences</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chrome.</translation>
 <translation id="4263656433980196874">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi (atvērta pilna ekrāna augstumā)</translation>
+<translation id="4266054596873078491">Pierakstieties šajā vietnē un pārlūkā Chrome, izmantojot savu Google kontu.</translation>
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
 <translation id="4290281343757112331">Vai lejupielādēt vēlāk?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ieslēgt ekrāna bloķēšanu Android iestatījumos<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="4425140285732600465">Notiek cenas izsekošana. Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="442518031075347249">Vairs nevarēsiet izmantot virtuālo karti pakalpojumā Google Pay. <ph name="BEGIN_LINK1" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK1" />.</translation>
 <translation id="4428065317363009941">Reklāmu personalizēšana</translation>
-<translation id="4450672886426705087">Google meklēšanas rezultāti.</translation>
 <translation id="4452411734226507615">Aizvērt cilni <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Grāmatzīme saglabāta mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Ja saistāt citu ierīci, izmantojot kvadrātkodu, otrā ierīcē var izmantot šo tālruni kā drošības atslēgu. Ja noņemsiet saistīto ierīci, būs jānoskenē kvadrātkods, lai to atkal saistītu.</translation>
@@ -732,6 +733,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4985248278475639481">Par reklāmu personalizēšanu</translation>
 <translation id="4987271110129728827">Nevar atrast šo lapu. Pārbaudiet pareizrakstību vai meklējiet tīmeklī.</translation>
 <translation id="4988526792673242964">Lapas</translation>
+<translation id="499724277181351974">Doties uz vietni <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Šeit varat sekot šai vietnei</translation>
 <translation id="500351648694011114">Pārlūkojiet tīmekli ērtāk</translation>
 <translation id="5004416275253351869">Google aktivitātes vadīklas</translation>
@@ -790,6 +792,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5329858041417644019">Jūsu pārlūks netiek pārvaldīts</translation>
 <translation id="5339031667684712858">Jūsu noņemtās vietnes</translation>
 <translation id="5342314432463739672">Atļauju pieprasījumi</translation>
+<translation id="53537532693258630">Šeit būs redzamas jūsu noņemtās vietnes.</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="5368227114232678694">Lai pārlūkotu tīmekli privāti šajā ierīcē, izmēģiniet inkognito režīmu.</translation>
 <translation id="5375577065097716013">Meklēt attēlu ar Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 Ņemot vērā jūsu mijiedarbību ar vietni, piemēram, regulāru pierakstīšanos kontā, attiecīgā vietne var izsniegt pārlūkam uzticamības marķieri. Pēc tam, ja citās jūsu apmeklētajās vietnēs tiks meklēts un atrasts jūsu derīgais uzticamības marķieris, palielināsies iespēja, ka šajās vietnēs pret jums izturēsies kā pret cilvēku, nevis robotu.
 
 Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, lai uzzinātu, kas jūs esat.</translation>
+<translation id="6394791151443660613">Meklēt: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">SAITE</translation>
 <translation id="6397616442223433927">Esat tiešsaistē</translation>
 <translation id="6402652558933147609">Kļūda <ph name="ERROR_CODE" /> vietnē <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="8993760627012879038">Atvērt jaunu cilni inkognito režīmā</translation>
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>
 <translation id="8998729206196772491">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="MANAGED_DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chrome datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chrome, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
+<translation id="9021388532480169802">Vietne ir pievienota.</translation>
 <translation id="9022774213089566801">Bieži apmeklētas vietnes</translation>
 <translation id="9028914725102941583">Sinhronizācijas ieslēgšana, lai kopīgotu saturu vairākās ierīcēs</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videoklips}zero{# videoklipi}one{# videoklips}other{# videoklipi}}</translation>

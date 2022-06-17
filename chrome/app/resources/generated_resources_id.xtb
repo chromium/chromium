@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">Buka &amp;Gambar Asli di Tab Baru</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> dalam 1 minggu}other{Update <ph name="DEVICE_TYPE" /> dalam {NUM_WEEKS} minggu}}</translation>
 <translation id="1056898198331236512">Peringatan</translation>
-<translation id="105822690353767994">Selalu izinkan ekstensi berjalan di situs ini jika Anda tidak ingin melihat pesan ini lagi.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Masukkan PIN baru. PIN harus berisi minimal satu karakter dan dapat berisi huruf, angka, dan karakter lain.}other{Masukkan PIN baru. PIN harus berisi minimal # karakter dan dapat berisi huruf, angka, dan karakter lainnya.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
@@ -1436,7 +1435,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Tombol berikut tidak didukung: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan atau sensor cahaya.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL Halaman</translation>
 <translation id="2314165183524574721">Visibilitas saat ini disetel ke tersembunyi</translation>
 <translation id="2314774579020744484">Bahasa yang digunakan saat menerjemahkan halaman</translation>
@@ -2590,6 +2588,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> akan dapat melihat <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Jawaban cepat Asisten Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> mnt</translation>
+<translation id="344537926140058498">Organisasi Anda memblokir file ini karena file berisi konten sensitif atau berbahaya. Minta pemiliknya untuk memperbaiki.</translation>
 <translation id="3445925074670675829">Perangkat USB-C</translation>
 <translation id="3446274660183028131">Luncurkan Parallels Desktop untuk menginstal Windows.</translation>
 <translation id="344630545793878684">Membaca data Anda di sejumlah situs</translation>
@@ -3148,6 +3147,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="3971764089670057203">Sidik jari pada kunci keamanan ini</translation>
 <translation id="3973005893595042880">Pengguna tidak diizinkan</translation>
+<translation id="3973062011568994448">Untuk mengimpor sandi, pilih file CSV.</translation>
 <translation id="3973660817924297510">Memeriksa sandi (<ph name="CHECKED_PASSWORDS" /> dari <ph name="TOTAL_PASSWORDS" />) …</translation>
 <translation id="3974514184580396500">Gunakan “Berikutnya” untuk memindahkan fokus ke item berikutnya di layar</translation>
 <translation id="3975201861340929143">Penjelasan</translation>
@@ -4617,6 +4617,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5466374726908360271">Tempel dan telusuri “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="5467207440419968613">Memblokir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Mencari berbagi file</translation>
+<translation id="5468881191994555667">Pilih file</translation>
 <translation id="5469852975082458401">Anda dapat membuka halaman dengan kursor teks. Tekan F7 untuk menonaktifkan.</translation>
 <translation id="5470735824776589490">Mulai ulang diperlukan sebelum perangkat Anda dapat direset dengan Powerwash. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Halo! Saya suara text to speech Anda.</translation>
@@ -5063,7 +5064,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 
   Eksponen Publik (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Ponsel dan <ph name="DEVICE_TYPE" /> terhubung</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="59174027418879706">Diaktifkan</translation>
 <translation id="5920543303088087579">Koneksi ke jaringan ini tidak diizinkan oleh administrator</translation>
@@ -5199,7 +5199,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat ini dalam mengirimkan informasi yang diperlukan bagi layanan penting seperti keamanan dan update sistem.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google anak Anda, data anak Anda mungkin akan disimpan ke Akun Google miliknya. Pelajari setelan ini dan cara menyesuaikannya lebih lanjut di families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Organisasi Anda memblokir file ini karena tidak memenuhi kebijakan keamanan</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Ketik kode akses untuk memulai transmisi</translation>
 <translation id="6052976518993719690">Otoritas Sertifikasi SSL</translation>
 <translation id="6053401458108962351">Hapus data penjelajahan...</translation>
@@ -6349,6 +6348,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7191159667348037">Printer Tidak Dikenal (USB)</translation>
 <translation id="7193051357671784796">Aplikasi ini ditambahkan oleh organisasi Anda. Mulai ulang aplikasi untuk menyelesaikan penginstalannya.</translation>
 <translation id="7193374945610105795">Tidak ada sandi yang tersimpan untuk <ph name="ORIGIN" /></translation>
+<translation id="7194873994243265344">Organisasi Anda memblokir file ini karena file dienkripsi. Minta pemiliknya untuk mendekripsi.</translation>
 <translation id="7196913789568937443">Cadangkan ke Google Drive. Pulihkan data atau beralih perangkat kapan saja dengan mudah. Cadangan Anda meliputi data aplikasi. Cadangan Anda diupload ke Google dan dienkripsi menggunakan sandi Akun Google Anda. <ph name="BEGIN_LINK1" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Nikmati kecanggihan Google dan Google Penelusuran setiap kali Anda browsing</translation>
 <translation id="719791532916917144">Pintasan keyboard</translation>
@@ -6367,6 +6367,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7211783048245131419">Belum ada kunci tombol akses yang ditetapkan</translation>
 <translation id="7212097698621322584">Masukkan PIN saat ini untuk mengubahnya. Jika tidak mengetahui PIN Anda, reset kunci keamanan, lalu buat PIN baru.</translation>
 <translation id="7213903639823314449">Mesin telusur yang digunakan di kolom URL</translation>
+<translation id="721490496276866468">Impor sandi</translation>
 <translation id="7216595297012131718">Urutkan bahasa berdasarkan preferensi Anda</translation>
 <translation id="7219473482981809164">Kami menemukan beberapa profil yang tersedia untuk didownload. Pilih salah satu yang ingin Anda download sebelum melanjutkan.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Tidak ada sandi lemah}=1{1 sandi lemah}other{{NUM_WEAK} sandi lemah}}</translation>
@@ -7000,6 +7001,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7826190688224781865">Kode ID toko retailer</translation>
 <translation id="7826249772873145665">Proses debug ADB dinonaktifkan</translation>
 <translation id="7826254698725248775">ID perangkat bertentangan.</translation>
+<translation id="7828642077514646543">Error: Tidak dapat mendekode sertifikat</translation>
 <translation id="7828731929332799387">Ini akan menghapus semua cookie dan data situs yang tersedia dalam konteks pihak ketiga. Ingin melanjutkan?</translation>
 <translation id="7829877209233347340">Minta orang tua login dan memberikan izin untuk menambahkan akun sekolah</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7962,6 +7964,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> akan otomatis terkunci dalam # detik.
 <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}other{<ph name="DEVICE_TYPE" /> akan otomatis terkunci dalam # detik.
 <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.}}</translation>
+<translation id="8776294611668764629">Organisasi Anda memblokir file ini karena file terlalu besar untuk pemeriksaan keamanan. Anda dapat membuka file hingga 50 MB.</translation>
 <translation id="8777628254805677039">sandi akar</translation>
 <translation id="8779944680596936487">Situs hanya dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di situs itu sendiri</translation>
 <translation id="8780123805589053431">Dapatkan deskripsi gambar dari Google</translation>
@@ -8026,7 +8029,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Kelola ponsel</translation>
 <translation id="8841843049738266382">Membaca dan mengubah pengguna yang diizinkan</translation>
-<translation id="8842059467121215385">Refresh halaman untuk menggunakan "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8842594465773264717">Hapus sidik jari ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8846132060409673887">Membaca produsen dan model komputer ini</translation>
@@ -8480,7 +8482,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="992778845837390402">Backup Linux saat ini sedang berlangsung</translation>
 <translation id="993540765962421562">Penginstalan sedang berlangsung</translation>
 <translation id="994289308992179865">&amp;Putaran</translation>
-<translation id="995571563161129624">Perlu diingat bahwa menutup notifikasi di Chromebook juga akan menutupnya di ponsel</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Membuat koneksi aman...</translation>
 <translation id="996803490569799917">Lihat kenangan orang-orang favorit Anda dan banyak lagi</translation>

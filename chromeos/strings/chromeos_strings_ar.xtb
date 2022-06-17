@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">‏الحفظ على محرّك أقراص USB</translation>
 <translation id="1468664791493211953">العروض</translation>
 <translation id="1476467821656042872">يدير <ph name="MANAGER" /> هذا الجهاز، وقد يتمكَّن من مراقبة نشاطك.</translation>
+<translation id="147809995039451286">تعذَّر تنزيل التحديث.</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
+<translation id="1483493594462132177">إرسال</translation>
 <translation id="1491076385728777984">جارِ تحديث البرامج الثابتة على الجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="1499900233129743732">يدير <ph name="MANAGER" /> هذا المستخدم، ويمكنه إدارة الإعدادات ومراقبة نشاط المستخدم عن بُعد.</translation>
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
@@ -128,6 +130,7 @@
 <translation id="1999615961760456652">مدخل مشروط الوصول إليه</translation>
 <translation id="2006864819935886708">إمكانية التوصيل</translation>
 <translation id="2008685064673031089">البحث الأوّلي</translation>
+<translation id="2011174342667534258">‏إصدار حزمة تطوير البرامج (SDK):</translation>
 <translation id="2016697457005847575">تجربة خطوات تحديد المشاكل وحلّها</translation>
 <translation id="2016848882344942759">--لم يتم تغيير العلامة التجارية للجهاز--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +162,7 @@
 <translation id="225692081236532131">حالة التفعيل</translation>
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
 <translation id="2275586345903859204">اكتملت عملية الإصلاح</translation>
+<translation id="2276999893457278469">أهم مقالات المحتوى المساعِد ذات الصلة</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="2294753434210277304">‏يُرجى إدخال وحدة تخزين خارجية، مثل محرّك أقراص USB أو بطاقة SD، تتضمّن صورة استرداد الإعدادات الأصلية والتي تم تنزيلها من خلال "أداة استرداد Chromebook".</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
@@ -180,6 +184,7 @@
 <translation id="2418150275289244458">الفتح من خلال "الإعدادات"</translation>
 <translation id="2421798028054665193">الصورة في الصفحة رقم <ph name="CURRENT_PAGE" /> من إجمالي <ph name="TOTAL_PAGES" />.</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
+<translation id="2447969267935997922">‏اكتملت عملية التثبيت. يمكنك الآن إخراج محرّك أقراص USB أو بطاقة SD.</translation>
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="2480034874476596812">الإيقاف يدويًا</translation>
@@ -191,6 +196,7 @@
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2526590354069164005">سطح المكتب</translation>
 <translation id="253029298928638905">جارٍ إعادة التشغيل…</translation>
+<translation id="2533048460510040082">المحتوى المساعِد المُقترَح</translation>
 <translation id="2536159006530886390">تعذَّر الاتصال بالإنترنت.</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
@@ -229,6 +235,7 @@
 <translation id="3083667275341675831">بيانات تشخيص الاتصال</translation>
 <translation id="3084958266922136097">إيقاف شاشة التوقف</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
+<translation id="3096753366938912951">ضع الغطاء على سطح مستوٍ.</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3124039320086536031">الجهاز متصل.</translation>
@@ -286,9 +293,11 @@
 <translation id="3604713164406837697">تغيير الخلفية</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
+<translation id="361575905210396100">شكرًا على ملاحظاتك</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3621202678540785336">الإدخال</translation>
 <translation id="3632579075709132555">إيقاف/تفعيل شاشة الخصوصية</translation>
+<translation id="3643198267586205643">تحديث نظام التشغيل</translation>
 <translation id="3643810137582748570">تخطّي المعايرة</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
 <translation id="3678765385266369662">اختَر كيف تريد إيقاف وضع "الحماية من إضافة المعلومات أو تغييرها"</translation>
@@ -303,6 +312,7 @@
 <translation id="3784455785234192852">قفل</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
+<translation id="3824259034819781947">إرفاق ملفات</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3856304145690230735">الجيروسكوب المُثبَّت في قاعدة الجهاز</translation>
@@ -406,6 +416,7 @@
 <translation id="469379815867856270">قوة الإشارة</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="473775607612524610">تحديث</translation>
+<translation id="4740255236714854844">ضع القاعدة على سطح مستوٍ.</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
 <translation id="4751272708893364980">‏الاطّلاع على سجلّات RMA</translation>
 <translation id="4773299976671772492">متوقفة</translation>
@@ -453,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">عندما تكون الشاشة غير نشطة لفترة، يمكن أن تعرض الصور والوقت وحالة الطقس ومعلومات الوسائط.</translation>
 <translation id="5039804452771397117">سماح</translation>
+<translation id="5044978354634658544">‏إدخال محرّك أقراص USB</translation>
 <translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>
 <translation id="5050042263972837708">اسم المجموعة</translation>
 <translation id="5051044138948155788">هذه هي الصفحة الوحيدة وستؤدي إزالتها إلى نقلك إلى شاشة بدء المسح الضوئي.</translation>
@@ -643,6 +655,7 @@
 <translation id="6659594942844771486">علامة تبويب</translation>
 <translation id="6692996468359469499">الحصول على معلومات ذات صلة باختيارك</translation>
 <translation id="6704062477274546131">دقة نظام أسماء النطاقات</translation>
+<translation id="6721744718589119342">قد نرسل إليك رسالة إلكترونية للحصول على مزيد من المعلومات أو لإطلاعك على آخر التعديلات.</translation>
 <translation id="6723839937902243910">الطاقة</translation>
 <translation id="6723847290197874913">الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="672609503628871915">تعرف على الجديد</translation>
@@ -707,6 +720,7 @@
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />، <ph name="RESULT_TEXT" />، اضغط على مفتاحَي البحث والمسافة لعرض النتائج في "بحث Google".</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
+<translation id="73631062356239394">مشاركة بيانات التشخيص</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">‏رمز التخزين التعريفي (SKU)</translation>
 <translation id="7397270852490618635">إيقاف تشغيل المظهر الفاتح</translation>
@@ -737,6 +751,7 @@
 <translation id="7657530360897961171">حدث خطأ أثناء إصلاح <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7665800271478495366">تغيير الصورة الرمزية</translation>
+<translation id="7682274994254393134">بدء عملية الإصلاح</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -863,6 +878,7 @@
 <translation id="885701979325669005">التخزين</translation>
 <translation id="8863170912498892583">تفعيل المظهر الداكن</translation>
 <translation id="8863888432376731307">الحصول على <ph name="INTENT" /> للطلب المتعلّق بـ "<ph name="QUERY" />" وغير ذلك</translation>
+<translation id="8864415976656252616">ما مِن محتوًى مقترَح. يمكنك الاطّلاع على أهم مقالات المحتوى المساعِد ذات الصلة.</translation>
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
@@ -910,6 +926,7 @@
 <translation id="9149391708638971077">تشغيل اختبار الذاكرة</translation>
 <translation id="9173638680043580060">يتبقى أقل من دقيقة.</translation>
 <translation id="917720651393141712">اختبار</translation>
+<translation id="9188992814426075118">يمكن أن تكون لوحة المفاتيح متطابقة تلقائيًا مع خلفيتك.</translation>
 <translation id="9204237731135241582">‏تعذَّر الاتصال بالبوابة من خلال تطبيقات Android.</translation>
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>
 <translation id="922179502584117429">الإصدار الحالي رقم <ph name="VERSION_NUMBER" /> هو إصدار قديم.</translation>

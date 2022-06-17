@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">جستجوی گفتاری در این دستگاه دردسترس نیست</translation>
 <translation id="3749259744154402564">پشتیبانی‌نشده</translation>
 <translation id="3771033907050503522">برگه‌های ناشناس</translation>
+<translation id="377124182565324804">افزودن <ph name="SITE" /></translation>
 <translation id="3771290962915251154">این تنظیم غیرفعال است زیرا کنترل‌های والدین روشن است</translation>
 <translation id="3771694256347217732">‏شرایط خدمات Google</translation>
 <translation id="3773856050682458546">داده‌های اصلی به‌علاوه اطلاعاتی درباره وب‌سایت‌هایی که بازدید می‌کنید و برنامه‌هایی که استفاده می‌کنید</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />انواع داده‌ای که استفاده می‌شود:<ph name="END_BOLD" /> سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
 <translation id="4263656433980196874">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
+<translation id="4266054596873078491">‏با «حساب Google» به سیستم این سایت و Chrome وارد می‌شوید.</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
 <translation id="4290281343757112331">بعداً بارگیری شود؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">درحال پیگیری قیمت هستید. اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید.</translation>
 <translation id="442518031075347249">‏دیگر نمی‌توانید از کارت مجازی‌تان در Google Pay استفاده کنید. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">شخصی‌سازی آگهی</translation>
-<translation id="4450672886426705087">‏نتایج جستجو از Google.</translation>
 <translation id="4452411734226507615">بستن برگه <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">در <ph name="FOLDER_NAME" /> نشانک گذاشته شد</translation>
 <translation id="4461614516424362539">وقتی دستگاه دیگری را با رمزینه پاسخ‌سریع پیوند دهید، آن دستگاه می‌تواند از این تلفن به‌عنوان کلید امنیتی استفاده کند. اگر دستگاه را بردارید، باید رمزینه پاسخ‌سریع را اسکن کنید تا دوباره پیوند داده شود.</translation>
@@ -732,6 +733,7 @@
 <translation id="4985248278475639481">درباره شخصی‌سازی آگهی</translation>
 <translation id="4987271110129728827">صفحه پیدا نشد. املای واژه‌های تایپ‌شده را بررسی کنید یا جستجوی وب انجام دهید.</translation>
 <translation id="4988526792673242964">صفحات</translation>
+<translation id="499724277181351974">پیمایش: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">این سایت را در اینجا دنبال کنید</translation>
 <translation id="500351648694011114">مرور آسان‌تر</translation>
 <translation id="5004416275253351869">‏کنترل‌های فعالیت Google</translation>
@@ -790,6 +792,7 @@
 <translation id="5329858041417644019">مرورگرتان مدیریت نمی‌شود</translation>
 <translation id="5339031667684712858">سایت‌هایی که برداشته‌اید</translation>
 <translation id="5342314432463739672">درخواست‌های مجوز</translation>
+<translation id="53537532693258630">سایت‌هایی که برداشته‌اید در اینجا نشان داده خواهد شد</translation>
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
 <translation id="5368227114232678694">برای مرور خصوصی در این دستگاه،‌ حالت «ناشناس» را امتحان کنید</translation>
 <translation id="5375577065097716013">‏جستجوی تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@
 براساس تعاملتان با یک سایت (مثلاً مرتباً وارد شدن به سیستم حسابی خاص)، این سایت می‌تواند کد اطمینان برای مرورگرتان صادر کنند. بعداً، اگر سایت‌های دیگری که از آن‌ها بازدید می‌کنید کد اطمینان معتبری را جستجو و پیدا کند، احتمال اینکه با شما مثل یک انسان (و نه ربات) برخورد کند بیشتر است.
 
 کدهای اطمینان حریم‌خصوصی را در وب بهبود می‌بخشد و نمی‌توان از آن‌ها برای پی بردن به هویت شما استفاده کرد.</translation>
+<translation id="6394791151443660613">جستجو: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">پیوند</translation>
 <translation id="6397616442223433927">دوباره آنلاین شدید</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> در <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@
 <translation id="8993760627012879038">باز کردن برگه جدیدی در حالت ناشناس</translation>
 <translation id="8996847606757455498">انتخاب ارائه‌دهنده دیگر</translation>
 <translation id="8998729206196772491">‏هم‌اکنون درحال ورود به سیستم با یک حساب مدیریت‌شده توسط <ph name="MANAGED_DOMAIN" /> و ارائه کنترل داده‌های Chrome خودتان به سرپرست این حساب هستید. داده‌هایتان به‌طور دائم به این حساب مرتبط می‌شوند. با خروج از Chrome، داده‌هایتان از این دستگاه حذف می‌شوند اما همچنان در حساب Google شما باقی می‌ماند.</translation>
+<translation id="9021388532480169802">سایت اضافه شد</translation>
 <translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
 <translation id="9028914725102941583">برای هم‌رسانی بین دستگاه‌ها، «همگام‌سازی» را روشن کنید</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ویدیو}one{# ویدیو}other{# ویدیو}}</translation>

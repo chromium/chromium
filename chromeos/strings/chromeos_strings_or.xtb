@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">USBରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରିଥାଏ ଏବଂ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ।</translation>
+<translation id="147809995039451286">ଅପଡେଟ ଡାଉନଲୋଡ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="1478594628797167447">ସ୍କାନର୍</translation>
+<translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରାଯାଉଛି</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ୍ ଭାବେ ସେଟିଂସକୁ ପରିଚାଳନା ଏବଂ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
@@ -182,6 +184,7 @@
 <translation id="2418150275289244458">ସେଟିଂସରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />ରୁ <ph name="CURRENT_PAGE" /> ନମ୍ବର ଇମେଜ</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
+<translation id="2447969267935997922">ଇନଷ୍ଟଲ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। ବର୍ତ୍ତମାନ ଆପଣ ଆପଣଙ୍କ USB ଡ୍ରାଇଭ କିମ୍ବା SD କାର୍ଡକୁ କାଢ଼ିପାରିବେ।</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
 <translation id="2461822463642141190">ବର୍ତ୍ତମାନର</translation>
 <translation id="2480034874476596812">ମାନୁଆଲୀ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -652,6 +655,7 @@
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
+<translation id="6721744718589119342">ଅଧିକ ସୂଚନା କିମ୍ବା ଅପଡେଟ ପାଇଁ ଆମେ ଆପଣଙ୍କୁ ଇମେଲ କରିପାରୁ</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6723847290197874913">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ</translation>
 <translation id="672609503628871915">କ’ଣ ନୂଆ ଅଛି ଦେଖନ୍ତୁ</translation>
@@ -716,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
+<translation id="73631062356239394">ଡାଏଗ୍ନୋଷ୍ଟିକ ଡାଟା ସେୟାର କରନ୍ତୁ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ହାଲୁକା ଥିମକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -921,6 +926,7 @@
 <translation id="9149391708638971077">ମେମୋରୀ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="9173638680043580060">ଗୋଟିଏ ମିନିଟରୁ କମ୍ ସମୟ ବାକି ଅଛି</translation>
 <translation id="917720651393141712">ପରୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="9188992814426075118">ଆପଣଙ୍କ କୀବୋର୍ଡ ସ୍ୱଚାଳିତ ଭାବେ ଆପଣଙ୍କର ୱାଲପେପର ସହ ମେଳ କରିପାରିବ</translation>
 <translation id="9204237731135241582">Android ଆପଗୁଡ଼ିକରୁ ଗେଟୱେ ସହ ଯୋଗାଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="9211490828691860325">ସମସ୍ତ ଡେସ୍କ</translation>
 <translation id="922179502584117429">ବର୍ତ୍ତମାନର ସଂସ୍କରଣ <ph name="VERSION_NUMBER" /> ପୁରୁଣା ଅଟେ</translation>

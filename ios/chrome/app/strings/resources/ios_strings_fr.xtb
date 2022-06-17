@@ -27,6 +27,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1145536944570833626">Supprimer les données existantes</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
+<translation id="1161340988127985692">Demander à ouvrir des liens d'autres applis en mode navigation privée</translation>
 <translation id="1164064664035028907">Utilisez un mot de passe sécurisé :</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1172898394251786223">Champ suivant</translation>
@@ -292,6 +293,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vue fractionnée</translation>
+<translation id="3450502512529866925">Ajouter cette page aux favoris</translation>
 <translation id="345565170154308620">Gérer les mots de passe…</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement ?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
@@ -484,6 +486,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5090832849094901128">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Vous pouvez enregistrer des pages pour les lire plus tard ou hors connexion. Chrome vous demandera si vous voulez enregistrer les longues pages.</translation>
 <translation id="5094827893301452931">Tweet publié.</translation>
+<translation id="509789154667432072">Ajouter un favori</translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5127805178023152808">La synchronisation est désactivée.</translation>

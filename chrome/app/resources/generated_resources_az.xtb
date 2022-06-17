@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">Orijinal Təsviri Yeni Paneldə Açın</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> cihazını 1 həftə ərzində güncəlləyin}other{<ph name="DEVICE_TYPE" /> cihazını {NUM_WEEKS} həftə ərzində güncəlləyin}}</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
-<translation id="105822690353767994">Bu mesajı yenidən görmək istəmirsinizsə, həmişə artırmanın bu saytda işləməsinə icazə verin.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Yeni PIN kodu daxil edin. PIN minimum bir simvoldan ibarət olmalıdır. Bunlar hərf, rəqəm və digər simvollar ola bilər.}other{Yeni PIN kodu daxil edin. PIN minimum # simvoldan ibarət olmalıdır. Bunlar hərf, rəqəm və digər simvollar ola bilər.}}</translation>
 <translation id="1059484610606223931">Hipermətn Transport Protokolu (HTTPS)</translation>
@@ -1420,7 +1419,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Aşağıdakı düymələr dəstəklənmir: Tab, Shift, Control, Escape, Caps lock, Səs</translation>
 <translation id="2309620859903500144">Bu saytın hərəkət və zəif sensorlarınıza girişi blok edilib.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Səhifə keçidi</translation>
 <translation id="2314165183524574721">Cari görünmə ayarı gizli olaraq ayarlanıb</translation>
 <translation id="2314774579020744484">Səhifələrin tərcüməsində istifadə edilən dil</translation>
@@ -2573,6 +2571,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylına baxa biləcək</translation>
 <translation id="3445047461171030979">Google Assistent cəld cavablar</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
+<translation id="344537926140058498">Təşkilatınız həssas və ya təhlükəli məzmun ehtiva etdiyinə görə bu faylı bloklayıb. Sahibindən onu düzəltməsini istəyin.</translation>
 <translation id="3445925074670675829">USB-C cihazı</translation>
 <translation id="3446274660183028131">Windows'u quraşdırmaq üçün Parallels Desktop'u işə salın.</translation>
 <translation id="344630545793878684">Datanızı çoxsaylı vebsaytda oxuyun</translation>
@@ -3131,6 +3130,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="3971764089670057203">Bu təhlükəsizlik açarında barmaq izləri</translation>
 <translation id="3973005893595042880">İstifadəçiyə icazə verilmir</translation>
+<translation id="3973062011568994448">Parolları idxal etmək üçün CSV faylı seçin.</translation>
 <translation id="3973660817924297510">Parollar yoxlanır (<ph name="CHECKED_PASSWORDS" />/<ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Fokusu ekranda irəli aparmaq üçün “Növbəti” seçimindən istifadə edin</translation>
 <translation id="3975201861340929143">İzahat</translation>
@@ -4597,6 +4597,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5466374726908360271">"<ph name="SEARCH_TERMS" />" ifadəsini yerləşdirib axtarın</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> bloklanıb</translation>
 <translation id="5468173180030470402">Fayl paylaşımı axtarılır</translation>
+<translation id="5468881191994555667">Fayl seçin</translation>
 <translation id="5469852975082458401">Səhifələri mətn kursoru ilə vərəqləyə bilərsiniz. Deaktiv etmək üçün F7 düyməsini basın.</translation>
 <translation id="5470735824776589490">Cihazınız fabrik sıfırlaması etmədən öncə yenidən başladılmalıdır. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Salam! Mən Sizin mətndən-nitqə səsinizəm.</translation>
@@ -5043,7 +5044,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 
   İctimai Eksponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Telefonunuz və <ph name="DEVICE_TYPE" /> qoşulub</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="59174027418879706">Aktiv edilib</translation>
 <translation id="5920543303088087579">Bu şəbəkəyə qoşulma administrator tərəfindən deaktiv edildi</translation>
@@ -5177,7 +5177,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Bu funksiyanı deaktiv etmək bu cihazın sistem güncəlləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Veb və Tətbiq Fəaliyyəti ayarı övladınızın Google Hesabı üçün aktiv edilərsə, övladınızın datası onun Google Hesabında yadda saxlanıla bilər. families.google.com ünvanında bu ayarlar və onları tənzimləmək haqqında ətraflı məlumat əldə edin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Təşkilatınız təhlükəsizlik siyasətinə cavab vermədiyinə görə bu faylı bloklayıb</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Yayımlamağa başlamaq üçün giriş kodunu yazın</translation>
 <translation id="6052976518993719690">SSL Sertifikatlaşdırma Təşkilatı</translation>
 <translation id="6053401458108962351">Baxış datasını silin...</translation>
@@ -6327,6 +6326,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7191159667348037">Naməlum Printer (USB)</translation>
 <translation id="7193051357671784796">Bu tətbiqi təşkilatınız əlavə edib. Quraşdırmanı tamamlamaq üçün tətbiqi yenidən başladın.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> ünvanında heç bir parol yadda saxlanmadı</translation>
+<translation id="7194873994243265344">Təşkilatınız şifrələndiyinə görə bu faylı bloklayıb. Sahibindən onun şifrəsini açmasını istəyin.</translation>
 <translation id="7196913789568937443">Google Diskə yedəkləyin. İstənilən vaxt asanlıqla datanı bərpa edin və ya cihazı dəyişin. Yedəkləməyə tətbiq datası daxildir. Yedəkləmələr Google'a yüklənir və Google Hesab parolu ilə şifrələnir. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">İstənilən vaxt axtarış etmək üçün Google Axtarış və Google yenilikləri əldə edin</translation>
 <translation id="719791532916917144">Klaviatura qısayolu</translation>
@@ -6345,6 +6345,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7211783048245131419">Hələ heç bir düymə təyin edilməyib</translation>
 <translation id="7212097698621322584">Dəyişmək üçün cari PIN-i daxil edin. PIN-i bilmirsinizsə, güvənlik açarını sıfırlamalı, sonra isə yeni PIN yaratmalısınız.</translation>
 <translation id="7213903639823314449">Ünvan panelində istifadə edilən axtarış sistemi</translation>
+<translation id="721490496276866468">Parolları import edin</translation>
 <translation id="7216595297012131718">Tərcihlərə əsasən dil sifariş edin</translation>
 <translation id="7219473482981809164">Endirmək üçün əlçatan çox sayda profil tapmışıq. Başlamazdan əvvəl endirmək istədiklərinizi seçin.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Zəif parol yoxdur}=1{1 zəif parol}other{{NUM_WEAK} zəif parol}}</translation>
@@ -6978,6 +6979,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7826190688224781865">Pərakəndə satıcı mağaza ID kodu</translation>
 <translation id="7826249772873145665">ADB sazlaması deaktivdir</translation>
 <translation id="7826254698725248775">Ziddiyyətli cihaz identifikatoru.</translation>
+<translation id="7828642077514646543">Xəta: Sertifikatın şifrəsini açmaq mümkün deyil</translation>
 <translation id="7828731929332799387">Bu zaman üçüncü tərəf kontekstlərində əlçatan olan bütün kuki və sayt datası silinəcək. Davam etmək istəyirsiniz?</translation>
 <translation id="7829877209233347340">Məktəb hesabı əlavə etmək icazəsi verməsi üçün valideyndən daxil olmasını istəyin</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7936,6 +7938,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8775653927968399786">{0,plural, =1{# saniyədən sonra <ph name="DEVICE_TYPE" /> avtomatik kilidlənəcək.
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.}other{# saniyədən sonra <ph name="DEVICE_TYPE" /> avtomatik kilidlənəcək.
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.}}</translation>
+<translation id="8776294611668764629">Təşkilatınız güvənlik yoxlanışı üçün çox böyük olduğuna görə bu faylı bloklayıb. 50 MB-a qədər faylları aça bilərsiniz.</translation>
 <translation id="8777628254805677039">əsas parol</translation>
 <translation id="8779944680596936487">Saytlar yalnız öz saytlarında axtarış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər</translation>
 <translation id="8780123805589053431">Google'dan şəkil təsvirlərini əldə edin</translation>
@@ -8000,7 +8003,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Telefonların idarə edilməsi</translation>
 <translation id="8841843049738266382">İcazə verilənlər siyahısında olan istifadəçiləri oxuyun və dəyişin</translation>
-<translation id="8842059467121215385">Səhifəni yeniləyərək "<ph name="EXTENSION_NAME" />" istifadə edin</translation>
 <translation id="8842594465773264717">Bu barmaq izini silin</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8846132060409673887">Bu kompüterin istehsalçı və modelini oxuyun</translation>
@@ -8454,7 +8456,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="992778845837390402">Linux hazırda yedəklənir</translation>
 <translation id="993540765962421562">Quraşdırma davam edir</translation>
 <translation id="994289308992179865">&amp;Dövr</translation>
-<translation id="995571563161129624">Nəzərə alın ki, Chromebook'da bildirişləri qapatdıqda onlar telefonunuzda da qapadılacaq</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Güvənli bağlantı qurulur...</translation>
 <translation id="996803490569799917">Sevdiyiniz insanların xatirələrinə və digər məlumatlara baxın</translation>

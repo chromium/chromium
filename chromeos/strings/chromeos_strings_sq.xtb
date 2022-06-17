@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">Ruaj te njësia USB</translation>
 <translation id="1468664791493211953">Ofertat</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
+<translation id="147809995039451286">Përditësimi nuk mund të shkarkohej</translation>
 <translation id="1478594628797167447">Skaner</translation>
+<translation id="1483493594462132177">Dërgo</translation>
 <translation id="1491076385728777984">Po përditësohet firmueri në <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
@@ -128,6 +130,7 @@
 <translation id="1999615961760456652">Portal izolues</translation>
 <translation id="2006864819935886708">Lidhshmëria</translation>
 <translation id="2008685064673031089">Kërkimi kryesor</translation>
+<translation id="2011174342667534258">Versioni i SDK-së:</translation>
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="2016848882344942759">--pa etiketë të bardhë--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -159,6 +162,7 @@
 <translation id="225692081236532131">Statusi i aktivizimit</translation>
 <translation id="2271469253353559191">Planifikimi i modalitetit të errët</translation>
 <translation id="2275586345903859204">Riparimi përfundoi</translation>
+<translation id="2276999893457278469">Përmbajtjet kryesore të ndihmës</translation>
 <translation id="2287186687001756809">Nuk ka asnjë imazh. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Fut hapësirën ruajtëse të jashtme, si p.sh. një njësi USB ose një kartë SD, me imazhin e shkarkuar të Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Përdor çiftin aktual të çelësave</translation>
@@ -180,6 +184,7 @@
 <translation id="2418150275289244458">Hape te cilësimet</translation>
 <translation id="2421798028054665193">Imazhi <ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
+<translation id="2447969267935997922">Instalimi ka përfunduar. Tani mund ta heqësh njësinë USB ose kartën SD.</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2461822463642141190">Rryma</translation>
 <translation id="2480034874476596812">Çaktivizo manualisht</translation>
@@ -191,6 +196,7 @@
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2526590354069164005">Desktopi</translation>
 <translation id="253029298928638905">Po riniset...</translation>
+<translation id="2533048460510040082">Përmbajtjet e sugjeruara të ndihmës</translation>
 <translation id="2536159006530886390">S'mund të lidhet me internetin.</translation>
 <translation id="2570743873672969996">Po ekzekuton testin <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Për ta konfiguruar, shko te "Cilësimet"</translation>
@@ -229,6 +235,7 @@
 <translation id="3083667275341675831">Diagnostikimi i lidhshmërisë</translation>
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
+<translation id="3096753366938912951">Vendose kapakun mbi një sipërfaqe të rrafshët</translation>
 <translation id="3102119246920354026">Memoria specifike</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Pajisja është lidhur.</translation>
@@ -286,9 +293,11 @@
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
+<translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Hyrje</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
+<translation id="3643198267586205643">Përditëso sistemin operativ</translation>
 <translation id="3643810137582748570">Kapërce kalibrimin</translation>
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
 <translation id="3678765385266369662">Zgjidh se si dëshiron ta çaktivizosh Write Protect</translation>
@@ -303,6 +312,7 @@
 <translation id="3784455785234192852">Kyçe</translation>
 <translation id="38114475217616659">Fshi të gjithë historikun</translation>
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
+<translation id="3824259034819781947">Bashkëngjit skedarët</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3856304145690230735">Xhiroskopi bazë</translation>
@@ -406,6 +416,7 @@
 <translation id="469379815867856270">Fuqia e sinjalit</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="473775607612524610">Përditësoje</translation>
+<translation id="4740255236714854844">Vendose bazën mbi një sipërfaqe të rrafshët</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
 <translation id="4751272708893364980">Shiko evidencat e autorizimeve AKM</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
@@ -453,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kur ekrani yt është në gjendje joaktive, shfaq fotografitë, orën, motin dhe informacionet e medias.</translation>
 <translation id="5039804452771397117">Lejo</translation>
+<translation id="5044978354634658544">Fut njësinë USB</translation>
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
 <translation id="5051044138948155788">Kjo është faqja e vetme. Kjo do të të çojë tek ekrani i fillimit të skanimit.</translation>
@@ -642,6 +654,7 @@
 <translation id="6659594942844771486">Skeda</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
+<translation id="6721744718589119342">Mund të të dërgojmë email-e për më shumë informacione ose për përditësime</translation>
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="6723847290197874913">Drita e sfondit e tastierës</translation>
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
@@ -736,6 +749,7 @@
 <translation id="7657530360897961171">Gabim riparimi për pajisjen <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665800271478495366">Ndrysho simbolin</translation>
+<translation id="7682274994254393134">Nisja e riparimit</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -862,6 +876,7 @@
 <translation id="885701979325669005">Hapësira ruajtëse</translation>
 <translation id="8863170912498892583">Aktivizo temën e errët</translation>
 <translation id="8863888432376731307">Merr <ph name="INTENT" /> për "<ph name="QUERY" />" dhe më shumë</translation>
+<translation id="8864415976656252616">Nuk ka përmbajtje të sugjeruara. Shiko përmbajtjet kryesore të ndihmës.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Pajisja është një tablet.</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>

@@ -345,6 +345,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus offertes</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Précharger les pages</translation>
+<translation id="2886836735871983413">Une liste de sites sera affichée ici au fur et à mesure que vous naviguez sur le Web</translation>
 <translation id="2888126860611144412">À propos de Google Chrome</translation>
 <translation id="2891154217021530873">Arrêter le chargement de la page</translation>
 <translation id="2892647708214602204">Vous verrez une notification lorsque ce fichier sera prêt</translation>
@@ -372,6 +373,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2987620471460279764">Texte partagé à partir d'un autre appareil</translation>
 <translation id="2989523299700148168">Visites récentes</translation>
 <translation id="2992473221983447149">Descriptions des images</translation>
+<translation id="2994959273484668146">Retirer <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Créer une phrase de passe</translation>
 <translation id="2996809686854298943">URL requise</translation>
 <translation id="2997081575621687554">Lorsqu'un site Google propose de précharger en privé des liens sur sa page, Chrome chiffre et précharge les pages par les serveurs de Google sans témoins. Cette opération permet de masquer votre identité sur le site préchargé.</translation>
@@ -521,6 +523,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861633093716975811">Vidéos populaires</translation>
+<translation id="3874520961715512166">Site retiré</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
 <translation id="3899682235662194879">Fermer tous les onglets de navigation privée</translation>
@@ -558,6 +561,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>
 <translation id="4096227151372679484">Flux d'enregistrement des favoris ouvert à mi-hauteur</translation>
 <translation id="4099578267706723511">Envoyez des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome.</translation>
+<translation id="4101475238162928417">Synchronisez vos données pour ajouter vos mots de passe, vos favoris et plus sur vos autres appareils</translation>
 <translation id="410351446219883937">Lecture automatique</translation>
 <translation id="4106587138345390261">Chrome explore de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigation tout en recourant dans une moindre mesure à vos renseignements personnels</translation>
 <translation id="4108314971463891922">Suivre</translation>
@@ -611,7 +615,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
 <translation id="442518031075347249">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
-<translation id="4450672886426705087">Résultats de la recherche Google.</translation>
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marqué comme favori dans <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Lorsque vous associez un autre appareil au moyen d'un code QR, il peut utiliser ce téléphone en tant que clé de sécurité. Si vous le retirez, vous devrez numériser le code QR de nouveau pour l'associer.</translation>
@@ -728,6 +731,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4985248278475639481">À propos de la personnalisation des annonces</translation>
 <translation id="4987271110129728827">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
+<translation id="499724277181351974">Naviguer : <ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Suivez ce site ici</translation>
 <translation id="500351648694011114">Naviguez plus facilement</translation>
 <translation id="5004416275253351869">Commandes d'activité Google</translation>
@@ -977,6 +981,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 Un site peut envoyer un jeton de confiance à votre navigateur en fonction de votre interaction avec ce site, comme la connexion régulière à un compte. Ultérieurement, si d'autres sites que vous visitez recherchent et trouvent un jeton de confiance valide, ils seront plus susceptibles de vous traiter comme une personne et non comme un robot.
 
 Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent pas être utilisés pour savoir qui vous êtes.</translation>
+<translation id="6394791151443660613">Recherche : <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIEN</translation>
 <translation id="6397616442223433927">De nouveau en ligne</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sur <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1196,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="749294055653435199">Cet appareil ne prend pas en charge Lentille Google</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (mise à jour : <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Veuillez patienter...</translation>
+<translation id="7502234197872745058">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Les mises à jour ne sont pas accessibles</translation>
 <translation id="7507207699631365376">Consulter la <ph name="BEGIN_LINK" />politique de confidentialité<ph name="END_LINK" /> de ce fournisseur</translation>
 <translation id="7514365320538308">Télécharger</translation>

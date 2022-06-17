@@ -91,6 +91,7 @@
 <translation id="300526633675317032">這會將網站儲存的資料全部清除 (共 <ph name="SIZE_IN_KB" />)。</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
+<translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
 <translation id="3114012059975132928">影片播放器</translation>
 <translation id="3115898365077584848">顯示資訊</translation>
 <translation id="3123473560110926937">在某些網站上設定封鎖</translation>
@@ -125,6 +126,7 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
+<translation id="3992684624889376114">為何顯示此頁</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4008040567710660924">允許特定網站的 Cookie。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
@@ -225,6 +227,7 @@
 <translation id="6270391203985052864">網站可以要求傳送通知給你</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6320088164292336938">震動</translation>
+<translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
 <translation id="6388207532828177975">清除並重設</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6439114592976064011">禁止網站使用你的虛擬實境裝置和資料</translation>

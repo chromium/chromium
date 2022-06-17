@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং তার ফলে হয়ত সে আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
 <translation id="147809995039451286">আপডেট ডাউনলোড করা যায়নি</translation>
 <translation id="1478594628797167447">স্ক্যানার</translation>
+<translation id="1483493594462132177">পাঠান</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> ডিভাইসে ফার্মওয়্যার আপডেট করা হচ্ছে</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> এই ব্যবহারকারীকে ম্যানেজ করে এবং তার ফলে এটি হয়ত অন্য জায়গা থেকে সেটিংস ম্যানেজ করতে এবং ব্যবহারকারীর অ্যাক্টিভিটির উপর নজর রাখতে পারে।</translation>
 <translation id="150962533380566081">ভুল PUK।</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">ছবি লোড করা যায়নি। আপনার নেটওয়ার্ক কানেকশন চেক করুন বা আবার ছবি লোড করার চেষ্টা করুন।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
 <translation id="1753496554272155572">ওয়ালপেপার প্রিভিউ থেকে বেরিয়ে আসুন</translation>
+<translation id="1755556344721611131">ডায়াগনস্টিকস অ্যাপ</translation>
 <translation id="175763766237925754">ভাল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -653,6 +655,7 @@
 <translation id="6659594942844771486">ট্যাব</translation>
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
+<translation id="6721744718589119342">আরও তথ্য বা আপডেটের জন্য আমরা আপনাকে ইমেল করতে পারি</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
 <translation id="6723847290197874913">কীবোর্ড ব্যাকলাইট</translation>
 <translation id="672609503628871915">নতুন কী আছে দেখুন</translation>

@@ -66,6 +66,7 @@
 <translation id="1476467821656042872">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ಗಮನವಿಡಲು ಇದಕ್ಕೆ ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
 <translation id="147809995039451286">ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1478594628797167447">ಸ್ಕ್ಯಾನರ್</translation>
+<translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> ನಲ್ಲಿ ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1499900233129743732">ಈ ಬಳಕೆದಾರರನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ರಿಮೋಟ್ ಆಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಬಳಕೆದಾರರ ಚಟುವಟಿಕೆಯನ್ನು ಮಾನಿಟರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="150962533380566081">ಅಮಾನ್ಯ PUK.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">ಚಿತ್ರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಚಿತ್ರಗಳನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1751249301761991853">ವೈಯಕ್ತಿಕ</translation>
 <translation id="1753496554272155572">ವಾಲ್‌ಪೇಪರ್ ಪೂರ್ವವೀಕ್ಷಣೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="1755556344721611131">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಆ್ಯಪ್</translation>
 <translation id="175763766237925754">ಉತ್ತಮ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -653,6 +655,7 @@
 <translation id="6659594942844771486">ಬ್ರೌಸರ್ ಟ್ಯಾಬ್</translation>
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="6704062477274546131">DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
+<translation id="6721744718589119342">ಹೆಚ್ಚಿನ ಮಾಹಿತಿ ಅಥವಾ ಅಪ್‌ಡೇಟ್‌ಗಳಿಗಾಗಿ ನಾವು ನಿಮಗೆ ಇಮೇಲ್ ಕಳುಹಿಸಬಹುದು</translation>
 <translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="6723847290197874913">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್</translation>
 <translation id="672609503628871915">ಹೊಸದೇನಿದೆ ನೋಡಿ</translation>
@@ -717,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="7343649194310845056">ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳು</translation>
 <translation id="7359657277149375382">ಫೈಲ್ ಪ್ರಕಾರ</translation>
+<translation id="73631062356239394">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ಲೈಟ್ ಥೀಮ್‌ ಆಫ್ ಮಾಡಿ</translation>
@@ -922,6 +926,7 @@
 <translation id="9149391708638971077">ಮೆಮೊರಿ ಪರೀಕ್ಷೆ ರನ್ ಮಾಡಿ</translation>
 <translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>
+<translation id="9188992814426075118">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಾಣಿಕೆಯಾಗಬಹುದು</translation>
 <translation id="9204237731135241582">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ಗೇಟ್‌ವೇ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="9211490828691860325">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="922179502584117429">ಪ್ರಸ್ತುತ ಆವೃತ್ತಿಯು <ph name="VERSION_NUMBER" /> ಹಳೆಯದಾಗಿದೆ</translation>

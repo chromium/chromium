@@ -27,6 +27,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1145536944570833626">Mevcut verileri silin.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> olarak oturum açıldı</translation>
 <translation id="1154984953698510061">Diğer Sekmeleri Göster</translation>
+<translation id="1161340988127985692">Diğer Uygulamalardaki Bağlantıları Gizli Modda Açma İsteğinde Bulunma</translation>
 <translation id="1164064664035028907">Güçlü şifre kullanın:</translation>
 <translation id="1165039591588034296">Hata</translation>
 <translation id="1172898394251786223">Sonraki alan</translation>
@@ -292,6 +293,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3443810440409579745">Sekme alındı.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dk.</translation>
 <translation id="3448016392200048164">Bölünmüş Görünüm</translation>
+<translation id="3450502512529866925">Bu sayfaya yer işareti ekle</translation>
 <translation id="345565170154308620">Şifreleri Yönet...</translation>
 <translation id="3469166899695866866">İndirme Durdurulsun mu?</translation>
 <translation id="3470502288861289375">Kopyalanıyor...</translation>
@@ -484,6 +486,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5090832849094901128">Bu şifre kaldırıldığında <ph name="WEBSITE" /> üzerindeki hesabınız silinmez.</translation>
 <translation id="5092117651143801290">Sayfaları daha sonra veya çevrimdışı okumak için kaydedebilirsiniz. Chrome, uzun sayfaları kaydetmek isteyip istemediğinizi sorar.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
+<translation id="509789154667432072">Yer işareti ekle</translation>
 <translation id="5118713593561876160">İlgi alanları</translation>
 <translation id="5118764316110575523">Kapalı</translation>
 <translation id="5127805178023152808">Senkronizasyon kapalı</translation>

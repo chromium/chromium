@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">આ ડિવાઇસ પર વૉઇસ શોધ ઉપલબ્ધ નથી</translation>
 <translation id="3749259744154402564">અનસપોર્ટેડ</translation>
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
+<translation id="377124182565324804"><ph name="SITE" /> ઉમેરો</translation>
 <translation id="3771290962915251154">માતાપિતા યોગ્ય નિયંત્રણો ચાલુ હોવાને કારણે આ સેટિંગ બંધ કરવામાં આવ્યું છે</translation>
 <translation id="3771694256347217732">Googleની સેવાની શરતો</translation>
 <translation id="3773856050682458546">મૂળભૂત ડેટા ઉપરાંત તમે મુલાકાત લો છો તે વેબસાઇટ અને ઉપયોગ કરો છો તે ઍપની માહિતી</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />કયા ડેટાનો ઉપયોગ કરવામાં આવે છે:<ph name="END_BOLD" /> તમારો બ્રાઉઝિંગ ઇતિહાસ, જે આ ડિવાઇસ પર તમે Chrome વડે મુલાકાત લીધેલી સાઇટનો રેકોર્ડ છે.</translation>
 <translation id="4263656433980196874">Assistant વૉઇસ શોધની સંમતિ માટેનું UI સંપૂર્ણ ઊંચાઈએ ખોલ્યું</translation>
+<translation id="4266054596873078491">તમારા Google એકાઉન્ટ વડે આ સાઇટ અને Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
 <translation id="4290281343757112331">તેના બદલે પછીથી ડાઉનલોડ કરીએ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android સેટિંગમાં સ્ક્રીન લૉકની સુવિધા ચાલુ કરો<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">કિંમત ટ્રૅક કરી રહ્યાં છીએ. જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો.</translation>
 <translation id="442518031075347249">હવેથી તમે Google Pay સાથે તમારા વર્ચ્યુઅલ કાર્ડનો ઉપયોગ કરી શકશો નહીં. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">રુચિ મુજબ જાહેરાત</translation>
-<translation id="4450672886426705087">Google પરથી મળેલા શોધ પરિણામો.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> પર બુકમાર્ક કર્યું</translation>
 <translation id="4461614516424362539">જ્યારે તમે QR કોડ વડે અન્ય ડિવાઇસ લિંક કરો, ત્યારે તે સિક્યુરિટી કી તરીકે આ ફોનનો ઉપયોગ કરી શકે છે. જો તમે તેને કાઢી નાખો, તો તેને ફરી લિંક કરવા માટે તમારે QR કોડ સ્કૅન કરવો જરૂરી રહેશે.</translation>
@@ -732,6 +733,7 @@
 <translation id="4985248278475639481">રુચિ મુજબ જાહેરાત વિશે</translation>
 <translation id="4987271110129728827">એ પેજ મળતું નથી. તમારી જોડણી ચેક કરો અથવા વેબ શોધનો પ્રયાસ કરો.</translation>
 <translation id="4988526792673242964">પેજ</translation>
+<translation id="499724277181351974">નૅવિગેટ કરીને આના પર જાઓ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">આ સાઇટને અહીં ફૉલો કરો</translation>
 <translation id="500351648694011114">વધુ સરળતાથી બ્રાઉઝ કરો</translation>
 <translation id="5004416275253351869">Google પ્રવૃત્તિ નિયંત્રણો</translation>
@@ -790,6 +792,7 @@
 <translation id="5329858041417644019">તમારું બ્રાઉઝર મેનેજ કરેલું નથી</translation>
 <translation id="5339031667684712858">તમે કાઢી નાખેલી સાઇટ</translation>
 <translation id="5342314432463739672">પરવાનગીની વિનંતી કરી</translation>
+<translation id="53537532693258630">તમે કાઢી નાખેલી સાઇટ અહીં દેખાશે</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5368227114232678694">આ ડિવાઇસ પર ખાનગી રીતે બ્રાઉઝ કરવા માટે, છૂપો મોડ અજમાવી જુઓ</translation>
 <translation id="5375577065097716013">Google Lens વડે છબી શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@
 એકાઉન્ટમાં નિયમિતપણે સાઇન ઇન કરવા જેવી સાઇટ સાથેની તમારી ક્રિયાપ્રતિક્રિયાના આધારે, તે સાઇટ તમારા બ્રાઉઝર માટે ટ્રસ્ટ ટોકન જારી કરી શકે છે. તે પછી, જો તમે મુલાકાત લીધેલી અન્ય સાઇટ ટ્રસ્ટ ટોકનને ચેક કરે અને એ માન્ય ટ્રસ્ટ ટોકન જણાય, તો તે તમારી સાથે બૉટની જેમ નહીં પણ એક વ્યક્તિની જેમ વર્તે તેવી શક્યતા વધુ છે.
 
 ટ્રસ્ટ ટોકન વેબ પર પ્રાઇવસીને બહેતર બનાવે છે અને તમે કોણ છો તે જાણવા માટે તેનો ઉપયોગ કરી શકાતો નથી.</translation>
+<translation id="6394791151443660613">આ શોધો: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">લિંક</translation>
 <translation id="6397616442223433927">પાછા ઑનલાઇન થયા</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> પર <ph name="ERROR_CODE" /></translation>
@@ -1495,6 +1499,7 @@
 <translation id="8993760627012879038">છુપા મોડમાં એક નવું ટૅબ ખોલો</translation>
 <translation id="8996847606757455498">કોઈ અન્ય પ્રદાતા પસંદ કરો</translation>
 <translation id="8998729206196772491">તમે <ph name="MANAGED_DOMAIN" /> દ્વારા મેનેજ એકાઉન્ટમાં સાઇન ઇન કરી રહ્યાં છો અને તમારા Chrome ડેટા પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો ડેટા આ એકાઉન્ટ સાથે કાયમીરૂપે જોડાયેલું રહેશે. Chromeમાંથી સાઇન આઉટ કરવું આ ડિવાઇસ પરથી તમારો ડેટા ડિલીટ કરશે, પરંતુ એ તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
+<translation id="9021388532480169802">સાઇટ ઉમેરી</translation>
 <translation id="9022774213089566801">વારંવાર મુલાકાત લેવાયેલ</translation>
 <translation id="9028914725102941583">બધા ડિવાઇસ પર શેર કરવા માટે 'સિંક કરો'ની સુવિધા ચાલુ કરો</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>

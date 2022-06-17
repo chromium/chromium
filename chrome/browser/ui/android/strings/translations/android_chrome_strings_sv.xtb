@@ -345,6 +345,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2861923151411510142">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
+<translation id="2886836735871983413">En lista över webbplatser visas här allt eftersom du surfar på webben</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Avbryt inläsningen av sidan</translation>
 <translation id="2892647708214602204">Du ser en avisering när filen är klar</translation>
@@ -372,6 +373,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2992473221983447149">Bildbeskrivningar</translation>
+<translation id="2994959273484668146">Ta bort <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Skapa lösenfras</translation>
 <translation id="2996809686854298943">En webbadress måste anges.</translation>
 <translation id="2997081575621687554">När en Google-webbplats frågar om dess länkar ska läsas in privat i förväg krypterar Chrome sidorna och läser in dem i förväg via Googles servrar utan cookies. Det innebär att din identitet döljs från den förinlästa webbplatsen.</translation>
@@ -522,6 +524,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861633093716975811">Populära videor</translation>
+<translation id="3874520961715512166">Webbplatsen har tagits bort</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3894427358181296146">Lägg till mapp</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>
@@ -559,6 +562,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
 <translation id="4099578267706723511">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
+<translation id="4101475238162928417">Synkronisera om du vill få tillgång till lösenord, bokmärken med mera på dina andra enheter</translation>
 <translation id="410351446219883937">Automatisk uppspelning</translation>
 <translation id="4106587138345390261">Chrome utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
 <translation id="4108314971463891922">Följ</translation>
@@ -612,7 +616,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="442518031075347249">Du kommer inte längre att kunna använda det virtuella kortet med Google Pay. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personliga annonspreferenser</translation>
-<translation id="4450672886426705087">Sökresultat från Google.</translation>
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bokmärkt i <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">När en annan enhet har länkats med QR-kod kan den enheten använda telefonen som säkerhetsnyckel. Om du tar bort länken måste du skanna en QR-kod om du vill länka enheten igen.</translation>
@@ -729,6 +732,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4985248278475639481">Om annonsanpassning</translation>
 <translation id="4987271110129728827">Sidan hittades inte. Kontrollera stavningen eller testa att söka på webben.</translation>
 <translation id="4988526792673242964">Sidor</translation>
+<translation id="499724277181351974">Navigera till: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Följ denna webbplats här</translation>
 <translation id="500351648694011114">Surfa enklare</translation>
 <translation id="5004416275253351869">Googles aktivitetsinställningar</translation>
@@ -978,6 +982,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 En webbplats kan utfärda en förtroendetoken till din webbläsare utifrån dina interaktioner med webbplatsen, till exempel att du regelbundet loggar in på ett konto. Om andra webbplatser du besöker sedan söker efter och hittar en giltig förtroendetoken är det mer sannolikt att du behandlas som en person och inte som en bot.
 
 Med förtroendetoken förbättras integriteten på webben. De kan inte användas för att ta reda på vem du är.</translation>
+<translation id="6394791151443660613">Sök efter: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LÄNK</translation>
 <translation id="6397616442223433927">Online igen</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
@@ -1192,6 +1197,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="749294055653435199">Google Lens är inte tillgängligt på den här enheten</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppdaterades <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Vänta …</translation>
+<translation id="7502234197872745058"><ph name="BEGIN_LINK1" />Logga ut från Chrome<ph name="END_LINK1" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="750228856503700085">Inga uppdateringar är tillgängliga</translation>
 <translation id="7507207699631365376">Läs leverantörens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">Ladda ned</translation>

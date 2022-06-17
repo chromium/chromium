@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">‏USB میں محفوظ کریں</translation>
 <translation id="1468664791493211953">پیشکشیں</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
+<translation id="147809995039451286">اپ ڈیٹ ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="1478594628797167447">اسکینر</translation>
+<translation id="1483493594462132177">بھیجیں</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> فرم ویئر کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="150962533380566081">‏غلط PUK۔</translation>
@@ -101,6 +103,7 @@
 <translation id="1745577949879301685">تصاویر لوڈ نہیں ہو سکیں۔ اپنا نیٹ ورک کنکشن چیک کریں یا تصاویر کو دوبارہ لوڈ کرنے کی کوشش کریں۔</translation>
 <translation id="1751249301761991853">ذاتی</translation>
 <translation id="1753496554272155572">وال پیپر کے پیش منظر سے باہر نکلیں</translation>
+<translation id="1755556344721611131">تشخیصات کی ایپ</translation>
 <translation id="175763766237925754">اچھا (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -182,6 +185,7 @@
 <translation id="2418150275289244458">ترتیبات میں کھولیں</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> میں سے تصویر <ph name="CURRENT_PAGE" /></translation>
 <translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
+<translation id="2447969267935997922">‏انسٹال کرنا مکمل ہو گیا۔ اب آپ اپنی USB ڈرائیو یا SD کارڈ کو ہٹا سکتے ہیں۔</translation>
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2461822463642141190">حالیہ</translation>
 <translation id="2480034874476596812">دستی طور پر آف کریں</translation>
@@ -232,6 +236,7 @@
 <translation id="3083667275341675831">کنیکٹویٹی ڈائيگناسٹکس</translation>
 <translation id="3084958266922136097">اسکرین سیور غیر فعال کریں</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
+<translation id="3096753366938912951">ہموار سطح پر لِڈ کو رکھیں</translation>
 <translation id="3102119246920354026">کیش</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">آلہ منسلک ہے۔</translation>
@@ -289,9 +294,11 @@
 <translation id="3604713164406837697">وال پیپر تبدیل کریں</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
 <translation id="3606583719724308068">‏HTTPS ویب سائٹس پر زیادہ تاخیر</translation>
+<translation id="361575905210396100">آپ کے تاثرات کا شکریہ</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3621202678540785336">ان پٹ</translation>
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
+<translation id="3643198267586205643">‏OS کو اپ ڈیٹ کریں</translation>
 <translation id="3643810137582748570">کیلیبریشن کو نظر انداز کریں</translation>
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
 <translation id="3678765385266369662">‏منتخب کریں کہ آپ کس طرح Write Protect کو آف کرنا چاہیں گے</translation>
@@ -410,6 +417,7 @@
 <translation id="469379815867856270">سگنل کی مضبوطی</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
+<translation id="4740255236714854844">ہموار سطح پر بنیاد رکھیں</translation>
 <translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
 <translation id="4751272708893364980">‏RMA لاگز دیکھیں</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
@@ -457,6 +465,7 @@
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
+<translation id="5044978354634658544">‏USB داخل کریں</translation>
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
 <translation id="5051044138948155788">یہ واحد صفحہ ہے۔ یہ آپ کو سکیننگ اسٹارٹ سکرین پر لے جائے گا۔</translation>
@@ -646,6 +655,7 @@
 <translation id="6659594942844771486">براؤزر ٹیب</translation>
 <translation id="6692996468359469499">اپنے انتخاب سے متعلق معلومات حاصل کریں</translation>
 <translation id="6704062477274546131">‏DNS ریزولیوشن</translation>
+<translation id="6721744718589119342">مزید معلومات یا اپ ڈیٹس کیلئے ہم آپ کو ای میل کر سکتے ہیں</translation>
 <translation id="6723839937902243910">پاور</translation>
 <translation id="6723847290197874913">کی بورڈ بیک لائٹ</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
@@ -710,6 +720,7 @@
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ Google تلاش میں نتیجہ دیکھنے کیلئے Search اور Space دبائیں۔</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
+<translation id="73631062356239394">تشخیصی ڈیٹا کا اشتراک کریں</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ہلکی تھیم آف کریں</translation>
@@ -740,6 +751,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> کی مرمت میں خرابی</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7665800271478495366">اوتار تبدیل کریں</translation>
+<translation id="7682274994254393134">مرمت کا آغاز</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -914,6 +926,7 @@
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
 <translation id="9173638680043580060">ایک منٹ سے کم باقی ہے</translation>
 <translation id="917720651393141712">ٹیسٹ</translation>
+<translation id="9188992814426075118">آپ کا کی بورڈ خودکار طور پر آپ کے وال پیپر سے مماثل ہو سکتا ہے</translation>
 <translation id="9204237731135241582">‏Android ایپس سے گیٹ وے رابطے کو منسلک نہیں کیا جا سکتا</translation>
 <translation id="9211490828691860325">تمام ڈیسکس</translation>
 <translation id="922179502584117429">موجودہ ورژن <ph name="VERSION_NUMBER" /> پرانا ہے</translation>

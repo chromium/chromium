@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">નવા ટેબમાં મૂળ &amp;છબી ખોલો</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 અઠવાડિયાની અંદર <ph name="DEVICE_TYPE" /> અપડેટ કરો}one{{NUM_WEEKS} અઠવાડિયાંમાં <ph name="DEVICE_TYPE" /> અપડેટ કરો}other{{NUM_WEEKS} અઠવાડિયાંમાં <ph name="DEVICE_TYPE" /> અપડેટ કરો}}</translation>
 <translation id="1056898198331236512">ચેતવણી</translation>
-<translation id="105822690353767994">જો તમે આ મેસેજ ફરીથી જોવા ન માગતા હો, તો આ સાઇટ પર એક્સ્ટેન્શનને ચલાવવાની હંમેશાં મંજૂરી આપો.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{તમારો નવો પિન દાખલ કરો. પિન ઓછામાં ઓછા એક અક્ષરનો હોવો જરૂરી છે અને તેમાં અક્ષરો, સંખ્યા અને અન્ય વર્ણો શામેલ હોઈ શકે છે.}one{તમારો નવો પિન દાખલ કરો. પિન ઓછામાં ઓછા # અક્ષરનો હોવો જરૂરી છે અને તેમાં અક્ષરો, સંખ્યા અને અન્ય વર્ણો શામેલ હોઈ શકે છે.}other{તમારો નવો પિન દાખલ કરો. પિન ઓછામાં ઓછા # અક્ષરનો હોવો જરૂરી છે અને તેમાં અક્ષરો, સંખ્યા અને અન્ય વર્ણો શામેલ હોઈ શકે છે.}}</translation>
 <translation id="1059484610606223931">હાઇપરટેક્સ્ટ ટ્રાન્સપોર્ટ પ્રોટોકૉલ (HTTPS)</translation>
@@ -1419,7 +1418,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">નીચે જણાવેલી કી સપોર્ટ કરતી નથી: Tab, Shift, Control, Escape, Caps lock, Volume</translation>
 <translation id="2309620859903500144">આ સાઇટને તમારા મોશન અથવા લાઇટ સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">પેજનું URL</translation>
 <translation id="2314165183524574721">હાલના સેટિંગ અનુસાર કોઈ જોઈ શકતું નથી</translation>
 <translation id="2314774579020744484">પેજનો અનુવાદ કરતી વખતે ઉપયોગમાં લેવાયેલી ભાષા</translation>
@@ -2573,6 +2571,7 @@
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" />ને જોઈ શકશે</translation>
 <translation id="3445047461171030979">Google Assistantનાં ઝડપી જવાબના સેટિંગ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
+<translation id="344537926140058498">આ ફાઇલમાં સંવેદનશીલ અથવા જોખમકારક કન્ટેન્ટ હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે. તેના માલિકને તેને સુધારવાનું કહો.</translation>
 <translation id="3445925074670675829">USB-C ઉપકરણ</translation>
 <translation id="3446274660183028131">Windows ઇન્સ્ટૉલ કરવા માટે કૃપા કરીને Parallels ડેસ્કટૉપ લૉન્ચ કરો.</translation>
 <translation id="344630545793878684">ઘણી વેબસાઇટ્સ પર તમારો ડેટા વાંચી શકે છે</translation>
@@ -3131,6 +3130,7 @@
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3971764089670057203">આ સિક્યુરિટી કીમાંના ફિંગરપ્રિન્ટ</translation>
 <translation id="3973005893595042880">વપરાશકર્તા કોઈ મંજૂરી ધરાવતા નથી</translation>
+<translation id="3973062011568994448">પાસવર્ડની આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો.</translation>
 <translation id="3973660817924297510">પાસવર્ડ ચેક કરી રહ્યાં છીએ (<ph name="TOTAL_PASSWORDS" />માંથી <ph name="CHECKED_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">સ્ક્રીન પર તમારા ફોકસને આગળ ખસેડવા માટે, "આગળ"નો ઉપયોગ કરો</translation>
 <translation id="3975201861340929143">સ્પષ્ટતા</translation>
@@ -4599,6 +4599,7 @@
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” પેસ્ટ કરો અને શોધો</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> બ્લૉક કરવામાં આવી</translation>
 <translation id="5468173180030470402">શેર કરેલી ફાઇલ માટે શોધી રહ્યાં છીએ</translation>
+<translation id="5468881191994555667">ફાઇલ પસંદ કરો</translation>
 <translation id="5469852975082458401">તમે ટેક્સ્ટ કર્સર વડે કોઈપણ પેજ પર નૅવિગેટ કરી શકશો. બંધ કરવા માટે, F7 દબાવો.</translation>
 <translation id="5470735824776589490">તમારું ડિવાઇસ Powerwash સાથે રીસેટ થઈ શકે તે પહેલાં એકવાર ફરી શરૂ કરવું આવશ્યક છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">કેમ છો! હું તમારો ટેક્સ્ટ-ટૂ-સ્પીચ વૉઇસ છું.</translation>
@@ -5046,7 +5047,6 @@
 
   પબ્લિક એક્સપોનન્ટ (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> બિટ્સ):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">તમારો ફોન અને <ph name="DEVICE_TYPE" /> કનેક્ટેડ છે</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="59174027418879706">સક્ષમ કરેલું</translation>
 <translation id="5920543303088087579">તમારા વ્યવસ્થાપક દ્વારા આ નેટવર્કથી કનેક્ટ કરવાનું અક્ષમ કરેલ છે</translation>
@@ -5183,7 +5183,6 @@ USB ડિવાઇસ</translation>
     <ph name="BEGIN_PARAGRAPH3" />આ સુવિધાને બંધ કરવાથી સિસ્ટમ અપડેટ અને સુરક્ષા જેવી આવશ્યક સેવાઓ માટે જરૂરી માહિતી મોકલવાની આ ડિવાઇસની ક્ષમતાને અસર થતી નથી.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />જો તમારા બાળકના Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા બાળકનો ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. આ સેટિંગ તેમજ તેમને ગોઠવવાની રીત વિશે families.google.com પર વધુ જાણો.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">આ ફાઇલ સુરક્ષા પૉલિસીનું પાલન કરતી ન હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">કાસ્ટ કરવાનું શરૂ કરવા માટે, ઍક્સેસ કોડ ટાઇપ કરો</translation>
 <translation id="6052976518993719690">SSL પ્રમાણન અધિકારી</translation>
 <translation id="6053401458108962351">&amp;બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
@@ -6335,6 +6334,7 @@ USB ડિવાઇસ</translation>
 <translation id="7191159667348037">અજાણ્યું પ્રિન્ટર (USB)</translation>
 <translation id="7193051357671784796">આ ઍપ તમારી સંસ્થા દ્વારા ઉમેરવામાં આવી છે. ઍપને ઇન્સ્ટૉલ કરવાનું સમાપ્ત કરવા માટે તેને ફરી શરૂ કરો.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> માટે કોઈ પાસવર્ડ સાચવેલા નથી</translation>
+<translation id="7194873994243265344">આ ફાઇલ એન્ક્રિપ્ટેડ હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે. તેના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.</translation>
 <translation id="7196913789568937443">Google ડ્રાઇવમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે. તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">તમે બ્રાઉઝ કરો તે દર વખતે Google Search અને Google સ્માર્ટ મેળવો</translation>
 <translation id="719791532916917144">કીબોર્ડ શૉર્ટકટ</translation>
@@ -6353,6 +6353,7 @@ USB ડિવાઇસ</translation>
 <translation id="7211783048245131419">હજી સુધી કોઈ સ્વિચની સોંપણી કરવામાં આવી નથી</translation>
 <translation id="7212097698621322584">પિન બદલવા માટે તમારો વર્તમાન પિન દાખલ કરો. જો તમને તમારો પિન યાદ ન હોય, તો તમારે સુરક્ષા કોડ રીસેટ કરવો પડશે, અને પછી નવો પિન બનાવવો પડશે.</translation>
 <translation id="7213903639823314449">ઍડ્રેસ બારમાં ઉપયોગમાં લેવાયેલું શોધ એન્જિન</translation>
+<translation id="721490496276866468">પાસવર્ડ આયાત કરો</translation>
 <translation id="7216595297012131718">તમારી પસંદગીના આધારે ભાષાઓને ક્રમમાં ગોઠવો</translation>
 <translation id="7219473482981809164">અમને ડાઉનલોડ કરવા માટે, એકથી વધુ ઉપલબ્ધ પ્રોફાઇલ મળી છે. આગળ વધતા પહેલાં, તમે જે ડાઉનલોડ કરવા ઇચ્છતા હો, તે પ્રોફાઇલ પસંદ કરો.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{એકેય નબળો પાસવર્ડ નથી}=1{1 નબળો પાસવર્ડ}one{{NUM_WEAK} નબળો પાસવર્ડ}other{{NUM_WEAK} નબળા પાસવર્ડ}}</translation>
@@ -6985,6 +6986,7 @@ USB ડિવાઇસ</translation>
 <translation id="7826190688224781865">છૂટક વેપારીના સ્ટોરના IDનો કોડ</translation>
 <translation id="7826249772873145665">ADB ડિબગીંગ બંધ છે</translation>
 <translation id="7826254698725248775">વિરોધાભાસી ડિવાઇસ ઓળખકર્તા.</translation>
+<translation id="7828642077514646543">ભૂલ: પ્રમાણપત્ર ડિકોડ કરી શકતા નથી</translation>
 <translation id="7828731929332799387">આનાથી ત્રીજા પક્ષ સંદર્ભમાં ઉપલબ્ધ બધી કુકી અને સાઇટ ડેટા ડિલીટ થઈ જશે. શું તમે ચાલુ રાખવા માગો છો?</translation>
 <translation id="7829877209233347340">સ્કૂલ એકાઉન્ટ ઉમેરવાની પરવાનગી આપવા માટે તમારા માતાપિતાને સાઇન ઇન કરવાનું કહો</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7943,6 +7945,7 @@ USB ડિવાઇસ</translation>
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}one{તમારું <ph name="DEVICE_TYPE" /> # સેકન્ડમાં ઑટોમૅટિક રીતે લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}other{તમારું <ph name="DEVICE_TYPE" /> # સેકન્ડમાં ઑટોમૅટિક રીતે લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.}}</translation>
+<translation id="8776294611668764629">આ ફાઇલ સુરક્ષા તપાસ માટે ખૂબ જ મોટી હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે. તમે 50 MB સુધીના કદવાળી ફાઇલો ખોલી શકશો.</translation>
 <translation id="8777628254805677039">રુટ પાસવર્ડ</translation>
 <translation id="8779944680596936487">અલગ-અલગ સાઇટ પોતપોતાની સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર કુકીનો ઉપયોગ કરી શકશે</translation>
 <translation id="8780123805589053431">Google તરફથી છબીનાં વર્ણનો મેળવો</translation>
@@ -8007,7 +8010,6 @@ USB ડિવાઇસ</translation>
 <translation id="8838770651474809439">હૅમ્બર્ગર</translation>
 <translation id="8838778928843281408">ફોન મેનેજ કરો</translation>
 <translation id="8841843049738266382">વ્હાઇટલિસ્ટ કરેલા વપરાશકર્તાઓને વાંચો અને બદલો</translation>
-<translation id="8842059467121215385">"<ph name="EXTENSION_NAME" />"નો ઉપયોગ કરવા માટે પેજને રિફ્રેશ કરો</translation>
 <translation id="8842594465773264717">આ ફિંગરપ્રિન્ટને ડિલીટ કરો</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8846132060409673887">આ કમ્પ્યુટરના ઉત્પાદક અને મૉડલનું નામ વાંચો</translation>
@@ -8461,7 +8463,6 @@ USB ડિવાઇસ</translation>
 <translation id="992778845837390402">હાલમાં Linuxનું બૅકઅપ લેવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="993540765962421562">ઇન્સ્ટૉલેશન થઈ રહ્યું છે</translation>
 <translation id="994289308992179865">&amp;લૂપ કરો</translation>
-<translation id="995571563161129624">યાદ રાખો કે જ્યારે તમે તમારી Chromebook પરથી નોટિફિકેશન છોડી દેશો, ત્યારે તે તમારા ફોન પરથી પણ નીકળી જશે</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">સુરક્ષિત કનેક્શન સ્થાપિત કરી રહ્યું છે...</translation>
 <translation id="996803490569799917">તમારા મનપસંદ લોકોની યાદગીરીઓ અને બીજું ઘણું જુઓ</translation>

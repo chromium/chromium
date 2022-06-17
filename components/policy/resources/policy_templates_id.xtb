@@ -3374,7 +3374,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
 <translation id="4632566332417930481">Larang penggunaan Developer Tools pada ekstensi yang diinstal oleh kebijakan perusahaan, izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
 <translation id="4635284822166984665">Waktu perangkat akan mulai mengisi daya, disesuaikan dengan zona waktu lokal perangkat.</translation>
-<translation id="4638532652671131094">Mengontrol batas bertingkat sebelum fungsi setTimeout() JavaScript mulai dikunci.</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
       Gunakan karakter pengganti '*' untuk mengizinkan penggabungan semua kebijakan kamus yang didukung.

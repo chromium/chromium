@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="147809995039451286">업데이트를 다운로드할 수 없음</translation>
 <translation id="1478594628797167447">스캐너</translation>
+<translation id="1483493594462132177">보내기</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> 펌웨어 업데이트 중</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며, 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
@@ -234,6 +235,7 @@
 <translation id="3083667275341675831">연결 진단</translation>
 <translation id="3084958266922136097">화면 보호기 사용 중지</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
+<translation id="3096753366938912951">평평한 표면에 기기 덮개 놓기</translation>
 <translation id="3102119246920354026">캐시</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">기기가 연결되어 있습니다.</translation>
@@ -291,9 +293,11 @@
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
+<translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3621202678540785336">입력</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
+<translation id="3643198267586205643">OS 업데이트</translation>
 <translation id="3643810137582748570">보정 건너뛰기</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
 <translation id="3678765385266369662">쓰기 방지를 사용 중지할 방법 선택</translation>
@@ -412,6 +416,7 @@
 <translation id="469379815867856270">신호 강도</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="473775607612524610">업데이트</translation>
+<translation id="4740255236714854844">평평한 표면에 기기 놓기</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
 <translation id="4751272708893364980">RMA 로그 보기</translation>
 <translation id="4773299976671772492">중지됨</translation>
@@ -459,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
 <translation id="5039804452771397117">허용</translation>
+<translation id="5044978354634658544">USB 삽입</translation>
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">그룹 이름</translation>
 <translation id="5051044138948155788">이 페이지만 삭제합니다. 스캔 시작 화면으로 이동합니다.</translation>
@@ -649,6 +655,7 @@
 <translation id="6659594942844771486">탭</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
+<translation id="6721744718589119342">이메일로 추가 정보나 새로운 소식을 전송하도록 허용</translation>
 <translation id="6723839937902243910">전원</translation>
 <translation id="6723847290197874913">키보드 백라이트</translation>
 <translation id="672609503628871915">새로운 기능 알아보기</translation>
@@ -713,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7359657277149375382">파일 형식</translation>
+<translation id="73631062356239394">진단 데이터 공유</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">밝은 테마 사용 중지</translation>
@@ -743,6 +751,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> 수리 오류</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665800271478495366">아바타 변경</translation>
+<translation id="7682274994254393134">수리 시작</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -917,6 +926,7 @@
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="917720651393141712">테스트</translation>
+<translation id="9188992814426075118">키보드 백라이트가 배경화면에 어울리게 자동으로 설정됩니다.</translation>
 <translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="922179502584117429">현재 버전(<ph name="VERSION_NUMBER" />)은 최신 버전이 아닙니다.</translation>

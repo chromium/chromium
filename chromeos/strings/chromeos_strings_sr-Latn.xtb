@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
 <translation id="147809995039451286">Preuzimanje ažuriranja nije uspelo</translation>
 <translation id="1478594628797167447">Skener</translation>
+<translation id="1483493594462132177">Pošalji</translation>
 <translation id="1491076385728777984">Ažurira se firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Učitavanje slika nije uspelo. Proverite mrežnu vezu ili probajte da ponovo učitate sliku.</translation>
 <translation id="1751249301761991853">Lično</translation>
 <translation id="1753496554272155572">Izađite iz pregleda pozadine</translation>
+<translation id="1755556344721611131">Aplikacija Dijagnostika</translation>
 <translation id="175763766237925754">Dobar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6659594942844771486">Kartica</translation>
 <translation id="6692996468359469499">Pronađite informacije u vezi sa vašim izborom</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>
+<translation id="6721744718589119342">Možda ćemo vam imejlom zatražiti više informacija ili novosti</translation>
 <translation id="6723839937902243910">Energija</translation>
 <translation id="6723847290197874913">Pozadinsko osvetljenje tastature</translation>
 <translation id="672609503628871915">Prikaži šta je novo</translation>
@@ -718,6 +721,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite taster za pretragu i razmak da biste videli rezultat u Google pretrazi.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
+<translation id="73631062356239394">Deli dijagnostičke podatke</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Šifra artikla</translation>
 <translation id="7397270852490618635">Isključite svetlu temu</translation>
@@ -923,6 +927,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9173638680043580060">Preostalo je manje od minuta</translation>
 <translation id="917720651393141712">Testiraj</translation>
+<translation id="9188992814426075118">Tastatura može automatski da se podudara sa pozadinom</translation>
 <translation id="9204237731135241582">Kontakt sa mrežnim prolazom ne uspeva iz Android aplikacija</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="922179502584117429">Aktuelna verzija <ph name="VERSION_NUMBER" /> je zastarela</translation>

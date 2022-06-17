@@ -27,6 +27,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1147031633655575115">Identifikuar si <ph name="USER" /></translation>
 <translation id="1154984953698510061">Shiko skedat e tjera</translation>
+<translation id="1161340988127985692">Kërko që t'i hapësh lidhjet nga aplikacionet e tjera në modalitetin "e fshehtë"</translation>
 <translation id="1164064664035028907">Përdor fjalëkalimin e fortë:</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1172898394251786223">Fusha tjetër</translation>
@@ -292,6 +293,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3443810440409579745">Skeda u mor.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Pamja e ndarë</translation>
+<translation id="3450502512529866925">Shtoje këtë faqe te faqeshënuesit</translation>
 <translation id="345565170154308620">Menaxho fjalëkalimet...</translation>
 <translation id="3469166899695866866">Të ndalohet shkarkimi?</translation>
 <translation id="3470502288861289375">Po kopjon...</translation>
@@ -484,6 +486,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5090832849094901128">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Mund t'i ruash faqet për t'i lexuar më vonë ose jashtë linje. Chrome do të të pyesë nëse do t'i ruash faqet e gjata.</translation>
 <translation id="5094827893301452931">Tweet përfundoi.</translation>
+<translation id="509789154667432072">Shto një faqeshënues</translation>
 <translation id="5118713593561876160">Interesat</translation>
 <translation id="5118764316110575523">Joaktiv</translation>
 <translation id="5127805178023152808">Sinkronizimi është joaktiv</translation>

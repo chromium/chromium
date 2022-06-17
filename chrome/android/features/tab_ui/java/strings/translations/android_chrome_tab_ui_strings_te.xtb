@@ -19,7 +19,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
-<translation id="2613747923081026172">సమూహాన్ని క్రియేట్ చేయండి</translation>
+<translation id="2613747923081026172">గ్రూప్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
@@ -92,7 +92,7 @@
 <translation id="8749939518995770034">మూసివేయబడిన ట్యాబ్‌ స్ట్రిప్</translation>
 <translation id="8820741577754260431">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి</translation>
 <translation id="9090098097337832354">ఈ స్టోర్ గురించిన సమాచారాన్ని చూపించే స్క్రీన్ మూసివేయబడింది</translation>
-<translation id="9150694013019234766">స్క్రీన్ దిగువ భాగం దగ్గరలో ఉండే మీ ట్యాబ్ సమూహంలో కోరుకునే ట్యాబ్‌లకు మారండి</translation>
-<translation id="9169594135889675189">సమూహానికి కొత్త ట్యాబ్‌ను జోడించు</translation>
+<translation id="9150694013019234766">స్క్రీన్ దిగువ భాగం దగ్గరలో ఉండే మీ ట్యాబ్ గ్రూప్‌లో కోరుకునే ట్యాబ్‌లకు మారండి</translation>
+<translation id="9169594135889675189">గ్రూప్‌నకు కొత్త ట్యాబ్‌ను జోడించు</translation>
 <translation id="959682366969460160">అన్నింటిని క్రమ పద్దతిలో అమర్చండి</translation>
 </translationbundle>

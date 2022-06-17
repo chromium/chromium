@@ -66,6 +66,7 @@
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
 <translation id="147809995039451286">Hindi ma-download ang update</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Ipadala</translation>
 <translation id="1491076385728777984">Nag-a-update ng firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Hindi ma-load ang mga larawan. Suriin ang iyong koneksyon sa network o subukang i-load ulit ang mga larawan.</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1753496554272155572">Lumabas sa preview ng wallpaper</translation>
+<translation id="1755556344721611131">Diagnostics app</translation>
 <translation id="175763766237925754">Mabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
+<translation id="6721744718589119342">Posibleng i-email ka namin para sa higit pang impormasyon o update</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Backlight ng keyboard</translation>
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
@@ -718,6 +721,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
+<translation id="73631062356239394">Ibahagi ang diagnostic na data</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">I-off ang maliwanag na tema</translation>
@@ -923,6 +927,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Awtomatikong maitutugma ng iyong keyboard ang wallpaper mo</translation>
 <translation id="9204237731135241582">Hindi makaugnayan ang gateway mula sa mga Android app</translation>
 <translation id="9211490828691860325">Lahat ng desk</translation>
 <translation id="922179502584117429">Luma na ang kasalukuyang bersyong <ph name="VERSION_NUMBER" /></translation>

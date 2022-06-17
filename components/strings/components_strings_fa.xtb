@@ -149,7 +149,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="1337692097987160377">هم‌رسانی این برگه</translation>
 <translation id="1339601241726513588">دامنه ثبت‌نام:</translation>
-<translation id="1340482604681802745">نشانی تحویل گرفتن کالا</translation>
+<translation id="1340482604681802745">نشانی تحویل گرفتن</translation>
 <translation id="1346748346194534595">راست</translation>
 <translation id="1348198688976932919">سایت پیش‌رو حاوی برنامه‌های خطرناک است</translation>
 <translation id="1348779747280417563">تأیید نام</translation>
@@ -209,7 +209,7 @@
 <translation id="1476595624592550506">گذرواژه‌تان را تغییر دهید</translation>
 <translation id="1482879811280872320">دوچرخه‌سواری</translation>
 <translation id="1483493594462132177">ارسال</translation>
-<translation id="1484290072879560759">انتخاب نشانی تحویل کالا</translation>
+<translation id="1484290072879560759">انتخاب نشانی ارسال کالا</translation>
 <translation id="1492194039220927094">اعمال خط‌مشی‌ها:</translation>
 <translation id="149293076951187737">‏وقتی همه برگه‌های ناشناس Chrome را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
           <ph name="BEGIN_LIST" />
@@ -239,7 +239,7 @@
 <translation id="153384715582417236">درحال‌حاضر مورد دیگری وجود ندارد</translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
 <translation id="1539840569003678498">گزارش ارسال شد:</translation>
-<translation id="154408704832528245">انتخاب نشانی ارسال</translation>
+<translation id="154408704832528245">انتخاب نشانی تحویل کالا</translation>
 <translation id="1549470594296187301">برای استفاده از این قابلیت، جاوا اسکریپت باید فعال باشد.</translation>
 <translation id="155039086686388498">Engineering-D</translation>
 <translation id="1551884710160394169">نرم‌افزار رایگان و اشتراکی</translation>
@@ -681,7 +681,7 @@
 <translation id="2728127805433021124">گواهی سرور با استفاده از یک الگوریتم امضای ضعیف امضا شده است.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />در حال اجرای عیب‌یابی اتصال<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">موسیقی کلاسیک</translation>
-<translation id="2738330467931008676">انتخاب نشانی تحویل گرفتن</translation>
+<translation id="2738330467931008676">انتخاب نشانی تحویل کالا</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2742511345840685325">تنیس روی میز</translation>
 <translation id="2742870351467570537">حذف موارد انتخابی</translation>
@@ -896,10 +896,10 @@
 <translation id="3381668585148405088">به تأیید رساندن خرید</translation>
 <translation id="3383566085871012386">ترتیب اولویت کنونی</translation>
 <translation id="3387261909427947069">روش‌های پرداخت</translation>
-<translation id="3391030046425686457">نشانی ارسال</translation>
+<translation id="3391030046425686457">نشانی تحویل کالا</translation>
 <translation id="3391482648489541560">ویرایش فایل</translation>
 <translation id="3395827396354264108">روش تحویل گرفتن</translation>
-<translation id="3399952811970034796">نشانی ارسال</translation>
+<translation id="3399952811970034796">نشانی تحویل کالا</translation>
 <translation id="3402261774528610252">اتصال استفاده‌شده برای بار کردن این سایت از «امنیت لایه انتقال» نسخه ۱.۰ یا ۱.۱ استفاده می‌کرد که منسوخ شده است و در آینده غیرفعال خواهد شد. بعد از غیرفعال شدن، کاربران نمی‌توانند این سایت را بار کنند. سرور باید «امنیت لایه انتقال» نسخه ۱.۲ یا بالاتر را فعال کند.</translation>
 <translation id="3405664148539009465">سفارشی کردن قلم‌ها</translation>
 <translation id="3407789382767355356">ورود به سیستم شخص ثالث</translation>
@@ -1576,7 +1576,7 @@
 <translation id="5222812217790122047">ایمیل ضروری است</translation>
 <translation id="5228404122310299359">لوازم مهمانی و تعطیلات</translation>
 <translation id="5229588705416009823">بازی چندنفره گسترده</translation>
-<translation id="5230733896359313003">نشانی تحویل کالا</translation>
+<translation id="5230733896359313003">نشانی ارسال کالا</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">رد کردن</translation>
@@ -1738,7 +1738,7 @@
 <translation id="568292603005599551">‏موقعیت X تصویر</translation>
 <translation id="5684277895745049190">فهرست</translation>
 <translation id="5684874026226664614">متأسفیم. این صفحه ترجمه نشد.</translation>
-<translation id="5685654322157854305">افزودن نشانی تحویل کالا</translation>
+<translation id="5685654322157854305">افزودن نشانی ارسال کالا</translation>
 <translation id="5689199277474810259">‏صادر کردن به JSON</translation>
 <translation id="5689516760719285838">مکان</translation>
 <translation id="569000877158168851">‏مقدار DnsOverHttpsTemplates مرتبط نیست و استفاده نخواهد شد، مگراینکه خط‌مشی DnsOverHttpsMode روی <ph name="SECURE_DNS_MODE_AUTOMATIC" /> یا<ph name="SECURE_DNS_MODE_SECURE" /> تنظیم شده باشد.</translation>
@@ -2872,7 +2872,7 @@
 <translation id="8963213021028234748"><ph name="MARKUP_1" />پیشنهادات:<ph name="MARKUP_2" />مطمئن شوید اتصال داده دارید<ph name="MARKUP_3" />بعداً این صفحه وب را تازه‌سازی کنید<ph name="MARKUP_4" />آدرسی را که وارد کرده‌اید، بررسی کنید<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ذخیره کارت</translation>
 <translation id="8971063699422889582">گواهی سرور منقضی شده است.</translation>
-<translation id="8975012916872825179">شامل اطلاعاتی مانند شماره تلفن، نشانی ایمیل و نشانی تحویل کالا می‌شود</translation>
+<translation id="8975012916872825179">شامل اطلاعاتی مانند شماره تلفن، نشانی ایمیل، و نشانی تحویل کالا می‌شود</translation>
 <translation id="8975263830901772334">نام فایل‌هایی که چاپ می‌کنید</translation>
 <translation id="8978053250194585037">‏Google Safe Browsing اخیراً در <ph name="SITE" />، <ph name="BEGIN_LINK" />رمزگیری شناسایی کرده است<ph name="END_LINK" />. سایت‌های رمزگیری وانمود می‌کنند وب‌سایت‌های دیگری هستند تا شما را فریب دهند.</translation>
 <translation id="8983369100812962543">اکنون می‌توانید برنامه را تغییر اندازه دهید</translation>
@@ -2989,7 +2989,7 @@
 <translation id="962484866189421427">این محتوا ممکن است برنامه‌های فریب‌دهنده‌ای نصب کند که وانمود می‌کنند برنامه دیگری هستند یا اینکه داده‌هایی برای ردیابی شما جمع‌آوری می‌کنند. <ph name="BEGIN_LINK" />درهرصورت نشان داده شود<ph name="END_LINK" /></translation>
 <translation id="96680173638229310">خودرو و وسیله نقلیه</translation>
 <translation id="969892804517981540">ساخت رسمی</translation>
-<translation id="973773823069644502">افزودن نشانی ارسال</translation>
+<translation id="973773823069644502">افزودن نشانی تحویل کالا</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{هیچ‌کدام}=1{۱ مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="977502174772294970">مراسم ازدواج</translation>
 <translation id="981121421437150478">آفلاین</translation>

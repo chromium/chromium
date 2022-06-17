@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="147809995039451286">ดาวน์โหลดอัปเดตไม่ได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
+<translation id="1483493594462132177">ส่ง</translation>
 <translation id="1491076385728777984">กำลังอัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">โหลดรูปภาพไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายหรือลองโหลดรูปภาพอีกครั้ง</translation>
 <translation id="1751249301761991853">ส่วนบุคคล</translation>
 <translation id="1753496554272155572">ออกจากตัวอย่างวอลเปเปอร์</translation>
+<translation id="1755556344721611131">แอปการวินิจฉัย</translation>
 <translation id="175763766237925754">ดี (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -129,6 +131,7 @@
 <translation id="1999615961760456652">แคพทีฟพอร์ทัล</translation>
 <translation id="2006864819935886708">การเชื่อมต่อ</translation>
 <translation id="2008685064673031089">Prime Search</translation>
+<translation id="2011174342667534258">เวอร์ชันของ SDK:</translation>
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
 <translation id="2016848882344942759">--ไม่มีไวท์เลเบล--</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +163,7 @@
 <translation id="225692081236532131">สถานะการเปิดใช้งาน</translation>
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
 <translation id="2275586345903859204">ซ่อมเรียบร้อยแล้ว</translation>
+<translation id="2276999893457278469">เนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
 <translation id="2294753434210277304">เสียบที่จัดเก็บข้อมูลภายนอก เช่น ไดรฟ์ USB หรือการ์ด SD ซึ่งมีอิมเมจยูทิลิตีการกู้คืน Chromebook ที่ดาวน์โหลดมา</translation>
 <translation id="2307344026739914387">ใช้คู่คีย์ปัจจุบัน</translation>
@@ -193,6 +197,7 @@
 <translation id="2517472476991765520">สแกน</translation>
 <translation id="2526590354069164005">เดสก์ท็อป</translation>
 <translation id="253029298928638905">กำลังรีสตาร์ท…</translation>
+<translation id="2533048460510040082">เนื้อหาช่วยเหลือที่แนะนำ</translation>
 <translation id="2536159006530886390">เชื่อมต่ออินเทอร์เน็ตไม่ได้</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">ไปที่การตั้งค่าเพื่อตั้งค่า</translation>
@@ -308,6 +313,7 @@
 <translation id="3784455785234192852">ล็อก</translation>
 <translation id="38114475217616659">ล้างประวัติทั้งหมด</translation>
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
+<translation id="3824259034819781947">แนบไฟล์</translation>
 <translation id="3838338534323494292">รหัสผ่านใหม่</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3856304145690230735">เครื่องวัดการหมุนในส่วนฐาน</translation>
@@ -650,6 +656,7 @@
 <translation id="6659594942844771486">แท็บ</translation>
 <translation id="6692996468359469499">ดูข้อมูลที่เกี่ยวข้องกับการเลือกของคุณ</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
+<translation id="6721744718589119342">เราอาจส่งข้อมูลเพิ่มเติมหรือข้อมูลอัปเดตให้คุณทางอีเมล</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6723847290197874913">ไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
@@ -714,6 +721,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Google Search</translation>
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
+<translation id="73631062356239394">แชร์ข้อมูลการวินิจฉัย</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
@@ -871,6 +879,7 @@
 <translation id="885701979325669005">พื้นที่เก็บข้อมูล</translation>
 <translation id="8863170912498892583">เปิดใช้ธีมมืด</translation>
 <translation id="8863888432376731307">รับ <ph name="INTENT" /> สำหรับ "<ph name="QUERY" />" และอื่นๆ</translation>
+<translation id="8864415976656252616">ไม่มีเนื้อหาที่แนะนำ ดูเนื้อหาช่วยเหลือยอดนิยม</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">อุปกรณ์เป็นแท็บเล็ต</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
@@ -918,6 +927,7 @@
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>
 <translation id="9173638680043580060">เหลืออีกไม่ถึง 1 นาที</translation>
 <translation id="917720651393141712">ทดสอบ</translation>
+<translation id="9188992814426075118">แป้นพิมพ์สามารถจับคู่กับวอลเปเปอร์ได้โดยอัตโนมัติ</translation>
 <translation id="9204237731135241582">ไม่สามารถติดต่อกับเกตเวย์จากแอป Android</translation>
 <translation id="9211490828691860325">เดสก์ทั้งหมด</translation>
 <translation id="922179502584117429">เวอร์ชันปัจจุบัน <ph name="VERSION_NUMBER" /> ล้าสมัยแล้ว</translation>

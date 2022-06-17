@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
 <translation id="147809995039451286">No s'ha pogut baixar l'actualització</translation>
 <translation id="1478594628797167447">Escàners</translation>
+<translation id="1483493594462132177">Envia</translation>
 <translation id="1491076385728777984">S'està actualitzant el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
@@ -234,6 +235,7 @@
 <translation id="3083667275341675831">Diagnòstic de connectivitat</translation>
 <translation id="3084958266922136097">Desactiva l'estalvi de pantalla</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
+<translation id="3096753366938912951">Col·loca la tapa sobre una superfície plana</translation>
 <translation id="3102119246920354026">Memòria cau</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">El dispositiu està connectat.</translation>
@@ -291,9 +293,11 @@
 <translation id="3604713164406837697">Canvia el fons de pantalla</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
+<translation id="361575905210396100">Gràcies pels teus suggeriments</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
+<translation id="3643198267586205643">Actualitza el SO</translation>
 <translation id="3643810137582748570">Omet la calibració</translation>
 <translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
 <translation id="3678765385266369662">Selecciona com vols desactivar la protecció contra escriptura</translation>
@@ -412,6 +416,7 @@
 <translation id="469379815867856270">Intensitat del senyal</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="473775607612524610">Actualitza</translation>
+<translation id="4740255236714854844">Col·loca la base sobre una superfície plana</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
 <translation id="4751272708893364980">Mostra els registres de l'RMA</translation>
 <translation id="4773299976671772492">En pausa</translation>
@@ -459,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Quan la pantalla està inactiva, mostra fotos, l'hora, el temps i informació multimèdia.</translation>
 <translation id="5039804452771397117">Permet</translation>
+<translation id="5044978354634658544">Insereix un USB</translation>
 <translation id="5049856988445523908">SIM bloquejada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom del grup</translation>
 <translation id="5051044138948155788">Aquesta és l'única pàgina. Se't dirigirà a la pantalla d'inici per escanejar.</translation>
@@ -649,6 +655,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6659594942844771486">Pestanya</translation>
 <translation id="6692996468359469499">Obtén informació relacionada amb la teva selecció</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
+<translation id="6721744718589119342">També pot ser que et demanem més informació o t'enviem novetats per correu electrònic</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6723847290197874913">Il·luminació a contrallum del teclat</translation>
 <translation id="672609503628871915">Novetats</translation>
@@ -713,6 +720,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
+<translation id="73631062356239394">Comparteix les dades de diagnòstic</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Desactiva el tema clar</translation>
@@ -743,6 +751,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7657530360897961171">Error de reparació del <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665800271478495366">Canvia l'avatar</translation>
+<translation id="7682274994254393134">Inici de la reparació</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -917,6 +926,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="9149391708638971077">Executa la prova de memòria</translation>
 <translation id="9173638680043580060">Queda menys d'un minut</translation>
 <translation id="917720651393141712">Prova</translation>
+<translation id="9188992814426075118">El teclat pot coincidir automàticament amb el fons de pantalla</translation>
 <translation id="9204237731135241582">No es pot contactar amb la passarel·la des d'aplicacions d'Android</translation>
 <translation id="9211490828691860325">Tots els escriptoris</translation>
 <translation id="922179502584117429">La versió actual, <ph name="VERSION_NUMBER" />, no està actualitzada</translation>

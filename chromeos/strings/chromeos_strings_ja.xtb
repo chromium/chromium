@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
 <translation id="147809995039451286">アップデートをダウンロードできませんでした</translation>
 <translation id="1478594628797167447">スキャナ</translation>
+<translation id="1483493594462132177">送信</translation>
 <translation id="1491076385728777984">「<ph name="DEVICE_NAME" />」のファームウェアを更新中</translation>
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
 <translation id="150962533380566081">無効な PUK です。</translation>
@@ -654,6 +655,7 @@
 <translation id="6659594942844771486">タブ</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
+<translation id="6721744718589119342">詳細や最新情報に関するメールをお送りさせていただく場合があります</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">キーボード バックライト</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
@@ -718,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
 <translation id="7359657277149375382">ファイル形式</translation>
+<translation id="73631062356239394">診断データを共有</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">ライトモードをオフにする</translation>
@@ -923,6 +926,7 @@
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>
+<translation id="9188992814426075118">キーボードのバックライトの色を壁紙に合わせて自動調整できます</translation>
 <translation id="9204237731135241582">Android アプリからゲートウェイにアクセスできません</translation>
 <translation id="9211490828691860325">すべてのデスク</translation>
 <translation id="922179502584117429">現在のバージョン <ph name="VERSION_NUMBER" /> は最新ではありません</translation>

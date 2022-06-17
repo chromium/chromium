@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1154984953698510061">查看其他分頁</translation>
+<translation id="1161340988127985692">要求在「無痕模式」中開啟其他應用程式的連結</translation>
 <translation id="1164064664035028907">請使用安全性強的密碼：</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1172898394251786223">下一個欄位</translation>
@@ -292,6 +293,7 @@
 <translation id="3443810440409579745">已收到分頁。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3448016392200048164">分割檢視</translation>
+<translation id="3450502512529866925">將此頁加入書籤</translation>
 <translation id="345565170154308620">管理密碼…</translation>
 <translation id="3469166899695866866">要停止下載嗎？</translation>
 <translation id="3470502288861289375">複製中…</translation>
@@ -484,6 +486,7 @@
 <translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
 <translation id="5092117651143801290">您可儲存網頁，以便稍後或離線閱讀。Chrome 將會詢問您是否要儲存長篇幅網頁。</translation>
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
+<translation id="509789154667432072">新增書籤</translation>
 <translation id="5118713593561876160">興趣</translation>
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5127805178023152808">同步處理已停用</translation>

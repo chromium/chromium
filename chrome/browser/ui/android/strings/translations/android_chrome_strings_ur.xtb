@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">اس آلہ پر صوتی تلاش دستیاب نہیں ہے</translation>
 <translation id="3749259744154402564">غیر تعاون یافتہ</translation>
 <translation id="3771033907050503522">پوشیدگی ٹیبز</translation>
+<translation id="377124182565324804"><ph name="SITE" /> شامل کریں</translation>
 <translation id="3771290962915251154">یہ ترتیب غیر فعال ہے کیونکہ پیرنٹل کنٹرولز آن ہیں</translation>
 <translation id="3771694256347217732">‏Google کی سروس کی شرائط</translation>
 <translation id="3773856050682458546">بنیادی ڈیٹا کے ساتھ آپ کی ملاحظہ کردہ ویب سائٹس سے متعلق معلومات اور آپ کی استعمال کردہ ایپس</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">اوپن سورس لائسنسز</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />کون سا ڈیٹا استعمال کیا جاتا ہے:<ph name="END_BOLD" /> آپ کی براؤزنگ کی سرگزشت، ان سائٹس کا ریکارڈ جو آپ اس آلے پر Chrome کا استعمال کر کے ملاحظہ کر چکے ہیں۔</translation>
 <translation id="4263656433980196874">‏اسسٹنٹ صوتی تلاش رضامندی ui پوری اونچائی پر کھلی ہوئی ہے</translation>
+<translation id="4266054596873078491">‏اپنے Google اکاؤنٹ سے اس سائٹ اور Chrome میں سائن ان کریں۔</translation>
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
 <translation id="4290281343757112331">اس کے بجائے آپ بعد میں ڈاؤن لوڈ کریں؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />Android کی ترتیبات میں اسکرین لاک کو آن کریں<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">قیمت ٹریک کی جا رہی ہے۔ کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں۔</translation>
 <translation id="442518031075347249">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
-<translation id="4450672886426705087">‏Google سے تلاش کے نتائج۔</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ٹیب بند کریں</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> میں بُک مارک کردہ</translation>
 <translation id="4461614516424362539">‏جب آپ کسی دوسرے آلے کو QR کوڈ سے لنک کرتے ہیں تو وہ اس فون کو بطور سیکیورٹی کلید استعمال کر سکتا ہے۔ اگر آپ اسے ہٹاتے ہیں تو آپ کو اسے دوبارہ لنک کرنے کے لیے QR کوڈ کو اسکین کرنا ہوگا۔</translation>
@@ -732,6 +733,7 @@
 <translation id="4985248278475639481">اشتہارات کی ذاتی نوعیت سازی کے بارے میں</translation>
 <translation id="4987271110129728827">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا ویب تلاش کی کوشش کریں۔</translation>
 <translation id="4988526792673242964">صفحات</translation>
+<translation id="499724277181351974">نیویگیٹ کریں: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">یہاں اس سائٹ کی پیروی کریں</translation>
 <translation id="500351648694011114">زیادہ آسانی سے براؤز کریں</translation>
 <translation id="5004416275253351869">‏Google سرگرمی کنٹرولز</translation>
@@ -790,6 +792,7 @@
 <translation id="5329858041417644019">آپ کا براؤزر زیر انتظام نہیں ہے</translation>
 <translation id="5339031667684712858">وہ سائٹس جنہیں آپ نے ہٹا دیا</translation>
 <translation id="5342314432463739672">اجازت کی درخواستیں</translation>
+<translation id="53537532693258630">آپ کی ہٹائی گئی سائٹس یہاں ظاہر ہوں گی</translation>
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="5368227114232678694">اس آلے پر نجی طور پر براؤز کرنے کے لیے پوشیدگی آزمائیں</translation>
 <translation id="5375577065097716013">‏Google لینز سے تصویر تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@
 کسی سائٹ کے ساتھ آپ کے تعامل کی بنیاد پر، جیسے کہ کسی اکاؤنٹ میں باقاعدگی سے سائن ان کرنے سے وہ سائٹ آپ کے براؤزر کے لیے ٹرسٹ ٹوکن جاری کر سکتی ہے۔ بعد میں، اگر آپ دیگر سائٹس کو ملاحظہ کرتے ہیں تو وہ ایک درست ٹرسٹ ٹوکن چیک کرتی ہیں اور اس کے حاصل ہونے پر ان کا آپ کے ساتھ ایک شخص کی طرح سلوک کرنے کا زیادہ امکان ہوتا ہے نہ کہ بوٹ کی طرح۔
 
 ٹرسٹ ٹوکنز ویب پر رازداری کو بہتر بناتے ہیں اور آپ کون ہیں یہ معلوم کرنے کے لیے استعمال نہیں کیے جا سکتے۔</translation>
+<translation id="6394791151443660613">تلاش کریں: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">لنک</translation>
 <translation id="6397616442223433927">نیٹ ورک کنکشن بحال ہو گیا</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> پر <ph name="ERROR_CODE" /></translation>
@@ -1495,6 +1499,7 @@
 <translation id="8993760627012879038">پوشیدگی وضع میں ایک نیا ٹیب کھولیں</translation>
 <translation id="8996847606757455498">کسی دوسرے فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="8998729206196772491">‏آپ <ph name="MANAGED_DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chrome ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chrome سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
+<translation id="9021388532480169802">سائٹ شامل کی گئی</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9028914725102941583">سبھی آلات پر اشتراک کرنے کے لیے مطابقت پذیری کو آن کریں</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ویڈیو}other{# ویڈیوز}}</translation>

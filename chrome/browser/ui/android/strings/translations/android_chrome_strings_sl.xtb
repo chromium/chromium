@@ -508,6 +508,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="3740525748616366977">Glasovno iskanje ni na voljo v tej napravi.</translation>
 <translation id="3749259744154402564">Ni podprto</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
+<translation id="377124182565324804">Dodajanje: <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Ta nastavitev je onemogočena, ker je vklopljen starševski nadzor</translation>
 <translation id="3771694256347217732">Googlovi pogoji storitve</translation>
 <translation id="3773856050682458546">Osnovni podatki, vključno s podatki o spletnih mestih, ki jih obiskujete, in aplikacijami, ki jih uporabljate.</translation>
@@ -590,6 +591,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="4256782883801055595">Odprtokodne licence</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="4263656433980196874">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku, odprt pri polni višini.</translation>
+<translation id="4266054596873078491">Prijavite se na tem spletnem mestu in v Chrome z računom Google.</translation>
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
 <translation id="4290281343757112331">Želite prenesti pozneje?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Vklop zaklepanja zaslona v nastavitvah za Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="4425140285732600465">Spremljanje cene. Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="442518031075347249">Navidezne kartice ne bo več mogoče uporabljati v Googlu Pay. <ph name="BEGIN_LINK1" />Preberite več o navideznih karticah<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Osebno prilagajanje oglasov</translation>
-<translation id="4450672886426705087">Rezultati iskanja v Googlu.</translation>
 <translation id="4452411734226507615">Zapiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Zaznamek ustvarjen v mapi <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Če povežete drugo napravo s kodo QR, lahko uporabi ta telefon kot varnostni ključ. Če ga odstranite, boste morali optično prebrati kodo QR, če ga boste želeli znova povezati.</translation>
@@ -732,6 +733,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4985248278475639481">O osebnem prilagajanju oglasov</translation>
 <translation id="4987271110129728827">Te strani ni mogoče najti. Preverite črkovanje ali poskusite spletno iskanje.</translation>
 <translation id="4988526792673242964">Strani</translation>
+<translation id="499724277181351974">Premikanje: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Spremljajte to spletno mesto tukaj</translation>
 <translation id="500351648694011114">Preprostejše brskanje</translation>
 <translation id="5004416275253351869">Googlovi kontrolniki za dejavnost</translation>
@@ -790,6 +792,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5329858041417644019">Vaš brskalnik ni upravljan</translation>
 <translation id="5339031667684712858">Spletna mesta, ki ste jih odstranili</translation>
 <translation id="5342314432463739672">Zahteve za dovoljenja</translation>
+<translation id="53537532693258630">Spletna mesta, ki ste jih odstranili, bodo prikazana tukaj.</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
 <translation id="5368227114232678694">Če želite zasebno brskati v tej napravi, preizkusite anonimni način.</translation>
 <translation id="5375577065097716013">Išči sliko z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahko to spletno mesto brskalniku izda žeton zaupanja. Če pozneje druga spletna mesta, ki jih obiščete, iščejo in poiščejo veljaven žeton zaupanja, vas bodo verjetneje obravnavala kot osebo, ne pa bot.
 
 Žetoni zaupanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabiti za osebno prepoznavo.</translation>
+<translation id="6394791151443660613">Iskanje: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">POVEZAVA</translation>
 <translation id="6397616442223433927">Povezava je znova vzpostavljena</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> na <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahk
 <translation id="8993760627012879038">Odpiranje novega anonimnega zavihka</translation>
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
 <translation id="8998729206196772491">Prijavljate se z računom, ki ga upravlja <ph name="MANAGED_DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
+<translation id="9021388532480169802">Spletno mesto je dodano</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
 <translation id="9028914725102941583">Vklopite sinhronizacijo, če želite deliti z drugimi napravami</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videoposnetek}one{# videoposnetek}two{# videoposnetka}few{# videoposnetki}other{# videoposnetkov}}</translation>

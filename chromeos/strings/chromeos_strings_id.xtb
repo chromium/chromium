@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> akan mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
 <translation id="147809995039451286">Tidak dapat mendownload update</translation>
 <translation id="1478594628797167447">Pemindai</translation>
+<translation id="1483493594462132177">Kirim</translation>
 <translation id="1491076385728777984">Mengupdate firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> akan mengelola pengguna ini serta mungkin dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
 <translation id="150962533380566081">PUK tidak valid.</translation>
@@ -234,6 +235,7 @@
 <translation id="3083667275341675831">Diagnostik Konektivitas</translation>
 <translation id="3084958266922136097">Nonaktifkan screen saver</translation>
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
+<translation id="3096753366938912951">Letakkan penutup di permukaan yang rata</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Perangkat terhubung.</translation>
@@ -291,9 +293,11 @@
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
+<translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3621202678540785336">Masukan</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
+<translation id="3643198267586205643">Update OS</translation>
 <translation id="3643810137582748570">Lewati kalibrasi</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
 <translation id="3678765385266369662">Pilih cara Anda ingin menonaktifkan Write Protect</translation>
@@ -412,6 +416,7 @@
 <translation id="469379815867856270">Kekuatan Sinyal</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="473775607612524610">Perbarui</translation>
+<translation id="4740255236714854844">Letakkan bagian dasar di permukaan yang rata</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
 <translation id="4751272708893364980">Lihat log RMA</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
@@ -459,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Jika layar tidak ada aktivitas, akan ditampilkan foto, waktu, cuaca, dan info media.</translation>
 <translation id="5039804452771397117">Izinkan</translation>
+<translation id="5044978354634658544">Colokkan USB</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama grup</translation>
 <translation id="5051044138948155788">Ini adalah satu-satunya halaman. Anda akan diarahkan ke layar awal pemindaian.</translation>
@@ -649,6 +655,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
+<translation id="6721744718589119342">Kami mungkin mengirimi Anda email untuk meminta informasi lebih lanjut atau memberikan informasi terbaru</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6723847290197874913">Lampu latar keyboard</translation>
 <translation id="672609503628871915">Lihat apa saja yang baru</translation>
@@ -713,6 +720,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7359657277149375382">Jenis file</translation>
+<translation id="73631062356239394">Bagikan data diagnostik</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Nonaktifkan tema terang</translation>
@@ -743,6 +751,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7657530360897961171">Terjadi error saat perbaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Ubah avatar</translation>
+<translation id="7682274994254393134">Perbaikan dimulai</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -917,6 +926,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>
+<translation id="9188992814426075118">Keyboard dapat otomatis menyesuaikan dengan wallpaper Anda</translation>
 <translation id="9204237731135241582">Tidak dapat terhubung ke gateway dari aplikasi Android</translation>
 <translation id="9211490828691860325">Semua desktop</translation>
 <translation id="922179502584117429">Versi <ph name="VERSION_NUMBER" /> saat ini perlu diupdate</translation>

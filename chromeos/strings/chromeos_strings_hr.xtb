@@ -66,6 +66,7 @@
 <translation id="1476467821656042872">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj možda može nadzirati vašu aktivnost.</translation>
 <translation id="147809995039451286">Preuzimanje ažuriranja nije uspjelo</translation>
 <translation id="1478594628797167447">Skener</translation>
+<translation id="1483493594462132177">Pošalji</translation>
 <translation id="1491076385728777984">Ažuriranje opreme na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i možda može daljinski upravljati postavkama i nadzirati aktivnost korisnika.</translation>
 <translation id="150962533380566081">PUK nije važeći.</translation>
@@ -655,6 +656,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6659594942844771486">Kartica</translation>
 <translation id="6692996468359469499">Dohvaćanje informacija povezanih s vašim odabirom</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>
+<translation id="6721744718589119342">Možda ćemo vam poslati e-poruku s dodatnim informacijama ili novostima</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6723847290197874913">Pozadinsko osvjetljenje tipkovnice</translation>
 <translation id="672609503628871915">Pogledajte što je novo</translation>
@@ -719,6 +721,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite Pretraži i razmaknicu da biste vidjeli rezultate u Google pretraživanju.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
+<translation id="73631062356239394">Dijeljenje dijagnostičkih podataka</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Kôd artikla</translation>
 <translation id="7397270852490618635">Isključivanje svijetle teme</translation>
@@ -924,6 +927,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Tipkovnica se može automatski uskladiti s pozadinom</translation>
 <translation id="9204237731135241582">Kontaktiranje pristupnika iz Android aplikacija nije uspjelo</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="922179502584117429">Trenutačna verzija <ph name="VERSION_NUMBER" /> je zastarjela</translation>

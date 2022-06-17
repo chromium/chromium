@@ -508,6 +508,7 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="3740525748616366977">Ukusesha ngezwi akutholakali kule divayisi</translation>
 <translation id="3749259744154402564">Akusekelwe</translation>
 <translation id="3771033907050503522">Amathebhu e-Incognito</translation>
+<translation id="377124182565324804">Faka i-<ph name="SITE" /></translation>
 <translation id="3771290962915251154">Lesi silungiselelo sikhutshaziwe ngoba izilawuli zomzali zivuliwe</translation>
 <translation id="3771694256347217732">Imigomo Yesevisi ye-Google</translation>
 <translation id="3773856050682458546">Idatha eyinhloko kanye nolwazi olumayelana namawebhusayithi owavakashelayo nezinhlelo zokusebenza ozisebenzisayo</translation>
@@ -590,6 +591,7 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="4256782883801055595">Amalayisensi womthombo ovulekile</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Iyiphi idatha esetshenziswayo:<ph name="END_BOLD" /> Umlando wakho wokubhrawuza, irekhodi lamasayithi owavakashele usebenzisa i-Chrome kule divayisi.</translation>
 <translation id="4263656433980196874">Imvume ye-ui yomsizi wokusesha ngezwi ivulwe ngokuphakama okuphelele</translation>
+<translation id="4266054596873078491">Ngena ngemvume kuleli sayithi naku-Chrome nge-Google Account yakho.</translation>
 <translation id="4269820728363426813">Kopisha ikheli lesixhumanisi</translation>
 <translation id="4290281343757112331">Dawuniloda kamuva kunalokho?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Vula ukukhiya isikrini kumasethingi we-Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="4425140285732600465">Ukulandelela intengo. Thola izexwayiso uma intengo yehla kunoma yiliphi isayithi.</translation>
 <translation id="442518031075347249">Ngeke usakwazi ukusebenzisa ikhadi lakho le-virtual nge-Google Pay. <ph name="BEGIN_LINK1" />Funda kabanzi ngamakhadi we-virtual<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Ukwenza ngezifiso izikhangiso</translation>
-<translation id="4450672886426705087">Imiphumela yosesho kusuka ku-Google.</translation>
 <translation id="4452411734226507615">Vala ithebhu ye-<ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Kubhukumakwe ku-<ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Uma uxhuma enye idivayisi ngekhodi ye-QR, ingasebenzisa le foni njengokhiye wokuqinisekisa ubunikazi. Uma uyisusa, kuzodingeka ukuthi uskene ikhodi ye-QR ukuze uyilinke futhi.</translation>
@@ -732,6 +733,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="4985248278475639481">Mayelana nokwenza ngokwezifiso izikhangiso</translation>
 <translation id="4987271110129728827">Ayikwazi ukuthola lelo khasi. Hlola isipelingi sakho noma zama usesho lewebhu.</translation>
 <translation id="4988526792673242964">Amakhasi</translation>
+<translation id="499724277181351974">Funa: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Landela le sayithi lapha</translation>
 <translation id="500351648694011114">Bhrawuza kalula ngokuthe xaxa</translation>
 <translation id="5004416275253351869">Izilawuli zomsebenzi we-Google</translation>
@@ -790,6 +792,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5329858041417644019">Isiphequluli sakho asiphethwe</translation>
 <translation id="5339031667684712858">Amasayithi owasusile</translation>
 <translation id="5342314432463739672">Izicelo zemvume</translation>
+<translation id="53537532693258630">Amasayithi owasusile azovela lapha</translation>
 <translation id="5355191726083956201">Ukuvikelwa Okuthuthukisiwe kuvuliwe</translation>
 <translation id="5368227114232678694">Ukuze ubhrawuze ngokugodliwe kule divayisi, zama i-Incognito</translation>
 <translation id="5375577065097716013">Sesha isithombe Ngama-Google Lens<ph name="BEGIN_NEW" />Entsha<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 Ngokusekelwe ekusebenzelaneni kwakho nesayithi, njengokungena njalo ku-akhawunti, lelo sayithi lingakhipha ithokheni yokwethenjwa kwibhrawuza yakho. Kamuva, uma amanye amasayithi owavakashelayo ehlola futhi ethola ithokheni elivumelekile lokwethenjwa, maningi amathuba okuthi akuphathe njengomuntu hhayi i-bot.
 
 Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenziselwa ukuthola ukuthi ungubani.</translation>
+<translation id="6394791151443660613">Sesha: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ISIXHUMANISI</translation>
 <translation id="6397616442223433927">Usuxhunyiwe futhi ku-inthanethi</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ku-<ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenzis
 <translation id="8993760627012879038">Vula kuthebhu entsha kumodi ye-Incognito</translation>
 <translation id="8996847606757455498">Khetha omunye umhlinzeki</translation>
 <translation id="8998729206196772491">Ungena ngemvume nge-akhawunti ephethwe yi-<ph name="MANAGED_DOMAIN" /> futhi unikeza umlawuli ulawulo olungaphezulu kwedatha yakho ye-Chrome. Idatha yakho izohlanganiswa ngunaphakade kule akhawunti. Ukuphuma ngemvume ku-Chrome kuzosusa idatha yakho kusukela kule divayisi, kodwa kuzohlala kugcinwe ku-akhawunti yakho ye-Google.</translation>
+<translation id="9021388532480169802">Isayithi lingeziwe</translation>
 <translation id="9022774213089566801">Okuvakashelwa njalo</translation>
 <translation id="9028914725102941583">Vula ukuvumelanisa ukuze wabelane kuwo wonke amadivayisi</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Ividiyo}one{# Amavidiyo}other{# Amavidiyo}}</translation>

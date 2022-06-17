@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini d'1 setmana}other{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_WEEKS} setmanes}}</translation>
 <translation id="1056898198331236512">Advertiment</translation>
-<translation id="105822690353767994">Permet sempre que l'extensió s'executi en aquest lloc web si no vols tornar a veure aquest missatge.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Introdueix el PIN nou. Els PIN han de tenir 1 caràcter com a mínim i poden contenir lletres, números i altres caràcters.}other{Introdueix el PIN nou. Els PIN han de tenir # caràcters com a mínim i poden contenir lletres, números i altres caràcters.}}</translation>
 <translation id="1059484610606223931">Protocol segur de transferència d'hipertext (HTTPS)</translation>
@@ -1421,7 +1420,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">No s'admeten les tecles següents: Tab, Maj, Ctrl, Esc, Bloq Maj ni Volum</translation>
 <translation id="2309620859903500144">Aquest lloc web no té permís per accedir als sensors de llum o moviment.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL de la pàgina</translation>
 <translation id="2314165183524574721">L'opció de configuració de visibilitat actual és Amagat</translation>
 <translation id="2314774579020744484">Idioma utilitzat per traduir pàgines</translation>
@@ -2575,6 +2573,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> podrà veure <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostes ràpides de l'Assistent de Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344537926140058498">La teva organització ha bloquejat aquest fitxer perquè inclou contingut sensible o perillós. Demana al propietari que el corregeixi.</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
 <translation id="3446274660183028131">Inicia Parallels Desktop per instal·lar Windows.</translation>
 <translation id="344630545793878684">Llegir les dades d'una sèrie de llocs web</translation>
@@ -3132,6 +3131,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="3971764089670057203">Empremtes digitals d'aquesta clau de seguretat</translation>
 <translation id="3973005893595042880">L'usuari no està permès</translation>
+<translation id="3973062011568994448">Per importar contrasenyes, selecciona un fitxer CSV.</translation>
 <translation id="3973660817924297510">S'estan comprovant les contrasenyes (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Utilitza l'interruptor "Següent" per fer avançar la posició del focus a la pantalla.</translation>
 <translation id="3975201861340929143">Explicació</translation>
@@ -4601,6 +4601,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5466374726908360271">Engan&amp;xa i cerca "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Permisos bloquejats: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">S'estan cercant usos compartits de fitxers</translation>
+<translation id="5468881191994555667">Tria un fitxer</translation>
 <translation id="5469852975082458401">Pots navegar per les pàgines amb un cursor de text. Prem F7 per desactivar aquesta funció.</translation>
 <translation id="5470735824776589490">Cal reiniciar el dispositiu per poder restablir-lo amb Powerwash. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hola! Soc la teva veu per a la conversió de text a parla.</translation>
@@ -5046,7 +5047,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 
   Exponent públic (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">El teu telèfon i el teu <ph name="DEVICE_TYPE" /> estan connectats</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5920543303088087579">L'administrador ha desactivat la possibilitat de connectar-se a aquesta xarxa</translation>
@@ -5181,7 +5181,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si l'opció Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots modificar-les, ves a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">La teva organització ha bloquejat aquest fitxer perquè no ha complert una política de seguretat</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Escriu el codi d'accés per iniciar l'emissió</translation>
 <translation id="6052976518993719690">Entitat emissora de certificats SSL</translation>
 <translation id="6053401458108962351">&amp;Esborra les dades de navegació...</translation>
@@ -6331,6 +6330,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7191159667348037">Impressora desconeguda (USB)</translation>
 <translation id="7193051357671784796">La teva organització ha afegit aquesta aplicació. Reinicia-la perquè s'acabi d'instal·lar.</translation>
 <translation id="7193374945610105795">No hi ha cap contrasenya desada per a <ph name="ORIGIN" /></translation>
+<translation id="7194873994243265344">La teva organització ha bloquejat aquest fitxer perquè està encriptat. Demana al propietari que el desencripti.</translation>
 <translation id="7196913789568937443">Crea còpies de seguretat a Google Drive. Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. La còpia de seguretat inclou dades d'aplicacions. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del teu Compte de Google. <ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Gaudeix de la Cerca i de les eines intel·ligents de Google sempre que naveguis</translation>
 <translation id="719791532916917144">Tecla de drecera</translation>
@@ -6349,6 +6349,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7211783048245131419">Encara no s'ha assignat cap interruptor</translation>
 <translation id="7212097698621322584">Introdueix el PIN actual per canviar-lo. Si no el saps, hauràs de restablir la clau de seguretat i, a continuació, crear un PIN nou.</translation>
 <translation id="7213903639823314449">Motor de cerca que s'utilitza a la barra d'adreces.</translation>
+<translation id="721490496276866468">Importa les contrasenyes</translation>
 <translation id="7216595297012131718">Ordena els idiomes segons les teves preferències</translation>
 <translation id="7219473482981809164">Hem trobat diversos perfils que es poden baixar. Selecciona els que vulguis baixar abans de continuar.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Cap contrasenya poc segura}=1{1 contrasenya poc segura}other{{NUM_WEAK} contrasenyes poc segures}}</translation>
@@ -6982,6 +6983,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7826190688224781865">Codi d'identificació de la botiga</translation>
 <translation id="7826249772873145665">S'ha desactivat la depuració d'ADB</translation>
 <translation id="7826254698725248775">L'identificador del dispositiu ja s'està utilitzant.</translation>
+<translation id="7828642077514646543">Error: no es pot descodificar el certificat</translation>
 <translation id="7828731929332799387">Se suprimiran totes les galetes i les dades de llocs web disponibles en contexts de tercers. Vols continuar?</translation>
 <translation id="7829877209233347340">Demana als pares que iniciïn la sessió per atorgar-te permís per afegir un compte de centre educatiu.</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7945,6 +7947,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8775653927968399786">{0,plural, =1{El teu dispositiu <ph name="DEVICE_TYPE" /> es bloquejarà automàticament d'aquí a # segon.
 <ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.}other{El teu dispositiu <ph name="DEVICE_TYPE" /> es bloquejarà automàticament d'aquí a # segons.
 <ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.}}</translation>
+<translation id="8776294611668764629">La teva organització ha bloquejat aquest fitxer perquè és massa gran per fer-hi una comprovació de seguretat. Pots obrir fitxers de fins a 50 MB.</translation>
 <translation id="8777628254805677039">contrasenya arrel</translation>
 <translation id="8779944680596936487">Els llocs web només poden fer servir les galetes per veure la teva activitat de navegació en aquests mateixos llocs web</translation>
 <translation id="8780123805589053431">Obtén descripcions d'imatges de Google</translation>
@@ -8009,7 +8012,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="8838778928843281408">Gestiona els telèfons</translation>
 <translation id="8841843049738266382">Llegir i canviar els usuaris de la llista d'accés permès</translation>
-<translation id="8842059467121215385">Actualitza la pàgina per utilitzar "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8842594465773264717">Suprimeix aquesta empremta digital</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8846132060409673887">Consultar el fabricant i el model d'aquest ordinador</translation>
@@ -8463,7 +8465,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="992778845837390402">Hi ha una còpia de seguretat de Linux en curs</translation>
 <translation id="993540765962421562">Instal·lació en curs</translation>
 <translation id="994289308992179865">&amp;Bucle</translation>
-<translation id="995571563161129624">Tingues en compte que, en ignorar les notificacions al Chromebook, també les ignoraràs al telèfon</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">S'està establint una connexió segura...</translation>
 <translation id="996803490569799917">Consulta els records de les teves persones preferides i més</translation>

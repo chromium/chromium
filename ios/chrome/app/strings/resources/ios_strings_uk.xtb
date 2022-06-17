@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1147031633655575115">Ви ввійшли як <ph name="USER" /></translation>
 <translation id="1154984953698510061">Переглянути інші вкладки</translation>
+<translation id="1161340988127985692">Запитувати дозвіл відкривати посилання з інших додатків в анонімному режимі</translation>
 <translation id="1164064664035028907">Використайте надійний пароль:</translation>
 <translation id="1165039591588034296">Помилка</translation>
 <translation id="1172898394251786223">Наступне поле</translation>
@@ -292,6 +293,7 @@
 <translation id="3443810440409579745">Вкладку отримано.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3448016392200048164">Режим розділеного екрана</translation>
+<translation id="3450502512529866925">Створити закладку для цієї сторінки</translation>
 <translation id="345565170154308620">Керувати паролями…</translation>
 <translation id="3469166899695866866">Зупинити завантаження?</translation>
 <translation id="3470502288861289375">Копіювання…</translation>
@@ -484,6 +486,7 @@
 <translation id="5090832849094901128">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться.</translation>
 <translation id="5092117651143801290">Ви можете зберігати сторінки, щоб читати їх пізніше або в режимі офлайн. Chrome запитуватиме вас, чи зберігати довгі сторінки.</translation>
 <translation id="5094827893301452931">Твіт опубліковано.</translation>
+<translation id="509789154667432072">Додати закладку</translation>
 <translation id="5118713593561876160">Інтереси</translation>
 <translation id="5118764316110575523">Вимк.</translation>
 <translation id="5127805178023152808">Синхронізацію вимкнено</translation>

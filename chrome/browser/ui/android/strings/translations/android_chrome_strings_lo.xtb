@@ -345,6 +345,7 @@
 <translation id="2861923151411510142">ຄຸນສົມບັດ Chrome ບາງຢ່າງບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="2870560284913253234">ເວັບ​ໄຊທ໌</translation>
 <translation id="2871733351037274014">ໂຫຼດໜ້າກ່ອນລ່ວງໜ້າ</translation>
+<translation id="2886836735871983413">ລາຍຊື່ຂອງເວັບໄຊຈະປາກົດຢູ່ບ່ອນນີ້ໃນເວລາທີ່ທ່ານທ່ອງເວັບ</translation>
 <translation id="2888126860611144412">ກ່ຽວ​ກັບ Chrome</translation>
 <translation id="2891154217021530873">ຢຸດ​ການໂຫຼດ​ຫນ້າ</translation>
 <translation id="2892647708214602204">ທ່ານຈະເຫັນການແຈ້ງເຕືອນເມື່ອໄຟລ໌ນີ້ພ້ອມແລ້ວ</translation>
@@ -372,6 +373,7 @@
 <translation id="2987620471460279764">ຂໍ້ຄວາມທີ່ແບ່ງປັນຈາກອຸປະກອນອື່ນ</translation>
 <translation id="2989523299700148168">ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="2992473221983447149">ລາຍລະອຽດການແຈ້ງເຕືອນ</translation>
+<translation id="2994959273484668146">ລຶບ <ph name="DOMAIN" /> ອອກ</translation>
 <translation id="2996291259634659425">ສ້າງວະ​ລີ​ຜ່ານ</translation>
 <translation id="2996809686854298943">ຕ້ອງມີ URL.</translation>
 <translation id="2997081575621687554">ເມື່ອ Google ຂໍໃຫ້ໂຫຼດລິ້ງຕ່າງໆຢູ່ໜ້າຂອງພວກມັນລ່ວງໜ້າເປັນການສ່ວນຕົວ, Chrome ຈະເຂົ້າລະຫັດ ແລະ ໂຫຼດໜ້າຕ່າງໆກ່ອນລ່ວງໜ້າຜ່ານເຊີບເວີ Google ໂດຍບໍ່ມີຄຸກກີ້. ນີ້ຈະເຊື່ອງຕົວຕົນຂອງທ່ານຈາກເວັບໄຊທີ່ມີການໂຫຼດກ່ອນລ່ວງໜ້າ.</translation>
@@ -521,6 +523,7 @@
 <translation id="3856096718352044181">ກະລຸນາຢັ້ງຢືນວ່ານີ້ແມ່ນຜູ້ໃຫ້ບໍລິການທີ່ຖືກຕ້ອງ ຫຼື ລອງໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3861633093716975811">ວິດີໂອຍອດນິຍົມ</translation>
+<translation id="3874520961715512166">ລຶບເວັບໄຊອອກແລ້ວ</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="3894427358181296146">ເພີ່ມໂຟລເດີ</translation>
 <translation id="3899682235662194879">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດ</translation>
@@ -558,6 +561,7 @@
 <translation id="4095146165863963773">ລຶບຂໍ້ມູນແອັບບໍ?</translation>
 <translation id="4096227151372679484">ເປີດຂັ້ນຕອນການບັນທຶກບຸກມາກແບບເຄິ່ງຄວາມສູງແລ້ວ</translation>
 <translation id="4099578267706723511">ຊ່ວຍເຮັດໃຫ້ Chrome ດີກ່ວາໂດຍການສົ່ງສະຖິຕິການໃຊ້ ແລະລາຍງານການຂັດຂ້ອງຫາ Google.</translation>
+<translation id="4101475238162928417">ຊິ້ງຂໍ້ມູນເພື່ອໃຊ້ລະຫັດຜ່ານ, ບຸກມາກ ແລະ ອື່ນໆຢູ່ອຸປະກອນອື່ນຂອງທ່ານ</translation>
 <translation id="410351446219883937">ຫຼິ້ນອັດຕະໂນມັດ</translation>
 <translation id="4106587138345390261">Chrome ກຳລັງສຳຫຼວດຄຸນສົມບັດໃໝ່ໆທີ່ເຮັດໃຫ້ເວັບໄຊຕ່າງໆສາມາດສະໜອງປະສົບການໃນການທ່ອງເວັບແບບດຽວກັນໂດຍໃຊ້ຂໍ້ມູນຂອງທ່ານໃຫ້ໜ້ອຍລົງ</translation>
 <translation id="4108314971463891922">ຕິດຕາມ</translation>
@@ -611,7 +615,6 @@
 <translation id="4425140285732600465">ກຳລັງຕິດຕາມລາຄາ. ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="442518031075347249">ທ່ານຈະບໍ່ສາມາດໃຊ້ບັດສະເໝືອນຂອງທ່ານກັບ Google Pay ໄດ້ອີກຕໍ່ໄປ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບບັດສະເໝືອນ<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
-<translation id="4450672886426705087">ຜົນການຊອກຫາຈາກ Google.</translation>
 <translation id="4452411734226507615">ປິດແຖບ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ</translation>
 <translation id="4461614516424362539">ເມື່ອທ່ານລິ້ງອຸປະກອນອື່ນດ້ວຍລະຫັດ QR, ມັນຈະສາມາດໃຊ້ໂທລະສັບນີ້ເປັນກະແຈຄວາມປອດໄພໄດ້. ຫາກທ່ານລຶບມັນອອກ, ທ່ານຈະຕ້ອງສະແດງລະຫັດ QR ເພື່ອລິ້ງມັນຄືນໃໝ່.</translation>
@@ -728,6 +731,7 @@
 <translation id="4985248278475639481">ກ່ຽວກັບການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="4987271110129728827">ບໍ່ສາມາດຊອກເຫັນໜ້ານັ້ນໄດ້. ກະລຸນາກວດສອບການສະກົດຄຳຂອງທ່ານ ຫຼື ລອງຊອກຫາໃນເວັບໄຊ.</translation>
 <translation id="4988526792673242964">ໜ້າ</translation>
+<translation id="499724277181351974">ນຳທາງ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ຕິດຕາມເວັບໄຊນີ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="500351648694011114">ທ່ອງເວັບໄດ້ງ່າຍຂຶ້ນ</translation>
 <translation id="5004416275253351869">ການຄວບຄຸມການເຄື່ອນໄຫວໃນ Google</translation>
@@ -977,6 +981,7 @@
 ໂດຍອ້າງອີງໃສ່ການໂຕ້ຕອບຂອງທ່ານກັບເວັບໄຊໃດໜຶ່ງ, ເຊັ່ນ: ການເຂົ້າສູ່ລະບົບຫາບັນຊີຕາມປົກກະຕິ, ເວັບໄຊນັ້ນສາມາດອອກໂທເຄນຄວາມເຊື່ອຖືໄປໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້. ໃນພາຍຫຼັງ, ຫາກເວັບໄຊອື່ນໆທີ່ທ່ານເຂົ້າເບິ່ງມີການກວດຫາ ແລະ ພົບໂທເຄນຄວາມເຊື່ອຖືທີ່ຖືກຕ້ອງ, ກໍມີໂອກາດທີ່ພວກມັນຈະປະຕິບັດກັບທ່ານວ່າເປັນຄົນ ແລະ ບໍ່ແມ່ນບັອດ.
 
 ໂທເຄນຄວາມເຊື່ອຖືຈະປັບປຸງຄວາມເປັນສ່ວນຕົວຢູ່ເວັບ ແລະ ບໍ່ສາມາດຖືກໃຊ້ເພື່ອລະບຸຕົວຕົນຂອງທ່ານໄດ້.</translation>
+<translation id="6394791151443660613">ຊອກຫາ: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ລິ້ງ</translation>
 <translation id="6397616442223433927">ກັບມາອອນລາຍ</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> ໃນ <ph name="VIOLATED_URL" /></translation>
@@ -1191,6 +1196,7 @@
 <translation id="749294055653435199">ບໍ່ສາມາດໃຊ້ Google Lens ຢູ່ອຸປະກອນນີ້ໄດ້</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (ອັບ​ເດດ​ແລ້ວ <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ...</translation>
+<translation id="7502234197872745058">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK1" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">ບໍ່ສາມາດອັບເດດໄດ້</translation>
 <translation id="7507207699631365376">ເບິ່ງ <ph name="BEGIN_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK" /> ຂອງຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>

@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" />, ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, ఇంకా మీ యాక్టివిటీని మానిటర్ చేయగలదు.</translation>
 <translation id="147809995039451286">అప్‌డేట్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1478594628797167447">స్కానర్</translation>
+<translation id="1483493594462132177">పంపు</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్ అప్‌డేట్ చేయబడుతోంది</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />, ఈ యూజర్‌ను మేనేజ్ చేస్తుంది, ఇంకా అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>
 <translation id="150962533380566081">PUK చెల్లదు.</translation>
@@ -465,7 +466,7 @@
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5044978354634658544">USBని ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="5049856988445523908">SIM లాక్ చేయబడింది (<ph name="LOCK_TYPE" />)</translation>
-<translation id="5050042263972837708">సమూహం పేరు</translation>
+<translation id="5050042263972837708">గ్రూప్‌ పేరు</translation>
 <translation id="5051044138948155788">ఈ పేజీ మాత్రమే ఉంది. ఇది మిమ్మల్ని స్కానింగ్ ప్రారంభ స్క్రీన్‌కు తీసుకువెళ్తుంది.</translation>
 <translation id="506768878203270635">8-అక్షరాలను ఎంటర్ చేయండి</translation>
 <translation id="5088172560898466307">సర్వర్ హోస్ట్ పేరు</translation>
@@ -653,6 +654,7 @@
 <translation id="6659594942844771486">బ్రౌజర్ ట్యాబ్</translation>
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>
+<translation id="6721744718589119342">మరింత సమాచారం లేదా అప్‌డేట్‌ల కోసం మేము మీకు ఈమెయిల్ చేయవచ్చు</translation>
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="6723847290197874913">కీబోర్డ్ బ్యాక్‌లైట్</translation>
 <translation id="672609503628871915">కొత్తగా ఏమి ఉన్నాయో చూడండి</translation>
@@ -717,6 +719,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchలో ఫలితాన్ని చూడటానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
+<translation id="73631062356239394">సమస్య విశ్లేషణ డేటాను షేర్ చేయండి</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">లేత రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
@@ -922,6 +925,7 @@
 <translation id="9149391708638971077">మెమరీ పరీక్షను రన్ చేయండి</translation>
 <translation id="9173638680043580060">నిమిషం కంటే తక్కువ సమయం మిగిలి ఉంది</translation>
 <translation id="917720651393141712">టెస్ట్ చేయండి</translation>
+<translation id="9188992814426075118">మీ కీబోర్డ్ ఆటోమేటిక్‌గా మీ వాల్‌పేపర్‌తో మ్యాచ్ అవుతుంది</translation>
 <translation id="9204237731135241582">Android యాప్‌ల నుండి గేట్‌వేను సంప్రదించడం సాధ్యపడదు</translation>
 <translation id="9211490828691860325">అన్ని డెస్క్‌లు</translation>
 <translation id="922179502584117429">ప్రస్తుత వెర్షన్ <ph name="VERSION_NUMBER" /> గడువు ముగిసింది</translation>

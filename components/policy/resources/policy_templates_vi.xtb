@@ -3363,7 +3363,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="4632343302005518762">Cho phép <ph name="PRODUCT_FRAME_NAME" /> xử lý các loại nội dung được liệt kê</translation>
 <translation id="4632566332417930481">Không cho phép sử dụng Công cụ dành cho nhà phát triển trên các tiện ích được cài đặt theo chính sách doanh nghiệp, nhưng lại cho phép sử dụng Công cụ dành cho nhà phát triển trong các ngữ cảnh khác</translation>
 <translation id="4635284822166984665">Thời điểm thiết bị sẽ bắt đầu sạc, được diễn giải theo múi giờ địa phương trên thiết bị.</translation>
-<translation id="4638532652671131094">Kiểm soát ngưỡng lồng trước khi hàm javascript setTimeout() bắt đầu được gắn.</translation>
 <translation id="4646626362889216307">Việc đặt chính sách này cho phép hợp nhất các chính sách đã chọn khi các chính sách đó thuộc nhiều nguồn nhưng có cùng phạm vi và cấp độ. Quá trình hợp nhất này bao gồm việc hợp nhất các khoá ở cấp độ đầu tiên của từ điển thuộc mỗi nguồn. Khoá thuộc nguồn có mức độ ưu tiên cao nhất sẽ được ưu tiên.
 
       Hãy sử dụng ký tự đại diện "*" để cho phép hợp nhất tất cả chính sách hỗ trợ từ điển.

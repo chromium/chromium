@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="147809995039451286">Não foi possível transferir a atualização</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Enviar</translation>
 <translation id="1491076385728777984">A atualizar o firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Não foi possível carregar as imagens. Verifique a sua ligação de rede ou tente carregá-las novamente.</translation>
 <translation id="1751249301761991853">Pessoal</translation>
 <translation id="1753496554272155572">Sair da pré-visualização da imagem de fundo</translation>
+<translation id="1755556344721611131">App Diagnósticos</translation>
 <translation id="175763766237925754">Boa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
+<translation id="6721744718589119342">Para mais informações ou atualizações, podemos enviar-lhe emails</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723847290197874913">Retroiluminação do teclado</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>

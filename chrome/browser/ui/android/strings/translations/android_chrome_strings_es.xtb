@@ -345,6 +345,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2861923151411510142">Algunas funciones de Chrome dejarán de estar disponibles</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2871733351037274014">Precargar páginas</translation>
+<translation id="2886836735871983413">La lista de sitios aparecerá aquí a medida que navegues por la Web</translation>
 <translation id="2888126860611144412">Información de Chrome</translation>
 <translation id="2891154217021530873">Detener la carga de la página</translation>
 <translation id="2892647708214602204">Cuando el archivo esté listo, verás una notificación</translation>
@@ -372,6 +373,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2987620471460279764">Texto compartido desde otro dispositivo</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2992473221983447149">Descripciones de imágenes</translation>
+<translation id="2994959273484668146">Quita <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Crear frase de contraseña</translation>
 <translation id="2996809686854298943">URL necesaria</translation>
 <translation id="2997081575621687554">Cuando un sitio de Google te pide precargar de forma privada los enlaces de su página, Chrome cifra y precarga las páginas a través de los servidores de Google sin cookies. De esta manera, se oculta tu identidad en el sitio precargado.</translation>
@@ -521,6 +523,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
+<translation id="3874520961715512166">Sitio quitado</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
 <translation id="3899682235662194879">Cerrar todas las pestañas de incógnito</translation>
@@ -558,6 +561,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
 <translation id="4096227151372679484">Flujo para guardar marcador abierto a media altura</translation>
 <translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
+<translation id="4101475238162928417">Sincroniza para recibir tus contraseñas, marcadores y más en tus otros dispositivos</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -611,7 +615,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="4425140285732600465">Siguiendo precio. Recibe alertas si el precio baja en algún sitio.</translation>
 <translation id="442518031075347249">Ya no podrás usar tu tarjeta virtual con Google Play. <ph name="BEGIN_LINK1" />Más información sobre tarjetas virtuales<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Personalización de anuncios</translation>
-<translation id="4450672886426705087">Resultados de la Búsqueda de Google.</translation>
 <translation id="4452411734226507615">Cerrar la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador añadido a <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Cuando vincules otro dispositivo con un código QR, podrá usar este teléfono como llave de seguridad. Si lo quitas, tendrás que escanear un código QR para volver a vincularlo.</translation>
@@ -1193,6 +1196,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="749294055653435199">Google Lens no está disponible en este dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizada el <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Espera…</translation>
+<translation id="7502234197872745058">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK1" />cierra la sesión de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Actualizaciones no disponibles</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este proveedor</translation>
 <translation id="7514365320538308">Descargar</translation>

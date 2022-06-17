@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">මෙම උපාංගයෙහි හඬ සෙවීම නොමැත</translation>
 <translation id="3749259744154402564">සහය නොදැක්වේ</translation>
 <translation id="3771033907050503522">අප්‍රකට පටිති</translation>
+<translation id="377124182565324804"><ph name="SITE" /> එක් කරන්න</translation>
 <translation id="3771290962915251154">මාපිය පාලන සක්‍රීය බැවින් මෙම සැකසීම අබල කර ඇත</translation>
 <translation id="3771694256347217732">Google සේවා නියම</translation>
 <translation id="3773856050682458546">ඔබ පිවිසෙන වෙබ් අඩවි සහ ඔබ භාවිත කරන යෙදුම් පිළිබඳ මූලික දත්ත සහ තොරතුරු</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">විවෘත කේත බලපත්</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />භාවිත කරන දත්ත මොනවාද:<ph name="END_BOLD" /> ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, මෙම උපාංගයේ Chrome භාවිතයෙන් ඔබ පිවිසි අඩවිවල වාර්තාවක්.</translation>
 <translation id="4263656433980196874">පූර්ණ උසකදී සහායක හඬ සෙවීම් අනුමත ui විවෘත කරන ලදි</translation>
+<translation id="4266054596873078491">ඔබගේ Google ගිණුමෙන් මෙම අඩවියට සහ Chrome වෙත පුරන්න.</translation>
 <translation id="4269820728363426813">ලින්ක් ලිපිනය පිටපත් කරන්න</translation>
 <translation id="4290281343757112331">ඒ වෙනුවට පසුව බාගන්නද?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">මිල හඹා යාම කිනම් හෝ අඩවියක මිල අඩු වුවහොත් ඇඟවීම් ලබා ගන්න.</translation>
 <translation id="442518031075347249">ඔබට තවදුරටත් Google Pay සමඟ ඔබගේ අතථ්‍ය කාඩ්පත භාවිත කළ නොහැකි වනු ඇත <ph name="BEGIN_LINK1" />අතථ්‍ය කාඩ්පත් ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">වෙළඳ දැන්වීම් පුද්ගලිකකරණය</translation>
-<translation id="4450672886426705087">Google වෙතින් සෙවීම් ප්‍රතිඵල.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> පටිත්ත වසන්න</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> වෙත පිටුසන් යොදන ලදී</translation>
 <translation id="4461614516424362539">ඔබ QR කේතයක් සමඟ වෙනත් උපාංගයක් සබැඳි කරන විට, එයට මෙම දුරකථනය ආරක්ෂක යතුරක් ලෙස භාවිත කළ හැකිය. ඔබ එය ඉවත් කළහොත්, එය නැවත සබැඳි කිරීමට ඔබට QR කේතයක් ස්කෑන් කිරීමට සිදු වනු ඇත.</translation>
@@ -732,6 +733,7 @@
 <translation id="4985248278475639481">වෙළඳ දැන්වීම් පුද්ගලිකකරණය ගැන</translation>
 <translation id="4987271110129728827">එම පිටුව සොයා ගත නොහැකිය. ඔබගේ අක්ෂර වින්‍යාසය පරීක්ෂා කරන්න හෝ වෙබ් සෙවීමක් උත්සාහ කරන්න.</translation>
 <translation id="4988526792673242964">පිටු</translation>
+<translation id="499724277181351974">සංචාලනය කරන්න: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">මෙම අඩවිය මෙහිදී අනුගමනය කරන්න</translation>
 <translation id="500351648694011114">වඩාත් පහසුවෙන් බ්‍රවුස් කරන්න</translation>
 <translation id="5004416275253351869">Google ක්‍රියාකාරකම් පාලන</translation>
@@ -790,6 +792,7 @@
 <translation id="5329858041417644019">ඔබේ බ්‍රවුසරය කළමනා නොකෙරේ</translation>
 <translation id="5339031667684712858">ඔබ ඉවත් කළ අඩවි</translation>
 <translation id="5342314432463739672">අවසර ඉල්ලීම්</translation>
+<translation id="53537532693258630">ඔබ ඉවත් කළ අඩවි මෙහි දිස් වනු ඇත</translation>
 <translation id="5355191726083956201">වැඩිදියුණු කළ ආරක්ෂාව සක්‍රීයයි</translation>
 <translation id="5368227114232678694">මෙම උපාංගයේ පුද්ගලිකව බ්‍රවුස් කිරීමට, අප්‍රසිද්ධ උත්සාහ කරන්න</translation>
 <translation id="5375577065097716013">Google Lens සමග රූපය සොයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@
 ගිණුමකට නිතර පිරීම වැනි, අඩවියක් සමඟ ඔබගේ අන්තර්ක්‍රියා මත පදනම්ව, එම අඩවියට ඔබගේ බ්‍රවුසරයට විශ්වාස ටෝකනයක් නිකුත් කළ හැකිය. පසුව, ඔබ පිවිසෙන අනෙකුත් අඩවි පරීක්ෂා කර වලංගු විශ්වාස ටෝකනයක් සොයා ගන්නේ නම්, ඔවුන් ඔබට සලකනු ලබන්නේ බොට් කෙනෙකු ලෙස නොව පුද්ගලයෙකු ලෙසය.
 
 විශ්වාස ටෝකන වෙබයේ පෞද්ගලිකත්වය වැඩි දියුණු කරන අතර ඔබ කවුදැයි සොයා ගැනීමට භාවිත කළ නොහැකිය.</translation>
+<translation id="6394791151443660613">සොයන්න: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">සබැඳිය</translation>
 <translation id="6397616442223433927">ආපසු සබැඳියි</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> හි <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@
 <translation id="8993760627012879038">අප්‍රකට ප්‍රකාරය තුළ නව ටැබයක් විවෘත කරන්න</translation>
 <translation id="8996847606757455498">වෙනත් සැපයුම්කරුවකු තෝරන්න</translation>
 <translation id="8998729206196772491">ඔබ <ph name="MANAGED_DOMAIN" /> මගින් කළමනාකරණය කරන ගිණුමක් සමගින් පුරමින් සහ එහි පරිපාලකට ඔබේ Chrome දත්තවල පාලනය දෙමින් සිටී. ඔබේ දත්ත මෙම ගිණුමට ස්ථිරව බැඳෙනු ඇත. Chrome වෙතින් වැරීම ඔබේ දත්ත මෙම උපාංගය වෙතින් මකනු ඇති නමුත්, ඔබේ දත්ත Google ගිණුම තුළ ගබඩා වී තිබෙනු ඇත.</translation>
+<translation id="9021388532480169802">අඩවිය එක් කරන ලදි</translation>
 <translation id="9022774213089566801">නිතර පිවිසි</translation>
 <translation id="9028914725102941583">උපාංග හරහා බෙදා ගැනීමට සමමුහුව ක්‍රියාත්මක කරන්න</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# වීඩියෝවක්}one{වීඩියෝ #ක්}other{වීඩියෝ #ක්}}</translation>

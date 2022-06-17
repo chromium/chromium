@@ -66,6 +66,7 @@
 <translation id="1476467821656042872">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="147809995039451286">Yangilanish yuklab olinmadi</translation>
 <translation id="1478594628797167447">Skaner</translation>
+<translation id="1483493594462132177">Yuborish</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> mikrodasturi yangilanmoqda</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Rasmlar yuklanmadi. Tarmoq aloqasini tekshiring yoki rasmlarni qaytadan yuklang.</translation>
 <translation id="1751249301761991853">Shaxsiy</translation>
 <translation id="1753496554272155572">Fon rasmiga razm solishdan chiqish</translation>
+<translation id="1755556344721611131">Diagnostika ilovasi</translation>
 <translation id="175763766237925754">Yaxshi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -654,6 +656,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6659594942844771486">Varaq</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
+<translation id="6721744718589119342">Qoʻshimcha axborot yoki xabalar haqida sizga email yuboramiz</translation>
 <translation id="6723839937902243910">Quvvat</translation>
 <translation id="6723847290197874913">Klaviatura orqa chirogʻi</translation>
 <translation id="672609503628871915">Nimalar yangiligini ko‘ring</translation>
@@ -718,6 +721,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Natijalarni Google Qidiruvida chiqarish uchun Qidiruv + Boʻshliq tugmalarini bosing.</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7359657277149375382">Fayl turi</translation>
+<translation id="73631062356239394">Diagnostika axborotini ulashish</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Materialning ombordagi hisobi (SKU)</translation>
 <translation id="7397270852490618635">Kunduzgi mavzuni faolsizlantirish</translation>
@@ -923,6 +927,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Klaviatura ranglari fon rasmiga avtomatik moslanishi mumkin</translation>
 <translation id="9204237731135241582">Android ilovalardan shlyuzga ulanish imkonsiz</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
 <translation id="922179502584117429">Joriy versiya (<ph name="VERSION_NUMBER" />) eskirgan</translation>

@@ -11,6 +11,7 @@
 <translation id="1008186147501209563">Exporter les favoris</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="1009476156254802388">Emplacement <ph name="WEB_DRIVE" /></translation>
+<translation id="1009663062402466586">Commandes de jeu maintenant accessibles</translation>
 <translation id="1010498023906173788">Cet onglet est connecté à un port série.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La page ne répond pas}one{La page ne répond pas}other{Les pages ne répondent pas}}</translation>
 <translation id="1011355516189274711">Volume de la synthèse vocale</translation>
@@ -55,7 +56,6 @@
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici 1 semaine}one{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}other{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaines}}</translation>
 <translation id="1056898198331236512">Avertissement</translation>
-<translation id="105822690353767994">Si vous ne voulez pas revoir ce message, cochez cette case pour toujours autoriser l'extension à s'exécuter sur ce site.</translation>
 <translation id="1058262162121953039">Clé PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Entrez votre nouveau NIP. Un NIP doit comprendre au moins un caractère. Il peut contenir des lettres, des numéros et d'autres caractères.}one{Entrez votre nouveau NIP. Un NIP doit comprendre au moins # caractère. Il peut contenir des lettres, des numéros et d'autres caractères.}other{Entrez votre nouveau NIP. Un NIP doit comprendre au moins # caractères. Il peut contenir des lettres, des numéros et d'autres caractères.}}</translation>
 <translation id="1059484610606223931">Protocole HTTPS</translation>
@@ -847,6 +847,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1796105431091975902">Sélectionner un playbook Ansible à ajouter</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
+<translation id="1797117170091578105">Jouez à l'aide de votre clavier Chromebook. Vous pouvez affecter des touches à des actions particulières.</translation>
 <translation id="1800502858278951817">Aucune extension n'a demandé de lire et de modifier <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
 <translation id="1802687198411089702">La page ne répond pas. Vous pouvez attendre qu'elle réponde ou la quitter.</translation>
@@ -1008,6 +1009,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1940546824932169984">Appareils connectés</translation>
 <translation id="1941410638996203291">Heure de début : <ph name="TIME" /></translation>
 <translation id="1941553344801134989">Version : <ph name="APP_VERSION" /></translation>
+<translation id="1941995177877935582">Afficher l'affectation des touches</translation>
 <translation id="1942128823046546853">Lire et modifier l'intégralité de vos données sur tous les sites Web</translation>
 <translation id="1942600407708803723">Éteindre lorsque le couvercle est fermé</translation>
 <translation id="1944528062465413897">Code d'association Bluetooth :</translation>
@@ -1417,8 +1419,8 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
     Si vous décidez plus tard que la fonctionnalité Voice Match ne convient pas à votre enfant, retirez-la simplement dans les paramètres de l'Assistant. Pour afficher ou supprimer les extraits audio enregistrés par votre enfant lors de la configuration de la fonctionnalité Voice Match, accédez à l'adresse <ph name="VOICE_MATCH_SETTINGS_URL" /> à partir du compte de votre enfant.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2308798336967462263">Les touches suivantes ne sont pas prises en charge : Tabulation, Majuscule, Contrôle, Échap., Verrouillage des majuscules et Volume</translation>
 <translation id="2309620859903500144">L'accès à vos capteurs de mouvement et de luminosité a été bloqué pour ce site.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL de la page</translation>
 <translation id="2314165183524574721">Le paramètre de visibilité actuelle est réglé à caché</translation>
 <translation id="2314774579020744484">Langue utilisée pour la traduction des pages</translation>
@@ -2621,6 +2623,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3482719661246593752"><ph name="ORIGIN" /> peut consulter les fichiers suivants</translation>
 <translation id="3484273680291419129">Suppression du logiciel nuisible en cours…</translation>
 <translation id="3484869148456018791">Obtenir un nouveau certificat</translation>
+<translation id="3486950712960783074">Votre trajet</translation>
 <translation id="3487007233252413104">fonction anonyme</translation>
 <translation id="3490695139702884919">Téléchargement en cours… <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Le compte de votre enfant n'est pas configuré de manière à utiliser les contrôles parentaux Family Link. Vous pourrez ajouter des contrôles parentaux une fois que vous aurez terminé la configuration. Vous trouverez de l'information sur les contrôles parentaux dans l'application Explorer.</translation>
@@ -2742,6 +2745,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3613422051106148727">&amp;Ouvrir dans un nouvel onglet</translation>
 <translation id="3615073365085224194">Touchez le capteur d'empreintes digitales avec votre doigt</translation>
 <translation id="3615579745882581859">Le fichier <ph name="FILE_NAME" /> est en train d'être analysé.</translation>
+<translation id="3615596877979647433">La clé est manquante. Appuyez sur une touche du clavier pour la personnaliser</translation>
 <translation id="3616741288025931835">Effa&amp;cer les données de navigation…</translation>
 <translation id="3617891479562106823">Les arrière-plans ne sont pas disponibles. Réessayez plus tard.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -2897,6 +2901,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3764753550716962406">Laisser Google accéder à votre panier pour trouver des rabais?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}one{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}other{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}}</translation>
 <translation id="3765246971671567135">Impossible de lire la politique du mode démo hors ligne.</translation>
+<translation id="3766687283066842296">En savoir plus sur Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="377050016711188788">Crème glacée</translation>
 <translation id="3771290962915251154">Ce paramètre est désactivé parce que les contrôles parentaux sont activés</translation>
@@ -2931,6 +2936,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3797739167230984533">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> est géré par votre organisation</translation>
 <translation id="3797900183766075808">Rechercher <ph name="SEARCH_TERMS" /> avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Version</translation>
+<translation id="3798632811625902122">L'appareil Bluetooth « <ph name="DEVICE" /> » demande l'autorisation de s'associer.</translation>
 <translation id="3799128412641261490">Paramètres de Switch Access</translation>
 <translation id="3800806661949714323">Tout afficher (recommandé)</translation>
 <translation id="3800828618615365228">Conditions supplémentaires pour Google Chrome et Chrome OS</translation>
@@ -3337,6 +3343,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4193836101014293726">Impossible de supprimer ce profil</translation>
 <translation id="419427585139779713">Entrer une syllabe à la fois</translation>
 <translation id="4194570336751258953">Activer la fonction « Toucher l'écran pour cliquer »</translation>
+<translation id="4195378859392041564">Cliquez sur n'importe quelle touche à l'aide de votre souris, puis appuyez sur une touche du clavier pour la personnaliser</translation>
 <translation id="4195421689821407315">Téléchargement non sécurisé</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre vos activités en ligne là où vous vous étiez arrêté</translation>
@@ -3402,6 +3409,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4258348331913189841">Systèmes de fichiers</translation>
 <translation id="4259388776256904261">Cela peut prendre un certain temps</translation>
 <translation id="4260182282978351200">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer à la protection avancée de Google afin de le faire analyser? Appuyer sur Majuscule+F6 pour accéder à la barre des téléchargements.</translation>
+<translation id="4260699894265914672">Appuyez sur une touche du clavier pour la personnaliser</translation>
 <translation id="4261429981378979799">Autorisations d'extensions</translation>
 <translation id="4262004481148703251">Ignorer l'avertissement</translation>
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
@@ -4576,6 +4584,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5449716055534515760">Fe&amp;rmer la fenêtre</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (fonctionne hors ligne)</translation>
 <translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
+<translation id="545484289444831485">Voir plus de résultats de recherche</translation>
 <translation id="5455603387986949153">Lire les numéros de série de l'appareil et des composantes Chrome OS Flex.</translation>
 <translation id="5457113250005438886">Non valide</translation>
 <translation id="5457459357461771897">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les supprimer</translation>
@@ -4916,6 +4925,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5792295754950501287">Autres actions pour <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Veuillez toucher l'interrupteur</translation>
 <translation id="5793339252089865437">Le téléchargement de la mise à jour par réseau cellulaire pourrait entraîner des frais supplémentaires.</translation>
+<translation id="5793420564274426163">Confirmation de l'association</translation>
 <translation id="5794034487966529952">Il y a <ph name="NUM_BROWSERS" /> fenêtres de navigateur ouvertes sur le bureau <ph name="DESK_TITLE" /></translation>
 <translation id="5794414402486823030">Toujours ouvrir avec System Viewer</translation>
 <translation id="5794700615121138172">Dossiers partagés Linux</translation>
@@ -5037,7 +5047,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 
   Exposant public (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits) :
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Votre téléphone et votre <ph name="DEVICE_TYPE" /> sont connectés</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5920543303088087579">La connexion à ce réseau est désactivée par votre administrateur</translation>
@@ -5173,7 +5182,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
     <ph name="BEGIN_PARAGRAPH3" />La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les données requises aux services essentiels, comme les mises à jour du système et la sécurité.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si le paramètre Activité sur le Web et dans les applications est activé pour le compte Google de votre enfant, les données de ce dernier peuvent être enregistrées dans son compte Google. Pour en savoir plus à propos de ces paramètres ou pour découvrir comment les régler, rendez-vous sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Votre organisation a bloqué ce fichier parce qu'il n'est pas conforme à une politique de sécurité</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Tapez le code d'accès pour commencer à diffuser</translation>
 <translation id="6052976518993719690">Autorité de certification SSL</translation>
 <translation id="6053401458108962351">&amp;Effacer les données de navigation…</translation>
@@ -7052,6 +7060,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Vous recherchez les composants du navigateur? Consultez</translation>
 <translation id="7903345046358933331">Cette page ne répond plus. Vous pouvez attendre qu'elle réponde ou la fermer.</translation>
+<translation id="7903429136755645827">Cliquez pour personnaliser vos commandes de jeu</translation>
 <translation id="7903742244674067440">Vous disposez de certificats qui identifient ces autorités de certification</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Rendez les ports Linux accessibles aux autres appareils sur votre réseau.</translation>
@@ -7412,6 +7421,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8242426110754782860">Continuer</translation>
 <translation id="8243948765190375130">La qualité des contenus multimédias peut être réduite</translation>
 <translation id="8244514732452879619">C'est bientôt l'heure du dodo</translation>
+<translation id="8245361042748627813">Ce raccourci a changé. Veuillez utiliser <ph name="NEW_SHORTCUT_KEY" /> pour imprimer à l'aide de la boîte de dialogue système.</translation>
 <translation id="8246776524656196770">Protégez votre clé de sécurité avec un NIP (numéro d'identification personnel)</translation>
 <translation id="8248050856337841185">C&amp;oller</translation>
 <translation id="8248381369318572865">Accéder à votre microphone et analyser votre discours</translation>
@@ -7716,6 +7726,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8561565784790166472">Soyez prudent</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Tentative d'installation d'une version antérieure de l'application.</translation>
+<translation id="8569673829373920831">En savoir plus sur <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Aucune destination trouvée</translation>
 <translation id="8571213806525832805">Quatre dernières semaines</translation>
 <translation id="8571687764447439720">Ajouter un ticket Kerberos</translation>
@@ -7999,7 +8010,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Gérer les téléphones</translation>
 <translation id="8841843049738266382">Consulter et modifier les utilisateurs ajoutés à la liste verte</translation>
-<translation id="8842059467121215385">Actualisez la page pour utiliser « <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8846132060409673887">Trouvez le fabricant et le modèle de cet ordinateur</translation>
@@ -8243,6 +8253,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9078316009970372699">Désactiver le partage de connexion instantané</translation>
 <translation id="9078842827190780028">Afficher plus de résultats de recherche dans le panneau latéral</translation>
 <translation id="9079267182985899251">Cette option ne sera bientôt plus prise en charge. Pour présenter un onglet, utilisez <ph name="GOOGLE_MEET" />.</translation>
+<translation id="9080971985541434310">Estime vos centres d'intérêt : Chrome peut estimer vos centres d'intérêt</translation>
 <translation id="9081543426177426948">Les sites que vous visitez ne sont pas enregistrés en mode de navigation privée</translation>
 <translation id="9084064520949870008">Ouvrir dans une fenêtre</translation>
 <translation id="9085256200913095638">Dupliquer l'onglet sélectionné</translation>
@@ -8452,7 +8463,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="992778845837390402">Sauvegarde Linux en cours…</translation>
 <translation id="993540765962421562">Installation en cours…</translation>
 <translation id="994289308992179865">Bouc&amp;le</translation>
-<translation id="995571563161129624">N'oubliez pas que les notifications ignorées sur votre Chromebook seront également ignorées sur votre téléphone</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Établissement de la connexion sécurisée...</translation>
 <translation id="996803490569799917">Découvrez des souvenirs de vos personnes préférées et plus encore</translation>

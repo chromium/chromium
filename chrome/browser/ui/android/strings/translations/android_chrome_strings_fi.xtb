@@ -508,6 +508,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="3740525748616366977">Puhehaku ei ole käytettävissä tällä laitteella</translation>
 <translation id="3749259744154402564">Ei tuettu</translation>
 <translation id="3771033907050503522">Incognito</translation>
+<translation id="377124182565324804">Lisää <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Tämä asetus on poistettu käytöstä, koska lapsilukko on päällä</translation>
 <translation id="3771694256347217732">Googlen käyttöehdot</translation>
 <translation id="3773856050682458546">Perustiedot sekä tiedot avaamistasi sivustoista ja käyttämistäsi sovelluksista</translation>
@@ -590,6 +591,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="4256782883801055595">Avoimen lähdekoodin käyttöluvat</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Selaushistoriaasi ja listaa sivuista, joilla olet käynyt Chromella tällä laitteella</translation>
 <translation id="4263656433980196874">Assistantin puhehaun suostumus-UI avattu koko näytön kokoisena</translation>
+<translation id="4266054596873078491">Kirjaudu tälle sivustolle ja Chromeen Google-tililläsi.</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="4290281343757112331">Ladataan myöhemmin?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Laita näytön lukitus päälle Android-asetuksista<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="4425140285732600465">Hintaa seurataan. Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="442518031075347249">Et voi tämän jälkeen käyttää virtuaalista korttia Google Payssa. <ph name="BEGIN_LINK1" />Lue lisää virtuaalisista korteista<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Mainosten personointi</translation>
-<translation id="4450672886426705087">Googlen hakutulokset.</translation>
 <translation id="4452411734226507615">Sulje välilehti <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Tätä puhelinta voi käyttää toisen QR-koodilla linkitetyn laitteen suojausavaimena. Jos poistat laitteen, linkitys QR-koodilla täytyy tehdä uudelleen.</translation>
@@ -732,6 +733,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4985248278475639481">Tietoa mainosten personoinnista</translation>
 <translation id="4987271110129728827">Sivua ei löydy. Tarkista oikeinkirjoitus tai kokeile verkkohakua.</translation>
 <translation id="4988526792673242964">Sivut</translation>
+<translation id="499724277181351974">Siirry: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seuraa sivustoa valitsemalla tämä</translation>
 <translation id="500351648694011114">Selaa helpommin</translation>
 <translation id="5004416275253351869">Google-toimintojen hallinta</translation>
@@ -790,6 +792,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5329858041417644019">Selainta ei ylläpidetä</translation>
 <translation id="5339031667684712858">Poistamasi sivustot</translation>
 <translation id="5342314432463739672">Käyttöoikeuspyynnöt</translation>
+<translation id="53537532693258630">Poistamasi sivustot näkyvät täällä</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
 <translation id="5368227114232678694">Voit selata yksityisesti tällä laitteella incognito-tilassa</translation>
 <translation id="5375577065097716013">Hae kuvaa Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 Sivusto voi myöntää selaimellesi luottamusmerkin sen perusteella, miten toimit sivulla, esim. jos kirjaudut säännöllisesti sisään tilille. Jos muut myöhemmin käyttämäsi sivustot löytävät kelvollisen luottamusmerkin, ne pitävät sinua todennäköisemmin ihmisenä.
 
 Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa niiden avulla.</translation>
+<translation id="6394791151443660613">Haku: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LINKITÄ</translation>
 <translation id="6397616442223433927">Verkkoyhteys palautettu</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
 <translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
+<translation id="9021388532480169802">Sivusto lisätty</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
 <translation id="9028914725102941583">Ota synkronointi käyttöön, niin voit jakaa sisältöä laitteiden välillä</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videota}}</translation>

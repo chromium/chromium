@@ -345,6 +345,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2861923151411510142">Sesetengah ciri Chrome tidak akan tersedia lagi</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2871733351037274014">Halaman pramuat</translation>
+<translation id="2886836735871983413">Senarai laman akan dipaparkan di sini semasa anda menyemak imbas web</translation>
 <translation id="2888126860611144412">Perihal Chrome</translation>
 <translation id="2891154217021530873">Hentikan pemuatan halaman</translation>
 <translation id="2892647708214602204">Anda akan melihat pemberitahuan apabila fail ini sudah sedia</translation>
@@ -372,6 +373,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2987620471460279764">Teks yang dikongsi daripada peranti lain</translation>
 <translation id="2989523299700148168">Dilawati baru-baru ini</translation>
 <translation id="2992473221983447149">Perihalan imej</translation>
+<translation id="2994959273484668146">Alih keluar <ph name="DOMAIN" /></translation>
 <translation id="2996291259634659425">Buat ungkapan laluan</translation>
 <translation id="2996809686854298943">URL yang diperlukan</translation>
 <translation id="2997081575621687554">Apabila laman Google meminta pramuat pautan secara peribadi pada halaman mereka, Chrome menyulitkan dan mempramuat halaman melalui pelayan Google tanpa kuki. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuat.</translation>
@@ -521,6 +523,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="3856096718352044181">Sila sahkan bahawa penyedia ini sah atau cuba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861633093716975811">Video popular</translation>
+<translation id="3874520961715512166">Laman dialih keluar</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3899682235662194879">Tutup semua tab Inkognito</translation>
@@ -558,6 +561,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="4095146165863963773">Padam data apl?</translation>
 <translation id="4096227151372679484">Aliran penyimpanan penanda halaman dibuka pada ketinggian separuh</translation>
 <translation id="4099578267706723511">Bantu jadikan Chrome lebih baik dengan menghantar laporan perangkaan penggunaan dan ranap sistem kepada Google.</translation>
+<translation id="4101475238162928417">Segerakkan untuk mendapatkan kata laluan, penanda halaman dan pelbagai lagi pada peranti anda yang lain</translation>
 <translation id="410351446219883937">Automain</translation>
 <translation id="4106587138345390261">Chrome sedang meneroka ciri baharu yang membolehkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang maklumat anda</translation>
 <translation id="4108314971463891922">Ikut</translation>
@@ -611,7 +615,6 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="4425140285732600465">Menjejaki harga. Dapatkan makluman sekiranya harga jatuh pada mana-mana laman.</translation>
 <translation id="442518031075347249">Anda tidak dapat menggunakan kad maya anda dengan Google Pay lagi. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Pemperibadian iklan</translation>
-<translation id="4450672886426705087">Hasil carian daripada Google.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ditandai halaman ke <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Apabila anda memautkan peranti lain menggunakan kod QR, telefon ini boleh digunakan sebagai kunci keselamatan. Jika anda mengalih keluarnya, anda perlu mengimbas kod QR untuk memautnya semula.</translation>
@@ -1193,6 +1196,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="749294055653435199">Google Lens tidak tersedia pada peranti ini</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Dikemas kini <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Sila tunggu…</translation>
+<translation id="7502234197872745058">Untuk log keluar daripada Google Account dalam semua laman web, <ph name="BEGIN_LINK1" />log keluar daripada Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Kemaskinian Tidak Tersedia</translation>
 <translation id="7507207699631365376">Lihat <ph name="BEGIN_LINK" />dasar privasi<ph name="END_LINK" /> penyedia ini</translation>
 <translation id="7514365320538308">Muat Turun</translation>

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Бар деректерді жойыңыз.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> аккаунтына кірдіңіз.</translation>
 <translation id="1154984953698510061">Басқа қойындыларды көру</translation>
+<translation id="1161340988127985692">Басқа қолданбалардағы сілтемелерді инкогнито режимінде ашуды сұрау</translation>
 <translation id="1164064664035028907">Күрделі құпия сөз пайдаланыңыз:</translation>
 <translation id="1165039591588034296">Қате</translation>
 <translation id="1172898394251786223">Келесі өріс</translation>
@@ -292,6 +293,7 @@
 <translation id="3443810440409579745">Қойынды қабылданды.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="3448016392200048164">Қатар ашу</translation>
+<translation id="3450502512529866925">Осы бетке бетбелгі қою</translation>
 <translation id="345565170154308620">Құпия сөздерді басқару...</translation>
 <translation id="3469166899695866866">Жүктеп алу процесін тоқтату керек пе?</translation>
 <translation id="3470502288861289375">Көшіруде…</translation>
@@ -484,6 +486,7 @@
 <translation id="5090832849094901128">Құпия сөзді жойсаңыз, <ph name="WEBSITE" /> сайтындағы аккаунтыңыз жойылмайды.</translation>
 <translation id="5092117651143801290">Беттерді сақтап, оларды кейінірек не офлайн режимде оқи аласыз. Ұзын беттерді сақтау кезінде Chrome бұл әрекетті орындау қажеттігін сұрайды.</translation>
 <translation id="5094827893301452931">Tweet аяқталды.</translation>
+<translation id="509789154667432072">Бетбелгі қою</translation>
 <translation id="5118713593561876160">Қызығушылықтар</translation>
 <translation id="5118764316110575523">Өшірулі</translation>
 <translation id="5127805178023152808">Синхрондау өшірулі</translation>

@@ -66,6 +66,7 @@
 <translation id="1476467821656042872">Den här enheten hanteras av <ph name="MANAGER" />, som kan ha möjlighet att övervaka din aktivitet.</translation>
 <translation id="147809995039451286">Det gick inte att ladda ned uppdateringen</translation>
 <translation id="1478594628797167447">Skanner</translation>
+<translation id="1483493594462132177">Skicka</translation>
 <translation id="1491076385728777984">Firmware uppdateras på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> hanterar denna användare och kan fjärrhantera inställningar och övervaka användaraktivitet.</translation>
 <translation id="150962533380566081">Ogiltig PUK-kod.</translation>
@@ -129,6 +130,7 @@
 <translation id="1999615961760456652">Infångstportal</translation>
 <translation id="2006864819935886708">Anslutning</translation>
 <translation id="2008685064673031089">Primtalssökning</translation>
+<translation id="2011174342667534258">SDK-version:</translation>
 <translation id="2016697457005847575">Testa felsökningsstegen</translation>
 <translation id="2016848882344942759">–ingen vit etikett–</translation>
 <translation id="202500043506723828">EID</translation>
@@ -160,6 +162,7 @@
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
 <translation id="2275586345903859204">Reparationen är klar</translation>
+<translation id="2276999893457278469">Populärt hjälpinnehåll</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
 <translation id="2294753434210277304">Sätt i en extern lagringsenhet, till exempel en USB-enhet eller ett SD-kort med den nedladdade avbildningen för återställningsverktyget för Chromebook</translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
@@ -193,6 +196,7 @@
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
 <translation id="253029298928638905">Startar om …</translation>
+<translation id="2533048460510040082">Föreslaget hjälpinnehåll</translation>
 <translation id="2536159006530886390">Det gick inte att ansluta till internet.</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
 <translation id="2584559707064218956">Öppna inställningarna för att konfigurera det</translation>
@@ -231,6 +235,7 @@
 <translation id="3083667275341675831">Anslutningsdiagnostik</translation>
 <translation id="3084958266922136097">Inaktivera skärmsläckare</translation>
 <translation id="3091839911843451378">Misslyckades – skrivaren har stannat</translation>
+<translation id="3096753366938912951">Placera locket på en plan yta</translation>
 <translation id="3102119246920354026">Cacheminne</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Enheten är ansluten.</translation>
@@ -288,9 +293,11 @@
 <translation id="3604713164406837697">Ändra bakgrund</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3606583719724308068">Hög fördröjning till HTTPS-webbplatser</translation>
+<translation id="361575905210396100">Tack för din feedback</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3621202678540785336">Ingång</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
+<translation id="3643198267586205643">Uppdatera operativsystemet</translation>
 <translation id="3643810137582748570">Hoppa över kalibrering</translation>
 <translation id="3651050199673793219">Välj en temperaturenhet</translation>
 <translation id="3678765385266369662">Välj hur du vill stänga av skrivskyddet</translation>
@@ -305,6 +312,7 @@
 <translation id="3784455785234192852">Lås</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
+<translation id="3824259034819781947">Bifoga filer</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3856304145690230735">Gyroskop i bas</translation>
@@ -408,6 +416,7 @@
 <translation id="469379815867856270">Signalstyrka</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="473775607612524610">Uppdatera</translation>
+<translation id="4740255236714854844">Placera basen på en plan yta</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4751272708893364980">Se RMA-loggar</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
@@ -455,6 +464,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet.</translation>
 <translation id="5039804452771397117">Tillåt</translation>
+<translation id="5044978354634658544">Sätta i USB-enheten</translation>
 <translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppnamn</translation>
 <translation id="5051044138948155788">Det här är den enda sidan. Du kommer till startskärmen för att skanna.</translation>
@@ -645,6 +655,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="6692996468359469499">Få information utifrån det du markerar</translation>
 <translation id="6704062477274546131">DNS-matchning</translation>
+<translation id="6721744718589119342">Det kan hända att vi kontaktar dig via e-post för mer information eller uppdateringar</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6723847290197874913">Tangentbordets bakgrundsbelysning</translation>
 <translation id="672609503628871915">Kolla nyheterna</translation>
@@ -739,6 +750,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7657530360897961171">Fel vid reparation av <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665800271478495366">Byt avatar</translation>
+<translation id="7682274994254393134">Påbörja reparationen</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -865,6 +877,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="885701979325669005">Lagring</translation>
 <translation id="8863170912498892583">Aktivera mörkt tema</translation>
 <translation id="8863888432376731307">Be om en <ph name="INTENT" /> av <ph name="QUERY" /> och annat</translation>
+<translation id="8864415976656252616">Inga innehållsförslag. Visa populärt hjälpinnehåll.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten är en surfplatta.</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>

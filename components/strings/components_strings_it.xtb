@@ -291,6 +291,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1662550410081243962">Salva e compila i metodi di pagamento</translation>
 <translation id="1663943134801823270">Carte di credito e indirizzi provengono da Chrome. Puoi gestirli in <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">D'ora in poi, le pagine in <ph name="SOURCE_LANGUAGE" /> verranno tradotte in <ph name="TARGET_LANGUAGE" />.</translation>
+<translation id="1673886523110456987">Effettua il pagamento con <ph name="CARD_DETAIL" /> per utilizzare l'offerta</translation>
 <translation id="1674504678466460478">Da <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Prima il lato corto</translation>
 <translation id="168693727862418163">Impossibile convalidare il valore del criterio in base al relativo schema. Il valore verrà ignorato.</translation>
@@ -590,6 +591,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2523886232349826891">Salvataggio effettuato solo su questo dispositivo</translation>
 <translation id="2524461107774643265">Aggiungi altre informazioni</translation>
 <translation id="2529899080962247600">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in più verranno ignorate.</translation>
+<translation id="253493526287553278">Visualizza i dettagli del codice promozionale</translation>
 <translation id="2535585790302968248">Apri una nuova scheda di navigazione in incognito per navigare in privato</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 altro}other{e altro #}}</translation>
 <translation id="2536110899380797252">Aggiungi indirizzo</translation>
@@ -1103,6 +1105,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3986705137476756801">Disattiva Sottotitoli in tempo reale per ora</translation>
 <translation id="3987940399970879459">Meno di 1 MB</translation>
 <translation id="3990250421422698716">Offset jog</translation>
+<translation id="3992684624889376114">Informazioni su questa pagina</translation>
 <translation id="3996311196211510766">Il sito <ph name="ORIGIN" /> ha richiesto l'applicazione di un criterio di origine
     a tutte le richieste indirizzate a esso, ma questo criterio al momento non può essere applicato.</translation>
 <translation id="4006465311664329701">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
@@ -1278,6 +1281,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
 <translation id="4441832193888514600">Ignorato perché il criterio può essere impostato solo da un utente cloud.</translation>
+<translation id="4442470707340296952">Schede di Chrome</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
@@ -1552,6 +1556,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5171045022955879922">Cerca o digita un URL</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Computer</translation>
+<translation id="5177076414499237632">Scopri di più sulla fonte e sull'argomento di questa pagina</translation>
 <translation id="5179510805599951267">Non in <ph name="ORIGINAL_LANGUAGE" />? Segnala questo errore</translation>
 <translation id="518639307526414276">Cibo e articoli per animali domestici</translation>
 <translation id="5190835502935405962">Barra dei Preferiti</translation>

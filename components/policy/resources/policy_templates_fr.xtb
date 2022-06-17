@@ -1346,6 +1346,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       La compatibilité de cette règle avec "tls1" ou "tls1.1" a été supprimée dans la version 91. La suppression de l'avertissement TLS 1.0/1.1 n'est plus disponible.</translation>
 <translation id="2364639863953745682">Mode du processus de prise en main de l'Assistant</translation>
 <translation id="2366301887862414321">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur et du système</translation>
+<translation id="2382672620906337383">La fonction JavaScript setTimeout() ne sera limitée que si le seuil d'imbrication est supérieur.</translation>
 <translation id="2384233438419344179">Si cette règle est activée, les éléments de page Web qui ne font pas partie du domaine indiqué dans la barre d'adresse du navigateur ne peuvent pas placer de cookies. Si cette règle est désactivée, ces éléments sont autorisés à placer des cookies, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle n'est pas configurée, les cookies tiers sont activés. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -1772,6 +1773,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="283478052049914107">Si cette règle est activée et qu'un port non standard est indiqué (c'est-à-dire un port autre que 80 ou 443), ce port est inclus dans le SPN Kerberos généré.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, le SPN Kerberos généré ne comprend aucun port.</translation>
+<translation id="2835686964326214400">Planifier le redémarrage des appareils de manière personnalisée</translation>
 <translation id="2838830882081735096">Interdire la migration de données et ARC</translation>
 <translation id="2839294585867804686">Paramètres de la fonctionnalité Partages de fichiers en réseau</translation>
 <translation id="284288632677954003">URL d'un fichier XML qui contient des URL qui ne doivent jamais déclencher un changement de navigateur.</translation>
@@ -2335,6 +2337,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3387211681524224831">Si cette règle est activée, l'historique de navigation n'est pas enregistré, la synchronisation des onglets est désactivée et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est désactivée ou si elle n'est pas configurée, l'historique de navigation est enregistré.</translation>
+<translation id="3387999258705169775">Comportement par défaut pour la limitation imbriquée de la fonction setTimeout().</translation>
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>
 <translation id="3391457705621770207">Permet de définir, en millisecondes, le délai de connexion automatique au compte local de l'appareil (spécifié dans la règle <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />) en l'absence d'action de l'utilisateur sur l'écran de connexion.
 
@@ -3003,6 +3006,16 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur de saisie est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4183229833636799228">Paramètre par défaut pour le plug-in "<ph name="FLASH_PLUGIN_NAME" />"</translation>
+<translation id="4186244263855283575">Permet de planifier le redémarrage des appareils de manière personnalisée. Une fois la règle définie sur "True", l'appareil redémarrera en fonction du calendrier établi. Pour annuler tout autre redémarrage planifié, cette règle doit être supprimée.
+
+      Dans les sessions utilisateur et les sessions Invité, les points suivants s'appliquent :
+
+        * Les utilisateurs sont informés que le redémarrage aura lieu une heure avant l'heure prévue. Ils peuvent choisir de redémarrer ou d'attendre le redémarrage planifié. Le redémarrage planifié ne peut pas être reporté.
+
+        * Il y a un délai de grâce d'une heure après le démarrage de l'appareil. Les redémarrages planifiés sont ignorés au cours de cette période et sont reprogrammés pour le jour, la semaine ou le mois d'après, en fonction du paramètre.
+
+      Dans les sessions Kiosque, il n'y a pas de délai de grâce ni de notification concernant le redémarrage.
+</translation>
 <translation id="4187576366596772431">Bloquer l'API WebHID sur ces sites</translation>
 <translation id="4192388905594723944">URL permettant de valider le jeton d'authentification du client d'accès à distance</translation>
 <translation id="4203055629055264833">Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent afficher la page la plus récente des résultats du moteur de recherche par défaut dans un panneau latéral à l'aide d'une icône de la barre d'outils.
@@ -4695,6 +4708,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si tel est le cas, un thème basé sur cette couleur est automatiquement généré et appliqué au navigateur. Les utilisateurs ne peuvent pas modifier le thème défini dans cette règle.
 
       En revanche, ils peuvent appliquer le thème de leur choix au navigateur si la règle n'est pas configurée.</translation>
+<translation id="619376519309703699">Permet de désactiver ou non la fonctionnalité d'ensembles internes.
+
+                  Si cette règle n'est pas configurée ou qu'elle est activée, la fonctionnalité d'ensembles internes est activée.
+
+                  Si elle est désactivée, la fonctionnalité l'est également.
+
+                  Cela détermine si Chrome accepte ou non les fonctionnalités liées aux ensembles internes (par exemple, l'attribut de cookie SameParty).</translation>
 <translation id="6195802366906945965">Déterminer si l'outil de vérification des certificats intégré sera utilisé pour vérifier les certificats des serveurs</translation>
 <translation id="6198947200418556248">Cette règle est obsolète. Si vous nécessitez toujours l'ancien comportement des cookies, veuillez utiliser <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. Ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour obtenir une description complète, consultez https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -7101,6 +7121,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8749536858950505376">Définissez cette règle sur "True" pour maintenir le grand curseur activé. Définissez cette règle sur "False" pour le maintenir désactivé.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier. Si elle n'est pas définie, le grand curseur est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="8750941317035081777">La fonction JavaScript setTimeout() sera limitée après un seuil d'imbrication normal.</translation>
 <translation id="8753264624162178499">L'option "Imprimer en tant qu'image" est proposée à l'utilisateur pour permettre la rastérisation des PDF avant l'envoi de la tâche d'impression à sa destination.</translation>
 <translation id="8757552286070680084">Configuration d'un dispositif DTC de Wilco</translation>
 <translation id="8758831693895931466">Activer l'inscription obligatoire à la gestion cloud</translation>

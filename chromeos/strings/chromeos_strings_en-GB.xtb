@@ -16,6 +16,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Update firmware for external devices window is open. <ph name="NUM_UPDATES" /> updates available.</translation>
+<translation id="1145516343487477149">Find help articles and answers to common Chromebook questions</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Average (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -66,6 +67,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
 <translation id="147809995039451286">Couldn't download the update</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Send</translation>
 <translation id="1491076385728777984">Updating firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> manages this user and may remotely manage settings and monitor user activity.</translation>
 <translation id="150962533380566081">Invalid PUK.</translation>
@@ -119,6 +121,7 @@
 <translation id="1871569928317311284">Turn Dark theme off</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Turn dark mode off</translation>
+<translation id="1881188606372070653">Go to the <ph name="BEGIN_LINK1" />legal help page<ph name="END_LINK1" /> to request content changes for legal reasons. Some account and system information may be sent to Google. We will use the information that you give us to help address technical issues and to improve our services, subject to our <ph name="BEGIN_LINK2" />privacy policy<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Terms of Service<ph name="END_LINK3" />.</translation>
 <translation id="1887850431809612466">Hardware revision</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
@@ -622,6 +625,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Test your keyboard</translation>
 <translation id="6388847657025262518">The scanner’s document feeder is jammed. Check the feeder and try again.</translation>
+<translation id="6394634179843537518">Add file</translation>
 <translation id="6410257289063177456">Image Files</translation>
 <translation id="641081527798843608">Subject match</translation>
 <translation id="6423239382391657905">Open VPN</translation>
@@ -655,6 +659,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
+<translation id="6721744718589119342">We may email you for more information or updates</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Keyboard backlight</translation>
 <translation id="672609503628871915">See what's new</translation>
@@ -719,6 +724,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>
 <translation id="7359657277149375382">File type</translation>
+<translation id="73631062356239394">Share diagnostic data</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">SKU</translation>
 <translation id="7397270852490618635">Turn Light theme off</translation>
@@ -924,6 +930,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9173638680043580060">Less than a minute remaining</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Your keyboard can automatically match your wallpaper</translation>
 <translation id="9204237731135241582">Can't contact the gateway from Android apps</translation>
 <translation id="9211490828691860325">All desks</translation>
 <translation id="922179502584117429">Current version <ph name="VERSION_NUMBER" /> is out of date</translation>

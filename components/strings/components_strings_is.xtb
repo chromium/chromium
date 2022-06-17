@@ -291,6 +291,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1662550410081243962">Vista og fylla út greiðslumáta</translation>
 <translation id="1663943134801823270">Spjöld og heimilisföng eru úr Chrome. Þú getur haft umsjón með þeim í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Síður á tungumálinu „<ph name="SOURCE_LANGUAGE" />“ verða héðan í frá þýddar yfir á eftirfarandi tungumál: <ph name="TARGET_LANGUAGE" />.</translation>
+<translation id="1673886523110456987">Gakktu frá kaupum með <ph name="CARD_DETAIL" /> til að nýta tilboð</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Skammhlið fyrst</translation>
 <translation id="168693727862418163">Ekki tókst að staðfesta gildi þessarar reglu gagnvart skema hennar og hún verður hunsuð.</translation>
@@ -590,6 +591,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2523886232349826891">Aðeins vistað í þessu tæki</translation>
 <translation id="2524461107774643265">Bæta við fleiri upplýsingum</translation>
 <translation id="2529899080962247600">Þessi reitur á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> færslur. Allar frekari færslur verða hunsaðar.</translation>
+<translation id="253493526287553278">Sjá upplýsingar um kynningarkóða</translation>
 <translation id="2535585790302968248">Opnaðu nýjan huliðsflipa til að fara huldu höfði</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 í viðbót}one{og # í viðbót}other{og # í viðbót}}</translation>
 <translation id="2536110899380797252">Bæta við heimilisfangi</translation>
@@ -1106,6 +1108,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3986705137476756801">Slökkva á skjátextum í rauntíma í bili</translation>
 <translation id="3987940399970879459">Minna en 1 MB</translation>
 <translation id="3990250421422698716">Jöfnuð offsetprentun</translation>
+<translation id="3992684624889376114">Um þessa síðu</translation>
 <translation id="3996311196211510766">Vefsvæðið <ph name="ORIGIN" /> hefur beðið um að upprunaregla
     gildi fyrir allar beiðnir þess, en ekki er hægt að nota þessa reglu eins og er.</translation>
 <translation id="4006465311664329701">Greiðslumátar, tilboð og heimilisföng sem nota Google Pay</translation>
@@ -1281,6 +1284,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4435702339979719576">póstkort)</translation>
 <translation id="443673843213245140">Slökkt er á notkun proxy-þjóns en sérstök proxy-stilling er tilgreind.</translation>
 <translation id="4441832193888514600">Hunsað vegna þess að aðeins er hægt að stilla regluna sem notendareglu í skýi.</translation>
+<translation id="4442470707340296952">Chrome flipar</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="4451135742916150903">Getur beðið um að tengjast HID-tækjum</translation>
 <translation id="4452328064229197696">Aðgangsorðið sem þú varst að nota fannst nýverið í öryggisbroti. Aðgangsorðastjórnun Google mælir með að þú athugir vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
@@ -1555,6 +1559,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5171045022955879922">Leitaðu eða sláðu inn vefslóð</translation>
 <translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Vél</translation>
+<translation id="5177076414499237632">Nánar um heimildir og umfjöllunarefni þessarar síðu</translation>
 <translation id="5179510805599951267">Ekki <ph name="ORIGINAL_LANGUAGE" />? Tilkynna þessa villu</translation>
 <translation id="518639307526414276">Gæludýrafóður og gæludýravörur</translation>
 <translation id="5190835502935405962">Bókamerkjastika</translation>

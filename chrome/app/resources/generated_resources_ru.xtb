@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Обновите <ph name="DEVICE_TYPE" /> в течение 1 недели}one{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}few{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}many{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}other{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}}</translation>
 <translation id="1056898198331236512">Внимание</translation>
-<translation id="105822690353767994">Чтобы это сообщение больше не показывалось, выберите "Разрешать всегда" для расширения на этом сайте.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Введите новый PIN-код. Он должен состоять как минимум из одного знака и может содержать буквы, цифры и другие символы.}one{Введите новый PIN-код. Он должен состоять хотя бы из # знака и может содержать буквы, цифры и другие символы.}few{Введите новый PIN-код. Он должен состоять хотя бы из # знаков и может содержать буквы, цифры и другие символы.}many{Введите новый PIN-код. Он должен состоять хотя бы из # знаков и может содержать буквы, цифры и другие символы.}other{Введите новый PIN-код. Он должен состоять хотя бы из # знака и может содержать буквы, цифры и другие символы.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
@@ -1423,7 +1422,6 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Нельзя использовать следующие клавиши: Tab, Shift, Ctrl, Esc, Caps Lock и клавиши регулировки громкости.</translation>
 <translation id="2309620859903500144">Этому сайту запрещено использовать датчики движения и освещенности.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">URL страницы</translation>
 <translation id="2314165183524574721">Ваше устройство скрыто от других пользователей</translation>
 <translation id="2314774579020744484">Язык, который используется при переводе страниц</translation>
@@ -2624,6 +2622,7 @@
 <translation id="3482719661246593752"><ph name="ORIGIN" /> может просматривать следующие файлы:</translation>
 <translation id="3484273680291419129">Удаление вредоносного ПО...</translation>
 <translation id="3484869148456018791">Получить новый сертификат</translation>
+<translation id="3486950712960783074">Ваше путешествие</translation>
 <translation id="3487007233252413104">анонимные функции</translation>
 <translation id="3490695139702884919">Скачивание… <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Для аккаунта ребенка не настроен родительский контроль Family Link. Вы сможете включить его, после того как завершите настройку. Узнать больше о родительском контроле можно в приложении "Возможности".</translation>
@@ -2936,6 +2935,7 @@
 <translation id="3797739167230984533">Этим устройством <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> управляет<ph name="END_LINK" /> ваша организация.</translation>
 <translation id="3797900183766075808">&amp;Найти "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Версия</translation>
+<translation id="3798632811625902122">Устройству <ph name="DEVICE" /> требуется разрешение на подключение через Bluetooth.</translation>
 <translation id="3799128412641261490">Настройки функции Switch Access</translation>
 <translation id="3800806661949714323">Показать все (рекомендуется)</translation>
 <translation id="3800828618615365228">Дополнительные условия использования Google Chrome и Chrome OS</translation>
@@ -4924,6 +4924,7 @@
 <translation id="5792295754950501287">Другие действия с картой "<ph name="CARD_DESCRIPTION" />"</translation>
 <translation id="5792728279623964091">Нажмите кнопку питания.</translation>
 <translation id="5793339252089865437">Скачивание обновлений по мобильной сети может привести к дополнительным расходам.</translation>
+<translation id="5793420564274426163">Подтвердите подключение</translation>
 <translation id="5794034487966529952">На рабочем столе "<ph name="DESK_TITLE" />" открыто несколько окон браузера (<ph name="NUM_BROWSERS" />)</translation>
 <translation id="5794414402486823030">Всегда открывать в программе просмотра по умолчанию</translation>
 <translation id="5794700615121138172">Общие папки Linux</translation>
@@ -5045,7 +5046,6 @@
 
   Открытая экспонента (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> бит):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Телефон и <ph name="DEVICE_TYPE" /> подключены</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="59174027418879706">Включено</translation>
 <translation id="5920543303088087579">Администратор запретил подключаться к этой сети</translation>
@@ -5181,7 +5181,6 @@
     <ph name="BEGIN_PARAGRAPH3" />Отключение этой функции не повлияет на возможность устройства отправлять информацию, необходимую для обновления ОС и системы безопасности.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Если в аккаунте Google вашего ребенка включена история приложений и веб-поиска, данные ребенка могут сохраняться в его аккаунте. Узнать больше об этих параметрах и о том, как их настроить, можно на странице families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Ваша организация заблокировала файл, так как он нарушает политику безопасности.</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Чтобы начать трансляцию, введите код доступа</translation>
 <translation id="6052976518993719690">Центр сертификации SSL</translation>
 <translation id="6053401458108962351">&amp;Удаление данных о просмотренных страницах...</translation>
@@ -7425,6 +7424,7 @@
 <translation id="8242426110754782860">Продолжить</translation>
 <translation id="8243948765190375130">Качество медиаконтента может снизиться</translation>
 <translation id="8244514732452879619">Пора ложиться спать</translation>
+<translation id="8245361042748627813">Это сочетание клавиш больше не работает. Используйте клавиши <ph name="NEW_SHORTCUT_KEY" />, чтобы печатать через системное диалоговое окно.</translation>
 <translation id="8246776524656196770">Защитите электронный ключ при помощи PIN-кода.</translation>
 <translation id="8248050856337841185">&amp;Вставить</translation>
 <translation id="8248381369318572865">Доступ к микрофону и анализ речи</translation>
@@ -7729,6 +7729,7 @@
 <translation id="8561565784790166472">Будьте осторожны!</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Попытка перейти на более раннюю версию приложения.</translation>
+<translation id="8569673829373920831"><ph name="APP_NAME" />: подробнее</translation>
 <translation id="8569682776816196752">Места назначения не найдены</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8571687764447439720">Добавить билет Kerberos</translation>
@@ -8014,7 +8015,6 @@
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="8838778928843281408">Управление смартфонами</translation>
 <translation id="8841843049738266382">Читать и изменять список разрешенных пользователей</translation>
-<translation id="8842059467121215385">Чтобы использовать расширение "<ph name="EXTENSION_NAME" />", обновите страницу</translation>
 <translation id="8842594465773264717">Удалить этот отпечаток пальца</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8846132060409673887">Доступ к информации о производителе и модели компьютера</translation>
@@ -8468,7 +8468,6 @@
 <translation id="992778845837390402">Выполняется резервное копирование Linux.</translation>
 <translation id="993540765962421562">Выполняется установка</translation>
 <translation id="994289308992179865">&amp;Повтор</translation>
-<translation id="995571563161129624">Обратите внимание, что если вы скроете уведомления на устройстве Chromebook, то они будут скрыты и на телефоне.</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Создание безопасного подключения...</translation>
 <translation id="996803490569799917">Показывать воспоминания с выбранными вами людьми и не только</translation>

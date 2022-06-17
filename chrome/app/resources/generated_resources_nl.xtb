@@ -56,7 +56,6 @@
 <translation id="1054153489933238809">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> binnen 1 week}other{Update <ph name="DEVICE_TYPE" /> binnen {NUM_WEEKS} weken}}</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
-<translation id="105822690353767994">Als je dit bericht niet meer wilt zien, sta je toe dat de extensie altijd wordt uitgevoerd op deze site.</translation>
 <translation id="1058262162121953039">Pukcode</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Geef je nieuwe pincode op. Een pincode moet uit minstens 1 teken bestaan en mag letters, cijfers en andere tekens bevatten.}other{Geef je nieuwe pincode op. Een pincode moet uit minstens # tekens bestaan en mag letters, cijfers en andere tekens bevatten.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
@@ -1421,7 +1420,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">De volgende toetsen worden niet ondersteund: Tab, Shift, Ctrl, Escape, Caps Lock en Volume</translation>
 <translation id="2309620859903500144">Deze site heeft geen toegang tot je bewegings- of lichtsensoren.</translation>
-<translation id="2311721625890389967">↓</translation>
 <translation id="2312219318583366810">Pagina-URL</translation>
 <translation id="2314165183524574721">Huidige zichtbaarheidsinstelling is 'Verborgen'</translation>
 <translation id="2314774579020744484">Gebruikte taal tijdens het vertalen van pagina's</translation>
@@ -2574,6 +2572,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
 <translation id="3445047461171030979">Snelle antwoorden van de Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
+<translation id="344537926140058498">Je organisatie heeft dit bestand geblokkeerd omdat het gevoelige of gevaarlijke content bevat. Vraag de eigenaar om dit op te lossen.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3446274660183028131">Start Parallels Desktop om Windows te installeren.</translation>
 <translation id="344630545793878684">Je gegevens voor een aantal websites lezen</translation>
@@ -3132,6 +3131,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3971764089670057203">Vingerafdrukken op deze beveiligingssleutel</translation>
 <translation id="3973005893595042880">Gebruiker is niet toegestaan</translation>
+<translation id="3973062011568994448">Als je wachtwoorden wilt importeren, selecteer je een csv-bestand.</translation>
 <translation id="3973660817924297510">Wachtwoorden controleren (<ph name="CHECKED_PASSWORDS" /> van <ph name="TOTAL_PASSWORDS" />)…</translation>
 <translation id="3974514184580396500">Gebruik Volgende om de focus vooruit te verplaatsen op het scherm</translation>
 <translation id="3975201861340929143">Uitleg</translation>
@@ -3918,6 +3918,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4768332406694066911">Je hebt certificaten van deze organisaties waarmee je wordt geïdentificeerd</translation>
 <translation id="4770119228883592393">Rechten gevraagd, druk op ⌘ + Option + pijl-omlaag om te reageren</translation>
 <translation id="4773112038801431077">Linux upgraden</translation>
+<translation id="4774337692467964393">Als Smart Lock aanstaat, hoef je geen pincode of wachtwoord op te geven</translation>
 <translation id="4775142426314270551">Help de functies en prestaties van Chrome en Chrome OS te verbeteren door automatisch crashrapporten en diagnostische en gebruiksgegevens naar Google te sturen. Daarnaast zijn sommige verzamelde gegevens nuttig voor Android-apps en Google-partners. Als de instelling voor Web- en app-activiteit is aangezet voor het Google-account van je kind, kunnen de Android-gegevens van je kind worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="477647109558161443">Een snelkoppeling maken</translation>
 <translation id="4776594120007763294">Klik op de knop om een pagina toe te voegen voor later lezen</translation>
@@ -3967,6 +3968,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4820236583224459650">Instellen als actief ticket</translation>
 <translation id="4821935166599369261">&amp;Profiling staat aan</translation>
 <translation id="4823484602432206655">Gebruikers- en apparaatinstellingen lezen en wijzigen</translation>
+<translation id="4823894915586516138">Je beschermt je gegevens op deze <ph name="DEVICE_TYPE" /> met een pincode of wachtwoord, waaronder informatie die je opent vanaf je telefoon</translation>
 <translation id="4824037980212326045">Back-up en herstel voor Linux</translation>
 <translation id="4824958205181053313">Synchronisatie annuleren?</translation>
 <translation id="4827675678516992122">Kan geen verbinding maken</translation>
@@ -4598,6 +4600,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5466374726908360271">Pl&amp;akken en zoeken naar '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="5467207440419968613">Rechten voor <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="5468173180030470402">Zoeken naar fileshares</translation>
+<translation id="5468881191994555667">Bestand kiezen</translation>
 <translation id="5469852975082458401">Je kunt navigeren op pagina's met een tekstcursor. Druk op F7 om dit uit te zetten.</translation>
 <translation id="5470735824776589490">Opnieuw starten is vereist voordat je apparaat opnieuw kan worden ingesteld met Powerwash. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hallo. Ik ben je stem voor tekst-naar-spraak.</translation>
@@ -5042,7 +5045,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 
   Openbare exponent (<ph name="PUBLIC_EXPONENT_NUM_BITS" />-bits):
   <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="591556859191968540">Je telefoon en <ph name="DEVICE_TYPE" /> zijn verbonden</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="59174027418879706">Aangezet</translation>
 <translation id="5920543303088087579">Verbinding met dit netwerk is uitgezet door je beheerder</translation>
@@ -5177,7 +5179,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Als je deze functie uitzet, kan dit apparaat nog steeds de informatie sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Als de instelling voor Web- en app-activiteit is aangezet voor het Google-account van je kind, kunnen de gegevens van je kind worden opgeslagen in het Google-account van je kind. Ga naar families.google.com voor meer informatie over deze instellingen en hoe je ze kunt aanpassen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6051811090255711417">Je organisatie heeft dit bestand geblokkeerd omdat het niet voldoet aan een beveiligingsbeleid</translation>
-<translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Typ de toegangscode om te beginnen met casten</translation>
 <translation id="6052976518993719690">SSL-certificeringsinstantie</translation>
 <translation id="6053401458108962351">&amp;Browsegegevens wissen</translation>
@@ -5621,6 +5622,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="648927581764831596">Niet beschikbaar</translation>
 <translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
 <translation id="6491376743066338510">Autorisatie mislukt</translation>
+<translation id="6492396476180293140">Interne camera gedeactiveerd door hardwareschakelaar</translation>
 <translation id="6494327278868541139">Details van geoptimaliseerde beveiliging bekijken</translation>
 <translation id="6494445798847293442">Geen certificeringsinstantie</translation>
 <translation id="6494974875566443634">Aanpassing</translation>
@@ -6326,6 +6328,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7191159667348037">Onbekende printer (USB)</translation>
 <translation id="7193051357671784796">Deze app is toegevoegd door je organisatie. Start de app opnieuw om de installatie te voltooien.</translation>
 <translation id="7193374945610105795">Geen wachtwoorden opgeslagen voor <ph name="ORIGIN" /></translation>
+<translation id="7194873994243265344">Je organisatie heeft dit bestand geblokkeerd omdat het is versleuteld. Vraag de eigenaar om het te ontsleutelen.</translation>
 <translation id="7196913789568937443">Een back-up maken in Google Drive. Gemakkelijk je gegevens herstellen of op elk gewenst moment van apparaat wisselen. Je back-up omvat app-gegevens. Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account. <ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google Zoeken en slimme Google-functies standaard instellen voor browsen</translation>
 <translation id="719791532916917144">Sneltoets</translation>
@@ -6344,6 +6347,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7211783048245131419">Er is nog geen schakelaar toegewezen</translation>
 <translation id="7212097698621322584">Voer je huidige pincode in om deze te wijzigen. Als je je pincode niet weet, moet je de beveiligingssleutel resetten en vervolgens een nieuwe pincode maken.</translation>
 <translation id="7213903639823314449">Zoekmachine gebruikt in adresbalk</translation>
+<translation id="721490496276866468">Wachtwoorden importeren</translation>
 <translation id="7216595297012131718">Talen rangschikken op basis van je voorkeur</translation>
 <translation id="7219473482981809164">We hebben meerdere beschikbare profielen gevonden om te downloaden. Selecteer de profielen die je wilt downloaden voordat je verdergaat.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Geen zwakke wachtwoorden}=1{1 zwak wachtwoord}other{{NUM_WEAK} zwakke wachtwoorden}}</translation>
@@ -6975,6 +6979,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7826190688224781865">Winkel-ID-code van verkoper</translation>
 <translation id="7826249772873145665">ADB-foutopsporing staat uit</translation>
 <translation id="7826254698725248775">Conflicterend apparaat-ID.</translation>
+<translation id="7828642077514646543">Fout: Kan certificaat niet decoderen</translation>
 <translation id="7828731929332799387">Dit verwijdert alle cookies en sitegegevens van derden. Wil je doorgaan?</translation>
 <translation id="7829877209233347340">Vraag een ouder om in te loggen en toe te staan dat je een schoolaccount toevoegt</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
@@ -7937,6 +7942,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8775653927968399786">{0,plural, =1{Je <ph name="DEVICE_TYPE" /> wordt over # seconde automatisch vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}other{Je <ph name="DEVICE_TYPE" /> wordt over # seconden automatisch vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}}</translation>
+<translation id="8776294611668764629">Je organisatie heeft dit bestand geblokkeerd omdat het te groot is voor een beveiligingscontrole. Je kunt bestanden tot 50 MB openen.</translation>
 <translation id="8777628254805677039">root-wachtwoord</translation>
 <translation id="8779944680596936487">Sites kunnen cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8780123805589053431">Afbeeldingsbeschrijvingen ophalen van Google</translation>
@@ -8001,7 +8007,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Telefoons beheren</translation>
 <translation id="8841843049738266382">Gebruikers op de toelatingslijst lezen en wijzigen</translation>
-<translation id="8842059467121215385">Vernieuw de pagina om <ph name="EXTENSION_NAME" /> te gebruiken</translation>
 <translation id="8842594465773264717">Deze vingerafdruk verwijderen</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8846132060409673887">De fabrikant en het model van deze computer lezen</translation>
@@ -8455,7 +8460,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="992778845837390402">Linux-back-up wordt momenteel uitgevoerd</translation>
 <translation id="993540765962421562">De installatie wordt uitgevoerd</translation>
 <translation id="994289308992179865">&amp;Herhalen</translation>
-<translation id="995571563161129624">Houd er rekening mee dat als je meldingen sluit op je Chromebook, ze ook worden gesloten op je telefoon</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Beveiligde verbinding tot stand brengen...</translation>
 <translation id="996803490569799917">Herinneringen aan je favoriete mensen en meer bekijken</translation>

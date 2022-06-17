@@ -508,6 +508,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="3740525748616366977">Không dùng được tính năng Tìm kiếm bằng giọng nói trên thiết bị này</translation>
 <translation id="3749259744154402564">Chưa hỗ trợ</translation>
 <translation id="3771033907050503522">Thẻ ẩn danh</translation>
+<translation id="377124182565324804">Thêm <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Tùy chọn cài đặt này bị tắt do các quyền kiểm soát của cha mẹ đang bật</translation>
 <translation id="3771694256347217732">Điều khoản dịch vụ của Google</translation>
 <translation id="3773856050682458546">Dữ liệu cơ bản cùng với thông tin về những trang web bạn truy cập và các ứng dụng bạn dùng</translation>
@@ -590,6 +591,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="4256782883801055595">Giấy phép nguồn mở</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Loại dữ liệu nào được sử dụng:<ph name="END_BOLD" /> Nhật ký duyệt web của bạn, một bản ghi các trang web bạn từng truy cập bằng Chrome trên thiết bị này.</translation>
 <translation id="4263656433980196874">Giao diện người dùng cho phép sử dụng Trợ lý để tìm kiếm bằng giọng nói đã mở trên toàn màn hình</translation>
+<translation id="4266054596873078491">Bạn sẽ đăng nhập vào trang web này và Chrome bằng Tài khoản Google của bạn.</translation>
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
 <translation id="4290281343757112331">Tải xuống vào lúc khác?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Bật phương thức khóa màn hình trong phần cài đặt Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="442518031075347249">Bạn sẽ không thể sử dụng thẻ ảo qua Google Pay được nữa. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
-<translation id="4450672886426705087">Kết quả tìm kiếm của Google.</translation>
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Khi bạn liên kết với một thiết bị khác bằng mã QR, thiết bị đó có thể dùng điện thoại này làm khoá bảo mật. Nếu bạn xoá thiết bị đó đi, bạn sẽ phải quét mã QR để liên kết lại.</translation>
@@ -732,6 +733,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4985248278475639481">Giới thiệu về chế độ cá nhân hoá quảng cáo</translation>
 <translation id="4987271110129728827">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên web.</translation>
 <translation id="4988526792673242964">Trang</translation>
+<translation id="499724277181351974">Di chuyển: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Theo dõi trang web này tại đây</translation>
 <translation id="500351648694011114">Duyệt xem dễ dàng hơn</translation>
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
@@ -790,6 +792,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5329858041417644019">Trình duyệt của bạn không được quản lý</translation>
 <translation id="5339031667684712858">Trang web bạn đã xoá</translation>
 <translation id="5342314432463739672">Yêu cầu cấp quyền</translation>
+<translation id="53537532693258630">Các trang web bạn đã loại bỏ sẽ xuất hiện tại đây</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
 <translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 Dựa trên tương tác của bạn với một trang web (chẳng hạn như thường xuyên đăng nhập vào một tài khoản), trang web đó có thể phát hành một mã thông báo tin cậy cho trình duyệt của bạn. Sau đó, nếu các trang web khác bạn truy cập cũng kiểm tra và tìm thấy một mã thông báo tin cậy hợp lệ, thì khả năng cao là các trang web đó sẽ xác định bạn là một người thực chứ không phải một bot.
 
 Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và các bên sẽ không thể dùng mã này để tìm ra bạn là ai.</translation>
+<translation id="6394791151443660613">Tìm kiếm: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">LIÊN KẾT</translation>
 <translation id="6397616442223433927">Đã có kết nối mạng trở lại</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> trên <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
 <translation id="8998729206196772491">Bạn đang đăng nhập bằng tài khoản do <ph name="MANAGED_DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
+<translation id="9021388532480169802">Đã thêm trang web</translation>
 <translation id="9022774213089566801">Truy cập thường xuyên</translation>
 <translation id="9028914725102941583">Bật tính năng đồng bộ hóa để chia sẻ giữa các thiết bị</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>

@@ -64,7 +64,9 @@
 <translation id="1459784442280469416">Auf USB speichern</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
+<translation id="147809995039451286">Update konnte nicht heruntergeladen werden</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Senden</translation>
 <translation id="1491076385728777984">Die Firmware auf „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
@@ -182,6 +184,7 @@
 <translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
+<translation id="2447969267935997922">Installation abgeschlossen. Du kannst jetzt den USB-Speicher bzw. die SD-Karte entfernen.</translation>
 <translation id="2448312741937722512">Art</translation>
 <translation id="2461822463642141190">Aktuell</translation>
 <translation id="2480034874476596812">Manuell deaktivieren</translation>
@@ -652,6 +655,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Informationen zu deiner Auswahl erhalten</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
+<translation id="6721744718589119342">Unter Umständen werden wir dich per E-Mail um weitere bzw. aktuelle Informationen bitten</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="6723847290197874913">Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
@@ -716,6 +720,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
+<translation id="73631062356239394">Diagnosedaten teilen</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Artikelnummer</translation>
 <translation id="7397270852490618635">Helles Design ausschalten</translation>
@@ -921,6 +926,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
 <translation id="917720651393141712">Testen</translation>
+<translation id="9188992814426075118">Die Tastatur kann automatisch an den Hintergrund angepasst werden</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>
 <translation id="922179502584117429">Die installierte Version (<ph name="VERSION_NUMBER" />) ist veraltet</translation>

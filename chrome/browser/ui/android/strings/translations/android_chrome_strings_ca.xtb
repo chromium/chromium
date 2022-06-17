@@ -508,6 +508,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="3740525748616366977">La cerca per veu no està disponible en aquest dispositiu</translation>
 <translation id="3749259744154402564">No s'admet</translation>
 <translation id="3771033907050503522">Pestanyes d'incògnit</translation>
+<translation id="377124182565324804">Afegeix <ph name="SITE" /></translation>
 <translation id="3771290962915251154">Aquesta opció de configuració està desactivada perquè els controls parentals estan activats</translation>
 <translation id="3771694256347217732">Condicions del servei de Google</translation>
 <translation id="3773856050682458546">Dades bàsiques i informació sobre els llocs web que visites i les aplicacions que utilitzes</translation>
@@ -590,6 +591,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="4256782883801055595">Llicències de programari lliure</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: el teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
 <translation id="4263656433980196874">La IU de consentiment de la cerca per veu de l'Assistent s'ha obert a alçada completa</translation>
+<translation id="4266054596873078491">Inicia la sessió en aquest lloc web i a Chrome amb el teu Compte de Google.</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
 <translation id="4290281343757112331">Vols posposar la baixada?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueig de pantalla a la configuració d'Android<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="4425140285732600465">Estàs fent un seguiment del preu. Si el preu baixa en qualsevol lloc web, rebràs una alerta.</translation>
 <translation id="442518031075347249">Ja no podràs utilitzar la targeta virtual amb Google Pay. <ph name="BEGIN_LINK1" />Obtén més informació sobre les targetes virtuals<ph name="END_LINK1" />.</translation>
 <translation id="4428065317363009941">Personalització d'anuncis</translation>
-<translation id="4450672886426705087">Resultats de la cerca de Google.</translation>
 <translation id="4452411734226507615">Tanca la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adreça d'interès afegida a <ph name="FOLDER_NAME" /></translation>
 <translation id="4461614516424362539">Quan enllaces un altre dispositiu amb un codi QR, pot utilitzar aquest telèfon com a clau de seguretat. Si el suprimeixes, hauràs d'escanejar el codi QR per tornar-lo a enllaçar.</translation>
@@ -732,6 +733,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4985248278475639481">Sobre la personalització d'anuncis</translation>
 <translation id="4987271110129728827">No es troba aquesta pàgina. Comprova'n l'ortografia o prova de fer una cerca web.</translation>
 <translation id="4988526792673242964">Pàgines</translation>
+<translation id="499724277181351974">Navega: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Segueix aquest lloc web aquí</translation>
 <translation id="500351648694011114">Navega més fàcilment</translation>
 <translation id="5004416275253351869">Controls d'activitat de Google</translation>
@@ -790,6 +792,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5329858041417644019">El navegador no està gestionat</translation>
 <translation id="5339031667684712858">Llocs web que has suprimit</translation>
 <translation id="5342314432463739672">Sol·licituds de permís</translation>
+<translation id="53537532693258630">Els llocs web que hagis suprimit es mostraran aquí</translation>
 <translation id="5355191726083956201">Està activada la protecció millorada</translation>
 <translation id="5368227114232678694">Per navegar de manera privada en aquest dispositiu, prova el mode d'incògnit</translation>
 <translation id="5375577065097716013">Cerca la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
@@ -981,6 +984,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 Un lloc web, en funció de com hi interaccionis (per exemple, si hi inicies la sessió habitualment en un compte), pot emetre un testimoni de confiança al teu navegador. Després, si altres llocs web que visitis cerquen i troben un testimoni de confiança vàlid, és més possible que et tractin com una persona i no com un bot.
 
 Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-se per esbrinar qui ets.</translation>
+<translation id="6394791151443660613">Cerca: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ENLLAÇ</translation>
 <translation id="6397616442223433927">Tornes a tenir connexió</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> a <ph name="VIOLATED_URL" /></translation>
@@ -1495,6 +1499,7 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>
 <translation id="8998729206196772491">Estàs iniciant la sessió amb un compte gestionat per <ph name="MANAGED_DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chrome. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chrome, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
+<translation id="9021388532480169802">El lloc web s'ha afegit</translation>
 <translation id="9022774213089566801">Visitats amb freqüència</translation>
 <translation id="9028914725102941583">Activa la sincronització per compartir elements entre dispositius</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>

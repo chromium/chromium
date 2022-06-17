@@ -3309,7 +3309,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
 <translation id="4632566332417930481">Gebruik van hulpprogramma's voor ontwikkelaars uitzetten voor extensies die zijn geïnstalleerd op basis van het bedrijfsbeleid, maar toestaan in andere contexten</translation>
 <translation id="4635284822166984665">Tijd wanneer het apparaat begint met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
-<translation id="4638532652671131094">De nestdrempel bepalen waarvoor de JavaScript-functie setTimeout() wordt vastgezet.</translation>
 <translation id="4646626362889216307">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
 
       Gebruik het jokerteken '*' om samenvoeging van alle ondersteunde woordenboekbeleidsregels toe te staan.

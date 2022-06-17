@@ -27,6 +27,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
 <translation id="1154984953698510061">Vedi altre schede</translation>
+<translation id="1161340988127985692">Chiedi di aprire link da altre app in incognito</translation>
 <translation id="1164064664035028907">Usa una password efficace:</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1172898394251786223">Campo successivo</translation>
@@ -292,6 +293,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3443810440409579745">Scheda ricevuta.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Visualizzazione divisa</translation>
+<translation id="3450502512529866925">Aggiungi questa pagina ai Preferiti</translation>
 <translation id="345565170154308620">Gestisci password…</translation>
 <translation id="3469166899695866866">Interrompere il download?</translation>
 <translation id="3470502288861289375">Copia...</translation>
@@ -484,6 +486,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Puoi salvare le pagine da leggere in un secondo momento oppure offline. Chrome ti chiederà se vuoi salvare le pagine lunghe.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
+<translation id="509789154667432072">Aggiungi un preferito</translation>
 <translation id="5118713593561876160">Interessi</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">La sincronizzazione è disattivata</translation>

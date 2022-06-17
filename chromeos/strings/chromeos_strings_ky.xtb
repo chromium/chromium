@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> бул түзмөктү башкарат жана аракеттериңизди да көзөмөлдөшү мүмкүн.</translation>
 <translation id="147809995039451286">Жаңыртуу жүктөлүп алынган жок</translation>
 <translation id="1478594628797167447">Сканер</translation>
+<translation id="1483493594462132177">Жөнтүү</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> түзмөгүндө орнотулган программа жаңыртылууда</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> алыстан жөндөөлөрдү башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="150962533380566081">Жараксыз PUK.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Сүрөттөр жүктөлбөй калды. Тармакка туташууну текшериңиз же сүрөттөрдү кайра жүктөп көрүңүз.</translation>
 <translation id="1751249301761991853">Жеке</translation>
 <translation id="1753496554272155572">Тушкагазды алдын ала көрүү режиминен чыгуу</translation>
+<translation id="1755556344721611131">Мүчүлүштүктөрдү аныктоо колдонмосу</translation>
 <translation id="175763766237925754">Жакшы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -234,6 +236,7 @@
 <translation id="3083667275341675831">Байланыштагы мүчүлүштүктөрдү аныктоо</translation>
 <translation id="3084958266922136097">Көшөгөнү өчүрүү</translation>
 <translation id="3091839911843451378">Басылып чыгарылган жок - Принтер токтоп калды</translation>
+<translation id="3096753366938912951">Капкакты түз жерге коюңуз</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Түзмөк туташты.</translation>
@@ -291,9 +294,11 @@
 <translation id="3604713164406837697">Тушкагазды өзгөртүп алыңыз</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
 <translation id="3606583719724308068">HTTPS вебсайттары үчүн күтүү убакыты жогору</translation>
+<translation id="361575905210396100">Пикириңиз үчүн рахмат</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3621202678540785336">Киргизүү</translation>
 <translation id="3632579075709132555">Купуялык экранын өчүрүү/күйгүзүү</translation>
+<translation id="3643198267586205643">OS тутумун жаңыртуу</translation>
 <translation id="3643810137582748570">Калибрлөөнү өткөрүп жиберүү</translation>
 <translation id="3651050199673793219">Температураны өлчөө бирдигин тандоо</translation>
 <translation id="3678765385266369662">Жазуудан коргоону кайсы жол менен өчүргүңүз келерин тандаңыз</translation>
@@ -412,6 +417,7 @@
 <translation id="469379815867856270">Сигналдын күчү</translation>
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
+<translation id="4740255236714854844">Негизди түз жерге коюңуз</translation>
 <translation id="4744944742468440486">Тандаган нерсеңизге тиешелүү маалымат</translation>
 <translation id="4751272708893364980">RMA таржымалдарын көрүү</translation>
 <translation id="4773299976671772492">Токтотулду</translation>
@@ -459,6 +465,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Сенек мезгилде экранда сүрөттөрдү, убакытты, аба ырайын жана медиа маалыматты көрсөтүү.</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
+<translation id="5044978354634658544">USB түзмөктү киргизүү</translation>
 <translation id="5049856988445523908">SIM карта кулпуланды (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топтун аталышы:</translation>
 <translation id="5051044138948155788">Бир эле бет бар. Ушуну менен скандап баштоо экранына өтөсүз.</translation>
@@ -649,6 +656,7 @@
 <translation id="6659594942844771486">Өтмөк</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>
+<translation id="6721744718589119342">Кошумча маалыматтар менен соңку жаңылыктарды электрондук кат аркылуу кабарлап турабыз</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6723847290197874913">Баскычтоптун жарыгы</translation>
 <translation id="672609503628871915">Эмне жаңылык бар</translation>
@@ -743,6 +751,7 @@
 <translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> түзмөгүн оңдоо катасы</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7665800271478495366">Аватарды өзгөртүү</translation>
+<translation id="7682274994254393134">Оңдоп баштоо</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7705524343798198388">VPN</translation>

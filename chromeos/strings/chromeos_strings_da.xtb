@@ -66,6 +66,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="147809995039451286">Opdateringen kunne ikke downloades</translation>
 <translation id="1478594628797167447">Scanner</translation>
+<translation id="1483493594462132177">Send</translation>
 <translation id="1491076385728777984">Opdaterer firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og overvåge brugeraktivitet via fjernadgang.</translation>
 <translation id="150962533380566081">Ugyldig PUK-kode.</translation>
@@ -102,6 +103,7 @@
 <translation id="1745577949879301685">Billederne kunne ikke indlæses. Tjek din netværksforbindelse, eller prøv at indlæse billederne igen.</translation>
 <translation id="1751249301761991853">Personlig</translation>
 <translation id="1753496554272155572">Forlad forhåndsvisning af baggrund</translation>
+<translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="175763766237925754">Godt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -234,6 +236,7 @@
 <translation id="3083667275341675831">Diagnosticering af forbindelse</translation>
 <translation id="3084958266922136097">Deaktiver Pauseskærm</translation>
 <translation id="3091839911843451378">Handlingen mislykkedes – Stoppede</translation>
+<translation id="3096753366938912951">Læg låget på en jævn overflade</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Enheden har forbindelse.</translation>
@@ -291,9 +294,11 @@
 <translation id="3604713164406837697">Skift baggrund</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
+<translation id="361575905210396100">Tak for din feedback</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
+<translation id="3643198267586205643">Opdater OS</translation>
 <translation id="3643810137582748570">Spring kalibreringen over</translation>
 <translation id="3651050199673793219">Vælg en temperaturenhed</translation>
 <translation id="3678765385266369662">Vælg, hvordan du vil deaktivere Write Protect</translation>
@@ -412,6 +417,7 @@
 <translation id="469379815867856270">Signalstyrke</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="473775607612524610">Opdater</translation>
+<translation id="4740255236714854844">Placer basen på en jævn overflade</translation>
 <translation id="4744944742468440486">Oplysninger relateret til det, du har markeret</translation>
 <translation id="4751272708893364980">Se logs over godkendelse af varereturnering</translation>
 <translation id="4773299976671772492">Stoppet</translation>
@@ -459,6 +465,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv.</translation>
 <translation id="5039804452771397117">Tillad</translation>
+<translation id="5044978354634658544">Indsæt USB-nøgle</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste side. Du videreføres til startsiden for scanning.</translation>
@@ -648,6 +655,7 @@
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
+<translation id="6721744718589119342">Vi sender dig muligvis en mail med en opdatering eller anmodning om flere oplysninger</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Tastaturlys</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
@@ -712,6 +720,7 @@
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tryk på søgetasten og mellemrumstasten for at se resultater i Google Søgning.</translation>
 <translation id="7343649194310845056">Netværksenheder</translation>
 <translation id="7359657277149375382">Filtype</translation>
+<translation id="73631062356239394">Del diagnosticeringsdata</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378553660733179982">Varenummer</translation>
 <translation id="7397270852490618635">Deaktiver Lyst tema</translation>
@@ -742,6 +751,7 @@
 <translation id="7657530360897961171">Fejl ved reparation af <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7665800271478495366">Skift avatar</translation>
+<translation id="7682274994254393134">Reparationsstart</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -916,6 +926,7 @@
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
 <translation id="9173638680043580060">Mindre end ét minut tilbage</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="9188992814426075118">Dit tastatur kan automatisk tilpasses din baggrund</translation>
 <translation id="9204237731135241582">Gateway kan ikke kontaktes fra Android-apps</translation>
 <translation id="9211490828691860325">Alle skriveborde</translation>
 <translation id="922179502584117429">Den aktuelle version, <ph name="VERSION_NUMBER" />, er forældet</translation>

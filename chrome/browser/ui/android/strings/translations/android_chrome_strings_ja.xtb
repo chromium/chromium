@@ -508,6 +508,7 @@
 <translation id="3740525748616366977">音声検索はこのデバイスではご利用いただけません</translation>
 <translation id="3749259744154402564">サポートされていません</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
+<translation id="377124182565324804"><ph name="SITE" /> を追加</translation>
 <translation id="3771290962915251154">保護者による使用制限が有効なため、この設定は無効になっています</translation>
 <translation id="3771694256347217732">Google 利用規約</translation>
 <translation id="3773856050682458546">基本データに加えて、アクセスしたウェブサイト、使用したアプリに関する情報</translation>
@@ -590,6 +591,7 @@
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 閲覧履歴（このデバイスで Chrome を使用してアクセスしたサイトの記録）。</translation>
 <translation id="4263656433980196874">アシスタントの音声検索の同意ダイアログが画面全体に表示されています</translation>
+<translation id="4266054596873078491">Google アカウントでこのサイトと Chrome にログインします。</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
 <translation id="4290281343757112331">後でダウンロードしますか？</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android の設定で画面ロックをオンにする<ph name="END_LINK" /></translation>
@@ -615,7 +617,6 @@
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
 <translation id="442518031075347249">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
 <translation id="4428065317363009941">広告のカスタマイズ</translation>
-<translation id="4450672886426705087">Google 検索結果。</translation>
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
 <translation id="4461614516424362539">QR コードを使用してリンクした他のデバイスで、このスマートフォンをセキュリティ キーとして使用できます。デバイスを削除した場合は、QR コードをスキャンしてもう一度リンクする必要があります。</translation>
@@ -791,6 +792,7 @@
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5339031667684712858">削除したサイト</translation>
 <translation id="5342314432463739672">権限のリクエスト</translation>
+<translation id="53537532693258630">削除したサイトがここに表示されます</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
 <translation id="5368227114232678694">このデバイスで記録を残さずに閲覧するには、シークレット モードを使用してください</translation>
 <translation id="5375577065097716013">Google レンズで画像を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1497,6 +1499,7 @@
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
+<translation id="9021388532480169802">サイトを追加しました</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
 <translation id="9028914725102941583">デバイス間で共有するには同期をオンにします</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 個の動画}other{# 個の動画}}</translation>
