@@ -1772,6 +1772,9 @@ crbug.com/1283025 external/wpt/css/css-tables/fractional-percent-width.html [ Fa
 # https://chromium-review.googlesource.com/c/chromium/src/+/3422590
 crbug.com/591099 fast/forms/text/input-appearance-scroll-size-mocked.html [ Failure ]
 
+# https://chromium-review.googlesource.com/c/chromium/src/+/3697708
+crbug.com/1337210 external/wpt/paint-timing/fcp-only/fcp-text-input.html [ Failure ]
+
 # HighlightOverlayPainting is only implemented in ng
 crbug.com/1147859 virtual/css-highlight-overlay-painting/* [ Skip ]
 

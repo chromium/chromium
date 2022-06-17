@@ -340,9 +340,14 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
                                  gfx::PointF(text_origin_), node_id,
                                  auto_dark_mode);
     }
-    // TODO(npm): Check that there are non-whitespace characters. See
-    // crbug.com/788444.
-    graphics_context_.GetPaintController().SetTextPainted();
+
+    // TODO(sohom): SubstringContainsOnlyWhitespaceOrEmpty() does not check
+    // for all whitespace characters as defined in the spec definition of
+    // whitespace. See https://w3c.github.io/paint-timing/#non-empty
+    // In particular 0xb and 0xc are not checked.
+    if (!fragment_paint_info_.text.SubstringContainsOnlyWhitespaceOrEmpty(from,
+                                                                          to))
+      graphics_context_.GetPaintController().SetTextPainted();
 
     if (!font_.ShouldSkipDrawing())
       PaintTimingDetector::NotifyTextPaint(visual_rect_);

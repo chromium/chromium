@@ -165,6 +165,8 @@ class WTF_EXPORT StringView {
 
   bool ContainsOnlyASCIIOrEmpty() const;
 
+  bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;
+
   void Clear();
 
   UChar operator[](unsigned i) const {
