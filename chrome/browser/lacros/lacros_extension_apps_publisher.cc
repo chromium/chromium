@@ -463,6 +463,7 @@ void LacrosExtensionAppsPublisher::OnProfileMarkedForPermanentDeletion(
 }
 
 void LacrosExtensionAppsPublisher::OnProfileManagerDestroying() {
+  profile_trackers_.clear();
   profile_manager_observation_.Reset();
 }
 
