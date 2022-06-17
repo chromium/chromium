@@ -3407,42 +3407,15 @@
                     "params": {
                         "UseDnsHttpsSvcbEnableInsecure": "true",
                         "UseDnsHttpsSvcbHttpUpgrade": "true",
-                        "UseDnsHttpsSvcbInsecureExtraTimeMax": "500ms",
-                        "UseDnsHttpsSvcbInsecureExtraTimeMin": "300ms",
-                        "UseDnsHttpsSvcbInsecureExtraTimePercent": "50",
-                        "UseDnsHttpsSvcbSecureExtraTimeMax": "500ms",
-                        "UseDnsHttpsSvcbSecureExtraTimeMin": "300ms",
-                        "UseDnsHttpsSvcbSecureExtraTimePercent": "50"
+                        "UseDnsHttpsSvcbInsecureExtraTimeMax": "50ms",
+                        "UseDnsHttpsSvcbInsecureExtraTimeMin": "5ms",
+                        "UseDnsHttpsSvcbInsecureExtraTimePercent": "20",
+                        "UseDnsHttpsSvcbSecureExtraTimeMax": "50ms",
+                        "UseDnsHttpsSvcbSecureExtraTimeMin": "5ms",
+                        "UseDnsHttpsSvcbSecureExtraTimePercent": "20"
                     },
                     "enable_features": [
                         "UseDnsHttpsSvcb"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DnsHttpssvc": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "DnsHttpssvcStudy",
-                    "params": {
-                        "DnsHttpssvcControlDomainWildcard": "true",
-                        "DnsHttpssvcEnableQueryOverInsecure": "true",
-                        "DnsHttpssvcExperimentDomains": "youtube.com.au",
-                        "DnsHttpssvcExtraTimeMs": "50",
-                        "DnsHttpssvcExtraTimePercent": "20",
-                        "DnsHttpssvcUseHttpssvc": "true",
-                        "DnsHttpssvcUseIntegrity": "true"
-                    },
-                    "enable_features": [
-                        "DnsHttpssvc"
                     ]
                 }
             ]
