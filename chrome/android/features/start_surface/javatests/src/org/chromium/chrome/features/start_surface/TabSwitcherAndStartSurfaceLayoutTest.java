@@ -12,7 +12,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -130,7 +129,6 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -1393,70 +1391,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // Make sure all tabs have thumbnail.
         enterGTSWithThumbnailRetry();
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "aspect_ratio_of_one");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("NewTabVariation")
-    @DisabledTest(message = "https://crbug.com/1144666")
-    // clang-format off
-    @Features.DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION,
-            ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
-    @CommandLineFlags.Add({BASE_PARAMS + "/tab_grid_layout_android_new_tab/NewTabVariation"})
-    public void testNewTabVariation() {
-        // clang-format on
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(2, 0, null);
-        enterTabSwitcher(cta);
-        verifyTabModelTabCount(cta, 2, 0);
-        checkNewTabVariationVisibility(true);
-
-        createTabs(cta, true, 1);
-        verifyTabModelTabCount(cta, 2, 1);
-        enterTabSwitcher(cta);
-        checkNewTabVariationVisibility(false);
-
-        switchTabModel(cta, false);
-        checkNewTabVariationVisibility(false);
-
-        switchTabModel(cta, true);
-        checkNewTabVariationVisibility(false);
-
-        closeFirstTabInTabSwitcher();
-        verifyTabModelTabCount(cta, 2, 0);
-        checkNewTabVariationVisibility(true);
-
-        createTabs(cta, true, 2);
-        verifyTabModelTabCount(cta, 2, 2);
-        enterTabSwitcher(cta);
-        checkNewTabVariationVisibility(false);
-
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta,
-                R.id.close_all_incognito_tabs_menu_id);
-        verifyTabModelTabCount(cta, 2, 0);
-        checkNewTabVariationVisibility(true);
-    }
-
-    private void checkNewTabVariationVisibility(boolean isVisible) {
-        if (isVisible) {
-            onView(allOf(withId(R.id.incognito_toggle_tabs),
-                           withParent(withId(R.id.tab_switcher_toolbar))))
-                    .check(matches(withEffectiveVisibility(GONE)));
-            onView(allOf(withId(R.id.new_tab_button),
-                           withParent(withId(R.id.tab_switcher_toolbar))))
-                    .check(matches(withEffectiveVisibility(GONE)));
-            onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
-                    .check(matches(isDisplayed()));
-        } else {
-            onView(allOf(withId(R.id.incognito_toggle_tabs),
-                           withParent(withId(R.id.tab_switcher_toolbar))))
-                    .check(matches(isDisplayed()));
-            onView(allOf(withId(R.id.new_tab_button),
-                           withParent(withId(R.id.tab_switcher_toolbar))))
-                    .check(matches(isDisplayed()));
-            onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
-                    .check(matches(withEffectiveVisibility(GONE)));
-        }
     }
 
     @Test
