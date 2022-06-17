@@ -3171,6 +3171,7 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     "//chrome/browser/partnercustomizations:unit_device_javatests",
     "//chrome/browser/password_edit_dialog/android:unit_device_javatests",
     "//chrome/browser/signin/services/android:unit_device_javatests",
+    "//chrome/browser/thumbnail/generator:unit_device_javatests",
     "//chrome/browser/ui/android/appmenu/internal:unit_device_javatests",
     "//chrome/browser/ui/android/omnibox:unit_device_javatests",
     "//chrome/browser/ui/android/searchactivityutils:unit_device_javatests",
