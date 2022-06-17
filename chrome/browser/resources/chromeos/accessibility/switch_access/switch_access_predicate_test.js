@@ -244,7 +244,7 @@ TEST_F('SwitchAccessPredicateTest', 'IsActionable', async function() {
        <input type="range" aria-label="slider" value=5 min=0 max=10>
        <div id="clickable" role="listitem" onclick="2+2"></div>
        <div id="div1"><p>p1</p></div>`;
-  await this.runWithLoadedTree(treeString);
+  const loadedPage = await this.runWithLoadedTree(treeString);
   const cache = new SACache();
 
   const offscreenButton = this.findNodeByNameAndRole('offscreen', 'button');
