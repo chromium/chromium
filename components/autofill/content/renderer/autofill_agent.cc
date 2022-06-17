@@ -288,14 +288,17 @@ void AutofillAgent::DidChangeScrollOffset() {
 
 void AutofillAgent::DidChangeScrollOffsetImpl(
     const WebFormControlElement& element) {
-  if (element != element_ || element_.IsNull() || focus_requires_scroll_ ||
-      !is_popup_possibly_visible_ || !element_.Focused())
+  if (element != element_ || element.IsNull() || focus_requires_scroll_ ||
+      !is_popup_possibly_visible_ || !element.Focused()) {
     return;
+  }
+
+  DCHECK(IsOwnedByFrame(element, render_frame()));
 
   FormData form;
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(
-          element_, field_data_manager_.get(),
+          element, field_data_manager_.get(),
           static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                    GetExtractDatalistMask()),
           &form, &field)) {
