@@ -334,8 +334,14 @@ bool SaveCardMessageControllerAndroid::HadUserInteraction() {
 void SaveCardMessageControllerAndroid::ResetInternal() {
   message_.reset();
   reprompt_required_ = false;
+  is_dialog_shown_ = false;
+  is_link_clicked_ = false;
   web_contents_ = nullptr;
   save_card_message_confirm_controller_.reset();
+
+  is_name_confirmed_for_testing_ = false;
+  is_date_confirmed_for_testing_ = false;
+  is_save_card_confirmed_for_testing_ = false;
 }
 
 }  // namespace autofill
