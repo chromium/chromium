@@ -291,11 +291,17 @@ fi
 if package_exists libegl1; then
   lib_list="${lib_list} libegl1"
 fi
+if package_exists libwayland-egl1; then
+  lib_list="${lib_list} libwayland-egl1"
+fi
 if package_exists libgl1:i386; then
   lib_list="${lib_list} libgl1:i386"
 fi
 if package_exists libegl1:i386; then
   lib_list="${lib_list} libegl1:i386"
+fi
+if package_exists libwayland-egl1:i386; then
+  lib_list="${lib_list} libwayland-egl1:i386"
 fi
 
 # 32-bit libraries needed e.g. to compile V8 snapshot for Android or armhf
