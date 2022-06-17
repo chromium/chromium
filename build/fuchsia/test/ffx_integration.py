@@ -6,13 +6,14 @@
 import logging
 import os
 import json
+import random
 import subprocess
 import tempfile
 
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional
 
-from common import run_ffx_command, run_continuous_ffx_command
+from common import get_host_arch, run_ffx_command, run_continuous_ffx_command
 
 
 class ScopedFfxConfig(AbstractContextManager):
@@ -66,6 +67,68 @@ def test_connection(target_id: Optional[str]) -> None:
     """Run an echo test to verify that the device can be connected to."""
 
     run_ffx_command(('target', 'echo'), target_id)
+
+
+class FfxEmulator(AbstractContextManager):
+    """A helper for managing emulators."""
+
+    def __init__(self, enable_graphics: bool, hardware_gpu: bool,
+                 product_bundle: Optional[str], with_network: bool) -> None:
+        if product_bundle:
+            self._product_bundle = product_bundle
+        else:
+            target_cpu = get_host_arch()
+            self._product_bundle = f'terminal.qemu-{target_cpu}'
+
+        self._enable_graphics = enable_graphics
+        self._hardware_gpu = hardware_gpu
+        self._with_network = with_network
+        node_name_suffix = random.randint(1, 9999)
+        self._node_name = f'fuchsia-emulator-{node_name_suffix}'
+
+    def _download_product_bundle_if_necessary(self) -> None:
+        """Download the image for a given product bundle."""
+
+        # Check if the product bundle has already been downloaded.
+        # TODO: remove when `ffx product-bundle get` doesn't automatically
+        # redownload.
+        list_cmd = run_ffx_command(('product-bundle', 'list'),
+                                   capture_output=True)
+        for line in list_cmd.stdout.splitlines():
+            if self._product_bundle in line and '*' in line:
+                return
+
+        run_ffx_command(('product-bundle', 'get', self._product_bundle))
+
+    def __enter__(self) -> str:
+        """Start the emulator.
+
+        Returns:
+            The node name of the emulator.
+        """
+
+        self._download_product_bundle_if_necessary()
+        emu_command = [
+            'emu', 'start', self._product_bundle, '--name', self._node_name
+        ]
+        if not self._enable_graphics:
+            emu_command.append('-H')
+        if self._hardware_gpu:
+            emu_command.append('--gpu')
+        if self._with_network:
+            emu_command.extend(('--net', 'tap'))
+        run_ffx_command(emu_command)
+        return self._node_name
+
+    def __exit__(self, exc_type, exc_value, traceback) -> bool:
+        """Shutdown the emulator."""
+
+        # The emulator might have shut down unexpectedly, so this command
+        # might fail.
+        run_ffx_command(('emu', 'stop', self._node_name), check=False)
+
+        # Do not suppress exceptions.
+        return False
 
 
 class FfxTestRunner(AbstractContextManager):

@@ -1,5 +1,11 @@
 [MESSAGES CONTROL]
 
+# Disable the message, report, category or checker with the given id(s).
+disable=fixme,
+
+# fixme
+# This complains about TODOs, which are perfectly valid to have.
+
 # Suppression for invalid-name error for PRESUBMIT.py file.
 good-names=f,PRESUBMIT
 

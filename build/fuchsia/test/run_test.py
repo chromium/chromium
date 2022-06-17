@@ -5,11 +5,10 @@
 """Implements commands for running tests E2E on a Fuchsia device."""
 
 import argparse
-import atexit
-import shutil
 import sys
 import tempfile
 
+from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args
@@ -18,12 +17,13 @@ from log_manager import LogManager, register_log_args, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
 from run_executable_test import ExecutableTestRunner
-from serve_repo import register_serve_args, run_serve_cmd
+from serve_repo import register_serve_args, serve_repository
+from start_emulator import create_emulator_from_args, register_emulator_args
 from test_runner import TestRunner
 
 
-def get_test_runner(runner_args: argparse.Namespace,
-                    test_args: List[str]) -> TestRunner:
+def _get_test_runner(runner_args: argparse.Namespace,
+                     test_args: List[str]) -> TestRunner:
     """Initialize a suitable TestRunner class."""
     if runner_args.test_type == 'blink':
         return BlinkTestRunner(runner_args.out_dir, test_args,
@@ -39,10 +39,16 @@ def main():
         'test_type',
         help='The type of test to run. Options include \'blink\''
         'or in the case of gtests, the gtest name.')
+    parser.add_argument('--device',
+                        '-d',
+                        action='store_true',
+                        default=False,
+                        help='Use an existing device.')
 
     # Register arguments
     register_common_args(parser)
     register_device_args(parser)
+    register_emulator_args(parser)
     register_log_args(parser)
     register_package_args(parser, allow_temp_repo=True)
     register_serve_args(parser)
@@ -53,25 +59,35 @@ def main():
     if not runner_args.out_dir:
         raise ValueError("--out-dir must be specified.")
 
-    test_connection(runner_args.target_id)
+    with ExitStack() as stack:
+        log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
+        if not runner_args.device:
+            if runner_args.target_id:
+                raise ValueError(
+                    'Target id can not be set without also setting \'-d\' flag.'
+                )
+            runner_args.target_id = stack.enter_context(
+                create_emulator_from_args(runner_args))
 
-    test_runner = get_test_runner(runner_args, test_args)
-    package_paths = test_runner.get_package_paths()
-    with LogManager(runner_args.logs_dir) as log_manager:
-        start_system_log(log_manager, False, package_paths, ['--since', 'now'])
+        test_connection(runner_args.target_id)
+
+        test_runner = _get_test_runner(runner_args, test_args)
+        packages = test_runner.get_package_paths()
+
+        # Start system logging.
+        start_system_log(log_manager, False, packages, ('--since', 'now'),
+                         runner_args.target_id)
+
         if not runner_args.repo:
             # Create a directory that serves as a temporary repository.
-            tmpdir = tempfile.mkdtemp()
-            atexit.register(shutil.rmtree, tmpdir)
-            runner_args.repo = tmpdir
+            runner_args.repo = stack.enter_context(
+                tempfile.TemporaryDirectory())
 
-        publish_packages(package_paths, runner_args.repo,
+        publish_packages(packages, runner_args.repo,
                          not runner_args.no_repo_init)
-        try:
-            run_serve_cmd('start', runner_args)
+
+        with serve_repository(runner_args):
             return test_runner.run_test().returncode
-        finally:
-            run_serve_cmd('stop', runner_args)
 
 
 if __name__ == '__main__':

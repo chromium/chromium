@@ -5,6 +5,7 @@
 """Implements commands for serving a TUF repository."""
 
 import argparse
+import contextlib
 import json
 import logging
 import os
@@ -99,6 +100,16 @@ def run_serve_cmd(cmd: str, args: argparse.Namespace) -> None:
     if cmd == 'start':
         _start_serving(args.repo, args.repo_name, args.target_id)
     else:
+        _stop_serving()
+
+
+@contextlib.contextmanager
+def serve_repository(args: argparse.Namespace) -> None:
+    """Context manager for serving a repository."""
+    _start_serving(args.repo, args.repo_name, args.target_id)
+    try:
+        yield None
+    finally:
         _stop_serving()
 
 
