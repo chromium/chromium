@@ -290,7 +290,9 @@ viz_component("service") {
     }
   }
 
-  if (is_chromecast) {
+  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+  # such builds no longer reach this file.
+  if (is_castos || is_cast_android || (is_fuchsia && is_chromecast)) {
     deps += [ "//chromecast/media/service/mojom" ]
   }
 
@@ -357,7 +359,9 @@ viz_component("service") {
     public_deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromecast) {
+  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition once
+  # such builds no longer reach this file.
+  if (is_castos || is_cast_android || (is_fuchsia && is_chromecast)) {
     defines += [ "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY" ]
   }
 

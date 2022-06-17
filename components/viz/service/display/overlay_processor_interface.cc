@@ -116,12 +116,12 @@ OverlayProcessorInterface::CreateOverlayProcessor(
                               ? 2
                               : 1));
 #elif defined(USE_OZONE)
-#if !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_CASTOS)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
-  // For chromecast, we always need OverlayProcessorOzone.
+  // For CastOS, we always need OverlayProcessorOzone.
   if (!capabilities.supports_surfaceless)
     return std::make_unique<OverlayProcessorStub>();
-#endif  // #if !BUILDFLAG(IS_CHROMECAST)
+#endif  // #if !BUILDFLAG(IS_CASTOS)
 
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
   if (!renderer_settings.overlay_strategies.empty()) {

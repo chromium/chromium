@@ -17,7 +17,7 @@
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #endif
@@ -25,7 +25,7 @@
 namespace viz {
 namespace {
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // This persistent mojo::Remote is bound then used by all the instances
 // of OverlayStrategyUnderlayCast.
 mojo::Remote<chromecast::media::mojom::VideoGeometrySetter>&
@@ -265,7 +265,7 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
 void OverlayStrategyUnderlayCast::CommitCandidate(
     const OverlayProposedCandidate& proposed_candidate,
     AggregatedRenderPass* render_pass) {
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   DCHECK(GetVideoGeometrySetter());
   GetVideoGeometrySetter()->SetVideoGeometry(
       proposed_candidate.candidate.display_rect,
@@ -288,7 +288,7 @@ OverlayStrategy OverlayStrategyUnderlayCast::GetUMAEnum() const {
   return OverlayStrategy::kUnderlayCast;
 }
 
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // static
 void OverlayStrategyUnderlayCast::ConnectVideoGeometrySetter(
     mojo::PendingRemote<chromecast::media::mojom::VideoGeometrySetter>
