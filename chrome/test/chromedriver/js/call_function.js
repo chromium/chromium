@@ -354,7 +354,7 @@ function jsonSerialize(item, seen) {
   // (above) are type 'function', so this check must be performed after.
   if (typeof item === 'function')
     return item;
-  // TODO(rohpavone): Implement WindowProxy serialization.
+  // TODO(crbug.com/1337415): Implement WindowProxy serialization.
   if (typeof item.toJSON === 'function' &&
       (item.hasOwnProperty('toJSON') ||
        Object.getPrototypeOf(item).hasOwnProperty('toJSON')))
